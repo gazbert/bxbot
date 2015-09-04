@@ -4,7 +4,7 @@ _BX-bot is in beta and undergoing a final round of live-testing on the exchanges
 If you plan on using the current code, be careful! Release 1.0 is coming soon..._
 
 ## What is BX-bot?
-BX-bot (Bex bot) is a simple Java algorithmic trading bot for trading [Bitcoin](https://bitcoin.org) on 
+BX-bot (_Bex_ bot) is a simple Java algorithmic trading bot for trading [Bitcoin](https://bitcoin.org) on 
 crytocurrency [exchanges](https://bitcoinwisdom.com/).
 
 The project contains the basic infrastructure to trade on a [cryptocurrency](http://coinmarketcap.com/) exchange... 
@@ -19,7 +19,7 @@ project; that would be shiny.
 
 The Trading API provides support for [limit orders](http://www.investopedia.com/terms/l/limitorder.asp)
 traded at the [spot price](http://www.investopedia.com/terms/s/spotprice.asp);
-it does not support [futures](http://www.investopedia.com/university/beginners-guide-to-trading-futures/") or 
+it does not support [futures](http://www.investopedia.com/university/beginners-guide-to-trading-futures/) or 
 [margin](http://www.investopedia.com/university/margin/) trading... yet.
  
 **Warning:** Trading Bitcoin carries significant financial risk; you could lose money. This software is provided 'as is'
@@ -348,7 +348,7 @@ The project Javadoc will be useful too. It can be found in the `./target/apidocs
 see the _Build Guide_ section.
 
 ##### Error Handling
-Your Exchange Adapter implementation should throw a [TradingApiException](https://bitbucket.org/gazzbert/bx-bot/src/f62f8e684dffe3ec96c2848855a1eca817b60216/src/main/java/com/gazbert/bxbot/core/api/trading/TradingApiException.java?at=master)
+Your Exchange Adapter implementation should throw a [TradingApiException](https://github.com/gazbert/BX-bot/blob/master/src/main/java/com/gazbert/bxbot/core/api/trading/TradingApiException.java)
 whenever it breaks; the Trading Strategies will catch this and decide how they want to proceed.
 
 The first release of the bot is _single-threaded_ for simplicity. The downside to this is that if an API call to the 
