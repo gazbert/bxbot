@@ -405,7 +405,7 @@ To start, stop, and query the bot's status, use `./bxbot.sh [start|stop|status]`
 The following features are going to be developed: 
 
 - [Bitfinex](https://www.bitfinex.com/) Exchange Adapter.
-    - [OKcoin](https://www.okcoin.com/) Exchange Adapter.
+- [OKcoin](https://www.okcoin.com/) Exchange Adapter.
 - [Huobi](https://www.huobi.com/) Exchange Adapter.
 - Convert bot into [Spring Boot](http://projects.spring.io/spring-boot/) app. This will include a new REST API for administering the bot.
 - Web UI (written in [AngularJS](https://angularjs.org/), [TypeScript](http://www.typescriptlang.org/), and 
