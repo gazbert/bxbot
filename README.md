@@ -5,7 +5,7 @@ If you plan on using the current code, be careful! Release 1.0 is coming soon...
 
 ## What is BX-bot?
 BX-bot (_Bex_ bot) is a simple Java algorithmic trading bot for trading [Bitcoin](https://bitcoin.org) on 
-crytocurrency [exchanges](https://bitcoinwisdom.com/).
+cryptocurrency [exchanges](https://bitcoinwisdom.com/).
 
 The project contains the basic infrastructure to trade on a [cryptocurrency](http://coinmarketcap.com/) exchange... 
 except for the trading strategies; you'll need to write those yourself. A basic example 
@@ -405,7 +405,7 @@ To start, stop, and query the bot's status, use `./bxbot.sh [start|stop|status]`
 The following features are going to be developed: 
 
 - [Bitfinex](https://www.bitfinex.com/) Exchange Adapter.
-- [OKcoin](https://www.okcoin.com/) Exchange Adapter.
+    - [OKcoin](https://www.okcoin.com/) Exchange Adapter.
 - [Huobi](https://www.huobi.com/) Exchange Adapter.
 - Convert bot into [Spring Boot](http://projects.spring.io/spring-boot/) app. This will include a new REST API for administering the bot.
 - Web UI (written in [AngularJS](https://angularjs.org/), [TypeScript](http://www.typescriptlang.org/), and 
