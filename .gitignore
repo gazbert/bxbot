@@ -1,12 +1,37 @@
+# Java stuff
 *.class
-
-# Mobile Tools for Java (J2ME)
-.mtj.tmp/
-
-# Package Files #
 *.jar
 *.war
 *.ear
 
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+# virtual machine crash logs; hopefully not many of these ;-)
 hs_err_pid*
+
+# Eclipse
+.classpath
+.project
+.settings
+
+# IntelliJ
+*.iml
+/.idea
+/out
+
+# Build and log dirs
+/bin
+/target
+/dist
+/libs
+/logs
+*.log
+
+# bot pid when running locally
+.bxbot.pid
+
+# Ignore my key props files!
+/resources/bitstamp/bitstamp-config.properties
+/resources/btce/btce-config.properties
+/resources/cryptsy/cryptsy-config.properties
+/resouces/bitfinex/bitfinex-config.properties
+/resouces/okcoin/okcoin-config.properties
+/resouces/huobi/huobi-config.properties

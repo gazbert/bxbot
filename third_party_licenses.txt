@@ -1,0 +1,14 @@
+Used in Product
+===============
+* GSON     - https://github.com/google/gson                - https://github.com/google/gson/blob/master/LICENSE
+* log4j    - http://logging.apache.org/log4j/1.2/          - http://www.apache.org/licenses/LICENSE-2.0
+* JavaMail - https://java.net/projects/javamail/pages/Home - https://glassfish.java.net/public/CDDL+GPL_1_1.html
+
+Used for building & testing
+============================
+* JUnit     - http://junit.org/                   - http://opensource.org/licenses/eclipse-1.0.html
+* Powermock - https://github.com/jayway/powermock - https://github.com/jayway/powermock/blob/master/LICENSE.txt
+* EasyMock  - http://easymock.org/                - http://easymock.org/License.html
+* Objenesis - http://objenesis.org/index.html     - http://objenesis.org/license.html
+* cglib     - https://github.com/cglib/cglib      - https://github.com/cglib/cglib/blob/master/LICENSE
+* Maven     - https://maven.apache.org/           - http://www.apache.org/licenses/

@@ -1,0 +1,23 @@
+{
+  "success": 1,
+  "return": {
+    "received": 0,
+    "remains": 0.05,
+    "order_id": 804754279,
+    "funds": {
+      "usd": 0.00013757,
+      "btc": 0.59614021,
+      "ltc": 0,
+      "nmc": 0,
+      "rur": 0,
+      "eur": 0,
+      "nvc": 0,
+      "trc": 0,
+      "ppc": 0,
+      "ftc": 0,
+      "xpm": 0,
+      "cnh": 0,
+      "gbp": 0
+    }
+  }
+}
