@@ -53,7 +53,7 @@ BX-bot depends on [log4j](http://logging.apache.org/log4j/1.2/), and [JavaMail](
 and [Google Gson](https://code.google.com/p/google-gson/). See the pom.xml for details.
 
 ## Testing
-[![Build Status](https://travis-ci.org/gazbert/java-design-patterns.svg?branch=master)](https://travis-ci.org/gazbert/BX-bot)
+[![Build Status](https://travis-ci.org/gazbert/BX-bot.svg?branch=master)](https://travis-ci.org/gazbert/BX-bot)
 
 The bot has undergone basic unit testing on a _best-effort_ basis. The project also has a continuous integration build 
 running on [Travis CI](https://travis-ci.org/).
