@@ -48,13 +48,13 @@ BX-bot requires [Oracle JDK 1.8](http://www.oracle.com/technetwork/java/javase/d
 development and runtime environment.
 
 You'll also need [Maven 3](https://maven.apache.org) installed in order to build the bot and pull in the dependencies;
-BX-bot depends on [log4j](http://logging.apache.org/log4j/1.2/), and [JavaMail](https://java.net/projects/javamail/pages/Home), 
+BX-bot depends on [log4j](http://logging.apache.org/log4j/1.2/), [JavaMail](https://java.net/projects/javamail/pages/Home), 
 and [Google Gson](https://code.google.com/p/google-gson/). See the pom.xml for details.
 
 ## Testing
 [![Build Status](https://travis-ci.org/gazbert/BX-bot.svg?branch=master)](https://travis-ci.org/gazbert/BX-bot)
 
-The bot has undergone basic unit testing on a _best-effort_ basis. The project also has a continuous integration build 
+The bot has undergone basic unit testing on a _best-effort_ basis. The project has a continuous integration build 
 running on [Travis CI](https://travis-ci.org/).
 
 ## Issue & Change Management
