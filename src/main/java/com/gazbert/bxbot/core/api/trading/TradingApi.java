@@ -30,7 +30,7 @@ import java.util.List;
 
 /**
  * <p>
- * BXBot's Trading API.
+ * BX-bot's Trading API.
  * </p>
  *
  * <p>
@@ -38,7 +38,7 @@ import java.util.List;
  * </p>
  *
  * <p>
- * Exchange Adapters provide their own implementation of the API for the trading they wish to trade on.
+ * Exchange Adapters provide their own implementation of the API for the exchange they wish to trade on.
  * </p>
  *
  * <p>
@@ -70,7 +70,7 @@ public interface TradingApi {
      *
      * @param marketId the id of the market.
      * @return the market order book.
-     * @throws ExchangeTimeoutException if a timeout occurred trying to connect to the trading. The timeout limit is
+     * @throws ExchangeTimeoutException if a timeout occurred trying to connect to the exchange. The timeout limit is
      *                                  implementation specific for each Exchange Adapter; see the documentation for the
      *                                  adapter you are using. You could retry the API call, or exit from your Trading Strategy
      *                                  and let the Trading Engine execute your Trading Strategy at the next trade cycle.
@@ -87,7 +87,7 @@ public interface TradingApi {
      *
      * @param marketId the id of the market.
      * @return your current open orders.
-     * @throws ExchangeTimeoutException if a timeout occurred trying to connect to the trading. The timeout limit is
+     * @throws ExchangeTimeoutException if a timeout occurred trying to connect to the exchange. The timeout limit is
      *                                  implementation specific for each Exchange Adapter; see the documentation for the
      *                                  adapter you are using. You could retry the API call, or exit from your Trading Strategy
      *                                  and let the Trading Engine execute your Trading Strategy at the next trade cycle.
@@ -100,14 +100,14 @@ public interface TradingApi {
     List<OpenOrder> getYourOpenOrders(String marketId) throws ExchangeTimeoutException, TradingApiException;
 
     /**
-     * Places an order on the trading.
+     * Places an order on the exchange.
      *
      * @param marketId  the id of the market.
      * @param orderType Value must be {@link OrderType#BUY} or {@link OrderType#SELL}.
      * @param quantity  amount of units you are buying/selling in this order.
      * @param price     the price per unit you are buying/selling at.
      * @return the id of the order.
-     * @throws ExchangeTimeoutException if a timeout occurred trying to connect to the trading. The timeout limit is
+     * @throws ExchangeTimeoutException if a timeout occurred trying to connect to the exchange. The timeout limit is
      *                                  implementation specific for each Exchange Adapter; see the documentation for the
      *                                  adapter you are using. You could retry the API call, or exit from your Trading Strategy
      *                                  and let the Trading Engine execute your Trading Strategy at the next trade cycle.
@@ -121,11 +121,11 @@ public interface TradingApi {
             throws ExchangeTimeoutException, TradingApiException;
 
     /**
-     * Cancels your existing order on the trading.
+     * Cancels your existing order on the exchange.
      *
      * @param orderId your order Id.
      * @return true if order cancelled ok, false otherwise.
-     * @throws ExchangeTimeoutException if a timeout occurred trying to connect to the trading. The timeout limit is
+     * @throws ExchangeTimeoutException if a timeout occurred trying to connect to the exchange. The timeout limit is
      *                                  implementation specific for each Exchange Adapter; see the documentation for the
      *                                  adapter you are using. You could retry the API call, or exit from your Trading Strategy
      *                                  and let the Trading Engine execute your Trading Strategy at the next trade cycle.
@@ -143,7 +143,7 @@ public interface TradingApi {
      *
      * @param marketId the id of the market.
      * @return the latest market price.
-     * @throws ExchangeTimeoutException if a timeout occurred trying to connect to the trading. The timeout limit is
+     * @throws ExchangeTimeoutException if a timeout occurred trying to connect to the exchange. The timeout limit is
      *                                  implementation specific for each Exchange Adapter; see the documentation for the
      *                                  adapter you are using. You could retry the API call, or exit from your Trading Strategy
      *                                  and let the Trading Engine execute your Trading Strategy at the next trade cycle.
@@ -156,10 +156,10 @@ public interface TradingApi {
     BigDecimal getLatestMarketPrice(String marketId) throws ExchangeTimeoutException, TradingApiException;
 
     /**
-     * Fetches the balance of your wallets on the trading.
+     * Fetches the balance of your wallets on the exchange.
      *
      * @return your wallet balance info.
-     * @throws ExchangeTimeoutException if a timeout occurred trying to connect to the trading. The timeout limit is
+     * @throws ExchangeTimeoutException if a timeout occurred trying to connect to the exchange. The timeout limit is
      *                                  implementation specific for each Exchange Adapter; see the documentation for the
      *                                  adapter you are using. You could retry the API call, or exit from your Trading Strategy
      *                                  and let the Trading Engine execute your Trading Strategy at the next trade cycle.
@@ -172,13 +172,13 @@ public interface TradingApi {
     BalanceInfo getBalanceInfo() throws ExchangeTimeoutException, TradingApiException;
 
     /**
-     * Returns the trading BUY order fee for a given market id.
-     * The returned value is the % of the BUY order that the trading uses to calculate its fee as
+     * Returns the exchange BUY order fee for a given market id.
+     * The returned value is the % of the BUY order that the exchange uses to calculate its fee as
      * a {@link BigDecimal}. If the fee is 0.33%, then the {@link BigDecimal} value returned is
      * 0.0033.
      * @param marketId the id of the market.
-     * @return the % of the BUY order that the trading uses to calculate its fee as a {@link BigDecimal}.
-     * @throws ExchangeTimeoutException if a timeout occurred trying to connect to the trading. The timeout limit is
+     * @return the % of the BUY order that the exchange uses to calculate its fee as a {@link BigDecimal}.
+     * @throws ExchangeTimeoutException if a timeout occurred trying to connect to the exchange. The timeout limit is
      *                                  implementation specific for each Exchange Adapter; see the documentation for the
      *                                  adapter you are using. You could retry the API call, or exit from your Trading Strategy
      *                                  and let the Trading Engine execute your Trading Strategy at the next trade cycle.
@@ -191,13 +191,13 @@ public interface TradingApi {
     BigDecimal getPercentageOfBuyOrderTakenForExchangeFee(String marketId) throws TradingApiException, ExchangeTimeoutException;
 
     /**
-     * Returns the trading SELL order fee for a given market id.
-     * The returned value is the % of the SELL order that the trading uses to calculate its fee as a
+     * Returns the exchange SELL order fee for a given market id.
+     * The returned value is the % of the SELL order that the exchange uses to calculate its fee as a
      * {@link BigDecimal}. If the fee is 0.33%, then the {@link BigDecimal} value returned is
      * 0.0033.
      * @param marketId the id of the market.
-     * @return the % of the SELL order that the trading uses to calculate its fee as a {@link BigDecimal}.
-     * @throws ExchangeTimeoutException if a timeout occurred trying to connect to the trading. The timeout limit is
+     * @return the % of the SELL order that the exchange uses to calculate its fee as a {@link BigDecimal}.
+     * @throws ExchangeTimeoutException if a timeout occurred trying to connect to the exchange. The timeout limit is
      *                                  implementation specific for each Exchange Adapter; see the documentation for the
      *                                  adapter you are using. You could retry the API call, or exit from your Trading Strategy
      *                                  and let the Trading Engine execute your Trading Strategy at the next trade cycle.

@@ -118,7 +118,7 @@ public class TestExampleScalpingStrategy {
      * <ol>
      * <li>Given the bot has just started</li>
      * <li>When the strategy is first invoked</li>
-     * <li>Then a new buy order is sent to the trading</li>
+     * <li>Then a new buy order is sent to the exchange</li>
      * </ol>
      *
      * @throws Exception if anything unexpected happens and fails the test.
@@ -137,7 +137,7 @@ public class TestExampleScalpingStrategy {
         final BigDecimal lastTradePrice = new BigDecimal("0.015");
         expect(tradingApi.getLatestMarketPrice(MARKET_ID)).andReturn(lastTradePrice);
 
-        // expect to send initial buy order to trading
+        // expect to send initial buy order to exchange
         final String orderId = "4239407233";
         final BigDecimal amountOfUnitsToBuy = new BigDecimal("33.33333333");
         expect(market.getId()).andReturn(MARKET_ID);
@@ -160,7 +160,7 @@ public class TestExampleScalpingStrategy {
      * <ol>
      * <li>Given the bot has had its current buy order filled</li>
      * <li>When the strategy is invoked</li>
-     * <li>Then a new sell order is sent to the trading</li>
+     * <li>Then a new sell order is sent to the exchange</li>
      * </ol>
      *
      * @throws Exception if anything unexpected happens and fails the test.
@@ -188,11 +188,11 @@ public class TestExampleScalpingStrategy {
         expect(market.getId()).andReturn(MARKET_ID);
         expect(tradingApi.getYourOpenOrders(MARKET_ID)).andReturn(new ArrayList<>()); // empty list; order has filled
 
-        // expect to get trading fees
+        // expect to get exchange fees
         expect(tradingApi.getPercentageOfBuyOrderTakenForExchangeFee(MARKET_ID)).andReturn(EXCHANGE_BUY_FEE_PERCENTAGE);
         expect(tradingApi.getPercentageOfSellOrderTakenForExchangeFee(MARKET_ID)).andReturn(EXCHANGE_SELL_FEE_PERCENTAGE);
 
-        // expect to send new sell order to trading
+        // expect to send new sell order to exchange
         final BigDecimal requiredProfitInPercent = new BigDecimal("0.01");
         final BigDecimal totalPercentageGainRequired = EXCHANGE_BUY_FEE_PERCENTAGE.add(EXCHANGE_SELL_FEE_PERCENTAGE).add(requiredProfitInPercent);
         final BigDecimal newAskPrice = lastOrderPrice.multiply(totalPercentageGainRequired).add(lastOrderPrice).setScale(8, RoundingMode.HALF_UP);
@@ -278,7 +278,7 @@ public class TestExampleScalpingStrategy {
      * <ol>
      * <li>Given the bot has had its current sell order filled</li>
      * <li>When the strategy is invoked</li>
-     * <li>Then a new buy order is sent to the trading</li>
+     * <li>Then a new buy order is sent to the exchange</li>
      * </ol>
      *
      * @throws Exception if anything unexpected happens and fails the test.
@@ -311,7 +311,7 @@ public class TestExampleScalpingStrategy {
         final BigDecimal lastTradePrice = new BigDecimal("0.015");
         expect(tradingApi.getLatestMarketPrice(MARKET_ID)).andReturn(lastTradePrice);
 
-        // expect to send new buy order to trading
+        // expect to send new buy order to exchange
         final String orderId = "4239407233";
         final BigDecimal amountOfUnitsToBuy = new BigDecimal("33.33333333");
         expect(market.getId()).andReturn(MARKET_ID);
@@ -393,7 +393,7 @@ public class TestExampleScalpingStrategy {
 
     /**
      * <p>
-     * When attempting to send the initial buy order to the trading, a timeout exception is received. We expect the strategy to
+     * When attempting to send the initial buy order to the exchange, a timeout exception is received. We expect the strategy to
      * swallow it and exit until the next trade cycle.
      * </p>
      * <p/>
@@ -419,11 +419,11 @@ public class TestExampleScalpingStrategy {
         final BigDecimal lastTradePrice = new BigDecimal("0.015");
         expect(tradingApi.getLatestMarketPrice(MARKET_ID)).andReturn(lastTradePrice);
 
-        // expect to send initial buy order to trading and receive timeout exception
+        // expect to send initial buy order to exchange and receive timeout exception
         final BigDecimal amountOfUnitsToBuy = new BigDecimal("33.33333333");
         expect(market.getId()).andReturn(MARKET_ID);
         expect(tradingApi.createOrder(MARKET_ID, OrderType.BUY, amountOfUnitsToBuy, bidSpotPrice)).andThrow(
-                new ExchangeTimeoutException("Timeout waiting for trading!"));
+                new ExchangeTimeoutException("Timeout waiting for exchange!"));
 
         PowerMock.replayAll();
 
@@ -436,7 +436,7 @@ public class TestExampleScalpingStrategy {
 
     /**
      * <p>
-     * When attempting to send a buy order to the trading, a timeout exception is received. We expect the strategy to
+     * When attempting to send a buy order to the exchange, a timeout exception is received. We expect the strategy to
      * swallow it and exit until the next trade cycle.
      * </p>
      * <p/>
@@ -476,11 +476,11 @@ public class TestExampleScalpingStrategy {
         final BigDecimal lastTradePrice = new BigDecimal("0.015");
         expect(tradingApi.getLatestMarketPrice(MARKET_ID)).andReturn(lastTradePrice);
 
-        // expect to send new buy order to trading and receive timeout exception
+        // expect to send new buy order to exchange and receive timeout exception
         final BigDecimal amountOfUnitsToBuy = new BigDecimal("33.33333333");
         expect(market.getId()).andReturn(MARKET_ID);
         expect(tradingApi.createOrder(MARKET_ID, OrderType.BUY, amountOfUnitsToBuy, bidSpotPrice)).andThrow(
-                new ExchangeTimeoutException("Timeout waiting for trading!"));
+                new ExchangeTimeoutException("Timeout waiting for exchange!"));
 
         PowerMock.replayAll();
 
@@ -498,7 +498,7 @@ public class TestExampleScalpingStrategy {
 
     /**
      * <p>
-     * When attempting to send a sell order to the trading, a timeout exception is received. We expect the strategy to
+     * When attempting to send a sell order to the exchange, a timeout exception is received. We expect the strategy to
      * swallow it and exit until the next trade cycle.
      * </p>
      * <p/>
@@ -533,17 +533,17 @@ public class TestExampleScalpingStrategy {
         expect(market.getId()).andReturn(MARKET_ID);
         expect(tradingApi.getYourOpenOrders(MARKET_ID)).andReturn(new ArrayList<>()); // empty list; order has filled
 
-        // expect to get trading fees
+        // expect to get exchange fees
         expect(tradingApi.getPercentageOfBuyOrderTakenForExchangeFee(MARKET_ID)).andReturn(EXCHANGE_BUY_FEE_PERCENTAGE);
         expect(tradingApi.getPercentageOfSellOrderTakenForExchangeFee(MARKET_ID)).andReturn(EXCHANGE_SELL_FEE_PERCENTAGE);
 
-        // expect to send new sell order to trading and receive timeout exception
+        // expect to send new sell order to exchange and receive timeout exception
         final BigDecimal requiredProfitInPercent = new BigDecimal("0.01");
         final BigDecimal totalPercentageGainRequired = EXCHANGE_BUY_FEE_PERCENTAGE.add(EXCHANGE_SELL_FEE_PERCENTAGE).add(requiredProfitInPercent);
         final BigDecimal newAskPrice = lastOrderPrice.multiply(totalPercentageGainRequired).add(lastOrderPrice).setScale(8, RoundingMode.HALF_UP);
         expect(market.getId()).andReturn(MARKET_ID).atLeastOnce();
         expect(tradingApi.createOrder(MARKET_ID, OrderType.SELL, lastOrderAmount, newAskPrice)).andThrow(
-                new ExchangeTimeoutException("Timeout waiting for trading!"));
+                new ExchangeTimeoutException("Timeout waiting for exchange!"));
 
         PowerMock.replayAll();
 
@@ -565,7 +565,7 @@ public class TestExampleScalpingStrategy {
 
     /**
      * <p>
-     * When attempting to send the initial buy order to the trading, a Trading API exception is received. We expect the
+     * When attempting to send the initial buy order to the exchange, a Trading API exception is received. We expect the
      * strategy to wrap it in a Strategy exception and throw it to the Trading Engine.
      * </p>
      * <p/>
@@ -591,7 +591,7 @@ public class TestExampleScalpingStrategy {
         final BigDecimal lastTradePrice = new BigDecimal("0.015");
         expect(tradingApi.getLatestMarketPrice(MARKET_ID)).andReturn(lastTradePrice);
 
-        // expect to send initial buy order to trading and receive timeout exception
+        // expect to send initial buy order to exchange and receive timeout exception
         final BigDecimal amountOfUnitsToBuy = new BigDecimal("33.33333333");
         expect(market.getId()).andReturn(MARKET_ID).atLeastOnce();
         expect(tradingApi.createOrder(MARKET_ID, OrderType.BUY, amountOfUnitsToBuy, bidSpotPrice)).andThrow(
@@ -608,7 +608,7 @@ public class TestExampleScalpingStrategy {
 
     /**
      * <p>
-     * When attempting to send a buy order to the trading, a Trading API exception is received. We expect the strategy to
+     * When attempting to send a buy order to the exchange, a Trading API exception is received. We expect the strategy to
      * wrap it in a Strategy exception and throw it to the Trading Engine.
      * </p>
      * <p/>
@@ -648,7 +648,7 @@ public class TestExampleScalpingStrategy {
         final BigDecimal lastTradePrice = new BigDecimal("0.015");
         expect(tradingApi.getLatestMarketPrice(MARKET_ID)).andReturn(lastTradePrice);
 
-        // expect to send new buy order to trading and receive timeout exception
+        // expect to send new buy order to exchange and receive timeout exception
         final BigDecimal amountOfUnitsToBuy = new BigDecimal("33.33333333");
         expect(market.getId()).andReturn(MARKET_ID);
         expect(tradingApi.createOrder(MARKET_ID, OrderType.BUY, amountOfUnitsToBuy, bidSpotPrice)).andThrow(
@@ -670,7 +670,7 @@ public class TestExampleScalpingStrategy {
 
     /**
      * <p>
-     * When attempting to send a sell order to the trading, a Trading API exception is received. We expect the strategy to
+     * When attempting to send a sell order to the exchange, a Trading API exception is received. We expect the strategy to
      * wrap it in a Strategy exception and throw it to the Trading Engine.
      * </p>
      * <p/>
@@ -705,11 +705,11 @@ public class TestExampleScalpingStrategy {
         expect(market.getId()).andReturn(MARKET_ID);
         expect(tradingApi.getYourOpenOrders(MARKET_ID)).andReturn(new ArrayList<>()); // empty list; order has filled
 
-        // expect to get trading fees
+        // expect to get exchange fees
         expect(tradingApi.getPercentageOfBuyOrderTakenForExchangeFee(MARKET_ID)).andReturn(EXCHANGE_BUY_FEE_PERCENTAGE);
         expect(tradingApi.getPercentageOfSellOrderTakenForExchangeFee(MARKET_ID)).andReturn(EXCHANGE_SELL_FEE_PERCENTAGE);
 
-        // expect to send new sell order to trading and receive timeout exception
+        // expect to send new sell order to exchange and receive timeout exception
         final BigDecimal requiredProfitInPercent = new BigDecimal("0.01");
         final BigDecimal totalPercentageGainRequired = EXCHANGE_BUY_FEE_PERCENTAGE.add(EXCHANGE_SELL_FEE_PERCENTAGE).add(requiredProfitInPercent);
         final BigDecimal newAskPrice = lastOrderPrice.multiply(totalPercentageGainRequired).add(lastOrderPrice).setScale(8, RoundingMode.HALF_UP);

@@ -68,7 +68,7 @@ public class TestCryptsyExchangeAdapter {
     // Valid config location - expected on runtime classpath in the ./src/test/resources folder.
     private static final String VALID_CONFIG_LOCATION = "cryptsy/cryptsy-config.properties";
 
-    // Canned JSON responses from trading - expected to reside on filesystem relative to project root
+    // Canned JSON responses from exchange - expected to reside on filesystem relative to project root
     private static final String MARKET_ORDERS_JSON_RESPONSE = "./src/test/exchange-data/cryptsy/marketorders.json";
     private static final String MY_ORDERS_JSON_RESPONSE = "./src/test/exchange-data/cryptsy/myorders.json";
     private static final String GET_INFO_JSON_RESPONSE = "./src/test/exchange-data/cryptsy/getinfo.json";
@@ -99,7 +99,7 @@ public class TestCryptsyExchangeAdapter {
     private static final String MOCKED_SEND_REQUEST_TO_EXCHANGE_METHOD = "sendRequestToExchange";
 
     /**
-     * Cryptsy trading Date format: 2014-06-07 15:16:38
+     * Cryptsy exchange Date format: 2014-06-07 15:16:38
      */
     private static final SimpleDateFormat EXCHANGE_DATE_FORMAT = new SimpleDateFormat("y-M-d H:m:s");
 
@@ -111,7 +111,7 @@ public class TestCryptsyExchangeAdapter {
     @Test
     public void testCreateOrderToBuyIsSuccessful() throws Exception {
 
-        // Load the canned response from the trading
+        // Load the canned response from the exchange
         final byte[] encoded = Files.readAllBytes(Paths.get(CREATE_BUY_ORDER_JSON_RESPONSE));
         final String exchangeResponse = new String(encoded, StandardCharsets.UTF_8);
 
@@ -132,7 +132,7 @@ public class TestCryptsyExchangeAdapter {
     @Test
     public void testCreateOrderToSellIsSuccessful() throws Exception {
 
-        // Load the canned response from the trading
+        // Load the canned response from the exchange
         final byte[] encoded = Files.readAllBytes(Paths.get(CREATE_SELL_ORDER_JSON_RESPONSE));
         final String exchangeResponse = new String(encoded, StandardCharsets.UTF_8);
 
@@ -190,7 +190,7 @@ public class TestCryptsyExchangeAdapter {
     @Test
     public void testCancelOrderIsSuccessful() throws Exception {
 
-        // Load the canned response from the trading
+        // Load the canned response from the exchange
         final byte[] encoded = Files.readAllBytes(Paths.get(CANCEL_ORDER_JSON_RESPONSE));
         final String exchangeResponse = new String(encoded, StandardCharsets.UTF_8);
 
@@ -250,7 +250,7 @@ public class TestCryptsyExchangeAdapter {
     @Test
     public void testGettingMarketOrdersSuccessfully() throws Exception {
 
-        // Load the canned response from the trading
+        // Load the canned response from the exchange
         final byte[] encoded = Files.readAllBytes(Paths.get(MARKET_ORDERS_JSON_RESPONSE));
         final String exchangeResponse = new String(encoded, StandardCharsets.UTF_8);
 
@@ -321,7 +321,7 @@ public class TestCryptsyExchangeAdapter {
     @Test
     public void testGettingYourOpenOrdersSuccessfully() throws Exception {
 
-        // Load the canned response from the trading
+        // Load the canned response from the exchange
         final byte[] encoded = Files.readAllBytes(Paths.get(MY_ORDERS_JSON_RESPONSE));
         final String exchangeResponse = new String(encoded, StandardCharsets.UTF_8);
 
@@ -390,7 +390,7 @@ public class TestCryptsyExchangeAdapter {
     @Test
     public void testGettingLatestMarketPriceSuccessfully() throws Exception {
 
-        // Load the canned response from the trading
+        // Load the canned response from the exchange
         final byte[] encoded = Files.readAllBytes(Paths.get(MARKET_TRADES_JSON_RESPONSE));
         final String exchangeResponse = new String(encoded, StandardCharsets.UTF_8);
 
@@ -451,7 +451,7 @@ public class TestCryptsyExchangeAdapter {
     @Test
     public void testGettingBalanceInfoSuccessfully() throws Exception {
 
-        // Load the canned response from the trading
+        // Load the canned response from the exchange
         final byte[] encoded = Files.readAllBytes(Paths.get(GET_INFO_JSON_RESPONSE));
         final String exchangeResponse = new String(encoded, StandardCharsets.UTF_8);
 
@@ -652,7 +652,7 @@ public class TestCryptsyExchangeAdapter {
     }
 
     /*
-     * Used for making real API calls to the trading in order to grab JSON responses.
+     * Used for making real API calls to the exchange in order to grab JSON responses.
      * Have left this in; it might come in useful.
      */
     //@Test

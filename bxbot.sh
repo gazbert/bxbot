@@ -3,8 +3,6 @@
 #set -x
 
 #
-# TODO clean this up and create windows .bat equivalent
-#
 # Bare bones script for starting BX-bot on linux systems.
 #
 # Could be made better, but will do for now...
@@ -20,7 +18,7 @@
 #
 # Set bxbot_exchanges var if you have a jar with your own Exchange Adapters.
 #
-# If you are using the inbuit Exchange Adapters, you will need to add your trade keys in the appropriate trading
+# If you are using the inbuit Exchange Adapters, you will need to add your trade keys in the appropriate exchange
 # config file, e.g. RESOURCES_DIR/btce/btce-config.properties
 #
 

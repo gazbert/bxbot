@@ -77,7 +77,7 @@ import java.util.Properties;
  * </strong>
  *
  * <p>
- * Exchange Adapter for integrating with the Bitstamp trading.
+ * Exchange Adapter for integrating with the Bitstamp exchange.
  * The Bitstamp API is documented <a href="https://www.bitstamp.net/api/">here</a>.
  * </p>
  *
@@ -89,13 +89,13 @@ import java.util.Properties;
  *
  * <p>
  * The {@link TradingApi} calls will throw a {@link ExchangeTimeoutException} if a network error occurs trying to
- * connect to the trading. A {@link TradingApiException} is thrown for <em>all</em> other failures.
+ * connect to the exchange. A {@link TradingApiException} is thrown for <em>all</em> other failures.
  * </p>
  *
  * <p>
  * NOTE: Bitstamp requires all price values to be limited to 2 decimal places when creating orders. This adapter
  * truncates any prices with more than 2 decimal places and rounds using {@link java.math.RoundingMode#HALF_EVEN},
- * E.g. 250.176 would be sent to the trading as 250.18.
+ * E.g. 250.176 would be sent to the exchange as 250.18.
  * </p>
  *
  * @author gazbert
@@ -116,7 +116,7 @@ public final class BitstampExchangeAdapter implements TradingApi {
 
     /**
      * Your Bitstamp API keys and connection timeout config.
-     * This file must be on BXBot's runtime classpath located at: ./resources/bitstamp/bitstamp-config.properties
+     * This file must be on BX-bot's runtime classpath located at: ./resources/bitstamp/bitstamp-config.properties
      */
     private static final String CONFIG_FILE = "bitstamp/bitstamp-config.properties";
 
@@ -141,12 +141,12 @@ public final class BitstampExchangeAdapter implements TradingApi {
     private static final String CONNECTION_TIMEOUT_PROPERTY_NAME = "connection-timeout";
 
     /**
-     * Nonce used for sending authenticated messages to the trading.
+     * Nonce used for sending authenticated messages to the exchange.
      */
     private static long nonce = 0;
 
     /**
-     * The connection timeout in SECONDS for terminating hung connections to the trading.
+     * The connection timeout in SECONDS for terminating hung connections to the exchange.
      */
     private int connectionTimeout;
 
@@ -303,10 +303,10 @@ public final class BitstampExchangeAdapter implements TradingApi {
         try {
             final Map<String, String> params = new HashMap<>();
 
-            // note we need to limit price to 2 decimal places else trading will barf
+            // note we need to limit price to 2 decimal places else exchange will barf
             params.put("price", new DecimalFormat("#.##").format(price));
 
-            // note we need to limit amount to 8 decimal places else trading will barf
+            // note we need to limit amount to 8 decimal places else exchange will barf
             params.put("amount", new DecimalFormat("#.########").format(quantity));
 
             final String results;
@@ -333,7 +333,7 @@ public final class BitstampExchangeAdapter implements TradingApi {
             final BitstampOrderResponse createOrderResponse = gson.fromJson(results, BitstampOrderResponse.class);
             final long id = createOrderResponse.id;
             if (id == 0) {
-                final String errorMsg = "Failed to place order on trading. Error response: " + results;
+                final String errorMsg = "Failed to place order on exchange. Error response: " + results;
                 LOG.error(errorMsg);
                 throw new TradingApiException(errorMsg);
             } else {
@@ -365,7 +365,7 @@ public final class BitstampExchangeAdapter implements TradingApi {
             if (results.equalsIgnoreCase("true")) {
                 return true;
             } else {
-                final String errorMsg = "Failed to cancel order on trading. Error response: " + results;
+                final String errorMsg = "Failed to cancel order on exchange. Error response: " + results;
                 LOG.error(errorMsg);
                 return false;
             }
@@ -647,12 +647,12 @@ public final class BitstampExchangeAdapter implements TradingApi {
     // ------------------------------------------------------------------------------------------------
 
     /**
-     * Makes a public API call to Bitstamp trading. Uses HTTP GET.
+     * Makes a public API call to Bitstamp exchange. Uses HTTP GET.
      * 
      * @param apiMethod the API method to call..
      * @param params the query param args to use in the API call
-     * @return the response from the trading.
-     * @throws ExchangeTimeoutException if there is a network issue connecting to trading.
+     * @return the response from the exchange.
+     * @throws ExchangeTimeoutException if there is a network issue connecting to exchange.
      * @throws TradingApiException if anything unexpected happens.
      */
     private String sendPublicRequestToExchange(String apiMethod, Map<String, String> params) throws
@@ -751,12 +751,12 @@ public final class BitstampExchangeAdapter implements TradingApi {
     }
 
     /**
-     * Makes Authenticated API call to Bitstamp trading. Uses HTTP POST.
+     * Makes Authenticated API call to Bitstamp exchange. Uses HTTP POST.
      * 
      * @param apiMethod the API method to call.
      * @param params the query param args to use in the API call.
-     * @return the response from the trading.
-     * @throws ExchangeTimeoutException if there is a network issue connecting to trading.
+     * @return the response from the exchange.
+     * @throws ExchangeTimeoutException if there is a network issue connecting to exchange.
      * @throws TradingApiException if anything unexpected happens.
      */
     private String sendAuthenticatedRequestToExchange(String apiMethod, Map<String, String> params) throws
@@ -768,7 +768,7 @@ public final class BitstampExchangeAdapter implements TradingApi {
             throw new IllegalStateException(errorMsg);
         }
 
-        // Connect to the trading
+        // Connect to the exchange
         HttpURLConnection exchangeConnection = null;
         final StringBuilder exchangeResponse = new StringBuilder();
 
@@ -904,7 +904,7 @@ public final class BitstampExchangeAdapter implements TradingApi {
 
     /**
      * Initialises the secure messaging layer
-     * Sets up the MAC to safeguard the data we send to the trading.
+     * Sets up the MAC to safeguard the data we send to the exchange.
      * We fail hard n fast if any of this stuff blows.
      */
     private void initSecureMessageLayer() {
@@ -940,7 +940,7 @@ public final class BitstampExchangeAdapter implements TradingApi {
         final InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream(configFile);
 
         if (inputStream == null) {
-            final String errorMsg = "Cannot find Bitstamp config at: " + configFile + " HINT: is it on BXBot's classpath?";
+            final String errorMsg = "Cannot find Bitstamp config at: " + configFile + " HINT: is it on BX-bot's classpath?";
             LOG.error(errorMsg);
             throw new IllegalStateException(errorMsg);
         }

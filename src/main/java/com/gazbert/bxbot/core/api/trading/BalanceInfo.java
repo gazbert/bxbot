@@ -27,7 +27,7 @@ import java.math.BigDecimal;
 import java.util.Map;
 
 /**
- * Domain class representing your wallet balance info on the trading.
+ * Domain class representing your wallet balance info on the exchange.
  *
  * @author gazbert
  */

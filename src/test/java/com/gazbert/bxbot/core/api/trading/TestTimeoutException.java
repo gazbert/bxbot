@@ -29,7 +29,7 @@ import static org.junit.Assert.*;
 
 public class TestTimeoutException {
 
-    private static final String ERROR_MSG = "Timeout connecting to trading";
+    private static final String ERROR_MSG = "Timeout connecting to exchange";
     private static final RuntimeException CAUSE = new RuntimeException("The cause of the exception");
 
     @Test

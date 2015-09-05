@@ -27,7 +27,7 @@ import com.gazbert.bxbot.core.api.strategy.StrategyException;
 
 /**
  * <p>
- * This exception is thrown from Exchange Adapter implementations when there is a problem making an API call to the trading.
+ * This exception is thrown from Exchange Adapter implementations when there is a problem making an API call to the exchange.
  * </p>
  *
  * <p>

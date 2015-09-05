@@ -246,7 +246,7 @@ public class TestTradingEngine {
     }
 
     /*
-     * Tests the engine is shutdown if Emergency Stop Currency wallet balance on the trading drops below
+     * Tests the engine is shutdown if Emergency Stop Currency wallet balance on the exchange drops below
      * configured limit.
      */
     @Test
@@ -269,7 +269,7 @@ public class TestTradingEngine {
         // expect Email Alert to be sent
         emailAlerter.sendMessage(eq(CRITICAL_EMAIL_ALERT_SUBJECT),
                 contains("EMERGENCY STOP triggered! - Current Emergency Stop Currency [BTC] wallet balance [0.49999999]" +
-                        " on trading is lower than configured Emergency Stop balance [0.5] BTC"));
+                        " on exchange is lower than configured Emergency Stop balance [0.5] BTC"));
 
         // activate mocks
         PowerMock.replayAll();

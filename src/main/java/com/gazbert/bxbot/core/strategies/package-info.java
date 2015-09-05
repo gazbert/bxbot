@@ -30,7 +30,7 @@
  *
  * <p>
  * You can write your own Trading Strategies and keep them here. Alternatively, you can package them up in a
- * separate jar and place it on BXBot's runtime classpath.
+ * separate jar and place it on BX-bot's runtime classpath.
  * </p>
  *
  * Your Trading Strategy must:

@@ -73,7 +73,7 @@ import java.util.Map.Entry;
  * </strong>
  *
  * <p>
- * Exchange Adapter for integrating with the Cryptsy trading.
+ * Exchange Adapter for integrating with the Cryptsy exchange.
  * The Cryptsy API is documented <a href="https://www.cryptsy.com/pages/api">here</a>.
  * </p>
  *
@@ -85,13 +85,13 @@ import java.util.Map.Entry;
  *
  * <p>
  * The {@link TradingApi} calls will throw a {@link ExchangeTimeoutException} if a network error occurs trying to
- * connect to the trading. A {@link TradingApiException} is thrown for <em>all</em> other failures.
+ * connect to the exchange. A {@link TradingApiException} is thrown for <em>all</em> other failures.
  * </p>
  *
  * <p>
  * Exchange fees are currently loaded from the cryptsy-config.properties file on startup; they are not fetched from the
- * trading at runtime as the Cryptsy v1 API does not support this. The fees are used across all markets. Make sure you
- * keep an eye on the <a href="https://www.cryptsy.com/pages/fees">trading fees</a> and update the config accordingly.
+ * exchange at runtime as the Cryptsy v1 API does not support this. The fees are used across all markets. Make sure you
+ * keep an eye on the <a href="https://www.cryptsy.com/pages/fees">exchange fees</a> and update the config accordingly.
  * </p>
  *
  * @author gazbert
@@ -112,8 +112,8 @@ public final class CryptsyExchangeAdapter implements TradingApi {
     private static final String AUTH_API_URL = "https://api.cryptsy.com/api";
 
     /**
-     * Your Cryptsy API keys, trading fees, and connection timeout config.
-     * This file must be on BXBot's runtime classpath located at: ./resources/cryptsy/cryptsy-config.properties
+     * Your Cryptsy API keys, exchange fees, and connection timeout config.
+     * This file must be on BX- bot's runtime classpath located at: ./resources/cryptsy/cryptsy-config.properties
      */
     private static final String CONFIG_FILE = "cryptsy/cryptsy-config.properties";
 
@@ -143,7 +143,7 @@ public final class CryptsyExchangeAdapter implements TradingApi {
     private static final String SELL_FEE_PROPERTY_NAME = "sell-fee";
 
     /**
-     * Nonce used for sending authenticated messages to the trading.
+     * Nonce used for sending authenticated messages to the exchange.
      */
     private static long nonce = 0;
 
@@ -168,7 +168,7 @@ public final class CryptsyExchangeAdapter implements TradingApi {
     private BigDecimal sellFeePercentage;
 
     /**
-     * The connection timeout in SECONDS for terminating hung connections to the trading.
+     * The connection timeout in SECONDS for terminating hung connections to the exchange.
      */
     private int connectionTimeout;
 
@@ -319,7 +319,7 @@ public final class CryptsyExchangeAdapter implements TradingApi {
             params.put("marketid", marketId);
             params.put("ordertype", orderType.getStringValue());
 
-            // we need to limit to 8 decimal places else trading will barf
+            // we need to limit to 8 decimal places else exchange will barf
             params.put("quantity", new DecimalFormat("#.########").format(quantity));
             params.put("price", new DecimalFormat("#.########").format(price));
 
@@ -335,7 +335,7 @@ public final class CryptsyExchangeAdapter implements TradingApi {
             if (createOrderResponse.success == 1) {
                 return Long.toString(createOrderResponse.orderid);
             } else {
-                final String errorMsg = "Failed to place order on trading. Error response: " + createOrderResponse.error
+                final String errorMsg = "Failed to place order on exchange. Error response: " + createOrderResponse.error
                         + " MoreInfo: " + createOrderResponse.moreinfo;
                 LOG.error(errorMsg);
                 throw new TradingApiException(errorMsg);
@@ -367,7 +367,7 @@ public final class CryptsyExchangeAdapter implements TradingApi {
             if (cancelOrderResponse.success == 1) {
                 return true;
             } else {
-                final String errorMsg = "Failed to cancel order on trading. Error response: " + cancelOrderResponse.error
+                final String errorMsg = "Failed to cancel order on exchange. Error response: " + cancelOrderResponse.error
                         + " MoreInfo: " + cancelOrderResponse.info;
                 LOG.error(errorMsg);
                 return false;
@@ -815,12 +815,12 @@ public final class CryptsyExchangeAdapter implements TradingApi {
     // ------------------------------------------------------------------------------------------------
 
     /**
-     * Makes an authenticated API call to the Cryptsy trading.
+     * Makes an authenticated API call to the Cryptsy exchange.
      *
      * @param apiMethod the API method to call.
      * @param params the query param args to use in the API call.
-     * @return the response from the trading.
-     * @throws ExchangeTimeoutException if there is a network issue connecting to trading.
+     * @return the response from the exchange.
+     * @throws ExchangeTimeoutException if there is a network issue connecting to exchange.
      * @throws TradingApiException if anything unexpected happens.
      */
     private String sendRequestToExchange(String apiMethod, Map<String, String> params) throws
@@ -852,7 +852,7 @@ public final class CryptsyExchangeAdapter implements TradingApi {
             postData += param + "=" + URLEncoder.encode(params.get(param));
         }
 
-        // Connect to the trading
+        // Connect to the exchange
         URLConnection exchangeConnection;
         final StringBuilder exchangeResponse = new StringBuilder();
 
@@ -946,7 +946,7 @@ public final class CryptsyExchangeAdapter implements TradingApi {
 
     /**
      * Initialises the secure messaging layer
-     * Sets up the MAC to safeguard the data we send to the trading.
+     * Sets up the MAC to safeguard the data we send to the exchange.
      * We fail hard n fast if any of this stuff blows.
      */
     private void initSecureMessageLayer() {
@@ -985,7 +985,7 @@ public final class CryptsyExchangeAdapter implements TradingApi {
         final InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream(configFile);
 
         if (inputStream == null) {
-            final String errorMsg = "Cannot find Cryptsy config at: " + configFile + " HINT: is it on BXBot's classpath?";
+            final String errorMsg = "Cannot find Cryptsy config at: " + configFile + " HINT: is it on BX-bot's classpath?";
             LOG.error(errorMsg);
             throw new IllegalStateException(errorMsg);
         }

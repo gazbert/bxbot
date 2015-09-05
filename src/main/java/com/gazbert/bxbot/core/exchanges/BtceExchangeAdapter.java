@@ -80,7 +80,7 @@ import java.util.UUID;
  * </strong>
  *
  * <p>
- * Exchange Adapter for integrating with the BTC-e trading.
+ * Exchange Adapter for integrating with the BTC-e exchange.
  * The BTC-e API is documented <a href="https://btc-e.com/api/documentation">here</a> and
  * <a href="https://btc-e.com/page/2">here</a>.
  * </p>
@@ -97,7 +97,7 @@ import java.util.UUID;
  *
  * <p>
  * The {@link TradingApi} calls will throw a {@link ExchangeTimeoutException} if a network error occurs trying to
- * connect to the trading. A {@link TradingApiException} is thrown for <em>all</em> other failures.
+ * connect to the exchange. A {@link TradingApiException} is thrown for <em>all</em> other failures.
  * </p>
  *
  * @author gazbert
@@ -124,7 +124,7 @@ public final class BtceExchangeAdapter implements TradingApi {
 
     /**
      * Your BTC-e API keys and connection timeout config.
-     * This file must be on BXBot's runtime classpath located at: ./resources/btce/btce-config.properties
+     * This file must be on BX-bot's runtime classpath located at: ./resources/btce/btce-config.properties
      */
     private static final String CONFIG_FILE = "btce/btce-config.properties";
 
@@ -144,12 +144,12 @@ public final class BtceExchangeAdapter implements TradingApi {
     private static final String CONNECTION_TIMEOUT_PROPERTY_NAME = "connection-timeout";
 
     /**
-     * Nonce used for sending authenticated messages to the trading.
+     * Nonce used for sending authenticated messages to the exchange.
      */
     private static long nonce = 0;
 
     /**
-     * The connection timeout in SECONDS for terminating hung connections to the trading.
+     * The connection timeout in SECONDS for terminating hung connections to the exchange.
      */
     private int connectionTimeout;
 
@@ -318,7 +318,7 @@ public final class BtceExchangeAdapter implements TradingApi {
             final Map<String, String> params = new HashMap<>();
             params.put("pair", marketId);
 
-            // note we need to limit to 8 decimal places else trading will barf
+            // note we need to limit to 8 decimal places else exchange will barf
             params.put("amount", new DecimalFormat("#.########").format(quantity));
             params.put("rate", new DecimalFormat("#.########").format(price));
 
@@ -363,7 +363,7 @@ public final class BtceExchangeAdapter implements TradingApi {
                 }
                 return Long.toString(orderId);
             } else {
-                final String errorMsg = "Failed to place order on trading. Error response: " + createOrderResponseWrapper.error;
+                final String errorMsg = "Failed to place order on exchange. Error response: " + createOrderResponseWrapper.error;
                 LOG.error(errorMsg);
                 throw new TradingApiException(errorMsg);
             }
@@ -444,7 +444,7 @@ public final class BtceExchangeAdapter implements TradingApi {
             balancesAvailable.put("USD", info.info.funds.get("usd"));
             balancesAvailable.put("BTC", info.info.funds.get("btc"));
 
-            // 2nd arg of reserved balances not provided by trading.
+            // 2nd arg of reserved balances not provided by exchange.
             return new BalanceInfo(balancesAvailable, new HashMap<>());
 
         } catch (ExchangeTimeoutException e) {
@@ -915,12 +915,12 @@ public final class BtceExchangeAdapter implements TradingApi {
     // ------------------------------------------------------------------------------------------------
 
     /**
-     * Makes a public REST-like API call to BTC-e trading. Uses HTTP GET.
+     * Makes a public REST-like API call to BTC-e exchange. Uses HTTP GET.
      * 
      * @param apiMethod the API method to call.
      * @param resource to use in the API call.
-     * @return the response from the trading.
-     * @throws ExchangeTimeoutException if there is a network issue connecting to trading.
+     * @return the response from the exchange.
+     * @throws ExchangeTimeoutException if there is a network issue connecting to exchange.
      * @throws TradingApiException if anything unexpected happens.
      */
     private String sendPublicRequestToExchange(String apiMethod, String resource) throws TradingApiException,
@@ -1001,12 +1001,12 @@ public final class BtceExchangeAdapter implements TradingApi {
     }
 
     /**
-     * Makes an Authenticated API call to BTC-e trading.
+     * Makes an Authenticated API call to BTC-e exchange.
      * 
      * @param apiMethod the API method to call.
      * @param params the query param args to use in the API call.
-     * @return the response from the trading.
-     * @throws ExchangeTimeoutException if there is a network issue connecting to trading.
+     * @return the response from the exchange.
+     * @throws ExchangeTimeoutException if there is a network issue connecting to exchange.
      * @throws TradingApiException if anything unexpected happens.
      */
     private String sendAuthenticatedRequestToExchange(String apiMethod, Map<String, String> params)
@@ -1131,7 +1131,7 @@ public final class BtceExchangeAdapter implements TradingApi {
 
     /**
      * Initialises the secure messaging layer
-     * Sets up the MAC to safeguard the data we send to the trading.
+     * Sets up the MAC to safeguard the data we send to the exchange.
      * We fail hard n fast if any of this stuff blows.
      */
     private void initSecureMessageLayer() {
@@ -1168,7 +1168,7 @@ public final class BtceExchangeAdapter implements TradingApi {
 
         if (inputStream == null) {
             final String errorMsg = "Cannot find BTC-e config at: " + configFile
-                    + " HINT: is it on BXBot's classpath?";
+                    + " HINT: is it on BX-bot's classpath?";
             LOG.error(errorMsg);
             throw new IllegalStateException(errorMsg);
         }

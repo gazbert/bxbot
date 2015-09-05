@@ -6,7 +6,7 @@
  * </p>
  *
  * <p>
- * It uses a common data model that all trading data must adapt to. The model is based off the Cryptsy data model;
+ * It uses a common data model that all exchange data must adapt to. The model is based off the Cryptsy data model;
  * it will most likely be normalised in the near future.
  * </p>
  *
@@ -24,7 +24,7 @@
  * The Trading Engine and Trading Strategies have a compile-time dependency on this API.
  * </p>
  *
- * TODO Consider moving this into a separate project - BXBot, Trading Strategies and Exchange Adapters projects would depend on it.
+ * TODO Consider moving this into a separate project - BX-bot, Trading Strategies and Exchange Adapters projects would depend on it.
  *
  * @author gazbert
  */

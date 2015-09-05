@@ -61,13 +61,13 @@ import java.util.Set;
  * The engine has been coded to fail *hard and fast* whenever something unexpected happens. If Email
  * Alerts are enabled, a message will be sent with details of the problem before the bot is shutdown.
  *
- * The only time the bot does not fail hard and fast is for network issues connecting to the trading - it logs the error
+ * The only time the bot does not fail hard and fast is for network issues connecting to the exchange - it logs the error
  * and retries at next trade cycle.
  *
  * To keep things simple:
  *
  * - The engine is single threaded; I'm working on a concurrent version.
- * - The engine only supports trading on 1 trading per instance of the bot, i.e. 1 Exchange Adapter per process.
+ * - The engine only supports trading on 1 exchange per instance of the bot, i.e. 1 Exchange Adapter per process.
  * - The engine only supports 1 Trading Strategy per Market.
  *
  */
@@ -139,7 +139,7 @@ final public class TradingEngine {
     private final List<TradingStrategy> tradingStrategiesToExecute = new ArrayList<>();
 
     /*
-     * The emergency stop currency value is used to prevent a catastrophic loss on the trading.
+     * The emergency stop currency value is used to prevent a catastrophic loss on the exchange.
      * It is set to the currency short code, e.g. BTC, USD.
      * This is normally the currency you intend to hold a long position in.
      */
@@ -147,9 +147,9 @@ final public class TradingEngine {
 
     /*
      * The Emergency Stop balance.
-     * It is used to prevent a catastrophic loss on the trading.
+     * It is used to prevent a catastrophic loss on the exchange.
      * The Trading Engine checks this value at the start of every trade cycle: if the balance on
-     * the trading drops below this value, the Trading Engine will stop trading on all markets.
+     * the exchange drops below this value, the Trading Engine will stop trading on all markets.
      * Manual intervention is then required to restart the bot.
      */
     private BigDecimal emergencyStopBalance;
@@ -160,7 +160,7 @@ final public class TradingEngine {
     private EmailAlerter emailAlerter;
 
     /*
-     * The Trading API for interfacing with the trading - this is provided by the Exchange Adapter.
+     * The Trading API for interfacing with the exchange - this is provided by the Exchange Adapter.
      */
     private TradingApi tradingApi;
 
@@ -348,14 +348,14 @@ final public class TradingEngine {
     }
 
     /*
-     * Checks if the Emergency Stop Currency (e.g. USD, BTC) wallet balance on trading has gone *below* configured limit.
+     * Checks if the Emergency Stop Currency (e.g. USD, BTC) wallet balance on exchange has gone *below* configured limit.
      * If the balance cannot be obtained or has dropped below the configured limit, we notify the main control loop to
      * immediately shutdown the bot.
      *
      * This check is here to help protect runaway losses due to:
      * - 'buggy' Trading Strategies
      * - Unforeseen bugs in the Trading Engine and Exchange Adapter
-     * - the trading sending corrupt order book data and the Trading Strategy being misled... this has happened.
+     * - the exchange sending corrupt order book data and the Trading Strategy being misled... this has happened.
      */
     private boolean isEmergencyStopLimitBreached() throws TradingApiException, ExchangeTimeoutException {
 
@@ -369,7 +369,7 @@ final public class TradingEngine {
         try {
             balanceInfo = tradingApi.getBalanceInfo();
         } catch (TradingApiException e) {
-            final String errorMsg = "Failed to get Balance info from trading to perform Emergency Stop check - letting"
+            final String errorMsg = "Failed to get Balance info from exchange to perform Emergency Stop check - letting"
                     + " Trade Engine error policy decide what to do next...";
             LOG.error(errorMsg, e);
             // re-throw to main loop - might only be connection issue and it will retry...
@@ -387,7 +387,7 @@ final public class TradingEngine {
             throw new IllegalStateException(errorMsg);
         } else {
             if (LOG.isInfoEnabled()) {
-                LOG.info("Emergency Stop Currency balance available on trading is ["
+                LOG.info("Emergency Stop Currency balance available on exchange is ["
                         + new DecimalFormat("#.########").format(currentBalance) + "] "
                         + emergencyStopCurrency);
 
@@ -398,7 +398,7 @@ final public class TradingEngine {
             if (currentBalance.compareTo(emergencyStopBalance) < 0) {
                 final String balanceBlownErrorMsg =
                         "EMERGENCY STOP triggered! - Current Emergency Stop Currency [" + emergencyStopCurrency + "] wallet balance ["
-                                + new DecimalFormat("#.########").format(currentBalance) + "] on trading "
+                                + new DecimalFormat("#.########").format(currentBalance) + "] on exchange "
                                 + "is lower than configured Emergency Stop balance ["
                                 + new DecimalFormat("#.########").format(emergencyStopBalance) + "] " + emergencyStopCurrency;
 

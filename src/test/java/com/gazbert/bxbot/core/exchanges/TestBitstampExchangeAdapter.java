@@ -69,7 +69,7 @@ public class TestBitstampExchangeAdapter {
     // Valid config location - expected on runtime classpath in the ./src/test/resources folder.
     private static final String VALID_CONFIG_LOCATION = "bitstamp/bitstamp-config.properties";
 
-    // Canned JSON responses from trading - expected to reside on filesystem relative to project root
+    // Canned JSON responses from exchange - expected to reside on filesystem relative to project root
     private static final String ORDER_BOOK_JSON_RESPONSE = "./src/test/exchange-data/bitstamp/order_book.json";
     private static final String OPEN_ORDERS_JSON_RESPONSE = "./src/test/exchange-data/bitstamp/open_orders.json";
     private static final String BALANCE_JSON_RESPONSE = "./src/test/exchange-data/bitstamp/balance.json";
@@ -88,7 +88,7 @@ public class TestBitstampExchangeAdapter {
     private static final String CANCEL_ORDER = "cancel_order";
 
     // Canned test data
-    private static final String MARKET_ID = "BTC_USD"; // can be anything for Bitstamp; not used as trading only has 1 market.
+    private static final String MARKET_ID = "BTC_USD"; // can be anything for Bitstamp; not used as exchange only has 1 market.
     private static final BigDecimal BUY_ORDER_PRICE = new BigDecimal("200.18");
     private static final BigDecimal BUY_ORDER_QUANTITY = new BigDecimal("0.03");
     private static final BigDecimal SELL_ORDER_PRICE = new BigDecimal("250.176");
@@ -101,7 +101,7 @@ public class TestBitstampExchangeAdapter {
     private static final String MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD = "sendPublicRequestToExchange";
 
     /**
-     * Bitstamp trading Date format: 2015-01-09 21:14:50
+     * Bitstamp exchange Date format: 2015-01-09 21:14:50
      */
     private static final SimpleDateFormat EXCHANGE_DATE_FORMAT = new SimpleDateFormat("y-M-d H:m:s");
 
@@ -113,7 +113,7 @@ public class TestBitstampExchangeAdapter {
     @Test
     public void testCancelOrderIsSuccessful() throws Exception {
 
-        // Load the canned response from the trading
+        // Load the canned response from the exchange
         final byte[] encoded = Files.readAllBytes(Paths.get(CANCEL_ORDER_JSON_RESPONSE));
         final String exchangeResponse = new String(encoded, StandardCharsets.UTF_8);
 
@@ -172,7 +172,7 @@ public class TestBitstampExchangeAdapter {
     @Test
     public void testCreateOrderToBuyIsSuccessful() throws Exception {
 
-        // Load the canned response from the trading
+        // Load the canned response from the exchange
         final byte[] encoded = Files.readAllBytes(Paths.get(BUY_JSON_RESPONSE));
         final String exchangeResponse = new String(encoded, StandardCharsets.UTF_8);
 
@@ -193,7 +193,7 @@ public class TestBitstampExchangeAdapter {
     @Test
     public void testCreateOrderToSellIsSuccessful() throws Exception {
 
-        // Load the canned response from the trading
+        // Load the canned response from the exchange
         final byte[] encoded = Files.readAllBytes(Paths.get(SELL_JSON_RESPONSE));
         final String exchangeResponse = new String(encoded, StandardCharsets.UTF_8);
 
@@ -251,7 +251,7 @@ public class TestBitstampExchangeAdapter {
     @Test
     public void testGettingMarketOrdersSuccessfully() throws Exception {
 
-        // Load the canned response from the trading
+        // Load the canned response from the exchange
         final byte[] encoded = Files.readAllBytes(Paths.get(ORDER_BOOK_JSON_RESPONSE));
         final String exchangeResponse = new String(encoded, StandardCharsets.UTF_8);
 
@@ -331,7 +331,7 @@ public class TestBitstampExchangeAdapter {
     @Test
     public void testGettingYourOpenOrdersSuccessfully() throws Exception {
 
-        // Load the canned response from the trading
+        // Load the canned response from the exchange
         final byte[] encoded = Files.readAllBytes(Paths.get(OPEN_ORDERS_JSON_RESPONSE));
         final String exchangeResponse = new String(encoded, StandardCharsets.UTF_8);
 
@@ -400,7 +400,7 @@ public class TestBitstampExchangeAdapter {
     @Test
     public void testGettingLatestMarketPriceSuccessfully() throws Exception {
 
-        // Load the canned response from the trading
+        // Load the canned response from the exchange
         final byte[] encoded = Files.readAllBytes(Paths.get(TICKER_JSON_RESPONSE));
         final String exchangeResponse = new String(encoded, StandardCharsets.UTF_8);
 
@@ -458,7 +458,7 @@ public class TestBitstampExchangeAdapter {
     @Test
     public void testGettingBalanceInfoSuccessfully() throws Exception {
 
-        // Load the canned response from the trading
+        // Load the canned response from the exchange
         final byte[] encoded = Files.readAllBytes(Paths.get(BALANCE_JSON_RESPONSE));
         final String exchangeResponse = new String(encoded, StandardCharsets.UTF_8);
 
@@ -522,7 +522,7 @@ public class TestBitstampExchangeAdapter {
     @Test
     public void testGettingExchangeBuyingFeeSuccessfully() throws Exception {
 
-        // Load the canned response from the trading
+        // Load the canned response from the exchange
         final byte[] encoded = Files.readAllBytes(Paths.get(BALANCE_JSON_RESPONSE));
         final String exchangeResponse = new String(encoded, StandardCharsets.UTF_8);
 
@@ -580,7 +580,7 @@ public class TestBitstampExchangeAdapter {
     @Test
     public void testGettingExchangeSellingFeeSuccessfully() throws Exception {
 
-        // Load the canned response from the trading
+        // Load the canned response from the exchange
         final byte[] encoded = Files.readAllBytes(Paths.get(BALANCE_JSON_RESPONSE));
         final String exchangeResponse = new String(encoded, StandardCharsets.UTF_8);
 
@@ -724,7 +724,7 @@ public class TestBitstampExchangeAdapter {
     }
 
     /*
-     * Used for making real API calls to the trading in order to grab JSON responses.
+     * Used for making real API calls to the exchange in order to grab JSON responses.
      * Have left this in; it might come in useful.
      */
     //@Test

@@ -27,7 +27,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 /**
- * Domain class representing one of your Open (active) Orders on the trading.
+ * Domain class representing one of your Open (active) Orders on the exchange.
  *
  * @author gazbert
  */
@@ -39,7 +39,7 @@ public final class OpenOrder {
     private String id;
 
     /**
-     * The trading date/time the order was created.
+     * The exchange date/time the order was created.
      */
     private Date creationDate;
 
@@ -76,10 +76,10 @@ public final class OpenOrder {
 
 
     /**
-     * Constructor builds an Open (active) Order on the trading.
+     * Constructor builds an Open (active) Order on the exchange.
      *
      * @param id               ID for this order.
-     * @param creationDate     The trading date/time the order was created.
+     * @param creationDate     The exchange date/time the order was created.
      * @param marketId         The id of the market this order was placed on.
      * @param type             Type of order. Value must be {@link OrderType#BUY} or {@link OrderType#SELL}.
      * @param price            The price per unit for this order. This is usually in BTC or USD.
@@ -118,15 +118,15 @@ public final class OpenOrder {
     }
 
     /**
-     * Returns the trading date/time the order was created.
-     * @return The trading date/time.
+     * Returns the exchange date/time the order was created.
+     * @return The exchange date/time.
      */
     public Date getCreationDate() {
         return creationDate;
     }
 
     /**
-     * Sets the trading date/time the order was created.
+     * Sets the exchange date/time the order was created.
      *
      * @param creationDate the creation date of the order.
      */

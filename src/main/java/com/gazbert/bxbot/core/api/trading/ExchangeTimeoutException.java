@@ -24,7 +24,7 @@
 package com.gazbert.bxbot.core.api.trading;
 
 /**
- * This exception is thrown by an Exchange Adapter when there is a timeout trying to connect to the trading to make an
+ * This exception is thrown by an Exchange Adapter when there is a timeout trying to connect to the exchange to make an
  * API call.
  * </p>
  * The timeout limit is implementation specific for each Exchange Adapter; see the documentation for the adapter

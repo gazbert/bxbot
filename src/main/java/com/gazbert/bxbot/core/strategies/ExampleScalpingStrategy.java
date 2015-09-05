@@ -49,9 +49,9 @@ import java.util.List;
  *
  * <p>
  * It has been written specifically to trade altcoins on <a href="https://www.cryptsy.com/">Cryptsy</a>, but can be
- * adapted to trade on any trading. It assumes a long position in BTC and short positions in various altcoins. In other
+ * adapted to trade on any exchange. It assumes a long position in BTC and short positions in various altcoins. In other
  * words, it initiates trades to buy altcoins using BTC and then sells those altcoins at a profit to receive additional BTC.
- * The algorithm expects you to have deposited sufficient BTC into your trading wallet.
+ * The algorithm expects you to have deposited sufficient BTC into your exchange wallet.
  * </p>
  *
  * <p>
@@ -62,7 +62,7 @@ import java.util.List;
  * </p>
  *
  * <p>
- * In a nutshell, the algorithm places an order at the current BID price, holds until the current ASK price (+ trading fees) is
+ * In a nutshell, the algorithm places an order at the current BID price, holds until the current ASK price (+ exchange fees) is
  * higher than the price the order filled at, and then places a sell order at the current ASK price. Assuming the sell
  * order fills, we take the profit from the spread. The process then repeats.
  * </p>
@@ -85,7 +85,7 @@ import java.util.List;
  *
  * <p>
  * Remember to include the correct exchanges fees (both buy and sell) in your calculations else you'll end up bleeding
- * money/coins to the trading.
+ * money/coins to the exchange.
  * </p>
  *
  * <p>
@@ -188,14 +188,14 @@ public class ExampleScalpingStrategy implements TradingStrategy {
             // Grab the latest order book for the market.
             final MarketOrderBook orderBook = tradingApi.getMarketOrders(market.getId());
 
-            // Cryptsy trading used to return nothing sometimes! So we need to be defensive here to protect from NPEs
+            // Cryptsy exchange used to return nothing sometimes! So we need to be defensive here to protect from NPEs
             final List<MarketOrder> buyOrders = orderBook.getBuyOrders();
             if (buyOrders.size() == 0) {
                 LOG.warn("Exchange returned empty Buy Orders. Ignoring this trade window. OrderBook: " + orderBook);
                 return;
             }
 
-            // Cryptsy trading used to return nothing sometimes! So we need to be defensive here to protect from NPEs
+            // Cryptsy exchange used to return nothing sometimes! So we need to be defensive here to protect from NPEs
             final List<MarketOrder> sellOrders = orderBook.getSellOrders();
             if (sellOrders.size() == 0) {
                 LOG.warn("Exchange returned empty Sell Orders. Ignoring this trade window. OrderBook: " + orderBook);
@@ -278,10 +278,10 @@ public class ExampleScalpingStrategy implements TradingStrategy {
             BigDecimal amountOfAltcoinToBuyForGivenBtc = getAmountOfAltcoinToBuyForGivenBtcAmount(btcBuyOrderAmount);
 
             if (LOG.isInfoEnabled()) {
-                LOG.info(market.getName() + " Sending initial BUY order to trading --->");
+                LOG.info(market.getName() + " Sending initial BUY order to exchange --->");
             }
 
-            // Send the order to the trading
+            // Send the order to the exchange
             lastOrder.id = tradingApi.createOrder(market.getId(), OrderType.BUY, amountOfAltcoinToBuyForGivenBtc, currentBidPrice);
 
             if (LOG.isInfoEnabled()) {
@@ -296,7 +296,7 @@ public class ExampleScalpingStrategy implements TradingStrategy {
         } catch (ExchangeTimeoutException e) {
 
             // Your timeout handling code could got here, e.g. you might want to check if the order actually
-            // made it to the trading? And if not, resend it...
+            // made it to the exchange? And if not, resend it...
             // We are just going to log it and swallow it, and wait for next trade cycle.
             LOG.error(market.getName() + " Initial order to BUY altcoin failed because Exchange threw timeout exception. " +
                     "Waiting until next trade cycle.", e);
@@ -327,7 +327,7 @@ public class ExampleScalpingStrategy implements TradingStrategy {
 
         try {
 
-            // Fetch our current open orders and see if the buy order is still outstanding on the trading
+            // Fetch our current open orders and see if the buy order is still outstanding on the exchange
             final List<OpenOrder> myOrders = tradingApi.getYourOpenOrders(market.getId());
             boolean lastOrderFound = false;
             for (final OpenOrder myOrder : myOrders) {
@@ -346,9 +346,9 @@ public class ExampleScalpingStrategy implements TradingStrategy {
                 /*
                  * The last buy order was filled, so lets see if we can send a new sell order...
                  *
-                 * IMPORTANT - new sell order ASK price must be > (last order price + trading fees) because:
+                 * IMPORTANT - new sell order ASK price must be > (last order price + exchange fees) because:
                  *
-                 * 1. if we put sell amount in at same amount as previous buy and trading barfs because we don't have
+                 * 1. if we put sell amount in at same amount as previous buy and exchange barfs because we don't have
                  *    enough to cover transaction fee! Results in stuck SELL order.
                  * 2. we could be selling at a loss!
                  *
@@ -388,7 +388,7 @@ public class ExampleScalpingStrategy implements TradingStrategy {
                 if (LOG.isInfoEnabled()) {
                     LOG.info(market.getName() + " Placing new SELL order at ask price [" +
                             new DecimalFormat("#.########").format(newAskPrice) + "]");
-                    LOG.info(market.getName() + " Sending new SELL order to trading --->");
+                    LOG.info(market.getName() + " Sending new SELL order to exchange --->");
                 }
 
 
@@ -421,7 +421,7 @@ public class ExampleScalpingStrategy implements TradingStrategy {
         } catch (ExchangeTimeoutException e) {
 
             // Your timeout handling code could got here, e.g. you might want to check if the order actually
-            // made it to the trading? And if not, resend it...
+            // made it to the exchange? And if not, resend it...
             // We are just going to log it and swallow it, and wait for next trade cycle.
             LOG.error(market.getName() + " New Order to SELL altcoin failed because Exchange threw timeout exception. " +
                     "Waiting until next trade cycle. Last Order: " + lastOrder, e);
@@ -442,7 +442,7 @@ public class ExampleScalpingStrategy implements TradingStrategy {
      * </p>
      *
      * <p>
-     * If last sell order filled, we send a new buy order to the trading.
+     * If last sell order filled, we send a new buy order to the exchange.
      * </p>
      *
      * @param currentBidPrice the current market BID price.
@@ -455,7 +455,7 @@ public class ExampleScalpingStrategy implements TradingStrategy {
 
         try  {
 
-            // Fetch our current open orders and see if the sell order is still outstanding on the trading
+            // Fetch our current open orders and see if the sell order is still outstanding on the exchange
             final List<OpenOrder> myOrders = tradingApi.getYourOpenOrders(market.getId());
             boolean lastOrderFound = false;
             for (final OpenOrder myOrder : myOrders) {
@@ -477,10 +477,10 @@ public class ExampleScalpingStrategy implements TradingStrategy {
                 if (LOG.isInfoEnabled()) {
                     LOG.info(market.getName() + " Placing new BUY order at bid price [" +
                             new DecimalFormat("#.########").format(currentBidPrice) + "]");
-                    LOG.info(market.getName() + " Sending new BUY order to trading --->");
+                    LOG.info(market.getName() + " Sending new BUY order to exchange --->");
                 }
 
-                // Send the buy order to the trading.
+                // Send the buy order to the exchange.
                 lastOrder.id = tradingApi.createOrder(market.getId(), OrderType.BUY, amountOfAltcoinToBuyForGivenBtc, currentBidPrice);
 
                 if (LOG.isInfoEnabled()) {
@@ -511,7 +511,7 @@ public class ExampleScalpingStrategy implements TradingStrategy {
                     // TODO throw illegal state exception
                     LOG.error(market.getName() + " >>> Current ask price [" + currentAskPrice
                             + "] is HIGHER than last order price ["
-                            + lastOrder.price + "] - IMPOSSIBLE! BXBot must have sold?????");
+                            + lastOrder.price + "] - IMPOSSIBLE! BX-bot must have sold?????");
                 } else if (currentAskPrice.compareTo(lastOrder.price) == 0) {
                     if (LOG.isInfoEnabled()) {
                         LOG.info(market.getName() + " === Current ask price [" + currentAskPrice
@@ -523,7 +523,7 @@ public class ExampleScalpingStrategy implements TradingStrategy {
         } catch (ExchangeTimeoutException e) {
 
             // Your timeout handling code could got here, e.g. you might want to check if the order actually
-            // made it to the trading? And if not, resend it...
+            // made it to the exchange? And if not, resend it...
             // We are just going to log it and swallow it, and wait for next trade cycle.
             LOG.error(market.getName() + " New Order to BUY altcoin failed because Exchange threw timeout exception. " +
                     "Waiting until next trade cycle. Last Order: " + lastOrder, e);
@@ -543,8 +543,8 @@ public class ExampleScalpingStrategy implements TradingStrategy {
      *
      * @param amountOfBtcToTrade the amount of BTC we have to trade (buy) with.
      * @return the amount of altcoin we can buy for the given BTC amount.
-     * @throws TradingApiException if an unexpected error occurred contacting the trading.
-     * @throws ExchangeTimeoutException if a request to the trading has timed out.
+     * @throws TradingApiException if an unexpected error occurred contacting the exchange.
+     * @throws ExchangeTimeoutException if a request to the exchange has timed out.
      */
     private BigDecimal getAmountOfAltcoinToBuyForGivenBtcAmount(BigDecimal amountOfBtcToTrade) throws
             TradingApiException, ExchangeTimeoutException {
@@ -562,7 +562,7 @@ public class ExampleScalpingStrategy implements TradingStrategy {
         }
 
         /*
-         * Most exchanges (if not all) use 8 decimal places and typically round in favour of the trading.
+         * Most exchanges (if not all) use 8 decimal places and typically round in favour of the exchange.
          * It's usually safest to ROUND DOWN the order quantity in your calculations.
          */
         final BigDecimal amountOfAltcoinToBuyForGivenBtc = amountOfBtcToTrade.divide(
@@ -603,7 +603,7 @@ public class ExampleScalpingStrategy implements TradingStrategy {
 
     /**
      * <p>
-     * Models the state of an Order we have placed on the trading.
+     * Models the state of an Order we have placed on the exchange.
      * </p>
      *
      * <p>

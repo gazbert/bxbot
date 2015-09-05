@@ -78,6 +78,8 @@ Config changes are only applied at startup; they are _not_ hot.
 
 All configuration elements are mandatory unless specified otherwise.
 
+Sample configurations for running on different exchanges can be found in the `config/samples` folder.
+
 ##### Exchange Adapters
 You specify the Exchange Adapter you want BX-bot to use in the `exchange.xml` file. 
 

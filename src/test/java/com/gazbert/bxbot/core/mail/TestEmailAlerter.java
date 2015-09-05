@@ -47,8 +47,8 @@ import static org.easymock.EasyMock.expect;
 @PrepareForTest({Transport.class, EmailAlerter.class})
 public class TestEmailAlerter {
 
-    private static final String EMAIL_SUBJECT = "CRITICAL Alert message from BXBot";
-    private static final String EMAIL_MSG = "The trading has blown up!";
+    private static final String EMAIL_SUBJECT = "CRITICAL Alert message from BX-bot";
+    private static final String EMAIL_MSG = "The exchange has blown up!";
 
     private static final String SMTP_HOST = "smtp.gmail.com";
     private static final int SMTP_TLS_PORT = 587;

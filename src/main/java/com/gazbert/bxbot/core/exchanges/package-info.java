@@ -29,17 +29,17 @@
  * </p>
  *
  * <p>
- * The Trading Strategies will use the Exchange Adapters to make trades on the trading.
+ * The Trading Strategies will use the Exchange Adapters to make trades on the exchange.
  * </p>
  *
  * <p>
  * Each Exchange Adapter must provide an implementation of the {@link com.gazbert.bxbot.core.api.trading.TradingApi} for the
- * trading it is integrating with.
+ * exchange it is integrating with.
  * </p>
  *
  * <p>
  * You can write your own Exchange Adapters and keep them here. Alternatively, you can package them up in a
- * separate jar and place it on BXBot's runtime classpath.
+ * separate jar and place it on BX-bot's runtime classpath.
  * </p>
  *
  * Your Exchange Adapter must:

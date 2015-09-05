@@ -70,7 +70,7 @@ public class TestBtceExchangeAdapter {
     // Valid config location - expected on runtime classpath in the ./src/test/resources folder.
     private static final String VALID_CONFIG_LOCATION = "btce/btce-config.properties";
 
-    // Canned JSON responses from trading - expected to reside on filesystem relative to project root
+    // Canned JSON responses from exchange - expected to reside on filesystem relative to project root
     private static final String DEPTH_JSON_RESPONSE = "./src/test/exchange-data/btce/depth.json";
     private static final String ACTIVE_ORDERS_JSON_RESPONSE = "./src/test/exchange-data/btce/ActiveOrders.json";
     private static final String GET_INFO_JSON_RESPONSE = "./src/test/exchange-data/btce/getInfo.json";
@@ -110,7 +110,7 @@ public class TestBtceExchangeAdapter {
     @Test
     public void testCreateOrderToBuyIsSuccessful() throws Exception {
 
-        // Load the canned response from the trading
+        // Load the canned response from the exchange
         final byte[] encoded = Files.readAllBytes(Paths.get(TRADE_BUY_JSON_RESPONSE));
         final String exchangeResponse = new String(encoded, StandardCharsets.UTF_8);
 
@@ -131,7 +131,7 @@ public class TestBtceExchangeAdapter {
     @Test
     public void testCreateOrderToSellIsSuccessful() throws Exception {
 
-        // Load the canned response from the trading
+        // Load the canned response from the exchange
         final byte[] encoded = Files.readAllBytes(Paths.get(TRADE_SELL_JSON_RESPONSE));
         final String exchangeResponse = new String(encoded, StandardCharsets.UTF_8);
 
@@ -189,7 +189,7 @@ public class TestBtceExchangeAdapter {
     @Test
     public void testCancelOrderIsSuccessful() throws Exception {
 
-        // Load the canned response from the trading
+        // Load the canned response from the exchange
         final byte[] encoded = Files.readAllBytes(Paths.get(CANCEL_ORDER_JSON_RESPONSE));
         final String exchangeResponse = new String(encoded, StandardCharsets.UTF_8);
 
@@ -246,7 +246,7 @@ public class TestBtceExchangeAdapter {
     @Test
     public void testGettingMarketOrdersSuccessfully() throws Exception {
 
-        // Load the canned response from the trading
+        // Load the canned response from the exchange
         final byte[] encoded = Files.readAllBytes(Paths.get(DEPTH_JSON_RESPONSE));
         final String exchangeResponse = new String(encoded, StandardCharsets.UTF_8);
 
@@ -327,7 +327,7 @@ public class TestBtceExchangeAdapter {
     @Test
     public void testGettingYourOpenOrdersSuccessfully() throws Exception {
 
-        // Load the canned response from the trading
+        // Load the canned response from the exchange
         final byte[] encoded = Files.readAllBytes(Paths.get(ACTIVE_ORDERS_JSON_RESPONSE));
         final String exchangeResponse = new String(encoded, StandardCharsets.UTF_8);
 
@@ -401,7 +401,7 @@ public class TestBtceExchangeAdapter {
     @Test
     public void testGettingLatestMarketPriceSuccessfully() throws Exception {
 
-        // Load the canned response from the trading
+        // Load the canned response from the exchange
         final byte[] encoded = Files.readAllBytes(Paths.get(TICKER_JSON_RESPONSE));
         final String exchangeResponse = new String(encoded, StandardCharsets.UTF_8);
 
@@ -461,7 +461,7 @@ public class TestBtceExchangeAdapter {
     @Test
     public void testGettingBalanceInfoSuccessfully() throws Exception {
 
-        // Load the canned response from the trading
+        // Load the canned response from the exchange
         final byte[] encoded = Files.readAllBytes(Paths.get(GET_INFO_JSON_RESPONSE));
         final String exchangeResponse = new String(encoded, StandardCharsets.UTF_8);
 
@@ -526,7 +526,7 @@ public class TestBtceExchangeAdapter {
     @Test
     public void testGettingExchangeBuyingFeeSuccessfully() throws Exception {
 
-        // Load the canned response from the trading
+        // Load the canned response from the exchange
         final byte[] encoded = Files.readAllBytes(Paths.get(FEE_JSON_RESPONSE));
         final String exchangeResponse = new String(encoded, StandardCharsets.UTF_8);
 
@@ -583,7 +583,7 @@ public class TestBtceExchangeAdapter {
     @Test
     public void testGettingExchangeSellingFeeSuccessfully() throws Exception {
 
-        // Load the canned response from the trading
+        // Load the canned response from the exchange
         final byte[] encoded = Files.readAllBytes(Paths.get(FEE_JSON_RESPONSE));
         final String exchangeResponse = new String(encoded, StandardCharsets.UTF_8);
 
@@ -712,7 +712,7 @@ public class TestBtceExchangeAdapter {
     }
 
     /*
-     * Used for making real API calls to the trading in order to grab JSON responses.
+     * Used for making real API calls to the exchange in order to grab JSON responses.
      * Have left this in; it might come in useful.
      */
     //@Test

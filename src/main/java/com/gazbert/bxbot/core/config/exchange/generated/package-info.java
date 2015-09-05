@@ -30,7 +30,7 @@
  *
  * <p>
  * The classes were generated using
- * <a href="http://docs.oracle.com/javase/8/docs/technotes/tools/unix/xjc.html">xjc</a> and the config/trading.xsd
+ * <a href="http://docs.oracle.com/javase/8/docs/technotes/tools/unix/xjc.html">xjc</a> and the config/exchange.xsd
  * </p>
  * 
  * @author gazbert

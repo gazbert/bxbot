@@ -27,7 +27,7 @@ import java.math.BigDecimal;
 
 /**
  * <p>
- * Domain class representing a Market Order on the trading.
+ * Domain class representing a Market Order on the exchange.
  * </p>
  *
  * <p>
