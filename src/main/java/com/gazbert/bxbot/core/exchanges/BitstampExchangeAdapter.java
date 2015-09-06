@@ -68,6 +68,12 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
+ * <p>
+ * Exchange Adapter for integrating with the Bitstamp exchange.
+ * The Bitstamp API is documented <a href="https://www.bitstamp.net/api/">here</a>.
+ * </p>
+ *
+ * <p>
  * <strong>
  * DISCLAIMER:
  * This Exchange Adapter is provided as-is; it might have bugs in it and you could lose money. Despite running live
@@ -75,10 +81,6 @@ import java.util.Properties;
  * {@link #sendPublicRequestToExchange(String, Map)} and {@link #sendAuthenticatedRequestToExchange(String, Map)}
  * methods. Use it at our own risk!
  * </strong>
- *
- * <p>
- * Exchange Adapter for integrating with the Bitstamp exchange.
- * The Bitstamp API is documented <a href="https://www.bitstamp.net/api/">here</a>.
  * </p>
  *
  * <p>

@@ -35,16 +35,18 @@ import java.text.DecimalFormat;
 import java.util.List;
 
 /**
- * <strong>
- * DISCLAIMER:
- * This algorithm is provided as-is; it might have bugs in it and you could lose money. Use it at our own risk!
- * </strong>
- *
  * <p>
  * This is a very simple <a href="http://www.investopedia.com/articles/trading/02/081902.asp">scalping strategy</a>
  * to show how to use the Trading API; you will want to code a much better algorithm.
  * It trades using <a href="http://www.investopedia.com/terms/l/limitorder.asp">limit orders</a> at the
  * <a href="http://www.investopedia.com/terms/s/spotprice.asp">spot price</a>.
+ * </p>
+ *
+ * <p>
+ * <strong>
+ * DISCLAIMER:
+ * This algorithm is provided as-is; it might have bugs in it and you could lose money. Use it at our own risk!
+ * </strong>
  * </p>
  *
  * <p>

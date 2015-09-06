@@ -1,7 +1,7 @@
 ##################################################################################################################
 # Mandatory config for the Cryptsy Exchange Adapter.
 #
-# For details see "Authentication" section: https://www.cryptsy.com/pages/privateapi
+# For details see "Authenticated Methods" section: https://www.cryptsy.com/pages/privateapi
 #
 # WARNING: Keep this file safe and secret - it contains your private key!
 #

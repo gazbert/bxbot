@@ -32,6 +32,6 @@ hs_err_pid*
 /resources/bitstamp/bitstamp-config.properties
 /resources/btce/btce-config.properties
 /resources/cryptsy/cryptsy-config.properties
-/resouces/bitfinex/bitfinex-config.properties
-/resouces/okcoin/okcoin-config.properties
-/resouces/huobi/huobi-config.properties
+/resources/bitfinex/bitfinex-config.properties
+/resources/okcoin/okcoin-config.properties
+/resources/huobi/huobi-config.properties

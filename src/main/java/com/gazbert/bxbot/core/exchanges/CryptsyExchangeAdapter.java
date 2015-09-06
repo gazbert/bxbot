@@ -65,16 +65,18 @@ import java.util.*;
 import java.util.Map.Entry;
 
 /**
+ * <p>
+ * Exchange Adapter for integrating with the Cryptsy exchange.
+ * The Cryptsy API is documented <a href="https://www.cryptsy.com/pages/api">here</a>.
+ * </p>
+ *
+ * <p>
  * <strong>
  * DISCLAIMER:
  * This Exchange Adapter is provided as-is; it might have bugs in it and you could lose money. Despite running live
  * on Cryptsy, it has only been unit tested up until the point of calling the
  * {@link #sendRequestToExchange(String, Map)} method. Use it at our own risk!
  * </strong>
- *
- * <p>
- * Exchange Adapter for integrating with the Cryptsy exchange.
- * The Cryptsy API is documented <a href="https://www.cryptsy.com/pages/api">here</a>.
  * </p>
  *
  * <p>

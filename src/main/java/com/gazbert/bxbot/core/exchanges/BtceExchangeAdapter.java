@@ -71,6 +71,13 @@ import java.util.Set;
 import java.util.UUID;
 
 /**
+ * <p>
+ * Exchange Adapter for integrating with the BTC-e exchange.
+ * The BTC-e API is documented <a href="https://btc-e.com/api/documentation">here</a> and
+ * <a href="https://btc-e.com/page/2">here</a>.
+ * </p>
+ *
+ * <p>
  * <strong>
  * DISCLAIMER:
  * This Exchange Adapter is provided as-is; it might have bugs in it and you could lose money. Despite running live
@@ -78,11 +85,6 @@ import java.util.UUID;
  * {@link #sendPublicRequestToExchange(String, String)} and {@link #sendAuthenticatedRequestToExchange(String, Map)}
  * methods. Use it at our own risk!
  * </strong>
- *
- * <p>
- * Exchange Adapter for integrating with the BTC-e exchange.
- * The BTC-e API is documented <a href="https://btc-e.com/api/documentation">here</a> and
- * <a href="https://btc-e.com/page/2">here</a>.
  * </p>
  *
  * <p>
