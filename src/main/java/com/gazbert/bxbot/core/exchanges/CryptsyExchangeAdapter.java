@@ -251,7 +251,7 @@ public final class CryptsyExchangeAdapter implements TradingApi {
 
             return new MarketOrderBook(marketId, sellOrders, buyOrders);
 
-        } catch (ExchangeTimeoutException e) {
+        } catch (ExchangeTimeoutException | TradingApiException e) {
             throw e;
         } catch (Exception e) {
             LOG.error(UNEXPECTED_ERROR_MSG, e);
@@ -304,7 +304,7 @@ public final class CryptsyExchangeAdapter implements TradingApi {
             }
             return ordersToReturn;
 
-        } catch (ExchangeTimeoutException e) {
+        } catch (ExchangeTimeoutException | TradingApiException e) {
             throw e;
         } catch (Exception e) {
             LOG.error(UNEXPECTED_ERROR_MSG, e);
@@ -343,7 +343,7 @@ public final class CryptsyExchangeAdapter implements TradingApi {
                 throw new TradingApiException(errorMsg);
             }
 
-        } catch (ExchangeTimeoutException e) {
+        } catch (ExchangeTimeoutException | TradingApiException e) {
             throw e;
         } catch (Exception e) {
             LOG.error(UNEXPECTED_ERROR_MSG, e);
@@ -375,7 +375,7 @@ public final class CryptsyExchangeAdapter implements TradingApi {
                 return false;
              }
 
-        } catch (ExchangeTimeoutException e) {
+        } catch (ExchangeTimeoutException | TradingApiException e) {
             throw e;
         } catch (Exception e) {
             LOG.error(UNEXPECTED_ERROR_MSG, e);
@@ -409,7 +409,7 @@ public final class CryptsyExchangeAdapter implements TradingApi {
             // just take the latest one
             return new BigDecimal(cryptsyTrades[0].tradeprice);
 
-        } catch (ExchangeTimeoutException e) {
+        } catch (ExchangeTimeoutException | TradingApiException e) {
             throw e;
         } catch (Exception e) {
             LOG.error(UNEXPECTED_ERROR_MSG, e);
@@ -921,7 +921,7 @@ public final class CryptsyExchangeAdapter implements TradingApi {
                 LOG.error(errorMsg, e);
                 throw new ExchangeTimeoutException(errorMsg, e);
             } else {
-                final String errorMsg = "Failed to connect to Exchange due to some other IO error.";
+                final String errorMsg = "Failed to connect to Exchange due to unexpected IO error.";
                 LOG.error(errorMsg, e);
                 throw new TradingApiException(errorMsg, e);
             }

@@ -43,7 +43,7 @@ public final class StrategyException extends Exception {
     }
 
     /**
-     * Constructor builds exception from another exception.
+     * Constructor builds exception from original throwable.
      *
      * @param e the original exception.
      */

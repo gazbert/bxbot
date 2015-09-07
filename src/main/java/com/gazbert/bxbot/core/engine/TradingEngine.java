@@ -44,6 +44,8 @@ import com.gazbert.bxbot.core.config.strategy.generated.TradingStrategiesType;
 import com.gazbert.bxbot.core.mail.EmailAlerter;
 import org.apache.log4j.Logger;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -282,7 +284,7 @@ final public class TradingEngine {
                 emailAlerter.sendMessage(CRITICAL_EMAIL_ALERT_SUBJECT,
                         buildCriticalEmailAlertMsgContent(FATAL_ERROR_MSG +
                                 DETAILS_ERROR_MSG_LABEL + e.getMessage() +
-                                CAUSE_ERROR_MSG_LABEL + e.getCause()));
+                                CAUSE_ERROR_MSG_LABEL + e.getCause(), e));
                 keepAlive = false;
 
             } catch (StrategyException e) {
@@ -296,7 +298,7 @@ final public class TradingEngine {
                 emailAlerter.sendMessage(CRITICAL_EMAIL_ALERT_SUBJECT,
                         buildCriticalEmailAlertMsgContent(FATAL_ERROR_MSG +
                                 DETAILS_ERROR_MSG_LABEL + e.getMessage() +
-                                CAUSE_ERROR_MSG_LABEL + e.getCause()));
+                                CAUSE_ERROR_MSG_LABEL + e.getCause(), e));
                 keepAlive = false;
 
             } catch (Exception e) {
@@ -310,7 +312,7 @@ final public class TradingEngine {
                 emailAlerter.sendMessage(CRITICAL_EMAIL_ALERT_SUBJECT,
                         buildCriticalEmailAlertMsgContent(FATAL_ERROR_MSG +
                                 DETAILS_ERROR_MSG_LABEL + e.getMessage() +
-                                CAUSE_ERROR_MSG_LABEL + e.getCause()));
+                                CAUSE_ERROR_MSG_LABEL + e.getCause(), e));
                 keepAlive = false;
             }
         }
@@ -404,7 +406,7 @@ final public class TradingEngine {
 
                 LOG.fatal(balanceBlownErrorMsg);
                 emailAlerter.sendMessage(CRITICAL_EMAIL_ALERT_SUBJECT,
-                        buildCriticalEmailAlertMsgContent(balanceBlownErrorMsg));
+                        buildCriticalEmailAlertMsgContent(balanceBlownErrorMsg, null));
             } else {
                 if (LOG.isInfoEnabled()) {
                     LOG.info("Emergency Stop check PASSED!");
@@ -418,11 +420,17 @@ final public class TradingEngine {
     /*
      * Builds and formats the Email Alert message content in plain text.
      */
-    private String buildCriticalEmailAlertMsgContent(String errorDetails) {
+    private String buildCriticalEmailAlertMsgContent(String errorDetails, Throwable exception) {
 
         final String newline = System.getProperty("line.separator");
 
-        final StringBuilder msgContent = new StringBuilder("A CRITICAL level alert has been sent by BX-bot.");
+        final StringBuilder msgContent = new StringBuilder("A CRITICAL error event has occurred on BX-bot.");
+        msgContent.append(newline);
+        msgContent.append(newline);
+
+        msgContent.append("Exchange Adapter:");
+        msgContent.append(newline);
+        msgContent.append(tradingApi.getImplName());
         msgContent.append(newline);
         msgContent.append(newline);
 
@@ -440,7 +448,18 @@ final public class TradingEngine {
 
         msgContent.append("Take Action:");
         msgContent.append(newline);
-        msgContent.append("Check the bot logs on the server for more information. The bot will shutdown NOW!");
+        msgContent.append("Check the bot logs for more information. The bot will shutdown NOW!");
+        msgContent.append(newline);
+        msgContent.append(newline);
+
+        if (exception != null) {
+            msgContent.append("Stacktrace:");
+            msgContent.append(newline);
+            final StringWriter stringWriter = new StringWriter();
+            final PrintWriter printWriter = new PrintWriter(stringWriter);
+            exception.printStackTrace(printWriter);
+            msgContent.append(stringWriter.toString());
+        }
 
         return msgContent.toString();
     }
