@@ -267,7 +267,6 @@ public class TestTradingEngine {
         expect(balanceInfo.getBalancesAvailable()).andReturn(balancesAvailable);
 
         // expect Email Alert to be sent
-        expect(tradingApi.getImplName()).andReturn(EXCHANGE_ADAPTER_NAME);
         emailAlerter.sendMessage(eq(CRITICAL_EMAIL_ALERT_SUBJECT),
                 contains("EMERGENCY STOP triggered! - Current Emergency Stop Currency [BTC] wallet balance [0.49999999]" +
                         " on exchange is lower than configured Emergency Stop balance [0.5] BTC"));
@@ -379,7 +378,6 @@ public class TestTradingEngine {
         expectLastCall().andThrow(new StrategyException(exceptionErrorMsg));
 
         // expect Email Alert to be sent
-        expect(tradingApi.getImplName()).andReturn(EXCHANGE_ADAPTER_NAME);
         emailAlerter.sendMessage(eq(CRITICAL_EMAIL_ALERT_SUBJECT), contains("A FATAL error has occurred in Trading" +
                 " Strategy! Details: " + exceptionErrorMsg));
 
@@ -428,7 +426,6 @@ public class TestTradingEngine {
         expectLastCall().andThrow(new IllegalArgumentException(exceptionErrorMsg));
 
         // expect Email Alert to be sent
-        expect(tradingApi.getImplName()).andReturn(EXCHANGE_ADAPTER_NAME);
         emailAlerter.sendMessage(eq(CRITICAL_EMAIL_ALERT_SUBJECT), contains("An unexpected FATAL error has occurred in" +
                 " Exchange Adapter or Trading Strategy! Details: " + exceptionErrorMsg));
 
@@ -474,7 +471,6 @@ public class TestTradingEngine {
         expect(tradingApi.getBalanceInfo()).andThrow(new IllegalStateException(exceptionErrorMsg));
 
         // expect Email Alert to be sent
-        expect(tradingApi.getImplName()).andReturn(EXCHANGE_ADAPTER_NAME);
         emailAlerter.sendMessage(eq(CRITICAL_EMAIL_ALERT_SUBJECT), contains("An unexpected FATAL error has occurred in" +
                 " Exchange Adapter or Trading Strategy! Details: " + exceptionErrorMsg));
 
@@ -520,7 +516,6 @@ public class TestTradingEngine {
         expect(tradingApi.getBalanceInfo()).andThrow(new TradingApiException(exceptionErrorMsg));
 
         // expect Email Alert to be sent
-        expect(tradingApi.getImplName()).andReturn(EXCHANGE_ADAPTER_NAME);
         emailAlerter.sendMessage(eq(CRITICAL_EMAIL_ALERT_SUBJECT), contains("A FATAL error has occurred in Exchange" +
                 " Adapter! Details: " + exceptionErrorMsg));
 

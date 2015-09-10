@@ -430,7 +430,7 @@ final public class TradingEngine {
 
         msgContent.append("Exchange Adapter:");
         msgContent.append(newline);
-        msgContent.append(tradingApi.getImplName());
+        msgContent.append(tradingApi.getClass().getName());
         msgContent.append(newline);
         msgContent.append(newline);
 

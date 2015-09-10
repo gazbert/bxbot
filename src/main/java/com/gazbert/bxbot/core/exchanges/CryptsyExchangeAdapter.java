@@ -80,7 +80,7 @@ import java.util.Map.Entry;
  * </p>
  *
  * <p>
- * This Exchange Adapter is <em>not</em> thread safe. It expects to be called using by single thread in order to
+ * This Exchange Adapter is <em>not</em> thread safe. It expects to be called using a single thread in order to
  * preserve trade execution order. The {@link URLConnection} achieves this by blocking/waiting on the input stream
  * (response) for each API call.
  * </p>
@@ -106,7 +106,7 @@ public final class CryptsyExchangeAdapter implements TradingApi {
     /**
      * Used for reporting unexpected errors.
      */
-    private static final String UNEXPECTED_ERROR_MSG = "Unexpected error has occurred in Exchange Adapter. ";
+    private static final String UNEXPECTED_ERROR_MSG = "Unexpected error has occurred in Cryptsy Exchange Adapter. ";
 
     /**
      * The authenticated API URI.

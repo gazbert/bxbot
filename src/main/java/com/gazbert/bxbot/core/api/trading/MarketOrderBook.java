@@ -26,7 +26,17 @@ package com.gazbert.bxbot.core.api.trading;
 import java.util.List;
 
 /**
+ * <p>
  * Domain class representing a Market Order Book.
+ * </p>
+ *
+ * <p>
+ * The Market Order Book SELL orders are ordered price ascending - <em>lowest</em> ASK price is first in list.
+ * </p>
+ *
+ * <p>
+ * The Market Order Book BUY orders are ordered price descending - <em>highest</em> BID price is first in list.
+ * </p>
  *
  * @author gazbert
  */

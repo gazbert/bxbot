@@ -92,7 +92,7 @@ import java.util.UUID;
  * </p>
  *
  * <p>
- * This Exchange Adapter is <em>not</em> thread safe. It expects to be called using by single thread in order to
+ * This Exchange Adapter is <em>not</em> thread safe. It expects to be called using a single thread in order to
  * preserve trade execution order. The {@link URLConnection} achieves this by blocking/waiting on the input stream
  * (response) for each API call.
  * </p>
@@ -112,7 +112,7 @@ public final class BtceExchangeAdapter implements TradingApi {
     /**
      * Used for reporting unexpected errors.
      */
-    private static final String UNEXPECTED_ERROR_MSG = "Unexpected error has occurred in Exchange Adapter. ";
+    private static final String UNEXPECTED_ERROR_MSG = "Unexpected error has occurred in BTC-e Exchange Adapter. ";
 
     /**
      * The Authenticated API URI.
@@ -1224,7 +1224,9 @@ public final class BtceExchangeAdapter implements TradingApi {
                 throw new IllegalArgumentException(errorMsg);
             }
 
-            LOG.info(CONNECTION_TIMEOUT_PROPERTY_NAME + ": " + connectionTimeout);
+            if (LOG.isInfoEnabled()) {
+                LOG.info(CONNECTION_TIMEOUT_PROPERTY_NAME + ": " + connectionTimeout);
+            }
 
         } catch (IOException e) {
             final String errorMsg = "Failed to load Exchange config: " + configFile;
