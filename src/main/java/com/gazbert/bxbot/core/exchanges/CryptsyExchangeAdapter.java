@@ -51,11 +51,7 @@ import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
-import java.net.MalformedURLException;
-import java.net.SocketTimeoutException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.net.URLEncoder;
+import java.net.*;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
@@ -834,33 +830,37 @@ public final class CryptsyExchangeAdapter implements TradingApi {
             throw new IllegalStateException(errorMsg);
         }
 
-        // Setup common params for the API call
-        if (params == null) {
-            params = new HashMap<>();
-        }
-        params.put("method", apiMethod);
-        params.put("nonce", Long.toString(nonce)); // nonce is required by Cryptsy in every request
-
-        // Must be 1 higher for next call
-        nonce++;
-
-        // Build the URL with query param args in it - yuck!
-        String postData = "";
-        for (final String param : params.keySet()) {
-            if (postData.length() > 0) {
-                postData += "&";
-            }
-            //noinspection deprecation
-            postData += param + "=" + URLEncoder.encode(params.get(param));
-        }
-
-        // Connect to the exchange
-        URLConnection exchangeConnection;
+        HttpURLConnection exchangeConnection = null;
         final StringBuilder exchangeResponse = new StringBuilder();
 
         try {
+
+            // Setup common params for the API call
+            if (params == null) {
+                params = new HashMap<>();
+            }
+            params.put("method", apiMethod);
+            params.put("nonce", Long.toString(nonce)); // nonce is required by Cryptsy in every request
+
+            // Must be 1 higher for next call
+            nonce++;
+
+            // Build the URL with query param args in it - yuck!
+            String postData = "";
+            for (final String param : params.keySet()) {
+                if (postData.length() > 0) {
+                    postData += "&";
+                }
+                //noinspection deprecation
+                postData += param + "=" + URLEncoder.encode(params.get(param));
+            }
+
             final URL url = new URL(AUTH_API_URL);
-            exchangeConnection = url.openConnection();
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Using following URL for API call: " + url);
+            }
+
+            exchangeConnection = (HttpURLConnection) url.openConnection();
             exchangeConnection.setUseCaches(false);
             exchangeConnection.setDoOutput(true);
 
@@ -901,6 +901,9 @@ public final class CryptsyExchangeAdapter implements TradingApi {
             }
             responseInputStream.close();
 
+            // return the JSON response string
+            return exchangeResponse.toString();
+
         } catch (MalformedURLException e) {
             final String errorMsg = "Failed to send request to Exchange.";
             LOG.error(errorMsg, e);
@@ -925,9 +928,11 @@ public final class CryptsyExchangeAdapter implements TradingApi {
                 LOG.error(errorMsg, e);
                 throw new TradingApiException(errorMsg, e);
             }
+        } finally {
+            if (exchangeConnection != null) {
+                exchangeConnection.disconnect();
+            }
         }
-
-        return exchangeResponse.toString();
     }
 
     /**

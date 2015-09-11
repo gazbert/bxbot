@@ -1020,32 +1020,36 @@ public final class BtceExchangeAdapter implements TradingApi {
             throw new IllegalStateException(errorMsg);
         }
 
-        // Setup common params for the API call
-        if (params == null) {
-            params = new HashMap<>();
-        }
-        params.put("method", apiMethod);
-
-        // must be higher for next call, even if a failure occurred on previous call
-        params.put("nonce", Long.toString(++nonce));
-
-        // Build the URL with query param args in it - yuk!
-        String postData = "";
-        for (final String param : params.keySet()) {
-            if (postData.length() > 0) {
-                postData += "&";
-            }
-            //noinspection deprecation
-            postData += param + "=" + URLEncoder.encode(params.get(param));
-        }
-
-        // Connect to the exchanges
-        URLConnection exchangeConnection;
+        HttpURLConnection exchangeConnection = null;
         final StringBuilder exchangeResponse = new StringBuilder();
 
         try {
+
+            // Setup common params for the API call
+            if (params == null) {
+                params = new HashMap<>();
+            }
+            params.put("method", apiMethod);
+
+            // must be higher for next call, even if a failure occurred on previous call
+            params.put("nonce", Long.toString(++nonce));
+
+            // Build the URL with query param args in it - yuk!
+            String postData = "";
+            for (final String param : params.keySet()) {
+                if (postData.length() > 0) {
+                    postData += "&";
+                }
+                //noinspection deprecation
+                postData += param + "=" + URLEncoder.encode(params.get(param));
+            }
+
             final URL url = new URL(AUTHENTICATED_API_URL);
-            exchangeConnection = url.openConnection();
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Using following URL for API call: " + url);
+            }
+
+            exchangeConnection = (HttpURLConnection) url.openConnection();
             exchangeConnection.setUseCaches(false);
             exchangeConnection.setDoOutput(true);
 
@@ -1086,6 +1090,9 @@ public final class BtceExchangeAdapter implements TradingApi {
             }
             responseInputStream.close();
 
+            // return the JSON response string
+            return exchangeResponse.toString();
+
         } catch (MalformedURLException e) {
             final String errorMsg = "Failed to send request to Exchange.";
             LOG.error(errorMsg, e);
@@ -1110,9 +1117,11 @@ public final class BtceExchangeAdapter implements TradingApi {
                 LOG.error(errorMsg, e);
                 throw new TradingApiException(errorMsg, e);
             }
+        } finally {
+            if (exchangeConnection != null) {
+                exchangeConnection.disconnect();
+            }
         }
-
-        return exchangeResponse.toString();
     }
 
     /**
