@@ -349,10 +349,10 @@ public class TestBtceExchangeAdapter {
         assertTrue(openOrders.get(0).getCreationDate().getTime() == new Date(1440956890).getTime());
         assertTrue(openOrders.get(0).getPrice().compareTo(new BigDecimal("234.88400000")) == 0);
         assertTrue(openOrders.get(0).getQuantity().compareTo(new BigDecimal("0.03000000")) == 0);
+        assertTrue(openOrders.get(0).getTotal().compareTo(openOrders.get(0).getQuantity().multiply(openOrders.get(0).getPrice()))== 0);
 
         // the values below are not provided by BTC-e
         assertNull(openOrders.get(0).getOriginalQuantity());
-        assertTrue(openOrders.get(0).getTotal().compareTo(openOrders.get(0).getQuantity().multiply(openOrders.get(0).getPrice()))== 0);
 
         PowerMock.verifyAll();
     }

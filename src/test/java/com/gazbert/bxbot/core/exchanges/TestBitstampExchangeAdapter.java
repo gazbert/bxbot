@@ -353,11 +353,10 @@ public class TestBitstampExchangeAdapter {
         assertTrue(openOrders.get(0).getType() == OrderType.SELL);
         assertTrue(openOrders.get(0).getCreationDate().getTime() == EXCHANGE_DATE_FORMAT.parse("2015-01-09 21:14:50").getTime());
         assertTrue(openOrders.get(0).getPrice().compareTo(new BigDecimal("350.00")) == 0);
-        assertTrue(openOrders.get(0).getQuantity().compareTo(new BigDecimal("0.20000000")) == 0);
+        assertTrue(openOrders.get(0).getTotal().compareTo(openOrders.get(0).getQuantity().multiply(openOrders.get(0).getPrice())) == 0);
 
         // the values below are not provided by Bitstamp
         assertNull(openOrders.get(0).getOriginalQuantity());
-        assertTrue(openOrders.get(0).getTotal().compareTo(openOrders.get(0).getQuantity().multiply(openOrders.get(0).getPrice())) == 0);
 
         PowerMock.verifyAll();
     }
