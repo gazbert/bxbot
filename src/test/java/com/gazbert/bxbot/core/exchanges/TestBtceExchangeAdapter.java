@@ -716,7 +716,7 @@ public class TestBtceExchangeAdapter {
      * Have left this in; it might come in useful.
      * It expects VALID_CONFIG_LOCATION to contain the correct credentials.
      */
-    //@Test
+//    @Test
     public void testCallingExchangeToGetJson() throws Exception {
 
         // Partial mock the adapter so we can manipulate config location
@@ -724,9 +724,13 @@ public class TestBtceExchangeAdapter {
         PowerMock.expectPrivate(BtceExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD).andReturn(VALID_CONFIG_LOCATION);
         PowerMock.replayAll();
 
-        //final BtceExchangeAdapter exchangeAdapter = new BtceExchangeAdapter();
-        //exchangeAdapter.getLatestMarketPrice(MARKET_ID);
-        //exchangeAdapter.getBalanceInfo();
+//        final BtceExchangeAdapter exchangeAdapter = new BtceExchangeAdapter();
+//        exchangeAdapter.getImplName();
+//        exchangeAdapter.getPercentageOfBuyOrderTakenForExchangeFee(MARKET_ID);
+//        exchangeAdapter.getPercentageOfSellOrderTakenForExchangeFee(MARKET_ID);
+//        exchangeAdapter.getLatestMarketPrice(MARKET_ID);
+//        exchangeAdapter.getYourOpenOrders(MARKET_ID);
+//        exchangeAdapter.getBalanceInfo();
 
         PowerMock.verifyAll();
     }

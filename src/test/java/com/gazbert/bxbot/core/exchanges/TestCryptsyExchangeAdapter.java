@@ -656,7 +656,7 @@ public class TestCryptsyExchangeAdapter {
      * Have left this in; it might come in useful.
      * It expects VALID_CONFIG_LOCATION to contain the correct credentials.
      */
-    //@Test
+//    @Test
     public void testCallingExchangeToGetJson() throws Exception {
 
         // Partial mock the adapter so we can manipulate config location
@@ -664,9 +664,13 @@ public class TestCryptsyExchangeAdapter {
         PowerMock.expectPrivate(CryptsyExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD).andReturn(VALID_CONFIG_LOCATION);
         PowerMock.replayAll();
 
-        //final CryptsyExchangeAdapter exchangeAdapter = new CryptsyExchangeAdapter();
-        //exchangeAdapter.getLatestMarketPrice(MARKET_ID);
-        //exchangeAdapter.getBalanceInfo();
+//        final CryptsyExchangeAdapter exchangeAdapter = new CryptsyExchangeAdapter();
+//        exchangeAdapter.getImplName();
+//        exchangeAdapter.getPercentageOfBuyOrderTakenForExchangeFee(MARKET_ID);
+//        exchangeAdapter.getPercentageOfSellOrderTakenForExchangeFee(MARKET_ID);
+//        exchangeAdapter.getLatestMarketPrice(MARKET_ID);
+//        exchangeAdapter.getYourOpenOrders(MARKET_ID);
+//        exchangeAdapter.getBalanceInfo();
 
         PowerMock.verifyAll();
     }
