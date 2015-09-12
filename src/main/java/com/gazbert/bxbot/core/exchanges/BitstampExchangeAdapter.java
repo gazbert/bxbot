@@ -282,8 +282,8 @@ public final class BitstampExchangeAdapter implements TradingApi {
                         orderType,
                         openOrder.price,
                         openOrder.amount,
-                        new BigDecimal(0), //cryptsyOrders[i].orig_quantity - not provided by stamp :-(
-                        new BigDecimal(0) //cryptsyOrders[i].total - not provided by stamp :-(
+                        null, // orig_quantity - not provided by stamp :-(
+                        openOrder.price.multiply(openOrder.amount) // total - not provided by stamp :-(
                 );
 
                 ordersToReturn.add(order);

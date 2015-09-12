@@ -65,7 +65,8 @@ public final class OpenOrder {
     private BigDecimal quantity;
 
     /**
-     * Original total order quantity. This is usually the amount of the other currency you want to trade for BTC/USD.
+     * Original total order quantity. If the Exchange does not provide this information, the value will be null.
+     * This is usually the amount of the other currency you want to trade for BTC/USD.
      */
     private BigDecimal originalQuantity;
 
@@ -206,9 +207,10 @@ public final class OpenOrder {
     }
 
     /**
-     * Returns the Original total order quantity. This is usually the amount of the other currency you want to trade for BTC/USD.
+     * Returns the Original total order quantity. If the Exchange does not provide this information, the value will be null.
+     * This is usually the amount of the other currency you want to trade for BTC/USD.
      *
-     * @return the Original total order quantity.
+     * @return the Original total order quantity if the Exchange provides this information, null otherwise.
      */
     public BigDecimal getOriginalQuantity() {
         return originalQuantity;

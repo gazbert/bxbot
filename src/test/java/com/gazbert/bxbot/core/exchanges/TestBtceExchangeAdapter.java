@@ -714,6 +714,7 @@ public class TestBtceExchangeAdapter {
     /*
      * Used for making real API calls to the exchange in order to grab JSON responses.
      * Have left this in; it might come in useful.
+     * It expects VALID_CONFIG_LOCATION to contain the correct credentials.
      */
     //@Test
     public void testCallingExchangeToGetJson() throws Exception {

@@ -295,8 +295,8 @@ public final class BtceExchangeAdapter implements TradingApi {
                             orderType,
                             orderDetails.rate,
                             orderDetails.amount,
-                            new BigDecimal(0), //c.f. cryptsyOrders[i].orig_quantity - not provided by btce :-(
-                            new BigDecimal(0) //c.f. cryptsyOrders[i].total - not provided by btce :-(
+                            null, // original quantity not provided by btce :-(
+                            orderDetails.rate.multiply(orderDetails.amount) // total not provided by btce :-(
                     );
 
                     ordersToReturn.add(order);
