@@ -351,8 +351,8 @@ public class TestBtceExchangeAdapter {
         assertTrue(openOrders.get(0).getQuantity().compareTo(new BigDecimal("0.03000000")) == 0);
 
         // the values below are not provided by BTC-e
-        assertTrue(openOrders.get(0).getOriginalQuantity().compareTo(new BigDecimal("0")) == 0);
-        assertTrue(openOrders.get(0).getTotal().compareTo(new BigDecimal("0")) == 0);
+        assertNull(openOrders.get(0).getOriginalQuantity());
+        assertTrue(openOrders.get(0).getTotal().compareTo(openOrders.get(0).getQuantity().multiply(openOrders.get(0).getPrice()))== 0);
 
         PowerMock.verifyAll();
     }

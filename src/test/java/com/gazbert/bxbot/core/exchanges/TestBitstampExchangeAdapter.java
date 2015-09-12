@@ -42,6 +42,7 @@ import java.util.Map;
 import static org.easymock.EasyMock.anyObject;
 import static org.easymock.EasyMock.eq;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -355,8 +356,8 @@ public class TestBitstampExchangeAdapter {
         assertTrue(openOrders.get(0).getQuantity().compareTo(new BigDecimal("0.20000000")) == 0);
 
         // the values below are not provided by Bitstamp
-        assertTrue(openOrders.get(0).getOriginalQuantity().compareTo(new BigDecimal("0")) == 0);
-        assertTrue(openOrders.get(0).getTotal().compareTo(new BigDecimal("0")) == 0);
+        assertNull(openOrders.get(0).getOriginalQuantity());
+        assertTrue(openOrders.get(0).getTotal().compareTo(openOrders.get(0).getQuantity().multiply(openOrders.get(0).getPrice())) == 0);
 
         PowerMock.verifyAll();
     }
