@@ -381,7 +381,7 @@ You can also create your own jar for your adapters, e.g. `my-adapters.jar`, and 
 see the _Installation Guide_ for how to do this.
 
 ## Build Guide
-A simple Maven `pom.xml` is included for building the bot.
+A Maven `pom.xml` is included for building the bot.
 
 1. Clone the BX-bot repo locally.
 1. Open the `./config` XML files and configure them as required.
@@ -397,12 +397,12 @@ A simple Maven `pom.xml` is included for building the bot.
 
 1. Copy either the `bxbot-core-1.0-SNAPSHOT-dist.tar.gz` or `bxbot-core-1.0-SNAPSHOT-dist.zip` onto the machine you want
    to run the bot.
-1. Unzip it into a folder, e.g. `bxbot-home`. Make the `bxbot.sh` script is executable: `chmod 755 bxbot.sh`.
+1. Unzip it into a folder, e.g. `bxbot-home`. Make sure the `bxbot.sh` script is executable: `chmod 755 bxbot.sh`.
 1. Open the `bxbot.sh` script and follow the instructions in the file.
 
 To start, stop, and query the bot's status, use `./bxbot.sh [start|stop|status]`
  
-## Coming Soon...
+## Coming Soon
 The following features are going to be developed: 
 
 - [Bitfinex](https://www.bitfinex.com/) Exchange Adapter.
