@@ -23,7 +23,14 @@
 
 package com.gazbert.bxbot.core.exchanges;
 
-import com.gazbert.bxbot.core.api.trading.*;
+import com.gazbert.bxbot.core.api.trading.BalanceInfo;
+import com.gazbert.bxbot.core.api.trading.ExchangeTimeoutException;
+import com.gazbert.bxbot.core.api.trading.MarketOrder;
+import com.gazbert.bxbot.core.api.trading.MarketOrderBook;
+import com.gazbert.bxbot.core.api.trading.OpenOrder;
+import com.gazbert.bxbot.core.api.trading.OrderType;
+import com.gazbert.bxbot.core.api.trading.TradingApi;
+import com.gazbert.bxbot.core.api.trading.TradingApiException;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.apache.log4j.Logger;
@@ -31,14 +38,29 @@ import org.apache.log4j.Logger;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import javax.xml.bind.DatatypeConverter;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
-import java.net.*;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.SocketTimeoutException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
 import java.time.Instant;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 
 /**
  * <p>
@@ -287,12 +309,9 @@ public final class BitfinexExchangeAdapter implements TradingApi {
 
             params.put("symbol", marketId);
 
-            // note we need to limit amount to 8 decimal places else exchange will barf
+            // note we need to limit amount and price to 8 decimal places else exchange will barf
             params.put("amount", new DecimalFormat("#.########").format(quantity));
-
-            // TODO note we need to limit price to 2 decimal places else exchange will barf
-            params.put("price", new DecimalFormat("#.##").format(price));
-            //params.put("price", new DecimalFormat("#.########").format(price));
+            params.put("price", new DecimalFormat("#.########").format(price));
 
             params.put("exchange", "bitfinex");
 
@@ -1031,13 +1050,9 @@ public final class BitfinexExchangeAdapter implements TradingApi {
 
             // JSON-ify the param dictionary
             final String paramsInJson = gson.toJson(params);
-            // TODO tmp debug
-            LOG.debug("paramsInJson: " + paramsInJson);
 
             // Need to base64 encode payload as per API
             final String base64payload = DatatypeConverter.printBase64Binary(paramsInJson.getBytes());
-            // TODO tmp debug
-            LOG.debug("base64payload: " + base64payload);
 
             final URL url = new URL(AUTHENTICATED_API_URL + apiMethod);
             if (LOG.isDebugEnabled()) {
@@ -1050,13 +1065,9 @@ public final class BitfinexExchangeAdapter implements TradingApi {
 
             // Add the public key
             exchangeConnection.setRequestProperty("X-BFX-APIKEY", key);
-            // TODO tmp debug
-            LOG.debug("X-BFX-APIKEY: " + key);
 
             // Add Base64 encoded JSON payload
             exchangeConnection.setRequestProperty("X-BFX-PAYLOAD", base64payload);
-            // TODO tmp debug
-            LOG.debug("X-BFX-PAYLOAD: " + base64payload);
 
             // Add the signature
             mac.reset(); // force reset
@@ -1067,10 +1078,7 @@ public final class BitfinexExchangeAdapter implements TradingApi {
              * See: http://bitcoin.stackexchange.com/questions/25835/bitfinex-api-call-returns-400-bad-request
              */
             final String signature = toHex(mac.doFinal()).toLowerCase();
-
             exchangeConnection.setRequestProperty("X-BFX-SIGNATURE", signature);
-            // TODO tmp debug
-            LOG.debug("X-BFX-SIGNATURE: " + signature);
 
             // payload is JSON for this exchange
             exchangeConnection.setRequestProperty("Content-Type", "application/json");

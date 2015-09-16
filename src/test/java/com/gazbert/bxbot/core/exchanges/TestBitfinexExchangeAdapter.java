@@ -66,7 +66,7 @@ public class TestBitfinexExchangeAdapter {
     private static final String MARKET_ID = "btcusd";
     private static final BigDecimal BUY_ORDER_PRICE = new BigDecimal("200.18");
     private static final BigDecimal BUY_ORDER_QUANTITY = new BigDecimal("0.03");
-    private static final BigDecimal SELL_ORDER_PRICE = new BigDecimal("250.176");
+    private static final BigDecimal SELL_ORDER_PRICE = new BigDecimal("250.17622");
     private static final BigDecimal SELL_ORDER_QUANTITY = new BigDecimal("0.03");
     private static final String ORDER_ID_TO_CANCEL = "426152651";
 
