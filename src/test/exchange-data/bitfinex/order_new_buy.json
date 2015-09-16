@@ -1,0 +1,18 @@
+{
+  "id": 425116925,
+  "symbol": "btcusd",
+  "exchange": "bitfinex",
+  "price": "250.18",
+  "avg_execution_price": "0.0",
+  "side": "sell",
+  "type": "exchange limit",
+  "timestamp": "1442174278.422032415",
+  "is_live": true,
+  "is_cancelled": false,
+  "is_hidden": false,
+  "was_forced": false,
+  "original_amount": "0.03",
+  "remaining_amount": "0.03",
+  "executed_amount": "0.0",
+  "order_id": 425116925
+}

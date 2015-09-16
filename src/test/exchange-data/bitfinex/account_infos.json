@@ -1,0 +1,23 @@
+[
+  {
+    "maker_fees": "0.1",
+    "taker_fees": "0.2",
+    "fees": [
+      {
+        "pairs": "BTC",
+        "maker_fees": "0.1",
+        "taker_fees": "0.2"
+      },
+      {
+        "pairs": "LTC",
+        "maker_fees": "0.1",
+        "taker_fees": "0.2"
+      },
+      {
+        "pairs": "DRK",
+        "maker_fees": "0.1",
+        "taker_fees": "0.2"
+      }
+    ]
+  }
+]

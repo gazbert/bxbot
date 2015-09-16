@@ -13,8 +13,8 @@ except for the trading strategies; you'll need to write those yourself. A basic 
 Trading API. Take a look [here](http://www.investopedia.com/articles/active-trading/101014/basics-algorithmic-trading-concepts-and-examples.asp)
 for more ideas.
 
-Exchange Adapters for using and [BTC-e](https://btc-e.com), [Bitstamp](https://www.bitstamp.net), 
-and [Cryptsy](https://www.cryptsy.com) are included. Feel free to improve these or contribute new adapters to the 
+Exchange Adapters for using and [BTC-e](https://btc-e.com), [Bitstamp](https://www.bitstamp.net), [Cryptsy](https://www.cryptsy.com), 
+and [Bitfinex](https://www.bitfinex.com) are included. Feel free to improve these or contribute new adapters to the 
 project; that would be shiny.
 
 The Trading API provides support for [limit orders](http://www.investopedia.com/terms/l/limitorder.asp)
@@ -405,7 +405,6 @@ To start, stop, and query the bot's status, use `./bxbot.sh [start|stop|status]`
 ## Coming Soon
 The following features are going to be developed: 
 
-- [Bitfinex](https://www.bitfinex.com/) Exchange Adapter.
 - [OKcoin](https://www.okcoin.com/) Exchange Adapter.
 - [Huobi](https://www.huobi.com/) Exchange Adapter.
 - Convert bot into [Spring Boot](http://projects.spring.io/spring-boot/) app. This will include a new REST API for administering the bot.
