@@ -78,7 +78,7 @@ import java.util.Properties;
  * DISCLAIMER:
  * This Exchange Adapter is provided as-is; it might have bugs in it and you could lose money. Despite running live
  * on Bitstamp, it has only been unit tested up until the point of calling the
- * {@link #sendPublicRequestToExchange(String, Map)} and {@link #sendAuthenticatedRequestToExchange(String, Map)}
+ * {@link #sendPublicRequestToExchange(String)} and {@link #sendAuthenticatedRequestToExchange(String, Map)}
  * methods. Use it at our own risk!
  * </strong>
  * </p>
@@ -216,7 +216,7 @@ public final class BitstampExchangeAdapter implements TradingApi {
     public MarketOrderBook getMarketOrders(String marketId) throws TradingApiException, ExchangeTimeoutException {
 
         try {
-            final String results = sendPublicRequestToExchange("order_book", null);
+            final String results = sendPublicRequestToExchange("order_book");
 
             // useful to log diff types of error response in JSON response
             if (LOG.isDebugEnabled()) {
@@ -394,7 +394,7 @@ public final class BitstampExchangeAdapter implements TradingApi {
     public BigDecimal getLatestMarketPrice(String marketId) throws TradingApiException, ExchangeTimeoutException {
 
         try {
-            final String results = sendPublicRequestToExchange("ticker", null);
+            final String results = sendPublicRequestToExchange("ticker");
 
             // useful to log diff types of error response in JSON response
             if (LOG.isDebugEnabled()) {
@@ -661,39 +661,20 @@ public final class BitstampExchangeAdapter implements TradingApi {
     /**
      * Makes a public API call to Bitstamp exchange. Uses HTTP GET.
      * 
-     * @param apiMethod the API method to call..
-     * @param params the query param args to use in the API call
+     * @param apiMethod the API method to call.
      * @return the response from the exchange.
      * @throws ExchangeTimeoutException if there is a network issue connecting to exchange.
      * @throws TradingApiException if anything unexpected happens.
      */
-    private String sendPublicRequestToExchange(String apiMethod, Map<String, String> params) throws
-            ExchangeTimeoutException, TradingApiException {
+    private String sendPublicRequestToExchange(String apiMethod) throws ExchangeTimeoutException, TradingApiException {
 
         HttpURLConnection exchangeConnection = null;
         final StringBuilder exchangeResponse = new StringBuilder();
 
         try {
-            if (params == null) {
-                params = new HashMap<>();
-            }
-
-            // Build the URL with query param args in it
-            String queryString = "";
-            if (params.size() > 0) {
-                queryString = "?";
-            }
-
-            for (final String param : params.keySet()) {
-                if (queryString.length() > 0) {
-                    queryString += "&";
-                }
-                //noinspection deprecation
-                queryString += param + "=" + URLEncoder.encode(params.get(param));
-            }
 
             // MUST have the trailing slash even if no params...
-            final URL url = new URL(API_BASE_URL + apiMethod + "/" + queryString);
+            final URL url = new URL(API_BASE_URL + apiMethod + "/");
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Using following URL for API call: " + url);
             }

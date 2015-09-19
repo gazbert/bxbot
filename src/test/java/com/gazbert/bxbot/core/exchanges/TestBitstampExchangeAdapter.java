@@ -51,12 +51,12 @@ import static org.junit.Assert.assertTrue;
  * </p>
  *
  * <p>
- * Coverage could be better: it does not include calling the {@link BitstampExchangeAdapter#sendPublicRequestToExchange(String, Map)}
+ * Coverage could be better: it does not include calling the {@link BitstampExchangeAdapter#sendPublicRequestToExchange(String)}
  * and {@link BitstampExchangeAdapter#sendAuthenticatedRequestToExchange(String, Map)} methods; the code in these methods
  * is a bloody nightmare to test!
  * </p>
  *
- * TODO Unit test {@link BitstampExchangeAdapter#sendPublicRequestToExchange(String, Map)} method.
+ * TODO Unit test {@link BitstampExchangeAdapter#sendPublicRequestToExchange(String)} method.
  * TODO Unit test {@link BitstampExchangeAdapter#sendAuthenticatedRequestToExchange(String, Map)} method.
  *
  * @author gazbert
@@ -259,7 +259,7 @@ public class TestBitstampExchangeAdapter {
         // Partial mock so we do not send stuff down the wire
         final BitstampExchangeAdapter exchangeAdapter =  PowerMock.createPartialMockAndInvokeDefaultConstructor(
                 BitstampExchangeAdapter.class, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD);
-        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD, eq(ORDER_BOOK), eq(null)).
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD, eq(ORDER_BOOK)).
                 andReturn(exchangeResponse);
 
         PowerMock.replayAll();
@@ -298,7 +298,7 @@ public class TestBitstampExchangeAdapter {
         // Partial mock so we do not send stuff down the wire
         final BitstampExchangeAdapter exchangeAdapter =  PowerMock.createPartialMock(BitstampExchangeAdapter.class,
                 MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD);
-        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD, eq(ORDER_BOOK), eq(null)).
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD, eq(ORDER_BOOK)).
                 andThrow(new ExchangeTimeoutException("Traveling through hyperspace ain’t like dusting crops, farm boy."));
 
         PowerMock.replayAll();
@@ -314,7 +314,7 @@ public class TestBitstampExchangeAdapter {
         // Partial mock so we do not send stuff down the wire
         final BitstampExchangeAdapter exchangeAdapter =  PowerMock.createPartialMock(BitstampExchangeAdapter.class,
                 MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD);
-        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD, eq(ORDER_BOOK), eq(null)).
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD, eq(ORDER_BOOK)).
                 andThrow(new IllegalArgumentException("Uh, we had a slight weapons malfunction, but uh... " +
                         "everything's perfectly all right now. We're fine. We're all fine here now, thank you. How are you?"));
 
@@ -407,7 +407,7 @@ public class TestBitstampExchangeAdapter {
         // Partial mock so we do not send stuff down the wire
         final BitstampExchangeAdapter exchangeAdapter =  PowerMock.createPartialMockAndInvokeDefaultConstructor(
                 BitstampExchangeAdapter.class, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD);
-        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD, eq(TICKER), eq(null)).
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD, eq(TICKER)).
                 andReturn(exchangeResponse);
 
         PowerMock.replayAll();
@@ -424,7 +424,7 @@ public class TestBitstampExchangeAdapter {
         // Partial mock so we do not send stuff down the wire
         final BitstampExchangeAdapter exchangeAdapter =  PowerMock.createPartialMock(BitstampExchangeAdapter.class,
                 MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD);
-        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD, eq(TICKER), eq(null)).
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD, eq(TICKER)).
                 andThrow(new ExchangeTimeoutException("Jumping in 5... 4... 3... 2... 1... Jump!"));
 
         PowerMock.replayAll();
@@ -440,7 +440,7 @@ public class TestBitstampExchangeAdapter {
         // Partial mock so we do not send stuff down the wire
         final BitstampExchangeAdapter exchangeAdapter =  PowerMock.createPartialMock(BitstampExchangeAdapter.class,
                 MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD);
-        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD, eq(TICKER), eq(null)).
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD, eq(TICKER)).
                 andThrow(new IllegalArgumentException("Sir, the possibility of successfully navigating an asteroid field" +
                         " is approximately 3,720 to 1."));
 
@@ -741,6 +741,7 @@ public class TestBitstampExchangeAdapter {
 //        exchangeAdapter.getPercentageOfBuyOrderTakenForExchangeFee(MARKET_ID);
 //        exchangeAdapter.getPercentageOfSellOrderTakenForExchangeFee(MARKET_ID);
 //        exchangeAdapter.getLatestMarketPrice(MARKET_ID);
+//        exchangeAdapter.getMarketOrders(MARKET_ID);
 //        exchangeAdapter.getYourOpenOrders(MARKET_ID);
 //        exchangeAdapter.getBalanceInfo();
 
