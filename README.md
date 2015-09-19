@@ -161,8 +161,8 @@ You specify the Trading Strategies you wish to use in the `strategies.xml` file.
     <strategy>
         <id>scalping-strategy</id>
         <label>Basic Scalping Strat</label>
-        <description>A simple trend following scalper that buys at current BID price and sells at current ASK price, 
-        taking profit from the spread. The exchange fees are factored in.</description>
+        <description>A simple trend following scalper that buys at current BID price and sells at current
+         ASK price, taking profit from the spread. The exchange fees are factored in.</description>
         <class-name>com.gazbert.bxbot.core.strategies.ExampleScalpingStrategy</class-name>
         <configuration>
             <config-item>
@@ -235,7 +235,7 @@ the exchange drops below this value, the Trading Engine will log it, send an Ema
 
 The `<trade-cycle-interval>` value is the interval in _seconds_ that the Trading Engine will wait/sleep before executing
 each trade cycle. The minimum value is 1 second. Some exchanges allow you to hit them harder than others. However, while
-their API documentation might say one thing, the reality is you might get socket timeouts and 50X responses if you hit it
+their API documentation might say one thing, the reality is you might get socket timeouts and 50x responses if you hit it
 too hard - you cannot perform HFT over the public internet! I have EMA/MACD strats running every 5mins and 'scalping' 
 strats running every 60s on BTC-e. You'll need to experiment with the trade cycle interval for different exchanges.
 

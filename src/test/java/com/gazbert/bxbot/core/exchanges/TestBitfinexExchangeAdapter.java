@@ -311,7 +311,7 @@ public class TestBitfinexExchangeAdapter {
         final BitfinexExchangeAdapter exchangeAdapter =  PowerMock.createPartialMockAndInvokeDefaultConstructor(
                 BitfinexExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
         PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(ORDERS),
-                     anyObject(Map.class)).andReturn(exchangeResponse);
+                eq(null)).andReturn(exchangeResponse);
 
         PowerMock.replayAll();
 
@@ -337,7 +337,7 @@ public class TestBitfinexExchangeAdapter {
         // Partial mock so we do not send stuff down the wire
         final BitfinexExchangeAdapter exchangeAdapter =  PowerMock.createPartialMock(BitfinexExchangeAdapter.class,
                 MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
-        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(ORDERS), anyObject(Map.class)).
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(ORDERS), eq(null)).
                 andThrow(new ExchangeTimeoutException("There's an entirely different universe beyond that black hole. " +
                         "A point where time and space as we know it no longer exists. We will be the first to see it, " +
                         "to explore it, to experience it!"));
@@ -355,7 +355,7 @@ public class TestBitfinexExchangeAdapter {
         // Partial mock so we do not send stuff down the wire
         final BitfinexExchangeAdapter exchangeAdapter =  PowerMock.createPartialMock(BitfinexExchangeAdapter.class,
                 MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
-        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(ORDERS), anyObject(Map.class)).
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(ORDERS), eq(null)).
                 andThrow(new IllegalStateException("Nope, I can't make it! My main circuits are gone, my " +
                         "anti-grav-systems blown, and both backup systems are failing"));
 
@@ -446,7 +446,7 @@ public class TestBitfinexExchangeAdapter {
         final BitfinexExchangeAdapter exchangeAdapter =  PowerMock.createPartialMockAndInvokeDefaultConstructor(
                 BitfinexExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
         PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(BALANCES),
-                anyObject(Map.class)).andReturn(exchangeResponse);
+                eq(null)).andReturn(exchangeResponse);
 
         PowerMock.replayAll();
 
@@ -469,7 +469,7 @@ public class TestBitfinexExchangeAdapter {
         // Partial mock so we do not send stuff down the wire
         final BitfinexExchangeAdapter exchangeAdapter =  PowerMock.createPartialMock(BitfinexExchangeAdapter.class,
                 MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
-        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(BALANCES), anyObject(Map.class)).
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(BALANCES), eq(null)).
                 andThrow(new ExchangeTimeoutException(" Don't know, I don't know such stuff. I just do eyes, ju-, ju-," +
                         " just eyes... just genetic design, just eyes. You Nexus, huh? I design your eyes"));
 
@@ -486,7 +486,7 @@ public class TestBitfinexExchangeAdapter {
         // Partial mock so we do not send stuff down the wire
         final BitfinexExchangeAdapter exchangeAdapter =  PowerMock.createPartialMock(BitfinexExchangeAdapter.class,
                 MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
-        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(BALANCES), anyObject(Map.class)).
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(BALANCES), eq(null)).
                 andThrow(new IllegalStateException(" I've seen things you people wouldn't believe. Attack ships on fire" +
                         " off the shoulder of Orion. I watched C-beams glitter in the dark near the Tannhauser gate. " +
                         "All those moments will be lost in time... like tears in rain... Time to die"));
@@ -513,7 +513,7 @@ public class TestBitfinexExchangeAdapter {
         final BitfinexExchangeAdapter exchangeAdapter =  PowerMock.createPartialMockAndInvokeDefaultConstructor(
                 BitfinexExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
         PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(ACCOUNT_INFOS),
-                anyObject(Map.class)).andReturn(exchangeResponse);
+                eq(null)).andReturn(exchangeResponse);
 
         PowerMock.replayAll();
 
@@ -529,7 +529,7 @@ public class TestBitfinexExchangeAdapter {
         // Partial mock so we do not send stuff down the wire
         final BitfinexExchangeAdapter exchangeAdapter =  PowerMock.createPartialMock(BitfinexExchangeAdapter.class,
                 MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
-        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(ACCOUNT_INFOS), anyObject(Map.class)).
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(ACCOUNT_INFOS), eq(null)).
                 andThrow(new ExchangeTimeoutException("Right. Well, um, using layman's terms... Use a retaining magnetic" +
                         " field to focus a narrow beam of gravitons - these, in turn, fold space-time consistent with" +
                         " Weyl tensor dynamics until the space-time curvature becomes infinitely large, and you produce" +
@@ -548,7 +548,7 @@ public class TestBitfinexExchangeAdapter {
         // Partial mock so we do not send stuff down the wire
         final BitfinexExchangeAdapter exchangeAdapter =  PowerMock.createPartialMock(BitfinexExchangeAdapter.class,
                 MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
-        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(ACCOUNT_INFOS), anyObject(Map.class)).
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(ACCOUNT_INFOS), eq(null)).
                 andThrow(new IllegalStateException("I created the Event Horizon to reach the stars, but she's gone much," +
                         " much farther than that. She tore a hole in our universe, a gateway to another dimension." +
                         " A dimension of pure chaos. Pure... evil. When she crossed over, she was just a ship." +
@@ -576,7 +576,7 @@ public class TestBitfinexExchangeAdapter {
         final BitfinexExchangeAdapter exchangeAdapter =  PowerMock.createPartialMockAndInvokeDefaultConstructor(
                 BitfinexExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
         PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(ACCOUNT_INFOS),
-                anyObject(Map.class)).andReturn(exchangeResponse);
+                eq(null)).andReturn(exchangeResponse);
 
         PowerMock.replayAll();
 
@@ -592,7 +592,7 @@ public class TestBitfinexExchangeAdapter {
         // Partial mock so we do not send stuff down the wire
         final BitfinexExchangeAdapter exchangeAdapter =  PowerMock.createPartialMock(BitfinexExchangeAdapter.class,
                 MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
-        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(ACCOUNT_INFOS), anyObject(Map.class)).
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(ACCOUNT_INFOS), eq(null)).
                 andThrow(new ExchangeTimeoutException("Day 11, Test 37, Configuration 2.0. For lack of a better option," +
                         " Dummy is still on fire safety."));
 
@@ -609,7 +609,7 @@ public class TestBitfinexExchangeAdapter {
         // Partial mock so we do not send stuff down the wire
         final BitfinexExchangeAdapter exchangeAdapter =  PowerMock.createPartialMock(BitfinexExchangeAdapter.class,
                 MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
-        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(ACCOUNT_INFOS), anyObject(Map.class)).
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(ACCOUNT_INFOS), eq(null)).
                 andThrow(new IllegalStateException("What was made public about the Event Horizon - that she was a deep" +
                         " space research vessel, that her reactor went critical, and that the ship blew up - none of " +
                         "that is true. The Event Horizon is the culmination of a secret government project to create a" +

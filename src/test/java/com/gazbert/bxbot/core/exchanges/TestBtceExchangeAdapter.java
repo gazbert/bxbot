@@ -469,7 +469,7 @@ public class TestBtceExchangeAdapter {
         final BtceExchangeAdapter exchangeAdapter =  PowerMock.createPartialMockAndInvokeDefaultConstructor(
                 BtceExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
         PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(GET_INFO),
-                anyObject(Map.class)).andReturn(exchangeResponse);
+                eq(null)).andReturn(exchangeResponse);
 
         PowerMock.replayAll();
 
@@ -492,7 +492,7 @@ public class TestBtceExchangeAdapter {
         // Partial mock so we do not send stuff down the wire
         final BtceExchangeAdapter exchangeAdapter =  PowerMock.createPartialMock(BtceExchangeAdapter.class,
                 MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
-        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(GET_INFO), anyObject(Map.class)).
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(GET_INFO), eq(null)).
                 andThrow(new ExchangeTimeoutException("And so say we all!"));
 
         PowerMock.replayAll();
@@ -508,7 +508,7 @@ public class TestBtceExchangeAdapter {
         // Partial mock so we do not send stuff down the wire
         final BtceExchangeAdapter exchangeAdapter =  PowerMock.createPartialMock(BtceExchangeAdapter.class,
                 MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
-        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(GET_INFO), anyObject(Map.class)).
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(GET_INFO), eq(null)).
                 andThrow(new IllegalStateException("There is a clause in the contract which specifically states any " +
                         "systematized transmission indicating a possible intelligent origin must be investigated."));
 

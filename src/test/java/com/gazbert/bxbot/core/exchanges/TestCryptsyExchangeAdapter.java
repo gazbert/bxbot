@@ -459,7 +459,7 @@ public class TestCryptsyExchangeAdapter {
         final CryptsyExchangeAdapter exchangeAdapter =  PowerMock.createPartialMockAndInvokeDefaultConstructor(
                 CryptsyExchangeAdapter.class, MOCKED_SEND_REQUEST_TO_EXCHANGE_METHOD);
         PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_REQUEST_TO_EXCHANGE_METHOD, eq(GET_INFO),
-                anyObject(Map.class)).andReturn(exchangeResponse);
+                eq(null)).andReturn(exchangeResponse);
 
         PowerMock.replayAll();
 
@@ -487,7 +487,7 @@ public class TestCryptsyExchangeAdapter {
         // Partial mock so we do not send stuff down the wire
         final CryptsyExchangeAdapter exchangeAdapter =  PowerMock.createPartialMock(CryptsyExchangeAdapter.class,
                 MOCKED_SEND_REQUEST_TO_EXCHANGE_METHOD);
-        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_REQUEST_TO_EXCHANGE_METHOD, eq(GET_INFO), anyObject(Map.class)).
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_REQUEST_TO_EXCHANGE_METHOD, eq(GET_INFO), eq(null)).
                 andThrow(new ExchangeTimeoutException("Sometimes you gotta roll the hard six."));
 
         PowerMock.replayAll();
@@ -503,7 +503,7 @@ public class TestCryptsyExchangeAdapter {
         // Partial mock so we do not send stuff down the wire
         final CryptsyExchangeAdapter exchangeAdapter =  PowerMock.createPartialMock(CryptsyExchangeAdapter.class,
                 MOCKED_SEND_REQUEST_TO_EXCHANGE_METHOD);
-        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_REQUEST_TO_EXCHANGE_METHOD, eq(GET_INFO), anyObject(Map.class)).
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_REQUEST_TO_EXCHANGE_METHOD, eq(GET_INFO), eq(null)).
                 andThrow(new IllegalStateException("When you are in the cockpit, you are in control. " +
                         "It's hard to give it up... All you can do now is wait and hope you didn't make any mistakes." +
                         " Welcome to the big leagues."));
