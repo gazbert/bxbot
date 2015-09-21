@@ -100,16 +100,6 @@ import java.util.Properties;
  * E.g. 250.176 would be sent to the exchange as 250.18.
  * </p>
  *
- * <h2>Known Exchange Issues</h2>
- *
- * <ol>
- *     <li>12 Sep 2015 - Bitstamp tends to fail every few days with a 500 response when calling to get 'balance' info:
- *     Caused by: java.io.IOException: Server returned HTTP response code: 500 for URL: https://www.bitstamp.net/api/balance/</li>
- *     <li>12 Sep 2015 - for the same 'balance' API call, the exchange sends back null data for the balance info:
- *     167942649 [main] 2015-09-12 18:24:26,625 ERROR TradingEngine  - Emergency stop check: Failed to get current
- *     Emergency Stop Currency balance as 'BTC' key into Balances map returned null. Balances returned: {BTC=null, USD=null}</li>
- * </ol>
- *
  * @author gazbert
  */
 public final class BitstampExchangeAdapter implements TradingApi {
