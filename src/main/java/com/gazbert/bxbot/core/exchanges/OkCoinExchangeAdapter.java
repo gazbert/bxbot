@@ -23,18 +23,40 @@
 
 package com.gazbert.bxbot.core.exchanges;
 
-import com.gazbert.bxbot.core.api.trading.*;
+import com.gazbert.bxbot.core.api.trading.BalanceInfo;
+import com.gazbert.bxbot.core.api.trading.ExchangeTimeoutException;
+import com.gazbert.bxbot.core.api.trading.MarketOrder;
+import com.gazbert.bxbot.core.api.trading.MarketOrderBook;
+import com.gazbert.bxbot.core.api.trading.OpenOrder;
+import com.gazbert.bxbot.core.api.trading.OrderType;
+import com.gazbert.bxbot.core.api.trading.TradingApi;
+import com.gazbert.bxbot.core.api.trading.TradingApiException;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.apache.log4j.Logger;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.math.BigDecimal;
-import java.net.*;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.SocketTimeoutException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 
 /**
  * <p>
@@ -57,10 +79,11 @@ import java.util.*;
  * </p>
  *
  * <p>
- * Exchange fees are currently loaded from the okcoin-config.properties file on startup; they are not fetched from the
- * exchange at runtime as the OKCoin API does not support this - it only provides the fee monetary value for a given
- * order id via the order_fee.do API call. The fees are used across all markets. Make sure you keep an eye on the
- * <a href="https://www.okcoin.com/about/fees.do">exchange fees</a> and update the config accordingly.
+ * The exchange % buy and sell fees are currently loaded statically from the okcoin-config.properties file on startup;
+ * they are not fetched from the exchange at runtime as the OKCoin API does not support this - it only provides the fee
+ * monetary value for a given order id via the order_fee.do API call. The fees are used across all markets.
+ * Make sure you keep an eye on the <a href="https://www.okcoin.com/about/fees.do">exchange fees</a> and update the
+ * config accordingly.
  * </p>
  *
  * <p>
@@ -463,8 +486,8 @@ public final class OkCoinExchangeAdapter implements TradingApi {
     public BigDecimal getPercentageOfBuyOrderTakenForExchangeFee(String marketId) throws TradingApiException,
             ExchangeTimeoutException {
 
-        // OKCoin does not provide generic method for fetching buy fee; it only provides fee monetary value for a given
-        // order if via order_fee.do API call.
+        // OKCoin does not provide API call for fetching % buy fee; it only provides the fee monetary value for a
+        // given order via order_fee.do API call. We load the % fee statically from okcoin-config.properties
         return buyFeePercentage;
     }
 
@@ -472,8 +495,8 @@ public final class OkCoinExchangeAdapter implements TradingApi {
     public BigDecimal getPercentageOfSellOrderTakenForExchangeFee(String marketId) throws TradingApiException,
             ExchangeTimeoutException {
 
-        // OKCoin does not provide generic method for fetching sell fee; it only provides fee monetary value for a given
-        // order if via order_fee.do API call.
+        // OKCoin does not provide API call for fetching % sell fee; it only provides the fee monetary value for a
+        // given order via order_fee.do API call. We load the % fee statically from okcoin-config.properties
         return sellFeePercentage;
     }
 
