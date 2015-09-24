@@ -350,8 +350,11 @@ public final class BitstampExchangeAdapter implements TradingApi {
         }
     }
 
+    /*
+     * marketId is not needed for cancelling orders on this exchange.
+     */
     @Override
-    public boolean cancelOrder(String orderId) throws TradingApiException, ExchangeTimeoutException {
+    public boolean cancelOrder(String orderId, String marketIdNotNeeded) throws TradingApiException, ExchangeTimeoutException {
 
         try {
             final Map<String, String> params = new HashMap<>();

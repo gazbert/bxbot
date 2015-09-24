@@ -202,7 +202,8 @@ public class TestCryptsyExchangeAdapter {
 
         PowerMock.replayAll();
 
-        final boolean success = exchangeAdapter.cancelOrder(ORDER_ID_TO_CANCEL);
+        // marketId arg not needed for cancelling orders on this exchange.
+        final boolean success = exchangeAdapter.cancelOrder(ORDER_ID_TO_CANCEL, null);
         assertTrue(success);
 
         PowerMock.verifyAll();
@@ -219,7 +220,8 @@ public class TestCryptsyExchangeAdapter {
 
         PowerMock.replayAll();
 
-        exchangeAdapter.cancelOrder(ORDER_ID_TO_CANCEL);
+        // marketId arg not needed for cancelling orders on this exchange.
+        exchangeAdapter.cancelOrder(ORDER_ID_TO_CANCEL, null);
 
         PowerMock.verifyAll();
     }
@@ -238,7 +240,8 @@ public class TestCryptsyExchangeAdapter {
 
         PowerMock.replayAll();
 
-        exchangeAdapter.cancelOrder(ORDER_ID_TO_CANCEL);
+        // marketId arg not needed for cancelling orders on this exchange.
+        exchangeAdapter.cancelOrder(ORDER_ID_TO_CANCEL, null);
 
         PowerMock.verifyAll();
     }

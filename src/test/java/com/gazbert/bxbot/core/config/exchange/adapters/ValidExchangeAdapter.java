@@ -53,7 +53,7 @@ public class ValidExchangeAdapter implements TradingApi {
     }
 
     @Override
-    public boolean cancelOrder(String orderId) throws ExchangeTimeoutException, TradingApiException {
+    public boolean cancelOrder(String orderId, String marketId) throws ExchangeTimeoutException, TradingApiException {
         return false;
     }
 

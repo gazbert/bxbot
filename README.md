@@ -14,8 +14,8 @@ Trading API. Take a look [here](http://www.investopedia.com/articles/active-trad
 for more ideas.
 
 Exchange Adapters for using and [BTC-e](https://btc-e.com), [Bitstamp](https://www.bitstamp.net), [Cryptsy](https://www.cryptsy.com), 
-and [Bitfinex](https://www.bitfinex.com) are included. Feel free to improve these or contribute new adapters to the 
-project; that would be shiny.
+[Bitfinex](https://www.bitfinex.com), and [OKCoin](https://www.okcoin.com/) are included. 
+Feel free to improve these or contribute new adapters to the project; that would be shiny.
 
 The Trading API provides support for [limit orders](http://www.investopedia.com/terms/l/limitorder.asp)
 traded at the [spot price](http://www.investopedia.com/terms/s/spotprice.asp);

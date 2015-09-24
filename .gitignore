@@ -34,4 +34,3 @@ hs_err_pid*
 /resources/cryptsy/cryptsy-config.properties
 /resources/bitfinex/bitfinex-config.properties
 /resources/okcoin/okcoin-config.properties
-/resources/huobi/huobi-config.properties

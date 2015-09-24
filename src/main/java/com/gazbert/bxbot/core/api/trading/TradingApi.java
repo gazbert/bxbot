@@ -124,6 +124,7 @@ public interface TradingApi {
      * Cancels your existing order on the exchange.
      *
      * @param orderId your order Id.
+     * @param marketId the id of the market the order was placed on, e.g. btc_usd
      * @return true if order cancelled ok, false otherwise.
      * @throws ExchangeTimeoutException if a timeout occurred trying to connect to the exchange. The timeout limit is
      *                                  implementation specific for each Exchange Adapter; see the documentation for the
@@ -135,7 +136,7 @@ public interface TradingApi {
      *                                  {@link StrategyException} and let the Trading Engine shutdown the bot immediately
      *                                  to prevent unexpected losses.
      */
-    boolean cancelOrder(String orderId) throws ExchangeTimeoutException, TradingApiException;
+    boolean cancelOrder(String orderId, String marketId) throws ExchangeTimeoutException, TradingApiException;
 
     /**
      * Fetches the latest price for a given market.
