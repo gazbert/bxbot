@@ -405,7 +405,6 @@ To start, stop, and query the bot's status, use `./bxbot.sh [start|stop|status]`
 ## Coming Soon
 The following features are going to be developed: 
 
-- [OKcoin](https://www.okcoin.com/) Exchange Adapter.
 - [itBit](https://www.itbit.com) Exchange Adapter.
 - Convert bot into [Spring Boot](http://projects.spring.io/spring-boot/) app. This will include a new REST API for administering the bot.
 - Web UI (written in [AngularJS](https://angularjs.org/), [TypeScript](http://www.typescriptlang.org/), and 
