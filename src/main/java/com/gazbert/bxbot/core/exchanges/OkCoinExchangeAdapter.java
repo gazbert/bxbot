@@ -170,17 +170,17 @@ public final class OkCoinExchangeAdapter implements TradingApi {
     private BigDecimal sellFeePercentage;
 
     /**
-     * Used to indicate if we have initialised the MAC authentication protocol.
+     * Used to indicate if we have initialised the secure messaging layer.
      */
-    private boolean initializedMACAuthentication = false;
+    private boolean initializedSecureMessagingLayer = false;
 
     /**
-     * The key used in the MAC message.
+     * The key used in the secure message.
      */
     private String key = "";
 
     /**
-     * The secret used for signing MAC message.
+     * The secret used for signing secure message.
      */
     private String secret = "";
 
@@ -511,7 +511,7 @@ public final class OkCoinExchangeAdapter implements TradingApi {
     // ------------------------------------------------------------------------------------------------
 
     /**
-     * GSON class for wrapping cance_order.do response.
+     * GSON class for wrapping cancel_order.do response.
      *
      * @author gazbert
      */
@@ -928,7 +928,7 @@ public final class OkCoinExchangeAdapter implements TradingApi {
     private String sendAuthenticatedRequestToExchange(String apiMethod, Map<String, String> params)
             throws ExchangeTimeoutException, TradingApiException {
 
-        if (!initializedMACAuthentication) {
+        if (!initializedSecureMessagingLayer) {
             final String errorMsg = "Message security layer has not been initialized.";
             LOG.error(errorMsg);
             throw new IllegalStateException(errorMsg);
@@ -970,7 +970,6 @@ public final class OkCoinExchangeAdapter implements TradingApi {
                 LOG.debug("Using following URL encoded POST payload for API call: " + payload);
             }
 
-            // MUST have the trailing slash even if no params...
             final URL url = new URL(AUTHENTICATED_API_URL + apiMethod);
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Using following URL for API call: " + url);
@@ -1101,7 +1100,7 @@ public final class OkCoinExchangeAdapter implements TradingApi {
 
         try {
             messageDigest = MessageDigest.getInstance("MD5");
-            initializedMACAuthentication = true;
+            initializedSecureMessagingLayer = true;
         } catch (NoSuchAlgorithmException e) {
             final String errorMsg = "Failed to setup MessageDigest for secure message layer. Details: " + e.getMessage();
             LOG.error(errorMsg, e);
@@ -1164,6 +1163,7 @@ public final class OkCoinExchangeAdapter implements TradingApi {
                 LOG.error(errorMsg);
                 throw new IllegalArgumentException(errorMsg);
             }
+
             // Grab the buy fee
             final String buyFeeInConfig = configEntries.getProperty(BUY_FEE_PROPERTY_NAME);
             if (buyFeeInConfig == null || buyFeeInConfig.length() == 0) {
