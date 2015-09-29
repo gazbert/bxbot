@@ -446,8 +446,9 @@ public final class BtceExchangeAdapter implements TradingApi {
 
             // adapt
             final HashMap<String, BigDecimal> balancesAvailable = new HashMap<>();
-            balancesAvailable.put("USD", info.info.funds.get("usd"));
-            balancesAvailable.put("BTC", info.info.funds.get("btc"));
+            for (final Entry<String, BigDecimal> fund : info.info.funds.entrySet()) {
+                balancesAvailable.put(fund.getKey().toUpperCase(), fund.getValue());
+            }
 
             // 2nd arg of reserved balances not provided by exchange.
             return new BalanceInfo(balancesAvailable, new HashMap<>());

@@ -39,7 +39,7 @@ public final class BalanceInfo {
      * </p>
      *
      * <p>
-     * Key is currency id, e.g. LTC, BTC, USD
+     * Key is currency id in UPPERCASE, e.g. LTC, BTC, USD
      * </p>
      */
     private Map<String, BigDecimal> balancesAvailable;
@@ -50,7 +50,7 @@ public final class BalanceInfo {
      * </p>
      *
      * <p>
-     * Key is currency id, e.g. LTC, BTC, USD
+     * Key is currency id in UPPERCASE, e.g. LTC, BTC, USD
      * </p>
      */
     private Map<String, BigDecimal> balancesOnHold;
@@ -85,7 +85,8 @@ public final class BalanceInfo {
     }
 
     /**
-     * Returns map of balances on hold.
+     * Returns map of balances on hold. Some exchanges do not provide this information and the returned map will be
+     * empty.
      * @return map of balances on hold.
      */
     public Map<String, BigDecimal> getBalancesOnHold() {

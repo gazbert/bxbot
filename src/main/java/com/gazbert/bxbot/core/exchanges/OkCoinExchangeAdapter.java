@@ -459,12 +459,14 @@ public final class OkCoinExchangeAdapter implements TradingApi {
 
                 // adapt
                 final Map<String, BigDecimal> balancesAvailable = new HashMap<>();
-                balancesAvailable.put("BTC", userInfoWrapper.info.funds.free.get("btc"));
-                balancesAvailable.put("USD", userInfoWrapper.info.funds.free.get("usd"));
+                for (final Map.Entry<String, BigDecimal> balance : userInfoWrapper.info.funds.free.entrySet()) {
+                    balancesAvailable.put(balance.getKey().toUpperCase(), balance.getValue());
+                }
 
                 final Map<String, BigDecimal> balancesOnOrder = new HashMap<>();
-                balancesOnOrder.put("BTC", userInfoWrapper.info.funds.freezed.get("btc"));
-                balancesOnOrder.put("USD", userInfoWrapper.info.funds.freezed.get("usd"));
+                for (final Map.Entry<String, BigDecimal> balance : userInfoWrapper.info.funds.freezed.entrySet()) {
+                    balancesOnOrder.put(balance.getKey().toUpperCase(), balance.getValue());
+                }
 
                 return new BalanceInfo(balancesAvailable, balancesOnOrder);
 
