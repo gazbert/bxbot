@@ -376,23 +376,23 @@ public final class OkCoinExchangeAdapter implements TradingApi {
 
             // adapt BUYs
             final List<MarketOrder> buyOrders = new ArrayList<>();
-            for (OKCoinMarketOrder bitfinexBuyOrder : orderBook.bids) {
+            for (OKCoinMarketOrder okCoinBuyOrder : orderBook.bids) {
                 final MarketOrder buyOrder = new MarketOrder(
                         OrderType.BUY,
-                        bitfinexBuyOrder.get(0),
-                        bitfinexBuyOrder.get(1),
-                        bitfinexBuyOrder.get(0).multiply(bitfinexBuyOrder.get(1)));
+                        okCoinBuyOrder.get(0),
+                        okCoinBuyOrder.get(1),
+                        okCoinBuyOrder.get(0).multiply(okCoinBuyOrder.get(1)));
                 buyOrders.add(buyOrder);
             }
 
             // adapt SELLs
             final List<MarketOrder> sellOrders = new ArrayList<>();
-            for (OKCoinMarketOrder bitfinexSellOrder : orderBook.asks) {
+            for (OKCoinMarketOrder okCoinSellOrder : orderBook.asks) {
                 final MarketOrder sellOrder = new MarketOrder(
                         OrderType.SELL,
-                        bitfinexSellOrder.get(0),
-                        bitfinexSellOrder.get(1),
-                        bitfinexSellOrder.get(0).multiply(bitfinexSellOrder.get(1)));
+                        okCoinSellOrder.get(0),
+                        okCoinSellOrder.get(1),
+                        okCoinSellOrder.get(0).multiply(okCoinSellOrder.get(1)));
                 sellOrders.add(sellOrder);
             }
 
