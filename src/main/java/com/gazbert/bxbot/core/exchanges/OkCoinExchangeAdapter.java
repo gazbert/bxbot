@@ -190,9 +190,9 @@ public final class OkCoinExchangeAdapter implements TradingApi {
     private BigDecimal sellFeePercentage;
 
     /**
-     * Used to indicate if we have initialised the authentication and secure transport layer.
+     * Used to indicate if we have initialised the authentication and secure messaging layer.
      */
-    private boolean initializedSecureTransportLayer = false;
+    private boolean initializedSecureMessagingLayer = false;
 
     /**
      * The key used in the secure message.
@@ -508,8 +508,8 @@ public final class OkCoinExchangeAdapter implements TradingApi {
     public BigDecimal getPercentageOfBuyOrderTakenForExchangeFee(String marketId) throws TradingApiException,
             ExchangeTimeoutException {
 
-        // OKCoin does not provide generic method for fetching buy fee; it only provides fee monetary value for a given
-        // order if via order_fee.do API call.
+        // OKCoin does not provide API call for fetching % buy fee; it only provides the fee monetary value for a
+        // given order via order_fee.do API call. We load the % fee statically from okcoin-config.properties
         return buyFeePercentage;
     }
 
@@ -517,8 +517,8 @@ public final class OkCoinExchangeAdapter implements TradingApi {
     public BigDecimal getPercentageOfSellOrderTakenForExchangeFee(String marketId) throws TradingApiException,
             ExchangeTimeoutException {
 
-        // OKCoin does not provide generic method for fetching sell fee; it only provides fee monetary value for a given
-        // order if via order_fee.do API call.
+        // OKCoin does not provide API call for fetching % sell fee; it only provides the fee monetary value for a
+        // given order via order_fee.do API call. We load the % fee statically from okcoin-config.properties
         return sellFeePercentage;
     }
 
@@ -962,7 +962,7 @@ public final class OkCoinExchangeAdapter implements TradingApi {
     private String sendAuthenticatedRequestToExchange(String apiMethod, Map<String, String> params)
             throws ExchangeTimeoutException, TradingApiException {
 
-        if (!initializedSecureTransportLayer) {
+        if (!initializedSecureMessagingLayer) {
             final String errorMsg = "Message security layer has not been initialized.";
             LOG.error(errorMsg);
             throw new IllegalStateException(errorMsg);
@@ -1146,7 +1146,7 @@ public final class OkCoinExchangeAdapter implements TradingApi {
 
         try {
             messageDigest = MessageDigest.getInstance("MD5");
-            initializedSecureTransportLayer = true;
+            initializedSecureMessagingLayer = true;
         } catch (NoSuchAlgorithmException e) {
             final String errorMsg = "Failed to setup MessageDigest for secure message layer. Details: " + e.getMessage();
             LOG.error(errorMsg, e);

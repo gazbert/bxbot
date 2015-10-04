@@ -588,7 +588,7 @@ public final class BitstampExchangeAdapter implements TradingApi {
 
         public BigDecimal high;
         public BigDecimal last;
-        public BigDecimal timestamp;
+        public long timestamp;
         public BigDecimal bid;
         public BigDecimal vwap;
         public BigDecimal volume;

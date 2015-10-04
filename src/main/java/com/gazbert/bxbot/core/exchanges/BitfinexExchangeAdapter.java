@@ -329,12 +329,9 @@ public final class BitfinexExchangeAdapter implements TradingApi {
 
             params.put("symbol", marketId);
 
-            // note we need to limit amount to 8 decimal places else exchange will barf
+            // note we need to limit amount and price to 8 decimal places else exchange will barf
             params.put("amount", new DecimalFormat("#.########").format(quantity));
-
-            // TODO note we need to limit price to 2 decimal places else exchange will barf
-            params.put("price", new DecimalFormat("#.##").format(price));
-            //params.put("price", new DecimalFormat("#.########").format(price));
+            params.put("price", new DecimalFormat("#.########").format(price));
 
             params.put("exchange", "bitfinex");
 
