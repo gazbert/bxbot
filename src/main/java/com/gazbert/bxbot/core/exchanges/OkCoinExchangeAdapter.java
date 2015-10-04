@@ -104,11 +104,6 @@ public final class OkCoinExchangeAdapter implements TradingApi {
     private static final Logger LOG = Logger.getLogger(OkCoinExchangeAdapter.class);
 
     /**
-     * Used for reporting unexpected errors.
-     */
-    private static final String UNEXPECTED_ERROR_MSG = "Unexpected error has occurred in OKCoin Exchange Adapter. ";
-
-    /**
      * The version of the OKCoin API being used.
      */
     private static final String OKCOIN_API_VERSION = "v1";
@@ -122,6 +117,31 @@ public final class OkCoinExchangeAdapter implements TradingApi {
      * The Authenticated API URI - it is the same as the Authenticated URL as of 17 Sep 2015.
      */
     private static final String AUTHENTICATED_API_URL = PUBLIC_API_BASE_URL;
+
+    /**
+     * Used for reporting unexpected errors.
+     */
+    private static final String UNEXPECTED_ERROR_MSG = "Unexpected error has occurred in OKCoin Exchange Adapter. ";
+
+    /**
+     * Unexpected IO error message for logging.
+     */
+    private static final String UNEXPECTED_IO_ERROR_MSG = "Failed to connect to Exchange due to unexpected IO error.";
+
+    /**
+     * IO 50x Timeout error message for logging.
+     */
+    private static final String IO_50X_TIMEOUT_ERROR_MSG = "Failed to connect to Exchange due to 50x timeout.";
+
+    /**
+     * IO Socket Timeout error message for logging.
+     */
+    private static final String IO_SOCKET_TIMEOUT_ERROR_MSG = "Failed to connect to Exchange due to socket timeout.";
+
+    /**
+     * Used for building error messages for missing config.
+     */
+    private static final String CONFIG_IS_NULL_OR_ZERO_LENGTH = " cannot be null or zero length! HINT: is the value set in the ";
 
     /**
      * Your OKCoin API keys and connection timeout config.
@@ -170,9 +190,9 @@ public final class OkCoinExchangeAdapter implements TradingApi {
     private BigDecimal sellFeePercentage;
 
     /**
-     * Used to indicate if we have initialised the secure messaging layer.
+     * Used to indicate if we have initialised the authentication and secure transport layer.
      */
-    private boolean initializedSecureMessagingLayer = false;
+    private boolean initializedSecureTransportLayer = false;
 
     /**
      * The key used in the secure message.
@@ -488,8 +508,8 @@ public final class OkCoinExchangeAdapter implements TradingApi {
     public BigDecimal getPercentageOfBuyOrderTakenForExchangeFee(String marketId) throws TradingApiException,
             ExchangeTimeoutException {
 
-        // OKCoin does not provide API call for fetching % buy fee; it only provides the fee monetary value for a
-        // given order via order_fee.do API call. We load the % fee statically from okcoin-config.properties
+        // OKCoin does not provide generic method for fetching buy fee; it only provides fee monetary value for a given
+        // order if via order_fee.do API call.
         return buyFeePercentage;
     }
 
@@ -497,8 +517,8 @@ public final class OkCoinExchangeAdapter implements TradingApi {
     public BigDecimal getPercentageOfSellOrderTakenForExchangeFee(String marketId) throws TradingApiException,
             ExchangeTimeoutException {
 
-        // OKCoin does not provide API call for fetching % sell fee; it only provides the fee monetary value for a
-        // given order via order_fee.do API call. We load the % fee statically from okcoin-config.properties
+        // OKCoin does not provide generic method for fetching sell fee; it only provides fee monetary value for a given
+        // order if via order_fee.do API call.
         return sellFeePercentage;
     }
 
@@ -856,28 +876,40 @@ public final class OkCoinExchangeAdapter implements TradingApi {
             return exchangeResponse.toString();
 
         } catch (MalformedURLException e) {
-            final String errorMsg = "Failed to send request to Exchange.";
+            final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
             LOG.error(errorMsg, e);
             throw new TradingApiException(errorMsg, e);
 
         } catch (SocketTimeoutException e) {
-            final String errorMsg = "Failed to connect to Exchange due to socket timeout.";
+            final String errorMsg = IO_SOCKET_TIMEOUT_ERROR_MSG;
             LOG.error(errorMsg, e);
             throw new ExchangeTimeoutException(errorMsg, e);
 
         } catch (IOException e) {
 
-            /*
-             * Exchange sometimes fails with these codes, but recovers by next request...
-             */
-            if (e.getMessage().contains("502") || e.getMessage().contains("503") || e.getMessage().contains("504")) {
-                final String errorMsg = "Failed to connect to Exchange due to 5XX timeout.";
-                LOG.error(errorMsg, e);
-                throw new ExchangeTimeoutException(errorMsg, e);
-            } else {
-                final String errorMsg = "Failed to connect to Exchange due to unexpected IO error.";
-                LOG.error(errorMsg, e);
-                throw new TradingApiException(errorMsg, e);
+            try {
+
+                /*
+                 * Exchange sometimes fails with these codes, but recovers by next request...
+                 */
+                if (exchangeConnection != null && (exchangeConnection.getResponseCode() == 502
+                        || exchangeConnection.getResponseCode() == 503
+                        || exchangeConnection.getResponseCode() == 504)) {
+
+                    final String errorMsg = IO_50X_TIMEOUT_ERROR_MSG;
+                    LOG.error(errorMsg, e);
+                    throw new ExchangeTimeoutException(errorMsg, e);
+
+                } else {
+                    final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
+                    LOG.error(errorMsg, e);
+                    throw new TradingApiException(errorMsg, e);
+                }
+            } catch (IOException e1) {
+
+                final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
+                LOG.error(errorMsg, e1);
+                throw new TradingApiException(errorMsg, e1);
             }
         } finally {
             if (exchangeConnection != null) {
@@ -930,7 +962,7 @@ public final class OkCoinExchangeAdapter implements TradingApi {
     private String sendAuthenticatedRequestToExchange(String apiMethod, Map<String, String> params)
             throws ExchangeTimeoutException, TradingApiException {
 
-        if (!initializedSecureMessagingLayer) {
+        if (!initializedSecureTransportLayer) {
             final String errorMsg = "Message security layer has not been initialized.";
             LOG.error(errorMsg);
             throw new IllegalStateException(errorMsg);
@@ -1016,28 +1048,40 @@ public final class OkCoinExchangeAdapter implements TradingApi {
             return exchangeResponse.toString();
 
         } catch (MalformedURLException e) {
-            final String errorMsg = "Failed to send request to Exchange.";
+            final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
             LOG.error(errorMsg, e);
             throw new TradingApiException(errorMsg, e);
 
         } catch (SocketTimeoutException e) {
-            final String errorMsg = "Failed to connect to Exchange due to socket timeout.";
+            final String errorMsg = IO_SOCKET_TIMEOUT_ERROR_MSG;
             LOG.error(errorMsg, e);
             throw new ExchangeTimeoutException(errorMsg, e);
 
         } catch (IOException e) {
 
-            /*
-             * Exchange sometimes fails with these codes, but recovers by next request...
-             */
-            if (e.getMessage().contains("502") || e.getMessage().contains("503") || e.getMessage().contains("504")) {
-                final String errorMsg = "Failed to connect to Exchange due to 5XX timeout.";
-                LOG.error(errorMsg, e);
-                throw new ExchangeTimeoutException(errorMsg, e);
-            } else {
-                final String errorMsg = "Failed to connect to Exchange due to unexpected IO error.";
-                LOG.error(errorMsg, e);
-                throw new TradingApiException(errorMsg, e);
+            try {
+
+                /*
+                 * Exchange sometimes fails with these codes, but recovers by next request...
+                 */
+                if (exchangeConnection != null && (exchangeConnection.getResponseCode() == 502
+                        || exchangeConnection.getResponseCode() == 503
+                        || exchangeConnection.getResponseCode() == 504)) {
+
+                    final String errorMsg = IO_50X_TIMEOUT_ERROR_MSG;
+                    LOG.error(errorMsg, e);
+                    throw new ExchangeTimeoutException(errorMsg, e);
+
+                } else {
+                    final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
+                    LOG.error(errorMsg, e);
+                    throw new TradingApiException(errorMsg, e);
+                }
+            } catch (IOException e1) {
+
+                final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
+                LOG.error(errorMsg, e1);
+                throw new TradingApiException(errorMsg, e1);
             }
         } finally {
             if (exchangeConnection != null) {
@@ -1102,7 +1146,7 @@ public final class OkCoinExchangeAdapter implements TradingApi {
 
         try {
             messageDigest = MessageDigest.getInstance("MD5");
-            initializedSecureMessagingLayer = true;
+            initializedSecureTransportLayer = true;
         } catch (NoSuchAlgorithmException e) {
             final String errorMsg = "Failed to setup MessageDigest for secure message layer. Details: " + e.getMessage();
             LOG.error(errorMsg, e);
@@ -1143,8 +1187,7 @@ public final class OkCoinExchangeAdapter implements TradingApi {
 //            }
 
             if (key == null || key.length() == 0) {
-                final String errorMsg = KEY_PROPERTY_NAME + " cannot be null or zero length!"
-                        + " HINT: is the value set in the " + configFile + "?";
+                final String errorMsg = KEY_PROPERTY_NAME + CONFIG_IS_NULL_OR_ZERO_LENGTH + configFile + "?";
                 LOG.error(errorMsg);
                 throw new IllegalArgumentException(errorMsg);
             }
@@ -1160,8 +1203,7 @@ public final class OkCoinExchangeAdapter implements TradingApi {
 //            }
 
             if (secret == null || secret.length() == 0) {
-                final String errorMsg = SECRET_PROPERTY_NAME + " cannot be null or zero length!"
-                        + " HINT: is the value set in the " + configFile + "?";
+                final String errorMsg = SECRET_PROPERTY_NAME + CONFIG_IS_NULL_OR_ZERO_LENGTH + configFile + "?";
                 LOG.error(errorMsg);
                 throw new IllegalArgumentException(errorMsg);
             }
@@ -1169,8 +1211,7 @@ public final class OkCoinExchangeAdapter implements TradingApi {
             // Grab the buy fee
             final String buyFeeInConfig = configEntries.getProperty(BUY_FEE_PROPERTY_NAME);
             if (buyFeeInConfig == null || buyFeeInConfig.length() == 0) {
-                final String errorMsg = BUY_FEE_PROPERTY_NAME + " cannot be null or zero length!"
-                        + " HINT: is the value set in the " + configFile + "?";
+                final String errorMsg = BUY_FEE_PROPERTY_NAME + CONFIG_IS_NULL_OR_ZERO_LENGTH + configFile + "?";
                 LOG.error(errorMsg);
                 throw new IllegalArgumentException(errorMsg);
             }
@@ -1187,8 +1228,7 @@ public final class OkCoinExchangeAdapter implements TradingApi {
             // Grab the sell fee
             final String sellFeeInConfig = configEntries.getProperty(SELL_FEE_PROPERTY_NAME);
             if (sellFeeInConfig == null || sellFeeInConfig.length() == 0) {
-                final String errorMsg = SELL_FEE_PROPERTY_NAME + " cannot be null or zero length!"
-                        + " HINT: is the value set in the " + configFile + "?";
+                final String errorMsg = SELL_FEE_PROPERTY_NAME + CONFIG_IS_NULL_OR_ZERO_LENGTH + configFile + "?";
                 LOG.error(errorMsg);
                 throw new IllegalArgumentException(errorMsg);
             }

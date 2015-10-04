@@ -160,9 +160,7 @@ public class TestCryptsyExchangeAdapter {
                 andThrow(new ExchangeTimeoutException("Say what??!"));
 
         PowerMock.replayAll();
-
         exchangeAdapter.createOrder(MARKET_ID, OrderType.BUY, BUY_ORDER_QUANTITY, BUY_ORDER_PRICE);
-
         PowerMock.verifyAll();
     }
 
@@ -177,9 +175,7 @@ public class TestCryptsyExchangeAdapter {
                         "remorse, or delusions of morality."));
 
         PowerMock.replayAll();
-
         exchangeAdapter.createOrder(MARKET_ID, OrderType.BUY, BUY_ORDER_QUANTITY, BUY_ORDER_PRICE);
-
         PowerMock.verifyAll();
     }
 
@@ -295,9 +291,7 @@ public class TestCryptsyExchangeAdapter {
                 andThrow(new ExchangeTimeoutException("Nothing but the rain."));
 
         PowerMock.replayAll();
-
         exchangeAdapter.getMarketOrders(MARKET_ID);
-
         PowerMock.verifyAll();
     }
 
@@ -311,9 +305,7 @@ public class TestCryptsyExchangeAdapter {
                 andThrow(new IllegalArgumentException("Error, error, does not compute. I don't have a soul, I have software. If I die, I'm gone."));
 
         PowerMock.replayAll();
-
         exchangeAdapter.getMarketOrders(MARKET_ID);
-
         PowerMock.verifyAll();
     }
 
@@ -362,9 +354,7 @@ public class TestCryptsyExchangeAdapter {
                 andThrow(new ExchangeTimeoutException("Have you lost your frakkin' mind?"));
 
         PowerMock.replayAll();
-
         exchangeAdapter.getYourOpenOrders(MARKET_ID);
-
         PowerMock.verifyAll();
     }
 
@@ -380,9 +370,7 @@ public class TestCryptsyExchangeAdapter {
                         " Like I said, you make your choices and you live with them. And in end you are those choices."));
 
         PowerMock.replayAll();
-
         exchangeAdapter.getYourOpenOrders(MARKET_ID);
-
         PowerMock.verifyAll();
     }
 
@@ -421,9 +409,7 @@ public class TestCryptsyExchangeAdapter {
                 andThrow(new ExchangeTimeoutException("Sir, I'm running every diagnostic we've got. Checking each line of code could take days."));
 
         PowerMock.replayAll();
-
         exchangeAdapter.getLatestMarketPrice(MARKET_ID);
-
         PowerMock.verifyAll();
     }
 
@@ -441,9 +427,7 @@ public class TestCryptsyExchangeAdapter {
                         "Almost 2,000 guys bought the farm that day."));
 
         PowerMock.replayAll();
-
         exchangeAdapter.getLatestMarketPrice(MARKET_ID);
-
         PowerMock.verifyAll();
     }
 
@@ -494,9 +478,7 @@ public class TestCryptsyExchangeAdapter {
                 andThrow(new ExchangeTimeoutException("Sometimes you gotta roll the hard six."));
 
         PowerMock.replayAll();
-
         exchangeAdapter.getBalanceInfo();
-
         PowerMock.verifyAll();
     }
 
@@ -512,9 +494,7 @@ public class TestCryptsyExchangeAdapter {
                         " Welcome to the big leagues."));
 
         PowerMock.replayAll();
-
         exchangeAdapter.getBalanceInfo();
-
         PowerMock.verifyAll();
     }
 
@@ -577,10 +557,8 @@ public class TestCryptsyExchangeAdapter {
         PowerMock.mockStaticPartial(CryptsyExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD);
         PowerMock.expectPrivate(CryptsyExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD).andReturn(VALID_CONFIG_LOCATION);
         PowerMock.replayAll();
-
         final CryptsyExchangeAdapter exchangeAdapter = new CryptsyExchangeAdapter();
         assertNotNull(exchangeAdapter);
-
         PowerMock.verifyAll();
     }
 
@@ -592,9 +570,7 @@ public class TestCryptsyExchangeAdapter {
         PowerMock.expectPrivate(CryptsyExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD).andReturn(
                 "cryptsy/missing-public-key-cryptsy-config.properties");
         PowerMock.replayAll();
-
         new CryptsyExchangeAdapter();
-
         PowerMock.verifyAll();
     }
 
@@ -606,9 +582,7 @@ public class TestCryptsyExchangeAdapter {
         PowerMock.expectPrivate(CryptsyExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD).andReturn(
                 "cryptsy/missing-private-key-cryptsy-config.properties");
         PowerMock.replayAll();
-
         new CryptsyExchangeAdapter();
-
         PowerMock.verifyAll();
     }
 
@@ -620,9 +594,7 @@ public class TestCryptsyExchangeAdapter {
         PowerMock.expectPrivate(CryptsyExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD).andReturn(
                 "cryptsy/missing-buy-fee-cryptsy-config.properties");
         PowerMock.replayAll();
-
         new CryptsyExchangeAdapter();
-
         PowerMock.verifyAll();
     }
 
@@ -634,9 +606,7 @@ public class TestCryptsyExchangeAdapter {
         PowerMock.expectPrivate(CryptsyExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD).andReturn(
                 "cryptsy/missing-sell-fee-cryptsy-config.properties");
         PowerMock.replayAll();
-
         new CryptsyExchangeAdapter();
-
         PowerMock.verifyAll();
     }
 
@@ -648,9 +618,7 @@ public class TestCryptsyExchangeAdapter {
         PowerMock.expectPrivate(CryptsyExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD).andReturn(
                 "cryptsy/missing-timeout-cryptsy-config.properties");
         PowerMock.replayAll();
-
         new CryptsyExchangeAdapter();
-
         PowerMock.verifyAll();
     }
 

@@ -23,7 +23,12 @@
 
 package com.gazbert.bxbot.core.exchanges;
 
-import com.gazbert.bxbot.core.api.trading.*;
+import com.gazbert.bxbot.core.api.trading.BalanceInfo;
+import com.gazbert.bxbot.core.api.trading.ExchangeTimeoutException;
+import com.gazbert.bxbot.core.api.trading.MarketOrderBook;
+import com.gazbert.bxbot.core.api.trading.OpenOrder;
+import com.gazbert.bxbot.core.api.trading.OrderType;
+import com.gazbert.bxbot.core.api.trading.TradingApiException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.api.easymock.PowerMock;
@@ -156,9 +161,7 @@ public class TestBitfinexExchangeAdapter {
                         " it, no matter what happens!"));
 
         PowerMock.replayAll();
-
         exchangeAdapter.createOrder(MARKET_ID, OrderType.SELL, SELL_ORDER_QUANTITY, SELL_ORDER_PRICE);
-
         PowerMock.verifyAll();
     }
 
@@ -174,9 +177,7 @@ public class TestBitfinexExchangeAdapter {
                         " even you may be worth something."));
 
         PowerMock.replayAll();
-
         exchangeAdapter.createOrder(MARKET_ID, OrderType.BUY, BUY_ORDER_QUANTITY, BUY_ORDER_PRICE);
-
         PowerMock.verifyAll();
     }
 
@@ -230,7 +231,7 @@ public class TestBitfinexExchangeAdapter {
         final BitfinexExchangeAdapter exchangeAdapter =  PowerMock.createPartialMock(BitfinexExchangeAdapter.class,
                 MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
         PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(ORDER_CANCEL), anyObject(Map.class)).
-                andThrow(new IllegalStateException("he ring, it chose you. Take it... place the ring on the lantern..." +
+                andThrow(new IllegalStateException("The ring, it chose you. Take it... place the ring on the lantern..." +
                         " place the ring, speak the oath... great honor... responsibility"));
 
         PowerMock.replayAll();
@@ -300,9 +301,7 @@ public class TestBitfinexExchangeAdapter {
                         "Can'ts won't try anything."));
 
         PowerMock.replayAll();
-
         exchangeAdapter.getMarketOrders(MARKET_ID);
-
         PowerMock.verifyAll();
     }
 
@@ -316,9 +315,7 @@ public class TestBitfinexExchangeAdapter {
                 andThrow(new IllegalArgumentException("Deckard. B26354"));
 
         PowerMock.replayAll();
-
         exchangeAdapter.getMarketOrders(MARKET_ID);
-
         PowerMock.verifyAll();
     }
 
@@ -369,9 +366,7 @@ public class TestBitfinexExchangeAdapter {
                         "to explore it, to experience it!"));
 
         PowerMock.replayAll();
-
         exchangeAdapter.getYourOpenOrders(MARKET_ID);
-
         PowerMock.verifyAll();
     }
 
@@ -386,9 +381,7 @@ public class TestBitfinexExchangeAdapter {
                         "anti-grav-systems blown, and both backup systems are failing"));
 
         PowerMock.replayAll();
-
         exchangeAdapter.getYourOpenOrders(MARKET_ID);
-
         PowerMock.verifyAll();
     }
 
@@ -434,9 +427,7 @@ public class TestBitfinexExchangeAdapter {
                         " to go wrong..."));
 
         PowerMock.replayAll();
-
         exchangeAdapter.getLatestMarketPrice(MARKET_ID);
-
         PowerMock.verifyAll();
     }
 
@@ -451,9 +442,7 @@ public class TestBitfinexExchangeAdapter {
                         " a compliment. But it ain't me you gotta worry about now"));
 
         PowerMock.replayAll();
-
         exchangeAdapter.getLatestMarketPrice(MARKET_ID);
-
         PowerMock.verifyAll();
     }
 
@@ -500,9 +489,7 @@ public class TestBitfinexExchangeAdapter {
                         " just eyes... just genetic design, just eyes. You Nexus, huh? I design your eyes"));
 
         PowerMock.replayAll();
-
         exchangeAdapter.getBalanceInfo();
-
         PowerMock.verifyAll();
     }
 
@@ -518,9 +505,7 @@ public class TestBitfinexExchangeAdapter {
                         "All those moments will be lost in time... like tears in rain... Time to die"));
 
         PowerMock.replayAll();
-
         exchangeAdapter.getBalanceInfo();
-
         PowerMock.verifyAll();
     }
 
@@ -562,9 +547,7 @@ public class TestBitfinexExchangeAdapter {
                         " a singularity. Now, the singularity..."));
 
         PowerMock.replayAll();
-
         exchangeAdapter.getPercentageOfBuyOrderTakenForExchangeFee(MARKET_ID);
-
         PowerMock.verifyAll();
     }
 
@@ -581,9 +564,7 @@ public class TestBitfinexExchangeAdapter {
                         " But when she came back... she was alive! Look at her, Miller. Isn't she beautiful?"));
 
         PowerMock.replayAll();
-
         exchangeAdapter.getPercentageOfBuyOrderTakenForExchangeFee(MARKET_ID);
-
         PowerMock.verifyAll();
     }
 
@@ -623,9 +604,7 @@ public class TestBitfinexExchangeAdapter {
                         " Dummy is still on fire safety."));
 
         PowerMock.replayAll();
-
         exchangeAdapter.getPercentageOfSellOrderTakenForExchangeFee(MARKET_ID);
-
         PowerMock.verifyAll();
     }
 
@@ -642,9 +621,7 @@ public class TestBitfinexExchangeAdapter {
                         " spacecraft capable of faster-than-light flight."));
 
         PowerMock.replayAll();
-
         exchangeAdapter.getPercentageOfSellOrderTakenForExchangeFee(MARKET_ID);
-
         PowerMock.verifyAll();
     }
 
@@ -677,10 +654,8 @@ public class TestBitfinexExchangeAdapter {
         PowerMock.mockStaticPartial(BitfinexExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD);
         PowerMock.expectPrivate(BitfinexExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD).andReturn(VALID_CONFIG_LOCATION);
         PowerMock.replayAll();
-
         final BitfinexExchangeAdapter exchangeAdapter = new BitfinexExchangeAdapter();
         assertNotNull(exchangeAdapter);
-
         PowerMock.verifyAll();
     }
 
@@ -692,9 +667,7 @@ public class TestBitfinexExchangeAdapter {
         PowerMock.expectPrivate(BitfinexExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD).andReturn(
                 "bitfinex/missing-public-key-bitfinex-config.properties");
         PowerMock.replayAll();
-
         new BitfinexExchangeAdapter();
-
         PowerMock.verifyAll();
     }
 
@@ -706,9 +679,7 @@ public class TestBitfinexExchangeAdapter {
         PowerMock.expectPrivate(BitfinexExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD).andReturn(
                 "bitfinex/missing-secret-bitfinex-config.properties");
         PowerMock.replayAll();
-
         new BitfinexExchangeAdapter();
-
         PowerMock.verifyAll();
     }
 
@@ -720,9 +691,7 @@ public class TestBitfinexExchangeAdapter {
         PowerMock.expectPrivate(BitfinexExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD).andReturn(
                 "bitfinex/missing-timeout-bitfinex-config.properties");
         PowerMock.replayAll();
-
         new BitfinexExchangeAdapter();
-
         PowerMock.verifyAll();
     }
 

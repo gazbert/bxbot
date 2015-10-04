@@ -23,7 +23,12 @@
 
 package com.gazbert.bxbot.core.exchanges;
 
-import com.gazbert.bxbot.core.api.trading.*;
+import com.gazbert.bxbot.core.api.trading.BalanceInfo;
+import com.gazbert.bxbot.core.api.trading.ExchangeTimeoutException;
+import com.gazbert.bxbot.core.api.trading.MarketOrderBook;
+import com.gazbert.bxbot.core.api.trading.OpenOrder;
+import com.gazbert.bxbot.core.api.trading.OrderType;
+import com.gazbert.bxbot.core.api.trading.TradingApiException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.api.easymock.PowerMock;
@@ -159,9 +164,7 @@ public class TestBtceExchangeAdapter {
                 andThrow(new ExchangeTimeoutException("Movement. Signal's clean. Range, 20 meters."));
 
         PowerMock.replayAll();
-
         exchangeAdapter.createOrder(MARKET_ID, OrderType.BUY, BUY_ORDER_QUANTITY, BUY_ORDER_PRICE);
-
         PowerMock.verifyAll();
     }
 
@@ -176,9 +179,7 @@ public class TestBtceExchangeAdapter {
                         "This is an M41A pulse rifle. Ten millimeter with over-and-under thirty millimeter pump action grenade launcher."));
 
         PowerMock.replayAll();
-
         exchangeAdapter.createOrder(MARKET_ID, OrderType.BUY, BUY_ORDER_QUANTITY, BUY_ORDER_PRICE);
-
         PowerMock.verifyAll();
     }
 
@@ -299,9 +300,7 @@ public class TestBtceExchangeAdapter {
                 andThrow(new ExchangeTimeoutException("I say we take off and nuke the entire site from orbit. It's the only way to be sure."));
 
         PowerMock.replayAll();
-
         exchangeAdapter.getMarketOrders(MARKET_ID);
-
         PowerMock.verifyAll();
     }
 
@@ -317,9 +316,7 @@ public class TestBtceExchangeAdapter {
                         " Every meal's a banquet! Every paycheck a fortune! Every formation a parade! I LOVE the Corps"));
 
         PowerMock.replayAll();
-
         exchangeAdapter.getMarketOrders(MARKET_ID);
-
         PowerMock.verifyAll();
     }
 
@@ -371,9 +368,7 @@ public class TestBtceExchangeAdapter {
                         "Fossilized. Looks like it's growing out of the chair."));
 
         PowerMock.replayAll();
-
         exchangeAdapter.getYourOpenOrders(MARKET_ID);
-
         PowerMock.verifyAll();
     }
 
@@ -391,9 +386,7 @@ public class TestBtceExchangeAdapter {
                         " essence is all one, end of line. FTL system check. Diagnostic functions within parameters repeats the harlequin, the agony exquisite, the colors run the path of ashes..."));
 
         PowerMock.replayAll();
-
         exchangeAdapter.getYourOpenOrders(MARKET_ID);
-
         PowerMock.verifyAll();
     }
 
@@ -432,9 +425,7 @@ public class TestBtceExchangeAdapter {
                 andThrow(new ExchangeTimeoutException("You're what? You're still collating? I find that hard to believe..."));
 
         PowerMock.replayAll();
-
         exchangeAdapter.getLatestMarketPrice(MARKET_ID);
-
         PowerMock.verifyAll();
     }
 
@@ -451,9 +442,7 @@ public class TestBtceExchangeAdapter {
                         "eyeballs are bleeding. Space is disease and danger wrapped in darkness and silence."));
 
         PowerMock.replayAll();
-
         exchangeAdapter.getLatestMarketPrice(MARKET_ID);
-
         PowerMock.verifyAll();
     }
 
@@ -499,9 +488,7 @@ public class TestBtceExchangeAdapter {
                 andThrow(new ExchangeTimeoutException("And so say we all!"));
 
         PowerMock.replayAll();
-
         exchangeAdapter.getBalanceInfo();
-
         PowerMock.verifyAll();
     }
 
@@ -516,9 +503,7 @@ public class TestBtceExchangeAdapter {
                         "systematized transmission indicating a possible intelligent origin must be investigated."));
 
         PowerMock.replayAll();
-
         exchangeAdapter.getBalanceInfo();
-
         PowerMock.verifyAll();
     }
 
@@ -557,9 +542,7 @@ public class TestBtceExchangeAdapter {
                 andThrow(new ExchangeTimeoutException("These aren’t the droids you’re looking for..."));
 
         PowerMock.replayAll();
-
         exchangeAdapter.getPercentageOfBuyOrderTakenForExchangeFee(MARKET_ID);
-
         PowerMock.verifyAll();
     }
 
@@ -573,9 +556,7 @@ public class TestBtceExchangeAdapter {
                 andThrow(new IllegalStateException("Why you stuck-up, half-witted, scruffy-looking nerf-herder!"));
 
         PowerMock.replayAll();
-
         exchangeAdapter.getPercentageOfBuyOrderTakenForExchangeFee(MARKET_ID);
-
         PowerMock.verifyAll();
     }
 
@@ -614,9 +595,7 @@ public class TestBtceExchangeAdapter {
                 andThrow(new ExchangeTimeoutException("Aren't you a little short for a storm trooper?"));
 
         PowerMock.replayAll();
-
         exchangeAdapter.getPercentageOfSellOrderTakenForExchangeFee(MARKET_ID);
-
         PowerMock.verifyAll();
     }
 
@@ -630,9 +609,7 @@ public class TestBtceExchangeAdapter {
                 andThrow(new IllegalStateException("He’s holding a thermal detonator!"));
 
         PowerMock.replayAll();
-
         exchangeAdapter.getPercentageOfSellOrderTakenForExchangeFee(MARKET_ID);
-
         PowerMock.verifyAll();
     }
 
@@ -647,10 +624,8 @@ public class TestBtceExchangeAdapter {
         PowerMock.mockStaticPartial(BtceExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD);
         PowerMock.expectPrivate(BtceExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD).andReturn(VALID_CONFIG_LOCATION);
         PowerMock.replayAll();
-
         final BtceExchangeAdapter exchangeAdapter = new BtceExchangeAdapter();
         assertTrue(exchangeAdapter.getImplName().equals("BTC-e API v1"));
-
         PowerMock.verifyAll();
     }
 
@@ -665,10 +640,8 @@ public class TestBtceExchangeAdapter {
         PowerMock.mockStaticPartial(BtceExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD);
         PowerMock.expectPrivate(BtceExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD).andReturn(VALID_CONFIG_LOCATION);
         PowerMock.replayAll();
-
         final BtceExchangeAdapter exchangeAdapter = new BtceExchangeAdapter();
         assertNotNull(exchangeAdapter);
-
         PowerMock.verifyAll();
     }
 
@@ -680,9 +653,7 @@ public class TestBtceExchangeAdapter {
         PowerMock.expectPrivate(BtceExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD).andReturn(
                 "btce/missing-public-key-btce-config.properties");
         PowerMock.replayAll();
-
         new BtceExchangeAdapter();
-
         PowerMock.verifyAll();
     }
 
@@ -694,9 +665,7 @@ public class TestBtceExchangeAdapter {
         PowerMock.expectPrivate(BtceExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD).andReturn(
                 "btce/missing-secret-btce-config.properties");
         PowerMock.replayAll();
-
         new BtceExchangeAdapter();
-
         PowerMock.verifyAll();
     }
 
@@ -708,9 +677,7 @@ public class TestBtceExchangeAdapter {
         PowerMock.expectPrivate(BtceExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD).andReturn(
                 "btce/missing-timeout-btce-config.properties");
         PowerMock.replayAll();
-
         new BtceExchangeAdapter();
-
         PowerMock.verifyAll();
     }
 

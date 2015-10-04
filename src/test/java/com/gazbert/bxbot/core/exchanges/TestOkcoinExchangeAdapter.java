@@ -23,7 +23,12 @@
 
 package com.gazbert.bxbot.core.exchanges;
 
-import com.gazbert.bxbot.core.api.trading.*;
+import com.gazbert.bxbot.core.api.trading.BalanceInfo;
+import com.gazbert.bxbot.core.api.trading.ExchangeTimeoutException;
+import com.gazbert.bxbot.core.api.trading.MarketOrderBook;
+import com.gazbert.bxbot.core.api.trading.OpenOrder;
+import com.gazbert.bxbot.core.api.trading.OrderType;
+import com.gazbert.bxbot.core.api.trading.TradingApiException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.api.easymock.PowerMock;
@@ -344,9 +349,7 @@ public class TestOkcoinExchangeAdapter {
                 " song above hoarded gold, it would be a merrier world."));
 
         PowerMock.replayAll();
-
         exchangeAdapter.getYourOpenOrders(MARKET_ID);
-
         PowerMock.verifyAll();
     }
 
@@ -364,9 +367,7 @@ public class TestOkcoinExchangeAdapter {
                         "And I must follow, if I can"));
 
         PowerMock.replayAll();
-
         exchangeAdapter.getYourOpenOrders(MARKET_ID);
-
         PowerMock.verifyAll();
     }
 
@@ -661,9 +662,7 @@ public class TestOkcoinExchangeAdapter {
         PowerMock.expectPrivate(OkCoinExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD).andReturn(
                 "okcoin/missing-public-key-okcoin-config.properties");
         PowerMock.replayAll();
-
         new OkCoinExchangeAdapter();
-
         PowerMock.verifyAll();
     }
 
@@ -675,9 +674,7 @@ public class TestOkcoinExchangeAdapter {
         PowerMock.expectPrivate(OkCoinExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD).andReturn(
                 "okcoin/missing-secret-okcoin-config.properties");
         PowerMock.replayAll();
-
         new OkCoinExchangeAdapter();
-
         PowerMock.verifyAll();
     }
 
@@ -689,9 +686,7 @@ public class TestOkcoinExchangeAdapter {
         PowerMock.expectPrivate(OkCoinExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD).andReturn(
                 "okcoin/missing-timeout-okcoin-config.properties");
         PowerMock.replayAll();
-
         new OkCoinExchangeAdapter();
-
         PowerMock.verifyAll();
     }
 
@@ -703,9 +698,7 @@ public class TestOkcoinExchangeAdapter {
         PowerMock.expectPrivate(OkCoinExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD).andReturn(
                 "okcoin/missing-buy-fee-okcoin-config.properties");
         PowerMock.replayAll();
-
         new OkCoinExchangeAdapter();
-
         PowerMock.verifyAll();
     }
 
@@ -717,9 +710,7 @@ public class TestOkcoinExchangeAdapter {
         PowerMock.expectPrivate(OkCoinExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD).andReturn(
                 "okcoin/missing-sell-fee-okcoin-config.properties");
         PowerMock.replayAll();
-
         new OkCoinExchangeAdapter();
-
         PowerMock.verifyAll();
     }
 

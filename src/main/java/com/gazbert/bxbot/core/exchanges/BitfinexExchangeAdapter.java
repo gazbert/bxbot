@@ -107,11 +107,6 @@ public final class BitfinexExchangeAdapter implements TradingApi {
     private static final Logger LOG = Logger.getLogger(BitfinexExchangeAdapter.class);
 
     /**
-     * Used for reporting unexpected errors.
-     */
-    private static final String UNEXPECTED_ERROR_MSG = "Unexpected error has occurred in Bitfinex Exchange Adapter. ";
-
-    /**
      * The version of the Bitfinex API being used.
      */
     private static final String BITFINEX_API_VERSION = "v1";
@@ -125,6 +120,31 @@ public final class BitfinexExchangeAdapter implements TradingApi {
      * The Authenticated API URI - it is the same as the Authenticated URL as of 8 Sep 2015.
      */
     private static final String AUTHENTICATED_API_URL = PUBLIC_API_BASE_URL;
+
+    /**
+     * Used for reporting unexpected errors.
+     */
+    private static final String UNEXPECTED_ERROR_MSG = "Unexpected error has occurred in Bitfinex Exchange Adapter. ";
+
+    /**
+     * Unexpected IO error message for logging.
+     */
+    private static final String UNEXPECTED_IO_ERROR_MSG = "Failed to connect to Exchange due to unexpected IO error.";
+
+    /**
+     * IO 50x Timeout error message for logging.
+     */
+    private static final String IO_50X_TIMEOUT_ERROR_MSG = "Failed to connect to Exchange due to 50x timeout.";
+
+    /**
+     * IO Socket Timeout error message for logging.
+     */
+    private static final String IO_SOCKET_TIMEOUT_ERROR_MSG = "Failed to connect to Exchange due to socket timeout.";
+
+    /**
+     * Used for building error messages for missing config.
+     */
+    private static final String CONFIG_IS_NULL_OR_ZERO_LENGTH = " cannot be null or zero length! HINT: is the value set in the ";
 
     /**
      * Your Bitfinex API keys and connection timeout config.
@@ -309,9 +329,12 @@ public final class BitfinexExchangeAdapter implements TradingApi {
 
             params.put("symbol", marketId);
 
-            // note we need to limit amount and price to 8 decimal places else exchange will barf
+            // note we need to limit amount to 8 decimal places else exchange will barf
             params.put("amount", new DecimalFormat("#.########").format(quantity));
-            params.put("price", new DecimalFormat("#.########").format(price));
+
+            // TODO note we need to limit price to 2 decimal places else exchange will barf
+            params.put("price", new DecimalFormat("#.##").format(price));
+            //params.put("price", new DecimalFormat("#.########").format(price));
 
             params.put("exchange", "bitfinex");
 
@@ -956,29 +979,41 @@ public final class BitfinexExchangeAdapter implements TradingApi {
             return exchangeResponse.toString();
 
         } catch (MalformedURLException e) {
-            final String errorMsg = "Failed to send request to Exchange.";
+            final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
             LOG.error(errorMsg, e);
             throw new TradingApiException(errorMsg, e);
 
         } catch (SocketTimeoutException e) {
-            final String errorMsg = "Failed to connect to Exchange due to socket timeout.";
+            final String errorMsg = IO_SOCKET_TIMEOUT_ERROR_MSG;
             LOG.error(errorMsg, e);
             throw new ExchangeTimeoutException(errorMsg, e);
 
         } catch (IOException e) {
 
-            /*
-             * Exchange sometimes fails with these codes, but recovers by next request...
-             */
-            if (e.getMessage().contains("502") || e.getMessage().contains("503") || e.getMessage().contains("504")) {
-                final String errorMsg = "Failed to connect to Exchange due to 5XX timeout.";
-                LOG.error(errorMsg, e);
-                throw new ExchangeTimeoutException(errorMsg, e);
-            } else {
-                final String errorMsg = "Failed to connect to Exchange due to unexpected IO error.";
-                LOG.error(errorMsg, e);
-                e.printStackTrace();
-                throw new TradingApiException(errorMsg, e);
+            try {
+
+                /*
+                 * Exchange sometimes fails with these codes, but recovers by next request...
+                 */
+                if (exchangeConnection != null && (exchangeConnection.getResponseCode() == 502
+                        || exchangeConnection.getResponseCode() == 503
+                        || exchangeConnection.getResponseCode() == 504)) {
+
+                    final String errorMsg = IO_50X_TIMEOUT_ERROR_MSG;
+                    LOG.error(errorMsg, e);
+                    throw new ExchangeTimeoutException(errorMsg, e);
+
+                } else {
+                    final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
+                    LOG.error(errorMsg, e);
+                    e.printStackTrace();
+                    throw new TradingApiException(errorMsg, e);
+                }
+            } catch (IOException e1) {
+
+                final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
+                LOG.error(errorMsg, e1);
+                throw new TradingApiException(errorMsg, e1);
             }
         } finally {
             if (exchangeConnection != null) {
@@ -1119,28 +1154,40 @@ public final class BitfinexExchangeAdapter implements TradingApi {
             return exchangeResponse.toString();
 
         } catch (MalformedURLException e) {
-            final String errorMsg = "Failed to send request to Exchange.";
+            final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
             LOG.error(errorMsg, e);
             throw new TradingApiException(errorMsg, e);
 
         } catch (SocketTimeoutException e) {
-            final String errorMsg = "Failed to connect to Exchange due to socket timeout.";
+            final String errorMsg = IO_SOCKET_TIMEOUT_ERROR_MSG;
             LOG.error(errorMsg, e);
             throw new ExchangeTimeoutException(errorMsg, e);
 
         } catch (IOException e) {
 
-            /*
-             * Exchange sometimes fails with these codes, but recovers by next request...
-             */
-            if (e.getMessage().contains("502") || e.getMessage().contains("503") || e.getMessage().contains("504")) {
-                final String errorMsg = "Failed to connect to Exchange due to 5XX timeout.";
-                LOG.error(errorMsg, e);
-                throw new ExchangeTimeoutException(errorMsg, e);
-            } else {
-                final String errorMsg = "Failed to connect to Exchange due to unexpected IO error.";
-                LOG.error(errorMsg, e);
-                throw new TradingApiException(errorMsg, e);
+            try {
+
+                /*
+                 * Exchange sometimes fails with these codes, but recovers by next request...
+                 */
+                if (exchangeConnection != null && (exchangeConnection.getResponseCode() == 502
+                        || exchangeConnection.getResponseCode() == 503
+                        || exchangeConnection.getResponseCode() == 504)) {
+
+                    final String errorMsg = IO_50X_TIMEOUT_ERROR_MSG;
+                    LOG.error(errorMsg, e);
+                    throw new ExchangeTimeoutException(errorMsg, e);
+
+                } else {
+                    final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
+                    LOG.error(errorMsg, e);
+                    throw new TradingApiException(errorMsg, e);
+                }
+            } catch (IOException e1) {
+
+                final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
+                LOG.error(errorMsg, e1);
+                throw new TradingApiException(errorMsg, e1);
             }
         } finally {
             if (exchangeConnection != null) {
@@ -1223,8 +1270,7 @@ public final class BitfinexExchangeAdapter implements TradingApi {
 //            }
 
             if (key == null || key.length() == 0) {
-                final String errorMsg = KEY_PROPERTY_NAME + " cannot be null or zero length!"
-                        + " HINT: is the value set in the " + configFile + "?";
+                final String errorMsg = KEY_PROPERTY_NAME + CONFIG_IS_NULL_OR_ZERO_LENGTH + configFile + "?";
                 LOG.error(errorMsg);
                 throw new IllegalArgumentException(errorMsg);
             }
@@ -1240,8 +1286,7 @@ public final class BitfinexExchangeAdapter implements TradingApi {
 //            }
 
             if (secret == null || secret.length() == 0) {
-                final String errorMsg = SECRET_PROPERTY_NAME + " cannot be null or zero length!"
-                        + " HINT: is the value set in the " + configFile + "?";
+                final String errorMsg = SECRET_PROPERTY_NAME + CONFIG_IS_NULL_OR_ZERO_LENGTH + configFile + "?";
                 LOG.error(errorMsg);
                 throw new IllegalArgumentException(errorMsg);
             }

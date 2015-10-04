@@ -51,14 +51,25 @@ import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
-import java.net.*;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.SocketTimeoutException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLEncoder;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Properties;
 
 /**
  * <p>
@@ -100,18 +111,38 @@ public final class CryptsyExchangeAdapter implements TradingApi {
     private static final Logger LOG = Logger.getLogger(CryptsyExchangeAdapter.class);
 
     /**
-     * Used for reporting unexpected errors.
-     */
-    private static final String UNEXPECTED_ERROR_MSG = "Unexpected error has occurred in Cryptsy Exchange Adapter. ";
-
-    /**
      * The authenticated API URI.
      */
     private static final String AUTH_API_URL = "https://api.cryptsy.com/api";
 
     /**
+     * Used for reporting unexpected errors.
+     */
+    private static final String UNEXPECTED_ERROR_MSG = "Unexpected error has occurred in Cryptsy Exchange Adapter. ";
+
+    /**
+     * Unexpected IO error message for logging.
+     */
+    private static final String UNEXPECTED_IO_ERROR_MSG = "Failed to connect to Exchange due to unexpected IO error.";
+
+    /**
+     * IO 50x Timeout error message for logging.
+     */
+    private static final String IO_50X_TIMEOUT_ERROR_MSG = "Failed to connect to Exchange due to 50x timeout.";
+
+    /**
+     * IO Socket Timeout error message for logging.
+     */
+    private static final String IO_SOCKET_TIMEOUT_ERROR_MSG = "Failed to connect to Exchange due to socket timeout.";
+
+    /**
+     * Used for building error messages for missing config.
+     */
+    private static final String CONFIG_IS_NULL_OR_ZERO_LENGTH = " cannot be null or zero length! HINT: is the value set in the ";
+
+    /**
      * Your Cryptsy API keys, exchange fees, and connection timeout config.
-     * This file must be on BX- bot's runtime classpath located at: ./resources/cryptsy/cryptsy-config.properties
+     * This file must be on BX-bot's runtime classpath located at: ./resources/cryptsy/cryptsy-config.properties
      */
     private static final String CONFIG_FILE = "cryptsy/cryptsy-config.properties";
 
@@ -432,7 +463,7 @@ public final class CryptsyExchangeAdapter implements TradingApi {
             // adapt
             return new BalanceInfo(info.info.balances_available, info.info.balances_hold);
 
-        } catch (ExchangeTimeoutException e) {
+        } catch (ExchangeTimeoutException | TradingApiException e) {
             throw e;
         } catch (Exception e) {
             LOG.error(UNEXPECTED_ERROR_MSG, e);
@@ -908,28 +939,40 @@ public final class CryptsyExchangeAdapter implements TradingApi {
             return exchangeResponse.toString();
 
         } catch (MalformedURLException e) {
-            final String errorMsg = "Failed to send request to Exchange.";
+            final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
             LOG.error(errorMsg, e);
             throw new TradingApiException(errorMsg, e);
 
         } catch (SocketTimeoutException e) {
-            final String errorMsg = "Failed to connect to Exchange due to socket timeout.";
+            final String errorMsg = IO_SOCKET_TIMEOUT_ERROR_MSG;
             LOG.error(errorMsg, e);
             throw new ExchangeTimeoutException(errorMsg, e);
 
         } catch (IOException e) {
 
-            /*
-             * Cryptsy sometimes fails with these codes, but often recovers by next request...
-             */
-            if (e.getMessage().contains("502") || e.getMessage().contains("503") || e.getMessage().contains("504")) {
-                final String errorMsg = "Failed to connect to Exchange due to 5XX timeout.";
-                LOG.error(errorMsg, e);
-                throw new ExchangeTimeoutException(errorMsg, e);
-            } else {
-                final String errorMsg = "Failed to connect to Exchange due to unexpected IO error.";
-                LOG.error(errorMsg, e);
-                throw new TradingApiException(errorMsg, e);
+            try {
+
+                /*
+                 * Exchange sometimes fails with these codes, but often recovers by next request...
+                 */
+                if (exchangeConnection != null && (exchangeConnection.getResponseCode() == 502
+                        || exchangeConnection.getResponseCode() == 503
+                        || exchangeConnection.getResponseCode() == 504)) {
+
+                    final String errorMsg = IO_50X_TIMEOUT_ERROR_MSG;
+                    LOG.error(errorMsg, e);
+                    throw new ExchangeTimeoutException(errorMsg, e);
+
+                } else {
+                    final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
+                    LOG.error(errorMsg, e);
+                    throw new TradingApiException(errorMsg, e);
+                }
+            } catch (IOException e1) {
+
+                final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
+                LOG.error(errorMsg, e1);
+                throw new TradingApiException(errorMsg, e1);
             }
         } finally {
             if (exchangeConnection != null) {
@@ -1011,8 +1054,7 @@ public final class CryptsyExchangeAdapter implements TradingApi {
 //            }
 
             if (publicKey == null || publicKey.length() == 0) {
-                final String errorMsg = PUBLIC_KEY_PROPERTY_NAME + " cannot be null or zero length!"
-                        + " HINT: is the value set in the " + configFile + "?";
+                final String errorMsg = PUBLIC_KEY_PROPERTY_NAME + CONFIG_IS_NULL_OR_ZERO_LENGTH + configFile + "?";
                 LOG.error(errorMsg);
                 throw new IllegalArgumentException(errorMsg);
             }
@@ -1025,8 +1067,7 @@ public final class CryptsyExchangeAdapter implements TradingApi {
 //            }
 
             if (privateKey == null || privateKey.length() == 0) {
-                final String errorMsg = PRIVATE_KEY_PROPERTY_NAME + " cannot be null or zero length!"
-                        + " HINT: is the value set in the " + configFile + "?";
+                final String errorMsg = PRIVATE_KEY_PROPERTY_NAME + CONFIG_IS_NULL_OR_ZERO_LENGTH + configFile + "?";
                 LOG.error(errorMsg);
                 throw new IllegalArgumentException(errorMsg);
             }
@@ -1034,8 +1075,7 @@ public final class CryptsyExchangeAdapter implements TradingApi {
             // Grab the buy fee
             final String buyFeeInConfig = configEntries.getProperty(BUY_FEE_PROPERTY_NAME);
             if (buyFeeInConfig == null || buyFeeInConfig.length() == 0) {
-                final String errorMsg = BUY_FEE_PROPERTY_NAME + " cannot be null or zero length!"
-                        + " HINT: is the value set in the " + configFile + "?";
+                final String errorMsg = BUY_FEE_PROPERTY_NAME + CONFIG_IS_NULL_OR_ZERO_LENGTH + configFile + "?";
                 LOG.error(errorMsg);
                 throw new IllegalArgumentException(errorMsg);
             }
@@ -1052,8 +1092,7 @@ public final class CryptsyExchangeAdapter implements TradingApi {
             // Grab the sell fee
             final String sellFeeInConfig = configEntries.getProperty(SELL_FEE_PROPERTY_NAME);
             if (sellFeeInConfig == null || sellFeeInConfig.length() == 0) {
-                final String errorMsg = SELL_FEE_PROPERTY_NAME + " cannot be null or zero length!"
-                        + " HINT: is the value set in the " + configFile + "?";
+                final String errorMsg = SELL_FEE_PROPERTY_NAME + CONFIG_IS_NULL_OR_ZERO_LENGTH + configFile + "?";
                 LOG.error(errorMsg);
                 throw new IllegalArgumentException(errorMsg);
             }

@@ -110,11 +110,6 @@ public final class BtceExchangeAdapter implements TradingApi {
     private static final Logger LOG = Logger.getLogger(BtceExchangeAdapter.class);
 
     /**
-     * Used for reporting unexpected errors.
-     */
-    private static final String UNEXPECTED_ERROR_MSG = "Unexpected error has occurred in BTC-e Exchange Adapter. ";
-
-    /**
      * The Authenticated API URI.
      */
     private static final String AUTHENTICATED_API_URL = "https://btc-e.com/tapi";
@@ -123,6 +118,31 @@ public final class BtceExchangeAdapter implements TradingApi {
      * The Public API URI.
      */
     private static final String PUBLIC_API_BASE_URL = "https://btc-e.com/api/3/";
+
+    /**
+     * Used for reporting unexpected errors.
+     */
+    private static final String UNEXPECTED_ERROR_MSG = "Unexpected error has occurred in BTC-e Exchange Adapter. ";
+
+    /**
+     * Unexpected IO error message for logging.
+     */
+    private static final String UNEXPECTED_IO_ERROR_MSG = "Failed to connect to Exchange due to unexpected IO error.";
+
+    /**
+     * IO 50x Timeout error message for logging.
+     */
+    private static final String IO_50X_TIMEOUT_ERROR_MSG = "Failed to connect to Exchange due to 50x timeout.";
+
+    /**
+     * IO Socket Timeout error message for logging.
+     */
+    private static final String IO_SOCKET_TIMEOUT_ERROR_MSG = "Failed to connect to Exchange due to socket timeout.";
+
+    /**
+     * Used for building error messages for missing config.
+     */
+    private static final String CONFIG_IS_NULL_OR_ZERO_LENGTH = " cannot be null or zero length! HINT: is the value set in the ";
 
     /**
      * Your BTC-e API keys and connection timeout config.
@@ -295,8 +315,8 @@ public final class BtceExchangeAdapter implements TradingApi {
                             orderType,
                             orderDetails.rate,
                             orderDetails.amount,
-                            null, // original quantity not provided by btce :-(
-                            orderDetails.rate.multiply(orderDetails.amount) // total not provided by btce :-(
+                            null, // orig_quantity - not provided by btce :-(
+                            orderDetails.rate.multiply(orderDetails.amount) // total - not provided by btce :-(
                     );
 
                     ordersToReturn.add(order);
@@ -463,7 +483,7 @@ public final class BtceExchangeAdapter implements TradingApi {
 
     @Override
     public BigDecimal getPercentageOfBuyOrderTakenForExchangeFee(String marketId) throws TradingApiException,
-            ExchangeTimeoutException  {
+            ExchangeTimeoutException {
 
         try {
             final String results = sendPublicRequestToExchange("fee", marketId);
@@ -488,7 +508,7 @@ public final class BtceExchangeAdapter implements TradingApi {
 
     @Override
     public BigDecimal getPercentageOfSellOrderTakenForExchangeFee(String marketId) throws TradingApiException,
-            ExchangeTimeoutException  {
+            ExchangeTimeoutException {
 
         try {
             final String results = sendPublicRequestToExchange("fee", marketId);
@@ -976,29 +996,42 @@ public final class BtceExchangeAdapter implements TradingApi {
 
         } catch (MalformedURLException e) {
 
-            final String errorMsg = "Failed to send request to Exchange.";
+            final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
             LOG.error(errorMsg, e);
             throw new TradingApiException(errorMsg, e);
         } catch (SocketTimeoutException e) {
 
-            final String errorMsg = "Failed to connect to Exchange due to socket timeout.";
+            final String errorMsg = IO_SOCKET_TIMEOUT_ERROR_MSG;
             LOG.error(errorMsg, e);
             throw new ExchangeTimeoutException(errorMsg, e);
 
         } catch (IOException e) {
 
-            /*
-             * Exchange sometimes fails with these codes, but recovers by next request...
-             */
-            if (e.getMessage().contains("502") || e.getMessage().contains("503") || e.getMessage().contains("504")) {
-                final String errorMsg = "Failed to connect to Exchange due to 5XX timeout.";
-                LOG.error(errorMsg, e);
-                throw new ExchangeTimeoutException(errorMsg, e);
-            } else {
-                final String errorMsg = "Failed to connect to Exchange due to unexpected IO error.";
-                LOG.error(errorMsg, e);
-                throw new TradingApiException(errorMsg, e);
+            try {
+
+                /*
+                 * Exchange sometimes fails with these codes, but recovers by next request...
+                 */
+                if (exchangeConnection != null && (exchangeConnection.getResponseCode() == 502
+                        || exchangeConnection.getResponseCode() == 503
+                        || exchangeConnection.getResponseCode() == 504)) {
+
+                    final String errorMsg = IO_50X_TIMEOUT_ERROR_MSG;
+                    LOG.error(errorMsg, e);
+                    throw new ExchangeTimeoutException(errorMsg, e);
+
+                } else {
+                    final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
+                    LOG.error(errorMsg, e);
+                    throw new TradingApiException(errorMsg, e);
+                }
+            } catch (IOException e1) {
+
+                final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
+                LOG.error(errorMsg, e1);
+                throw new TradingApiException(errorMsg, e1);
             }
+
         } finally {
             if (exchangeConnection != null) {
                 exchangeConnection.disconnect();
@@ -1094,32 +1127,42 @@ public final class BtceExchangeAdapter implements TradingApi {
             }
             responseInputStream.close();
 
-            // return the JSON response string
             return exchangeResponse.toString();
 
         } catch (MalformedURLException e) {
-            final String errorMsg = "Failed to send request to Exchange.";
+            final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
             LOG.error(errorMsg, e);
             throw new TradingApiException(errorMsg, e);
 
         } catch (SocketTimeoutException e) {
-            final String errorMsg = "Failed to connect to Exchange due to socket timeout.";
+            final String errorMsg = IO_SOCKET_TIMEOUT_ERROR_MSG;
             LOG.error(errorMsg, e);
             throw new ExchangeTimeoutException(errorMsg, e);
 
         } catch (IOException e) {
 
-            /*
-             * Exchange sometimes fails with these codes, but recovers by next request...
-             */
-            if (e.getMessage().contains("502") || e.getMessage().contains("503") || e.getMessage().contains("504")) {
-                final String errorMsg = "Failed to connect to Exchange due to 5XX timeout.";
-                LOG.error(errorMsg, e);
-                throw new ExchangeTimeoutException(errorMsg, e);
-            } else {
-                final String errorMsg = "Failed to connect to Exchange due to unexpected IO error.";
-                LOG.error(errorMsg, e);
-                throw new TradingApiException(errorMsg, e);
+            try {
+
+                /*
+                 * Exchange sometimes fails with these codes, but recovers by next request...
+                 */
+                if (exchangeConnection != null && (exchangeConnection.getResponseCode() == 502
+                        || exchangeConnection.getResponseCode() == 503
+                        || exchangeConnection.getResponseCode() == 504)) {
+                    final String errorMsg = IO_50X_TIMEOUT_ERROR_MSG;
+                    LOG.error(errorMsg, e);
+                    throw new ExchangeTimeoutException(errorMsg, e);
+
+                } else {
+                    final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
+                    LOG.error(errorMsg, e);
+                    throw new TradingApiException(errorMsg, e);
+                }
+            } catch (IOException e1) {
+
+                final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
+                LOG.error(errorMsg, e1);
+                throw new TradingApiException(errorMsg, e1);
             }
         } finally {
             if (exchangeConnection != null) {
@@ -1182,8 +1225,7 @@ public final class BtceExchangeAdapter implements TradingApi {
         final InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream(configFile);
 
         if (inputStream == null) {
-            final String errorMsg = "Cannot find BTC-e config at: " + configFile
-                    + " HINT: is it on BX-bot's classpath?";
+            final String errorMsg = "Cannot find BTC-e config at: " + configFile + " HINT: is it on BX-bot's classpath?";
             LOG.error(errorMsg);
             throw new IllegalStateException(errorMsg);
         }
@@ -1202,8 +1244,7 @@ public final class BtceExchangeAdapter implements TradingApi {
 //            }
 
             if (key == null || key.length() == 0) {
-                final String errorMsg = KEY_PROPERTY_NAME + " cannot be null or zero length!"
-                        + " HINT: is the value set in the " + configFile + "?";
+                final String errorMsg = KEY_PROPERTY_NAME + CONFIG_IS_NULL_OR_ZERO_LENGTH + configFile + "?";
                 LOG.error(errorMsg);
                 throw new IllegalArgumentException(errorMsg);
             }
@@ -1219,8 +1260,7 @@ public final class BtceExchangeAdapter implements TradingApi {
 //            }
 
             if (secret == null || secret.length() == 0) {
-                final String errorMsg = SECRET_PROPERTY_NAME + " cannot be null or zero length!"
-                        + " HINT: is the value set in the " + configFile + "?";
+                final String errorMsg = SECRET_PROPERTY_NAME + CONFIG_IS_NULL_OR_ZERO_LENGTH + configFile + "?";
                 LOG.error(errorMsg);
                 throw new IllegalArgumentException(errorMsg);
             }           

@@ -107,14 +107,34 @@ public final class BitstampExchangeAdapter implements TradingApi {
     private static final Logger LOG = Logger.getLogger(BitstampExchangeAdapter.class);
 
     /**
+     * The Authenticated API URI.
+     */
+    private static final String API_BASE_URL = "https://www.bitstamp.net/api/";
+
+    /**
      * Used for reporting unexpected errors.
      */
     private static final String UNEXPECTED_ERROR_MSG = "Unexpected error has occurred in Bitstamp Exchange Adapter. ";
 
     /**
-     * The Authenticated API URI.
+     * Unexpected IO error message for logging.
      */
-    private static final String API_BASE_URL = "https://www.bitstamp.net/api/";
+    private static final String UNEXPECTED_IO_ERROR_MSG = "Failed to connect to Exchange due to unexpected IO error.";
+
+    /**
+     * IO 50x Timeout error message for logging.
+     */
+    private static final String IO_50X_TIMEOUT_ERROR_MSG = "Failed to connect to Exchange due to 50x timeout.";
+
+    /**
+     * IO Socket Timeout error message for logging.
+     */
+    private static final String IO_SOCKET_TIMEOUT_ERROR_MSG = "Failed to connect to Exchange due to socket timeout.";
+
+    /**
+     * Used for building error messages for missing config.
+     */
+    private static final String CONFIG_IS_NULL_OR_ZERO_LENGTH = " cannot be null or zero length! HINT: is the value set in the ";
 
     /**
      * Your Bitstamp API keys and connection timeout config.
@@ -439,7 +459,7 @@ public final class BitstampExchangeAdapter implements TradingApi {
 
     @Override
     public BigDecimal getPercentageOfBuyOrderTakenForExchangeFee(String marketId) throws TradingApiException,
-            ExchangeTimeoutException  {
+            ExchangeTimeoutException {
 
         try {
             final String results = sendAuthenticatedRequestToExchange("balance", null);
@@ -465,7 +485,7 @@ public final class BitstampExchangeAdapter implements TradingApi {
 
     @Override
     public BigDecimal getPercentageOfSellOrderTakenForExchangeFee(String marketId) throws TradingApiException,
-            ExchangeTimeoutException  {
+            ExchangeTimeoutException {
 
         try {
             final String results = sendAuthenticatedRequestToExchange("balance", null);
@@ -568,7 +588,7 @@ public final class BitstampExchangeAdapter implements TradingApi {
 
         public BigDecimal high;
         public BigDecimal last;
-        public long timestamp;
+        public BigDecimal timestamp;
         public BigDecimal bid;
         public BigDecimal vwap;
         public BigDecimal volume;
@@ -706,28 +726,40 @@ public final class BitstampExchangeAdapter implements TradingApi {
             return exchangeResponse.toString();
 
         } catch (MalformedURLException e) {
-            final String errorMsg = "Failed to send request to Exchange.";
+            final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
             LOG.error(errorMsg, e);
             throw new TradingApiException(errorMsg, e);
 
         } catch (SocketTimeoutException e) {
-            final String errorMsg = "Failed to connect to Exchange due to socket timeout.";
+            final String errorMsg = IO_SOCKET_TIMEOUT_ERROR_MSG;
             LOG.error(errorMsg, e);
             throw new ExchangeTimeoutException(errorMsg, e);
 
         } catch (IOException e) {
 
-            /*
-             * Exchange sometimes fails with these codes, but recovers by next request...
-             */
-            if (e.getMessage().contains("502") || e.getMessage().contains("503") || e.getMessage().contains("504")) {
-                final String errorMsg = "Failed to connect to Exchange due to 5XX timeout.";
-                LOG.error(errorMsg, e);
-                throw new ExchangeTimeoutException(errorMsg, e);
-            } else {
-                final String errorMsg = "Failed to connect to Exchange due to unexpected IO error.";
-                LOG.error(errorMsg, e);
-                throw new TradingApiException(errorMsg, e);
+            try {
+
+                /*
+                 * Exchange sometimes fails with these codes, but recovers by next request...
+                 */
+                if (exchangeConnection != null && (exchangeConnection.getResponseCode() == 502
+                        || exchangeConnection.getResponseCode() == 503
+                        || exchangeConnection.getResponseCode() == 504)) {
+
+                    final String errorMsg = IO_50X_TIMEOUT_ERROR_MSG;
+                    LOG.error(errorMsg, e);
+                    throw new ExchangeTimeoutException(errorMsg, e);
+
+                } else {
+                    final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
+                    LOG.error(errorMsg, e);
+                    throw new TradingApiException(errorMsg, e);
+                }
+            } catch (IOException e1) {
+
+                final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
+                LOG.error(errorMsg, e1);
+                throw new TradingApiException(errorMsg, e1);
             }
         } finally {
             if (exchangeConnection != null) {
@@ -754,7 +786,6 @@ public final class BitstampExchangeAdapter implements TradingApi {
             throw new IllegalStateException(errorMsg);
         }
 
-        // Connect to the exchange
         HttpURLConnection exchangeConnection = null;
         final StringBuilder exchangeResponse = new StringBuilder();
 
@@ -842,28 +873,40 @@ public final class BitstampExchangeAdapter implements TradingApi {
             return exchangeResponse.toString();
 
         } catch (MalformedURLException e) {
-            final String errorMsg = "Failed to send request to Exchange.";
+            final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
             LOG.error(errorMsg, e);
             throw new TradingApiException(errorMsg, e);
 
         } catch (SocketTimeoutException e) {
-            final String errorMsg = "Failed to connect to Exchange due to socket timeout.";
+            final String errorMsg = IO_SOCKET_TIMEOUT_ERROR_MSG;
             LOG.error(errorMsg, e);
             throw new ExchangeTimeoutException(errorMsg, e);
 
         } catch (IOException e) {
 
-            /*
-             * Exchange sometimes fails with these codes, but recovers by next request...
-             */
-            if (e.getMessage().contains("502") || e.getMessage().contains("503") || e.getMessage().contains("504")) {
-                final String errorMsg = "Failed to connect to Exchange due to 5XX timeout.";
-                LOG.error(errorMsg, e);
-                throw new ExchangeTimeoutException(errorMsg, e);
-            } else {
-                final String errorMsg = "Failed to connect to Exchange due to unexpected IO error.";
-                LOG.error(errorMsg, e);
-                throw new TradingApiException(errorMsg, e);
+            try {
+
+                /*
+                 * Exchange sometimes fails with these codes, but recovers by next request...
+                 */
+                if (exchangeConnection != null && (exchangeConnection.getResponseCode() == 502
+                        || exchangeConnection.getResponseCode() == 503
+                        || exchangeConnection.getResponseCode() == 504)) {
+
+                    final String errorMsg = IO_50X_TIMEOUT_ERROR_MSG;
+                    LOG.error(errorMsg, e);
+                    throw new ExchangeTimeoutException(errorMsg, e);
+
+                } else {
+                    final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
+                    LOG.error(errorMsg, e);
+                    throw new TradingApiException(errorMsg, e);
+                }
+            } catch (IOException e1) {
+
+                final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
+                LOG.error(errorMsg, e1);
+                throw new TradingApiException(errorMsg, e1);
             }
         } finally {
             if (exchangeConnection != null) {
@@ -945,8 +988,7 @@ public final class BitstampExchangeAdapter implements TradingApi {
 //            }
 
             if (clientId == null || clientId.length() == 0) {
-                final String errorMsg = CLIENT_ID_PROPERTY_NAME + " cannot be null or zero length!"
-                        + " HINT: is the value set in the " + configFile + "?";
+                final String errorMsg = CLIENT_ID_PROPERTY_NAME + CONFIG_IS_NULL_OR_ZERO_LENGTH + configFile + "?";
                 LOG.error(errorMsg);
                 throw new IllegalArgumentException(errorMsg);
             }     
@@ -962,8 +1004,7 @@ public final class BitstampExchangeAdapter implements TradingApi {
 //            }
 
             if (key == null || key.length() == 0) {
-                final String errorMsg = KEY_PROPERTY_NAME + " cannot be null or zero length!"
-                        + " HINT: is the value set in the " + configFile + "?";
+                final String errorMsg = KEY_PROPERTY_NAME + CONFIG_IS_NULL_OR_ZERO_LENGTH + configFile + "?";
                 LOG.error(errorMsg);
                 throw new IllegalArgumentException(errorMsg);
             }
@@ -979,8 +1020,7 @@ public final class BitstampExchangeAdapter implements TradingApi {
 //            }
 
             if (secret == null || secret.length() == 0) {
-                final String errorMsg = SECRET_PROPERTY_NAME + " cannot be null or zero length!"
-                        + " HINT: is the value set in the " + configFile + "?";
+                final String errorMsg = SECRET_PROPERTY_NAME + CONFIG_IS_NULL_OR_ZERO_LENGTH + configFile + "?";
                 LOG.error(errorMsg);
                 throw new IllegalArgumentException(errorMsg);
             }           

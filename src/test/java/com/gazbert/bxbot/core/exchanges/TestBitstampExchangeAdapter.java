@@ -23,7 +23,12 @@
 
 package com.gazbert.bxbot.core.exchanges;
 
-import com.gazbert.bxbot.core.api.trading.*;
+import com.gazbert.bxbot.core.api.trading.BalanceInfo;
+import com.gazbert.bxbot.core.api.trading.ExchangeTimeoutException;
+import com.gazbert.bxbot.core.api.trading.MarketOrderBook;
+import com.gazbert.bxbot.core.api.trading.OpenOrder;
+import com.gazbert.bxbot.core.api.trading.OrderType;
+import com.gazbert.bxbot.core.api.trading.TradingApiException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.api.easymock.PowerMock;
@@ -225,9 +230,7 @@ public class TestBitstampExchangeAdapter {
                 andThrow(new ExchangeTimeoutException("Aaaaaaaaaaaaaaaarrrgh!"));
 
         PowerMock.replayAll();
-
         exchangeAdapter.createOrder(MARKET_ID, OrderType.SELL, SELL_ORDER_QUANTITY, SELL_ORDER_PRICE);
-
         PowerMock.verifyAll();
     }
 
@@ -242,9 +245,7 @@ public class TestBitstampExchangeAdapter {
                         "sockets when they lose. Wookiees are known to do that."));
 
         PowerMock.replayAll();
-
         exchangeAdapter.createOrder(MARKET_ID, OrderType.BUY, BUY_ORDER_QUANTITY, BUY_ORDER_PRICE);
-
         PowerMock.verifyAll();
     }
 
@@ -305,9 +306,7 @@ public class TestBitstampExchangeAdapter {
                 andThrow(new ExchangeTimeoutException("Traveling through hyperspace ain’t like dusting crops, farm boy."));
 
         PowerMock.replayAll();
-
         exchangeAdapter.getMarketOrders(MARKET_ID);
-
         PowerMock.verifyAll();
     }
 
@@ -322,9 +321,7 @@ public class TestBitstampExchangeAdapter {
                         "everything's perfectly all right now. We're fine. We're all fine here now, thank you. How are you?"));
 
         PowerMock.replayAll();
-
         exchangeAdapter.getMarketOrders(MARKET_ID);
-
         PowerMock.verifyAll();
     }
 
@@ -374,9 +371,7 @@ public class TestBitstampExchangeAdapter {
                 andThrow(new ExchangeTimeoutException("The board is green!"));
 
         PowerMock.replayAll();
-
         exchangeAdapter.getYourOpenOrders(MARKET_ID);
-
         PowerMock.verifyAll();
     }
 
@@ -390,9 +385,7 @@ public class TestBitstampExchangeAdapter {
                 andThrow(new IllegalStateException("You may dispense with the pleasantries, Commander. I am here to put you back on schedule."));
 
         PowerMock.replayAll();
-
         exchangeAdapter.getYourOpenOrders(MARKET_ID);
-
         PowerMock.verifyAll();
     }
 
@@ -431,9 +424,7 @@ public class TestBitstampExchangeAdapter {
                 andThrow(new ExchangeTimeoutException("Jumping in 5... 4... 3... 2... 1... Jump!"));
 
         PowerMock.replayAll();
-
         exchangeAdapter.getLatestMarketPrice(MARKET_ID);
-
         PowerMock.verifyAll();
     }
 
@@ -448,9 +439,7 @@ public class TestBitstampExchangeAdapter {
                         " is approximately 3,720 to 1."));
 
         PowerMock.replayAll();
-
         exchangeAdapter.getLatestMarketPrice(MARKET_ID);
-
         PowerMock.verifyAll();
     }
 
@@ -496,9 +485,7 @@ public class TestBitstampExchangeAdapter {
                         "The circle is now complete. When I left you, I was but the learner; now I am the master."));
 
         PowerMock.replayAll();
-
         exchangeAdapter.getBalanceInfo();
-
         PowerMock.verifyAll();
     }
 
@@ -512,9 +499,7 @@ public class TestBitstampExchangeAdapter {
                 andThrow(new IllegalStateException("Get me some more frakking birds in the air!"));
 
         PowerMock.replayAll();
-
         exchangeAdapter.getBalanceInfo();
-
         PowerMock.verifyAll();
     }
 
@@ -553,9 +538,7 @@ public class TestBitstampExchangeAdapter {
                 andThrow(new ExchangeTimeoutException("Aren't you a little short for a stormtrooper?"));
 
         PowerMock.replayAll();
-
         exchangeAdapter.getPercentageOfBuyOrderTakenForExchangeFee(MARKET_ID);
-
         PowerMock.verifyAll();
     }
 
@@ -570,9 +553,7 @@ public class TestBitstampExchangeAdapter {
                         " suddenly cried out in terror and were suddenly silenced. I fear something terrible has happened."));
 
         PowerMock.replayAll();
-
         exchangeAdapter.getPercentageOfBuyOrderTakenForExchangeFee(MARKET_ID);
-
         PowerMock.verifyAll();
     }
 
@@ -611,9 +592,7 @@ public class TestBitstampExchangeAdapter {
                 andThrow(new ExchangeTimeoutException("That's no moon. It's a space station."));
 
         PowerMock.replayAll();
-
         exchangeAdapter.getPercentageOfSellOrderTakenForExchangeFee(MARKET_ID);
-
         PowerMock.verifyAll();
     }
 
@@ -628,9 +607,7 @@ public class TestBitstampExchangeAdapter {
                         " The ability to destroy a planet is insignificant next to the power of the Force."));
 
         PowerMock.replayAll();
-
         exchangeAdapter.getPercentageOfSellOrderTakenForExchangeFee(MARKET_ID);
-
         PowerMock.verifyAll();
     }
 
@@ -678,9 +655,7 @@ public class TestBitstampExchangeAdapter {
         PowerMock.expectPrivate(BitstampExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD).andReturn(
                 "bitstamp/missing-clientid-bitstamp-config.properties");
         PowerMock.replayAll();
-
         new BitstampExchangeAdapter();
-
         PowerMock.verifyAll();
     }
 
@@ -692,9 +667,7 @@ public class TestBitstampExchangeAdapter {
         PowerMock.expectPrivate(BitstampExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD).andReturn(
                 "bitstamp/missing-public-key-bitstamp-config.properties");
         PowerMock.replayAll();
-
         new BitstampExchangeAdapter();
-
         PowerMock.verifyAll();
     }
 
@@ -706,9 +679,7 @@ public class TestBitstampExchangeAdapter {
         PowerMock.expectPrivate(BitstampExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD).andReturn(
                 "bitstamp/missing-secret-bitstamp-config.properties");
         PowerMock.replayAll();
-
         new BitstampExchangeAdapter();
-
         PowerMock.verifyAll();
     }
 
@@ -720,9 +691,7 @@ public class TestBitstampExchangeAdapter {
         PowerMock.expectPrivate(BitstampExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD).andReturn(
                 "bitstamp/missing-timeout-bitstamp-config.properties");
         PowerMock.replayAll();
-
         new BitstampExchangeAdapter();
-
         PowerMock.verifyAll();
     }
 
