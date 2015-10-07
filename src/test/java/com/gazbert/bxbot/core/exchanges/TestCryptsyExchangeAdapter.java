@@ -35,15 +35,13 @@ import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Map;
 
-import static org.easymock.EasyMock.anyObject;
-import static org.easymock.EasyMock.eq;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.easymock.EasyMock.*;
+import static org.junit.Assert.*;
 
 /**
  * <p>
@@ -96,10 +94,11 @@ public class TestCryptsyExchangeAdapter {
 
     // Mocked out methods
     private static final String MOCKED_GET_CONFIG_LOCATION_METHOD = "getConfigFileLocation";
+    private static final String MOCKED_GET_REQUEST_PARAM_MAP_METHOD = "getRequestParamMap";
     private static final String MOCKED_SEND_REQUEST_TO_EXCHANGE_METHOD = "sendRequestToExchange";
 
     /**
-     * Cryptsy exchange Date format: 2014-06-07 15:16:38
+     * Cryptsy exchange Date format: 2014-05-25 20:58:38
      */
     private static final SimpleDateFormat EXCHANGE_DATE_FORMAT = new SimpleDateFormat("y-M-d H:m:s");
 
@@ -115,11 +114,21 @@ public class TestCryptsyExchangeAdapter {
         final byte[] encoded = Files.readAllBytes(Paths.get(CREATE_BUY_ORDER_JSON_RESPONSE));
         final String exchangeResponse = new String(encoded, StandardCharsets.UTF_8);
 
+        // Mock out param map so we can assert the contents passed to the transport layer are what we expect.
+        final Map<String, String> requestParamMap = PowerMock.createMock(Map.class);
+        expect(requestParamMap.put("marketid", MARKET_ID)).andStubReturn(null);
+        expect(requestParamMap.put("ordertype", "Buy")).andStubReturn(null);
+        expect(requestParamMap.put("quantity", new DecimalFormat("#.########").format(BUY_ORDER_QUANTITY))).andStubReturn(null);
+        expect(requestParamMap.put("price", new DecimalFormat("#.########").format(BUY_ORDER_PRICE))).andStubReturn(null);
+
         // Partial mock so we do not send stuff down the wire
         final CryptsyExchangeAdapter exchangeAdapter =  PowerMock.createPartialMockAndInvokeDefaultConstructor(
-                CryptsyExchangeAdapter.class, MOCKED_SEND_REQUEST_TO_EXCHANGE_METHOD);
-        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_REQUEST_TO_EXCHANGE_METHOD, eq(CREATE_ORDER), anyObject(Map.class)).
-                andReturn(exchangeResponse);
+                CryptsyExchangeAdapter.class, MOCKED_SEND_REQUEST_TO_EXCHANGE_METHOD,
+                MOCKED_GET_REQUEST_PARAM_MAP_METHOD);
+
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_GET_REQUEST_PARAM_MAP_METHOD).andReturn(requestParamMap);
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_REQUEST_TO_EXCHANGE_METHOD, eq(CREATE_ORDER),
+                eq(requestParamMap)).andReturn(exchangeResponse);
 
         PowerMock.replayAll();
 
@@ -136,11 +145,21 @@ public class TestCryptsyExchangeAdapter {
         final byte[] encoded = Files.readAllBytes(Paths.get(CREATE_SELL_ORDER_JSON_RESPONSE));
         final String exchangeResponse = new String(encoded, StandardCharsets.UTF_8);
 
+        // Mock out param map so we can assert the contents passed to the transport layer are what we expect.
+        final Map<String, String> requestParamMap = PowerMock.createMock(Map.class);
+        expect(requestParamMap.put("marketid", MARKET_ID)).andStubReturn(null);
+        expect(requestParamMap.put("ordertype", "Sell")).andStubReturn(null);
+        expect(requestParamMap.put("quantity", new DecimalFormat("#.########").format(SELL_ORDER_QUANTITY))).andStubReturn(null);
+        expect(requestParamMap.put("price", new DecimalFormat("#.########").format(SELL_ORDER_PRICE))).andStubReturn(null);
+
         // Partial mock so we do not send stuff down the wire
         final CryptsyExchangeAdapter exchangeAdapter =  PowerMock.createPartialMockAndInvokeDefaultConstructor(
-                CryptsyExchangeAdapter.class, MOCKED_SEND_REQUEST_TO_EXCHANGE_METHOD);
-        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_REQUEST_TO_EXCHANGE_METHOD, eq(CREATE_ORDER), anyObject(Map.class)).
-                andReturn(exchangeResponse);
+                CryptsyExchangeAdapter.class, MOCKED_SEND_REQUEST_TO_EXCHANGE_METHOD,
+                MOCKED_GET_REQUEST_PARAM_MAP_METHOD);
+
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_GET_REQUEST_PARAM_MAP_METHOD).andReturn(requestParamMap);
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_REQUEST_TO_EXCHANGE_METHOD, eq(CREATE_ORDER),
+                eq(requestParamMap)).andReturn(exchangeResponse);
 
         PowerMock.replayAll();
 
@@ -190,11 +209,18 @@ public class TestCryptsyExchangeAdapter {
         final byte[] encoded = Files.readAllBytes(Paths.get(CANCEL_ORDER_JSON_RESPONSE));
         final String exchangeResponse = new String(encoded, StandardCharsets.UTF_8);
 
+        // Mock out param map so we can assert the contents passed to the transport layer are what we expect.
+        final Map<String, String> requestParamMap = PowerMock.createMock(Map.class);
+        expect(requestParamMap.put("orderid", ORDER_ID_TO_CANCEL)).andStubReturn(null);
+
         // Partial mock so we do not send stuff down the wire
         final CryptsyExchangeAdapter exchangeAdapter =  PowerMock.createPartialMockAndInvokeDefaultConstructor(
-                CryptsyExchangeAdapter.class, MOCKED_SEND_REQUEST_TO_EXCHANGE_METHOD);
-        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_REQUEST_TO_EXCHANGE_METHOD, eq(CANCEL_ORDER), anyObject(Map.class)).
-                andReturn(exchangeResponse);
+                CryptsyExchangeAdapter.class, MOCKED_SEND_REQUEST_TO_EXCHANGE_METHOD,
+                MOCKED_GET_REQUEST_PARAM_MAP_METHOD);
+
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_GET_REQUEST_PARAM_MAP_METHOD).andReturn(requestParamMap);
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_REQUEST_TO_EXCHANGE_METHOD, eq(CANCEL_ORDER),
+                eq(requestParamMap)).andReturn(exchangeResponse);
 
         PowerMock.replayAll();
 
@@ -253,11 +279,18 @@ public class TestCryptsyExchangeAdapter {
         final byte[] encoded = Files.readAllBytes(Paths.get(MARKET_ORDERS_JSON_RESPONSE));
         final String exchangeResponse = new String(encoded, StandardCharsets.UTF_8);
 
+        // Mock out param map so we can assert the contents passed to the transport layer are what we expect.
+        final Map<String, String> requestParamMap = PowerMock.createMock(Map.class);
+        expect(requestParamMap.put("marketid", MARKET_ID)).andStubReturn(null);
+
         // Partial mock so we do not send stuff down the wire
         final CryptsyExchangeAdapter exchangeAdapter =  PowerMock.createPartialMockAndInvokeDefaultConstructor(
-                CryptsyExchangeAdapter.class, MOCKED_SEND_REQUEST_TO_EXCHANGE_METHOD);
-        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_REQUEST_TO_EXCHANGE_METHOD, eq(MARKET_ORDERS), anyObject(Map.class)).
-                andReturn(exchangeResponse);
+                CryptsyExchangeAdapter.class, MOCKED_SEND_REQUEST_TO_EXCHANGE_METHOD,
+                MOCKED_GET_REQUEST_PARAM_MAP_METHOD);
+
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_GET_REQUEST_PARAM_MAP_METHOD).andReturn(requestParamMap);
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_REQUEST_TO_EXCHANGE_METHOD, eq(MARKET_ORDERS),
+                eq(requestParamMap)).andReturn(exchangeResponse);
 
         PowerMock.replayAll();
 
@@ -320,11 +353,18 @@ public class TestCryptsyExchangeAdapter {
         final byte[] encoded = Files.readAllBytes(Paths.get(MY_ORDERS_JSON_RESPONSE));
         final String exchangeResponse = new String(encoded, StandardCharsets.UTF_8);
 
+        // Mock out param map so we can assert the contents passed to the transport layer are what we expect.
+        final Map<String, String> requestParamMap = PowerMock.createMock(Map.class);
+        expect(requestParamMap.put("marketid", MARKET_ID)).andStubReturn(null);
+
         // Partial mock so we do not send stuff down the wire
         final CryptsyExchangeAdapter exchangeAdapter =  PowerMock.createPartialMockAndInvokeDefaultConstructor(
-                CryptsyExchangeAdapter.class, MOCKED_SEND_REQUEST_TO_EXCHANGE_METHOD);
+                CryptsyExchangeAdapter.class, MOCKED_SEND_REQUEST_TO_EXCHANGE_METHOD,
+                MOCKED_GET_REQUEST_PARAM_MAP_METHOD);
+
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_GET_REQUEST_PARAM_MAP_METHOD).andReturn(requestParamMap);
         PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_REQUEST_TO_EXCHANGE_METHOD, eq(MY_ORDERS),
-                anyObject(Map.class)).andReturn(exchangeResponse);
+                eq(requestParamMap)).andReturn(exchangeResponse);
 
         PowerMock.replayAll();
 
@@ -385,11 +425,18 @@ public class TestCryptsyExchangeAdapter {
         final byte[] encoded = Files.readAllBytes(Paths.get(MARKET_TRADES_JSON_RESPONSE));
         final String exchangeResponse = new String(encoded, StandardCharsets.UTF_8);
 
+        // Mock out param map so we can assert the contents passed to the transport layer are what we expect.
+        final Map<String, String> requestParamMap = PowerMock.createMock(Map.class);
+        expect(requestParamMap.put("marketid", MARKET_ID)).andStubReturn(null);
+
         // Partial mock so we do not send stuff down the wire
         final CryptsyExchangeAdapter exchangeAdapter =  PowerMock.createPartialMockAndInvokeDefaultConstructor(
-                CryptsyExchangeAdapter.class, MOCKED_SEND_REQUEST_TO_EXCHANGE_METHOD);
-        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_REQUEST_TO_EXCHANGE_METHOD, eq(MARKET_TRADES), anyObject(Map.class)).
-                andReturn(exchangeResponse);
+                CryptsyExchangeAdapter.class, MOCKED_SEND_REQUEST_TO_EXCHANGE_METHOD,
+                MOCKED_GET_REQUEST_PARAM_MAP_METHOD);
+
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_GET_REQUEST_PARAM_MAP_METHOD).andReturn(requestParamMap);
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_REQUEST_TO_EXCHANGE_METHOD, eq(MARKET_TRADES),
+                eq(requestParamMap)).andReturn(exchangeResponse);
 
         PowerMock.replayAll();
 
@@ -409,7 +456,9 @@ public class TestCryptsyExchangeAdapter {
                 andThrow(new ExchangeTimeoutException("Sir, I'm running every diagnostic we've got. Checking each line of code could take days."));
 
         PowerMock.replayAll();
+
         exchangeAdapter.getLatestMarketPrice(MARKET_ID);
+
         PowerMock.verifyAll();
     }
 
@@ -427,7 +476,9 @@ public class TestCryptsyExchangeAdapter {
                         "Almost 2,000 guys bought the farm that day."));
 
         PowerMock.replayAll();
+
         exchangeAdapter.getLatestMarketPrice(MARKET_ID);
+
         PowerMock.verifyAll();
     }
 
@@ -627,7 +678,7 @@ public class TestCryptsyExchangeAdapter {
      * Have left this in; it might come in useful.
      * It expects VALID_CONFIG_LOCATION to contain the correct credentials.
      */
-//    @Test
+    //@Test
     public void testCallingExchangeToGetJson() throws Exception {
 
         // Partial mock the adapter so we can manipulate config location
@@ -635,7 +686,7 @@ public class TestCryptsyExchangeAdapter {
         PowerMock.expectPrivate(CryptsyExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD).andReturn(VALID_CONFIG_LOCATION);
         PowerMock.replayAll();
 
-//        final CryptsyExchangeAdapter exchangeAdapter = new CryptsyExchangeAdapter();
+        //final CryptsyExchangeAdapter exchangeAdapter = new CryptsyExchangeAdapter();
 //        exchangeAdapter.getImplName();
 //        exchangeAdapter.getPercentageOfBuyOrderTakenForExchangeFee(MARKET_ID);
 //        exchangeAdapter.getPercentageOfSellOrderTakenForExchangeFee(MARKET_ID);

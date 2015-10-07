@@ -23,12 +23,7 @@
 
 package com.gazbert.bxbot.core.exchanges;
 
-import com.gazbert.bxbot.core.api.trading.BalanceInfo;
-import com.gazbert.bxbot.core.api.trading.ExchangeTimeoutException;
-import com.gazbert.bxbot.core.api.trading.MarketOrderBook;
-import com.gazbert.bxbot.core.api.trading.OpenOrder;
-import com.gazbert.bxbot.core.api.trading.OrderType;
-import com.gazbert.bxbot.core.api.trading.TradingApiException;
+import com.gazbert.bxbot.core.api.trading.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.api.easymock.PowerMock;
@@ -40,11 +35,11 @@ import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Map;
 
-import static org.easymock.EasyMock.anyObject;
-import static org.easymock.EasyMock.eq;
+import static org.easymock.EasyMock.*;
 import static org.junit.Assert.*;
 
 /**
@@ -94,12 +89,13 @@ public class TestBitfinexExchangeAdapter {
     private static final String MARKET_ID = "btcusd";
     private static final BigDecimal BUY_ORDER_PRICE = new BigDecimal("200.18");
     private static final BigDecimal BUY_ORDER_QUANTITY = new BigDecimal("0.03");
-    private static final BigDecimal SELL_ORDER_PRICE = new BigDecimal("250.17622");
+    private static final BigDecimal SELL_ORDER_PRICE = new BigDecimal("250.176");
     private static final BigDecimal SELL_ORDER_QUANTITY = new BigDecimal("0.03");
     private static final String ORDER_ID_TO_CANCEL = "426152651";
 
     // Mocked out methods
     private static final String MOCKED_GET_CONFIG_LOCATION_METHOD = "getConfigFileLocation";
+    private static final String MOCKED_GET_REQUEST_PARAM_MAP_METHOD = "getRequestParamMap";
     private static final String MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD = "sendAuthenticatedRequestToExchange";
     private static final String MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD = "sendPublicRequestToExchange";
 
@@ -115,11 +111,23 @@ public class TestBitfinexExchangeAdapter {
         final byte[] encoded = Files.readAllBytes(Paths.get(ORDER_NEW_BUY_JSON_RESPONSE));
         final String exchangeResponse = new String(encoded, StandardCharsets.UTF_8);
 
+        // Mock out param map so we can assert the contents passed to the transport layer are what we expect.
+        final Map<String, Object> requestParamMap = PowerMock.createMock(Map.class);
+        expect(requestParamMap.put("symbol", MARKET_ID)).andStubReturn(null);
+        expect(requestParamMap.put("amount", new DecimalFormat("#.########").format(BUY_ORDER_QUANTITY))).andStubReturn(null);
+        expect(requestParamMap.put("price", new DecimalFormat("#.########").format(BUY_ORDER_PRICE))).andStubReturn(null);
+        expect(requestParamMap.put("exchange", "bitfinex")).andStubReturn(null);
+        expect(requestParamMap.put("side", "buy")).andStubReturn(null);
+        expect(requestParamMap.put("type", "exchange limit")).andStubReturn(null);
+
         // Partial mock so we do not send stuff down the wire
         final BitfinexExchangeAdapter exchangeAdapter =  PowerMock.createPartialMockAndInvokeDefaultConstructor(
-                BitfinexExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
-        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(ORDER_NEW), anyObject(Map.class)).
-                andReturn(exchangeResponse);
+                BitfinexExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD,
+                MOCKED_GET_REQUEST_PARAM_MAP_METHOD);
+
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_GET_REQUEST_PARAM_MAP_METHOD).andReturn(requestParamMap);
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(ORDER_NEW),
+                eq(requestParamMap)).andReturn(exchangeResponse);
 
         PowerMock.replayAll();
 
@@ -136,15 +144,28 @@ public class TestBitfinexExchangeAdapter {
         final byte[] encoded = Files.readAllBytes(Paths.get(ORDER_NEW_SELL_JSON_RESPONSE));
         final String exchangeResponse = new String(encoded, StandardCharsets.UTF_8);
 
+        // Mock out param map so we can assert the contents passed to the transport layer are what we expect.
+        final Map<String, Object> requestParamMap = PowerMock.createMock(Map.class);
+        expect(requestParamMap.put("symbol", MARKET_ID)).andStubReturn(null);
+        expect(requestParamMap.put("amount", new DecimalFormat("#.########").format(SELL_ORDER_QUANTITY))).andStubReturn(null);
+        expect(requestParamMap.put("price", new DecimalFormat("#.########").format(SELL_ORDER_PRICE))).andStubReturn(null);
+        expect(requestParamMap.put("exchange", "bitfinex")).andStubReturn(null);
+        expect(requestParamMap.put("side", "sell")).andStubReturn(null);
+        expect(requestParamMap.put("type", "exchange limit")).andStubReturn(null);
+
         // Partial mock so we do not send stuff down the wire
         final BitfinexExchangeAdapter exchangeAdapter =  PowerMock.createPartialMockAndInvokeDefaultConstructor(
-                BitfinexExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
-        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(ORDER_NEW), anyObject(Map.class)).
-                andReturn(exchangeResponse);
+                BitfinexExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD,
+                MOCKED_GET_REQUEST_PARAM_MAP_METHOD);
+
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_GET_REQUEST_PARAM_MAP_METHOD).andReturn(requestParamMap);
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(ORDER_NEW),
+                eq(requestParamMap)).andReturn(exchangeResponse);
 
         PowerMock.replayAll();
 
-        final String orderId = exchangeAdapter.createOrder(MARKET_ID, OrderType.SELL, SELL_ORDER_QUANTITY, SELL_ORDER_PRICE);
+        final String orderId = exchangeAdapter.createOrder(MARKET_ID, OrderType.SELL, SELL_ORDER_QUANTITY,
+                SELL_ORDER_PRICE);
         assertTrue(orderId.equals("425116929"));
 
         PowerMock.verifyAll();
@@ -156,7 +177,8 @@ public class TestBitfinexExchangeAdapter {
         // Partial mock so we do not send stuff down the wire
         final BitfinexExchangeAdapter exchangeAdapter =  PowerMock.createPartialMock(BitfinexExchangeAdapter.class,
                 MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
-        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(ORDER_NEW), anyObject(Map.class)).
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(ORDER_NEW),
+                anyObject(Map.class)).
                 andThrow(new ExchangeTimeoutException("Marion, don't look at it. Shut your eyes, Marion. Don't look at" +
                         " it, no matter what happens!"));
 
@@ -171,7 +193,8 @@ public class TestBitfinexExchangeAdapter {
         // Partial mock so we do not send stuff down the wire
         final BitfinexExchangeAdapter exchangeAdapter =  PowerMock.createPartialMock(BitfinexExchangeAdapter.class,
                 MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
-        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(ORDER_NEW), anyObject(Map.class)).
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(ORDER_NEW),
+                anyObject(Map.class)).
                 andThrow(new IllegalArgumentException("What a fitting end to your life's pursuits. You're about to " +
                         "become a permanent addition to this archaeological find. Who knows? In a thousand years," +
                         " even you may be worth something."));
@@ -192,11 +215,18 @@ public class TestBitfinexExchangeAdapter {
         final byte[] encoded = Files.readAllBytes(Paths.get(ORDER_CANCEL_JSON_RESPONSE));
         final String exchangeResponse = new String(encoded, StandardCharsets.UTF_8);
 
+        // Mock out param map so we can assert the contents passed to the transport layer are what we expect.
+        final Map<String, Object> requestParamMap = PowerMock.createMock(Map.class);
+        expect(requestParamMap.put("order_id", Long.parseLong(ORDER_ID_TO_CANCEL))).andStubReturn(null);
+
         // Partial mock so we do not send stuff down the wire
         final BitfinexExchangeAdapter exchangeAdapter =  PowerMock.createPartialMockAndInvokeDefaultConstructor(
-                BitfinexExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
-        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(ORDER_CANCEL), anyObject(Map.class)).
-                andReturn(exchangeResponse);
+                BitfinexExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD,
+                MOCKED_GET_REQUEST_PARAM_MAP_METHOD);
+
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_GET_REQUEST_PARAM_MAP_METHOD).andReturn(requestParamMap);
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(ORDER_CANCEL),
+                eq(requestParamMap)).andReturn(exchangeResponse);
 
         PowerMock.replayAll();
 
@@ -213,8 +243,10 @@ public class TestBitfinexExchangeAdapter {
         // Partial mock so we do not send stuff down the wire
         final BitfinexExchangeAdapter exchangeAdapter =  PowerMock.createPartialMock(BitfinexExchangeAdapter.class,
                 MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
-        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(ORDER_CANCEL), anyObject(Map.class)).
-                andThrow(new ExchangeTimeoutException("Good morning. I am Meredith Vickers, and it is my job to make sure you do yours"));
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(ORDER_CANCEL),
+                anyObject(Map.class)).
+                andThrow(new ExchangeTimeoutException("Good morning. I am Meredith Vickers, and it is my job to" +
+                        " make sure you do yours"));
 
         PowerMock.replayAll();
 
@@ -230,7 +262,8 @@ public class TestBitfinexExchangeAdapter {
         // Partial mock so we do not send stuff down the wire
         final BitfinexExchangeAdapter exchangeAdapter =  PowerMock.createPartialMock(BitfinexExchangeAdapter.class,
                 MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
-        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(ORDER_CANCEL), anyObject(Map.class)).
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(ORDER_CANCEL),
+                anyObject(Map.class)).
                 andThrow(new IllegalStateException("The ring, it chose you. Take it... place the ring on the lantern..." +
                         " place the ring, speak the oath... great honor... responsibility"));
 
@@ -349,7 +382,8 @@ public class TestBitfinexExchangeAdapter {
         assertTrue(openOrders.get(0).getPrice().compareTo(new BigDecimal("259.38")) == 0);
         assertTrue(openOrders.get(0).getQuantity().compareTo(new BigDecimal("0.03")) == 0);
         assertTrue(openOrders.get(0).getOriginalQuantity().compareTo(new BigDecimal("0.03")) == 0);
-        assertTrue(openOrders.get(0).getTotal().compareTo(openOrders.get(0).getPrice().multiply(openOrders.get(0).getOriginalQuantity())) == 0);
+        assertTrue(openOrders.get(0).getTotal().compareTo(openOrders.get(0).getPrice().multiply(openOrders.get(0).
+                getOriginalQuantity())) == 0);
 
         PowerMock.verifyAll();
     }
@@ -540,7 +574,8 @@ public class TestBitfinexExchangeAdapter {
         // Partial mock so we do not send stuff down the wire
         final BitfinexExchangeAdapter exchangeAdapter =  PowerMock.createPartialMock(BitfinexExchangeAdapter.class,
                 MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
-        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(ACCOUNT_INFOS), eq(null)).
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(ACCOUNT_INFOS),
+                eq(null)).
                 andThrow(new ExchangeTimeoutException("Right. Well, um, using layman's terms... Use a retaining magnetic" +
                         " field to focus a narrow beam of gravitons - these, in turn, fold space-time consistent with" +
                         " Weyl tensor dynamics until the space-time curvature becomes infinitely large, and you produce" +
@@ -557,7 +592,8 @@ public class TestBitfinexExchangeAdapter {
         // Partial mock so we do not send stuff down the wire
         final BitfinexExchangeAdapter exchangeAdapter =  PowerMock.createPartialMock(BitfinexExchangeAdapter.class,
                 MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
-        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(ACCOUNT_INFOS), eq(null)).
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD,
+                eq(ACCOUNT_INFOS), eq(null)).
                 andThrow(new IllegalStateException("I created the Event Horizon to reach the stars, but she's gone much," +
                         " much farther than that. She tore a hole in our universe, a gateway to another dimension." +
                         " A dimension of pure chaos. Pure... evil. When she crossed over, she was just a ship." +
@@ -599,9 +635,9 @@ public class TestBitfinexExchangeAdapter {
         // Partial mock so we do not send stuff down the wire
         final BitfinexExchangeAdapter exchangeAdapter =  PowerMock.createPartialMock(BitfinexExchangeAdapter.class,
                 MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
-        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(ACCOUNT_INFOS), eq(null)).
-                andThrow(new ExchangeTimeoutException("Day 11, Test 37, Configuration 2.0. For lack of a better option," +
-                        " Dummy is still on fire safety."));
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(ACCOUNT_INFOS),
+                eq(null)).andThrow(new ExchangeTimeoutException("Day 11, Test 37, Configuration 2.0. For lack of a " +
+                "better option, Dummy is still on fire safety."));
 
         PowerMock.replayAll();
         exchangeAdapter.getPercentageOfSellOrderTakenForExchangeFee(MARKET_ID);
@@ -614,11 +650,11 @@ public class TestBitfinexExchangeAdapter {
         // Partial mock so we do not send stuff down the wire
         final BitfinexExchangeAdapter exchangeAdapter =  PowerMock.createPartialMock(BitfinexExchangeAdapter.class,
                 MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
-        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(ACCOUNT_INFOS), eq(null)).
-                andThrow(new IllegalStateException("What was made public about the Event Horizon - that she was a deep" +
-                        " space research vessel, that her reactor went critical, and that the ship blew up - none of " +
-                        "that is true. The Event Horizon is the culmination of a secret government project to create a" +
-                        " spacecraft capable of faster-than-light flight."));
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(ACCOUNT_INFOS),
+                eq(null)).andThrow(new IllegalStateException("What was made public about the Event Horizon - that " +
+                "she was a deep space research vessel, that her reactor went critical, and that the ship blew up - " +
+                "none of that is true. The Event Horizon is the culmination of a secret government project to create a" +
+                " spacecraft capable of faster-than-light flight."));
 
         PowerMock.replayAll();
         exchangeAdapter.getPercentageOfSellOrderTakenForExchangeFee(MARKET_ID);
@@ -636,10 +672,8 @@ public class TestBitfinexExchangeAdapter {
         PowerMock.mockStaticPartial(BitfinexExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD);
         PowerMock.expectPrivate(BitfinexExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD).andReturn(VALID_CONFIG_LOCATION);
         PowerMock.replayAll();
-
         final BitfinexExchangeAdapter exchangeAdapter = new BitfinexExchangeAdapter();
         assertTrue(exchangeAdapter.getImplName().equals("Bitfinex API v1"));
-
         PowerMock.verifyAll();
     }
 

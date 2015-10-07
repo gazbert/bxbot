@@ -391,12 +391,11 @@ A Maven `pom.xml` is included for building the bot.
    the dependency in the `pom.xml` file - see the commented out examples.
 1. Run `mvn assembly:assembly` to build the bot and produce the distribution artifacts `bxbot-core-1.0-SNAPSHOT-dist.tar.gz`
    and `bxbot-core-1.0-SNAPSHOT-dist.zip`. Take a look at the Javadoc in the `./target/apidocs` folder after running this.
-1. Next, see the _Installation Instructions_.
 
 ## Installation Guide
 
-1. Copy either the `bxbot-core-1.0-SNAPSHOT-dist.tar.gz` or `bxbot-core-1.0-SNAPSHOT-dist.zip` onto the machine you want
-   to run the bot.
+1. Copy either the `bxbot-core-1.0-SNAPSHOT-dist.tar.gz` or `bxbot-core-1.0-SNAPSHOT-dist.zip` onto the machine you 
+   want to run the bot.
 1. Unzip it into a folder, e.g. `bxbot-home`. Make sure the `bxbot.sh` script is executable: `chmod 755 bxbot.sh`.
 1. Open the `bxbot.sh` script and follow the instructions in the file.
 

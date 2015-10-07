@@ -23,12 +23,7 @@
 
 package com.gazbert.bxbot.core.exchanges;
 
-import com.gazbert.bxbot.core.api.trading.BalanceInfo;
-import com.gazbert.bxbot.core.api.trading.ExchangeTimeoutException;
-import com.gazbert.bxbot.core.api.trading.MarketOrderBook;
-import com.gazbert.bxbot.core.api.trading.OpenOrder;
-import com.gazbert.bxbot.core.api.trading.OrderType;
-import com.gazbert.bxbot.core.api.trading.TradingApiException;
+import com.gazbert.bxbot.core.api.trading.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.api.easymock.PowerMock;
@@ -40,15 +35,13 @@ import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Map;
 
-import static org.easymock.EasyMock.anyObject;
-import static org.easymock.EasyMock.eq;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.easymock.EasyMock.*;
+import static org.junit.Assert.*;
 
 /**
  * <p>
@@ -103,6 +96,7 @@ public class TestBitstampExchangeAdapter {
 
     // Mocked out methods
     private static final String MOCKED_GET_CONFIG_LOCATION_METHOD = "getConfigFileLocation";
+    private static final String MOCKED_GET_REQUEST_PARAM_MAP_METHOD = "getRequestParamMap";
     private static final String MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD = "sendAuthenticatedRequestToExchange";
     private static final String MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD = "sendPublicRequestToExchange";
 
@@ -123,11 +117,18 @@ public class TestBitstampExchangeAdapter {
         final byte[] encoded = Files.readAllBytes(Paths.get(CANCEL_ORDER_JSON_RESPONSE));
         final String exchangeResponse = new String(encoded, StandardCharsets.UTF_8);
 
+        // Mock out param map so we can assert the contents passed to the transport layer are what we expect.
+        final Map<String, String> requestParamMap = PowerMock.createMock(Map.class);
+        expect(requestParamMap.put("id", ORDER_ID_TO_CANCEL)).andStubReturn(null);
+
         // Partial mock so we do not send stuff down the wire
         final BitstampExchangeAdapter exchangeAdapter =  PowerMock.createPartialMockAndInvokeDefaultConstructor(
-                BitstampExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
-        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(CANCEL_ORDER), anyObject(Map.class)).
-                andReturn(exchangeResponse);
+                BitstampExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD,
+                MOCKED_GET_REQUEST_PARAM_MAP_METHOD);
+
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_GET_REQUEST_PARAM_MAP_METHOD).andReturn(requestParamMap);
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(CANCEL_ORDER),
+                eq(requestParamMap)).andReturn(exchangeResponse);
 
         PowerMock.replayAll();
 
@@ -185,11 +186,20 @@ public class TestBitstampExchangeAdapter {
         final byte[] encoded = Files.readAllBytes(Paths.get(BUY_JSON_RESPONSE));
         final String exchangeResponse = new String(encoded, StandardCharsets.UTF_8);
 
+        // Mock out param map so we can assert the contents passed to the transport layer are what we expect.
+        final Map<String, String> requestParamMap = PowerMock.createMock(Map.class);
+        expect(requestParamMap.put("price", new DecimalFormat("#.##").format(BUY_ORDER_PRICE))).andStubReturn(null);
+        expect(requestParamMap.put("amount", new DecimalFormat("#.########").format(BUY_ORDER_QUANTITY))).andStubReturn(null);
+        expect(requestParamMap.put("type", "buy")).andStubReturn(null);
+
         // Partial mock so we do not send stuff down the wire
         final BitstampExchangeAdapter exchangeAdapter =  PowerMock.createPartialMockAndInvokeDefaultConstructor(
-                BitstampExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
-        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(BUY), anyObject(Map.class)).
-                andReturn(exchangeResponse);
+                BitstampExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD,
+                MOCKED_GET_REQUEST_PARAM_MAP_METHOD);
+
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_GET_REQUEST_PARAM_MAP_METHOD).andReturn(requestParamMap);
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(BUY),
+                eq(requestParamMap)).andReturn(exchangeResponse);
 
         PowerMock.replayAll();
 
@@ -206,11 +216,20 @@ public class TestBitstampExchangeAdapter {
         final byte[] encoded = Files.readAllBytes(Paths.get(SELL_JSON_RESPONSE));
         final String exchangeResponse = new String(encoded, StandardCharsets.UTF_8);
 
+        // Mock out param map so we can assert the contents passed to the transport layer are what we expect.
+        final Map<String, String> requestParamMap = PowerMock.createMock(Map.class);
+        expect(requestParamMap.put("price", new DecimalFormat("#.##").format(SELL_ORDER_PRICE))).andStubReturn(null);
+        expect(requestParamMap.put("amount", new DecimalFormat("#.########").format(SELL_ORDER_QUANTITY))).andStubReturn(null);
+        expect(requestParamMap.put("type", "sell")).andStubReturn(null);
+
         // Partial mock so we do not send stuff down the wire
         final BitstampExchangeAdapter exchangeAdapter =  PowerMock.createPartialMockAndInvokeDefaultConstructor(
-                BitstampExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
-        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(SELL), anyObject(Map.class)).
-                andReturn(exchangeResponse);
+                BitstampExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD,
+                MOCKED_GET_REQUEST_PARAM_MAP_METHOD);
+
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_GET_REQUEST_PARAM_MAP_METHOD).andReturn(requestParamMap);
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(SELL),
+                eq(requestParamMap)).andReturn(exchangeResponse);
 
         PowerMock.replayAll();
 
@@ -353,7 +372,8 @@ public class TestBitstampExchangeAdapter {
         assertTrue(openOrders.get(0).getType() == OrderType.SELL);
         assertTrue(openOrders.get(0).getCreationDate().getTime() == EXCHANGE_DATE_FORMAT.parse("2015-01-09 21:14:50").getTime());
         assertTrue(openOrders.get(0).getPrice().compareTo(new BigDecimal("350.00")) == 0);
-        assertTrue(openOrders.get(0).getTotal().compareTo(openOrders.get(0).getQuantity().multiply(openOrders.get(0).getPrice())) == 0);
+        assertTrue(openOrders.get(0).getQuantity().compareTo(new BigDecimal("0.20000000")) == 0);
+        assertTrue(openOrders.get(0).getTotal().compareTo(openOrders.get(0).getPrice().multiply(openOrders.get(0).getQuantity())) == 0);
 
         // the values below are not provided by Bitstamp
         assertNull(openOrders.get(0).getOriginalQuantity());
@@ -640,10 +660,8 @@ public class TestBitstampExchangeAdapter {
         PowerMock.mockStaticPartial(BitstampExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD);
         PowerMock.expectPrivate(BitstampExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD).andReturn(VALID_CONFIG_LOCATION);
         PowerMock.replayAll();
-
         final BitstampExchangeAdapter exchangeAdapter = new BitstampExchangeAdapter();
         assertNotNull(exchangeAdapter);
-
         PowerMock.verifyAll();
     }
 
@@ -700,7 +718,7 @@ public class TestBitstampExchangeAdapter {
      * Have left this in; it might come in useful.
      * It expects VALID_CONFIG_LOCATION to contain the correct credentials.
      */
-//    @Test
+    @Test
     public void testCallingExchangeToGetJson() throws Exception {
 
         // Partial mock the adapter so we can manipulate config location
@@ -708,12 +726,12 @@ public class TestBitstampExchangeAdapter {
         PowerMock.expectPrivate(BitstampExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD).andReturn(VALID_CONFIG_LOCATION);
         PowerMock.replayAll();
 
-//        final BitstampExchangeAdapter exchangeAdapter = new BitstampExchangeAdapter();
+        final TradingApi exchangeAdapter = new BitstampExchangeAdapter();
 //        exchangeAdapter.getImplName();
 //        exchangeAdapter.getPercentageOfBuyOrderTakenForExchangeFee(MARKET_ID);
 //        exchangeAdapter.getPercentageOfSellOrderTakenForExchangeFee(MARKET_ID);
-//        exchangeAdapter.getLatestMarketPrice(MARKET_ID);
-//        exchangeAdapter.getMarketOrders(MARKET_ID);
+        exchangeAdapter.getLatestMarketPrice(MARKET_ID);
+        exchangeAdapter.getMarketOrders(MARKET_ID);
 //        exchangeAdapter.getYourOpenOrders(MARKET_ID);
 //        exchangeAdapter.getBalanceInfo();
 

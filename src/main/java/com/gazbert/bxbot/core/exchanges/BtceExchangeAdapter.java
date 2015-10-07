@@ -271,7 +271,7 @@ public final class BtceExchangeAdapter implements TradingApi {
     public List<OpenOrder> getYourOpenOrders(String marketId) throws TradingApiException, ExchangeTimeoutException {
 
         try {
-            final Map<String, String> params = new HashMap<>();
+            final Map<String, String> params = getRequestParamMap();
             params.put("pair", marketId);
 
             final String results = sendAuthenticatedRequestToExchange("ActiveOrders", params);
@@ -337,7 +337,7 @@ public final class BtceExchangeAdapter implements TradingApi {
             TradingApiException, ExchangeTimeoutException {
 
         try {
-            final Map<String, String> params = new HashMap<>();
+            final Map<String, String> params = getRequestParamMap();
             params.put("pair", marketId);
 
             // note we need to limit to 8 decimal places else exchange will barf
@@ -404,7 +404,7 @@ public final class BtceExchangeAdapter implements TradingApi {
     public boolean cancelOrder(String orderId, String marketIdNotNeeded) throws TradingApiException, ExchangeTimeoutException {
 
         try {
-            final Map<String, String> params = new HashMap<>();
+            final Map<String, String> params = getRequestParamMap();
             params.put("order_id", orderId);
             final String results = sendAuthenticatedRequestToExchange("CancelOrder", params);
 
@@ -1306,9 +1306,16 @@ public final class BtceExchangeAdapter implements TradingApi {
     }
 
     /*
-     * Hack for unit-testing config loading ;-o
+     * Hack for unit-testing config loading.
      */
     private static String getConfigFileLocation() {
         return CONFIG_FILE;
+    }
+
+    /*
+     * Hack for unit-testing map params passed to transport layer.
+     */
+    private Map<String, String> getRequestParamMap() {
+        return new HashMap<>();
     }
 }

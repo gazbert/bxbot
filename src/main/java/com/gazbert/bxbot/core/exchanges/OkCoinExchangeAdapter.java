@@ -236,7 +236,7 @@ public final class OkCoinExchangeAdapter implements TradingApi {
 
         try {
 
-            final Map<String, String> params = new HashMap<>();
+            final Map<String, String> params = getRequestParamMap();
             params.put("symbol", marketId);
 
             if (orderType == OrderType.BUY) {
@@ -285,7 +285,7 @@ public final class OkCoinExchangeAdapter implements TradingApi {
     public boolean cancelOrder(String orderId, String marketId) throws TradingApiException, ExchangeTimeoutException {
 
         try {
-            final Map<String, String> params = new HashMap<>();
+            final Map<String, String> params = getRequestParamMap();
             params.put("order_id", orderId);
             params.put("symbol", marketId);
 
@@ -318,7 +318,7 @@ public final class OkCoinExchangeAdapter implements TradingApi {
 
         try {
 
-            final Map<String, String> params = new HashMap<>();
+            final Map<String, String> params = getRequestParamMap();
             params.put("symbol", marketId);
             params.put("order_id", "-1"); // -1 means bring back all the orders
 
@@ -382,7 +382,7 @@ public final class OkCoinExchangeAdapter implements TradingApi {
 
         try {
 
-            final Map<String, String> params = new HashMap<>();
+            final Map<String, String> params = getRequestParamMap();
             params.put("symbol", marketId);
 
             final String results = sendPublicRequestToExchange("depth.do", params);
@@ -442,7 +442,7 @@ public final class OkCoinExchangeAdapter implements TradingApi {
     public BigDecimal getLatestMarketPrice(String marketId) throws ExchangeTimeoutException, TradingApiException {
 
         try {
-            final Map<String, String> params = new HashMap<>();
+            final Map<String, String> params = getRequestParamMap();
             params.put("symbol", marketId);
 
             final String results = sendPublicRequestToExchange("ticker.do", params);
@@ -1281,9 +1281,16 @@ public final class OkCoinExchangeAdapter implements TradingApi {
     }
 
     /*
-     * Hack for unit-testing config loading ;-o
+     * Hack for unit-testing config loading.
      */
     private static String getConfigFileLocation() {
         return CONFIG_FILE;
+    }
+
+    /*
+     * Hack for unit-testing map params passed to transport layer.
+     */
+    private Map<String, String> getRequestParamMap() {
+        return new HashMap<>();
     }
 }

@@ -240,7 +240,7 @@ public final class CryptsyExchangeAdapter implements TradingApi {
     public MarketOrderBook getMarketOrders(String marketId) throws TradingApiException, ExchangeTimeoutException {
 
         try {
-            final Map<String, String> params = new HashMap<>();
+            final Map<String, String> params = getRequestParamMap();
             params.put("marketid", marketId);
 
             final String results = sendRequestToExchange("marketorders", params);
@@ -290,7 +290,7 @@ public final class CryptsyExchangeAdapter implements TradingApi {
     public List<OpenOrder> getYourOpenOrders(String marketId) throws TradingApiException, ExchangeTimeoutException {
 
         try {
-            final Map<String, String> params = new HashMap<>();
+            final Map<String, String> params = getRequestParamMap();
             params.put("marketid", marketId);
 
             final String results = sendRequestToExchange("myorders", params);
@@ -344,7 +344,7 @@ public final class CryptsyExchangeAdapter implements TradingApi {
             TradingApiException, ExchangeTimeoutException {
 
         try {
-            final Map<String, String> params = new HashMap<>();
+            final Map<String, String> params = getRequestParamMap();
             params.put("marketid", marketId);
             params.put("ordertype", orderType.getStringValue());
 
@@ -385,7 +385,7 @@ public final class CryptsyExchangeAdapter implements TradingApi {
     public boolean cancelOrder(String orderId, String marketIdNotNeeded) throws TradingApiException, ExchangeTimeoutException {
 
         try {
-            final Map<String, String> params = new HashMap<>();
+            final Map<String, String> params = getRequestParamMap();
             params.put("orderid", orderId);
 
             final String results = sendRequestToExchange("cancelorder", params);
@@ -417,7 +417,7 @@ public final class CryptsyExchangeAdapter implements TradingApi {
     public BigDecimal getLatestMarketPrice(String marketId) throws TradingApiException, ExchangeTimeoutException {
 
         try {
-            final Map<String, String> params = new HashMap<>();
+            final Map<String, String> params = getRequestParamMap();
             params.put("marketid", marketId);
 
             final String results = sendRequestToExchange("markettrades", params);
@@ -1145,9 +1145,16 @@ public final class CryptsyExchangeAdapter implements TradingApi {
     }
 
     /*
-     * Hack for unit-testing config loading ;-o
+     * Hack for unit-testing config loading.
      */
     private static String getConfigFileLocation() {
         return CONFIG_FILE;
+    }
+
+    /*
+     * Hack for unit-testing map params passed to transport layer.
+     */
+    private Map<String, String> getRequestParamMap() {
+        return new HashMap<>();
     }
 }

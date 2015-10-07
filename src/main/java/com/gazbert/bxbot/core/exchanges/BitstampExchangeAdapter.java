@@ -323,7 +323,7 @@ public final class BitstampExchangeAdapter implements TradingApi {
             TradingApiException, ExchangeTimeoutException {
 
         try {
-            final Map<String, String> params = new HashMap<>();
+            final Map<String, String> params = getRequestParamMap();
 
             // note we need to limit price to 2 decimal places else exchange will barf
             params.put("price", new DecimalFormat("#.##").format(price));
@@ -377,7 +377,7 @@ public final class BitstampExchangeAdapter implements TradingApi {
     public boolean cancelOrder(String orderId, String marketIdNotNeeded) throws TradingApiException, ExchangeTimeoutException {
 
         try {
-            final Map<String, String> params = new HashMap<>();
+            final Map<String, String> params = getRequestParamMap();
             params.put("id", orderId);
             final String results = sendAuthenticatedRequestToExchange("cancel_order", params);
 
@@ -1065,9 +1065,16 @@ public final class BitstampExchangeAdapter implements TradingApi {
     }
 
     /*
-     * Hack for unit-testing config loading ;-o
+     * Hack for unit-testing config loading.
      */
     private static String getConfigFileLocation() {
         return CONFIG_FILE;
+    }
+
+    /*
+     * Hack for unit-testing map params passed to transport layer.
+     */
+    private Map<String, String> getRequestParamMap() {
+        return new HashMap<>();
     }
 }

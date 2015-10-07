@@ -325,7 +325,7 @@ public final class BitfinexExchangeAdapter implements TradingApi {
             TradingApiException, ExchangeTimeoutException {
 
         try {
-            final Map<String, Object> params = new HashMap<>();
+            final Map<String, Object> params = getRequestParamMap();
 
             params.put("symbol", marketId);
 
@@ -392,7 +392,7 @@ public final class BitfinexExchangeAdapter implements TradingApi {
     public boolean cancelOrder(String orderId, String marketIdNotNeeded) throws TradingApiException, ExchangeTimeoutException {
 
         try {
-            final Map<String, Object> params = new HashMap<>();
+            final Map<String, Object> params = getRequestParamMap();
             params.put("order_id", Long.parseLong(orderId));
             final String results = sendAuthenticatedRequestToExchange("order/cancel", params);
 
@@ -1327,9 +1327,16 @@ public final class BitfinexExchangeAdapter implements TradingApi {
     }
 
     /*
-     * Hack for unit-testing config loading ;-o
+     * Hack for unit-testing config loading.
      */
     private static String getConfigFileLocation() {
         return CONFIG_FILE;
+    }
+
+    /*
+     * Hack for unit-testing map params passed to transport layer.
+     */
+    private Map<String, Object> getRequestParamMap() {
+        return new HashMap<>();
     }
 }
