@@ -13,7 +13,7 @@ except for the trading strategies; you'll need to write those yourself. A basic 
 Trading API. Take a look [here](http://www.investopedia.com/articles/active-trading/101014/basics-algorithmic-trading-concepts-and-examples.asp)
 for more ideas.
 
-Exchange Adapters for using and [BTC-e](https://btc-e.com), [Bitstamp](https://www.bitstamp.net), [Cryptsy](https://www.cryptsy.com), 
+Exchange Adapters for using [BTC-e](https://btc-e.com), [Bitstamp](https://www.bitstamp.net), [Cryptsy](https://www.cryptsy.com), 
 [Bitfinex](https://www.bitfinex.com), and [OKCoin](https://www.okcoin.com/) are included. 
 Feel free to improve these or contribute new adapters to the project; that would be shiny.
 
