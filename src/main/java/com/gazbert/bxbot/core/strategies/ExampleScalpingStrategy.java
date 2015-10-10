@@ -71,9 +71,9 @@ import java.util.List;
  *
  * <p>
  * The algorithm does not factor in being outbid when placing buy orders, i.e. it does not cancel its current order
- * and place a new order at a higher price; it simply holds until the current BID price falls down again. Likewise, the
- * algorithm does not factor in being undercut when placing sell orders, i.e. it does not cancel its current order
- * and place a new order at a lower price; it simply holds until the current BID price falls down again.
+ * and place a new order at a higher price; it simply holds until the current BID price falls again. Likewise, the
+ * algorithm does not factor in being undercut when placing sell orders; it does not cancel the current order
+ * and place a new order at a lower price.
  * </p>
  *
  * <p>

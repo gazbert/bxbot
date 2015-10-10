@@ -1134,6 +1134,10 @@ public final class CryptsyExchangeAdapter implements TradingApi {
         }
     }
 
+    // ------------------------------------------------------------------------------------------------
+    //  Util methods
+    // ------------------------------------------------------------------------------------------------
+
     /**
      * Initialises GSON layer for processing JSON in the Cryptsy API call responses.
      */

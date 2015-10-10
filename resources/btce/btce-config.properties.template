@@ -14,7 +14,7 @@
 ##################################################################################################################
 
 #
-# Login in to you BTC-e account and create your Trading API credentials. Add them below:
+# Login to your BTC-e account and create your Trading API credentials. Add them below:
 #
 key=
 secret=

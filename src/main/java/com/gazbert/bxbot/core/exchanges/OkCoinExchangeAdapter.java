@@ -855,7 +855,7 @@ public final class OkCoinExchangeAdapter implements TradingApi {
             /*
              * Add a timeout so we don't get blocked indefinitley; timeout on URLConnection is in millis.
              * Exchange sometimes gets stuck here for ~1 min once every half hour or so. Especially read timeouts.
-             * connectionTimeout is in SECONDS and comes from bitstamp-config.properties config.
+             * connectionTimeout is in SECONDS and comes from okcoin-config.properties config.
              */
             final int timeoutInMillis = connectionTimeout * 1000;
             exchangeConnection.setConnectTimeout(timeoutInMillis);
@@ -1022,7 +1022,7 @@ public final class OkCoinExchangeAdapter implements TradingApi {
             /*
              * Add a timeout so we don't get blocked indefinitley; timeout on URLConnection is in millis.
              * Exchange sometimes gets stuck here for ~1 min once every half hour or so. Especially read timeouts.
-             * connectionTimeout is in SECONDS and comes from bitfinex-config.properties config.
+             * connectionTimeout is in SECONDS and comes from okcoin-config.properties config.
              */
             final int timeoutInMillis = connectionTimeout * 1000;
             exchangeConnection.setConnectTimeout(timeoutInMillis);
@@ -1271,6 +1271,10 @@ public final class OkCoinExchangeAdapter implements TradingApi {
             }
         }
     }
+
+    // ------------------------------------------------------------------------------------------------
+    //  Util methods
+    // ------------------------------------------------------------------------------------------------
 
     /**
      * Initialises the GSON layer.
