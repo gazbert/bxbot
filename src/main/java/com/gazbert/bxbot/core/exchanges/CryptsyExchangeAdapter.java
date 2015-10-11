@@ -245,7 +245,6 @@ public final class CryptsyExchangeAdapter implements TradingApi {
 
             final String results = sendRequestToExchange("marketorders", params);
 
-            // useful to log diff types of Cryptsy error response in JSON response
             if (LOG.isDebugEnabled()) {
                 LOG.debug("getMarketOrders() response: " + results);
             }
@@ -295,7 +294,6 @@ public final class CryptsyExchangeAdapter implements TradingApi {
 
             final String results = sendRequestToExchange("myorders", params);
 
-            // useful to log diff types of Cryptsy error response in JSON response
             if (LOG.isDebugEnabled()) {
                 LOG.debug("getYourOpenOrders() response: " + results);
             }
@@ -354,7 +352,6 @@ public final class CryptsyExchangeAdapter implements TradingApi {
 
             final String results = sendRequestToExchange("createorder", params);
 
-            // useful to log diff types of Cryptsy error response in JSON response
             if (LOG.isDebugEnabled()) {
                 LOG.debug("createOrder() response: " + results);
             }
@@ -390,7 +387,6 @@ public final class CryptsyExchangeAdapter implements TradingApi {
 
             final String results = sendRequestToExchange("cancelorder", params);
 
-            // useful to log diff types of Cryptsy error response in JSON response
             if (LOG.isDebugEnabled()) {
                 LOG.debug("cancelOrder() response: " + results);
             }
@@ -422,7 +418,6 @@ public final class CryptsyExchangeAdapter implements TradingApi {
 
             final String results = sendRequestToExchange("markettrades", params);
 
-            // useful to log diff types of Cryptsy error response in JSON response
             if (LOG.isDebugEnabled()) {
                 LOG.debug("getLatestMarketPrice() response: " + results);
             }
@@ -453,7 +448,6 @@ public final class CryptsyExchangeAdapter implements TradingApi {
         try {
             final String results = sendRequestToExchange("getinfo", null);
 
-            // useful to log diff types of Cryptsy error response in JSON response
             if (LOG.isDebugEnabled()) {
                 LOG.debug("getBalanceInfo() response: " + results);
             }

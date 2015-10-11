@@ -259,7 +259,6 @@ public final class OkCoinExchangeAdapter implements TradingApi {
 
             final String results = sendAuthenticatedRequestToExchange("trade.do", params);
 
-            // useful to log diff types of error response in JSON response
             if (LOG.isDebugEnabled()) {
                 LOG.debug("createOrder() response: " + results);
             }
@@ -291,7 +290,6 @@ public final class OkCoinExchangeAdapter implements TradingApi {
 
             final String results = sendAuthenticatedRequestToExchange("cancel_order.do", params);
 
-            // useful to log diff types of error response in JSON response
             if (LOG.isDebugEnabled()) {
                 LOG.debug("cancelOrder() response: " + results);
             }
@@ -324,7 +322,6 @@ public final class OkCoinExchangeAdapter implements TradingApi {
 
             final String results = sendAuthenticatedRequestToExchange("order_info.do", params);
 
-            // useful to log diff types of error response in JSON response
             if (LOG.isDebugEnabled()) {
                 LOG.debug("getYourOpenOrders() response: " + results);
             }
@@ -387,7 +384,6 @@ public final class OkCoinExchangeAdapter implements TradingApi {
 
             final String results = sendPublicRequestToExchange("depth.do", params);
 
-            // useful to log diff types of error response in JSON response
             if (LOG.isDebugEnabled()) {
                 LOG.debug("getMarketOrders() response: " + results);
             }
@@ -447,7 +443,6 @@ public final class OkCoinExchangeAdapter implements TradingApi {
 
             final String results = sendPublicRequestToExchange("ticker.do", params);
 
-            // useful to log diff types of error response in JSON response
             if (LOG.isDebugEnabled()) {
                 LOG.debug("getLatestMarketPrice() response: " + results);
             }
@@ -469,7 +464,6 @@ public final class OkCoinExchangeAdapter implements TradingApi {
         try {
             final String results = sendAuthenticatedRequestToExchange("userinfo.do", null);
 
-            // useful to log diff types of error response in JSON response
             if (LOG.isDebugEnabled()) {
                 LOG.debug("getBalanceInfo() response: " + results);
             }

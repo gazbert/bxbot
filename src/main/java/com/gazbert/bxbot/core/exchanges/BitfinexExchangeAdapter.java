@@ -228,7 +228,6 @@ public final class BitfinexExchangeAdapter implements TradingApi {
         try {
             final String results = sendPublicRequestToExchange("book/" + marketId);
 
-            // useful to log diff types of error response in JSON response
             if (LOG.isDebugEnabled()) {
                 LOG.debug("getMarketOrders() response: " + results);
             }
@@ -273,7 +272,6 @@ public final class BitfinexExchangeAdapter implements TradingApi {
         try {
             final String results = sendAuthenticatedRequestToExchange("orders", null);
 
-            // useful to log diff types of error response in JSON response
             if (LOG.isDebugEnabled()) {
                 LOG.debug("getYourOpenOrders() response: " + results);
             }
@@ -362,7 +360,6 @@ public final class BitfinexExchangeAdapter implements TradingApi {
 
             final String results = sendAuthenticatedRequestToExchange("order/new", params);
 
-            // useful to log diff types of error response in JSON response
             if (LOG.isDebugEnabled()) {
                 LOG.debug("createOrder() response: " + results);
             }
@@ -396,7 +393,6 @@ public final class BitfinexExchangeAdapter implements TradingApi {
             params.put("order_id", Long.parseLong(orderId));
             final String results = sendAuthenticatedRequestToExchange("order/cancel", params);
 
-            // useful to log diff types of error response in JSON response
             if (LOG.isDebugEnabled()) {
                 LOG.debug("cancelOrder() response: " + results);
             }
@@ -425,7 +421,6 @@ public final class BitfinexExchangeAdapter implements TradingApi {
         try {
             final String results = sendPublicRequestToExchange("pubticker/" + marketId);
 
-            // useful to log diff types of error response in JSON response
             if (LOG.isDebugEnabled()) {
                 LOG.debug("getLatestMarketPrice() response: " + results);
             }
@@ -447,7 +442,6 @@ public final class BitfinexExchangeAdapter implements TradingApi {
         try {
             final String results = sendAuthenticatedRequestToExchange("balances", null);
 
-            // useful to log diff types of error response in JSON response
             if (LOG.isDebugEnabled()) {
                 LOG.debug("getBalanceInfo() response: " + results);
             }
@@ -489,7 +483,6 @@ public final class BitfinexExchangeAdapter implements TradingApi {
         try {
             final String results = sendAuthenticatedRequestToExchange("account_infos", null);
 
-            // useful to log diff types of error response in JSON response
             if (LOG.isDebugEnabled()) {
                 LOG.debug("getPercentageOfBuyOrderTakenForExchangeFee() response: " + results);
             }
@@ -516,7 +509,6 @@ public final class BitfinexExchangeAdapter implements TradingApi {
         try {
             final String results = sendAuthenticatedRequestToExchange("account_infos", null);
 
-            // useful to log diff types of error response in JSON response
             if (LOG.isDebugEnabled()) {
                 LOG.debug("getPercentageOfSellOrderTakenForExchangeFee() response: " + results);
             }
