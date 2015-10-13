@@ -718,7 +718,7 @@ public final class BitstampExchangeAdapter implements TradingApi {
 
             /*
              * Add a timeout so we don't get blocked indefinitley; timeout on URLConnection is in millis.
-             * Exchange sometimes gets stuck here for ~1 min once every half hour or so. Especially read timeouts.
+             * Exchange sometimes gets stuck here, especially read timeouts.
              * connectionTimeout is in SECONDS and comes from bitstamp-config.properties config.
              */
             final int timeoutInMillis = connectionTimeout * 1000;
@@ -860,7 +860,7 @@ public final class BitstampExchangeAdapter implements TradingApi {
 
             /*
              * Add a timeout so we don't get blocked indefinitley; timeout on URLConnection is in millis.
-             * Exchange sometimes gets stuck here for ~1 min once every half hour or so. Especially read timeouts.
+             * Exchange sometimes gets stuck here, especially read timeouts.
              * connectionTimeout is in SECONDS and comes from bitstamp-config.properties config.
              */
             final int timeoutInMillis = connectionTimeout * 1000;
