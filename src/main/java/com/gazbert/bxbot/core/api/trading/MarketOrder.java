@@ -63,13 +63,13 @@ public final class MarketOrder {
      * Constructor builds a Market Order.
      *
      * @param type      Type of order. Value must be {@link OrderType#BUY} or {@link OrderType#SELL}.
-     * @param sellPrice Price of the order. This is usually in BTC or USD.
+     * @param price     Price of the order. This is usually in BTC or USD.
      * @param quantity  Quantity of the order. This is usually the amount of the other currency you want to trade for BTC/USD.
      * @param total     Total value of order (price * quantity). This is usually in BTC or USD.
      */
-    public MarketOrder(OrderType type, BigDecimal sellPrice, BigDecimal quantity, BigDecimal total) {
+    public MarketOrder(OrderType type, BigDecimal price, BigDecimal quantity, BigDecimal total) {
         this.type = type;
-        this.price = sellPrice;
+        this.price = price;
         this.quantity = quantity;
         this.total = total;
     }

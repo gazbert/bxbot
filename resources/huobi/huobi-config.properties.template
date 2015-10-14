@@ -1,0 +1,52 @@
+##################################################################################################################
+# Mandatory config for the Huobi Exchange Adapter.
+#
+# For details see API Settings" section: https://www.huobi.com/account/account.php?a=apikeys
+#
+# WARNING: Keep this file safe and secret - it contains your private key!
+#
+# This file must be on BX-bot's runtime classpath in the ./resources/huobi folder.
+#
+# All properties are mandatory.
+#
+# Usage: RENAME this file to remove the .template suffix, save file, and then follow instructions below:
+#
+##################################################################################################################
+
+#
+# Login to your Huobi account and create your Trading API credentials. Add them below:
+#
+key=your_access_key
+secret=your_secret_key
+
+#
+# Exchange Taker Buy fee in %
+# IMPORTANT - keep an eye on the fees: https://www.huobi.com/about/detail
+# Buy fees on 10 Oct 2015 = 0.2%
+#
+buy-fee=0.2
+
+#
+# Exchange Taker Sell fee in %
+# IMPORTANT - keep an eye on the fees: https://www.huobi.com/about/detail
+# Sell fees on 10 Oct 2015 = 0.2%
+#
+sell-fee=0.2
+
+#
+# This value is in SECONDS. It is the timeout value that the exchange adapter will wait on socket connect/socket read
+# when communicating with the exchange. Once this threshold has been breached, the exchange adapter will give up and
+# throw a Trading API TimeoutException.
+#
+# The exchange adapter is single threaded: if one request gets blocked, it will block all subsequent requests from
+# getting to the exchange. This timeout prevents an indefinite block.
+#
+# You'll need to experiment with values here.
+#
+connection-timeout=30
+
+#
+# Market (currency) used for fetching wallet balances from exchange. Supported values are: 'cny' or 'usd'.
+# See: https://github.com/huobiapi/API_Docs_en/wiki/REST-get_account_info
+#
+account-info-market=usd
