@@ -118,7 +118,7 @@ import java.util.Properties;
  * they are not fetched from the exchange at runtime as the Huobi API does not support this - it only provides the fee
  * monetary value for a given order id via the order_info API call. The fees are used across all markets.
  * Make sure you keep an eye on the <a href="https://www.huobi.com/about/detail">exchange fees</a> and update the
- * config accordingly.
+ * config accordingly. This adapter will use the <em>Taker</em> fees to keep things simple for now.
  * </p>
  *
  * <p>
