@@ -405,8 +405,8 @@ To start, stop, and query the bot's status, use `./bxbot.sh [start|stop|status]`
 The following features are going to be developed: 
 
 - Convert bot into [Spring Boot](http://projects.spring.io/spring-boot/) app. This will include a new REST API for administering the bot.
-- Web UI (written in [AngularJS](https://angularjs.org/), [TypeScript](http://www.typescriptlang.org/), and 
-  [Bootstrap](http://getbootstrap.com/)) for administering the bot; it will consume the new Spring Boot app REST API. 
+- Web UI (written in [AngularJS](https://angularjs.org/) and [Bootstrap](http://getbootstrap.com/)) for administering 
+  the bot; it will consume the new Spring Boot app REST API. 
 - Android app for administering the bot; it will consume the new Spring Boot app REST API.
 - iOS app for administering the bot; it will consume the new Spring Boot app REST API.
 - Trade repository API for Trading Strategies to record and analyse their trades - SQL, [MongoDB](https://www.mongodb.org/),

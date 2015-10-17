@@ -91,7 +91,7 @@ public class TestBtceExchangeAdapter {
     private static final String MARKET_ID = "btc_usd";
     private static final BigDecimal BUY_ORDER_PRICE = new BigDecimal("200.10");
     private static final BigDecimal BUY_ORDER_QUANTITY = new BigDecimal("0.05");
-    private static final BigDecimal SELL_ORDER_PRICE = new BigDecimal("244.176");
+    private static final BigDecimal SELL_ORDER_PRICE = new BigDecimal("300.176");
     private static final BigDecimal SELL_ORDER_QUANTITY = new BigDecimal("0.05");
     private static final String ORDER_ID_TO_CANCEL = "804754278";
 
@@ -721,21 +721,26 @@ public class TestBtceExchangeAdapter {
      * Have left this in; it might come in useful.
      * It expects VALID_CONFIG_LOCATION to contain the correct credentials.
      */
-    //@Test
-    public void testCallingExchangeToGetJson() throws Exception {
+//    @Test
+    public void runIntegrationTest() throws Exception {
 
         // Partial mock the adapter so we can manipulate config location
         PowerMock.mockStaticPartial(BtceExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD);
         PowerMock.expectPrivate(BtceExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD).andReturn(VALID_CONFIG_LOCATION);
         PowerMock.replayAll();
 
-        //final BtceExchangeAdapter exchangeAdapter = new BtceExchangeAdapter();
+//        final BtceExchangeAdapter exchangeAdapter = new BtceExchangeAdapter();
 //        exchangeAdapter.getImplName();
 //        exchangeAdapter.getPercentageOfBuyOrderTakenForExchangeFee(MARKET_ID);
 //        exchangeAdapter.getPercentageOfSellOrderTakenForExchangeFee(MARKET_ID);
 //        exchangeAdapter.getLatestMarketPrice(MARKET_ID);
+//        exchangeAdapter.getMarketOrders(MARKET_ID);
 //        exchangeAdapter.getYourOpenOrders(MARKET_ID);
 //        exchangeAdapter.getBalanceInfo();
+
+//        // Careful here - make sure the SELL_ORDER_PRICE is sensible!
+//        final String orderId = exchangeAdapter.createOrder(MARKET_ID, OrderType.SELL, SELL_ORDER_QUANTITY, SELL_ORDER_PRICE);
+//        exchangeAdapter.cancelOrder(orderId, MARKET_ID);
 
         PowerMock.verifyAll();
     }

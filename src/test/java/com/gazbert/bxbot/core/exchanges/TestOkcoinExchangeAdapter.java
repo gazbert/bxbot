@@ -92,7 +92,7 @@ public class TestOkcoinExchangeAdapter {
     private static final String MARKET_ID = "btc_usd";
     private static final BigDecimal BUY_ORDER_PRICE = new BigDecimal("200.18");
     private static final BigDecimal BUY_ORDER_QUANTITY = new BigDecimal("0.01");
-    private static final BigDecimal SELL_ORDER_PRICE = new BigDecimal("250.176");
+    private static final BigDecimal SELL_ORDER_PRICE = new BigDecimal("300.176");
     private static final BigDecimal SELL_ORDER_QUANTITY = new BigDecimal("0.01");
     private static final String ORDER_ID_TO_CANCEL = "99671870";
 
@@ -769,7 +769,7 @@ public class TestOkcoinExchangeAdapter {
      * It expects VALID_CONFIG_LOCATION to contain the correct credentials.
      */
 //    @Test
-    public void testCallingExchangeToGetJson() throws Exception {
+    public void runIntegrationTest() throws Exception {
 
         // Partial mock the adapter so we can manipulate config location
         PowerMock.mockStaticPartial(OkCoinExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD);
@@ -784,8 +784,10 @@ public class TestOkcoinExchangeAdapter {
 //        exchangeAdapter.getMarketOrders(MARKET_ID);
 //        exchangeAdapter.getYourOpenOrders(MARKET_ID);
 //        exchangeAdapter.getBalanceInfo();
-//        exchangeAdapter.createOrder(MARKET_ID, OrderType.SELL, SELL_ORDER_QUANTITY, SELL_ORDER_PRICE);
-//        exchangeAdapter.cancelOrder(ORDER_ID_TO_CANCEL, MARKET_ID);
+
+//        // Careful here - make sure the SELL_ORDER_PRICE is sensible!
+//        final String orderId = exchangeAdapter.createOrder(MARKET_ID, OrderType.SELL, SELL_ORDER_QUANTITY, SELL_ORDER_PRICE);
+//        exchangeAdapter.cancelOrder(orderId, MARKET_ID);
 
         PowerMock.verifyAll();
     }

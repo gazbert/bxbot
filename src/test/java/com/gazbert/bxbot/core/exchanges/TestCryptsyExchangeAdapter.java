@@ -678,21 +678,26 @@ public class TestCryptsyExchangeAdapter {
      * Have left this in; it might come in useful.
      * It expects VALID_CONFIG_LOCATION to contain the correct credentials.
      */
-    //@Test
-    public void testCallingExchangeToGetJson() throws Exception {
+//    @Test
+    public void runIntegrationTest() throws Exception {
 
         // Partial mock the adapter so we can manipulate config location
         PowerMock.mockStaticPartial(CryptsyExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD);
         PowerMock.expectPrivate(CryptsyExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD).andReturn(VALID_CONFIG_LOCATION);
         PowerMock.replayAll();
 
-        //final CryptsyExchangeAdapter exchangeAdapter = new CryptsyExchangeAdapter();
+//        final CryptsyExchangeAdapter exchangeAdapter = new CryptsyExchangeAdapter();
 //        exchangeAdapter.getImplName();
 //        exchangeAdapter.getPercentageOfBuyOrderTakenForExchangeFee(MARKET_ID);
 //        exchangeAdapter.getPercentageOfSellOrderTakenForExchangeFee(MARKET_ID);
 //        exchangeAdapter.getLatestMarketPrice(MARKET_ID);
+//        exchangeAdapter.getMarketOrders(MARKET_ID);
 //        exchangeAdapter.getYourOpenOrders(MARKET_ID);
 //        exchangeAdapter.getBalanceInfo();
+
+//        // Careful here - make sure the SELL_ORDER_PRICE is sensible!
+//        final String orderId = exchangeAdapter.createOrder(MARKET_ID, OrderType.SELL, SELL_ORDER_QUANTITY, SELL_ORDER_PRICE);
+//        exchangeAdapter.cancelOrder(orderId, MARKET_ID);
 
         PowerMock.verifyAll();
     }
