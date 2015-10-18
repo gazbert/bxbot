@@ -14,7 +14,8 @@ Trading API. Take a look [here](http://www.investopedia.com/articles/active-trad
 for more ideas.
 
 Exchange Adapters for using [BTC-e](https://btc-e.com), [Bitstamp](https://www.bitstamp.net), [Cryptsy](https://www.cryptsy.com), 
-[Bitfinex](https://www.bitfinex.com), [OKCoin](https://www.okcoin.com/), and [Huobi](https://www.huobi.com/) are included. 
+[Bitfinex](https://www.bitfinex.com), [OKCoin](https://www.okcoin.com/), [Huobi](https://www.huobi.com/), and 
+[Coinbase](https://exchange.coinbase.com/) are included. 
 Feel free to improve these or contribute new adapters to the project; that would be shiny.
 
 The Trading API provides support for [limit orders](http://www.investopedia.com/terms/l/limitorder.asp)
