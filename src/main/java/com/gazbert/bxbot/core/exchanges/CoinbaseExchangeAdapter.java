@@ -851,7 +851,7 @@ public final class CoinbaseExchangeAdapter implements TradingApi {
 
     /**
      * <p>
-     * Makes Authenticated API call to Coinbase exchange. Uses HTTP POST.
+     * Makes Authenticated API call to Coinbase exchange.
      * </p>
      *
      * <p>
