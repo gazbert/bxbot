@@ -784,7 +784,6 @@ public final class CoinbaseExchangeAdapter implements TradingApi {
 
             /*
              * Add a timeout so we don't get blocked indefinitley; timeout on URLConnection is in millis.
-             * Exchange sometimes gets stuck here, especially read timeouts.
              * connectionTimeout is in SECONDS and comes from coinbase-config.properties config.
              */
             final int timeoutInMillis = connectionTimeout * 1000;
@@ -1014,7 +1013,6 @@ public final class CoinbaseExchangeAdapter implements TradingApi {
 
             /*
              * Add a timeout so we don't get blocked indefinitley; timeout on URLConnection is in millis.
-             * Exchange sometimes gets stuck here, especially read timeouts.
              * connectionTimeout is in SECONDS and comes from coinbase-config.properties config.
              */
             final int timeoutInMillis = connectionTimeout * 1000;

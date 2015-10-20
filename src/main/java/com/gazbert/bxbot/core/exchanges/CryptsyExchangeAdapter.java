@@ -906,7 +906,6 @@ public final class CryptsyExchangeAdapter implements TradingApi {
 
             /*
              * Add a timeout so we don't get blocked indefinitley; timeout on URLConnection is in millis.
-             * Cryptsy sometimes gets stuck here, especially read timeouts.
              * connectionTimeout is in SECONDS and comes from cryptsy-config.properties config.
              */
             final int timeoutInMillis = connectionTimeout * 1000;
