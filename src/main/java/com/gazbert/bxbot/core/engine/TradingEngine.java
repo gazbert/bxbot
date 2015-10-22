@@ -105,6 +105,11 @@ final public class TradingEngine {
     private static final String CAUSE_ERROR_MSG_LABEL = " Cause: " ;
 
     /*
+     * Horizontal rule divider for structuring the email message content.
+     */
+    private static final String HORIZONTAL_RULE = "------------------------------";
+
+    /*
      * Trade execution interval in secs.
      * The time we wait/sleep in between trade cycles.
      */
@@ -428,24 +433,28 @@ final public class TradingEngine {
         msgContent.append(newline);
         msgContent.append(newline);
 
+        msgContent.append(HORIZONTAL_RULE);
         msgContent.append("Exchange Adapter:");
         msgContent.append(newline);
         msgContent.append(tradingApi.getClass().getName());
         msgContent.append(newline);
         msgContent.append(newline);
 
+        msgContent.append(HORIZONTAL_RULE);
         msgContent.append("Event Time:");
         msgContent.append(newline);
         msgContent.append(new Date());
         msgContent.append(newline);
         msgContent.append(newline);
 
+        msgContent.append(HORIZONTAL_RULE);
         msgContent.append("Event Details:");
         msgContent.append(newline);
         msgContent.append(errorDetails);
         msgContent.append(newline);
         msgContent.append(newline);
 
+        msgContent.append(HORIZONTAL_RULE);
         msgContent.append("Take Action:");
         msgContent.append(newline);
         msgContent.append("Check the bot logs for more information. The bot will shutdown NOW!");
@@ -453,6 +462,7 @@ final public class TradingEngine {
         msgContent.append(newline);
 
         if (exception != null) {
+            msgContent.append(HORIZONTAL_RULE);
             msgContent.append("Stacktrace:");
             msgContent.append(newline);
             final StringWriter stringWriter = new StringWriter();
