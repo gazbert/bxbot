@@ -105,9 +105,14 @@ final public class TradingEngine {
     private static final String CAUSE_ERROR_MSG_LABEL = " Cause: " ;
 
     /*
+     *System Newline separator.
+     */
+    private static final String NEWLINE = System.getProperty("line.separator");
+
+    /*
      * Horizontal rule divider for structuring the email message content.
      */
-    private static final String HORIZONTAL_RULE = "------------------------------";
+    private static final String HORIZONTAL_RULE = "--------------------------------------------------" + NEWLINE;
 
     /*
      * Trade execution interval in secs.
@@ -427,44 +432,42 @@ final public class TradingEngine {
      */
     private String buildCriticalEmailAlertMsgContent(String errorDetails, Throwable exception) {
 
-        final String newline = System.getProperty("line.separator");
-
         final StringBuilder msgContent = new StringBuilder("A CRITICAL error event has occurred on BX-bot.");
-        msgContent.append(newline);
-        msgContent.append(newline);
+        msgContent.append(NEWLINE);
+        msgContent.append(NEWLINE);
 
         msgContent.append(HORIZONTAL_RULE);
         msgContent.append("Exchange Adapter:");
-        msgContent.append(newline);
+        msgContent.append(NEWLINE);
         msgContent.append(tradingApi.getClass().getName());
-        msgContent.append(newline);
-        msgContent.append(newline);
+        msgContent.append(NEWLINE);
+        msgContent.append(NEWLINE);
 
         msgContent.append(HORIZONTAL_RULE);
         msgContent.append("Event Time:");
-        msgContent.append(newline);
+        msgContent.append(NEWLINE);
         msgContent.append(new Date());
-        msgContent.append(newline);
-        msgContent.append(newline);
+        msgContent.append(NEWLINE);
+        msgContent.append(NEWLINE);
 
         msgContent.append(HORIZONTAL_RULE);
         msgContent.append("Event Details:");
-        msgContent.append(newline);
+        msgContent.append(NEWLINE);
         msgContent.append(errorDetails);
-        msgContent.append(newline);
-        msgContent.append(newline);
+        msgContent.append(NEWLINE);
+        msgContent.append(NEWLINE);
 
         msgContent.append(HORIZONTAL_RULE);
         msgContent.append("Take Action:");
-        msgContent.append(newline);
+        msgContent.append(NEWLINE);
         msgContent.append("Check the bot logs for more information. The bot will shutdown NOW!");
-        msgContent.append(newline);
-        msgContent.append(newline);
+        msgContent.append(NEWLINE);
+        msgContent.append(NEWLINE);
 
         if (exception != null) {
             msgContent.append(HORIZONTAL_RULE);
             msgContent.append("Stacktrace:");
-            msgContent.append(newline);
+            msgContent.append(NEWLINE);
             final StringWriter stringWriter = new StringWriter();
             final PrintWriter printWriter = new PrintWriter(stringWriter);
             exception.printStackTrace(printWriter);
