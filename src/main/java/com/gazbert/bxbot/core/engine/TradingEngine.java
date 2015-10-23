@@ -439,12 +439,14 @@ final public class TradingEngine {
         msgContent.append(HORIZONTAL_RULE);
         msgContent.append("Exchange Adapter:");
         msgContent.append(NEWLINE);
+        msgContent.append(NEWLINE);
         msgContent.append(tradingApi.getClass().getName());
         msgContent.append(NEWLINE);
         msgContent.append(NEWLINE);
 
         msgContent.append(HORIZONTAL_RULE);
         msgContent.append("Event Time:");
+        msgContent.append(NEWLINE);
         msgContent.append(NEWLINE);
         msgContent.append(new Date());
         msgContent.append(NEWLINE);
@@ -453,20 +455,23 @@ final public class TradingEngine {
         msgContent.append(HORIZONTAL_RULE);
         msgContent.append("Event Details:");
         msgContent.append(NEWLINE);
+        msgContent.append(NEWLINE);
         msgContent.append(errorDetails);
         msgContent.append(NEWLINE);
         msgContent.append(NEWLINE);
 
         msgContent.append(HORIZONTAL_RULE);
-        msgContent.append("Take Action:");
+        msgContent.append("Action Taken:");
         msgContent.append(NEWLINE);
-        msgContent.append("Check the bot logs for more information. The bot will shutdown NOW!");
+        msgContent.append(NEWLINE);
+        msgContent.append("The bot will shutdown NOW! Check the bot logs for more information.");
         msgContent.append(NEWLINE);
         msgContent.append(NEWLINE);
 
         if (exception != null) {
             msgContent.append(HORIZONTAL_RULE);
             msgContent.append("Stacktrace:");
+            msgContent.append(NEWLINE);
             msgContent.append(NEWLINE);
             final StringWriter stringWriter = new StringWriter();
             final PrintWriter printWriter = new PrintWriter(stringWriter);
