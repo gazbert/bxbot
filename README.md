@@ -14,7 +14,7 @@ Trading API. Take a look [here](http://www.investopedia.com/articles/active-trad
 for more ideas.
 
 Exchange Adapters for using [BTC-e](https://btc-e.com), [Bitstamp](https://www.bitstamp.net), [Cryptsy](https://www.cryptsy.com), 
-[Bitfinex](https://www.bitfinex.com), [OKCoin](https://www.okcoin.com/), [Huobi](https://www.huobi.com/),  
+[Bitfinex](https://www.bitfinex.com), [OKCoin](https://www.okcoin.com/), [Huobi](https://www.huobi.com/), 
 [Coinbase](https://exchange.coinbase.com/), and [itBit](https://www.itbit.com/) are included. 
 Feel free to improve these or contribute new adapters to the project; that would be shiny.
 
