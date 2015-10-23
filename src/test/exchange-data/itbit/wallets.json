@@ -1,0 +1,29 @@
+[
+  {
+    "id": "62827e93-f19b-67bf-8d2f-663fa4f0f1ad",
+    "userId": "51db621f-d79d-17dd-23dd-2bc891b1883a",
+    "name": "Wallet",
+    "balances": [
+      {
+        "availableBalance": "1000.9900000",
+        "totalBalance": "1100.58000000",
+        "currency": "USD"
+      },
+      {
+        "availableBalance": "1.50000000",
+        "totalBalance": "2.50000000",
+        "currency": "XBT"
+      },
+      {
+        "availableBalance": "0.00000000",
+        "totalBalance": "0.00000000",
+        "currency": "EUR"
+      },
+      {
+        "availableBalance": "0.00000000",
+        "totalBalance": "0.00000000",
+        "currency": "SGD"
+      }
+    ]
+  }
+]

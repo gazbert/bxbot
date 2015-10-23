@@ -1,0 +1,16 @@
+{
+  "id": "8a9ac32f-c2bd-4316-87d8-4219dc5e8041",
+  "walletId": "62997e9d-419b-48bf-8d21-689fa4f0ebdd",
+  "side": "buy",
+  "instrument": "XBTUSD",
+  "type": "limit",
+  "amount": "0.01",
+  "displayAmount": "0.01",
+  "price": "230.18",
+  "volumeWeightedAveragePrice": "0",
+  "amountFilled": "0",
+  "createdTime": "2015-10-03T16:40:45.7949832Z",
+  "status": "submitted",
+  "metadata": {},
+  "clientOrderIdentifier": ""
+}
