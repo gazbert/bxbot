@@ -129,9 +129,9 @@ public final class OkCoinExchangeAdapter implements TradingApi {
     private static final String UNEXPECTED_IO_ERROR_MSG = "Failed to connect to Exchange due to unexpected IO error.";
 
     /**
-     * IO 50x Timeout error message for logging.
+     * IO 5xx Timeout error message for logging.
      */
-    private static final String IO_50X_TIMEOUT_ERROR_MSG = "Failed to connect to Exchange due to 50x timeout.";
+    private static final String IO_5XX_TIMEOUT_ERROR_MSG = "Failed to connect to Exchange due to 5xx timeout.";
 
     /**
      * IO Socket Timeout error message for logging.
@@ -887,9 +887,13 @@ public final class OkCoinExchangeAdapter implements TradingApi {
                  */
                 if (exchangeConnection != null && (exchangeConnection.getResponseCode() == 502
                         || exchangeConnection.getResponseCode() == 503
-                        || exchangeConnection.getResponseCode() == 504)) {
+                        || exchangeConnection.getResponseCode() == 504
 
-                    final String errorMsg = IO_50X_TIMEOUT_ERROR_MSG;
+                        // Cloudflare related
+                        || exchangeConnection.getResponseCode() == 522
+                        || exchangeConnection.getResponseCode() == 525)) {
+
+                    final String errorMsg = IO_5XX_TIMEOUT_ERROR_MSG;
                     LOG.error(errorMsg, e);
                     throw new ExchangeTimeoutException(errorMsg, e);
 
@@ -1058,9 +1062,13 @@ public final class OkCoinExchangeAdapter implements TradingApi {
                  */
                 if (exchangeConnection != null && (exchangeConnection.getResponseCode() == 502
                         || exchangeConnection.getResponseCode() == 503
-                        || exchangeConnection.getResponseCode() == 504)) {
+                        || exchangeConnection.getResponseCode() == 504
 
-                    final String errorMsg = IO_50X_TIMEOUT_ERROR_MSG;
+                        // Cloudflare related
+                        || exchangeConnection.getResponseCode() == 522
+                        || exchangeConnection.getResponseCode() == 525)) {
+
+                    final String errorMsg = IO_5XX_TIMEOUT_ERROR_MSG;
                     LOG.error(errorMsg, e);
                     throw new ExchangeTimeoutException(errorMsg, e);
 
