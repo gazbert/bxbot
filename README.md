@@ -96,7 +96,7 @@ All elements are mandatory unless stated otherwise.
 The `<name>` value is for descriptive use only. It is used in the log statements.
 
 For the `<adapter>` value, you must specify the fully qualified name of the Exchange Adapter class for the Trading Engine
-to inject on startup. The class _must_ be on the runtime classpath. See the _How do I write my own Exchange Adapter?_ 
+to inject on startup. The class must be on the runtime classpath. See the _How do I write my own Exchange Adapter?_ 
 section for more details.
 
 BX-bot only supports 1 Exchange Adapter for each instance of the bot; you will need to create multiple (runtime) 

@@ -890,6 +890,7 @@ public final class OkCoinExchangeAdapter implements TradingApi {
                         || exchangeConnection.getResponseCode() == 504
 
                         // Cloudflare related
+                        || exchangeConnection.getResponseCode() == 520
                         || exchangeConnection.getResponseCode() == 522
                         || exchangeConnection.getResponseCode() == 525)) {
 
@@ -1065,6 +1066,7 @@ public final class OkCoinExchangeAdapter implements TradingApi {
                         || exchangeConnection.getResponseCode() == 504
 
                         // Cloudflare related
+                        || exchangeConnection.getResponseCode() == 520
                         || exchangeConnection.getResponseCode() == 522
                         || exchangeConnection.getResponseCode() == 525)) {
 
