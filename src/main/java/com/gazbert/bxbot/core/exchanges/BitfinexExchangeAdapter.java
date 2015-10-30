@@ -981,9 +981,18 @@ public final class BitfinexExchangeAdapter implements TradingApi {
             try {
 
                 /*
+                 * Occasionally get this on finex.
+                 */
+                if (e.getMessage() != null && e.getMessage().contains("Connection reset")) {
+
+                    final String errorMsg = "Failed to connect to Bitfinex. SSL Connection was reset by the server.";
+                    LOG.error(errorMsg, e);
+                    throw new ExchangeTimeoutException(errorMsg, e);
+
+                /*
                  * Exchange sometimes fails with these codes, but recovers by next request...
                  */
-                if (exchangeConnection != null && (exchangeConnection.getResponseCode() == 502
+                } else if (exchangeConnection != null && (exchangeConnection.getResponseCode() == 502
                         || exchangeConnection.getResponseCode() == 503
                         || exchangeConnection.getResponseCode() == 504)) {
 
@@ -1155,9 +1164,18 @@ public final class BitfinexExchangeAdapter implements TradingApi {
             try {
 
                 /*
+                 * Occasionally get this on finex.
+                 */
+                if (e.getMessage() != null && e.getMessage().contains("Connection reset")) {
+
+                    final String errorMsg = "Failed to connect to Bitfinex. SSL Connection was reset by the server.";
+                    LOG.error(errorMsg, e);
+                    throw new ExchangeTimeoutException(errorMsg, e);
+
+                /*
                  * Exchange sometimes fails with these codes, but recovers by next request...
                  */
-                if (exchangeConnection != null && (exchangeConnection.getResponseCode() == 502
+                } else if (exchangeConnection != null && (exchangeConnection.getResponseCode() == 502
                         || exchangeConnection.getResponseCode() == 503
                         || exchangeConnection.getResponseCode() == 504)) {
 
