@@ -60,6 +60,10 @@ import java.util.Properties;
 
 /**
  * <p>
+ * <em>TODO - Remove tmp PATCH in {@link #sendAuthenticatedRequestToExchange(String, Map)} for occasional 400 responses sent by exchange for userinfo calls/</em>
+ * </p>
+ *
+ * <p>
  * Exchange Adapter for integrating with the OKCoin exchange.
  * The OKCoin API is documented <a href="https://www.okcoin.com/about/rest_getStarted.do">here</a>.
  * </p>
@@ -1068,7 +1072,12 @@ public final class OkCoinExchangeAdapter implements TradingApi {
                         // Cloudflare related
                         || exchangeConnection.getResponseCode() == 520
                         || exchangeConnection.getResponseCode() == 522
-                        || exchangeConnection.getResponseCode() == 525)) {
+                        || exchangeConnection.getResponseCode() == 525
+
+                        // TODO - remove this tmp PATCH when OKCoin fix their side or I find the bug in my code... ;-)
+                        // Patch for exchange returning occasional 400 for userinfo calls, approx 1 per week?
+                        // java.io.IOException: Server returned HTTP response code: 400 for URL: https://www.okcoin.com/api/v1/userinfo.do
+                        || (exchangeConnection.getResponseCode() == 400 && apiMethod.equals("userinfo.do")))) {
 
                     final String errorMsg = IO_5XX_TIMEOUT_ERROR_MSG;
                     LOG.error(errorMsg, e);
