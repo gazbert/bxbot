@@ -60,7 +60,7 @@ import java.util.Properties;
 
 /**
  * <p>
- * <em>TODO - Remove tmp PATCH in {@link #sendAuthenticatedRequestToExchange(String, Map)} for occasional 400 responses sent by exchange for userinfo calls/</em>
+ * <em>TODO - Remove tmp PATCH in {@link #sendAuthenticatedRequestToExchange(String, Map)} for occasional 400 responses sent by exchange for userinfo + order_info calls/</em>
  * </p>
  *
  * <p>
@@ -1075,9 +1075,11 @@ public final class OkCoinExchangeAdapter implements TradingApi {
                         || exchangeConnection.getResponseCode() == 525
 
                         // TODO - remove this tmp PATCH when OKCoin fix their side or I find the bug in my code... ;-)
-                        // Patch for exchange returning occasional 400 for userinfo calls, approx 1 per week?
+                        // Patch for exchange returning occasional 400 responses.
                         // java.io.IOException: Server returned HTTP response code: 400 for URL: https://www.okcoin.com/api/v1/userinfo.do
-                        || (exchangeConnection.getResponseCode() == 400 && apiMethod.equals("userinfo.do")))) {
+                        // java.io.IOException: Server returned HTTP response code: 400 for URL: https://www.okcoin.com/api/v1/order_info.do
+                        || (exchangeConnection.getResponseCode() == 400 &&
+                           (apiMethod.equals("userinfo.do") || apiMethod.equals("order_info.do"))))) {
 
                     final String errorMsg = IO_5XX_TIMEOUT_ERROR_MSG;
                     LOG.error(errorMsg, e);

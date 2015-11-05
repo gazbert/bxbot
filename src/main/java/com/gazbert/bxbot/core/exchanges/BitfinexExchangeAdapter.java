@@ -64,6 +64,10 @@ import java.util.Properties;
 
 /**
  * <p>
+ * <em>TODO - Remove tmp PATCH in {@link #sendAuthenticatedRequestToExchange(String, Map)} for occasional 400 orders responses sent by exchange</em>
+ * </p>
+ *
+ * <p>
  * Exchange Adapter for integrating with the Bitfinex exchange.
  * The Bitfinex API is documented <a href="https://www.bitfinex.com/pages/api">here</a>.
  * </p>
@@ -1177,7 +1181,13 @@ public final class BitfinexExchangeAdapter implements TradingApi {
                  */
                 } else if (exchangeConnection != null && (exchangeConnection.getResponseCode() == 502
                         || exchangeConnection.getResponseCode() == 503
-                        || exchangeConnection.getResponseCode() == 504)) {
+                        || exchangeConnection.getResponseCode() == 504
+
+                        // TODO - remove this tmp PATCH when Bitfinex fix their side or I find the bug in my code... ;-)
+                        // Patch for exchange returning occasional 400 responses.
+                        // java.io.IOException: Server returned HTTP response code: 400 for URL: https://api.bitfinex.com/v1/orders
+                        || (exchangeConnection.getResponseCode() == 400 && apiMethod.equals("orders")))) {
+
 
                     final String errorMsg = IO_50X_TIMEOUT_ERROR_MSG;
                     LOG.error(errorMsg, e);

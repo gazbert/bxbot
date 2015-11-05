@@ -1093,7 +1093,8 @@ public final class HuobiExchangeAdapter implements TradingApi {
                 if (e.getMessage() != null &&
                         (e.getMessage().contains("Connection reset") ||
                          e.getMessage().contains("Remote host closed connection during handshake") ||
-                         e.getMessage().contains("Unexpected end of file from server"))) {
+                         e.getMessage().contains("Unexpected end of file from server") ||
+                         e.getMessage().contains("Connection refused"))) {
 
                     final String errorMsg = "Failed to connect to Huobi. SSL Connection was reset by the server.";
                     LOG.error(errorMsg, e);
@@ -1288,7 +1289,8 @@ public final class HuobiExchangeAdapter implements TradingApi {
                 if (e.getMessage() != null &&
                         (e.getMessage().contains("Connection reset") ||
                          e.getMessage().contains("Remote host closed connection during handshake") ||
-                         e.getMessage().contains("Unexpected end of file from server"))) {
+                         e.getMessage().contains("Unexpected end of file from server") ||
+                         e.getMessage().contains("Connection refused"))) {
 
                     final String errorMsg = "Failed to connect to Huobi. SSL Connection was reset by the server.";
                     LOG.error(errorMsg, e);
