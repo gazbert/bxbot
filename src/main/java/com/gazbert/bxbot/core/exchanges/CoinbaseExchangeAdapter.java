@@ -826,6 +826,7 @@ public final class CoinbaseExchangeAdapter implements TradingApi {
                         || exchangeConnection.getResponseCode() == 504
 
                         // Cloudflare related
+                        || exchangeConnection.getResponseCode() == 522
                         || exchangeConnection.getResponseCode() == 525)) {
 
                     final String errorMsg = IO_50X_TIMEOUT_ERROR_MSG;
@@ -1069,6 +1070,7 @@ public final class CoinbaseExchangeAdapter implements TradingApi {
                         || exchangeConnection.getResponseCode() == 504
 
                         // Cloudflare related
+                        || exchangeConnection.getResponseCode() == 522
                         || exchangeConnection.getResponseCode() == 525)) {
 
                     final String errorMsg = IO_50X_TIMEOUT_ERROR_MSG;
