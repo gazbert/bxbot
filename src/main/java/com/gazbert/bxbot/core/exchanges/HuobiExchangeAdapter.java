@@ -455,6 +455,12 @@ public final class HuobiExchangeAdapter implements TradingApi {
                 }
                 return ordersToReturn;
 
+            } else if (huobiOpenOrdersWrapper.code == 1) {
+                final String errorMsg = "Failed to get Open Order Info from exchange  - server busy. Error response: "
+                        + response;
+                LOG.error(errorMsg);
+                throw new ExchangeTimeoutException(errorMsg);
+
             } else {
                 final String errorMsg = "Failed to get Open Order Info from exchange. Error response: " + response;
                 LOG.error(errorMsg);
@@ -553,6 +559,12 @@ public final class HuobiExchangeAdapter implements TradingApi {
                 balancesOnOrder.put("USD", huobiAccountInfo.frozen_usd_display);
 
                 return new BalanceInfo(balancesAvailable, balancesOnOrder);
+
+            } else if (huobiAccountInfo.code == 1) {
+                final String errorMsg = "Failed to get Balance Info from exchange  - server busy. Error response: "
+                        + response;
+                LOG.error(errorMsg);
+                throw new ExchangeTimeoutException(errorMsg);
 
             } else {
                 final String errorMsg = "Failed to get Balance Info from exchange. Error response: " + response;
