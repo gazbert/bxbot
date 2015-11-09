@@ -40,11 +40,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import org.apache.log4j.Logger;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
+import java.io.*;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.net.HttpURLConnection;
@@ -1095,6 +1091,13 @@ public final class HuobiExchangeAdapter implements TradingApi {
             LOG.error(errorMsg, e);
             throw new ExchangeTimeoutException(errorMsg, e);
 
+        } catch (FileNotFoundException e) {
+
+            // Huobi started throwing this as of 8 Nov 2015 :-/
+            final String errorMsg = "Failed to connect to Huobi. Exchange is not there!";
+            LOG.error(errorMsg, e);
+            throw new ExchangeTimeoutException(errorMsg, e);
+
         } catch (IOException e) {
 
             try {
@@ -1288,6 +1291,13 @@ public final class HuobiExchangeAdapter implements TradingApi {
 
         } catch (SocketTimeoutException e) {
             final String errorMsg = IO_SOCKET_TIMEOUT_ERROR_MSG;
+            LOG.error(errorMsg, e);
+            throw new ExchangeTimeoutException(errorMsg, e);
+
+        } catch (FileNotFoundException e) {
+
+            // Huobi started throwing this as of 8 Nov 2015 :-/
+            final String errorMsg = "Failed to connect to Huobi. Exchange is not there!";
             LOG.error(errorMsg, e);
             throw new ExchangeTimeoutException(errorMsg, e);
 
