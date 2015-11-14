@@ -390,12 +390,12 @@ A Maven `pom.xml` is included for building the bot.
    config file, and configure/rename it as per instructions in file.
 1. If you plan on using Trading Strategies or Exchange Adapters that are packaged in separate jar files, you'll need to add
    the dependency in the `pom.xml` file - see the commented out examples.
-1. Run `mvn assembly:assembly` to build the bot and produce the distribution artifacts `bxbot-core-1.0-SNAPSHOT-dist.tar.gz`
-   and `bxbot-core-1.0-SNAPSHOT-dist.zip`. Take a look at the Javadoc in the `./target/apidocs` folder after running this.
+1. Run `mvn assembly:assembly` to build the bot and produce the distribution artifacts `bxbot-core-<version>-dist.tar.gz`
+   and `bxbot-core-<version>-dist.zip`. Take a look at the Javadoc in the `./target/apidocs` folder after running this.
 
 ## Installation Guide
 
-1. Copy either the `bxbot-core-1.0-SNAPSHOT-dist.tar.gz` or `bxbot-core-1.0-SNAPSHOT-dist.zip` onto the machine you 
+1. Copy either the `bxbot-core-<version>-dist.tar.gz` or `bxbot-core-<version>-dist.zip` onto the machine you 
    want to run the bot.
 1. Unzip it into a folder, e.g. `bxbot-home`. Make sure the `bxbot.sh` script is executable: `chmod 755 bxbot.sh`.
 1. Open the `bxbot.sh` script and follow the instructions in the file.
