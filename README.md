@@ -1,10 +1,7 @@
 # BX-bot
 
-_BX-bot is in beta and undergoing a final round of live-testing on the exchanges. 
-If you plan on using the current code, be careful! Release 1.0 is coming soon..._
-
 ## What is BX-bot?
-BX-bot (_Bex_ bot) is a simple Java algorithmic trading bot for trading [Bitcoin](https://bitcoin.org) on 
+BX-bot (_Bex_) is a simple Java algorithmic trading bot for trading [Bitcoin](https://bitcoin.org) on 
 cryptocurrency [exchanges](https://bitcoinwisdom.com/).
 
 The project contains the basic infrastructure to trade on a [cryptocurrency](http://coinmarketcap.com/) exchange... 
