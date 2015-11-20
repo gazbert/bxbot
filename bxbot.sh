@@ -35,7 +35,7 @@ javamail=javax.mail-1.5.4.jar
 gson=gson-2.3.1.jar
 
 # The BX-bot core jar (mandatory)
-bxbot_core=bxbot-core-0.1-beta.3-SNAPSHOT.jar
+bxbot_core=bxbot-core-0.1-beta.4.jar
 
 # Your Trading Strategies (optional)
 # Needed if you're not using the sample included with the bot OR you have not included your strats in the bxbot_core jar.

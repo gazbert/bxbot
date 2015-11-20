@@ -1013,7 +1013,12 @@ public final class BtceExchangeAdapter implements TradingApi {
                  */
                 if (exchangeConnection != null && (exchangeConnection.getResponseCode() == 502
                         || exchangeConnection.getResponseCode() == 503
-                        || exchangeConnection.getResponseCode() == 504)) {
+                        || exchangeConnection.getResponseCode() == 504
+
+                        // Cloudflare related
+                        || exchangeConnection.getResponseCode() == 520
+                        || exchangeConnection.getResponseCode() == 522
+                        || exchangeConnection.getResponseCode() == 525)) {
 
                     final String errorMsg = IO_50X_TIMEOUT_ERROR_MSG;
                     LOG.error(errorMsg, e);
@@ -1146,7 +1151,13 @@ public final class BtceExchangeAdapter implements TradingApi {
                  */
                 if (exchangeConnection != null && (exchangeConnection.getResponseCode() == 502
                         || exchangeConnection.getResponseCode() == 503
-                        || exchangeConnection.getResponseCode() == 504)) {
+                        || exchangeConnection.getResponseCode() == 504
+
+                        // Cloudflare related
+                        || exchangeConnection.getResponseCode() == 520
+                        || exchangeConnection.getResponseCode() == 522
+                        || exchangeConnection.getResponseCode() == 525)) {
+
                     final String errorMsg = IO_50X_TIMEOUT_ERROR_MSG;
                     LOG.error(errorMsg, e);
                     throw new ExchangeTimeoutException(errorMsg, e);
