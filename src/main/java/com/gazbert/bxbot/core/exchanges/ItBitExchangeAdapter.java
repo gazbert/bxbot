@@ -943,7 +943,9 @@ public final class ItBitExchangeAdapter implements TradingApi {
                  * Started happening 22 Nov 2015...
                  */
                 if (e.getMessage() != null &&
-                   (e.getMessage().contains("Remote host closed connection during handshake"))) {
+                        (e.getMessage().contains("Remote host closed connection during handshake") ||
+                         e.getMessage().contains("Connection reset") ||
+                         e.getMessage().contains("Connection refused"))) {
 
                     final String errorMsg = "Failed to connect to itBit. SSL Connection was reset by the server.";
                     LOG.error(errorMsg, e);
@@ -1238,7 +1240,9 @@ public final class ItBitExchangeAdapter implements TradingApi {
                  * Started happening 22 Nov 2015...
                  */
                 if (e.getMessage() != null &&
-                   (e.getMessage().contains("Remote host closed connection during handshake"))) {
+                        (e.getMessage().contains("Remote host closed connection during handshake") ||
+                         e.getMessage().contains("Connection reset") ||
+                         e.getMessage().contains("Connection refused"))) {
 
                     final String errorMsg = "Failed to connect to itBit. SSL Connection was reset by the server.";
                     LOG.error(errorMsg, e);
