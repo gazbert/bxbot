@@ -940,7 +940,7 @@ public final class ItBitExchangeAdapter implements TradingApi {
             try {
 
                 /*
-                 * Started happening 22 Nov 2016...
+                 * Started happening 22 Nov 2015...
                  */
                 if (e.getMessage() != null &&
                    (e.getMessage().contains("Remote host closed connection during handshake"))) {
@@ -1235,7 +1235,7 @@ public final class ItBitExchangeAdapter implements TradingApi {
             try {
 
                 /*
-                 * Started happening 22 Nov 2016...
+                 * Started happening 22 Nov 2015...
                  */
                 if (e.getMessage() != null &&
                    (e.getMessage().contains("Remote host closed connection during handshake"))) {
