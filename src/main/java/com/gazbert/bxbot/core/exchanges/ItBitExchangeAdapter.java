@@ -940,9 +940,19 @@ public final class ItBitExchangeAdapter implements TradingApi {
             try {
 
                 /*
+                 * Started happening 22 Nov 2016...
+                 */
+                if (e.getMessage() != null &&
+                   (e.getMessage().contains("Remote host closed connection during handshake"))) {
+
+                    final String errorMsg = "Failed to connect to itBit. SSL Connection was reset by the server.";
+                    LOG.error(errorMsg, e);
+                    throw new ExchangeTimeoutException(errorMsg, e);
+
+                /*
                  * Exchange sometimes fails with these codes, but recovers by next request...
                  */
-                if (exchangeConnection != null && (exchangeConnection.getResponseCode() == 502
+                } else if (exchangeConnection != null && (exchangeConnection.getResponseCode() == 502
                         || exchangeConnection.getResponseCode() == 503
                         || exchangeConnection.getResponseCode() == 504)) {
 
@@ -1225,11 +1235,21 @@ public final class ItBitExchangeAdapter implements TradingApi {
             try {
 
                 /*
+                 * Started happening 22 Nov 2016...
+                 */
+                if (e.getMessage() != null &&
+                   (e.getMessage().contains("Remote host closed connection during handshake"))) {
+
+                    final String errorMsg = "Failed to connect to itBit. SSL Connection was reset by the server.";
+                    LOG.error(errorMsg, e);
+                    throw new ExchangeTimeoutException(errorMsg, e);
+
+                /*
                  * TODO - remove this tmp PATCH when ItBit fix their side or I find the bug in my code... ;-)
                  * Patch to catch the 401s that ItBit occasionally sends... approx 1-2 per hour.
                  * In discussion with exchange.
                  */
-                if (exchangeConnection != null && (exchangeConnection.getResponseCode() == 401)) {
+                } else if (exchangeConnection != null && (exchangeConnection.getResponseCode() == 401)) {
 
                     final String errorMsg = "Received rogue ItBit 401 response again... :-/";
                     LOG.error(errorMsg, e);
