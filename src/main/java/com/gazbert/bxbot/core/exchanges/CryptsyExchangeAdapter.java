@@ -946,9 +946,21 @@ public final class CryptsyExchangeAdapter implements TradingApi {
             try {
 
                 /*
+                 * Started happening 26 Nov 2015...
+                 */
+                if (e.getMessage() != null &&
+                        (e.getMessage().contains("Remote host closed connection during handshake") ||
+                         e.getMessage().contains("Connection reset") ||
+                         e.getMessage().contains("Connection refused"))) {
+
+                    final String errorMsg = "Failed to connect to Cryptsy. SSL Connection was reset by the server.";
+                    LOG.error(errorMsg, e);
+                    throw new ExchangeTimeoutException(errorMsg, e);
+
+                /*
                  * Exchange sometimes fails with these codes, but often recovers by next request...
                  */
-                if (exchangeConnection != null && (exchangeConnection.getResponseCode() == 502
+                } else if (exchangeConnection != null && (exchangeConnection.getResponseCode() == 502
                         || exchangeConnection.getResponseCode() == 503
                         || exchangeConnection.getResponseCode() == 504)) {
 
