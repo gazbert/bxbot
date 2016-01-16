@@ -331,7 +331,7 @@ You can also create your own jar for your strats, e.g. `my-strats.jar`, and incl
 see the _Installation Guide_ for how to do this.
 
 ### How do I write my own Exchange Adapter?
-The best place to start is with the Cryptsy Exchange Adapter provided - see the latest [BitstampExchangeAdapter](https://github.com/gazbert/BX-bot/blob/master/src/main/java/com/gazbert/bxbot/core/exchanges/BitstampExchangeAdapter.java)
+The best place to start is with the Bitstamp Exchange Adapter provided - see the latest [BitstampExchangeAdapter](https://github.com/gazbert/BX-bot/blob/master/src/main/java/com/gazbert/bxbot/core/exchanges/BitstampExchangeAdapter.java)
 for an example.
 
 Your adapter must implement the [TradingApi](https://github.com/gazbert/BX-bot/blob/master/src/main/java/com/gazbert/bxbot/core/api/trading/TradingApi.java)
