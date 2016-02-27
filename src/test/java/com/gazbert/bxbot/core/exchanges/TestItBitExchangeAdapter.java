@@ -675,11 +675,11 @@ public class TestItBitExchangeAdapter {
     public void testExchangeAdapterThrowsExceptionIfBuyFeeIsMissing() throws Exception {
 
         // Partial mock the adapter so we can manipulate config location
-        PowerMock.mockStaticPartial(CryptsyExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD);
-        PowerMock.expectPrivate(CryptsyExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD).andReturn(
+        PowerMock.mockStaticPartial(ItBitExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD);
+        PowerMock.expectPrivate(ItBitExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD).andReturn(
                 "itbit/missing-buyfee-itbit-config.properties");
         PowerMock.replayAll();
-        new CryptsyExchangeAdapter();
+        new ItBitExchangeAdapter();
         PowerMock.verifyAll();
     }
 
@@ -687,11 +687,11 @@ public class TestItBitExchangeAdapter {
     public void testExchangeAdapterThrowsExceptionIfSellFeeIsMissing() throws Exception {
 
         // Partial mock the adapter so we can manipulate config location
-        PowerMock.mockStaticPartial(CryptsyExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD);
-        PowerMock.expectPrivate(CryptsyExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD).andReturn(
+        PowerMock.mockStaticPartial(ItBitExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD);
+        PowerMock.expectPrivate(ItBitExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD).andReturn(
                 "itbit/missing-sellfee-itbit-config.properties");
         PowerMock.replayAll();
-        new CryptsyExchangeAdapter();
+        new ItBitExchangeAdapter();
         PowerMock.verifyAll();
     }
 
