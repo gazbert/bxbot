@@ -31,7 +31,6 @@ hs_err_pid*
 # Ignore my key props files!
 /resources/bitstamp/bitstamp-config.properties
 /resources/btce/btce-config.properties
-/resources/cryptsy/cryptsy-config.properties
 /resources/bitfinex/bitfinex-config.properties
 /resources/okcoin/okcoin-config.properties
 /resources/huobi/huobi-config.properties

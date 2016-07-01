@@ -51,7 +51,7 @@ public class TestExchangeConfigurationManagement {
 
         // basic check - we're not testing JAXB here.
         assertNotNull(exchangeType);
-        assertEquals("com.gazbert.bxbot.core.exchanges.CryptsyExchangeAdapter", exchangeType.getAdapter());
+        assertEquals("com.gazbert.bxbot.core.exchanges.BtceExchangeAdapter", exchangeType.getAdapter());
     }
 
     @Test(expected = IllegalStateException.class)

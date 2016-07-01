@@ -31,6 +31,7 @@ import com.gazbert.bxbot.core.api.trading.OpenOrder;
 import com.gazbert.bxbot.core.api.trading.OrderType;
 import com.gazbert.bxbot.core.api.trading.TradingApi;
 import com.gazbert.bxbot.core.api.trading.TradingApiException;
+import com.gazbert.bxbot.core.util.LogUtils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializationContext;
@@ -38,6 +39,7 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import java.io.*;
@@ -344,9 +346,7 @@ public final class HuobiExchangeAdapter implements TradingApi {
             }
 
             final String response = sendAuthenticatedRequestToExchange(apiCall, marketIdForAuthenticatedRequest, params);
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("createOrder() response: " + response);
-            }
+            LogUtils.log(LOG, Level.DEBUG, () -> "createOrder() response: " + response);
 
             final HuobiOrderResponse createOrderResponse = gson.fromJson(response, HuobiOrderResponse.class);
             if (createOrderResponse.result != null && createOrderResponse.result.equalsIgnoreCase("success")) {
@@ -375,12 +375,8 @@ public final class HuobiExchangeAdapter implements TradingApi {
             params.put("coin_type", "1"); // "1" = BTC
             params.put("id", orderId);
 
-            final String response = sendAuthenticatedRequestToExchange("cancel_order", marketIdForAuthenticatedRequest,
-                    params);
-
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("cancelOrder() response: " + response);
-            }
+            final String response = sendAuthenticatedRequestToExchange("cancel_order", marketIdForAuthenticatedRequest, params);
+            LogUtils.log(LOG, Level.DEBUG, () -> "cancelOrder() response: " + response);
 
             final HuobiCancelOrderResponse cancelOrderResponse = gson.fromJson(response, HuobiCancelOrderResponse.class);
             if (cancelOrderResponse.result != null && cancelOrderResponse.result.equalsIgnoreCase("success")) {
@@ -408,12 +404,8 @@ public final class HuobiExchangeAdapter implements TradingApi {
             final Map<String, String> params = getRequestParamMap();
             params.put("coin_type", "1"); // "1" = BTC
 
-            final String response = sendAuthenticatedRequestToExchange("get_orders", marketIdForAuthenticatedRequest,
-                    params);
-
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("getYourOpenOrders() response: " + response);
-            }
+            final String response = sendAuthenticatedRequestToExchange("get_orders", marketIdForAuthenticatedRequest, params);
+            LogUtils.log(LOG, Level.DEBUG, () -> "getYourOpenOrders() response: " + response);
 
             final HuobiOpenOrderResponseWrapper huobiOpenOrdersWrapper
                     = gson.fromJson(response, HuobiOpenOrderResponseWrapper.class);
@@ -490,10 +482,7 @@ public final class HuobiExchangeAdapter implements TradingApi {
             }
 
             final String response = sendPublicRequestToExchange(apiCall);
-
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("getMarketOrders() response: " + response);
-            }
+            LogUtils.log(LOG, Level.DEBUG, () -> "getMarketOrders() response: " + response);
 
             final HuobiOrderBookWrapper orderBook = gson.fromJson(response, HuobiOrderBookWrapper.class);
 
@@ -535,10 +524,7 @@ public final class HuobiExchangeAdapter implements TradingApi {
         try {
 
             final String response = sendAuthenticatedRequestToExchange("get_account_info", accountInfoMarket, null);
-
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("getBalanceInfo() response: " + response);
-            }
+            LogUtils.log(LOG, Level.DEBUG, () -> "getBalanceInfo() response: " + response);
 
             final HuobiAccountInfo huobiAccountInfo = gson.fromJson(response, HuobiAccountInfo.class);
             if (huobiAccountInfo.code == 0) {
@@ -595,10 +581,7 @@ public final class HuobiExchangeAdapter implements TradingApi {
             }
 
             final String response = sendPublicRequestToExchange(apiCall);
-
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("getLatestMarketPrice() response: " + response);
-            }
+            LogUtils.log(LOG, Level.DEBUG, () -> "getLatestMarketPrice() response: " + response);
 
             final HuobiTickerWrapper tickerWrapper = gson.fromJson(response, HuobiTickerWrapper.class);
             return tickerWrapper.ticker.last;
@@ -1045,9 +1028,7 @@ public final class HuobiExchangeAdapter implements TradingApi {
         try {
 
             final URL url = new URL(PUBLIC_API_BASE_URL + apiMethod);
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Using following URL for API call: " + url);
-            }
+            LogUtils.log(LOG, Level.DEBUG, () -> "Using following URL for API call: " + url);
 
             exchangeConnection = (HttpURLConnection) url.openConnection();
             exchangeConnection.setUseCaches(false);
@@ -1237,9 +1218,7 @@ public final class HuobiExchangeAdapter implements TradingApi {
             }
 
             final URL url = new URL(AUTHENTICATED_API_URL);
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Using following URL for API call: " + url);
-            }
+            LogUtils.log(LOG, Level.DEBUG, () -> "Using following URL for API call: " + url);
 
             exchangeConnection = (HttpURLConnection) url.openConnection();
             exchangeConnection.setUseCaches(false);
@@ -1472,15 +1451,10 @@ public final class HuobiExchangeAdapter implements TradingApi {
                 LOG.error(errorMsg);
                 throw new IllegalArgumentException(errorMsg);
             }
-
-            if (LOG.isInfoEnabled()) {
-                LOG.info(BUY_FEE_PROPERTY_NAME + ": " + buyFeeInConfig + "%");
-            }
+            LogUtils.log(LOG, Level.INFO, () -> BUY_FEE_PROPERTY_NAME + ": " + buyFeeInConfig + "%");
 
             buyFeePercentage = new BigDecimal(buyFeeInConfig).divide(new BigDecimal("100"), 8, BigDecimal.ROUND_HALF_UP);
-            if (LOG.isInfoEnabled()) {
-                LOG.info("Buy fee % in BigDecimal format: " + buyFeePercentage);
-            }
+            LogUtils.log(LOG, Level.INFO, () -> "Buy fee % in BigDecimal format: " + buyFeePercentage);
 
             // Grab the sell fee
             final String sellFeeInConfig = configEntries.getProperty(SELL_FEE_PROPERTY_NAME);
@@ -1490,15 +1464,10 @@ public final class HuobiExchangeAdapter implements TradingApi {
                 LOG.error(errorMsg);
                 throw new IllegalArgumentException(errorMsg);
             }
-
-            if (LOG.isInfoEnabled()) {
-                LOG.info(SELL_FEE_PROPERTY_NAME + ": " + sellFeeInConfig + "%");
-            }
+            LogUtils.log(LOG, Level.INFO, () -> SELL_FEE_PROPERTY_NAME + ": " + sellFeeInConfig + "%");
 
             sellFeePercentage = new BigDecimal(sellFeeInConfig).divide(new BigDecimal("100"), 8, BigDecimal.ROUND_HALF_UP);
-            if (LOG.isInfoEnabled()) {
-                LOG.info("Sell fee % in BigDecimal format: " + sellFeePercentage);
-            }
+            LogUtils.log(LOG, Level.INFO, () -> "Sell fee % in BigDecimal format: " + sellFeePercentage);
 
             /*
              * Grab the connection timeout
@@ -1511,10 +1480,7 @@ public final class HuobiExchangeAdapter implements TradingApi {
                 LOG.error(errorMsg);
                 throw new IllegalArgumentException(errorMsg);
             }
-
-            if (LOG.isInfoEnabled()) {
-                LOG.info(CONNECTION_TIMEOUT_PROPERTY_NAME + ": " + connectionTimeout);
-            }
+            LogUtils.log(LOG, Level.INFO, () -> CONNECTION_TIMEOUT_PROPERTY_NAME + ": " + connectionTimeout);
 
             /*
              * Grab the account info market
@@ -1525,10 +1491,7 @@ public final class HuobiExchangeAdapter implements TradingApi {
                 LOG.error(errorMsg);
                 throw new IllegalArgumentException(errorMsg);
             }
-
-            if (LOG.isInfoEnabled()) {
-                LOG.info(ACCOUNT_INFO_MARKET_PROPERTY_NAME + ": " + accountInfoMarket);
-            }
+            LogUtils.log(LOG, Level.INFO, () -> ACCOUNT_INFO_MARKET_PROPERTY_NAME + ": " + accountInfoMarket);
 
         } catch (IOException e) {
             final String errorMsg = "Failed to load Exchange config: " + configFile;

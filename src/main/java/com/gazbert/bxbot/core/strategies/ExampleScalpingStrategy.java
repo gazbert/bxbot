@@ -50,17 +50,17 @@ import java.util.List;
  * </p>
  *
  * <p>
- * It has been written specifically to trade altcoins on <a href="https://www.cryptsy.com/">Cryptsy</a>, but can be
+ * It has been written specifically to trade altcoins on <a href="https://btc-e.com">BTC-e</a>, but can be
  * adapted to trade on any exchange. It assumes a long position in BTC and short positions in various altcoins. In other
  * words, it initiates trades to buy altcoins using BTC and then sells those altcoins at a profit to receive additional BTC.
  * The algorithm expects you to have deposited sufficient BTC into your exchange wallet.
  * </p>
  *
  * <p>
- * Altcoin exchanges like <a href="https://www.cryptsy.com/">Cryptsy</a> are a good place to start trading Bitcoin,
+ * Exchanges like <a href="https://btc-e.com">BTC-e</a> are a good place to start trading Bitcoin,
  * because you can typically trade much smaller amounts (and risk losing it!) when testing your new algorithms. I usually
- * test my algorithms out on altcoin markets before running them on USD/BTC markets on exchanges like
- * <a href="https://btc-e.com">BTC-e</a> and <a href="https://www.bitstamp.net/">Bitstamp</a>.
+ * test my algorithms out on altcoin markets before running them on USD/BTC markets on other exchanges like
+ * <a href="https://www.bitstamp.net/">Bitstamp</a>.
  * </p>
  *
  * <p>

@@ -29,8 +29,7 @@
  * </p>
  *
  * <p>
- * It uses a common data model that all exchange data must adapt to. The model is based off the Cryptsy data model;
- * it will most likely be normalised in the near future.
+ * It uses a common data model that all exchange data must adapt to.
  * </p>
  *
  * <p>

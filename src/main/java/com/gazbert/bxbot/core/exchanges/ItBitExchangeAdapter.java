@@ -31,8 +31,10 @@ import com.gazbert.bxbot.core.api.trading.OpenOrder;
 import com.gazbert.bxbot.core.api.trading.OrderType;
 import com.gazbert.bxbot.core.api.trading.TradingApi;
 import com.gazbert.bxbot.core.api.trading.TradingApiException;
+import com.gazbert.bxbot.core.util.LogUtils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import javax.crypto.Mac;
@@ -334,10 +336,7 @@ public final class ItBitExchangeAdapter implements TradingApi {
 
             final ItBitHttpResponse response = sendAuthenticatedRequestToExchange(
                     "POST", "wallets/" + walletId + "/orders", params);
-
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("createOrder() response: " + response);
-            }
+            LogUtils.log(LOG, Level.DEBUG, () -> "createOrder() response: " + response);
 
             if (response.statusCode == HttpURLConnection.HTTP_CREATED) {
                 final ItBitNewOrderResponse itBitNewOrderResponse = gson.fromJson(response.getPayload(),
@@ -372,10 +371,7 @@ public final class ItBitExchangeAdapter implements TradingApi {
 
             final ItBitHttpResponse response = sendAuthenticatedRequestToExchange(
                     "DELETE", "wallets/" + walletId + "/orders/" + orderId, null);
-
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("cancelOrder() response: " + response);
-            }
+            LogUtils.log(LOG, Level.DEBUG, () -> "cancelOrder() response: " + response);
 
             if (response.statusCode == HttpURLConnection.HTTP_ACCEPTED) {
                 gson.fromJson(response.getPayload(), ItBitCancelOrderResponse.class);
@@ -409,10 +405,7 @@ public final class ItBitExchangeAdapter implements TradingApi {
 
             final ItBitHttpResponse response = sendAuthenticatedRequestToExchange(
                     "GET", "wallets/" + walletId + "/orders", params);
-
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("getYourOpenOrders() response: " + response);
-            }
+            LogUtils.log(LOG, Level.DEBUG, () -> "getYourOpenOrders() response: " + response);
 
             if (response.statusCode == HttpURLConnection.HTTP_OK) {
 
@@ -466,10 +459,7 @@ public final class ItBitExchangeAdapter implements TradingApi {
 
         try {
             final ItBitHttpResponse response = sendPublicRequestToExchange("/markets/" + marketId + "/order_book");
-
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("getMarketOrders() response: " + response);
-            }
+            LogUtils.log(LOG, Level.DEBUG, () -> "getMarketOrders() response: " + response);
 
             if (response.statusCode == HttpURLConnection.HTTP_OK) {
 
@@ -518,10 +508,7 @@ public final class ItBitExchangeAdapter implements TradingApi {
         try {
 
             final ItBitHttpResponse response = sendPublicRequestToExchange("/markets/" + marketId + "/ticker");
-
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("getLatestMarketPrice() response: " + response);
-            }
+            LogUtils.log(LOG, Level.DEBUG, () -> "getLatestMarketPrice() response: " + response);
 
             if (response.statusCode == HttpURLConnection.HTTP_OK) {
 
@@ -550,10 +537,7 @@ public final class ItBitExchangeAdapter implements TradingApi {
             params.put("userId", userId);
 
             final ItBitHttpResponse response = sendAuthenticatedRequestToExchange("GET", "wallets", params);
-
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("getBalanceInfo() response: " + response);
-            }
+            LogUtils.log(LOG, Level.DEBUG, () -> "getBalanceInfo() response: " + response);
 
             if (response.statusCode == HttpURLConnection.HTTP_OK) {
 
@@ -888,9 +872,7 @@ public final class ItBitExchangeAdapter implements TradingApi {
         try {
 
             final URL url = new URL(PUBLIC_API_BASE_URL + apiMethod);
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Using following URL for API call: " + url);
-            }
+            LogUtils.log(LOG, Level.DEBUG, () -> "Using following URL for API call: " + url);
 
             exchangeConnection = (HttpURLConnection) url.openConnection();
             exchangeConnection.setUseCaches(false);
@@ -1049,9 +1031,8 @@ public final class ItBitExchangeAdapter implements TradingApi {
 
             switch (httpMethod) {
                 case "GET" :
-                    if (LOG.isDebugEnabled()) {
-                        LOG.debug("Building secure GET request...");
-                    }
+
+                    LogUtils.log(LOG, Level.DEBUG, () -> "Building secure GET request...");
 
                     // Build (optional) query param string
                     final StringBuilder queryParamBuilder = new StringBuilder();
@@ -1066,9 +1047,7 @@ public final class ItBitExchangeAdapter implements TradingApi {
                     }
 
                     final String queryParams = queryParamBuilder.toString();
-                    if (LOG.isDebugEnabled()) {
-                        LOG.debug("Query param string: " + queryParams);
-                    }
+                    LogUtils.log(LOG, Level.DEBUG, () -> "Query param string: " + queryParams);
 
                     if (params.isEmpty()) {
                         invocationUrl = AUTHENTICATED_API_URL + apiMethod;
@@ -1082,9 +1061,8 @@ public final class ItBitExchangeAdapter implements TradingApi {
                     break;
 
                 case "POST" :
-                    if (LOG.isDebugEnabled()) {
-                        LOG.debug("Building secure POST request...");
-                    }
+
+                    LogUtils.log(LOG, Level.DEBUG, () -> "Building secure POST request...");
 
                     invocationUrl = AUTHENTICATED_API_URL + apiMethod;
                     signatureParamList.add(invocationUrl);
@@ -1094,9 +1072,8 @@ public final class ItBitExchangeAdapter implements TradingApi {
                     break;
 
                 case "DELETE" :
-                    if (LOG.isDebugEnabled()) {
-                        LOG.debug("Building secure DELETE request...");
-                    }
+
+                    LogUtils.log(LOG, Level.DEBUG, () -> "Building secure DELETE request...");
 
                     invocationUrl = AUTHENTICATED_API_URL + apiMethod;
                     signatureParamList.add(invocationUrl);
@@ -1119,27 +1096,19 @@ public final class ItBitExchangeAdapter implements TradingApi {
              * '["GET","https://api.itbit.com/v1/wallets/7e037345-1288-4c39-12fe-d0f99a475a98","","5","1405385860202"]'
              */
             final String signatureParamsInJson = gson.toJson(signatureParamList);
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Signature params in JSON: " + signatureParamsInJson);
-            }
+            LogUtils.log(LOG, Level.DEBUG, () -> "Signature params in JSON: " + signatureParamsInJson);
 
             // Prepend the string version of the nonce to the JSON-encoded array string
             final String noncePrependedToJson = Long.toString(nonce) + signatureParamsInJson;
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Nonce prepended to Signature params in JSON: " + noncePrependedToJson);
-            }
+            LogUtils.log(LOG, Level.DEBUG, () -> "Nonce prepended to Signature params in JSON: " + noncePrependedToJson);
 
             // Construct the SHA-256 hash of the noncePrependedToJson. Call this the message hash.
             final MessageDigest md = MessageDigest.getInstance("SHA-256");
             md.update(noncePrependedToJson.getBytes());
             final BigInteger messageHash = new BigInteger(md.digest());
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Message SHA-256 Hash: " + messageHash);
-            }
+            LogUtils.log(LOG, Level.DEBUG, () -> "Message SHA-256 Hash: " + messageHash);
 
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Invocation URL in SHA-512 HMAC: " + invocationUrl);
-            }
+            LogUtils.log(LOG, Level.DEBUG, () -> "Invocation URL in SHA-512 HMAC: " + invocationUrl);
 
             // Prepend the UTF-8 encoded request URL to the message hash.
             // Generate the SHA-512 HMAC of the prependRequestUrlToMsgHash using your API secret as the key.
@@ -1148,14 +1117,10 @@ public final class ItBitExchangeAdapter implements TradingApi {
             mac.update(messageHash.toByteArray());
 
             final String signature = DatatypeConverter.printBase64Binary((new BigInteger(mac.doFinal())).toByteArray());
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Signature in Base64: " + signature);
-            }
+            LogUtils.log(LOG, Level.DEBUG, () -> "Signature in Base64: " + signature);
 
             final URL url = new URL(invocationUrl);
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Using following URL for API call: " + url);
-            }
+            LogUtils.log(LOG, Level.DEBUG, () -> "Using following URL for API call: " + url);
 
             exchangeConnection = (HttpURLConnection) url.openConnection();
             exchangeConnection.setUseCaches(false);
@@ -1166,21 +1131,15 @@ public final class ItBitExchangeAdapter implements TradingApi {
             // Generate the authorization header by concatenating the client key with a colon separator (‘:’)
             // and the signature. The resulting string should look like "clientkey:signature".
             exchangeConnection.setRequestProperty("Authorization", key + ":" + signature);
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Authorization: " + key + ":" + signature);
-            }
+            LogUtils.log(LOG, Level.DEBUG, () -> "Authorization: " + key + ":" + signature);
 
             // Add timestamp header
             exchangeConnection.setRequestProperty("X-Auth-Timestamp", unixTime);
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("X-Auth-Timestamp: " + unixTime);
-            }
+            LogUtils.log(LOG, Level.DEBUG, () -> "X-Auth-Timestamp: " + unixTime);
 
             // Add nonce header
             exchangeConnection.setRequestProperty("X-Auth-Nonce", Long.toString(nonce));
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("X-Auth-Nonce: " + Long.toString(nonce));
-            }
+            LogUtils.log(LOG, Level.DEBUG, () -> "X-Auth-Nonce: " + Long.toString(nonce));
 
             // Payload is JSON for this exchange
             exchangeConnection.setRequestProperty("Content-Type", "application/json");
@@ -1190,7 +1149,7 @@ public final class ItBitExchangeAdapter implements TradingApi {
                     "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.114 Safari/537.36");
 
             /*
-             * Add a timeout so we don't get blocked indefinitley; timeout on URLConnection is in millis.
+             * Add a timeout so we don't get blocked indefinitely; timeout on URLConnection is in millis.
              * connectionTimeout is in SECONDS and comes from itbit-config.properties config.
              */
             final int timeoutInMillis = connectionTimeout * 1000;
@@ -1199,8 +1158,8 @@ public final class ItBitExchangeAdapter implements TradingApi {
 
             if (httpMethod.equalsIgnoreCase("POST")) {
 
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("Doing POST with request body: " + requestBody);
+                if (LOG.isInfoEnabled()) {
+                    LOG.info("Doing POST with request body: " + requestBody);
                 }
 
                 final OutputStreamWriter outputPostStream = new OutputStreamWriter(exchangeConnection.getOutputStream());
@@ -1407,15 +1366,10 @@ public final class ItBitExchangeAdapter implements TradingApi {
                 LOG.error(errorMsg);
                 throw new IllegalArgumentException(errorMsg);
             }
-
-            if (LOG.isInfoEnabled()) {
-                LOG.info(BUY_FEE_PROPERTY_NAME + ": " + buyFeeInConfig + "%");
-            }
+            LogUtils.log(LOG, Level.INFO, () -> BUY_FEE_PROPERTY_NAME + ": " + buyFeeInConfig + "%");
 
             buyFeePercentage = new BigDecimal(buyFeeInConfig).divide(new BigDecimal("100"), 8, BigDecimal.ROUND_HALF_UP);
-            if (LOG.isInfoEnabled()) {
-                LOG.info("Buy fee % in BigDecimal format: " + buyFeePercentage);
-            }
+            LogUtils.log(LOG, Level.INFO, () -> "Buy fee % in BigDecimal format: " + buyFeePercentage);
 
             // Grab the sell fee
             final String sellFeeInConfig = configEntries.getProperty(SELL_FEE_PROPERTY_NAME);
@@ -1424,15 +1378,10 @@ public final class ItBitExchangeAdapter implements TradingApi {
                 LOG.error(errorMsg);
                 throw new IllegalArgumentException(errorMsg);
             }
-
-            if (LOG.isInfoEnabled()) {
-                LOG.info(SELL_FEE_PROPERTY_NAME + ": " + sellFeeInConfig + "%");
-            }
+            LogUtils.log(LOG, Level.INFO, () -> SELL_FEE_PROPERTY_NAME + ": " + sellFeeInConfig + "%");
 
             sellFeePercentage = new BigDecimal(sellFeeInConfig).divide(new BigDecimal("100"), 8, BigDecimal.ROUND_HALF_UP);
-            if (LOG.isInfoEnabled()) {
-                LOG.info("Sell fee % in BigDecimal format: " + sellFeePercentage);
-            }
+            LogUtils.log(LOG, Level.INFO, () -> "Sell fee % in BigDecimal format: " + sellFeePercentage);
 
             /*
              * Grab the connection timeout
@@ -1445,10 +1394,7 @@ public final class ItBitExchangeAdapter implements TradingApi {
                 LOG.error(errorMsg);
                 throw new IllegalArgumentException(errorMsg);
             }
-
-            if (LOG.isInfoEnabled()) {
-                LOG.info(CONNECTION_TIMEOUT_PROPERTY_NAME + ": " + connectionTimeout);
-            }
+            LogUtils.log(LOG, Level.INFO, () -> CONNECTION_TIMEOUT_PROPERTY_NAME + ": " + connectionTimeout);
 
         } catch (IOException e) {
             final String errorMsg = "Failed to load Exchange config: " + configFile;

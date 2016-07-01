@@ -10,7 +10,7 @@ except for the trading strategies; you'll need to write those yourself. A basic 
 Trading API. Take a look [here](http://www.investopedia.com/articles/active-trading/101014/basics-algorithmic-trading-concepts-and-examples.asp)
 for more ideas.
 
-Exchange Adapters for using [BTC-e](https://btc-e.com), [Bitstamp](https://www.bitstamp.net), [Cryptsy](https://www.cryptsy.com), 
+Exchange Adapters for using [BTC-e](https://btc-e.com), [Bitstamp](https://www.bitstamp.net), 
 [Bitfinex](https://www.bitfinex.com), [OKCoin](https://www.okcoin.com/), [Huobi](https://www.huobi.com/), 
 [Coinbase](https://exchange.coinbase.com/), and [itBit](https://www.itbit.com/) are included. 
 Feel free to improve these or contribute new adapters to the project; that would be shiny.
@@ -83,8 +83,8 @@ You specify the Exchange Adapter you want BX-bot to use in the `exchange.xml` fi
 
 ```xml
 <exchange>
-    <name>Cryptsy</name>
-    <adapter>com.gazbert.bxbot.core.exchanges.CryptsyExchangeAdapter</adapter>
+    <name>BTC-e</name>
+    <adapter>com.gazbert.bxbot.core.exchanges.BtceExchangeAdapter</adapter>
 </exchange>
 ```
 
@@ -103,31 +103,23 @@ instances of the bot to run against different exchanges.
 You specify which markets you want to trade on in the `markets.xml` file.
 
 ```xml
-<markets>
+<markets>      
+    <market>
+        <label>BTC/USD</label>
+        <id>btc_usd</id>
+        <base-currency>BTC</base-currency>
+        <counter-currency>USD</counter-currency>
+        <enabled>true</enabled>
+        <trading-strategy>scalping-strategy</trading-strategy>
+    </market>
     <market>
         <label>LTC/BTC</label>
-        <id>3</id>
+        <id>ltc_usd</id>
         <base-currency>LTC</base-currency>
         <counter-currency>BTC</counter-currency>
         <enabled>true</enabled>
         <trading-strategy>scalping-strategy</trading-strategy>
-    </market>          
-    <market>
-        <label>DOGE/BTC</label>
-        <id>132</id>
-        <base-currency>DOGE</base-currency>
-        <counter-currency>BTC</counter-currency>
-        <enabled>false</enabled>
-        <trading-strategy>scalping-strategy</trading-strategy>
-    </market>         
-    <market>
-        <label>XRP/BTC</label>
-        <id>454</id>
-        <base-currency>XRP</base-currency>
-        <counter-currency>BTC</counter-currency>
-        <enabled>false</enabled>
-        <trading-strategy>scalping-strategy</trading-strategy>
-    </market>              
+    </market>        
 </markets>
 ```
 
@@ -135,16 +127,16 @@ All elements are mandatory unless stated otherwise.
 
 The `<label>` value is for descriptive use only. It is used in the log statements.
 
-The `<id>` value is the market id as defined on the exchange. E.g the Cryptsy LTC market id is 3: https://www.cryptsy.com/markets/view/3
+The `<id>` value is the market id as defined on the exchange. E.g the BTC-e BTC/USD market id is btc_usd : see - https://btc-e.com/api/3/docs
 
 The `<base-currency>` value is the currency short code for the base currency in the currency pair. When you buy or sell a
 currency pair, you are performing that action on the base currency. The base currency is the commodity you are buying or
-selling. E.g. in a LTC/BTC market, the first currency (LTC) is the base currency and the second currency (BTC) is the
+selling. E.g. in a BTC/USD market, the first currency (BTC) is the base currency and the second currency (USD) is the
 counter currency.
 
 The `<counter-currency>` value is the currency short code for the counter currency in the currency pair. This is also known
-as the quote currency. E.g. in a LTC/BTC market, the first currency (LTC) is the base currency and the second currency 
-(BTC) is the counter currency.
+as the quote currency. E.g. in a BTC/USD market, the first currency (BTC) is the base currency and the second currency 
+(USD) is the counter currency.
 
 The `<enabled>` value allows you to toggle trading on the market. Remember, config changes are only applied on startup.
 

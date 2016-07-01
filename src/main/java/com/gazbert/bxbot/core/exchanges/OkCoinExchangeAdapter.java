@@ -31,8 +31,10 @@ import com.gazbert.bxbot.core.api.trading.OpenOrder;
 import com.gazbert.bxbot.core.api.trading.OrderType;
 import com.gazbert.bxbot.core.api.trading.TradingApi;
 import com.gazbert.bxbot.core.api.trading.TradingApiException;
+import com.gazbert.bxbot.core.util.LogUtils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import java.io.BufferedReader;
@@ -262,10 +264,7 @@ public final class OkCoinExchangeAdapter implements TradingApi {
             params.put("amount", new DecimalFormat("#.########").format(quantity));
 
             final String results = sendAuthenticatedRequestToExchange("trade.do", params);
-
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("createOrder() response: " + results);
-            }
+            LogUtils.log(LOG, Level.DEBUG, () -> "createOrder() response: " + results);
 
             final OKCoinTradeResponse createOrderResponse = gson.fromJson(results, OKCoinTradeResponse.class);
             if (createOrderResponse.result) {
@@ -293,10 +292,7 @@ public final class OkCoinExchangeAdapter implements TradingApi {
             params.put("symbol", marketId);
 
             final String results = sendAuthenticatedRequestToExchange("cancel_order.do", params);
-
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("cancelOrder() response: " + results);
-            }
+            LogUtils.log(LOG, Level.DEBUG, () -> "cancelOrder() response: " + results);
 
             final OKCoinCancelOrderResponse cancelOrderResponse = gson.fromJson(results, OKCoinCancelOrderResponse.class);
             if (cancelOrderResponse.result) {
@@ -325,10 +321,7 @@ public final class OkCoinExchangeAdapter implements TradingApi {
             params.put("order_id", "-1"); // -1 means bring back all the orders
 
             final String results = sendAuthenticatedRequestToExchange("order_info.do", params);
-
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("getYourOpenOrders() response: " + results);
-            }
+            LogUtils.log(LOG, Level.DEBUG, () -> "getYourOpenOrders() response: " + results);
 
             final OKCoinOrderInfoWrapper orderInfoWrapper = gson.fromJson(results, OKCoinOrderInfoWrapper.class);
             if (orderInfoWrapper.result) {
@@ -387,10 +380,7 @@ public final class OkCoinExchangeAdapter implements TradingApi {
             params.put("symbol", marketId);
 
             final String results = sendPublicRequestToExchange("depth.do", params);
-
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("getMarketOrders() response: " + results);
-            }
+            LogUtils.log(LOG, Level.DEBUG, () -> "getMarketOrders() response: " + results);
 
             final OKCoinDepthWrapper orderBook = gson.fromJson(results, OKCoinDepthWrapper.class);
 
@@ -446,10 +436,7 @@ public final class OkCoinExchangeAdapter implements TradingApi {
             params.put("symbol", marketId);
 
             final String results = sendPublicRequestToExchange("ticker.do", params);
-
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("getLatestMarketPrice() response: " + results);
-            }
+            LogUtils.log(LOG, Level.DEBUG, () -> "getLatestMarketPrice() response: " + results);
 
             final OKCoinTickerWrapper tickerWrapper = gson.fromJson(results, OKCoinTickerWrapper.class);
             return tickerWrapper.ticker.last;
@@ -467,10 +454,7 @@ public final class OkCoinExchangeAdapter implements TradingApi {
 
         try {
             final String results = sendAuthenticatedRequestToExchange("userinfo.do", null);
-
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("getBalanceInfo() response: " + results);
-            }
+            LogUtils.log(LOG, Level.DEBUG, () -> "getBalanceInfo() response: " + results);
 
             final OKCoinUserInfoWrapper userInfoWrapper = gson.fromJson(results, OKCoinUserInfoWrapper.class);
             if (userInfoWrapper.result) {
@@ -836,9 +820,7 @@ public final class OkCoinExchangeAdapter implements TradingApi {
             }
 
             final URL url = new URL(PUBLIC_API_BASE_URL + apiMethod + queryString);
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Using following URL for API call: " + url);
-            }
+            LogUtils.log(LOG, Level.DEBUG, () -> "Using following URL for API call: " + url);
 
             exchangeConnection = (HttpURLConnection) url.openConnection();
             exchangeConnection.setUseCaches(false);
@@ -1001,15 +983,10 @@ public final class OkCoinExchangeAdapter implements TradingApi {
                 //noinspection deprecation
                 payload.append(param).append("=").append(URLEncoder.encode(params.get(param)));
             }
-
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Using following URL encoded POST payload for API call: " + payload);
-            }
+            LogUtils.log(LOG, Level.DEBUG, () -> "Using following URL encoded POST payload for API call: " + payload);
 
             final URL url = new URL(AUTHENTICATED_API_URL + apiMethod);
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Using following URL for API call: " + url);
-            }
+            LogUtils.log(LOG, Level.DEBUG, () -> "Using following URL for API call: " + url);
 
             exchangeConnection = (HttpURLConnection) url.openConnection();
             exchangeConnection.setUseCaches(false);
@@ -1022,7 +999,7 @@ public final class OkCoinExchangeAdapter implements TradingApi {
                     "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.114 Safari/537.36");
 
             /*
-             * Add a timeout so we don't get blocked indefinitley; timeout on URLConnection is in millis.
+             * Add a timeout so we don't get blocked indefinitely; timeout on URLConnection is in millis.
              * connectionTimeout is in SECONDS and comes from okcoin-config.properties config.
              */
             final int timeoutInMillis = connectionTimeout * 1000;
@@ -1228,15 +1205,10 @@ public final class OkCoinExchangeAdapter implements TradingApi {
                 LOG.error(errorMsg);
                 throw new IllegalArgumentException(errorMsg);
             }
-
-            if (LOG.isInfoEnabled()) {
-                LOG.info(BUY_FEE_PROPERTY_NAME + ": " + buyFeeInConfig + "%");
-            }
+            LogUtils.log(LOG, Level.INFO, () -> BUY_FEE_PROPERTY_NAME + ": " + buyFeeInConfig + "%");
 
             buyFeePercentage = new BigDecimal(buyFeeInConfig).divide(new BigDecimal("100"), 8, BigDecimal.ROUND_HALF_UP);
-            if (LOG.isInfoEnabled()) {
-                LOG.info("Buy fee % in BigDecimal format: " + buyFeePercentage);
-            }
+            LogUtils.log(LOG, Level.INFO, () -> "Buy fee % in BigDecimal format: " + buyFeePercentage);
 
             // Grab the sell fee
             final String sellFeeInConfig = configEntries.getProperty(SELL_FEE_PROPERTY_NAME);
@@ -1245,15 +1217,10 @@ public final class OkCoinExchangeAdapter implements TradingApi {
                 LOG.error(errorMsg);
                 throw new IllegalArgumentException(errorMsg);
             }
-
-            if (LOG.isInfoEnabled()) {
-                LOG.info(SELL_FEE_PROPERTY_NAME + ": " + sellFeeInConfig + "%");
-            }
+            LogUtils.log(LOG, Level.INFO, () -> SELL_FEE_PROPERTY_NAME + ": " + sellFeeInConfig + "%");
 
             sellFeePercentage = new BigDecimal(sellFeeInConfig).divide(new BigDecimal("100"), 8, BigDecimal.ROUND_HALF_UP);
-            if (LOG.isInfoEnabled()) {
-                LOG.info("Sell fee % in BigDecimal format: " + sellFeePercentage);
-            }
+            LogUtils.log(LOG, Level.INFO, () -> "Sell fee % in BigDecimal format: " + sellFeePercentage);
 
             /*
              * Grab the connection timeout
@@ -1266,10 +1233,7 @@ public final class OkCoinExchangeAdapter implements TradingApi {
                 LOG.error(errorMsg);
                 throw new IllegalArgumentException(errorMsg);
             }
-
-            if (LOG.isInfoEnabled()) {
-                LOG.info(CONNECTION_TIMEOUT_PROPERTY_NAME + ": " + connectionTimeout);
-            }
+            LogUtils.log(LOG, Level.INFO, () -> CONNECTION_TIMEOUT_PROPERTY_NAME + ": " + connectionTimeout);
 
         } catch (IOException e) {
             final String errorMsg = "Failed to load Exchange config: " + configFile;

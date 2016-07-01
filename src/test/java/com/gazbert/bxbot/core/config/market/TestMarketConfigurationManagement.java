@@ -50,28 +50,21 @@ public class TestMarketConfigurationManagement {
         final MarketsType marketsType = ConfigurationManager.loadConfig(MarketsType.class,
                 VALID_XML_CONFIG_FILENAME, XML_SCHEMA_FILENAME);
 
-        assertEquals(3, marketsType.getMarkets().size());
+        assertEquals(2, marketsType.getMarkets().size());
 
-        assertEquals("LTC/BTC", marketsType.getMarkets().get(0).getLabel());
-        assertEquals("3", marketsType.getMarkets().get(0).getId());
-        assertEquals("LTC", marketsType.getMarkets().get(0).getBaseCurrency());
-        assertEquals("BTC", marketsType.getMarkets().get(0).getCounterCurrency());
+        assertEquals("BTC/USD", marketsType.getMarkets().get(0).getLabel());
+        assertEquals("btc_usd", marketsType.getMarkets().get(0).getId());
+        assertEquals("BTC", marketsType.getMarkets().get(0).getBaseCurrency());
+        assertEquals("USD", marketsType.getMarkets().get(0).getCounterCurrency());
         assertTrue(marketsType.getMarkets().get(0).isEnabled());
         assertEquals("scalping-strategy", marketsType.getMarkets().get(0).getTradingStrategy());
 
-        assertEquals("DOGE/BTC", marketsType.getMarkets().get(1).getLabel());
-        assertEquals("132", marketsType.getMarkets().get(1).getId());
-        assertEquals("DOGE", marketsType.getMarkets().get(1).getBaseCurrency());
+        assertEquals("LTC/BTC", marketsType.getMarkets().get(1).getLabel());
+        assertEquals("ltc_usd", marketsType.getMarkets().get(1).getId());
+        assertEquals("LTC", marketsType.getMarkets().get(1).getBaseCurrency());
         assertEquals("BTC", marketsType.getMarkets().get(1).getCounterCurrency());
         assertFalse(marketsType.getMarkets().get(1).isEnabled());
         assertEquals("scalping-strategy", marketsType.getMarkets().get(1).getTradingStrategy());
-
-        assertEquals("XRP/BTC", marketsType.getMarkets().get(2).getLabel());
-        assertEquals("454", marketsType.getMarkets().get(2).getId());
-        assertEquals("XRP", marketsType.getMarkets().get(2).getBaseCurrency());
-        assertEquals("BTC", marketsType.getMarkets().get(2).getCounterCurrency());
-        assertFalse(marketsType.getMarkets().get(2).isEnabled());
-        assertEquals("scalping-strategy", marketsType.getMarkets().get(2).getTradingStrategy());
     }
 
     @Test(expected = IllegalStateException.class)

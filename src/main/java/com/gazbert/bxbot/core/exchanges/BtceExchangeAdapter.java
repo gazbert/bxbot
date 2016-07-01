@@ -273,7 +273,7 @@ public final class BtceExchangeAdapter implements TradingApi {
             params.put("pair", marketId);
 
             final String results = sendAuthenticatedRequestToExchange("ActiveOrders", params);
-            LogUtils.log(LOG, Level.DEBUG, () ->"getYourOpenOrders() response: " + results);
+            LogUtils.log(LOG, Level.DEBUG, () -> "getYourOpenOrders() response: " + results);
 
             final BtceOpenOrderResponseWrapper myOpenOrders = gson.fromJson(results, BtceOpenOrderResponseWrapper.class);
             final List<OpenOrder> ordersToReturn = new ArrayList<>();
@@ -357,7 +357,7 @@ public final class BtceExchangeAdapter implements TradingApi {
                 throw new IllegalArgumentException(errorMsg);
             }
 
-            LogUtils.log(LOG, Level.DEBUG, () ->"createOrder() response: " + results);
+            LogUtils.log(LOG, Level.DEBUG, () -> "createOrder() response: " + results);
 
             final BtceCreateOrderResponseWrapper createOrderResponseWrapper = gson.fromJson(results,
                     BtceCreateOrderResponseWrapper.class);
@@ -424,7 +424,7 @@ public final class BtceExchangeAdapter implements TradingApi {
 
         try {
             final String results = sendPublicRequestToExchange("ticker", marketId);
-            LogUtils.log(LOG, Level.DEBUG, () ->"getLatestMarketPrice() response: " + results);
+            LogUtils.log(LOG, Level.DEBUG, () -> "getLatestMarketPrice() response: " + results);
 
             final BtceTickerWrapper btceTicker = gson.fromJson(results, BtceTickerWrapper.class);
             return btceTicker.ticker.last;
@@ -931,7 +931,7 @@ public final class BtceExchangeAdapter implements TradingApi {
 
         try {
             final URL url = new URL(PUBLIC_API_BASE_URL + apiMethod + "/" + resource);
-            LogUtils.log(LOG, Level.DEBUG, () ->"Using following URL for API call: " + url);
+            LogUtils.log(LOG, Level.DEBUG, () -> "Using following URL for API call: " + url);
 
             exchangeConnection = (HttpURLConnection) url.openConnection();
             exchangeConnection.setUseCaches(false);
@@ -1058,7 +1058,7 @@ public final class BtceExchangeAdapter implements TradingApi {
             }
 
             final URL url = new URL(AUTHENTICATED_API_URL);
-            LogUtils.log(LOG, Level.DEBUG, () ->"Using following URL for API call: " + url);
+            LogUtils.log(LOG, Level.DEBUG, () -> "Using following URL for API call: " + url);
 
             exchangeConnection = (HttpURLConnection) url.openConnection();
             exchangeConnection.setUseCaches(false);
@@ -1256,7 +1256,7 @@ public final class BtceExchangeAdapter implements TradingApi {
                 throw new IllegalArgumentException(errorMsg);
             }
 
-            LogUtils.log(LOG, Level.INFO, () ->CONNECTION_TIMEOUT_PROPERTY_NAME + ": " + connectionTimeout);
+            LogUtils.log(LOG, Level.INFO, () -> CONNECTION_TIMEOUT_PROPERTY_NAME + ": " + connectionTimeout);
 
         } catch (IOException e) {
             final String errorMsg = "Failed to load Exchange config: " + configFile;

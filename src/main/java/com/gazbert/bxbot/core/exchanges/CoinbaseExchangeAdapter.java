@@ -241,7 +241,6 @@ public final class CoinbaseExchangeAdapter implements TradingApi {
      * Constructor initialises the Exchange Adapter for using the Coinbase API.
      */
     public CoinbaseExchangeAdapter() {
-
         loadConfig();
         initSecureMessageLayer();
         initGson();
@@ -290,7 +289,7 @@ public final class CoinbaseExchangeAdapter implements TradingApi {
             params.put("size", new DecimalFormat("#.########").format(quantity));
 
             final CoinbaseHttpResponse response = sendAuthenticatedRequestToExchange("POST", "orders", params);
-            LogUtils.log(LOG, Level.DEBUG, () ->"createOrder() response: " + response);
+            LogUtils.log(LOG, Level.DEBUG, () -> "createOrder() response: " + response);
 
             if (response.statusCode == HttpURLConnection.HTTP_OK) {
 
@@ -326,7 +325,7 @@ public final class CoinbaseExchangeAdapter implements TradingApi {
         try {
 
             final CoinbaseHttpResponse response = sendAuthenticatedRequestToExchange("DELETE", "orders/" + orderId, null);
-            LogUtils.log(LOG, Level.DEBUG, () ->"cancelOrder() response: " + response);
+            LogUtils.log(LOG, Level.DEBUG, () -> "cancelOrder() response: " + response);
 
             if (response.statusCode == HttpURLConnection.HTTP_OK) {
 
@@ -360,7 +359,7 @@ public final class CoinbaseExchangeAdapter implements TradingApi {
             // we use default request no-param call - only open or un-settled orders are returned.
             // As soon as an order is no longer open and settled, it will no longer appear in the default request.
             final CoinbaseHttpResponse response = sendAuthenticatedRequestToExchange("GET", "orders", null);
-            LogUtils.log(LOG, Level.DEBUG, () ->"getYourOpenOrders() response: " + response);
+            LogUtils.log(LOG, Level.DEBUG, () -> "getYourOpenOrders() response: " + response);
 
             if (response.statusCode == HttpURLConnection.HTTP_OK) {
 
@@ -468,7 +467,7 @@ public final class CoinbaseExchangeAdapter implements TradingApi {
 
         try {
             final CoinbaseHttpResponse response = sendAuthenticatedRequestToExchange("GET", "accounts", null);
-            LogUtils.log(LOG, Level.DEBUG, () ->"getBalanceInfo() response: " + response);
+            LogUtils.log(LOG, Level.DEBUG, () -> "getBalanceInfo() response: " + response);
 
             if (response.statusCode == HttpURLConnection.HTTP_OK) {
 
@@ -751,7 +750,7 @@ public final class CoinbaseExchangeAdapter implements TradingApi {
             }
 
             final URL url = new URL(PUBLIC_API_BASE_URL + apiMethod + queryString);
-            LogUtils.log(LOG, Level.DEBUG, () ->"Using following URL for API call: " + url);
+            LogUtils.log(LOG, Level.DEBUG, () -> "Using following URL for API call: " + url);
 
             exchangeConnection = (HttpURLConnection) url.openConnection();
             exchangeConnection.setUseCaches(false);
@@ -910,7 +909,7 @@ public final class CoinbaseExchangeAdapter implements TradingApi {
             switch (httpMethod) {
 
                 case "GET" :
-                    LogUtils.log(LOG, Level.DEBUG, () ->"Building secure GET request...");
+                    LogUtils.log(LOG, Level.DEBUG, () -> "Building secure GET request...");
 
                     // Build (optional) query param string
                     final StringBuilder queryParamBuilder = new StringBuilder();
@@ -959,7 +958,7 @@ public final class CoinbaseExchangeAdapter implements TradingApi {
             final String signature = DatatypeConverter.printBase64Binary(mac.doFinal());
 
             final URL url = new URL(invocationUrl);
-            LogUtils.log(LOG, Level.DEBUG, () ->"Using following URL for API call: " + url);
+            LogUtils.log(LOG, Level.DEBUG, () -> "Using following URL for API call: " + url);
 
             exchangeConnection = (HttpURLConnection) url.openConnection();
             exchangeConnection.setUseCaches(false);
@@ -1170,7 +1169,7 @@ public final class CoinbaseExchangeAdapter implements TradingApi {
                 LOG.error(errorMsg);
                 throw new IllegalArgumentException(errorMsg);
             }
-            LogUtils.log(LOG, Level.INFO, () ->BUY_FEE_PROPERTY_NAME + ": " + buyFeeInConfig + "%");
+            LogUtils.log(LOG, Level.INFO, () -> BUY_FEE_PROPERTY_NAME + ": " + buyFeeInConfig + "%");
 
             buyFeePercentage = new BigDecimal(buyFeeInConfig).divide(new BigDecimal("100"), 8, BigDecimal.ROUND_HALF_UP);
             LogUtils.log(LOG, Level.INFO, () -> "Buy fee % in BigDecimal format: " + buyFeePercentage);
@@ -1182,7 +1181,7 @@ public final class CoinbaseExchangeAdapter implements TradingApi {
                 LOG.error(errorMsg);
                 throw new IllegalArgumentException(errorMsg);
             }
-            LogUtils.log(LOG, Level.INFO, () ->SELL_FEE_PROPERTY_NAME + ": " + sellFeeInConfig + "%");
+            LogUtils.log(LOG, Level.INFO, () -> SELL_FEE_PROPERTY_NAME + ": " + sellFeeInConfig + "%");
 
             sellFeePercentage = new BigDecimal(sellFeeInConfig).divide(new BigDecimal("100"), 8, BigDecimal.ROUND_HALF_UP);
             LogUtils.log(LOG, Level.INFO, () -> "Sell fee % in BigDecimal format: " + sellFeePercentage);
