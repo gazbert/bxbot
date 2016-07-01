@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2015 Gareth Jon Lynch
+ * Copyright (c) 2016 Gareth Jon Lynch
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -21,31 +21,23 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.core;
+package com.gazbert.bxbot.core.util;
 
-import com.gazbert.bxbot.core.engine.TradingEngine;
-import com.gazbert.bxbot.core.util.LogUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
+import java.util.function.Supplier;
+
 /*
- * BX-bot is a simple algo trading bot for running on Bitcoin exchanges.
- *
- * It is made up of 3 components:
- *
- * 1. The data stream unit (the part of the systems that receives data (e.g. order book, news wire) from
- *    external sources) - the Exchange Adapters.
- * 2. The decision or strategy unit - the Trading Strategies.
- * 3. The execution unit - the Trading Engine.
- *
+ * Util class for wrapping log4j calls.
  */
-public final class BXBot {
+public final class LogUtils {
 
-    private static final Logger LOG = Logger.getLogger(BXBot.class);
+    private LogUtils() {}
 
-    public static void main(String[] args) {
-
-        LogUtils.log(LOG, Level.INFO, () -> "Starting BX-bot...");
-        TradingEngine.newInstance().start();
+    public static void log(Logger logger, Level level, Supplier<String> msg) {
+        if (logger.isEnabledFor(level)) {
+            logger.log(level, msg.get());
+        }
     }
 }

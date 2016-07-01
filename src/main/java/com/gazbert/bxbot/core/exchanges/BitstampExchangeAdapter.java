@@ -31,12 +31,14 @@ import com.gazbert.bxbot.core.api.trading.OpenOrder;
 import com.gazbert.bxbot.core.api.trading.OrderType;
 import com.gazbert.bxbot.core.api.trading.TradingApi;
 import com.gazbert.bxbot.core.api.trading.TradingApiException;
+import com.gazbert.bxbot.core.util.LogUtils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import javax.crypto.Mac;
@@ -227,10 +229,7 @@ public final class BitstampExchangeAdapter implements TradingApi {
 
         try {
             final String results = sendPublicRequestToExchange("order_book");
-
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("getMarketOrders() response: " + results);
-            }
+            LogUtils.log(LOG, Level.DEBUG, () -> "getMarketOrders() response: " + results);
 
             final BitstampOrderBook bitstampOrderBook = gson.fromJson(results, BitstampOrderBook.class);
 
@@ -273,10 +272,7 @@ public final class BitstampExchangeAdapter implements TradingApi {
 
         try {
             final String results = sendAuthenticatedRequestToExchange("open_orders", null);
-
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("getYourOpenOrders() response: " + results);
-            }
+            LogUtils.log(LOG, Level.DEBUG, () -> "getYourOpenOrders() response: " + results);
 
             final BitstampOrderResponse[] myOpenOrders = gson.fromJson(results, BitstampOrderResponse[].class);
 
@@ -345,9 +341,7 @@ public final class BitstampExchangeAdapter implements TradingApi {
                 throw new IllegalArgumentException(errorMsg);
             }
 
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("createOrder() response: " + results);
-            }
+            LogUtils.log(LOG, Level.DEBUG, () -> "createOrder() response: " + results);
 
             final BitstampOrderResponse createOrderResponse = gson.fromJson(results, BitstampOrderResponse.class);
             final long id = createOrderResponse.id;
@@ -376,11 +370,9 @@ public final class BitstampExchangeAdapter implements TradingApi {
         try {
             final Map<String, String> params = getRequestParamMap();
             params.put("id", orderId);
-            final String results = sendAuthenticatedRequestToExchange("cancel_order", params);
 
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("cancelOrder() response: " + results);
-            }
+            final String results = sendAuthenticatedRequestToExchange("cancel_order", params);
+            LogUtils.log(LOG, Level.DEBUG, () -> "cancelOrder() response: " + results);
 
             // Returns 'true' if order has been found and canceled.
             if (results.equalsIgnoreCase("true")) {
@@ -404,10 +396,7 @@ public final class BitstampExchangeAdapter implements TradingApi {
 
         try {
             final String results = sendPublicRequestToExchange("ticker");
-
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("getLatestMarketPrice() response: " + results);
-            }
+            LogUtils.log(LOG, Level.DEBUG, () -> "getLatestMarketPrice() response: " + results);
 
             final BitstampTicker bitstampTicker = gson.fromJson(results, BitstampTicker.class);
             return bitstampTicker.last;
@@ -425,10 +414,7 @@ public final class BitstampExchangeAdapter implements TradingApi {
 
         try {
             final String results = sendAuthenticatedRequestToExchange("balance", null);
-
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("getBalanceInfo() response: " + results);
-            }
+            LogUtils.log(LOG, Level.DEBUG, () -> "getBalanceInfo() response: " + results);
 
             final BitstampBalance balances = gson.fromJson(results, BitstampBalance.class);
 
@@ -457,10 +443,7 @@ public final class BitstampExchangeAdapter implements TradingApi {
 
         try {
             final String results = sendAuthenticatedRequestToExchange("balance", null);
-
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("getPercentageOfBuyOrderTakenForExchangeFee() response: " + results);
-            }
+            LogUtils.log(LOG, Level.DEBUG, () -> "getPercentageOfBuyOrderTakenForExchangeFee() response: " + results);
 
             final BitstampBalance balances = gson.fromJson(results, BitstampBalance.class);
             final BigDecimal fee = balances.fee;
@@ -482,10 +465,7 @@ public final class BitstampExchangeAdapter implements TradingApi {
 
         try {
             final String results = sendAuthenticatedRequestToExchange("balance", null);
-
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("getPercentageOfSellOrderTakenForExchangeFee() response: " + results);
-            }
+            LogUtils.log(LOG, Level.DEBUG, () -> "getPercentageOfSellOrderTakenForExchangeFee() response: " + results);
 
             final BitstampBalance balances = gson.fromJson(results, BitstampBalance.class);
             final BigDecimal fee = balances.fee;
@@ -680,9 +660,7 @@ public final class BitstampExchangeAdapter implements TradingApi {
 
             // MUST have the trailing slash even if no params...
             final URL url = new URL(API_BASE_URL + apiMethod + "/");
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Using following URL for API call: " + url);
-            }
+            LogUtils.log(LOG, Level.DEBUG, () -> "Using following URL for API call: " + url);
 
             exchangeConnection = (HttpURLConnection) url.openConnection();
             exchangeConnection.setUseCaches(false);
@@ -821,9 +799,7 @@ public final class BitstampExchangeAdapter implements TradingApi {
             }
 
             final URL url = new URL(API_BASE_URL + apiMethod + "/"); // MUST have the trailing slash...
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Using following URL for API call: " + url);
-            }
+            LogUtils.log(LOG, Level.DEBUG, () -> "Using following URL for API call: " + url);
 
             exchangeConnection = (HttpURLConnection) url.openConnection();
             exchangeConnection.setUseCaches(false);
@@ -1027,9 +1003,7 @@ public final class BitstampExchangeAdapter implements TradingApi {
                 throw new IllegalArgumentException(errorMsg);
             }
 
-            if (LOG.isInfoEnabled()) {
-                LOG.info(CONNECTION_TIMEOUT_PROPERTY_NAME + ": " + connectionTimeout);
-            }
+            LogUtils.log(LOG, Level.INFO, () -> CONNECTION_TIMEOUT_PROPERTY_NAME + ": " + connectionTimeout);
 
         } catch (IOException e) {
             final String errorMsg = "Failed to load Exchange config: " + configFile;

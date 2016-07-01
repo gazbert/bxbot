@@ -31,8 +31,10 @@ import com.gazbert.bxbot.core.api.trading.OpenOrder;
 import com.gazbert.bxbot.core.api.trading.OrderType;
 import com.gazbert.bxbot.core.api.trading.TradingApi;
 import com.gazbert.bxbot.core.api.trading.TradingApiException;
+import com.gazbert.bxbot.core.util.LogUtils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import javax.crypto.Mac;
@@ -232,9 +234,7 @@ public final class BitfinexExchangeAdapter implements TradingApi {
         try {
             final String results = sendPublicRequestToExchange("book/" + marketId);
 
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("getMarketOrders() response: " + results);
-            }
+            LogUtils.log(LOG, Level.DEBUG, () -> "getMarketOrders() response: " + results);
 
             final BitfinexOrderBook orderBook = gson.fromJson(results, BitfinexOrderBook.class);
 
@@ -275,10 +275,7 @@ public final class BitfinexExchangeAdapter implements TradingApi {
 
         try {
             final String results = sendAuthenticatedRequestToExchange("orders", null);
-
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("getYourOpenOrders() response: " + results);
-            }
+            LogUtils.log(LOG, Level.DEBUG, () -> "getYourOpenOrders() response: " + results);
 
             final BitfinexOpenOrders bitfinexOpenOrders = gson.fromJson(results, BitfinexOpenOrders.class);
 
@@ -363,10 +360,7 @@ public final class BitfinexExchangeAdapter implements TradingApi {
             //params.put("is_hidden", "false");
 
             final String results = sendAuthenticatedRequestToExchange("order/new", params);
-
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("createOrder() response: " + results);
-            }
+            LogUtils.log(LOG, Level.DEBUG, () -> "createOrder() response: " + results);
 
             final BitfinexNewOrderResponse createOrderResponse = gson.fromJson(results, BitfinexNewOrderResponse.class);
             final long id = createOrderResponse.order_id;
@@ -397,9 +391,7 @@ public final class BitfinexExchangeAdapter implements TradingApi {
             params.put("order_id", Long.parseLong(orderId));
             final String results = sendAuthenticatedRequestToExchange("order/cancel", params);
 
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("cancelOrder() response: " + results);
-            }
+            LogUtils.log(LOG, Level.DEBUG, () -> "cancelOrder() response: " + results);
 
             // Exchange returns order id and other details if successful, a 400 HTTP Status if the order id was not recognised.
             gson.fromJson(results, BitfinexCancelOrderResponse.class);
@@ -424,10 +416,7 @@ public final class BitfinexExchangeAdapter implements TradingApi {
 
         try {
             final String results = sendPublicRequestToExchange("pubticker/" + marketId);
-
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("getLatestMarketPrice() response: " + results);
-            }
+            LogUtils.log(LOG, Level.DEBUG, () -> "getLatestMarketPrice() response: " + results);
 
             final BitfinexTicker ticker = gson.fromJson(results, BitfinexTicker.class);
             return ticker.last_price;
@@ -445,10 +434,7 @@ public final class BitfinexExchangeAdapter implements TradingApi {
 
         try {
             final String results = sendAuthenticatedRequestToExchange("balances", null);
-
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("getBalanceInfo() response: " + results);
-            }
+            LogUtils.log(LOG, Level.DEBUG, () -> "getBalanceInfo() response: " + results);
 
             final BitfinexBalances allAccountBalances = gson.fromJson(results, BitfinexBalances.class);
 
@@ -486,10 +472,7 @@ public final class BitfinexExchangeAdapter implements TradingApi {
 
         try {
             final String results = sendAuthenticatedRequestToExchange("account_infos", null);
-
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("getPercentageOfBuyOrderTakenForExchangeFee() response: " + results);
-            }
+            LogUtils.log(LOG, Level.DEBUG, () -> "getPercentageOfBuyOrderTakenForExchangeFee() response: " + results);
 
             // Nightmare to adapt! Just take the top-level taker fees.
             final BitfinexAccountInfos bitfinexAccountInfos = gson.fromJson(results, BitfinexAccountInfos.class);
@@ -512,10 +495,7 @@ public final class BitfinexExchangeAdapter implements TradingApi {
 
         try {
             final String results = sendAuthenticatedRequestToExchange("account_infos", null);
-
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("getPercentageOfSellOrderTakenForExchangeFee() response: " + results);
-            }
+            LogUtils.log(LOG, Level.DEBUG, () -> "getPercentageOfSellOrderTakenForExchangeFee() response: " + results);
 
             // Nightmare to adapt! Just take the top-level taker fees.
             final BitfinexAccountInfos bitfinexAccountInfos = gson.fromJson(results, BitfinexAccountInfos.class);
@@ -933,9 +913,7 @@ public final class BitfinexExchangeAdapter implements TradingApi {
         try {
 
             final URL url = new URL(PUBLIC_API_BASE_URL + apiMethod);
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Using following URL for API call: " + url);
-            }
+            LogUtils.log(LOG, Level.DEBUG, () -> "Using following URL for API call: " + url);
 
             exchangeConnection = (HttpURLConnection) url.openConnection();
             exchangeConnection.setUseCaches(false);
@@ -1094,9 +1072,7 @@ public final class BitfinexExchangeAdapter implements TradingApi {
             final String base64payload = DatatypeConverter.printBase64Binary(paramsInJson.getBytes());
 
             final URL url = new URL(AUTHENTICATED_API_URL + apiMethod);
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Using following URL for API call: " + url);
-            }
+            LogUtils.log(LOG, Level.DEBUG, () -> "Using following URL for API call: " + url);
 
             exchangeConnection = (HttpURLConnection) url.openConnection();
             exchangeConnection.setUseCaches(false);
@@ -1318,9 +1294,7 @@ public final class BitfinexExchangeAdapter implements TradingApi {
                 throw new IllegalArgumentException(errorMsg);
             }
 
-            if (LOG.isInfoEnabled()) {
-                LOG.info(CONNECTION_TIMEOUT_PROPERTY_NAME + ": " + connectionTimeout);
-            }
+            LogUtils.log(LOG, Level.INFO, () -> CONNECTION_TIMEOUT_PROPERTY_NAME + ": " + connectionTimeout);
 
         } catch (IOException e) {
             final String errorMsg = "Failed to load Exchange config: " + configFile;

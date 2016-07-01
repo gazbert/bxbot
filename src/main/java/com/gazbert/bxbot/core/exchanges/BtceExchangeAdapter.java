@@ -31,6 +31,7 @@ import com.gazbert.bxbot.core.api.trading.OpenOrder;
 import com.gazbert.bxbot.core.api.trading.OrderType;
 import com.gazbert.bxbot.core.api.trading.TradingApi;
 import com.gazbert.bxbot.core.api.trading.TradingApiException;
+import com.gazbert.bxbot.core.util.LogUtils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializationContext;
@@ -39,6 +40,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.annotations.SerializedName;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import javax.crypto.Mac;
@@ -225,11 +227,7 @@ public final class BtceExchangeAdapter implements TradingApi {
 
         try {
             final String results = sendPublicRequestToExchange("depth", marketId);
-
-            // useful to log diff types of error response in JSON response
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("getMarketOrders() response(): " + results);
-            }
+            LogUtils.log(LOG, Level.DEBUG, () -> "getMarketOrders() response(): " + results);
 
             final BtceMarketOrderBookWrapper marketOrderWrapper = gson.fromJson(results, BtceMarketOrderBookWrapper.class);
 
@@ -275,20 +273,17 @@ public final class BtceExchangeAdapter implements TradingApi {
             params.put("pair", marketId);
 
             final String results = sendAuthenticatedRequestToExchange("ActiveOrders", params);
-
-            // useful to log diff types of error response in JSON response
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("getYourOpenOrders() response: " + results);
-            }
+            LogUtils.log(LOG, Level.DEBUG, () ->"getYourOpenOrders() response: " + results);
 
             final BtceOpenOrderResponseWrapper myOpenOrders = gson.fromJson(results, BtceOpenOrderResponseWrapper.class);
             final List<OpenOrder> ordersToReturn = new ArrayList<>();
 
             // this sucks!
             if (myOpenOrders.success == 0 && myOpenOrders.error.equalsIgnoreCase("no orders")) {
-                LOG.debug("No Open Orders");
+                LogUtils.log(LOG, Level.DEBUG, () ->"No Open Orders");
+
             } else {
-                LOG.debug("BtceOpenOrderResponseWrapper: " + myOpenOrders);
+                LogUtils.log(LOG, Level.DEBUG, () -> "BtceOpenOrderResponseWrapper: " + myOpenOrders);
 
                 // adapt (and we really have to this time... jeez...
                 final BtceOpenOrders btceOrders = myOpenOrders.openOrders;
@@ -362,10 +357,7 @@ public final class BtceExchangeAdapter implements TradingApi {
                 throw new IllegalArgumentException(errorMsg);
             }
 
-            // useful to log diff types of error response in JSON response
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("createOrder() response: " + results);
-            }
+            LogUtils.log(LOG, Level.DEBUG, () ->"createOrder() response: " + results);
 
             final BtceCreateOrderResponseWrapper createOrderResponseWrapper = gson.fromJson(results,
                     BtceCreateOrderResponseWrapper.class);
@@ -409,9 +401,7 @@ public final class BtceExchangeAdapter implements TradingApi {
             final String results = sendAuthenticatedRequestToExchange("CancelOrder", params);
 
             // useful to log diff types of error response in JSON response
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("cancelOrder() response: " + results);
-            }
+            LogUtils.log(LOG, Level.DEBUG, () -> "cancelOrder() response: " + results);
 
             final BtceCancelledOrderWrapper cancelOrderResponse = gson.fromJson(results, BtceCancelledOrderWrapper.class);
 
@@ -434,11 +424,7 @@ public final class BtceExchangeAdapter implements TradingApi {
 
         try {
             final String results = sendPublicRequestToExchange("ticker", marketId);
-
-            // useful to log diff types of error response in JSON response
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("getLatestMarketPrice() response: " + results);
-            }
+            LogUtils.log(LOG, Level.DEBUG, () ->"getLatestMarketPrice() response: " + results);
 
             final BtceTickerWrapper btceTicker = gson.fromJson(results, BtceTickerWrapper.class);
             return btceTicker.ticker.last;
@@ -456,11 +442,7 @@ public final class BtceExchangeAdapter implements TradingApi {
 
         try {
             final String results = sendAuthenticatedRequestToExchange("getInfo", null);
-
-            // useful to log diff types of error response in JSON response
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("getBalanceInfo() response: " + results);
-            }
+            LogUtils.log(LOG, Level.DEBUG, () -> "getBalanceInfo() response: " + results);
 
             final BtceInfoWrapper info = gson.fromJson(results, BtceInfoWrapper.class);
 
@@ -487,11 +469,7 @@ public final class BtceExchangeAdapter implements TradingApi {
 
         try {
             final String results = sendPublicRequestToExchange("fee", marketId);
-
-            // useful to log diff types of error response in JSON response
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("getPercentageOfSellOrderTakenForExchangeFee() response: " + results);
-            }
+            LogUtils.log(LOG, Level.DEBUG, () -> "getPercentageOfSellOrderTakenForExchangeFee() response: " + results);
 
             final BtceFees fees = gson.fromJson(results, BtceFees.class);
 
@@ -512,11 +490,7 @@ public final class BtceExchangeAdapter implements TradingApi {
 
         try {
             final String results = sendPublicRequestToExchange("fee", marketId);
-
-            // useful to log diff types of error response in JSON response
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("getPercentageOfSellOrderTakenForExchangeFee() response: " + results);
-            }
+            LogUtils.log(LOG, Level.DEBUG, () -> "getPercentageOfSellOrderTakenForExchangeFee() response: " + results);
 
             final BtceFees fees = gson.fromJson(results, BtceFees.class);
 
@@ -957,9 +931,7 @@ public final class BtceExchangeAdapter implements TradingApi {
 
         try {
             final URL url = new URL(PUBLIC_API_BASE_URL + apiMethod + "/" + resource);
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Using following URL for API call: " + url);
-            }
+            LogUtils.log(LOG, Level.DEBUG, () ->"Using following URL for API call: " + url);
 
             exchangeConnection = (HttpURLConnection) url.openConnection();
             exchangeConnection.setUseCaches(false);
@@ -1086,9 +1058,7 @@ public final class BtceExchangeAdapter implements TradingApi {
             }
 
             final URL url = new URL(AUTHENTICATED_API_URL);
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Using following URL for API call: " + url);
-            }
+            LogUtils.log(LOG, Level.DEBUG, () ->"Using following URL for API call: " + url);
 
             exchangeConnection = (HttpURLConnection) url.openConnection();
             exchangeConnection.setUseCaches(false);
@@ -1286,9 +1256,7 @@ public final class BtceExchangeAdapter implements TradingApi {
                 throw new IllegalArgumentException(errorMsg);
             }
 
-            if (LOG.isInfoEnabled()) {
-                LOG.info(CONNECTION_TIMEOUT_PROPERTY_NAME + ": " + connectionTimeout);
-            }
+            LogUtils.log(LOG, Level.INFO, () ->CONNECTION_TIMEOUT_PROPERTY_NAME + ": " + connectionTimeout);
 
         } catch (IOException e) {
             final String errorMsg = "Failed to load Exchange config: " + configFile;
