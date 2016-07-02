@@ -372,8 +372,8 @@ public class TestItBitExchangeAdapter {
 
         // Load the canned response from the exchange
         final byte[] encoded = Files.readAllBytes(Paths.get(ORDER_BOOK_JSON_RESPONSE));
-        final ItBitExchangeAdapter.ItBitHttpResponse exchangeResponse =
-                new ItBitExchangeAdapter.ItBitHttpResponse(200, "OK", new String(encoded, StandardCharsets.UTF_8));
+        final AbstractExchangeAdapter.ExchangeHttpResponse exchangeResponse =
+                new AbstractExchangeAdapter.ExchangeHttpResponse(200, "OK", new String(encoded, StandardCharsets.UTF_8));
 
         // Partial mock so we do not send stuff down the wire
         final ItBitExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
@@ -451,8 +451,8 @@ public class TestItBitExchangeAdapter {
 
         // Load the canned response from the exchange
         final byte[] encoded = Files.readAllBytes(Paths.get(TICKER_JSON_RESPONSE));
-        final ItBitExchangeAdapter.ItBitHttpResponse exchangeResponse =
-                new ItBitExchangeAdapter.ItBitHttpResponse(200, "OK", new String(encoded, StandardCharsets.UTF_8));
+        final AbstractExchangeAdapter.ExchangeHttpResponse exchangeResponse =
+                new AbstractExchangeAdapter.ExchangeHttpResponse(200, "OK", new String(encoded, StandardCharsets.UTF_8));
 
         // Partial mock so we do not send stuff down the wire
         final ItBitExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(

@@ -108,7 +108,7 @@ import java.util.Properties;
  *
  * @author gazbert
  */
-public final class BitfinexExchangeAdapter implements TradingApi {
+public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter implements TradingApi {
 
     private static final Logger LOG = Logger.getLogger(BitfinexExchangeAdapter.class);
 
@@ -232,11 +232,11 @@ public final class BitfinexExchangeAdapter implements TradingApi {
     public MarketOrderBook getMarketOrders(String marketId) throws TradingApiException, ExchangeTimeoutException {
 
         try {
-            final String results = sendPublicRequestToExchange("book/" + marketId);
+            final ExchangeHttpResponse response = sendPublicRequestToExchange("book/" + marketId);
 
-            LogUtils.log(LOG, Level.DEBUG, () -> "getMarketOrders() response: " + results);
+            LogUtils.log(LOG, Level.DEBUG, () -> "getMarketOrders() response: " + response);
 
-            final BitfinexOrderBook orderBook = gson.fromJson(results, BitfinexOrderBook.class);
+            final BitfinexOrderBook orderBook = gson.fromJson(response.getPayload(), BitfinexOrderBook.class);
 
             // adapt BUYs
             final List<MarketOrder> buyOrders = new ArrayList<>();
@@ -415,10 +415,10 @@ public final class BitfinexExchangeAdapter implements TradingApi {
     public BigDecimal getLatestMarketPrice(String marketId) throws TradingApiException, ExchangeTimeoutException {
 
         try {
-            final String results = sendPublicRequestToExchange("pubticker/" + marketId);
-            LogUtils.log(LOG, Level.DEBUG, () -> "getLatestMarketPrice() response: " + results);
+            final ExchangeHttpResponse response = sendPublicRequestToExchange("pubticker/" + marketId);
+            LogUtils.log(LOG, Level.DEBUG, () -> "getLatestMarketPrice() response: " + response);
 
-            final BitfinexTicker ticker = gson.fromJson(results, BitfinexTicker.class);
+            final BitfinexTicker ticker = gson.fromJson(response.getPayload(), BitfinexTicker.class);
             return ticker.last_price;
 
         } catch (ExchangeTimeoutException | TradingApiException e) {
@@ -524,8 +524,6 @@ public final class BitfinexExchangeAdapter implements TradingApi {
 
     /**
      * GSON class for a market Order Book.
-     *
-     * @author gazbert
      */
     private static class BitfinexOrderBook {
 
@@ -545,8 +543,6 @@ public final class BitfinexExchangeAdapter implements TradingApi {
 
     /**
      * GSON class for a Market Order.
-     *
-     * @author gazbert
      */
     private static class BitfinexMarketOrder {
 
@@ -568,8 +564,6 @@ public final class BitfinexExchangeAdapter implements TradingApi {
 
     /**
      * GSON class for receiving your open orders in 'orders' API call response.
-     *
-     * @author gazbert
      */
     private static class BitfinexOpenOrders extends ArrayList<BitfinexOpenOrder> {
         private static final long serialVersionUID = 5516523641153401953L;
@@ -577,8 +571,6 @@ public final class BitfinexExchangeAdapter implements TradingApi {
 
     /**
      * GSON class for mapping returned order from 'orders' API call response.
-     *
-     * @author gazbert
      */
     private static class BitfinexOpenOrder {
 
@@ -623,8 +615,6 @@ public final class BitfinexExchangeAdapter implements TradingApi {
 
     /**
      * GSON class for a Bitfinex 'pubticker' API call response.
-     *
-     * @author gazbert
      */
     private static class BitfinexTicker {
 
@@ -685,8 +675,6 @@ public final class BitfinexExchangeAdapter implements TradingApi {
      *      }
      *  ]
      * </pre>
-     *
-     * @author gazbert
      */
     private static class BitfinexAccountInfos extends ArrayList<BitfinexAccountInfo> {
         private static final long serialVersionUID = 5516521641453401953L;
@@ -694,8 +682,6 @@ public final class BitfinexExchangeAdapter implements TradingApi {
 
     /**
      * GSON class for holding Bitfinex Account Info.
-     *
-     * @author gazbert
      */
     private static class BitfinexAccountInfo {
 
@@ -715,8 +701,6 @@ public final class BitfinexExchangeAdapter implements TradingApi {
 
     /**
      * GSON class for holding Bitfinex Pair Fees.
-     *
-     * @author gazbert
      */
     private static class BitfinexPairFees extends ArrayList<BitfinexPairFee> {
         private static final long serialVersionUID = 1516526641473401953L;
@@ -724,8 +708,6 @@ public final class BitfinexExchangeAdapter implements TradingApi {
 
     /**
      * GSON class for holding Bitfinex Pair Fee.
-     *
-     * @author gazbert
      */
     private static class BitfinexPairFee {
 
@@ -757,8 +739,6 @@ public final class BitfinexExchangeAdapter implements TradingApi {
      * {"type":"trading","currency":"usd","amount":"0.0","available":"0.0"}
      * ]
      * </pre>
-     *
-     * @author gazbert
      */
     private static class BitfinexBalances extends ArrayList<BitfinexAccountBalance> {
         private static final long serialVersionUID = 5516523641953401953L;
@@ -778,8 +758,6 @@ public final class BitfinexExchangeAdapter implements TradingApi {
      * {"type":"trading","currency":"usd","amount":"0.0","available":"0.0"}
      * ]
      * </pre>
-     *
-     * @author gazbert
      */
     private static class BitfinexAccountBalance {
 
@@ -801,8 +779,6 @@ public final class BitfinexExchangeAdapter implements TradingApi {
 
     /**
      * GSON class for Bitfinex 'order/new' response.
-     *
-     * @author gazbert
      */
     private static class BitfinexNewOrderResponse {
 
@@ -849,8 +825,6 @@ public final class BitfinexExchangeAdapter implements TradingApi {
 
     /**
      * GSON class for Bitfinex 'order/cancel' response.
-     *
-     * @author gazbert
      */
     private static class BitfinexCancelOrderResponse {
 
@@ -898,106 +872,25 @@ public final class BitfinexExchangeAdapter implements TradingApi {
     // ------------------------------------------------------------------------------------------------
 
     /**
-     * Makes a public API call to Bitfinex exchange. Uses HTTP GET.
+     * Makes a public API call to the Bitfinex exchange.
      *
-     * @param apiMethod the API method to call..
+     * @param apiMethod the API method to call.
      * @return the response from the exchange.
      * @throws ExchangeTimeoutException if there is a network issue connecting to exchange.
      * @throws TradingApiException if anything unexpected happens.
      */
-    private String sendPublicRequestToExchange(String apiMethod) throws ExchangeTimeoutException, TradingApiException {
-
-        HttpURLConnection exchangeConnection = null;
-        final StringBuilder exchangeResponse = new StringBuilder();
+    private ExchangeHttpResponse sendPublicRequestToExchange(String apiMethod) throws ExchangeTimeoutException, TradingApiException {
 
         try {
 
             final URL url = new URL(PUBLIC_API_BASE_URL + apiMethod);
-            LogUtils.log(LOG, Level.DEBUG, () -> "Using following URL for API call: " + url);
-
-            exchangeConnection = (HttpURLConnection) url.openConnection();
-            exchangeConnection.setUseCaches(false);
-            exchangeConnection.setDoOutput(true);
-
-            // no JSON this time
-            exchangeConnection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-
-            // Er, perhaps, I need to be a bit more stealth here...
-            exchangeConnection.setRequestProperty("User-Agent",
-                    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.114 Safari/537.36");
-
-            /*
-             * Add a timeout so we don't get blocked indefinitley; timeout on URLConnection is in millis.
-             * connectionTimeout is in SECONDS and comes from bitfinex-config.properties config.
-             */
-            final int timeoutInMillis = connectionTimeout * 1000;
-            exchangeConnection.setConnectTimeout(timeoutInMillis);
-            exchangeConnection.setReadTimeout(timeoutInMillis);
-
-            // Grab the response - we just block here as per Connection API
-            final BufferedReader responseInputStream = new BufferedReader(new InputStreamReader(
-                    exchangeConnection.getInputStream()));
-
-            // Read the JSON response lines into our response buffer
-            String responseLine;
-            while ((responseLine = responseInputStream.readLine()) != null) {
-                exchangeResponse.append(responseLine);
-            }
-            responseInputStream.close();
-
-            // return the JSON response string
-            return exchangeResponse.toString();
+            return sendPublicNetworkRequest(url, connectionTimeout);
 
         } catch (MalformedURLException e) {
+
             final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
             LOG.error(errorMsg, e);
             throw new TradingApiException(errorMsg, e);
-
-        } catch (SocketTimeoutException e) {
-            final String errorMsg = IO_SOCKET_TIMEOUT_ERROR_MSG;
-            LOG.error(errorMsg, e);
-            throw new ExchangeTimeoutException(errorMsg, e);
-
-        } catch (IOException e) {
-
-            try {
-
-                /*
-                 * Occasionally get this on finex.
-                 */
-                if (e.getMessage() != null && e.getMessage().contains("Connection reset")) {
-
-                    final String errorMsg = "Failed to connect to Bitfinex. SSL Connection was reset by the server.";
-                    LOG.error(errorMsg, e);
-                    throw new ExchangeTimeoutException(errorMsg, e);
-
-                /*
-                 * Exchange sometimes fails with these codes, but recovers by next request...
-                 */
-                } else if (exchangeConnection != null && (exchangeConnection.getResponseCode() == 502
-                        || exchangeConnection.getResponseCode() == 503
-                        || exchangeConnection.getResponseCode() == 504)) {
-
-                    final String errorMsg = IO_50X_TIMEOUT_ERROR_MSG;
-                    LOG.error(errorMsg, e);
-                    throw new ExchangeTimeoutException(errorMsg, e);
-
-                } else {
-                    final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
-                    LOG.error(errorMsg, e);
-                    e.printStackTrace();
-                    throw new TradingApiException(errorMsg, e);
-                }
-            } catch (IOException e1) {
-
-                final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
-                LOG.error(errorMsg, e1);
-                throw new TradingApiException(errorMsg, e1);
-            }
-        } finally {
-            if (exchangeConnection != null) {
-                exchangeConnection.disconnect();
-            }
         }
     }
 

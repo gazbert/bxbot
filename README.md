@@ -1,3 +1,4 @@
+
 # BX-bot
 
 ## What is BX-bot?
@@ -371,6 +372,10 @@ You can also create your own jar for your adapters, e.g. `my-adapters.jar`, and 
 see the _Installation Guide_ for how to do this.
 
 ## Build Guide
+
+The latest stable build can be found on the [Releases](https://github.com/gazbert/BX-bot/releases) page. The SNAPSHOT builds are
+very much [Sid](https://www.debian.org/releases/sid/) - be careful!
+
 A Maven `pom.xml` is included for building the bot.
 
 1. Clone the BX-bot repo locally.

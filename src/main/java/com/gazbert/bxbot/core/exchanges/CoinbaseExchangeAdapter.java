@@ -115,7 +115,7 @@ import java.util.Properties;
  *
  * @author gazbert
  */
-public final class CoinbaseExchangeAdapter implements TradingApi {
+public final class CoinbaseExchangeAdapter extends AbstractExchangeAdapter implements TradingApi {
 
     private static final Logger LOG = Logger.getLogger(CoinbaseExchangeAdapter.class);
 
@@ -417,10 +417,10 @@ public final class CoinbaseExchangeAdapter implements TradingApi {
             final Map<String, String> params = getRequestParamMap();
             params.put("level", "2"); //  "2" = Top 50 bids and asks (aggregated)
 
-            final CoinbaseHttpResponse response = sendPublicRequestToExchange("products/" + marketId + "/book", params);
+            final ExchangeHttpResponse response = sendPublicRequestToExchange("products/" + marketId + "/book", params);
             LogUtils.log(LOG, Level.DEBUG, () -> "getMarketOrders() response: " + response);
 
-            if (response.statusCode == HttpURLConnection.HTTP_OK) {
+            if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
 
                 final CoinbaseBookWrapper orderBook = gson.fromJson(response.getPayload(), CoinbaseBookWrapper.class);
 
@@ -502,10 +502,10 @@ public final class CoinbaseExchangeAdapter implements TradingApi {
 
         try {
 
-            final CoinbaseHttpResponse response = sendPublicRequestToExchange("products/" + marketId + "/ticker", null);
+            final ExchangeHttpResponse response = sendPublicRequestToExchange("products/" + marketId + "/ticker", null);
             LogUtils.log(LOG, Level.DEBUG, () -> "getLatestMarketPrice() response: " + response);
 
-            if (response.statusCode == HttpURLConnection.HTTP_OK) {
+            if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
                 final CoinbaseTicker coinbaseTicker = gson.fromJson(response.getPayload(), CoinbaseTicker.class);
                 return coinbaseTicker.price;
             } else {
@@ -554,8 +554,6 @@ public final class CoinbaseExchangeAdapter implements TradingApi {
      * GSON class for Coinbase '/orders' API call response.
      *
      * There are other critters in here different to what is spec'd: https://docs.exchange.coinbase.com/#list-orders
-     *
-     * @author gazbert
      */
     private static class CoinbaseOrder {
 
@@ -599,8 +597,6 @@ public final class CoinbaseExchangeAdapter implements TradingApi {
 
     /**
      * GSON class for Coinbase '/products/{marketId}/book' API call response.
-     *
-     * @author gazbert
      */
     private static class CoinbaseBookWrapper {
 
@@ -621,8 +617,6 @@ public final class CoinbaseExchangeAdapter implements TradingApi {
     /**
      * GSON class for holding Market Orders. First element in array is price, second element is amount, third is number
      * of orders.
-     *
-     * @author gazbert
      */
     private static class CoinbaseMarketOrder extends ArrayList<BigDecimal> {
         private static final long serialVersionUID = -4919711220797077759L;
@@ -630,8 +624,6 @@ public final class CoinbaseExchangeAdapter implements TradingApi {
 
     /**
      * GSON class for Coinbase '/products/{marketId}/ticker' API call response.
-     *
-     * @author gazbert
      */
     private static class CoinbaseTicker {
 
@@ -654,8 +646,6 @@ public final class CoinbaseExchangeAdapter implements TradingApi {
 
     /**
      * GSON class for Coinbase '/accounts' API call response.
-     *
-     * @author gazbert
      */
     private static class CoinbaseAccount {
 
@@ -688,8 +678,6 @@ public final class CoinbaseExchangeAdapter implements TradingApi {
      * Wrapper class for holding Coinbase HTTP responses.
      *
      * Package private for unit testing ;-o
-     *
-     * @author gazbert
      */
     static class CoinbaseHttpResponse {
 
@@ -719,7 +707,7 @@ public final class CoinbaseExchangeAdapter implements TradingApi {
     }
 
     /**
-     * Makes a public API call to Coinbase exchange. Uses HTTP GET.
+     * Makes a public API call to the Coinbase exchange.
      *
      * @param apiMethod the API method to call.
      * @param params any (optional) query param args to use in the API call.
@@ -727,13 +715,8 @@ public final class CoinbaseExchangeAdapter implements TradingApi {
      * @throws ExchangeTimeoutException if there is a network issue connecting to exchange.
      * @throws TradingApiException if anything unexpected happens.
      */
-    private CoinbaseHttpResponse sendPublicRequestToExchange(String apiMethod, Map<String, String> params)
+    private ExchangeHttpResponse sendPublicRequestToExchange(String apiMethod, Map<String, String> params)
             throws ExchangeTimeoutException, TradingApiException {
-
-        HttpURLConnection exchangeConnection = null;
-        final StringBuilder exchangeResponse = new StringBuilder();
-
-        try {
 
             if (params == null) {
                 params = new HashMap<>(); // no params, so empty query string
@@ -749,87 +732,16 @@ public final class CoinbaseExchangeAdapter implements TradingApi {
                 queryString.append(param).append("=").append(URLEncoder.encode(params.get(param)));
             }
 
+        try {
+
             final URL url = new URL(PUBLIC_API_BASE_URL + apiMethod + queryString);
-            LogUtils.log(LOG, Level.DEBUG, () -> "Using following URL for API call: " + url);
-
-            exchangeConnection = (HttpURLConnection) url.openConnection();
-            exchangeConnection.setUseCaches(false);
-            exchangeConnection.setDoOutput(true);
-
-            // no JSON this time
-            exchangeConnection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-
-            // Er, perhaps, I need to be a bit more stealth here...
-            exchangeConnection.setRequestProperty("User-Agent",
-                    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.114 Safari/537.36");
-
-            /*
-             * Add a timeout so we don't get blocked indefinitley; timeout on URLConnection is in millis.
-             * connectionTimeout is in SECONDS and comes from coinbase-config.properties config.
-             */
-            final int timeoutInMillis = connectionTimeout * 1000;
-            exchangeConnection.setConnectTimeout(timeoutInMillis);
-            exchangeConnection.setReadTimeout(timeoutInMillis);
-
-            // Grab the response - we just block here as per Connection API
-            final BufferedReader responseInputStream = new BufferedReader(new InputStreamReader(
-                    exchangeConnection.getInputStream()));
-
-            // Read the JSON response lines into our response buffer
-            String responseLine;
-            while ((responseLine = responseInputStream.readLine()) != null) {
-                exchangeResponse.append(responseLine);
-            }
-            responseInputStream.close();
-
-            return new CoinbaseHttpResponse(exchangeConnection.getResponseCode(), exchangeConnection.getResponseMessage(),
-                    exchangeResponse.toString());
+            return sendPublicNetworkRequest(url, connectionTimeout);
 
         } catch (MalformedURLException e) {
+
             final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
             LOG.error(errorMsg, e);
             throw new TradingApiException(errorMsg, e);
-
-        } catch (SocketTimeoutException e) {
-            final String errorMsg = IO_SOCKET_TIMEOUT_ERROR_MSG;
-            LOG.error(errorMsg, e);
-            throw new ExchangeTimeoutException(errorMsg, e);
-
-        } catch (IOException e) {
-
-            try {
-
-                /*
-                 * Exchange sometimes fails with these codes, but recovers by next request...
-                 */
-                if (exchangeConnection != null && (exchangeConnection.getResponseCode() == 502
-                        || exchangeConnection.getResponseCode() == 503
-                        || exchangeConnection.getResponseCode() == 504
-
-                        // Cloudflare related
-                        || exchangeConnection.getResponseCode() == 522
-                        || exchangeConnection.getResponseCode() == 525)) {
-
-                    final String errorMsg = IO_50X_TIMEOUT_ERROR_MSG;
-                    LOG.error(errorMsg, e);
-                    throw new ExchangeTimeoutException(errorMsg, e);
-
-                } else {
-                    final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
-                    LOG.error(errorMsg, e);
-                    e.printStackTrace();
-                    throw new TradingApiException(errorMsg, e);
-                }
-            } catch (IOException e1) {
-
-                final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
-                LOG.error(errorMsg, e1);
-                throw new TradingApiException(errorMsg, e1);
-            }
-        } finally {
-            if (exchangeConnection != null) {
-                exchangeConnection.disconnect();
-            }
         }
     }
 

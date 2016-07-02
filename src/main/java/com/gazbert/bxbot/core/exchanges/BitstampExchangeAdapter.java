@@ -104,7 +104,7 @@ import java.util.Properties;
  *
  * @author gazbert
  */
-public final class BitstampExchangeAdapter implements TradingApi {
+public final class BitstampExchangeAdapter extends AbstractExchangeAdapter implements TradingApi {
 
     private static final Logger LOG = Logger.getLogger(BitstampExchangeAdapter.class);
 
@@ -228,10 +228,10 @@ public final class BitstampExchangeAdapter implements TradingApi {
     public MarketOrderBook getMarketOrders(String marketId) throws TradingApiException, ExchangeTimeoutException {
 
         try {
-            final String results = sendPublicRequestToExchange("order_book");
-            LogUtils.log(LOG, Level.DEBUG, () -> "getMarketOrders() response: " + results);
+            final ExchangeHttpResponse response = sendPublicRequestToExchange("order_book");
+            LogUtils.log(LOG, Level.DEBUG, () -> "getMarketOrders() response: " + response);
 
-            final BitstampOrderBook bitstampOrderBook = gson.fromJson(results, BitstampOrderBook.class);
+            final BitstampOrderBook bitstampOrderBook = gson.fromJson(response.getPayload(), BitstampOrderBook.class);
 
             // adapt BUYs
             final List<MarketOrder> buyOrders = new ArrayList<>();
@@ -395,10 +395,10 @@ public final class BitstampExchangeAdapter implements TradingApi {
     public BigDecimal getLatestMarketPrice(String marketId) throws TradingApiException, ExchangeTimeoutException {
 
         try {
-            final String results = sendPublicRequestToExchange("ticker");
-            LogUtils.log(LOG, Level.DEBUG, () -> "getLatestMarketPrice() response: " + results);
+            final ExchangeHttpResponse response = sendPublicRequestToExchange("ticker");
+            LogUtils.log(LOG, Level.DEBUG, () -> "getLatestMarketPrice() response: " + response);
 
-            final BitstampTicker bitstampTicker = gson.fromJson(results, BitstampTicker.class);
+            final BitstampTicker bitstampTicker = gson.fromJson(response.getPayload(), BitstampTicker.class);
             return bitstampTicker.last;
 
         } catch (ExchangeTimeoutException | TradingApiException e) {
@@ -493,8 +493,6 @@ public final class BitstampExchangeAdapter implements TradingApi {
 
     /**
      * GSON class for holding Bitstamp Balance response from balance API call.
-     *
-     * @author gazbert
      */
     private static class BitstampBalance {
 
@@ -533,8 +531,6 @@ public final class BitstampExchangeAdapter implements TradingApi {
      * </pre>
      * </p>
      * Each is a list of open orders and each order is represented as a list of price and amount.
-     *
-     * @author gazbert
      */
     private static class BitstampOrderBook {
 
@@ -553,8 +549,6 @@ public final class BitstampExchangeAdapter implements TradingApi {
 
     /**
      * GSON class for a Bitstamp ticker response.
-     *
-     * @author gazbert
      */
     private static class BitstampTicker {
 
@@ -583,8 +577,6 @@ public final class BitstampExchangeAdapter implements TradingApi {
 
     /**
      * GSON class for Bitstamp create order response.
-     *
-     * @author gazbert
      */
     private static class BitstampOrderResponse {
 
@@ -617,8 +609,6 @@ public final class BitstampExchangeAdapter implements TradingApi {
      * at com.gazbert.bxbot.adapter.BitstampExchangeAdapter$DateDeserializer.deserialize(BitstampExchangeAdapter.java:1)
      * at com.google.gson.TreeTypeAdapter.read(TreeTypeAdapter.java:58)
      * </pre>
-     *
-     * @author gazbert
      */
     private class BitstampDateDeserializer implements JsonDeserializer<Date> {
         private SimpleDateFormat bitstampDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -644,96 +634,26 @@ public final class BitstampExchangeAdapter implements TradingApi {
     // ------------------------------------------------------------------------------------------------
 
     /**
-     * Makes a public API call to Bitstamp exchange. Uses HTTP GET.
-     * 
+     * Makes a public API call to Bitstamp exchange.
+     *
      * @param apiMethod the API method to call.
      * @return the response from the exchange.
      * @throws ExchangeTimeoutException if there is a network issue connecting to exchange.
      * @throws TradingApiException if anything unexpected happens.
      */
-    private String sendPublicRequestToExchange(String apiMethod) throws ExchangeTimeoutException, TradingApiException {
-
-        HttpURLConnection exchangeConnection = null;
-        final StringBuilder exchangeResponse = new StringBuilder();
+    private ExchangeHttpResponse sendPublicRequestToExchange(String apiMethod) throws ExchangeTimeoutException, TradingApiException {
 
         try {
 
-            // MUST have the trailing slash even if no params...
+            // MUST have the trailing slash even if no params... else exchange barfs!
             final URL url = new URL(API_BASE_URL + apiMethod + "/");
-            LogUtils.log(LOG, Level.DEBUG, () -> "Using following URL for API call: " + url);
-
-            exchangeConnection = (HttpURLConnection) url.openConnection();
-            exchangeConnection.setUseCaches(false);
-            exchangeConnection.setDoOutput(true);
-
-            exchangeConnection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-
-            // Er, perhaps, I need to be a bit more stealth here...
-            exchangeConnection.setRequestProperty("User-Agent",
-                    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.114 Safari/537.36");
-
-            /*
-             * Add a timeout so we don't get blocked indefinitley; timeout on URLConnection is in millis.
-             * connectionTimeout is in SECONDS and comes from bitstamp-config.properties config.
-             */
-            final int timeoutInMillis = connectionTimeout * 1000;
-            exchangeConnection.setConnectTimeout(timeoutInMillis);
-            exchangeConnection.setReadTimeout(timeoutInMillis);
-
-            // Grab the response - we just block here as per Connection API
-            final BufferedReader responseInputStream = new BufferedReader(new InputStreamReader(
-                    exchangeConnection.getInputStream()));
-
-            // Read the JSON response lines into our response buffer
-            String responseLine;
-            while ((responseLine = responseInputStream.readLine()) != null) {
-                exchangeResponse.append(responseLine);
-            }
-            responseInputStream.close();
-
-            // return the JSON response string
-            return exchangeResponse.toString();
+            return sendPublicNetworkRequest(url, connectionTimeout);
 
         } catch (MalformedURLException e) {
+
             final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
             LOG.error(errorMsg, e);
             throw new TradingApiException(errorMsg, e);
-
-        } catch (SocketTimeoutException e) {
-            final String errorMsg = IO_SOCKET_TIMEOUT_ERROR_MSG;
-            LOG.error(errorMsg, e);
-            throw new ExchangeTimeoutException(errorMsg, e);
-
-        } catch (IOException e) {
-
-            try {
-
-                /*
-                 * Exchange sometimes fails with these codes, but recovers by next request...
-                 */
-                if (exchangeConnection != null && (exchangeConnection.getResponseCode() == 502
-                        || exchangeConnection.getResponseCode() == 503
-                        || exchangeConnection.getResponseCode() == 504)) {
-
-                    final String errorMsg = IO_50X_TIMEOUT_ERROR_MSG;
-                    LOG.error(errorMsg, e);
-                    throw new ExchangeTimeoutException(errorMsg, e);
-
-                } else {
-                    final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
-                    LOG.error(errorMsg, e);
-                    throw new TradingApiException(errorMsg, e);
-                }
-            } catch (IOException e1) {
-
-                final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
-                LOG.error(errorMsg, e1);
-                throw new TradingApiException(errorMsg, e1);
-            }
-        } finally {
-            if (exchangeConnection != null) {
-                exchangeConnection.disconnect();
-            }
         }
     }
 

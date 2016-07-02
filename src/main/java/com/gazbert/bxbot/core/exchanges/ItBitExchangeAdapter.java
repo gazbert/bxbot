@@ -126,7 +126,7 @@ import java.util.Properties;
  *
  * @author gazbert
  */
-public final class ItBitExchangeAdapter implements TradingApi {
+public final class ItBitExchangeAdapter extends  AbstractExchangeAdapter implements TradingApi {
 
     private static final Logger LOG = Logger.getLogger(ItBitExchangeAdapter.class);
 
@@ -458,10 +458,10 @@ public final class ItBitExchangeAdapter implements TradingApi {
     public MarketOrderBook getMarketOrders(String marketId) throws TradingApiException, ExchangeTimeoutException {
 
         try {
-            final ItBitHttpResponse response = sendPublicRequestToExchange("/markets/" + marketId + "/order_book");
+            final ExchangeHttpResponse response = sendPublicRequestToExchange("/markets/" + marketId + "/order_book");
             LogUtils.log(LOG, Level.DEBUG, () -> "getMarketOrders() response: " + response);
 
-            if (response.statusCode == HttpURLConnection.HTTP_OK) {
+            if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
 
                 final ItBitOrderBookWrapper orderBook = gson.fromJson(response.getPayload(), ItBitOrderBookWrapper.class);
 
@@ -507,10 +507,10 @@ public final class ItBitExchangeAdapter implements TradingApi {
 
         try {
 
-            final ItBitHttpResponse response = sendPublicRequestToExchange("/markets/" + marketId + "/ticker");
+            final ExchangeHttpResponse response = sendPublicRequestToExchange("/markets/" + marketId + "/ticker");
             LogUtils.log(LOG, Level.DEBUG, () -> "getLatestMarketPrice() response: " + response);
 
-            if (response.statusCode == HttpURLConnection.HTTP_OK) {
+            if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
 
                 final ItBitTicker itBitTicker = gson.fromJson(response.getPayload(), ItBitTicker.class);
                 return itBitTicker.lastPrice;
@@ -615,8 +615,6 @@ public final class ItBitExchangeAdapter implements TradingApi {
      * <p>
      * No payload returned by exchange on success.
      * </p>
-     *
-     * @author gazbert
      */
     private static class ItBitCancelOrderResponse {
     }
@@ -630,8 +628,6 @@ public final class ItBitExchangeAdapter implements TradingApi {
      * <p>
      * It is exactly the same as order returned in Get Orders response.
      * </p>
-     *
-     * @author gazbert
      */
     private static class ItBitNewOrderResponse extends ItBitYourOrder {
     }
@@ -639,8 +635,6 @@ public final class ItBitExchangeAdapter implements TradingApi {
     /**
      * GSON class for holding itBit order returned from:
      * "Get Orders" /wallets/{walletId}/orders{?instrument,page,perPage,status} API call.
-     *
-     * @author gazbert
      */
     private static class ItBitYourOrder {
 
@@ -683,8 +677,6 @@ public final class ItBitExchangeAdapter implements TradingApi {
 
     /**
      * GSON class for holding Your Order metadata. No idea what this is / or gonna be...
-     *
-     * @author gazbert
      */
     private static class ItBitOrderMetadata {
     }
@@ -692,8 +684,6 @@ public final class ItBitExchangeAdapter implements TradingApi {
     /**
      * GSON class for holding itBit ticker returned from:
      * "Get Order Book" /markets/{tickerSymbol}/order_book API call.
-     *
-     * @author gazbert
      */
     private static class ItBitOrderBookWrapper {
 
@@ -712,8 +702,6 @@ public final class ItBitExchangeAdapter implements TradingApi {
 
     /**
      * GSON class for holding Market Orders. First element in array is price, second element is amount.
-     *
-     * @author gazbert
      */
     private static class ItBitMarketOrder extends ArrayList<BigDecimal> {
         private static final long serialVersionUID = -4959711260747077759L;
@@ -722,8 +710,6 @@ public final class ItBitExchangeAdapter implements TradingApi {
     /**
      * GSON class for holding itBit ticker returned from:
      * "Get Ticker" /markets/{tickerSymbol}/ticker API call.
-     *
-     * @author gazbert
      */
     private static class ItBitTicker {
 
@@ -774,8 +760,6 @@ public final class ItBitExchangeAdapter implements TradingApi {
     /**
      * GSON class for holding itBit wallets returned from:
      * "Get All Wallets" /wallets{?userId,page,perPage} API call.
-     *
-     * @author gazbert
      */
     private static class ItBitWallet {
 
@@ -798,8 +782,6 @@ public final class ItBitExchangeAdapter implements TradingApi {
 
     /**
      * GSON class for holding itBit wallet balances.
-     *
-     * @author gazbert
      */
     private static class ItBitBalance {
 
@@ -826,8 +808,6 @@ public final class ItBitExchangeAdapter implements TradingApi {
      * Wrapper class for holding itBit HTTP responses.
      *
      * Package private for unit testing ;-o
-     *
-     * @author gazbert
      */
     static class ItBitHttpResponse {
 
@@ -857,121 +837,25 @@ public final class ItBitExchangeAdapter implements TradingApi {
     }
 
     /**
-     * Makes a public API call to itBit exchange. Uses HTTP GET.
+     * Makes a public API call to the itBit exchange.
      *
      * @param apiMethod the API method to call.
      * @return the response from the exchange.
      * @throws ExchangeTimeoutException if there is a network issue connecting to exchange.
      * @throws TradingApiException if anything unexpected happens.
      */
-    private ItBitHttpResponse sendPublicRequestToExchange(String apiMethod) throws ExchangeTimeoutException, TradingApiException {
-
-        HttpURLConnection exchangeConnection = null;
-        final StringBuilder exchangeResponse = new StringBuilder();
+    private ExchangeHttpResponse sendPublicRequestToExchange(String apiMethod) throws ExchangeTimeoutException, TradingApiException {
 
         try {
 
             final URL url = new URL(PUBLIC_API_BASE_URL + apiMethod);
-            LogUtils.log(LOG, Level.DEBUG, () -> "Using following URL for API call: " + url);
-
-            exchangeConnection = (HttpURLConnection) url.openConnection();
-            exchangeConnection.setUseCaches(false);
-            exchangeConnection.setDoOutput(true);
-
-            // no JSON this time
-            exchangeConnection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-
-            // Er, perhaps, I need to be a bit more stealth here...
-            exchangeConnection.setRequestProperty("User-Agent",
-                    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.114 Safari/537.36");
-
-            /*
-             * Add a timeout so we don't get blocked indefinitley; timeout on URLConnection is in millis.
-             * connectionTimeout is in SECONDS and comes from itbit-config.properties config.
-             */
-            final int timeoutInMillis = connectionTimeout * 1000;
-            exchangeConnection.setConnectTimeout(timeoutInMillis);
-            exchangeConnection.setReadTimeout(timeoutInMillis);
-
-            // Grab the response - we just block here as per Connection API
-            final BufferedReader responseInputStream = new BufferedReader(new InputStreamReader(
-                    exchangeConnection.getInputStream()));
-
-            // Read the JSON response lines into our response buffer
-            String responseLine;
-            while ((responseLine = responseInputStream.readLine()) != null) {
-                exchangeResponse.append(responseLine);
-            }
-            responseInputStream.close();
-
-            return new ItBitHttpResponse(exchangeConnection.getResponseCode(), exchangeConnection.getResponseMessage(),
-                    exchangeResponse.toString());
+            return sendPublicNetworkRequest(url, connectionTimeout);
 
         } catch (MalformedURLException e) {
+
             final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
             LOG.error(errorMsg, e);
             throw new TradingApiException(errorMsg, e);
-
-        } catch (SocketTimeoutException e) {
-            final String errorMsg = IO_SOCKET_TIMEOUT_ERROR_MSG;
-            LOG.error(errorMsg, e);
-            throw new ExchangeTimeoutException(errorMsg, e);
-
-        } catch (IOException e) {
-
-            try {
-
-                /*
-                 * Started happening 22 Nov 2015...
-                 */
-                if (e.getMessage() != null &&
-                        (e.getMessage().contains("Remote host closed connection during handshake") ||
-                         e.getMessage().contains("Connection reset") ||
-                         e.getMessage().contains("Connection refused"))) {
-
-                    final String errorMsg = "Failed to connect to itBit. SSL Connection was reset by the server.";
-                    LOG.error(errorMsg, e);
-                    throw new ExchangeTimeoutException(errorMsg, e);
-
-                /*
-                 * Exchange sometimes fails with these codes, but recovers by next request...
-                 */
-                } else if (exchangeConnection != null && (exchangeConnection.getResponseCode() == 502
-                        || exchangeConnection.getResponseCode() == 503
-                        || exchangeConnection.getResponseCode() == 504)) {
-
-                    final String errorMsg = IO_50X_TIMEOUT_ERROR_MSG;
-                    LOG.error(errorMsg, e);
-                    throw new ExchangeTimeoutException(errorMsg, e);
-
-                /*
-                 * Check for itBit specific REST error responses so we can return useful data to caller.
-                 */
-                } else if (exchangeConnection != null && (exchangeConnection.getResponseCode() == 401
-                                || exchangeConnection.getResponseCode() == 404
-                                || exchangeConnection.getResponseCode() == 422)) {
-
-                        final String errorMsg = BAD_REQUEST_ERROR_MSG;
-                        LOG.error(errorMsg, e);
-                        return new ItBitHttpResponse(exchangeConnection.getResponseCode(),
-                                exchangeConnection.getResponseMessage(), exchangeResponse.toString());
-
-                } else {
-                    final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
-                    LOG.error(errorMsg, e);
-                    e.printStackTrace();
-                    throw new TradingApiException(errorMsg, e);
-                }
-            } catch (IOException e1) {
-
-                final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
-                LOG.error(errorMsg, e1);
-                throw new TradingApiException(errorMsg, e1);
-            }
-        } finally {
-            if (exchangeConnection != null) {
-                exchangeConnection.disconnect();
-            }
         }
     }
 

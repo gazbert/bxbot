@@ -105,7 +105,7 @@ import java.util.Properties;
  *
  * @author gazbert
  */
-public final class OkCoinExchangeAdapter implements TradingApi {
+public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter implements TradingApi {
 
     private static final Logger LOG = Logger.getLogger(OkCoinExchangeAdapter.class);
 
@@ -379,10 +379,10 @@ public final class OkCoinExchangeAdapter implements TradingApi {
             final Map<String, String> params = getRequestParamMap();
             params.put("symbol", marketId);
 
-            final String results = sendPublicRequestToExchange("depth.do", params);
-            LogUtils.log(LOG, Level.DEBUG, () -> "getMarketOrders() response: " + results);
+            final ExchangeHttpResponse response = sendPublicRequestToExchange("depth.do", params);
+            LogUtils.log(LOG, Level.DEBUG, () -> "getMarketOrders() response: " + response);
 
-            final OKCoinDepthWrapper orderBook = gson.fromJson(results, OKCoinDepthWrapper.class);
+            final OKCoinDepthWrapper orderBook = gson.fromJson(response.getPayload(), OKCoinDepthWrapper.class);
 
             // adapt BUYs
             final List<MarketOrder> buyOrders = new ArrayList<>();
@@ -435,10 +435,10 @@ public final class OkCoinExchangeAdapter implements TradingApi {
             final Map<String, String> params = getRequestParamMap();
             params.put("symbol", marketId);
 
-            final String results = sendPublicRequestToExchange("ticker.do", params);
-            LogUtils.log(LOG, Level.DEBUG, () -> "getLatestMarketPrice() response: " + results);
+            final ExchangeHttpResponse response = sendPublicRequestToExchange("ticker.do", params);
+            LogUtils.log(LOG, Level.DEBUG, () -> "getLatestMarketPrice() response: " + response);
 
-            final OKCoinTickerWrapper tickerWrapper = gson.fromJson(results, OKCoinTickerWrapper.class);
+            final OKCoinTickerWrapper tickerWrapper = gson.fromJson(response.getPayload(), OKCoinTickerWrapper.class);
             return tickerWrapper.ticker.last;
 
         } catch (ExchangeTimeoutException | TradingApiException e) {
@@ -789,7 +789,7 @@ public final class OkCoinExchangeAdapter implements TradingApi {
     // ------------------------------------------------------------------------------------------------
 
     /**
-     * Makes a public API call to OKCoin exchange. Uses HTTP GET.
+     * Makes a public API call to the OKCoin exchange.
      *
      * @param apiMethod the API method to call.
      * @param params the query param args to use in the API call
@@ -797,13 +797,8 @@ public final class OkCoinExchangeAdapter implements TradingApi {
      * @throws ExchangeTimeoutException if there is a network issue connecting to exchange.
      * @throws TradingApiException if anything unexpected happens.
      */
-    private String sendPublicRequestToExchange(String apiMethod, Map<String, String> params) throws
+    private ExchangeHttpResponse sendPublicRequestToExchange(String apiMethod, Map<String, String> params) throws
             ExchangeTimeoutException, TradingApiException {
-
-        HttpURLConnection exchangeConnection = null;
-        final StringBuilder exchangeResponse = new StringBuilder();
-
-        try {
 
             if (params == null) {
                 params = new HashMap<>(); // no params, so empty query string
@@ -819,86 +814,16 @@ public final class OkCoinExchangeAdapter implements TradingApi {
                 queryString.append(param).append("=").append(URLEncoder.encode(params.get(param)));
             }
 
+        try {
+
             final URL url = new URL(PUBLIC_API_BASE_URL + apiMethod + queryString);
-            LogUtils.log(LOG, Level.DEBUG, () -> "Using following URL for API call: " + url);
-
-            exchangeConnection = (HttpURLConnection) url.openConnection();
-            exchangeConnection.setUseCaches(false);
-            exchangeConnection.setDoOutput(true);
-
-            exchangeConnection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-
-            // Er, perhaps, I need to be a bit more stealth here...
-            exchangeConnection.setRequestProperty("User-Agent",
-                    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.114 Safari/537.36");
-
-            /*
-             * Add a timeout so we don't get blocked indefinitley; timeout on URLConnection is in millis.
-             * connectionTimeout is in SECONDS and comes from okcoin-config.properties config.
-             */
-            final int timeoutInMillis = connectionTimeout * 1000;
-            exchangeConnection.setConnectTimeout(timeoutInMillis);
-            exchangeConnection.setReadTimeout(timeoutInMillis);
-
-            // Grab the response - we just block here as per Connection API
-            final BufferedReader responseInputStream = new BufferedReader(new InputStreamReader(
-                    exchangeConnection.getInputStream()));
-
-            // Read the JSON response lines into our response buffer
-            String responseLine;
-            while ((responseLine = responseInputStream.readLine()) != null) {
-                exchangeResponse.append(responseLine);
-            }
-            responseInputStream.close();
-
-            // return the JSON response string
-            return exchangeResponse.toString();
+            return sendPublicNetworkRequest(url, connectionTimeout);
 
         } catch (MalformedURLException e) {
+
             final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
             LOG.error(errorMsg, e);
             throw new TradingApiException(errorMsg, e);
-
-        } catch (SocketTimeoutException e) {
-            final String errorMsg = IO_SOCKET_TIMEOUT_ERROR_MSG;
-            LOG.error(errorMsg, e);
-            throw new ExchangeTimeoutException(errorMsg, e);
-
-        } catch (IOException e) {
-
-            try {
-
-                /*
-                 * Exchange sometimes fails with these codes, but recovers by next request...
-                 */
-                if (exchangeConnection != null && (exchangeConnection.getResponseCode() == 502
-                        || exchangeConnection.getResponseCode() == 503
-                        || exchangeConnection.getResponseCode() == 504
-
-                        // Cloudflare related
-                        || exchangeConnection.getResponseCode() == 520
-                        || exchangeConnection.getResponseCode() == 522
-                        || exchangeConnection.getResponseCode() == 525)) {
-
-                    final String errorMsg = IO_5XX_TIMEOUT_ERROR_MSG;
-                    LOG.error(errorMsg, e);
-                    throw new ExchangeTimeoutException(errorMsg, e);
-
-                } else {
-                    final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
-                    LOG.error(errorMsg, e);
-                    throw new TradingApiException(errorMsg, e);
-                }
-            } catch (IOException e1) {
-
-                final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
-                LOG.error(errorMsg, e1);
-                throw new TradingApiException(errorMsg, e1);
-            }
-        } finally {
-            if (exchangeConnection != null) {
-                exchangeConnection.disconnect();
-            }
         }
     }
 
