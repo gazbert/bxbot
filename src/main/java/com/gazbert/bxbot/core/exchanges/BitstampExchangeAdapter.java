@@ -644,13 +644,11 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
     private ExchangeHttpResponse sendPublicRequestToExchange(String apiMethod) throws ExchangeTimeoutException, TradingApiException {
 
         try {
-
             // MUST have the trailing slash even if no params... else exchange barfs!
             final URL url = new URL(API_BASE_URL + apiMethod + "/");
             return sendPublicNetworkRequest(url, connectionTimeout);
 
         } catch (MalformedURLException e) {
-
             final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
             LOG.error(errorMsg, e);
             throw new TradingApiException(errorMsg, e);

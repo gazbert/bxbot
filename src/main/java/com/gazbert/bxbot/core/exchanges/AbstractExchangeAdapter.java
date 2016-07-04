@@ -89,7 +89,7 @@ abstract class AbstractExchangeAdapter {
 
             exchangeConnection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
 
-            // Er, perhaps, I need to be a bit more stealth here...
+            // Er, perhaps I need to be a bit more stealth here...
             exchangeConnection.setRequestProperty("User-Agent",
                     "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.114 Safari/537.36");
 
@@ -112,18 +112,16 @@ abstract class AbstractExchangeAdapter {
                     exchangeResponse.toString());
 
         } catch (MalformedURLException e) {
-
             final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
             LOG.error(errorMsg, e);
             throw new TradingApiException(errorMsg, e);
-        } catch (SocketTimeoutException e) {
 
+        } catch (SocketTimeoutException e) {
             final String errorMsg = IO_SOCKET_TIMEOUT_ERROR_MSG;
             LOG.error(errorMsg, e);
             throw new ExchangeTimeoutException(errorMsg, e);
 
         } catch (IOException e) {
-
 
             // TODO rework this stuff to read network retry codes from exchange adapter config
             try {
@@ -163,7 +161,6 @@ abstract class AbstractExchangeAdapter {
                     throw new TradingApiException(errorMsg, e);
                 }
             } catch (IOException e1) {
-
                 final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
                 LOG.error(errorMsg, e1);
                 throw new TradingApiException(errorMsg, e1);

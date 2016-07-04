@@ -733,12 +733,10 @@ public final class CoinbaseExchangeAdapter extends AbstractExchangeAdapter imple
             }
 
         try {
-
             final URL url = new URL(PUBLIC_API_BASE_URL + apiMethod + queryString);
             return sendPublicNetworkRequest(url, connectionTimeout);
 
         } catch (MalformedURLException e) {
-
             final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
             LOG.error(errorMsg, e);
             throw new TradingApiException(errorMsg, e);

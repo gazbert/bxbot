@@ -882,12 +882,10 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter imple
     private ExchangeHttpResponse sendPublicRequestToExchange(String apiMethod) throws ExchangeTimeoutException, TradingApiException {
 
         try {
-
             final URL url = new URL(PUBLIC_API_BASE_URL + apiMethod);
             return sendPublicNetworkRequest(url, connectionTimeout);
 
         } catch (MalformedURLException e) {
-
             final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
             LOG.error(errorMsg, e);
             throw new TradingApiException(errorMsg, e);
