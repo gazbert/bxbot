@@ -78,7 +78,7 @@ import java.util.UUID;
  * The BTC-e API is documented <a href="https://btc-e.com/api/documentation">here</a> and
  * <a href="https://btc-e.com/page/2">here</a>.
  * </p>
- *
+ * <p>
  * <p>
  * <strong>
  * DISCLAIMER:
@@ -88,24 +88,23 @@ import java.util.UUID;
  * methods. Use it at our own risk!
  * </strong>
  * </p>
- *
+ * <p>
  * <p>
  * The BTC-e trading API is 'unique' and difficult to adapt! Apologies for some shocking code coming up... ;-o
  * </p>
- *
+ * <p>
  * <p>
  * This Exchange Adapter is <em>not</em> thread safe. It expects to be called using a single thread in order to
  * preserve trade execution order. The {@link URLConnection} achieves this by blocking/waiting on the input stream
  * (response) for each API call.
  * </p>
- *
+ * <p>
  * <p>
  * The {@link TradingApi} calls will throw a {@link ExchangeTimeoutException} if a network error occurs trying to
  * connect to the exchange. A {@link TradingApiException} is thrown for <em>all</em> other failures.
  * </p>
  *
  * @author gazbert
- *
  */
 public final class BtceExchangeAdapter extends AbstractExchangeAdapter implements TradingApi {
 
@@ -281,7 +280,7 @@ public final class BtceExchangeAdapter extends AbstractExchangeAdapter implement
 
             // this sucks!
             if (myOpenOrders.success == 0 && myOpenOrders.error.equalsIgnoreCase("no orders")) {
-                LogUtils.log(LOG, Level.DEBUG, () ->"No Open Orders");
+                LogUtils.log(LOG, Level.DEBUG, () -> "No Open Orders");
 
             } else {
                 LogUtils.log(LOG, Level.DEBUG, () -> "BtceOpenOrderResponseWrapper: " + myOpenOrders);
@@ -670,7 +669,7 @@ public final class BtceExchangeAdapter extends AbstractExchangeAdapter implement
      * <p>
      * GSON class for holding BTC-e open order response wrapper from ActiveOrders API call.
      * </p>
-     *
+     * <p>
      * <p>
      * JSON response when we don't have open orders is:
      * <pre>
@@ -678,7 +677,7 @@ public final class BtceExchangeAdapter extends AbstractExchangeAdapter implement
      * </pre>
      * Error? WTF?!
      * </p>
-     *
+     * <p>
      * <p>
      * JSON response when we have open orders is:
      * <pre>
@@ -846,7 +845,7 @@ public final class BtceExchangeAdapter extends AbstractExchangeAdapter implement
 
     /**
      * GSON class for holding fee response.
-     *
+     * <p>
      * Basically a GSON enabled map.
      * Keys into map is the market id.
      * Values are BigDec's.
@@ -883,10 +882,10 @@ public final class BtceExchangeAdapter extends AbstractExchangeAdapter implement
      * Makes a public API call to the BTC-e exchange.
      *
      * @param apiMethod the API method to call.
-     * @param resource to use in the API call.
+     * @param resource  to use in the API call.
      * @return the response from the exchange.
      * @throws ExchangeTimeoutException if there is a network issue connecting to exchange.
-     * @throws TradingApiException if anything unexpected happens.
+     * @throws TradingApiException      if anything unexpected happens.
      */
     private ExchangeHttpResponse sendPublicRequestToExchange(String apiMethod, String resource) throws TradingApiException,
             ExchangeTimeoutException {
@@ -906,12 +905,12 @@ public final class BtceExchangeAdapter extends AbstractExchangeAdapter implement
 
     /**
      * Makes an authenticated API call to the BTC-e exchange.
-     * 
+     *
      * @param apiMethod the API method to call.
-     * @param params the query param args to use in the API call.
+     * @param params    the query param args to use in the API call.
      * @return the response from the exchange.
      * @throws ExchangeTimeoutException if there is a network issue connecting to exchange.
-     * @throws TradingApiException if anything unexpected happens.
+     * @throws TradingApiException      if anything unexpected happens.
      */
     private String sendAuthenticatedRequestToExchange(String apiMethod, Map<String, String> params)
             throws TradingApiException, ExchangeTimeoutException {
@@ -921,9 +920,6 @@ public final class BtceExchangeAdapter extends AbstractExchangeAdapter implement
             LOG.error(errorMsg);
             throw new IllegalStateException(errorMsg);
         }
-
-        HttpURLConnection exchangeConnection = null;
-        final StringBuilder exchangeResponse = new StringBuilder();
 
         try {
 
@@ -946,96 +942,24 @@ public final class BtceExchangeAdapter extends AbstractExchangeAdapter implement
                 postData += param + "=" + URLEncoder.encode(params.get(param));
             }
 
+            // Request headers required by Exchange
+            final Map<String, String> requestHeaders = new HashMap<>();
+            requestHeaders.put("Content-Type", "application/x-www-form-urlencoded");
+
+            // Add public key
+            requestHeaders.put("Key", key);
+
+            // Sign the payload with private key
+            requestHeaders.put("Sign", toHex(mac.doFinal(postData.getBytes("UTF-8"))));
+
             final URL url = new URL(AUTHENTICATED_API_URL);
-            LogUtils.log(LOG, Level.DEBUG, () -> "Using following URL for API call: " + url);
+            return sendAuthenticatedNetworkRequest(url, postData, requestHeaders, connectionTimeout);
 
-            exchangeConnection = (HttpURLConnection) url.openConnection();
-            exchangeConnection.setUseCaches(false);
-            exchangeConnection.setDoOutput(true);
+        } catch (MalformedURLException | UnsupportedEncodingException e) {
 
-            // Add my public key
-            exchangeConnection.setRequestProperty("Key", key);
-
-            // Sign the payload with my private key
-            exchangeConnection.setRequestProperty("Sign", toHex(mac.doFinal(postData.getBytes("UTF-8"))));
-
-            exchangeConnection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-
-            // Er, perhaps, I need to be a bit more stealth here...
-            exchangeConnection.setRequestProperty("User-Agent",
-                    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.114 Safari/537.36");
-
-            /*
-             * Add a timeout so we don't get blocked indefinitley; timeout on URLConnection is in millis.
-             * connectionTimeout is in SECONDS and comes from btce-config.properties config.
-             */
-            final int timeoutInMillis = connectionTimeout * 1000;
-            exchangeConnection.setConnectTimeout(timeoutInMillis);
-            exchangeConnection.setReadTimeout(timeoutInMillis);
-
-            // POST the request
-            final OutputStreamWriter outputPostStream = new OutputStreamWriter(exchangeConnection.getOutputStream());
-            outputPostStream.write(postData);
-            outputPostStream.close();
-
-            // Grab the response - we just block here as per Connection API
-            final BufferedReader responseInputStream = new BufferedReader(new InputStreamReader(
-                    exchangeConnection.getInputStream()));
-
-            // Read the JSON response lines into our response buffer
-            String responseLine;
-            while ((responseLine = responseInputStream.readLine()) != null) {
-                exchangeResponse.append(responseLine);
-            }
-            responseInputStream.close();
-
-            return exchangeResponse.toString();
-
-        } catch (MalformedURLException e) {
             final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
             LOG.error(errorMsg, e);
             throw new TradingApiException(errorMsg, e);
-
-        } catch (SocketTimeoutException e) {
-            final String errorMsg = IO_SOCKET_TIMEOUT_ERROR_MSG;
-            LOG.error(errorMsg, e);
-            throw new ExchangeTimeoutException(errorMsg, e);
-
-        } catch (IOException e) {
-
-            try {
-
-                /*
-                 * Exchange sometimes fails with these codes, but recovers by next request...
-                 */
-                if (exchangeConnection != null && (exchangeConnection.getResponseCode() == 502
-                        || exchangeConnection.getResponseCode() == 503
-                        || exchangeConnection.getResponseCode() == 504
-
-                        // Cloudflare related
-                        || exchangeConnection.getResponseCode() == 520
-                        || exchangeConnection.getResponseCode() == 522
-                        || exchangeConnection.getResponseCode() == 525)) {
-
-                    final String errorMsg = IO_50X_TIMEOUT_ERROR_MSG;
-                    LOG.error(errorMsg, e);
-                    throw new ExchangeTimeoutException(errorMsg, e);
-
-                } else {
-                    final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
-                    LOG.error(errorMsg, e);
-                    throw new TradingApiException(errorMsg, e);
-                }
-            } catch (IOException e1) {
-
-                final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
-                LOG.error(errorMsg, e1);
-                throw new TradingApiException(errorMsg, e1);
-            }
-        } finally {
-            if (exchangeConnection != null) {
-                exchangeConnection.disconnect();
-            }
         }
     }
 

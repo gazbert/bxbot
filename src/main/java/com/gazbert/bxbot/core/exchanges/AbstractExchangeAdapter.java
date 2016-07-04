@@ -31,10 +31,13 @@ import org.apache.log4j.Logger;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
+import java.net.URLConnection;
+import java.util.Map;
 
 /**
  * Base class for shared Exchange Adapter functionality.
@@ -129,13 +132,13 @@ abstract class AbstractExchangeAdapter {
             try {
 
                 /*
-                 * Occasionally get this on Bitfinex, Huobi,
+                 * Occasionally get this on Bitfinex, Huobi, OKCoin,
                  */
                 if (e.getMessage() != null &&
                         (e.getMessage().contains("Connection reset") ||
-                         e.getMessage().contains("Remote host closed connection during handshake") ||
-                         e.getMessage().contains("Unexpected end of file from server") ||
-                         e.getMessage().contains("Connection refused"))) {
+                                e.getMessage().contains("Remote host closed connection during handshake") ||
+                                e.getMessage().contains("Unexpected end of file from server") ||
+                                e.getMessage().contains("Connection refused"))) {
 
                     final String errorMsg = "Failed to connect to Exchange. SSL Connection was refused or reset by the server.";
                     LOG.error(errorMsg, e);
@@ -169,6 +172,116 @@ abstract class AbstractExchangeAdapter {
                 throw new TradingApiException(errorMsg, e1);
             }
 
+        } finally {
+            if (exchangeConnection != null) {
+                exchangeConnection.disconnect();
+            }
+        }
+    }
+
+    /**
+     * Makes an authenticated request to the Exchange. It uses HTTP POST.
+     *
+     * @param url               the URL to invoke.
+     * @param postData          the data to post.
+     * @param requestHeaders    any request headers to set on the {@link URLConnection} used to invoke the Exchange.
+     * @param connectionTimeout timeout value before a 'stuck' connection is terminated. Value must be in seconds.
+     * @return the response from the Exchange.
+     * @throws ExchangeTimeoutException if a timeout occurred trying to connect to the exchange. The timeout limit is
+     *                                  implementation specific for each Exchange Adapter. This allows for recovery from
+     *                                  temporary network issues.
+     * @throws TradingApiException      if the API call failed for any reason other than a timeout. This means something
+     *                                  really bad as happened.
+     */
+    String sendAuthenticatedNetworkRequest(URL url, String postData, Map<String, String> requestHeaders,
+                                           int connectionTimeout) throws TradingApiException, ExchangeTimeoutException {
+
+        HttpURLConnection exchangeConnection = null;
+        final StringBuilder exchangeResponse = new StringBuilder();
+
+        try {
+
+            LogUtils.log(LOG, Level.DEBUG, () -> "Using following URL for API call: " + url);
+
+            exchangeConnection = (HttpURLConnection) url.openConnection();
+            exchangeConnection.setUseCaches(false);
+            exchangeConnection.setDoOutput(true);
+
+            for (final Map.Entry<String, String> requestHeader : requestHeaders.entrySet()) {
+                exchangeConnection.setRequestProperty(requestHeader.getKey(), requestHeader.getValue());
+                LogUtils.log(LOG, Level.DEBUG, () -> "Setting following request header: " + requestHeader);
+            }
+
+            // Er, perhaps, I need to be a bit more stealth here...
+            exchangeConnection.setRequestProperty("User-Agent",
+                    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.114 Safari/537.36");
+
+            /*
+             * Add a timeout so we don't get blocked indefinitely; timeout on URLConnection is in millis.
+             * connectionTimeout is in SECONDS and comes from btce-config.properties config.
+             */
+            final int timeoutInMillis = connectionTimeout * 1000;
+            exchangeConnection.setConnectTimeout(timeoutInMillis);
+            exchangeConnection.setReadTimeout(timeoutInMillis);
+
+            // POST the request
+            final OutputStreamWriter outputPostStream = new OutputStreamWriter(exchangeConnection.getOutputStream());
+            outputPostStream.write(postData);
+            outputPostStream.close();
+
+            // Grab the response - we just block here as per Connection API
+            final BufferedReader responseInputStream = new BufferedReader(new InputStreamReader(
+                    exchangeConnection.getInputStream()));
+
+            // Read the JSON response lines into our response buffer
+            String responseLine;
+            while ((responseLine = responseInputStream.readLine()) != null) {
+                exchangeResponse.append(responseLine);
+            }
+            responseInputStream.close();
+            return exchangeResponse.toString();
+
+        } catch (MalformedURLException e) {
+            final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
+            LOG.error(errorMsg, e);
+            throw new TradingApiException(errorMsg, e);
+
+        } catch (SocketTimeoutException e) {
+            final String errorMsg = IO_SOCKET_TIMEOUT_ERROR_MSG;
+            LOG.error(errorMsg, e);
+            throw new ExchangeTimeoutException(errorMsg, e);
+
+        } catch (IOException e) {
+
+            try {
+
+                /*
+                 * Exchange sometimes fails with these codes, but recovers by next request...
+                 */
+                if (exchangeConnection != null && (exchangeConnection.getResponseCode() == 502
+                        || exchangeConnection.getResponseCode() == 503
+                        || exchangeConnection.getResponseCode() == 504
+
+                        // Cloudflare related
+                        || exchangeConnection.getResponseCode() == 520
+                        || exchangeConnection.getResponseCode() == 522
+                        || exchangeConnection.getResponseCode() == 525)) {
+
+                    final String errorMsg = IO_5XX_TIMEOUT_ERROR_MSG;
+                    LOG.error(errorMsg, e);
+                    throw new ExchangeTimeoutException(errorMsg, e);
+
+                } else {
+                    final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
+                    LOG.error(errorMsg, e);
+                    throw new TradingApiException(errorMsg, e);
+                }
+            } catch (IOException e1) {
+
+                final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
+                LOG.error(errorMsg, e1);
+                throw new TradingApiException(errorMsg, e1);
+            }
         } finally {
             if (exchangeConnection != null) {
                 exchangeConnection.disconnect();
