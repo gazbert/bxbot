@@ -656,7 +656,7 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
     }
 
     /**
-     * Makes Authenticated API call to Bitstamp exchange. Uses HTTP POST.
+     * Makes authenticated API call to Bitstamp exchange.
      * 
      * @param apiMethod the API method to call.
      * @param params the query param args to use in the API call.
@@ -672,9 +672,6 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
             LOG.error(errorMsg);
             throw new IllegalStateException(errorMsg);
         }
-
-        HttpURLConnection exchangeConnection = null;
-        final StringBuilder exchangeResponse = new StringBuilder();
 
         try {
 
@@ -716,86 +713,17 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
                 postData += param + "=" + URLEncoder.encode(params.get(param));
             }
 
-            final URL url = new URL(API_BASE_URL + apiMethod + "/"); // MUST have the trailing slash...
-            LogUtils.log(LOG, Level.DEBUG, () -> "Using following URL for API call: " + url);
+            // Request headers required by Exchange
+            final Map<String, String> requestHeaders = new HashMap<>();
+            requestHeaders.put("Content-Type", "application/x-www-form-urlencoded");
 
-            exchangeConnection = (HttpURLConnection) url.openConnection();
-            exchangeConnection.setUseCaches(false);
-            exchangeConnection.setDoOutput(true);
+            final URL url = new URL(API_BASE_URL + apiMethod + "/"); // MUST have the trailing slash else exchange barfs...
+            return sendAuthenticatedNetworkRequest(url, postData, requestHeaders, connectionTimeout);
 
-            exchangeConnection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-
-            // Scare them with her name!!! Er, perhaps, I need to be a bit more stealth here...
-            exchangeConnection.setRequestProperty("User-Agent",
-                    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.114 Safari/537.36");
-
-            /*
-             * Add a timeout so we don't get blocked indefinitley; timeout on URLConnection is in millis.
-             * connectionTimeout is in SECONDS and comes from bitstamp-config.properties config.
-             */
-            final int timeoutInMillis = connectionTimeout * 1000;
-            exchangeConnection.setConnectTimeout(timeoutInMillis);
-            exchangeConnection.setReadTimeout(timeoutInMillis);
-
-            // POST the request
-            final OutputStreamWriter outputPostStream = new OutputStreamWriter(exchangeConnection.getOutputStream());
-            outputPostStream.write(postData);
-            outputPostStream.close();
-
-            // Grab the response - we just block here as per Connection API
-            final BufferedReader responseInputStream = new BufferedReader(new InputStreamReader(
-                    exchangeConnection.getInputStream()));
-
-            // Read the JSON response lines into our response buffer
-            String responseLine;
-            while ((responseLine = responseInputStream.readLine()) != null) {
-                exchangeResponse.append(responseLine);
-            }
-            responseInputStream.close();
-
-            // return the JSON response string
-            return exchangeResponse.toString();
-
-        } catch (MalformedURLException e) {
+        } catch (MalformedURLException | UnsupportedEncodingException e) {
             final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
             LOG.error(errorMsg, e);
             throw new TradingApiException(errorMsg, e);
-
-        } catch (SocketTimeoutException e) {
-            final String errorMsg = IO_SOCKET_TIMEOUT_ERROR_MSG;
-            LOG.error(errorMsg, e);
-            throw new ExchangeTimeoutException(errorMsg, e);
-
-        } catch (IOException e) {
-
-            try {
-
-                /*
-                 * Exchange sometimes fails with these codes, but recovers by next request...
-                 */
-                if (exchangeConnection != null && (exchangeConnection.getResponseCode() == 502
-                        || exchangeConnection.getResponseCode() == 503
-                        || exchangeConnection.getResponseCode() == 504)) {
-
-                    final String errorMsg = IO_50X_TIMEOUT_ERROR_MSG;
-                    LOG.error(errorMsg, e);
-                    throw new ExchangeTimeoutException(errorMsg, e);
-
-                } else {
-                    final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
-                    LOG.error(errorMsg, e);
-                    throw new TradingApiException(errorMsg, e);
-                }
-            } catch (IOException e1) {
-
-                final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
-                LOG.error(errorMsg, e1);
-                throw new TradingApiException(errorMsg, e1);
-            }
-        } finally {
-            if (exchangeConnection != null) {
-                exchangeConnection.disconnect();
-            }
         }
     }
 
