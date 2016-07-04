@@ -45,17 +45,12 @@ import org.apache.log4j.Logger;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
-import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
@@ -129,16 +124,6 @@ public final class BtceExchangeAdapter extends AbstractExchangeAdapter implement
      * Unexpected IO error message for logging.
      */
     private static final String UNEXPECTED_IO_ERROR_MSG = "Failed to connect to Exchange due to unexpected IO error.";
-
-    /**
-     * IO 50x Timeout error message for logging.
-     */
-    private static final String IO_50X_TIMEOUT_ERROR_MSG = "Failed to connect to Exchange due to 50x timeout.";
-
-    /**
-     * IO Socket Timeout error message for logging.
-     */
-    private static final String IO_SOCKET_TIMEOUT_ERROR_MSG = "Failed to connect to Exchange due to socket timeout.";
 
     /**
      * Used for building error messages for missing config.
@@ -1006,6 +991,8 @@ public final class BtceExchangeAdapter extends AbstractExchangeAdapter implement
     // ------------------------------------------------------------------------------------------------
 
     /**
+     * TODO Push up common config loading to base class...
+     *
      * Loads Exchange Adapter config.
      */
     private void loadConfig() {

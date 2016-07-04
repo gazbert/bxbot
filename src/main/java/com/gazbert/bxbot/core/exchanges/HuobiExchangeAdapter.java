@@ -45,9 +45,7 @@ import org.apache.log4j.Logger;
 import java.io.*;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
-import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
@@ -167,16 +165,6 @@ public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implemen
      * Unexpected IO error message for logging.
      */
     private static final String UNEXPECTED_IO_ERROR_MSG = "Failed to connect to Exchange due to unexpected IO error.";
-
-    /**
-     * IO 50x Timeout error message for logging.
-     */
-    private static final String IO_50X_TIMEOUT_ERROR_MSG = "Failed to connect to Exchange due to 50x timeout.";
-
-    /**
-     * IO Socket Timeout error message for logging.
-     */
-    private static final String IO_SOCKET_TIMEOUT_ERROR_MSG = "Failed to connect to Exchange due to socket timeout.";
 
     /**
      * Used for building error messages for missing config.
@@ -993,7 +981,8 @@ public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implemen
      * @throws ExchangeTimeoutException if there is a network issue connecting to exchange.
      * @throws TradingApiException      if anything unexpected happens.
      */
-    private AbstractExchangeAdapter.ExchangeHttpResponse sendPublicRequestToExchange(String apiMethod) throws ExchangeTimeoutException, TradingApiException {
+    private AbstractExchangeAdapter.ExchangeHttpResponse sendPublicRequestToExchange(String apiMethod)
+            throws ExchangeTimeoutException, TradingApiException {
 
         try {
             final URL url = new URL(PUBLIC_API_BASE_URL + apiMethod);
@@ -1008,7 +997,7 @@ public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implemen
 
     /**
      * <p>
-     * Makes Authenticated API call to Huobi exchange. Uses HTTP POST.
+     * Makes an authenticated API call to the Huobi exchange.
      * </p>
      *
      * <p>
@@ -1049,10 +1038,8 @@ public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implemen
             throw new IllegalStateException(errorMsg);
         }
 
-        HttpURLConnection exchangeConnection = null;
-        final StringBuilder exchangeResponse = new StringBuilder();
-
         try {
+
             if (params == null) {
                 params = new HashMap<>();
             }
@@ -1098,112 +1085,18 @@ public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implemen
                         URLEncoder.encode(queryParam.getValue()));
             }
 
+            // Request headers required by Exchange
+            final Map<String, String> requestHeaders = new HashMap<>();
+            requestHeaders.put("Content-Type", "application/x-www-form-urlencoded");
+
             final URL url = new URL(AUTHENTICATED_API_URL);
-            LogUtils.log(LOG, Level.DEBUG, () -> "Using following URL for API call: " + url);
-
-            exchangeConnection = (HttpURLConnection) url.openConnection();
-            exchangeConnection.setUseCaches(false);
-            exchangeConnection.setDoOutput(true);
-
-            exchangeConnection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-
-            // Er, perhaps, I need to be a bit more stealth here...
-            exchangeConnection.setRequestProperty("User-Agent",
-                    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.114 Safari/537.36");
-
-            /*
-             * Add a timeout so we don't get blocked indefinitley; timeout on URLConnection is in millis.
-             * connectionTimeout is in SECONDS and comes from huobi-config.properties config.
-             */
-            final int timeoutInMillis = connectionTimeout * 1000;
-            exchangeConnection.setConnectTimeout(timeoutInMillis);
-            exchangeConnection.setReadTimeout(timeoutInMillis);
-
-            // POST the request
-            final OutputStreamWriter outputPostStream = new OutputStreamWriter(exchangeConnection.getOutputStream());
-
-            // WARNING: careful when you log this - it outputs your access_key
-//            if (LOG.isDebugEnabled()) {
-//                LOG.debug("Wire payload: " + payloadBuilder.toString());
-//            }
-
-            outputPostStream.write(payloadBuilder.toString());
-            outputPostStream.close();
-
-            // Grab the response - we just block here as per Connection API
-            final BufferedReader responseInputStream = new BufferedReader(new InputStreamReader(
-                    exchangeConnection.getInputStream()));
-
-            // Read the JSON response lines into our response buffer
-            String responseLine;
-            while ((responseLine = responseInputStream.readLine()) != null) {
-                exchangeResponse.append(responseLine);
-            }
-            responseInputStream.close();
-
-            // return the JSON response string
-            return exchangeResponse.toString();
+            return sendAuthenticatedNetworkRequest(url, payloadBuilder.toString(), requestHeaders, connectionTimeout);
 
         } catch (MalformedURLException e) {
+
             final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
             LOG.error(errorMsg, e);
             throw new TradingApiException(errorMsg, e);
-
-        } catch (SocketTimeoutException e) {
-            final String errorMsg = IO_SOCKET_TIMEOUT_ERROR_MSG;
-            LOG.error(errorMsg, e);
-            throw new ExchangeTimeoutException(errorMsg, e);
-
-        } catch (FileNotFoundException e) {
-
-            // Huobi started throwing this as of 8 Nov 2015 :-/
-            final String errorMsg = "Failed to connect to Huobi. Exchange is not there!";
-            LOG.error(errorMsg, e);
-            throw new ExchangeTimeoutException(errorMsg, e);
-
-        } catch (IOException e) {
-
-            try {
-
-                /*
-                 * This stuff happens a lot on Huobi :-/
-                 */
-                if (e.getMessage() != null &&
-                        (e.getMessage().contains("Connection reset") ||
-                         e.getMessage().contains("Remote host closed connection during handshake") ||
-                         e.getMessage().contains("Unexpected end of file from server") ||
-                         e.getMessage().contains("Connection refused"))) {
-
-                    final String errorMsg = "Failed to connect to Huobi. SSL Connection was reset by the server.";
-                    LOG.error(errorMsg, e);
-                    throw new ExchangeTimeoutException(errorMsg, e);
-
-                /*
-                 * Exchange sometimes fails with these codes, but recovers by next request...
-                 */
-                } else if (exchangeConnection != null && (exchangeConnection.getResponseCode() == 502
-                        || exchangeConnection.getResponseCode() == 503
-                        || exchangeConnection.getResponseCode() == 504)) {
-
-                    final String errorMsg = IO_50X_TIMEOUT_ERROR_MSG;
-                    LOG.error(errorMsg, e);
-                    throw new ExchangeTimeoutException(errorMsg, e);
-
-                } else {
-                    final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
-                    LOG.error(errorMsg, e);
-                    throw new TradingApiException(errorMsg, e);
-                }
-            } catch (IOException e1) {
-
-                final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
-                LOG.error(errorMsg, e1);
-                throw new TradingApiException(errorMsg, e1);
-            }
-        } finally {
-            if (exchangeConnection != null) {
-                exchangeConnection.disconnect();
-            }
         }
     }
 

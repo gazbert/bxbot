@@ -37,15 +37,10 @@ import com.google.gson.GsonBuilder;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.math.BigDecimal;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
-import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
@@ -61,10 +56,6 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
- * <p>
- * <em>TODO - Remove tmp PATCH in {@link #sendAuthenticatedRequestToExchange(String, Map)} for occasional 400 responses sent by exchange for userinfo + order_info calls/</em>
- * </p>
- *
  * <p>
  * Exchange Adapter for integrating with the OKCoin exchange.
  * The OKCoin API is documented <a href="https://www.okcoin.com/about/rest_getStarted.do">here</a>.
@@ -133,16 +124,6 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
      * Unexpected IO error message for logging.
      */
     private static final String UNEXPECTED_IO_ERROR_MSG = "Failed to connect to Exchange due to unexpected IO error.";
-
-    /**
-     * IO 5xx Timeout error message for logging.
-     */
-    private static final String IO_5XX_TIMEOUT_ERROR_MSG = "Failed to connect to Exchange due to 5xx timeout.";
-
-    /**
-     * IO Socket Timeout error message for logging.
-     */
-    private static final String IO_SOCKET_TIMEOUT_ERROR_MSG = "Failed to connect to Exchange due to socket timeout.";
 
     /**
      * Used for building error messages for missing config.
@@ -516,8 +497,6 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
 
     /**
      * GSON class for wrapping cancel_order.do response.
-     *
-     * @author gazbert
      */
     public static class OKCoinCancelOrderResponse extends OKCoinMessageBase {
 
@@ -534,8 +513,6 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
 
     /**
      * GSON class for wrapping trade.do response.
-     *
-     * @author gazbert
      */
     public static class OKCoinTradeResponse extends OKCoinMessageBase {
 
@@ -569,8 +546,6 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
 
     /**
      * GSON class for holding your open orders info from order_info.do API call.
-     *
-     * @author gazbert
      */
     private static class OKCoinOpenOrder {
 
@@ -607,8 +582,6 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
 
     /**
      * GSON class for wrapping depth.do response.
-     *
-     * @author gazbert
      */
     private static class OKCoinDepthWrapper {
 
@@ -637,8 +610,6 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
 
     /**
      * GSON class for wrapping userinfo.do response.
-     *
-     * @author gazbert
      */
     private static class OKCoinUserInfoWrapper extends OKCoinMessageBase {
 
@@ -654,8 +625,6 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
 
     /**
      * GSON class for holding funds in userinfo.do response.
-     *
-     * @author gazbert
      */
     private static class OKCoinUserInfo {
 
@@ -670,8 +639,6 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
 
     /**
      * GSON class for holding funds info from userinfo.do response.
-     *
-     * @author gazbert
      */
     private static class OKCoinFundsInfo {
 
@@ -692,8 +659,6 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
 
     /**
      * GSON class for holding asset info from userinfo.do response.
-     *
-     * @author gazbert
      */
     private static class OKCoinAssetInfo {
 
@@ -712,8 +677,6 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
 
     /**
      * GSON class for holding wallet balances - basically a GSON enabled map.
-     *
-     * @author gazbert
      */
     private static class OKCoinBalances extends HashMap<String, BigDecimal> {
         private static final long serialVersionUID = -4919711060747077759L;
@@ -738,8 +701,6 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
 
     /**
      * GSON class for a OKCoin ticker response.
-     *
-     * @author gazbert
      */
     private static class OKCoinTicker {
 
@@ -765,8 +726,6 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
 
     /**
      * GSON base class for API call requests and responses.
-     *
-     * @author gazbert
      */
     private static class OKCoinMessageBase {
 
@@ -827,7 +786,7 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
 
     /**
      * <p>
-     * Makes Authenticated API call to OKCoin exchange. Uses HTTP POST.
+     * Makes an authenticated API call to the OKCoin exchange.
      * </p>
      *
      * <p>
@@ -875,10 +834,8 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
             throw new IllegalStateException(errorMsg);
         }
 
-        HttpURLConnection exchangeConnection = null;
-        final StringBuilder exchangeResponse = new StringBuilder();
-
         try {
+
             if (params == null) {
                 params = new HashMap<>();
             }
@@ -908,98 +865,17 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
             }
             LogUtils.log(LOG, Level.DEBUG, () -> "Using following URL encoded POST payload for API call: " + payload);
 
+            // Request headers required by Exchange
+            final Map<String, String> requestHeaders = new HashMap<>();
+            requestHeaders.put("Content-Type", "application/x-www-form-urlencoded");
+
             final URL url = new URL(AUTHENTICATED_API_URL + apiMethod);
-            LogUtils.log(LOG, Level.DEBUG, () -> "Using following URL for API call: " + url);
-
-            exchangeConnection = (HttpURLConnection) url.openConnection();
-            exchangeConnection.setUseCaches(false);
-            exchangeConnection.setDoOutput(true);
-
-            exchangeConnection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-
-            // Er, perhaps, I need to be a bit more stealth here...
-            exchangeConnection.setRequestProperty("User-Agent",
-                    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.114 Safari/537.36");
-
-            /*
-             * Add a timeout so we don't get blocked indefinitely; timeout on URLConnection is in millis.
-             * connectionTimeout is in SECONDS and comes from okcoin-config.properties config.
-             */
-            final int timeoutInMillis = connectionTimeout * 1000;
-            exchangeConnection.setConnectTimeout(timeoutInMillis);
-            exchangeConnection.setReadTimeout(timeoutInMillis);
-
-            // POST the request
-            final OutputStreamWriter outputPostStream = new OutputStreamWriter(exchangeConnection.getOutputStream());
-            outputPostStream.write(payload.toString());
-            outputPostStream.close();
-
-            // Grab the response - we just block here as per Connection API
-            final BufferedReader responseInputStream = new BufferedReader(new InputStreamReader(
-                    exchangeConnection.getInputStream()));
-
-            // Read the JSON response lines into our response buffer
-            String responseLine;
-            while ((responseLine = responseInputStream.readLine()) != null) {
-                exchangeResponse.append(responseLine);
-            }
-            responseInputStream.close();
-
-            // return the JSON response string
-            return exchangeResponse.toString();
+            return sendAuthenticatedNetworkRequest(url, payload.toString(), requestHeaders, connectionTimeout);
 
         } catch (MalformedURLException e) {
             final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
             LOG.error(errorMsg, e);
             throw new TradingApiException(errorMsg, e);
-
-        } catch (SocketTimeoutException e) {
-            final String errorMsg = IO_SOCKET_TIMEOUT_ERROR_MSG;
-            LOG.error(errorMsg, e);
-            throw new ExchangeTimeoutException(errorMsg, e);
-
-        } catch (IOException e) {
-
-            try {
-
-                /*
-                 * Exchange sometimes fails with these codes, but recovers by next request...
-                 */
-                if (exchangeConnection != null && (exchangeConnection.getResponseCode() == 502
-                        || exchangeConnection.getResponseCode() == 503
-                        || exchangeConnection.getResponseCode() == 504
-
-                        // Cloudflare related
-                        || exchangeConnection.getResponseCode() == 520
-                        || exchangeConnection.getResponseCode() == 522
-                        || exchangeConnection.getResponseCode() == 525
-
-                        // TODO - remove this tmp PATCH when OKCoin fix their side or I find the bug in my code... ;-)
-                        // Patch for exchange returning occasional 400 responses.
-                        // java.io.IOException: Server returned HTTP response code: 400 for URL: https://www.okcoin.com/api/v1/userinfo.do
-                        // java.io.IOException: Server returned HTTP response code: 400 for URL: https://www.okcoin.com/api/v1/order_info.do
-                        || (exchangeConnection.getResponseCode() == 400 &&
-                           (apiMethod.equals("userinfo.do") || apiMethod.equals("order_info.do"))))) {
-
-                    final String errorMsg = IO_5XX_TIMEOUT_ERROR_MSG;
-                    LOG.error(errorMsg, e);
-                    throw new ExchangeTimeoutException(errorMsg, e);
-
-                } else {
-                    final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
-                    LOG.error(errorMsg, e);
-                    throw new TradingApiException(errorMsg, e);
-                }
-            } catch (IOException e1) {
-
-                final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
-                LOG.error(errorMsg, e1);
-                throw new TradingApiException(errorMsg, e1);
-            }
-        } finally {
-            if (exchangeConnection != null) {
-                exchangeConnection.disconnect();
-            }
         }
     }
 

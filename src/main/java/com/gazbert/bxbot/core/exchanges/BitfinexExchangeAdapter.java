@@ -40,16 +40,11 @@ import org.apache.log4j.Logger;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import javax.xml.bind.DatatypeConverter;
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
-import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.security.InvalidKeyException;
@@ -65,10 +60,6 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
- * <p>
- * <em>TODO - Remove tmp PATCH in {@link #sendAuthenticatedRequestToExchange(String, Map)} for occasional 400 orders responses sent by exchange</em>
- * </p>
- *
  * <p>
  * Exchange Adapter for integrating with the Bitfinex exchange.
  * The Bitfinex API is documented <a href="https://www.bitfinex.com/pages/api">here</a>.
@@ -136,16 +127,6 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter imple
      * Unexpected IO error message for logging.
      */
     private static final String UNEXPECTED_IO_ERROR_MSG = "Failed to connect to Exchange due to unexpected IO error.";
-
-    /**
-     * IO 50x Timeout error message for logging.
-     */
-    private static final String IO_50X_TIMEOUT_ERROR_MSG = "Failed to connect to Exchange due to 50x timeout.";
-
-    /**
-     * IO Socket Timeout error message for logging.
-     */
-    private static final String IO_SOCKET_TIMEOUT_ERROR_MSG = "Failed to connect to Exchange due to socket timeout.";
 
     /**
      * Used for building error messages for missing config.
@@ -445,15 +426,16 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter imple
              * The adapter only fetches the 'exchange' account balance details - this is the Bitfinex 'exchange' account,
              * i.e. the limit order trading account balance.
              */
-            allAccountBalances.stream().filter(
-                    accountBalance -> accountBalance.type.equalsIgnoreCase("exchange")).forEach(accountBalance -> {
-
-                if (accountBalance.currency.equalsIgnoreCase("usd")) {
-                    balancesAvailable.put("USD", accountBalance.available);
-                } else if (accountBalance.currency.equalsIgnoreCase("btc")) {
-                    balancesAvailable.put("BTC", accountBalance.available);
-                }
-            });
+            allAccountBalances
+                    .stream()
+                    .filter(accountBalance -> accountBalance.type.equalsIgnoreCase("exchange"))
+                    .forEach(accountBalance -> {
+                        if (accountBalance.currency.equalsIgnoreCase("usd")) {
+                            balancesAvailable.put("USD", accountBalance.available);
+                        } else if (accountBalance.currency.equalsIgnoreCase("btc")) {
+                            balancesAvailable.put("BTC", accountBalance.available);
+                        }
+                    });
 
             // 2nd arg of BalanceInfo constructor for reserved/on-hold balances is not provided by exchange.
             return new BalanceInfo(balancesAvailable, new HashMap<>());
@@ -894,7 +876,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter imple
 
     /**
      * <p>
-     * Makes Authenticated API call to Bitfinex exchange. Uses HTTP POST.
+     * Makes an authenticated API call to the Bitfinex exchange.
      * </p>
      *
      * <pre>
@@ -938,10 +920,6 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter imple
             throw new IllegalStateException(errorMsg);
         }
 
-        // Connect to the exchange
-        HttpURLConnection exchangeConnection = null;
-        final StringBuilder exchangeResponse = new StringBuilder();
-
         try {
 
             if (params == null) {
@@ -962,18 +940,13 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter imple
             // Need to base64 encode payload as per API
             final String base64payload = DatatypeConverter.printBase64Binary(paramsInJson.getBytes());
 
-            final URL url = new URL(AUTHENTICATED_API_URL + apiMethod);
-            LogUtils.log(LOG, Level.DEBUG, () -> "Using following URL for API call: " + url);
-
-            exchangeConnection = (HttpURLConnection) url.openConnection();
-            exchangeConnection.setUseCaches(false);
-            exchangeConnection.setDoOutput(true);
-
+            // Request headers required by Exchange
+            final Map<String, String> requestHeaders = new HashMap<>();
             // Add the public key
-            exchangeConnection.setRequestProperty("X-BFX-APIKEY", key);
+            requestHeaders.put("X-BFX-APIKEY", key);
 
             // Add Base64 encoded JSON payload
-            exchangeConnection.setRequestProperty("X-BFX-PAYLOAD", base64payload);
+            requestHeaders.put("X-BFX-PAYLOAD", base64payload);
 
             // Add the signature
             mac.reset(); // force reset
@@ -984,97 +957,19 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter imple
              * See: http://bitcoin.stackexchange.com/questions/25835/bitfinex-api-call-returns-400-bad-request
              */
             final String signature = toHex(mac.doFinal()).toLowerCase();
-            exchangeConnection.setRequestProperty("X-BFX-SIGNATURE", signature);
+            requestHeaders.put("X-BFX-SIGNATURE", signature);
 
             // payload is JSON for this exchange
-            exchangeConnection.setRequestProperty("Content-Type", "application/json");
+            requestHeaders.put("Content-Type", "application/json");
 
-            // Er, perhaps, I need to be a bit more stealth here...
-            exchangeConnection.setRequestProperty("User-Agent",
-                    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.114 Safari/537.36");
+            final URL url = new URL(AUTHENTICATED_API_URL + apiMethod);
+            return sendAuthenticatedNetworkRequest(url, paramsInJson, requestHeaders, connectionTimeout);
 
-            /*
-             * Add a timeout so we don't get blocked indefinitley; timeout on URLConnection is in millis.
-             * connectionTimeout is in SECONDS and comes from bitfinex-config.properties config.
-             */
-            final int timeoutInMillis = connectionTimeout * 1000;
-            exchangeConnection.setConnectTimeout(timeoutInMillis);
-            exchangeConnection.setReadTimeout(timeoutInMillis);
+        } catch (MalformedURLException | UnsupportedEncodingException e) {
 
-            // POST the request
-            final OutputStreamWriter outputPostStream = new OutputStreamWriter(exchangeConnection.getOutputStream());
-            outputPostStream.write(paramsInJson);
-            outputPostStream.close();
-
-            // Grab the response - we just block here as per Connection API
-            final BufferedReader responseInputStream = new BufferedReader(new InputStreamReader(
-                    exchangeConnection.getInputStream()));
-
-            // Read the JSON response lines into our response buffer
-            String responseLine;
-            while ((responseLine = responseInputStream.readLine()) != null) {
-                exchangeResponse.append(responseLine);
-            }
-            responseInputStream.close();
-
-            // return the JSON response string
-            return exchangeResponse.toString();
-
-        } catch (MalformedURLException e) {
             final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
             LOG.error(errorMsg, e);
             throw new TradingApiException(errorMsg, e);
-
-        } catch (SocketTimeoutException e) {
-            final String errorMsg = IO_SOCKET_TIMEOUT_ERROR_MSG;
-            LOG.error(errorMsg, e);
-            throw new ExchangeTimeoutException(errorMsg, e);
-
-        } catch (IOException e) {
-
-            try {
-
-                /*
-                 * Occasionally get this on finex.
-                 */
-                if (e.getMessage() != null && e.getMessage().contains("Connection reset")) {
-
-                    final String errorMsg = "Failed to connect to Bitfinex. SSL Connection was reset by the server.";
-                    LOG.error(errorMsg, e);
-                    throw new ExchangeTimeoutException(errorMsg, e);
-
-                /*
-                 * Exchange sometimes fails with these codes, but recovers by next request...
-                 */
-                } else if (exchangeConnection != null && (exchangeConnection.getResponseCode() == 502
-                        || exchangeConnection.getResponseCode() == 503
-                        || exchangeConnection.getResponseCode() == 504
-
-                        // TODO - remove this tmp PATCH when Bitfinex fix their side or I find the bug in my code... ;-)
-                        // Patch for exchange returning occasional 400 responses.
-                        // java.io.IOException: Server returned HTTP response code: 400 for URL: https://api.bitfinex.com/v1/orders
-                        || (exchangeConnection.getResponseCode() == 400 && apiMethod.equals("orders")))) {
-
-
-                    final String errorMsg = IO_50X_TIMEOUT_ERROR_MSG;
-                    LOG.error(errorMsg, e);
-                    throw new ExchangeTimeoutException(errorMsg, e);
-
-                } else {
-                    final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
-                    LOG.error(errorMsg, e);
-                    throw new TradingApiException(errorMsg, e);
-                }
-            } catch (IOException e1) {
-
-                final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
-                LOG.error(errorMsg, e1);
-                throw new TradingApiException(errorMsg, e1);
-            }
-        } finally {
-            if (exchangeConnection != null) {
-                exchangeConnection.disconnect();
-            }
         }
     }
 

@@ -29,6 +29,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -121,6 +122,12 @@ abstract class AbstractExchangeAdapter {
 
         } catch (SocketTimeoutException e) {
             final String errorMsg = IO_SOCKET_TIMEOUT_ERROR_MSG;
+            LOG.error(errorMsg, e);
+            throw new ExchangeTimeoutException(errorMsg, e);
+
+        } catch (FileNotFoundException e) {
+            // Huobi started throwing this as of 8 Nov 2015 :-/
+            final String errorMsg = "Failed to connect to Exchange. It's not there!";
             LOG.error(errorMsg, e);
             throw new ExchangeTimeoutException(errorMsg, e);
 
@@ -248,14 +255,33 @@ abstract class AbstractExchangeAdapter {
             LOG.error(errorMsg, e);
             throw new ExchangeTimeoutException(errorMsg, e);
 
+        } catch (FileNotFoundException e) {
+            // Huobi started throwing this as of 8 Nov 2015 :-/
+            final String errorMsg = "Failed to connect to Exchange. It's not there!";
+            LOG.error(errorMsg, e);
+            throw new ExchangeTimeoutException(errorMsg, e);
+
         } catch (IOException e) {
 
+            // TODO rework this stuff to read network retry codes from exchange adapter config
             try {
 
                 /*
+                 * Occasionally get this on Bitfinex, Huobi, OKCoin,
+                 */
+                if (e.getMessage() != null &&
+                        (e.getMessage().contains("Connection reset") ||
+                                e.getMessage().contains("Remote host closed connection during handshake") ||
+                                e.getMessage().contains("Unexpected end of file from server") ||
+                                e.getMessage().contains("Connection refused"))) {
+
+                    final String errorMsg = "Failed to connect to Exchange. SSL Connection was refused or reset by the server.";
+                    LOG.error(errorMsg, e);
+                    throw new ExchangeTimeoutException(errorMsg, e);
+                /*
                  * Exchange sometimes fails with these codes, but recovers by next request...
                  */
-                if (exchangeConnection != null && (exchangeConnection.getResponseCode() == 502
+                } else if (exchangeConnection != null && (exchangeConnection.getResponseCode() == 502
                         || exchangeConnection.getResponseCode() == 503
                         || exchangeConnection.getResponseCode() == 504
 
