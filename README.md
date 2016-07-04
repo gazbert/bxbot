@@ -56,6 +56,9 @@ and [Google Gson](https://code.google.com/p/google-gson/). See the pom.xml for d
 The bot has undergone basic unit testing on a _best-effort_ basis. The project has a continuous integration build 
 running on [Travis CI](https://travis-ci.org/).
 
+The latest stable build can be found on the [Releases](https://github.com/gazbert/BX-bot/releases) page. The SNAPSHOT builds are
+very much ["sid"](https://www.debian.org/releases/sid/) - be careful!
+
 ## Issue & Change Management
 Issues and new features will be managed using the project [Issue Tracker](https://github.com/gazbert/BX-bot/issues) - 
 please submit bugs here.
@@ -372,9 +375,6 @@ You can also create your own jar for your adapters, e.g. `my-adapters.jar`, and 
 see the _Installation Guide_ for how to do this.
 
 ## Build Guide
-
-The latest stable build can be found on the [Releases](https://github.com/gazbert/BX-bot/releases) page. The SNAPSHOT builds are
-very much ["sid"](https://www.debian.org/releases/sid/) - be careful!
 
 A Maven `pom.xml` is included for building the bot.
 
