@@ -963,7 +963,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter imple
             requestHeaders.put("Content-Type", "application/json");
 
             final URL url = new URL(AUTHENTICATED_API_URL + apiMethod);
-            return sendAuthenticatedNetworkRequest(url, paramsInJson, requestHeaders, connectionTimeout);
+            return sendAuthenticatedNetworkRequest(url, "POST", paramsInJson, requestHeaders, connectionTimeout);
 
         } catch (MalformedURLException | UnsupportedEncodingException e) {
 

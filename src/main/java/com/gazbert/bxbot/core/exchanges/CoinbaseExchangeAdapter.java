@@ -40,15 +40,11 @@ import org.apache.log4j.Logger;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import javax.xml.bind.DatatypeConverter;
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.math.BigDecimal;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
-import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
@@ -713,11 +709,11 @@ public final class CoinbaseExchangeAdapter extends AbstractExchangeAdapter imple
 
     /**
      * <p>
-     * Makes Authenticated API call to Coinbase exchange.
+     * Makes an authenticated API call to the Coinbase exchange.
      * </p>
      *
      * <p>
-     * The Coinbase authentication process is well documented
+     * The Coinbase authentication process is complex, but well documented
      * <a href="https://docs.exchange.coinbase.com/#creating-a-request">here</a>.
      * </p>
      *
@@ -766,10 +762,6 @@ public final class CoinbaseExchangeAdapter extends AbstractExchangeAdapter imple
             throw new IllegalStateException(errorMsg);
         }
 
-        // Connect to the exchange
-        HttpURLConnection exchangeConnection = null;
-        final StringBuilder exchangeResponse = new StringBuilder();
-
         try {
 
             if (params == null) {
@@ -788,7 +780,6 @@ public final class CoinbaseExchangeAdapter extends AbstractExchangeAdapter imple
 
                 case "GET" :
                     LogUtils.log(LOG, Level.DEBUG, () -> "Building secure GET request...");
-
                     // Build (optional) query param string
                     final StringBuilder queryParamBuilder = new StringBuilder();
                     for (final String param : params.keySet()) {
@@ -809,14 +800,12 @@ public final class CoinbaseExchangeAdapter extends AbstractExchangeAdapter imple
                     break;
 
                 case "POST" :
-
                     LogUtils.log(LOG, Level.DEBUG, () -> "Building secure POST request...");
                     invocationUrl = AUTHENTICATED_API_URL + apiMethod;
                     requestBody = gson.toJson(params);
                     break;
 
                 case "DELETE" :
-
                     LogUtils.log(LOG, Level.DEBUG, () -> "Building secure DELETE request...");
                     invocationUrl = AUTHENTICATED_API_URL + apiMethod;
                     break;
@@ -835,110 +824,21 @@ public final class CoinbaseExchangeAdapter extends AbstractExchangeAdapter imple
             mac.update(signatureBuilder.toString().getBytes());
             final String signature = DatatypeConverter.printBase64Binary(mac.doFinal());
 
+            // Request headers required by Exchange
+            final Map<String, String> requestHeaders = new HashMap<>();
+            requestHeaders.put("Content-Type", "application/json");
+            requestHeaders.put("CB-ACCESS-KEY", key);
+            requestHeaders.put("CB-ACCESS-SIGN", signature);
+            requestHeaders.put("CB-ACCESS-TIMESTAMP", timestamp);
+            requestHeaders.put("CB-ACCESS-PASSPHRASE", passphrase);
+
             final URL url = new URL(invocationUrl);
-            LogUtils.log(LOG, Level.DEBUG, () -> "Using following URL for API call: " + url);
-
-            exchangeConnection = (HttpURLConnection) url.openConnection();
-            exchangeConnection.setUseCaches(false);
-            exchangeConnection.setDoOutput(true);
-            exchangeConnection.setRequestMethod(httpMethod); // GET|POST|DELETE
-
-            // Add the public API key
-            exchangeConnection.setRequestProperty("CB-ACCESS-KEY", key);
-
-            // Add signature
-            exchangeConnection.setRequestProperty("CB-ACCESS-SIGN", signature);
-
-            // Add timestamp
-            exchangeConnection.setRequestProperty("CB-ACCESS-TIMESTAMP", timestamp);
-
-            // Add passphrase
-            exchangeConnection.setRequestProperty("CB-ACCESS-PASSPHRASE", passphrase);
-
-            // payload is JSON for this exchange
-            exchangeConnection.setRequestProperty("Content-Type", "application/json");
-
-            // Er, perhaps, I need to be a bit more stealth here...
-            exchangeConnection.setRequestProperty("User-Agent",
-                    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.114 Safari/537.36");
-
-            /*
-             * Add a timeout so we don't get blocked indefinitley; timeout on URLConnection is in millis.
-             * connectionTimeout is in SECONDS and comes from coinbase-config.properties config.
-             */
-            final int timeoutInMillis = connectionTimeout * 1000;
-            exchangeConnection.setConnectTimeout(timeoutInMillis);
-            exchangeConnection.setReadTimeout(timeoutInMillis);
-
-            if (httpMethod.equalsIgnoreCase("POST")) {
-
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("Doing POST with request body: " + requestBody);
-                }
-
-                final OutputStreamWriter outputPostStream = new OutputStreamWriter(exchangeConnection.getOutputStream());
-                outputPostStream.write(requestBody);
-                outputPostStream.close();
-            }
-
-            // Grab the response - we just block here as per Connection API
-            final BufferedReader responseInputStream = new BufferedReader(new InputStreamReader(
-                    exchangeConnection.getInputStream()));
-
-            // Read the JSON response lines into our response buffer
-            String responseLine;
-            while ((responseLine = responseInputStream.readLine()) != null) {
-                exchangeResponse.append(responseLine);
-            }
-            responseInputStream.close();
-
-            return new ExchangeHttpResponse(exchangeConnection.getResponseCode(), exchangeConnection.getResponseMessage(),
-                    exchangeResponse.toString());
+            return sendAuthenticatedNetworkRequest(url, httpMethod, requestBody, requestHeaders, connectionTimeout);
 
         } catch (MalformedURLException e) {
             final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
             LOG.error(errorMsg, e);
             throw new TradingApiException(errorMsg, e);
-
-        } catch (SocketTimeoutException e) {
-            final String errorMsg = IO_SOCKET_TIMEOUT_ERROR_MSG;
-            LOG.error(errorMsg, e);
-            throw new ExchangeTimeoutException(errorMsg, e);
-
-        } catch (IOException e) {
-
-            try {
-
-                /*
-                 * Exchange sometimes fails with these codes, but recovers by next request...
-                 */
-                if (exchangeConnection != null && (exchangeConnection.getResponseCode() == 502
-                        || exchangeConnection.getResponseCode() == 503
-                        || exchangeConnection.getResponseCode() == 504
-
-                        // Cloudflare related
-                        || exchangeConnection.getResponseCode() == 522
-                        || exchangeConnection.getResponseCode() == 525)) {
-
-                    final String errorMsg = IO_50X_TIMEOUT_ERROR_MSG;
-                    LOG.error(errorMsg, e);
-                    throw new ExchangeTimeoutException(errorMsg, e);
-
-                } else {
-                    final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
-                    LOG.error(errorMsg, e);
-                    throw new TradingApiException(errorMsg, e);
-                }
-            } catch (IOException e1) {
-
-                final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
-                LOG.error(errorMsg, e1);
-                throw new TradingApiException(errorMsg, e1);
-            }
-        } finally {
-            if (exchangeConnection != null) {
-                exchangeConnection.disconnect();
-            }
         }
     }
 

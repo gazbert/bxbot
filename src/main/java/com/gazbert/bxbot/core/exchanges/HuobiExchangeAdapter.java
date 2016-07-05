@@ -1092,7 +1092,7 @@ public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implemen
             requestHeaders.put("Content-Type", "application/x-www-form-urlencoded");
 
             final URL url = new URL(AUTHENTICATED_API_URL);
-            return sendAuthenticatedNetworkRequest(url, payloadBuilder.toString(), requestHeaders, connectionTimeout);
+            return sendAuthenticatedNetworkRequest(url, "POST", payloadBuilder.toString(), requestHeaders, connectionTimeout);
 
         } catch (MalformedURLException e) {
 

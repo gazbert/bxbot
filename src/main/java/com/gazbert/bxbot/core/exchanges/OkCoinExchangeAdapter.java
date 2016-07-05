@@ -870,7 +870,7 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
             requestHeaders.put("Content-Type", "application/x-www-form-urlencoded");
 
             final URL url = new URL(AUTHENTICATED_API_URL + apiMethod);
-            return sendAuthenticatedNetworkRequest(url, payload.toString(), requestHeaders, connectionTimeout);
+            return sendAuthenticatedNetworkRequest(url, "POST", payload.toString(), requestHeaders, connectionTimeout);
 
         } catch (MalformedURLException e) {
             final String errorMsg = UNEXPECTED_IO_ERROR_MSG;

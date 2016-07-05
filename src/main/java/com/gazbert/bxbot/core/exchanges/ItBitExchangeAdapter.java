@@ -40,17 +40,13 @@ import org.apache.log4j.Logger;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import javax.xml.bind.DatatypeConverter;
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
-import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.security.InvalidKeyException;
@@ -66,10 +62,6 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
- * <p>
- * <em>TODO - Remove tmp PATCH in {@link #sendAuthenticatedRequestToExchange(String, String, Map)} for occasional 401 responses sent by exchange.</em>
- * </p>
- *
  * <p>
  * Exchange Adapter for integrating with the itBit exchange.
  * The itBit API is documented <a href="https://www.itbit.com/h/api">here</a>.
@@ -155,21 +147,6 @@ public final class ItBitExchangeAdapter extends  AbstractExchangeAdapter impleme
      * Unexpected IO error message for logging.
      */
     private static final String UNEXPECTED_IO_ERROR_MSG = "Failed to connect to Exchange due to unexpected IO error.";
-
-    /**
-     * IO 50x Timeout error message for logging.
-     */
-    private static String IO_50X_TIMEOUT_ERROR_MSG = "Failed to connect to Exchange due to 50x timeout.";
-
-    /**
-     * IO Socket Timeout error message for logging.
-     */
-    private static final String IO_SOCKET_TIMEOUT_ERROR_MSG = "Failed to connect to Exchange due to socket timeout.";
-
-    /**
-     * Bad Request error message for logging.
-     */
-    private static final String BAD_REQUEST_ERROR_MSG =  "Exchange has rejected request due to bad data being sent to it.";
 
     /**
      * Used for building error messages for missing config.
@@ -827,7 +804,7 @@ public final class ItBitExchangeAdapter extends  AbstractExchangeAdapter impleme
 
     /**
      * <p>
-     * Makes Authenticated API call to itBit exchange.
+     * Makes an authenticated API call to the itBit exchange.
      * </p>
      *
      * <p>
@@ -850,9 +827,6 @@ public final class ItBitExchangeAdapter extends  AbstractExchangeAdapter impleme
             LOG.error(errorMsg);
             throw new IllegalStateException(errorMsg);
         }
-
-        HttpURLConnection exchangeConnection = null;
-        final StringBuilder exchangeResponse = new StringBuilder();
 
         try {
 
@@ -880,8 +854,8 @@ public final class ItBitExchangeAdapter extends  AbstractExchangeAdapter impleme
             signatureParamList.add(httpMethod);
 
             switch (httpMethod) {
-                case "GET" :
 
+                case "GET" :
                     LogUtils.log(LOG, Level.DEBUG, () -> "Building secure GET request...");
 
                     // Build (optional) query param string
@@ -911,7 +885,6 @@ public final class ItBitExchangeAdapter extends  AbstractExchangeAdapter impleme
                     break;
 
                 case "POST" :
-
                     LogUtils.log(LOG, Level.DEBUG, () -> "Building secure POST request...");
 
                     invocationUrl = AUTHENTICATED_API_URL + apiMethod;
@@ -922,7 +895,6 @@ public final class ItBitExchangeAdapter extends  AbstractExchangeAdapter impleme
                     break;
 
                 case "DELETE" :
-
                     LogUtils.log(LOG, Level.DEBUG, () -> "Building secure DELETE request...");
 
                     invocationUrl = AUTHENTICATED_API_URL + apiMethod;
@@ -969,150 +941,36 @@ public final class ItBitExchangeAdapter extends  AbstractExchangeAdapter impleme
             final String signature = DatatypeConverter.printBase64Binary((new BigInteger(mac.doFinal())).toByteArray());
             LogUtils.log(LOG, Level.DEBUG, () -> "Signature in Base64: " + signature);
 
-            final URL url = new URL(invocationUrl);
-            LogUtils.log(LOG, Level.DEBUG, () -> "Using following URL for API call: " + url);
-
-            exchangeConnection = (HttpURLConnection) url.openConnection();
-            exchangeConnection.setUseCaches(false);
-            exchangeConnection.setDoOutput(true);
-            exchangeConnection.setRequestMethod(httpMethod); // GET|POST|DELETE
+            // Request headers required by Exchange
+            final Map<String, String> requestHeaders = new HashMap<>();
+            requestHeaders.put("Content-Type", "application/json");
 
             // Add Authorization header
             // Generate the authorization header by concatenating the client key with a colon separator (‘:’)
             // and the signature. The resulting string should look like "clientkey:signature".
-            exchangeConnection.setRequestProperty("Authorization", key + ":" + signature);
+            requestHeaders.put("Authorization", key + ":" + signature);
             LogUtils.log(LOG, Level.DEBUG, () -> "Authorization: " + key + ":" + signature);
 
             // Add timestamp header
-            exchangeConnection.setRequestProperty("X-Auth-Timestamp", unixTime);
+            requestHeaders.put("X-Auth-Timestamp", unixTime);
             LogUtils.log(LOG, Level.DEBUG, () -> "X-Auth-Timestamp: " + unixTime);
 
             // Add nonce header
-            exchangeConnection.setRequestProperty("X-Auth-Nonce", Long.toString(nonce));
+            requestHeaders.put("X-Auth-Nonce", Long.toString(nonce));
             LogUtils.log(LOG, Level.DEBUG, () -> "X-Auth-Nonce: " + Long.toString(nonce));
 
-            // Payload is JSON for this exchange
-            exchangeConnection.setRequestProperty("Content-Type", "application/json");
-
-            // Er, perhaps, I need to be a bit more stealth here...
-            exchangeConnection.setRequestProperty("User-Agent",
-                    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.114 Safari/537.36");
-
-            /*
-             * Add a timeout so we don't get blocked indefinitely; timeout on URLConnection is in millis.
-             * connectionTimeout is in SECONDS and comes from itbit-config.properties config.
-             */
-            final int timeoutInMillis = connectionTimeout * 1000;
-            exchangeConnection.setConnectTimeout(timeoutInMillis);
-            exchangeConnection.setReadTimeout(timeoutInMillis);
-
-            if (httpMethod.equalsIgnoreCase("POST")) {
-
-                if (LOG.isInfoEnabled()) {
-                    LOG.info("Doing POST with request body: " + requestBody);
-                }
-
-                final OutputStreamWriter outputPostStream = new OutputStreamWriter(exchangeConnection.getOutputStream());
-                outputPostStream.write(requestBody);
-                outputPostStream.close();
-            }
-
-            // Grab the response - we just block here as per Connection API
-            final BufferedReader responseInputStream = new BufferedReader(new InputStreamReader(
-                    exchangeConnection.getInputStream()));
-
-            // Read the JSON response lines into our response buffer
-            String responseLine;
-            while ((responseLine = responseInputStream.readLine()) != null) {
-                exchangeResponse.append(responseLine);
-            }
-            responseInputStream.close();
-
-            return new ExchangeHttpResponse(exchangeConnection.getResponseCode(), exchangeConnection.getResponseMessage(),
-                    exchangeResponse.toString());
+            final URL url = new URL(invocationUrl);
+            return sendAuthenticatedNetworkRequest(url, httpMethod, requestBody, requestHeaders, connectionTimeout);
 
         } catch (MalformedURLException e) {
             final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
             LOG.error(errorMsg, e);
             throw new TradingApiException(errorMsg, e);
 
-        } catch (SocketTimeoutException e) {
-            final String errorMsg = IO_SOCKET_TIMEOUT_ERROR_MSG;
-            LOG.error(errorMsg, e);
-            throw new ExchangeTimeoutException(errorMsg, e);
-
-        } catch (IOException e) {
-
-            try {
-
-                /*
-                 * Started happening 22 Nov 2015...
-                 */
-                if (e.getMessage() != null &&
-                        (e.getMessage().contains("Remote host closed connection during handshake") ||
-                         e.getMessage().contains("Connection reset") ||
-                         e.getMessage().contains("Connection refused"))) {
-
-                    final String errorMsg = "Failed to connect to itBit. SSL Connection was reset by the server.";
-                    LOG.error(errorMsg, e);
-                    throw new ExchangeTimeoutException(errorMsg, e);
-
-                /*
-                 * TODO - remove this tmp PATCH when ItBit fix their side or I find the bug in my code... ;-)
-                 * Patch to catch the 401s that ItBit occasionally sends... approx 1-2 per hour.
-                 * In discussion with exchange.
-                 */
-                } else if (exchangeConnection != null && (exchangeConnection.getResponseCode() == 401)) {
-
-                    final String errorMsg = "Received rogue ItBit 401 response again... :-/";
-                    LOG.error(errorMsg, e);
-                    throw new ExchangeTimeoutException(errorMsg, e);
-
-                /*
-                 * Exchange sometimes fails with these codes, but recovers by next request...
-                 */
-                } else if (exchangeConnection != null && (exchangeConnection.getResponseCode() == 502
-                        || exchangeConnection.getResponseCode() == 503
-                        || exchangeConnection.getResponseCode() == 504)) {
-
-                    final String errorMsg = IO_50X_TIMEOUT_ERROR_MSG;
-                    LOG.error(errorMsg, e);
-                    throw new ExchangeTimeoutException(errorMsg, e);
-
-                /*
-                 * Check for itBit specific REST error responses so we can return useful data to caller.
-                 */
-                } else if (exchangeConnection != null && (exchangeConnection.getResponseCode() == 401
-                                || exchangeConnection.getResponseCode() == 404
-                                || exchangeConnection.getResponseCode() == 422)) {
-
-                    final String errorMsg = BAD_REQUEST_ERROR_MSG;
-                    LOG.error(errorMsg, e);
-                    return new ExchangeHttpResponse(exchangeConnection.getResponseCode(),
-                            exchangeConnection.getResponseMessage(), exchangeResponse.toString());
-
-                } else {
-                    final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
-                    LOG.error(errorMsg, e);
-                    e.printStackTrace();
-                    throw new TradingApiException(errorMsg, e);
-                }
-            } catch (IOException e1) {
-
-                final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
-                LOG.error(errorMsg, e1);
-                throw new TradingApiException(errorMsg, e1);
-            }
-
         } catch (NoSuchAlgorithmException e) {
             final String errorMsg = "Failed to create SHA-256 digest when building message signature.";
             LOG.error(errorMsg, e);
             throw new TradingApiException(errorMsg, e);
-
-        } finally {
-            if (exchangeConnection != null) {
-                exchangeConnection.disconnect();
-            }
         }
     }
 
@@ -1123,7 +981,6 @@ public final class ItBitExchangeAdapter extends  AbstractExchangeAdapter impleme
      */
     private void initSecureMessageLayer() {
 
-        // Setup the MAC
         try {
             final SecretKeySpec keyspec = new SecretKeySpec(secret.getBytes("UTF-8"), "HmacSHA512");
             mac = Mac.getInstance("HmacSHA512");
@@ -1139,6 +996,7 @@ public final class ItBitExchangeAdapter extends  AbstractExchangeAdapter impleme
             throw new IllegalArgumentException(errorMsg, e);
         }
     }
+
     // ------------------------------------------------------------------------------------------------
     //  Config methods
     // ------------------------------------------------------------------------------------------------

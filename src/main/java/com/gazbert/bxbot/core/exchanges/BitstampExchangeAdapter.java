@@ -703,7 +703,7 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
             requestHeaders.put("Content-Type", "application/x-www-form-urlencoded");
 
             final URL url = new URL(API_BASE_URL + apiMethod + "/"); // MUST have the trailing slash else exchange barfs...
-            return sendAuthenticatedNetworkRequest(url, postData, requestHeaders, connectionTimeout);
+            return sendAuthenticatedNetworkRequest(url, "POST", postData, requestHeaders, connectionTimeout);
 
         } catch (MalformedURLException | UnsupportedEncodingException e) {
             final String errorMsg = UNEXPECTED_IO_ERROR_MSG;

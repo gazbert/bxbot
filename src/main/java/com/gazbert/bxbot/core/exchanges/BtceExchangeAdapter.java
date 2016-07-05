@@ -936,7 +936,7 @@ public final class BtceExchangeAdapter extends AbstractExchangeAdapter implement
             requestHeaders.put("Sign", toHex(mac.doFinal(postData.getBytes("UTF-8"))));
 
             final URL url = new URL(AUTHENTICATED_API_URL);
-            return sendAuthenticatedNetworkRequest(url, postData, requestHeaders, connectionTimeout);
+            return sendAuthenticatedNetworkRequest(url, "POST", postData, requestHeaders, connectionTimeout);
 
         } catch (MalformedURLException | UnsupportedEncodingException e) {
 

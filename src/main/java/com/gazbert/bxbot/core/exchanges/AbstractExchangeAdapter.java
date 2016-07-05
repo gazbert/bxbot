@@ -175,7 +175,6 @@ abstract class AbstractExchangeAdapter {
                 LOG.error(errorMsg, e1);
                 throw new TradingApiException(errorMsg, e1);
             }
-
         } finally {
             if (exchangeConnection != null) {
                 exchangeConnection.disconnect();
@@ -188,6 +187,7 @@ abstract class AbstractExchangeAdapter {
      *
      * @param url               the URL to invoke.
      * @param postData          optional post data to send.
+     * @param httpMethod        the HTTP method to use, e.g. GET, POST, DELETE
      * @param requestHeaders    optional request headers to set on the {@link URLConnection} used to invoke the Exchange.
      * @param connectionTimeout timeout value before a 'stuck' connection is terminated. Value must be in seconds.
      * @return the response from the Exchange.
@@ -197,8 +197,9 @@ abstract class AbstractExchangeAdapter {
      * @throws TradingApiException      if the API call failed for any reason other than a timeout. This means something
      *                                  really bad as happened.
      */
-    ExchangeHttpResponse sendAuthenticatedNetworkRequest(URL url, String postData, Map<String, String> requestHeaders,
-                                           int connectionTimeout) throws TradingApiException, ExchangeTimeoutException {
+    ExchangeHttpResponse sendAuthenticatedNetworkRequest(URL url, String httpMethod, String postData,
+                                                         Map<String, String> requestHeaders, int connectionTimeout)
+            throws TradingApiException, ExchangeTimeoutException {
 
         HttpURLConnection exchangeConnection = null;
         final StringBuilder exchangeResponse = new StringBuilder();
@@ -210,6 +211,7 @@ abstract class AbstractExchangeAdapter {
             exchangeConnection = (HttpURLConnection) url.openConnection();
             exchangeConnection.setUseCaches(false);
             exchangeConnection.setDoOutput(true);
+            exchangeConnection.setRequestMethod(httpMethod); // GET|POST|DELETE
 
             for (final Map.Entry<String, String> requestHeader : requestHeaders.entrySet()) {
                 exchangeConnection.setRequestProperty(requestHeader.getKey(), requestHeader.getValue());
@@ -228,10 +230,12 @@ abstract class AbstractExchangeAdapter {
             exchangeConnection.setConnectTimeout(timeoutInMillis);
             exchangeConnection.setReadTimeout(timeoutInMillis);
 
-            // POST the request
-            final OutputStreamWriter outputPostStream = new OutputStreamWriter(exchangeConnection.getOutputStream());
-            outputPostStream.write(postData);
-            outputPostStream.close();
+            if (httpMethod.equalsIgnoreCase("POST")) {
+                LogUtils.log(LOG, Level.DEBUG, () -> "Doing POST with request body: " + postData);
+                final OutputStreamWriter outputPostStream = new OutputStreamWriter(exchangeConnection.getOutputStream());
+                outputPostStream.write(postData);
+                outputPostStream.close();
+            }
 
             // Grab the response - we just block here as per Connection API
             final BufferedReader responseInputStream = new BufferedReader(new InputStreamReader(
