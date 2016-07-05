@@ -628,10 +628,15 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
      */
     private ExchangeHttpResponse sendPublicRequestToExchange(String apiMethod) throws ExchangeTimeoutException, TradingApiException {
 
+        // Request headers required by Exchange
+        final Map<String, String> requestHeaders = new HashMap<>();
+        requestHeaders.put("Content-Type", "application/x-www-form-urlencoded");
+
         try {
+
             // MUST have the trailing slash even if no params... else exchange barfs!
             final URL url = new URL(API_BASE_URL + apiMethod + "/");
-            return sendPublicNetworkRequest(url, connectionTimeout);
+            return sendNetworkRequest(url, "GET", null, requestHeaders, connectionTimeout);
 
         } catch (MalformedURLException e) {
             final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
@@ -703,7 +708,7 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
             requestHeaders.put("Content-Type", "application/x-www-form-urlencoded");
 
             final URL url = new URL(API_BASE_URL + apiMethod + "/"); // MUST have the trailing slash else exchange barfs...
-            return sendAuthenticatedNetworkRequest(url, "POST", postData, requestHeaders, connectionTimeout);
+            return sendNetworkRequest(url, "POST", postData, requestHeaders, connectionTimeout);
 
         } catch (MalformedURLException | UnsupportedEncodingException e) {
             final String errorMsg = UNEXPECTED_IO_ERROR_MSG;

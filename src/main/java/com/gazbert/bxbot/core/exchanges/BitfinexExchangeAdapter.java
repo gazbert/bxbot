@@ -863,9 +863,14 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter imple
      */
     private ExchangeHttpResponse sendPublicRequestToExchange(String apiMethod) throws ExchangeTimeoutException, TradingApiException {
 
+        // Request headers required by Exchange
+        final Map<String, String> requestHeaders = new HashMap<>();
+        requestHeaders.put("Content-Type", "application/x-www-form-urlencoded");
+
         try {
+
             final URL url = new URL(PUBLIC_API_BASE_URL + apiMethod);
-            return sendPublicNetworkRequest(url, connectionTimeout);
+            return sendNetworkRequest(url, "GET", null, requestHeaders, connectionTimeout);
 
         } catch (MalformedURLException e) {
             final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
@@ -963,7 +968,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter imple
             requestHeaders.put("Content-Type", "application/json");
 
             final URL url = new URL(AUTHENTICATED_API_URL + apiMethod);
-            return sendAuthenticatedNetworkRequest(url, "POST", paramsInJson, requestHeaders, connectionTimeout);
+            return sendNetworkRequest(url, "POST", paramsInJson, requestHeaders, connectionTimeout);
 
         } catch (MalformedURLException | UnsupportedEncodingException e) {
 

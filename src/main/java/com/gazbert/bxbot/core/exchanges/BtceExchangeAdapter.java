@@ -875,9 +875,14 @@ public final class BtceExchangeAdapter extends AbstractExchangeAdapter implement
     private ExchangeHttpResponse sendPublicRequestToExchange(String apiMethod, String resource) throws TradingApiException,
             ExchangeTimeoutException {
 
+        // Request headers required by Exchange
+        final Map<String, String> requestHeaders = new HashMap<>();
+        requestHeaders.put("Content-Type", "application/x-www-form-urlencoded");
+
         try {
+
             final URL url = new URL(PUBLIC_API_BASE_URL + apiMethod + "/" + resource);
-            return sendPublicNetworkRequest(url, connectionTimeout);
+            return sendNetworkRequest(url, "GET", null, requestHeaders, connectionTimeout);
 
         } catch (MalformedURLException e) {
             final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
@@ -936,7 +941,7 @@ public final class BtceExchangeAdapter extends AbstractExchangeAdapter implement
             requestHeaders.put("Sign", toHex(mac.doFinal(postData.getBytes("UTF-8"))));
 
             final URL url = new URL(AUTHENTICATED_API_URL);
-            return sendAuthenticatedNetworkRequest(url, "POST", postData, requestHeaders, connectionTimeout);
+            return sendNetworkRequest(url, "POST", postData, requestHeaders, connectionTimeout);
 
         } catch (MalformedURLException | UnsupportedEncodingException e) {
 

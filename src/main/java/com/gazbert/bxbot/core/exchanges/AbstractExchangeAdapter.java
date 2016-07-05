@@ -65,128 +65,11 @@ abstract class AbstractExchangeAdapter {
      */
     private static final String IO_5XX_TIMEOUT_ERROR_MSG = "Failed to connect to Exchange due to 5xx timeout.";
 
-
     /**
-     * Makes a public request to the Exchange. It uses HTTP GET.
+     * Makes a request to the Exchange.
      *
      * @param url               the URL to invoke.
-     * @param connectionTimeout timeout value before a 'stuck' connection is terminated. Value must be in seconds.
-     * @return the response from the Exchange.
-     * @throws ExchangeTimeoutException if a timeout occurred trying to connect to the exchange. The timeout limit is
-     *                                  implementation specific for each Exchange Adapter. This allows for recovery from
-     *                                  temporary network issues.
-     * @throws TradingApiException      if the API call failed for any reason other than a timeout. This means something
-     *                                  really bad as happened.
-     */
-    ExchangeHttpResponse sendPublicNetworkRequest(URL url, int connectionTimeout) throws TradingApiException, ExchangeTimeoutException {
-
-        HttpURLConnection exchangeConnection = null;
-        final StringBuilder exchangeResponse = new StringBuilder();
-
-        try {
-
-            LogUtils.log(LOG, Level.DEBUG, () -> "Using following URL for API call: " + url);
-
-            exchangeConnection = (HttpURLConnection) url.openConnection();
-            exchangeConnection.setUseCaches(false);
-            exchangeConnection.setDoOutput(true);
-
-            exchangeConnection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-
-            // Er, perhaps I need to be a bit more stealth here...
-            exchangeConnection.setRequestProperty("User-Agent",
-                    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.114 Safari/537.36");
-
-            // Add a timeout so we don't get blocked indefinitley; timeout on URLConnection is in millis.
-            final int timeoutInMillis = connectionTimeout * 1000;
-            exchangeConnection.setConnectTimeout(timeoutInMillis);
-            exchangeConnection.setReadTimeout(timeoutInMillis);
-
-            // Grab the response - we just block here as per Java Connection API
-            final BufferedReader responseInputStream = new BufferedReader(new InputStreamReader(
-                    exchangeConnection.getInputStream()));
-
-            String responseLine;
-            while ((responseLine = responseInputStream.readLine()) != null) {
-                exchangeResponse.append(responseLine);
-            }
-            responseInputStream.close();
-
-            return new ExchangeHttpResponse(exchangeConnection.getResponseCode(), exchangeConnection.getResponseMessage(),
-                    exchangeResponse.toString());
-
-        } catch (MalformedURLException e) {
-            final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
-            LOG.error(errorMsg, e);
-            throw new TradingApiException(errorMsg, e);
-
-        } catch (SocketTimeoutException e) {
-            final String errorMsg = IO_SOCKET_TIMEOUT_ERROR_MSG;
-            LOG.error(errorMsg, e);
-            throw new ExchangeTimeoutException(errorMsg, e);
-
-        } catch (FileNotFoundException e) {
-            // Huobi started throwing this as of 8 Nov 2015 :-/
-            final String errorMsg = "Failed to connect to Exchange. It's not there!";
-            LOG.error(errorMsg, e);
-            throw new ExchangeTimeoutException(errorMsg, e);
-
-        } catch (IOException e) {
-
-            // TODO rework this stuff to read network retry codes from exchange adapter config
-            try {
-
-                /*
-                 * Occasionally get this on Bitfinex, Huobi, OKCoin,
-                 */
-                if (e.getMessage() != null &&
-                        (e.getMessage().contains("Connection reset") ||
-                                e.getMessage().contains("Remote host closed connection during handshake") ||
-                                e.getMessage().contains("Unexpected end of file from server") ||
-                                e.getMessage().contains("Connection refused"))) {
-
-                    final String errorMsg = "Failed to connect to Exchange. SSL Connection was refused or reset by the server.";
-                    LOG.error(errorMsg, e);
-                    throw new ExchangeTimeoutException(errorMsg, e);
-
-                /*
-                 * Exchange sometimes fails with these codes, but recovers by next request...
-                 */
-                } else if (exchangeConnection != null && (exchangeConnection.getResponseCode() == 502
-                        || exchangeConnection.getResponseCode() == 503
-                        || exchangeConnection.getResponseCode() == 504
-
-                        // Cloudflare related
-                        || exchangeConnection.getResponseCode() == 520
-                        || exchangeConnection.getResponseCode() == 522
-                        || exchangeConnection.getResponseCode() == 525)) {
-
-                    final String errorMsg = IO_5XX_TIMEOUT_ERROR_MSG;
-                    LOG.error(errorMsg, e);
-                    throw new ExchangeTimeoutException(errorMsg, e);
-
-                } else {
-                    final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
-                    LOG.error(errorMsg, e);
-                    throw new TradingApiException(errorMsg, e);
-                }
-            } catch (IOException e1) {
-                final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
-                LOG.error(errorMsg, e1);
-                throw new TradingApiException(errorMsg, e1);
-            }
-        } finally {
-            if (exchangeConnection != null) {
-                exchangeConnection.disconnect();
-            }
-        }
-    }
-
-    /**
-     * Makes an authenticated request to the Exchange.
-     *
-     * @param url               the URL to invoke.
-     * @param postData          optional post data to send.
+     * @param postData          optional post data to send. This can be null.
      * @param httpMethod        the HTTP method to use, e.g. GET, POST, DELETE
      * @param requestHeaders    optional request headers to set on the {@link URLConnection} used to invoke the Exchange.
      * @param connectionTimeout timeout value before a 'stuck' connection is terminated. Value must be in seconds.
@@ -197,8 +80,8 @@ abstract class AbstractExchangeAdapter {
      * @throws TradingApiException      if the API call failed for any reason other than a timeout. This means something
      *                                  really bad as happened.
      */
-    ExchangeHttpResponse sendAuthenticatedNetworkRequest(URL url, String httpMethod, String postData,
-                                                         Map<String, String> requestHeaders, int connectionTimeout)
+    ExchangeHttpResponse sendNetworkRequest(URL url, String httpMethod, String postData,
+                                            Map<String, String> requestHeaders, int connectionTimeout)
             throws TradingApiException, ExchangeTimeoutException {
 
         HttpURLConnection exchangeConnection = null;
@@ -213,24 +96,23 @@ abstract class AbstractExchangeAdapter {
             exchangeConnection.setDoOutput(true);
             exchangeConnection.setRequestMethod(httpMethod); // GET|POST|DELETE
 
-            for (final Map.Entry<String, String> requestHeader : requestHeaders.entrySet()) {
-                exchangeConnection.setRequestProperty(requestHeader.getKey(), requestHeader.getValue());
-                LogUtils.log(LOG, Level.DEBUG, () -> "Setting following request header: " + requestHeader);
-            }
-
             // Er, perhaps, I need to be a bit more stealth here...
             exchangeConnection.setRequestProperty("User-Agent",
                     "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.114 Safari/537.36");
 
-            /*
-             * Add a timeout so we don't get blocked indefinitely; timeout on URLConnection is in millis.
-             * connectionTimeout is in SECONDS and comes from btce-config.properties config.
-             */
+            if (requestHeaders != null) {
+                for (final Map.Entry<String, String> requestHeader : requestHeaders.entrySet()) {
+                    exchangeConnection.setRequestProperty(requestHeader.getKey(), requestHeader.getValue());
+                    LogUtils.log(LOG, Level.DEBUG, () -> "Setting following request header: " + requestHeader);
+                }
+            }
+
+            // Add a timeout so we don't get blocked indefinitley; timeout on URLConnection is in millis.
             final int timeoutInMillis = connectionTimeout * 1000;
             exchangeConnection.setConnectTimeout(timeoutInMillis);
             exchangeConnection.setReadTimeout(timeoutInMillis);
 
-            if (httpMethod.equalsIgnoreCase("POST")) {
+            if (httpMethod.equalsIgnoreCase("POST") && postData != null) {
                 LogUtils.log(LOG, Level.DEBUG, () -> "Doing POST with request body: " + postData);
                 final OutputStreamWriter outputPostStream = new OutputStreamWriter(exchangeConnection.getOutputStream());
                 outputPostStream.write(postData);

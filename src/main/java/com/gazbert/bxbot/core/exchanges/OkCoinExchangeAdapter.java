@@ -759,23 +759,28 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
     private ExchangeHttpResponse sendPublicRequestToExchange(String apiMethod, Map<String, String> params) throws
             ExchangeTimeoutException, TradingApiException {
 
-            if (params == null) {
-                params = new HashMap<>(); // no params, so empty query string
-            }
+        if (params == null) {
+            params = new HashMap<>(); // no params, so empty query string
+        }
 
-            // Build the query string with any given params
-            final StringBuilder queryString = new StringBuilder("?");
-            for (final String param : params.keySet()) {
-                if (queryString.length() > 1) {
-                    queryString.append("&");
-                }
-                //noinspection deprecation
-                queryString.append(param).append("=").append(URLEncoder.encode(params.get(param)));
+        // Build the query string with any given params
+        final StringBuilder queryString = new StringBuilder("?");
+        for (final String param : params.keySet()) {
+            if (queryString.length() > 1) {
+                queryString.append("&");
             }
+            //noinspection deprecation
+            queryString.append(param).append("=").append(URLEncoder.encode(params.get(param)));
+        }
+
+        // Request headers required by Exchange
+        final Map<String, String> requestHeaders = new HashMap<>();
+        requestHeaders.put("Content-Type", "application/x-www-form-urlencoded");
 
         try {
+
             final URL url = new URL(PUBLIC_API_BASE_URL + apiMethod + queryString);
-            return sendPublicNetworkRequest(url, connectionTimeout);
+            return sendNetworkRequest(url, "GET", null, requestHeaders, connectionTimeout);
 
         } catch (MalformedURLException e) {
             final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
@@ -870,7 +875,7 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
             requestHeaders.put("Content-Type", "application/x-www-form-urlencoded");
 
             final URL url = new URL(AUTHENTICATED_API_URL + apiMethod);
-            return sendAuthenticatedNetworkRequest(url, "POST", payload.toString(), requestHeaders, connectionTimeout);
+            return sendNetworkRequest(url, "POST", payload.toString(), requestHeaders, connectionTimeout);
 
         } catch (MalformedURLException e) {
             final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
