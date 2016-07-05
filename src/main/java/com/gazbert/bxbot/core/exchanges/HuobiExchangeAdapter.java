@@ -333,10 +333,10 @@ public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implemen
                 throw new IllegalArgumentException(errorMsg);
             }
 
-            final String response = sendAuthenticatedRequestToExchange(apiCall, marketIdForAuthenticatedRequest, params);
+            final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange(apiCall, marketIdForAuthenticatedRequest, params);
             LogUtils.log(LOG, Level.DEBUG, () -> "createOrder() response: " + response);
 
-            final HuobiOrderResponse createOrderResponse = gson.fromJson(response, HuobiOrderResponse.class);
+            final HuobiOrderResponse createOrderResponse = gson.fromJson(response.getPayload(), HuobiOrderResponse.class);
             if (createOrderResponse.result != null && createOrderResponse.result.equalsIgnoreCase("success")) {
                 return Long.toString(createOrderResponse.id);
             } else {
@@ -363,10 +363,11 @@ public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implemen
             params.put("coin_type", "1"); // "1" = BTC
             params.put("id", orderId);
 
-            final String response = sendAuthenticatedRequestToExchange("cancel_order", marketIdForAuthenticatedRequest, params);
+            final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("cancel_order",
+                    marketIdForAuthenticatedRequest, params);
             LogUtils.log(LOG, Level.DEBUG, () -> "cancelOrder() response: " + response);
 
-            final HuobiCancelOrderResponse cancelOrderResponse = gson.fromJson(response, HuobiCancelOrderResponse.class);
+            final HuobiCancelOrderResponse cancelOrderResponse = gson.fromJson(response.getPayload(), HuobiCancelOrderResponse.class);
             if (cancelOrderResponse.result != null && cancelOrderResponse.result.equalsIgnoreCase("success")) {
                 return true;
             } else {
@@ -392,11 +393,12 @@ public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implemen
             final Map<String, String> params = getRequestParamMap();
             params.put("coin_type", "1"); // "1" = BTC
 
-            final String response = sendAuthenticatedRequestToExchange("get_orders", marketIdForAuthenticatedRequest, params);
+            final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("get_orders",
+                    marketIdForAuthenticatedRequest, params);
             LogUtils.log(LOG, Level.DEBUG, () -> "getYourOpenOrders() response: " + response);
 
             final HuobiOpenOrderResponseWrapper huobiOpenOrdersWrapper
-                    = gson.fromJson(response, HuobiOpenOrderResponseWrapper.class);
+                    = gson.fromJson(response.getPayload(), HuobiOpenOrderResponseWrapper.class);
 
             if (huobiOpenOrdersWrapper.code == 0) {
 
@@ -511,10 +513,10 @@ public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implemen
 
         try {
 
-            final String response = sendAuthenticatedRequestToExchange("get_account_info", accountInfoMarket, null);
+            final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("get_account_info", accountInfoMarket, null);
             LogUtils.log(LOG, Level.DEBUG, () -> "getBalanceInfo() response: " + response);
 
-            final HuobiAccountInfo huobiAccountInfo = gson.fromJson(response, HuobiAccountInfo.class);
+            final HuobiAccountInfo huobiAccountInfo = gson.fromJson(response.getPayload(), HuobiAccountInfo.class);
             if (huobiAccountInfo.code == 0) {
 
                 // adapt
@@ -1029,7 +1031,7 @@ public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implemen
      * @throws TradingApiException      if anything unexpected happens.
      */
     @SuppressWarnings("deprecation")
-    private String sendAuthenticatedRequestToExchange(String apiMethod, String marketId, Map<String, String> params)
+    private ExchangeHttpResponse sendAuthenticatedRequestToExchange(String apiMethod, String marketId, Map<String, String> params)
             throws ExchangeTimeoutException, TradingApiException {
 
         if (!initializedSecureMessagingLayer) {

@@ -184,11 +184,11 @@ abstract class AbstractExchangeAdapter {
     }
 
     /**
-     * Makes an authenticated request to the Exchange. It uses HTTP POST.
+     * Makes an authenticated request to the Exchange.
      *
      * @param url               the URL to invoke.
-     * @param postData          the data to post.
-     * @param requestHeaders    any request headers to set on the {@link URLConnection} used to invoke the Exchange.
+     * @param postData          optional post data to send.
+     * @param requestHeaders    optional request headers to set on the {@link URLConnection} used to invoke the Exchange.
      * @param connectionTimeout timeout value before a 'stuck' connection is terminated. Value must be in seconds.
      * @return the response from the Exchange.
      * @throws ExchangeTimeoutException if a timeout occurred trying to connect to the exchange. The timeout limit is
@@ -197,7 +197,7 @@ abstract class AbstractExchangeAdapter {
      * @throws TradingApiException      if the API call failed for any reason other than a timeout. This means something
      *                                  really bad as happened.
      */
-    String sendAuthenticatedNetworkRequest(URL url, String postData, Map<String, String> requestHeaders,
+    ExchangeHttpResponse sendAuthenticatedNetworkRequest(URL url, String postData, Map<String, String> requestHeaders,
                                            int connectionTimeout) throws TradingApiException, ExchangeTimeoutException {
 
         HttpURLConnection exchangeConnection = null;
@@ -243,7 +243,9 @@ abstract class AbstractExchangeAdapter {
                 exchangeResponse.append(responseLine);
             }
             responseInputStream.close();
-            return exchangeResponse.toString();
+
+            return new ExchangeHttpResponse(exchangeConnection.getResponseCode(), exchangeConnection.getResponseMessage(),
+                    exchangeResponse.toString());
 
         } catch (MalformedURLException e) {
             final String errorMsg = UNEXPECTED_IO_ERROR_MSG;

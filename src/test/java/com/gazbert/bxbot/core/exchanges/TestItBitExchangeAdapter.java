@@ -115,7 +115,7 @@ public class TestItBitExchangeAdapter {
 
         // Load the canned response from the exchange
         final byte[] encoded = Files.readAllBytes(Paths.get(NEW_ORDER_BUY_JSON_RESPONSE));
-        final ItBitExchangeAdapter.ItBitHttpResponse exchangeResponse = new ItBitExchangeAdapter.ItBitHttpResponse(
+        final AbstractExchangeAdapter.ExchangeHttpResponse exchangeResponse = new AbstractExchangeAdapter.ExchangeHttpResponse(
                 201, "Created", new String(encoded, StandardCharsets.UTF_8));
 
         // Mock out param map so we can assert the contents passed to the transport layer are what we expect.
@@ -150,7 +150,7 @@ public class TestItBitExchangeAdapter {
 
         // Load the canned response from the exchange
         final byte[] encoded = Files.readAllBytes(Paths.get(NEW_ORDER_SELL_JSON_RESPONSE));
-        final ItBitExchangeAdapter.ItBitHttpResponse exchangeResponse = new ItBitExchangeAdapter.ItBitHttpResponse(
+        final AbstractExchangeAdapter.ExchangeHttpResponse exchangeResponse = new AbstractExchangeAdapter.ExchangeHttpResponse(
                 201, "Created", new String(encoded, StandardCharsets.UTF_8));
 
         // Mock out param map so we can assert the contents passed to the transport layer are what we expect.
@@ -221,7 +221,7 @@ public class TestItBitExchangeAdapter {
 
         // Load the canned response from the exchange
         final byte[] encoded = Files.readAllBytes(Paths.get(CANCEL_ORDER_JSON_RESPONSE));
-        final ItBitExchangeAdapter.ItBitHttpResponse exchangeResponse = new ItBitExchangeAdapter.ItBitHttpResponse(
+        final AbstractExchangeAdapter.ExchangeHttpResponse exchangeResponse = new AbstractExchangeAdapter.ExchangeHttpResponse(
                 202, "Accepted", new String(encoded, StandardCharsets.UTF_8));
 
         // Partial mock so we do not send stuff down the wire
@@ -290,8 +290,8 @@ public class TestItBitExchangeAdapter {
         // Load the canned response from the exchange
         final byte[] encoded = Files.readAllBytes(Paths.get(OPEN_ORDERS_JSON_RESPONSE));
 
-        final ItBitExchangeAdapter.ItBitHttpResponse exchangeResponse =
-                new ItBitExchangeAdapter.ItBitHttpResponse(200, "OK", new String(encoded, StandardCharsets.UTF_8));
+        final AbstractExchangeAdapter.ExchangeHttpResponse exchangeResponse =
+                new AbstractExchangeAdapter.ExchangeHttpResponse(200, "OK", new String(encoded, StandardCharsets.UTF_8));
 
         // Mock out param map so we can assert the contents passed to the transport layer are what we expect.
         final Map<String, String> requestParamMap = PowerMock.createMock(Map.class);
@@ -510,7 +510,7 @@ public class TestItBitExchangeAdapter {
 
         // Load the canned response from the exchange
         final byte[] encoded = Files.readAllBytes(Paths.get(WALLETS_JSON_RESPONSE));
-        final ItBitExchangeAdapter.ItBitHttpResponse exchangeResponse = new ItBitExchangeAdapter.ItBitHttpResponse(
+        final AbstractExchangeAdapter.ExchangeHttpResponse exchangeResponse = new AbstractExchangeAdapter.ExchangeHttpResponse(
                 200, "Ok", new String(encoded, StandardCharsets.UTF_8));
 
         // Mock out param map so we can assert the contents passed to the transport layer are what we expect.

@@ -255,10 +255,10 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter imple
     public List<OpenOrder> getYourOpenOrders(String marketId) throws TradingApiException, ExchangeTimeoutException {
 
         try {
-            final String results = sendAuthenticatedRequestToExchange("orders", null);
-            LogUtils.log(LOG, Level.DEBUG, () -> "getYourOpenOrders() response: " + results);
+            final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("orders", null);
+            LogUtils.log(LOG, Level.DEBUG, () -> "getYourOpenOrders() response: " + response);
 
-            final BitfinexOpenOrders bitfinexOpenOrders = gson.fromJson(results, BitfinexOpenOrders.class);
+            final BitfinexOpenOrders bitfinexOpenOrders = gson.fromJson(response.getPayload(), BitfinexOpenOrders.class);
 
             // adapt
             final List<OpenOrder> ordersToReturn = new ArrayList<>();
@@ -340,13 +340,13 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter imple
             // If you try and set "is_hidden" to false, the exchange barfs and sends a 401 back. Nice.
             //params.put("is_hidden", "false");
 
-            final String results = sendAuthenticatedRequestToExchange("order/new", params);
-            LogUtils.log(LOG, Level.DEBUG, () -> "createOrder() response: " + results);
+            final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("order/new", params);
+            LogUtils.log(LOG, Level.DEBUG, () -> "createOrder() response: " + response);
 
-            final BitfinexNewOrderResponse createOrderResponse = gson.fromJson(results, BitfinexNewOrderResponse.class);
+            final BitfinexNewOrderResponse createOrderResponse = gson.fromJson(response.getPayload(), BitfinexNewOrderResponse.class);
             final long id = createOrderResponse.order_id;
             if (id == 0) {
-                final String errorMsg = "Failed to place order on exchange. Error response: " + results;
+                final String errorMsg = "Failed to place order on exchange. Error response: " + response;
                 LOG.error(errorMsg);
                 throw new TradingApiException(errorMsg);
             } else {
@@ -370,12 +370,12 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter imple
         try {
             final Map<String, Object> params = getRequestParamMap();
             params.put("order_id", Long.parseLong(orderId));
-            final String results = sendAuthenticatedRequestToExchange("order/cancel", params);
+            final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("order/cancel", params);
 
-            LogUtils.log(LOG, Level.DEBUG, () -> "cancelOrder() response: " + results);
+            LogUtils.log(LOG, Level.DEBUG, () -> "cancelOrder() response: " + response);
 
             // Exchange returns order id and other details if successful, a 400 HTTP Status if the order id was not recognised.
-            gson.fromJson(results, BitfinexCancelOrderResponse.class);
+            gson.fromJson(response.getPayload(), BitfinexCancelOrderResponse.class);
             return true;
 
         } catch (ExchangeTimeoutException | TradingApiException e) {
@@ -414,10 +414,10 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter imple
     public BalanceInfo getBalanceInfo() throws TradingApiException, ExchangeTimeoutException {
 
         try {
-            final String results = sendAuthenticatedRequestToExchange("balances", null);
-            LogUtils.log(LOG, Level.DEBUG, () -> "getBalanceInfo() response: " + results);
+            final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("balances", null);
+            LogUtils.log(LOG, Level.DEBUG, () -> "getBalanceInfo() response: " + response);
 
-            final BitfinexBalances allAccountBalances = gson.fromJson(results, BitfinexBalances.class);
+            final BitfinexBalances allAccountBalances = gson.fromJson(response.getPayload(), BitfinexBalances.class);
 
             // adapt
             final HashMap<String, BigDecimal> balancesAvailable = new HashMap<>();
@@ -453,11 +453,11 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter imple
             ExchangeTimeoutException {
 
         try {
-            final String results = sendAuthenticatedRequestToExchange("account_infos", null);
-            LogUtils.log(LOG, Level.DEBUG, () -> "getPercentageOfBuyOrderTakenForExchangeFee() response: " + results);
+            final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("account_infos", null);
+            LogUtils.log(LOG, Level.DEBUG, () -> "getPercentageOfBuyOrderTakenForExchangeFee() response: " + response);
 
             // Nightmare to adapt! Just take the top-level taker fees.
-            final BitfinexAccountInfos bitfinexAccountInfos = gson.fromJson(results, BitfinexAccountInfos.class);
+            final BitfinexAccountInfos bitfinexAccountInfos = gson.fromJson(response.getPayload(), BitfinexAccountInfos.class);
             final BigDecimal fee = bitfinexAccountInfos.get(0).taker_fees;
 
             // adapt the % into BigDecimal format
@@ -476,11 +476,11 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter imple
             ExchangeTimeoutException {
 
         try {
-            final String results = sendAuthenticatedRequestToExchange("account_infos", null);
-            LogUtils.log(LOG, Level.DEBUG, () -> "getPercentageOfSellOrderTakenForExchangeFee() response: " + results);
+            final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("account_infos", null);
+            LogUtils.log(LOG, Level.DEBUG, () -> "getPercentageOfSellOrderTakenForExchangeFee() response: " + response);
 
             // Nightmare to adapt! Just take the top-level taker fees.
-            final BitfinexAccountInfos bitfinexAccountInfos = gson.fromJson(results, BitfinexAccountInfos.class);
+            final BitfinexAccountInfos bitfinexAccountInfos = gson.fromJson(response.getPayload(), BitfinexAccountInfos.class);
             final BigDecimal fee = bitfinexAccountInfos.get(0).taker_fees;
 
             // adapt the % into BigDecimal format
@@ -911,7 +911,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter imple
      * @throws ExchangeTimeoutException if there is a network issue connecting to exchange.
      * @throws TradingApiException if anything unexpected happens.
      */
-    private String sendAuthenticatedRequestToExchange(String apiMethod, Map<String, Object> params)
+    private ExchangeHttpResponse sendAuthenticatedRequestToExchange(String apiMethod, Map<String, Object> params)
             throws ExchangeTimeoutException, TradingApiException {
 
         if (!initializedMACAuthentication) {

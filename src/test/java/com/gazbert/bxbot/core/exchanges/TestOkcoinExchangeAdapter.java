@@ -112,7 +112,8 @@ public class TestOkcoinExchangeAdapter {
 
         // Load the canned response from the exchange
         final byte[] encoded = Files.readAllBytes(Paths.get(CANCEL_ORDER_JSON_RESPONSE));
-        final String exchangeResponse = new String(encoded, StandardCharsets.UTF_8);
+        final AbstractExchangeAdapter.ExchangeHttpResponse exchangeResponse =
+                new AbstractExchangeAdapter.ExchangeHttpResponse(200, "OK", new String(encoded, StandardCharsets.UTF_8));
 
         // Mock out param map so we can assert the contents passed to the transport layer are what we expect.
         final Map<String, String> requestParamMap = PowerMock.createMock(Map.class);
@@ -141,7 +142,8 @@ public class TestOkcoinExchangeAdapter {
 
         // Load the canned response from the exchange
         final byte[] encoded = Files.readAllBytes(Paths.get(CANCEL_ORDER_ERROR_JSON_RESPONSE));
-        final String exchangeResponse = new String(encoded, StandardCharsets.UTF_8);
+        final AbstractExchangeAdapter.ExchangeHttpResponse exchangeResponse =
+                new AbstractExchangeAdapter.ExchangeHttpResponse(200, "OK",new String(encoded, StandardCharsets.UTF_8));
 
         // Partial mock so we do not send stuff down the wire
         final OkCoinExchangeAdapter exchangeAdapter =  PowerMock.createPartialMockAndInvokeDefaultConstructor(
@@ -195,7 +197,8 @@ public class TestOkcoinExchangeAdapter {
 
         // Load the canned response from the exchange
         final byte[] encoded = Files.readAllBytes(Paths.get(TRADE_BUY_JSON_RESPONSE));
-        final String exchangeResponse = new String(encoded, StandardCharsets.UTF_8);
+        final AbstractExchangeAdapter.ExchangeHttpResponse exchangeResponse =
+                new AbstractExchangeAdapter.ExchangeHttpResponse(200, "OK", new String(encoded, StandardCharsets.UTF_8));
 
         // Mock out param map so we can assert the contents passed to the transport layer are what we expect.
         final Map<String, String> requestParamMap = PowerMock.createMock(Map.class);
@@ -226,7 +229,8 @@ public class TestOkcoinExchangeAdapter {
 
         // Load the canned response from the exchange
         final byte[] encoded = Files.readAllBytes(Paths.get(TRADE_SELL_JSON_RESPONSE));
-        final String exchangeResponse = new String(encoded, StandardCharsets.UTF_8);
+        final AbstractExchangeAdapter.ExchangeHttpResponse exchangeResponse =
+                new AbstractExchangeAdapter.ExchangeHttpResponse(200, "OK", new String(encoded, StandardCharsets.UTF_8));
 
         // Mock out param map so we can assert the contents passed to the transport layer are what we expect.
         final Map<String, String> requestParamMap = PowerMock.createMock(Map.class);
@@ -257,7 +261,8 @@ public class TestOkcoinExchangeAdapter {
 
         // Load the canned response from the exchange
         final byte[] encoded = Files.readAllBytes(Paths.get(TRADE_ERROR_JSON_RESPONSE));
-        final String exchangeResponse = new String(encoded, StandardCharsets.UTF_8);
+        final AbstractExchangeAdapter.ExchangeHttpResponse exchangeResponse =
+                new AbstractExchangeAdapter.ExchangeHttpResponse(200, "OK", new String(encoded, StandardCharsets.UTF_8));
 
         // Partial mock so we do not send stuff down the wire
         final OkCoinExchangeAdapter exchangeAdapter =  PowerMock.createPartialMockAndInvokeDefaultConstructor(
@@ -316,7 +321,8 @@ public class TestOkcoinExchangeAdapter {
 
         // Load the canned response from the exchange
         final byte[] encoded = Files.readAllBytes(Paths.get(ORDER_INFO_JSON_RESPONSE));
-        final String exchangeResponse = new String(encoded, StandardCharsets.UTF_8);
+        final AbstractExchangeAdapter.ExchangeHttpResponse exchangeResponse =
+                new AbstractExchangeAdapter.ExchangeHttpResponse(200, "OK", new String(encoded, StandardCharsets.UTF_8));
 
         // Mock out param map so we can assert the contents passed to the transport layer are what we expect.
         final Map<String, String> requestParamMap = PowerMock.createMock(Map.class);
@@ -357,7 +363,8 @@ public class TestOkcoinExchangeAdapter {
 
         // Load the canned response from the exchange
         final byte[] encoded = Files.readAllBytes(Paths.get(ORDER_INFO_ERROR_JSON_RESPONSE));
-        final String exchangeResponse = new String(encoded, StandardCharsets.UTF_8);
+        final AbstractExchangeAdapter.ExchangeHttpResponse exchangeResponse =
+                new AbstractExchangeAdapter.ExchangeHttpResponse(200, "OK", new String(encoded, StandardCharsets.UTF_8));
 
         // Partial mock so we do not send stuff down the wire
         final OkCoinExchangeAdapter exchangeAdapter =  PowerMock.createPartialMockAndInvokeDefaultConstructor(
@@ -569,7 +576,8 @@ public class TestOkcoinExchangeAdapter {
 
         // Load the canned response from the exchange
         final byte[] encoded = Files.readAllBytes(Paths.get(USERINFO_JSON_RESPONSE));
-        final String exchangeResponse = new String(encoded, StandardCharsets.UTF_8);
+        final AbstractExchangeAdapter.ExchangeHttpResponse exchangeResponse =
+                new AbstractExchangeAdapter.ExchangeHttpResponse(200, "OK", new String(encoded, StandardCharsets.UTF_8));
 
         // Partial mock so we do not send stuff down the wire
         final OkCoinExchangeAdapter exchangeAdapter =  PowerMock.createPartialMockAndInvokeDefaultConstructor(
@@ -597,7 +605,8 @@ public class TestOkcoinExchangeAdapter {
 
         // Load the canned response from the exchange
         final byte[] encoded = Files.readAllBytes(Paths.get(USERINFO_ERROR_JSON_RESPONSE));
-        final String exchangeResponse = new String(encoded, StandardCharsets.UTF_8);
+        final AbstractExchangeAdapter.ExchangeHttpResponse exchangeResponse =
+                new AbstractExchangeAdapter.ExchangeHttpResponse(200, "OK", new String(encoded, StandardCharsets.UTF_8));
 
         // Partial mock so we do not send stuff down the wire
         final OkCoinExchangeAdapter exchangeAdapter =  PowerMock.createPartialMockAndInvokeDefaultConstructor(

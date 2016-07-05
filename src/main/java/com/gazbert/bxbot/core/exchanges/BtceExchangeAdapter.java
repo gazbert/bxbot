@@ -257,10 +257,10 @@ public final class BtceExchangeAdapter extends AbstractExchangeAdapter implement
             final Map<String, String> params = getRequestParamMap();
             params.put("pair", marketId);
 
-            final String results = sendAuthenticatedRequestToExchange("ActiveOrders", params);
-            LogUtils.log(LOG, Level.DEBUG, () -> "getYourOpenOrders() response: " + results);
+            final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("ActiveOrders", params);
+            LogUtils.log(LOG, Level.DEBUG, () -> "getYourOpenOrders() response: " + response);
 
-            final BtceOpenOrderResponseWrapper myOpenOrders = gson.fromJson(results, BtceOpenOrderResponseWrapper.class);
+            final BtceOpenOrderResponseWrapper myOpenOrders = gson.fromJson(response.getPayload(), BtceOpenOrderResponseWrapper.class);
             final List<OpenOrder> ordersToReturn = new ArrayList<>();
 
             // this sucks!
@@ -324,15 +324,15 @@ public final class BtceExchangeAdapter extends AbstractExchangeAdapter implement
             params.put("amount", new DecimalFormat("#.########").format(quantity));
             params.put("rate", new DecimalFormat("#.########").format(price));
 
-            final String results;
+            final ExchangeHttpResponse response;
             if (orderType == OrderType.BUY) {
                 // buying BTC
                 params.put("type", "buy");
-                results = sendAuthenticatedRequestToExchange("Trade", params);
+                response = sendAuthenticatedRequestToExchange("Trade", params);
             } else if (orderType == OrderType.SELL) {
                 // selling BTC
                 params.put("type", "sell");
-                results = sendAuthenticatedRequestToExchange("Trade", params);
+                response = sendAuthenticatedRequestToExchange("Trade", params);
             } else {
                 final String errorMsg = "Invalid order type: " + orderType
                         + " - Can only be "
@@ -342,9 +342,9 @@ public final class BtceExchangeAdapter extends AbstractExchangeAdapter implement
                 throw new IllegalArgumentException(errorMsg);
             }
 
-            LogUtils.log(LOG, Level.DEBUG, () -> "createOrder() response: " + results);
+            LogUtils.log(LOG, Level.DEBUG, () -> "createOrder() response: " + response);
 
-            final BtceCreateOrderResponseWrapper createOrderResponseWrapper = gson.fromJson(results,
+            final BtceCreateOrderResponseWrapper createOrderResponseWrapper = gson.fromJson(response.getPayload(),
                     BtceCreateOrderResponseWrapper.class);
 
             if (createOrderResponseWrapper.success == 1) {
@@ -383,12 +383,12 @@ public final class BtceExchangeAdapter extends AbstractExchangeAdapter implement
         try {
             final Map<String, String> params = getRequestParamMap();
             params.put("order_id", orderId);
-            final String results = sendAuthenticatedRequestToExchange("CancelOrder", params);
+            final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("CancelOrder", params);
 
             // useful to log diff types of error response in JSON response
-            LogUtils.log(LOG, Level.DEBUG, () -> "cancelOrder() response: " + results);
+            LogUtils.log(LOG, Level.DEBUG, () -> "cancelOrder() response: " + response);
 
-            final BtceCancelledOrderWrapper cancelOrderResponse = gson.fromJson(results, BtceCancelledOrderWrapper.class);
+            final BtceCancelledOrderWrapper cancelOrderResponse = gson.fromJson(response.getPayload(), BtceCancelledOrderWrapper.class);
 
             if (cancelOrderResponse.success == 0) {
                 LOG.error("Failed to cancel order: " + cancelOrderResponse.error);
@@ -426,10 +426,10 @@ public final class BtceExchangeAdapter extends AbstractExchangeAdapter implement
     public BalanceInfo getBalanceInfo() throws TradingApiException, ExchangeTimeoutException {
 
         try {
-            final String results = sendAuthenticatedRequestToExchange("getInfo", null);
-            LogUtils.log(LOG, Level.DEBUG, () -> "getBalanceInfo() response: " + results);
+            final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("getInfo", null);
+            LogUtils.log(LOG, Level.DEBUG, () -> "getBalanceInfo() response: " + response);
 
-            final BtceInfoWrapper info = gson.fromJson(results, BtceInfoWrapper.class);
+            final BtceInfoWrapper info = gson.fromJson(response.getPayload(), BtceInfoWrapper.class);
 
             // adapt
             final HashMap<String, BigDecimal> balancesAvailable = new HashMap<>();
@@ -895,7 +895,7 @@ public final class BtceExchangeAdapter extends AbstractExchangeAdapter implement
      * @throws ExchangeTimeoutException if there is a network issue connecting to exchange.
      * @throws TradingApiException      if anything unexpected happens.
      */
-    private String sendAuthenticatedRequestToExchange(String apiMethod, Map<String, String> params)
+    private ExchangeHttpResponse sendAuthenticatedRequestToExchange(String apiMethod, Map<String, String> params)
             throws TradingApiException, ExchangeTimeoutException {
 
         if (!initializedMACAuthentication) {

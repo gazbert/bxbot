@@ -244,14 +244,14 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
             // note we need to limit amount to 8 decimal places else exchange will barf
             params.put("amount", new DecimalFormat("#.########").format(quantity));
 
-            final String results = sendAuthenticatedRequestToExchange("trade.do", params);
-            LogUtils.log(LOG, Level.DEBUG, () -> "createOrder() response: " + results);
+            final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("trade.do", params);
+            LogUtils.log(LOG, Level.DEBUG, () -> "createOrder() response: " + response);
 
-            final OKCoinTradeResponse createOrderResponse = gson.fromJson(results, OKCoinTradeResponse.class);
+            final OKCoinTradeResponse createOrderResponse = gson.fromJson(response.getPayload(), OKCoinTradeResponse.class);
             if (createOrderResponse.result) {
                 return Long.toString(createOrderResponse.order_id);
             } else {
-                final String errorMsg = "Failed to place order on exchange. Error response: " + results;
+                final String errorMsg = "Failed to place order on exchange. Error response: " + response;
                 LOG.error(errorMsg);
                 throw new TradingApiException(errorMsg);
             }
@@ -272,14 +272,14 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
             params.put("order_id", orderId);
             params.put("symbol", marketId);
 
-            final String results = sendAuthenticatedRequestToExchange("cancel_order.do", params);
-            LogUtils.log(LOG, Level.DEBUG, () -> "cancelOrder() response: " + results);
+            final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("cancel_order.do", params);
+            LogUtils.log(LOG, Level.DEBUG, () -> "cancelOrder() response: " + response);
 
-            final OKCoinCancelOrderResponse cancelOrderResponse = gson.fromJson(results, OKCoinCancelOrderResponse.class);
+            final OKCoinCancelOrderResponse cancelOrderResponse = gson.fromJson(response.getPayload(), OKCoinCancelOrderResponse.class);
             if (cancelOrderResponse.result) {
                 return true;
             } else {
-                final String errorMsg = "Failed to cancel order on exchange. Error response: " + results;
+                final String errorMsg = "Failed to cancel order on exchange. Error response: " + response;
                 LOG.error(errorMsg);
                 return false;
             }
@@ -301,10 +301,10 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
             params.put("symbol", marketId);
             params.put("order_id", "-1"); // -1 means bring back all the orders
 
-            final String results = sendAuthenticatedRequestToExchange("order_info.do", params);
-            LogUtils.log(LOG, Level.DEBUG, () -> "getYourOpenOrders() response: " + results);
+            final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("order_info.do", params);
+            LogUtils.log(LOG, Level.DEBUG, () -> "getYourOpenOrders() response: " + response);
 
-            final OKCoinOrderInfoWrapper orderInfoWrapper = gson.fromJson(results, OKCoinOrderInfoWrapper.class);
+            final OKCoinOrderInfoWrapper orderInfoWrapper = gson.fromJson(response.getPayload(), OKCoinOrderInfoWrapper.class);
             if (orderInfoWrapper.result) {
 
                 // adapt
@@ -339,7 +339,7 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
                 return ordersToReturn;
 
             } else {
-                final String errorMsg = "Failed to get Open Order Info from exchange. Error response: " + results;
+                final String errorMsg = "Failed to get Open Order Info from exchange. Error response: " + response;
                 LOG.error(errorMsg);
                 throw new TradingApiException(errorMsg);
             }
@@ -434,10 +434,10 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
     public BalanceInfo getBalanceInfo() throws TradingApiException, ExchangeTimeoutException {
 
         try {
-            final String results = sendAuthenticatedRequestToExchange("userinfo.do", null);
-            LogUtils.log(LOG, Level.DEBUG, () -> "getBalanceInfo() response: " + results);
+            final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("userinfo.do", null);
+            LogUtils.log(LOG, Level.DEBUG, () -> "getBalanceInfo() response: " + response);
 
-            final OKCoinUserInfoWrapper userInfoWrapper = gson.fromJson(results, OKCoinUserInfoWrapper.class);
+            final OKCoinUserInfoWrapper userInfoWrapper = gson.fromJson(response.getPayload(), OKCoinUserInfoWrapper.class);
             if (userInfoWrapper.result) {
 
                 // adapt
@@ -454,7 +454,7 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
                 return new BalanceInfo(balancesAvailable, balancesOnOrder);
 
             } else {
-                final String errorMsg = "Failed to get Balance Info from exchange. Error response: " + results;
+                final String errorMsg = "Failed to get Balance Info from exchange. Error response: " + response;
                 LOG.error(errorMsg);
                 throw new TradingApiException(errorMsg);
             }
@@ -825,7 +825,7 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
      * @throws ExchangeTimeoutException if there is a network issue connecting to exchange.
      * @throws TradingApiException if anything unexpected happens.
      */
-    private String sendAuthenticatedRequestToExchange(String apiMethod, Map<String, String> params)
+    private ExchangeHttpResponse sendAuthenticatedRequestToExchange(String apiMethod, Map<String, String> params)
             throws ExchangeTimeoutException, TradingApiException {
 
         if (!initializedSecureMessagingLayer) {

@@ -334,11 +334,11 @@ public final class ItBitExchangeAdapter extends  AbstractExchangeAdapter impleme
             // params.put("metadata", "{}");
             // params.put("clientOrderIdentifier", "id_123");
 
-            final ItBitHttpResponse response = sendAuthenticatedRequestToExchange(
+            final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange(
                     "POST", "wallets/" + walletId + "/orders", params);
             LogUtils.log(LOG, Level.DEBUG, () -> "createOrder() response: " + response);
 
-            if (response.statusCode == HttpURLConnection.HTTP_CREATED) {
+            if (response.getStatusCode() == HttpURLConnection.HTTP_CREATED) {
                 final ItBitNewOrderResponse itBitNewOrderResponse = gson.fromJson(response.getPayload(),
                         ItBitNewOrderResponse.class);
                 return itBitNewOrderResponse.id;
@@ -369,11 +369,11 @@ public final class ItBitExchangeAdapter extends  AbstractExchangeAdapter impleme
                 getBalanceInfo();
             }
 
-            final ItBitHttpResponse response = sendAuthenticatedRequestToExchange(
+            final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange(
                     "DELETE", "wallets/" + walletId + "/orders/" + orderId, null);
             LogUtils.log(LOG, Level.DEBUG, () -> "cancelOrder() response: " + response);
 
-            if (response.statusCode == HttpURLConnection.HTTP_ACCEPTED) {
+            if (response.getStatusCode() == HttpURLConnection.HTTP_ACCEPTED) {
                 gson.fromJson(response.getPayload(), ItBitCancelOrderResponse.class);
                 return true;
             } else {
@@ -403,11 +403,11 @@ public final class ItBitExchangeAdapter extends  AbstractExchangeAdapter impleme
             final Map<String, String> params = getRequestParamMap();
             params.put("status", "open"); // we only want open orders
 
-            final ItBitHttpResponse response = sendAuthenticatedRequestToExchange(
+            final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange(
                     "GET", "wallets/" + walletId + "/orders", params);
             LogUtils.log(LOG, Level.DEBUG, () -> "getYourOpenOrders() response: " + response);
 
-            if (response.statusCode == HttpURLConnection.HTTP_OK) {
+            if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
 
                 final ItBitYourOrder[] itBitOpenOrders = gson.fromJson(response.getPayload(), ItBitYourOrder[].class);
 
@@ -536,10 +536,10 @@ public final class ItBitExchangeAdapter extends  AbstractExchangeAdapter impleme
             final Map<String, String> params = getRequestParamMap();
             params.put("userId", userId);
 
-            final ItBitHttpResponse response = sendAuthenticatedRequestToExchange("GET", "wallets", params);
+            final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("GET", "wallets", params);
             LogUtils.log(LOG, Level.DEBUG, () -> "getBalanceInfo() response: " + response);
 
-            if (response.statusCode == HttpURLConnection.HTTP_OK) {
+            if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
 
                 final ItBitWallet[] itBitWallets = gson.fromJson(response.getPayload(), ItBitWallet[].class);
 
@@ -805,38 +805,6 @@ public final class ItBitExchangeAdapter extends  AbstractExchangeAdapter impleme
     // ------------------------------------------------------------------------------------------------
 
     /**
-     * Wrapper class for holding itBit HTTP responses.
-     *
-     * Package private for unit testing ;-o
-     */
-    static class ItBitHttpResponse {
-
-        private int statusCode;
-        private String reasonPhrase;
-        private String payload;
-
-        public ItBitHttpResponse(int statusCode, String reasonPhrase, String payload) {
-            this.statusCode = statusCode;
-            this.reasonPhrase = reasonPhrase;
-            this.payload = payload;
-        }
-
-        public String getPayload() {
-            return payload;
-        }
-
-        @Override
-        public String toString() {
-            return ItBitHttpResponse.class.getSimpleName()
-                    + " ["
-                    + "statusCode=" + statusCode
-                    + ", reasonPhrase=" + reasonPhrase
-                    + ", payload=" + payload
-                    + "]";
-        }
-    }
-
-    /**
      * Makes a public API call to the itBit exchange.
      *
      * @param apiMethod the API method to call.
@@ -874,7 +842,7 @@ public final class ItBitExchangeAdapter extends  AbstractExchangeAdapter impleme
      * @throws ExchangeTimeoutException if there is a network issue connecting to exchange.
      * @throws TradingApiException if anything unexpected happens.
      */
-    private ItBitHttpResponse sendAuthenticatedRequestToExchange(String httpMethod, String apiMethod, Map<String, String> params)
+    private ExchangeHttpResponse sendAuthenticatedRequestToExchange(String httpMethod, String apiMethod, Map<String, String> params)
             throws ExchangeTimeoutException, TradingApiException {
 
         if (!initializedMACAuthentication) {
@@ -1060,7 +1028,7 @@ public final class ItBitExchangeAdapter extends  AbstractExchangeAdapter impleme
             }
             responseInputStream.close();
 
-            return new ItBitHttpResponse(exchangeConnection.getResponseCode(), exchangeConnection.getResponseMessage(),
+            return new ExchangeHttpResponse(exchangeConnection.getResponseCode(), exchangeConnection.getResponseMessage(),
                     exchangeResponse.toString());
 
         } catch (MalformedURLException e) {
@@ -1120,7 +1088,7 @@ public final class ItBitExchangeAdapter extends  AbstractExchangeAdapter impleme
 
                     final String errorMsg = BAD_REQUEST_ERROR_MSG;
                     LOG.error(errorMsg, e);
-                    return new ItBitHttpResponse(exchangeConnection.getResponseCode(),
+                    return new ExchangeHttpResponse(exchangeConnection.getResponseCode(),
                             exchangeConnection.getResponseMessage(), exchangeResponse.toString());
 
                 } else {

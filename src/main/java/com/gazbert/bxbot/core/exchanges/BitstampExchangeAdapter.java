@@ -256,10 +256,10 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
     public List<OpenOrder> getYourOpenOrders(String marketId) throws TradingApiException, ExchangeTimeoutException {
 
         try {
-            final String results = sendAuthenticatedRequestToExchange("open_orders", null);
-            LogUtils.log(LOG, Level.DEBUG, () -> "getYourOpenOrders() response: " + results);
+            final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("open_orders", null);
+            LogUtils.log(LOG, Level.DEBUG, () -> "getYourOpenOrders() response: " + response);
 
-            final BitstampOrderResponse[] myOpenOrders = gson.fromJson(results, BitstampOrderResponse[].class);
+            final BitstampOrderResponse[] myOpenOrders = gson.fromJson(response.getPayload(), BitstampOrderResponse[].class);
 
             // adapt
             final List<OpenOrder> ordersToReturn = new ArrayList<>();
@@ -310,13 +310,13 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
             // note we need to limit amount to 8 decimal places else exchange will barf
             params.put("amount", new DecimalFormat("#.########").format(quantity));
 
-            final String results;
+            final ExchangeHttpResponse response;
             if (orderType == OrderType.BUY) {
                 // buying BTC
-                results = sendAuthenticatedRequestToExchange("buy", params);
+                response = sendAuthenticatedRequestToExchange("buy", params);
             } else if (orderType == OrderType.SELL) {
                 // selling BTC
-                results = sendAuthenticatedRequestToExchange("sell", params);
+                response = sendAuthenticatedRequestToExchange("sell", params);
             } else {
                 final String errorMsg = "Invalid order type: " + orderType
                         + " - Can only be "
@@ -326,12 +326,12 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
                 throw new IllegalArgumentException(errorMsg);
             }
 
-            LogUtils.log(LOG, Level.DEBUG, () -> "createOrder() response: " + results);
+            LogUtils.log(LOG, Level.DEBUG, () -> "createOrder() response: " + response);
 
-            final BitstampOrderResponse createOrderResponse = gson.fromJson(results, BitstampOrderResponse.class);
+            final BitstampOrderResponse createOrderResponse = gson.fromJson(response.getPayload(), BitstampOrderResponse.class);
             final long id = createOrderResponse.id;
             if (id == 0) {
-                final String errorMsg = "Failed to place order on exchange. Error response: " + results;
+                final String errorMsg = "Failed to place order on exchange. Error response: " + response;
                 LOG.error(errorMsg);
                 throw new TradingApiException(errorMsg);
             } else {
@@ -356,14 +356,14 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
             final Map<String, String> params = getRequestParamMap();
             params.put("id", orderId);
 
-            final String results = sendAuthenticatedRequestToExchange("cancel_order", params);
-            LogUtils.log(LOG, Level.DEBUG, () -> "cancelOrder() response: " + results);
+            final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("cancel_order", params);
+            LogUtils.log(LOG, Level.DEBUG, () -> "cancelOrder() response: " + response);
 
             // Returns 'true' if order has been found and canceled.
-            if (results.equalsIgnoreCase("true")) {
+            if (response.getPayload().equalsIgnoreCase("true")) {
                 return true;
             } else {
-                final String errorMsg = "Failed to cancel order on exchange. Error response: " + results;
+                final String errorMsg = "Failed to cancel order on exchange. Error response: " + response;
                 LOG.error(errorMsg);
                 return false;
             }
@@ -398,10 +398,10 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
     public BalanceInfo getBalanceInfo() throws TradingApiException, ExchangeTimeoutException {
 
         try {
-            final String results = sendAuthenticatedRequestToExchange("balance", null);
-            LogUtils.log(LOG, Level.DEBUG, () -> "getBalanceInfo() response: " + results);
+            final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("balance", null);
+            LogUtils.log(LOG, Level.DEBUG, () -> "getBalanceInfo() response: " + response);
 
-            final BitstampBalance balances = gson.fromJson(results, BitstampBalance.class);
+            final BitstampBalance balances = gson.fromJson(response.getPayload(), BitstampBalance.class);
 
             // adapt
             final Map<String, BigDecimal> balancesAvailable = new HashMap<>();
@@ -427,10 +427,10 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
             ExchangeTimeoutException {
 
         try {
-            final String results = sendAuthenticatedRequestToExchange("balance", null);
-            LogUtils.log(LOG, Level.DEBUG, () -> "getPercentageOfBuyOrderTakenForExchangeFee() response: " + results);
+            final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("balance", null);
+            LogUtils.log(LOG, Level.DEBUG, () -> "getPercentageOfBuyOrderTakenForExchangeFee() response: " + response);
 
-            final BitstampBalance balances = gson.fromJson(results, BitstampBalance.class);
+            final BitstampBalance balances = gson.fromJson(response.getPayload(), BitstampBalance.class);
             final BigDecimal fee = balances.fee;
 
             // adapt the % into BigDecimal format
@@ -449,10 +449,10 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
             ExchangeTimeoutException {
 
         try {
-            final String results = sendAuthenticatedRequestToExchange("balance", null);
-            LogUtils.log(LOG, Level.DEBUG, () -> "getPercentageOfSellOrderTakenForExchangeFee() response: " + results);
+            final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("balance", null);
+            LogUtils.log(LOG, Level.DEBUG, () -> "getPercentageOfSellOrderTakenForExchangeFee() response: " + response);
 
-            final BitstampBalance balances = gson.fromJson(results, BitstampBalance.class);
+            final BitstampBalance balances = gson.fromJson(response.getPayload(), BitstampBalance.class);
             final BigDecimal fee = balances.fee;
 
             // adapt the % into BigDecimal format
@@ -649,7 +649,7 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
      * @throws ExchangeTimeoutException if there is a network issue connecting to exchange.
      * @throws TradingApiException if anything unexpected happens.
      */
-    private String sendAuthenticatedRequestToExchange(String apiMethod, Map<String, String> params) throws
+    private ExchangeHttpResponse sendAuthenticatedRequestToExchange(String apiMethod, Map<String, String> params) throws
             ExchangeTimeoutException, TradingApiException {
 
         if (!initializedMACAuthentication) {

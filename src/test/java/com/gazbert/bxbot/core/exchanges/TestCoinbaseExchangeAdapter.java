@@ -112,8 +112,8 @@ public class TestCoinbaseExchangeAdapter {
 
         // Load the canned response from the exchange
         final byte[] encoded = Files.readAllBytes(Paths.get(NEW_BUY_ORDER_JSON_RESPONSE));
-        final CoinbaseExchangeAdapter.CoinbaseHttpResponse exchangeResponse =
-                new CoinbaseExchangeAdapter.CoinbaseHttpResponse(200, "OK", new String(encoded, StandardCharsets.UTF_8));
+        final AbstractExchangeAdapter.ExchangeHttpResponse exchangeResponse =
+                new AbstractExchangeAdapter.ExchangeHttpResponse(200, "OK", new String(encoded, StandardCharsets.UTF_8));
 
         // Mock out param map so we can assert the contents passed to the transport layer are what we expect.
         final Map<String, String> requestParamMap = PowerMock.createMock(Map.class);
@@ -144,8 +144,8 @@ public class TestCoinbaseExchangeAdapter {
 
         // Load the canned response from the exchange
         final byte[] encoded = Files.readAllBytes(Paths.get(NEW_SELL_ORDER_JSON_RESPONSE));
-        final CoinbaseExchangeAdapter.CoinbaseHttpResponse exchangeResponse =
-                new CoinbaseExchangeAdapter.CoinbaseHttpResponse(200, "OK", new String(encoded, StandardCharsets.UTF_8));
+        final AbstractExchangeAdapter.ExchangeHttpResponse exchangeResponse =
+                new AbstractExchangeAdapter.ExchangeHttpResponse(200, "OK", new String(encoded, StandardCharsets.UTF_8));
 
         // Mock out param map so we can assert the contents passed to the transport layer are what we expect.
         final Map<String, String> requestParamMap = PowerMock.createMock(Map.class);
@@ -212,8 +212,8 @@ public class TestCoinbaseExchangeAdapter {
 
         // Load the canned response from the exchange
         final byte[] encoded = Files.readAllBytes(Paths.get(CANCEL_ORDER_JSON_RESPONSE));
-        final CoinbaseExchangeAdapter.CoinbaseHttpResponse exchangeResponse =
-                new CoinbaseExchangeAdapter.CoinbaseHttpResponse(200, "OK", new String(encoded, StandardCharsets.UTF_8));
+        final AbstractExchangeAdapter.ExchangeHttpResponse exchangeResponse =
+                new AbstractExchangeAdapter.ExchangeHttpResponse(200, "OK", new String(encoded, StandardCharsets.UTF_8));
 
         // Partial mock so we do not send stuff down the wire
         final CoinbaseExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
@@ -276,8 +276,8 @@ public class TestCoinbaseExchangeAdapter {
 
         // Load the canned response from the exchange
         final byte[] encoded = Files.readAllBytes(Paths.get(ORDERS_JSON_RESPONSE));
-        final CoinbaseExchangeAdapter.CoinbaseHttpResponse exchangeResponse =
-                new CoinbaseExchangeAdapter.CoinbaseHttpResponse(200, "OK", new String(encoded, StandardCharsets.UTF_8));
+        final AbstractExchangeAdapter.ExchangeHttpResponse exchangeResponse =
+                new AbstractExchangeAdapter.ExchangeHttpResponse(200, "OK", new String(encoded, StandardCharsets.UTF_8));
 
         // Partial mock so we do not send stuff down the wire
         final CoinbaseExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
@@ -488,8 +488,8 @@ public class TestCoinbaseExchangeAdapter {
 
         // Load the canned response from the exchange
         final byte[] encoded = Files.readAllBytes(Paths.get(ACCOUNTS_JSON_RESPONSE));
-        final CoinbaseExchangeAdapter.CoinbaseHttpResponse exchangeResponse =
-                new CoinbaseExchangeAdapter.CoinbaseHttpResponse(200, "OK", new String(encoded, StandardCharsets.UTF_8));
+        final AbstractExchangeAdapter.ExchangeHttpResponse exchangeResponse =
+                new AbstractExchangeAdapter.ExchangeHttpResponse(200, "OK", new String(encoded, StandardCharsets.UTF_8));
 
         // Partial mock so we do not send stuff down the wire
         final CoinbaseExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(

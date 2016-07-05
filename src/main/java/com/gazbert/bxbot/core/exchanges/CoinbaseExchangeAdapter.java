@@ -288,10 +288,10 @@ public final class CoinbaseExchangeAdapter extends AbstractExchangeAdapter imple
             // note we need to limit size to 8 decimal places else exchange will barf
             params.put("size", new DecimalFormat("#.########").format(quantity));
 
-            final CoinbaseHttpResponse response = sendAuthenticatedRequestToExchange("POST", "orders", params);
+            final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("POST", "orders", params);
             LogUtils.log(LOG, Level.DEBUG, () -> "createOrder() response: " + response);
 
-            if (response.statusCode == HttpURLConnection.HTTP_OK) {
+            if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
 
                 final CoinbaseOrder createOrderResponse = gson.fromJson(response.getPayload(), CoinbaseOrder.class);
                 if (createOrderResponse != null && (createOrderResponse.id != null && !createOrderResponse.id.isEmpty())) {
@@ -324,10 +324,10 @@ public final class CoinbaseExchangeAdapter extends AbstractExchangeAdapter imple
 
         try {
 
-            final CoinbaseHttpResponse response = sendAuthenticatedRequestToExchange("DELETE", "orders/" + orderId, null);
+            final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("DELETE", "orders/" + orderId, null);
             LogUtils.log(LOG, Level.DEBUG, () -> "cancelOrder() response: " + response);
 
-            if (response.statusCode == HttpURLConnection.HTTP_OK) {
+            if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
 
                 // eek! Wish they stuck with a proper JSON response with maybe cancelTime, orderId etc in it...
                 if (response.getPayload().equalsIgnoreCase("OK")) {
@@ -358,10 +358,10 @@ public final class CoinbaseExchangeAdapter extends AbstractExchangeAdapter imple
 
             // we use default request no-param call - only open or un-settled orders are returned.
             // As soon as an order is no longer open and settled, it will no longer appear in the default request.
-            final CoinbaseHttpResponse response = sendAuthenticatedRequestToExchange("GET", "orders", null);
+            final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("GET", "orders", null);
             LogUtils.log(LOG, Level.DEBUG, () -> "getYourOpenOrders() response: " + response);
 
-            if (response.statusCode == HttpURLConnection.HTTP_OK) {
+            if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
 
                 final CoinbaseOrder[] coinbaseOpenOrders = gson.fromJson(response.getPayload(), CoinbaseOrder[].class);
 
@@ -466,10 +466,10 @@ public final class CoinbaseExchangeAdapter extends AbstractExchangeAdapter imple
     public BalanceInfo getBalanceInfo() throws TradingApiException, ExchangeTimeoutException {
 
         try {
-            final CoinbaseHttpResponse response = sendAuthenticatedRequestToExchange("GET", "accounts", null);
+            final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("GET", "accounts", null);
             LogUtils.log(LOG, Level.DEBUG, () -> "getBalanceInfo() response: " + response);
 
-            if (response.statusCode == HttpURLConnection.HTTP_OK) {
+            if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
 
                 final CoinbaseAccount[] coinbaseAccounts = gson.fromJson(response.getPayload(), CoinbaseAccount[].class);
 
@@ -675,38 +675,6 @@ public final class CoinbaseExchangeAdapter extends AbstractExchangeAdapter imple
     // ------------------------------------------------------------------------------------------------
 
     /**
-     * Wrapper class for holding Coinbase HTTP responses.
-     *
-     * Package private for unit testing ;-o
-     */
-    static class CoinbaseHttpResponse {
-
-        private int statusCode;
-        private String reasonPhrase;
-        private String payload;
-
-        public CoinbaseHttpResponse(int statusCode, String reasonPhrase, String payload) {
-            this.statusCode = statusCode;
-            this.reasonPhrase = reasonPhrase;
-            this.payload = payload;
-        }
-
-        public String getPayload() {
-            return payload;
-        }
-
-        @Override
-        public String toString() {
-            return CoinbaseHttpResponse.class.getSimpleName()
-                    + " ["
-                    + "statusCode=" + statusCode
-                    + ", reasonPhrase=" + reasonPhrase
-                    + ", payload=" + payload
-                    + "]";
-        }
-    }
-
-    /**
      * Makes a public API call to the Coinbase exchange.
      *
      * @param apiMethod the API method to call.
@@ -788,7 +756,7 @@ public final class CoinbaseExchangeAdapter extends AbstractExchangeAdapter imple
      * @throws ExchangeTimeoutException if there is a network issue connecting to exchange.
      * @throws TradingApiException if anything unexpected happens.
      */
-    private CoinbaseHttpResponse sendAuthenticatedRequestToExchange(
+    private ExchangeHttpResponse sendAuthenticatedRequestToExchange(
             String httpMethod, String apiMethod, Map<String, String> params) throws
             ExchangeTimeoutException, TradingApiException {
 
@@ -924,7 +892,7 @@ public final class CoinbaseExchangeAdapter extends AbstractExchangeAdapter imple
             }
             responseInputStream.close();
 
-            return new CoinbaseHttpResponse(exchangeConnection.getResponseCode(), exchangeConnection.getResponseMessage(),
+            return new ExchangeHttpResponse(exchangeConnection.getResponseCode(), exchangeConnection.getResponseMessage(),
                     exchangeResponse.toString());
 
         } catch (MalformedURLException e) {
