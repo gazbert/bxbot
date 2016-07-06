@@ -177,7 +177,7 @@ public class ExampleScalpingStrategy implements TradingStrategy {
      * </p>
      *
      * <p>
-     * It is called by the Trading Engine during each trade cycle, e.g. every 60s. The trace cycle is configured in
+     * It is called by the Trading Engine during each trade cycle, e.g. every 60s. The trade cycle is configured in
      * the .config/engine.xml file.
      * </p>
      *

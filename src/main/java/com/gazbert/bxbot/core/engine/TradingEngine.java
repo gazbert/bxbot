@@ -481,6 +481,11 @@ final public class TradingEngine {
 
         tradingApi = ConfigurableComponentFactory.createComponent(exchangeConfig.getAdapter());
         LogUtils.log(LOG, Level.INFO, () ->"Trading Engine will use Exchange Adapter for: " + tradingApi.getImplName());
+
+
+
+        // TODO build up new exchange config wrapper and pass to adapter impl init() method
+
     }
 
     /*
