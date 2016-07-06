@@ -42,6 +42,8 @@ import com.gazbert.bxbot.core.config.strategy.generated.ConfigurationType;
 import com.gazbert.bxbot.core.config.strategy.generated.StrategyType;
 import com.gazbert.bxbot.core.config.strategy.generated.TradingStrategiesType;
 import com.gazbert.bxbot.core.mail.EmailAlerter;
+import com.gazbert.bxbot.core.util.LogUtils;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import java.io.PrintWriter;
@@ -217,11 +219,9 @@ final public class TradingEngine {
         // store this so we can shutdown the engine later
         engineThread = Thread.currentThread();
 
-        if (LOG.isInfoEnabled()) {
-            LOG.info("Starting Trading Engine...");
-        }
+        LogUtils.log(LOG, Level.INFO, () -> "Starting Trading Engine...");
         runMainControlLoop();
-    }
+}
 
     /*
      * The main control loop.
@@ -234,10 +234,8 @@ final public class TradingEngine {
 
             try {
 
-                if (LOG.isInfoEnabled()) {
-                    LOG.info("");
-                    LOG.info("*** Starting next trade cycle... ***");
-                }
+                LogUtils.log(LOG, Level.INFO, () -> "");
+                LogUtils.log(LOG, Level.INFO, () -> "*** Starting next trade cycle... ***");
 
                 // Emergency Stop Check MUST run at start of every trade cycle.
                 if (isEmergencyStopLimitBreached()) {
@@ -246,17 +244,12 @@ final public class TradingEngine {
 
                 // Execute the Trading Strategies
                 for (final TradingStrategy tradingStrategy : tradingStrategiesToExecute) {
-
-                    if (LOG.isInfoEnabled()) {
-                        LOG.info("Executing Trading Strategy ---> " + tradingStrategy.getClass().getSimpleName());
-                    }
+                    LogUtils.log(LOG, Level.INFO, () -> "Executing Trading Strategy ---> " + tradingStrategy.getClass().getSimpleName());
                     tradingStrategy.execute();
                 }
 
                 // Sleep until next trade cycle...
-                if (LOG.isInfoEnabled()) {
-                    LOG.info("*** Sleeping " + tradeExecutionInterval + "s til next trade cycle... ***");
-                }
+                LogUtils.log(LOG, Level.INFO, () -> "*** Sleeping " + tradeExecutionInterval + "s til next trade cycle... ***");
 
                 try {
                     Thread.sleep(tradeExecutionInterval * 1000);
@@ -340,10 +333,9 @@ final public class TradingEngine {
      */
     public void shutdown() {
 
-        if (LOG.isInfoEnabled()) {
-            LOG.info("Shutdown request received!");
-            LOG.info("Engine originally started in thread: " + engineThread);
-        }
+        LogUtils.log(LOG, Level.INFO, () -> "Shutdown request received!");
+        LogUtils.log(LOG, Level.INFO, () -> "Engine originally started in thread: " + engineThread);
+
         keepAlive = false;
         engineThread.interrupt(); // poke it in case bot is sleeping
     }
@@ -352,10 +344,7 @@ final public class TradingEngine {
      * Returns true if the Trading Engine is running, false otherwise.
      */
     public synchronized boolean isRunning() {
-
-        if (LOG.isInfoEnabled()) {
-            LOG.info("isRunning: " + isRunning);
-        }
+        LogUtils.log(LOG, Level.INFO, () -> "isRunning: " + isRunning);
         return isRunning;
     }
 
@@ -373,9 +362,7 @@ final public class TradingEngine {
 
         boolean isEmergencyStopLimitBreached = true;
 
-        if (LOG.isInfoEnabled()) {
-            LOG.info("Performing Emergency Stop check...");
-        }
+        LogUtils.log(LOG, Level.INFO, () -> "Performing Emergency Stop check...");
 
         BalanceInfo balanceInfo;
         try {
@@ -398,14 +385,13 @@ final public class TradingEngine {
             LOG.error(errorMsg);
             throw new IllegalStateException(errorMsg);
         } else {
-            if (LOG.isInfoEnabled()) {
-                LOG.info("Emergency Stop Currency balance available on exchange is ["
+
+            LogUtils.log(LOG, Level.INFO, () -> "Emergency Stop Currency balance available on exchange is ["
                         + new DecimalFormat("#.########").format(currentBalance) + "] "
                         + emergencyStopCurrency);
 
-                LOG.info("Balance that will stop ALL trading across ALL markets is ["
+            LogUtils.log(LOG, Level.INFO, () -> "Balance that will stop ALL trading across ALL markets is ["
                         + new DecimalFormat("#.########").format(emergencyStopBalance) + "] " + emergencyStopCurrency);
-            }
 
             if (currentBalance.compareTo(emergencyStopBalance) < 0) {
                 final String balanceBlownErrorMsg =
@@ -418,10 +404,9 @@ final public class TradingEngine {
                 emailAlerter.sendMessage(CRITICAL_EMAIL_ALERT_SUBJECT,
                         buildCriticalEmailAlertMsgContent(balanceBlownErrorMsg, null));
             } else {
-                if (LOG.isInfoEnabled()) {
-                    LOG.info("Emergency Stop check PASSED!");
-                    isEmergencyStopLimitBreached = false;
-                }
+
+                isEmergencyStopLimitBreached = false;
+                LogUtils.log(LOG, Level.INFO, () -> "Emergency Stop check PASSED!");
             }
         }
         return isEmergencyStopLimitBreached;
@@ -495,10 +480,7 @@ final public class TradingEngine {
                 EXCHANGE_CONFIG_XML_FILENAME, EXCHANGE_CONFIG_XSD_FILENAME);
 
         tradingApi = ConfigurableComponentFactory.createComponent(exchangeConfig.getAdapter());
-
-        if (LOG.isInfoEnabled()) {
-            LOG.info("Trading Engine will use Exchange Adapter for: " + tradingApi.getImplName());
-        }
+        LogUtils.log(LOG, Level.INFO, () ->"Trading Engine will use Exchange Adapter for: " + tradingApi.getImplName());
     }
 
     /*
@@ -511,18 +493,13 @@ final public class TradingEngine {
                 ENGINE_CONFIG_XML_FILENAME, ENGINE_CONFIG_XSD_FILENAME);
 
         tradeExecutionInterval = engineConfig.getTradeCycleInterval();
-        if (LOG.isInfoEnabled()) {
-            LOG.info("Trade Execution Cycle Interval in secs: " + tradeExecutionInterval);
-        }
+        LogUtils.log(LOG, Level.INFO, () -> "Trade Execution Cycle Interval in secs: " + tradeExecutionInterval);
+
         emergencyStopCurrency = engineConfig.getEmergencyStopCurrency();
-        if (LOG.isInfoEnabled()) {
-            LOG.info("Emergency Stop Currency is: " + emergencyStopCurrency);
-        }
+        LogUtils.log(LOG, Level.INFO, () -> "Emergency Stop Currency is: " + emergencyStopCurrency);
 
         emergencyStopBalance = engineConfig.getEmergencyStopBalance();
-        if (LOG.isInfoEnabled()) {
-            LOG.info("Emergency Stop Balance is: " + emergencyStopBalance);
-        }
+        LogUtils.log(LOG, Level.INFO, () -> "Emergency Stop Balance is: " + emergencyStopBalance);
     }
 
     /*
@@ -536,10 +513,7 @@ final public class TradingEngine {
         // Load em all up
         for (final StrategyType strategy : strategies) {
             strategyDescriptions.put(strategy.getId(), strategy);
-
-            if (LOG.isInfoEnabled()) {
-                LOG.info("Registered Trading Strategy with Trading Engine - ID: " + strategy.getId());
-            }
+            LogUtils.log(LOG, Level.INFO, () -> "Registered Trading Strategy with Trading Engine - ID: " + strategy.getId());
         }
     }
 
@@ -553,9 +527,7 @@ final public class TradingEngine {
                 MARKETS_CONFIG_XML_FILENAME, MARKETS_CONFIG_XSD_FILENAME);
         final List<MarketType> markets = marketConfiguration.getMarkets();
 
-        if (LOG.isInfoEnabled()) {
-            LOG.info("Processing Markets from config...");
-        }
+        LogUtils.log(LOG, Level.INFO, () -> "Processing Markets from config...");
 
         // used only as crude mechanism for checking for duplicate Markets
         final Set<Market> loadedMarkets = new HashSet<>();
@@ -563,34 +535,22 @@ final public class TradingEngine {
         // Load em up and create the Strategies
         for (final MarketType marketType : markets) {
             final String marketName = marketType.getLabel();
-            if (LOG.isInfoEnabled()) {
-                LOG.info("Market Name: " + marketName);
-            }
+            LogUtils.log(LOG, Level.INFO, () -> "Market Name: " + marketName);
 
             final String marketId = marketType.getId();
-            if (LOG.isInfoEnabled()) {
-                LOG.info("Market Id: " + marketId);
-            }
+            LogUtils.log(LOG, Level.INFO, () -> "Market Id: " + marketId);
 
             final String baseCurrency = marketType.getBaseCurrency();
-            if (LOG.isInfoEnabled()) {
-                LOG.info("Market Base Currency code: " + baseCurrency);
-            }
+            LogUtils.log(LOG, Level.INFO, () -> "Market Base Currency code: " + baseCurrency);
 
             final String counterCurrency = marketType.getCounterCurrency();
-            if (LOG.isInfoEnabled()) {
-                LOG.info("Market Counter Currency code: " + counterCurrency);
-            }
+            LogUtils.log(LOG, Level.INFO, () -> "Market Counter Currency code: " + counterCurrency);
 
             final boolean isMarketEnabled = marketType.isEnabled();
-            if (LOG.isInfoEnabled()) {
-                LOG.info("Is Market Enabled: " + isMarketEnabled);
-            }
+            LogUtils.log(LOG, Level.INFO, () -> "Is Market Enabled: " + isMarketEnabled);
 
             if (!isMarketEnabled) {
-                if (LOG.isInfoEnabled()) {
-                    LOG.info(marketName + " market is NOT enabled for trading - skipping to next market...");
-                }
+                LogUtils.log(LOG, Level.INFO, () -> marketName + " market is NOT enabled for trading - skipping to next market...");
                 continue;
             }
 
@@ -605,9 +565,7 @@ final public class TradingEngine {
 
             // Get the strategy to use for this Market
             final String strategyToUse = marketType.getTradingStrategy();
-            if (LOG.isInfoEnabled()) {
-                LOG.info("Market Trading Strategy Id: " + strategyToUse);
-            }
+            LogUtils.log(LOG, Level.INFO, () -> "Market Trading Strategy Id: " + strategyToUse);
 
             if (strategyDescriptions.containsKey(strategyToUse)) {
                 final StrategyType tradingStrategy = strategyDescriptions.get(strategyToUse);
@@ -622,14 +580,10 @@ final public class TradingEngine {
                         strategyConfig.addConfigItem(configItem.getName(), configItem.getValue());
                     }
                 } else {
-                    if (LOG.isInfoEnabled()) {
-                        LOG.info("No (optional) configuration has been set for Trading Strategy: " + strategyToUse);
-                    }
+                    LogUtils.log(LOG, Level.INFO, () -> "No (optional) configuration has been set for Trading Strategy: " + strategyToUse);
                 }
 
-                if (LOG.isInfoEnabled()) {
-                    LOG.info("StrategyConfig (optional): " + strategyConfig);
-                }
+                LogUtils.log(LOG, Level.INFO, () -> "StrategyConfig (optional): " + strategyConfig);
 
                 /*
                  * Load the Trading Strategy impl, instantiate it, set its config, and store in the cached
@@ -638,10 +592,8 @@ final public class TradingEngine {
                 final TradingStrategy strategyImpl = ConfigurableComponentFactory.createComponent(tradingStrategyClassname);
                 strategyImpl.init(tradingApi, market, strategyConfig);
 
-                if (LOG.isInfoEnabled()) {
-                    LOG.info("Initialized trading strategy successfully. Name: [" + tradingStrategy.getLabel()
+                LogUtils.log(LOG, Level.INFO, () -> "Initialized trading strategy successfully. Name: [" + tradingStrategy.getLabel()
                             + "] Class: " + tradingStrategy.getClassName());
-                }
 
                 tradingStrategiesToExecute.add(strategyImpl);
             } else {
@@ -655,8 +607,6 @@ final public class TradingEngine {
             }
         }
 
-        if (LOG.isInfoEnabled()) {
-            LOG.info("Loaded and set Market configuration successfully!");
-        }
+        LogUtils.log(LOG, Level.INFO, () -> "Loaded and set Market configuration successfully!");
     }
 }

@@ -23,6 +23,8 @@
 
 package com.gazbert.bxbot.core.config;
 
+import com.gazbert.bxbot.core.util.LogUtils;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 /*
@@ -32,7 +34,6 @@ import org.apache.log4j.Logger;
 public abstract class ConfigurableComponentFactory {
     private static final Logger LOG = Logger.getLogger(ConfigurableComponentFactory.class);
 
-    // lockdown
     private ConfigurableComponentFactory() {
     }
 
@@ -43,10 +44,7 @@ public abstract class ConfigurableComponentFactory {
         try {
             final Class componentClass = Class.forName(componentClassName);
             final Object rawComponentObject = componentClass.newInstance();
-
-            if (LOG.isInfoEnabled()) {
-                LOG.info("Created successfully the Component class for: " + componentClassName);
-            }
+            LogUtils.log(LOG, Level.INFO, () -> "Created successfully the Component class for: " + componentClassName);
 
             // should be one of ours
             return (T) rawComponentObject;

@@ -26,6 +26,8 @@ package com.gazbert.bxbot.core.mail;
 import com.gazbert.bxbot.core.config.ConfigurationManager;
 import com.gazbert.bxbot.core.config.emailalerts.generated.EmailAlertsType;
 import com.gazbert.bxbot.core.config.emailalerts.generated.SmtpConfigType;
+import com.gazbert.bxbot.core.util.LogUtils;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import javax.mail.Authenticator;
@@ -124,9 +126,7 @@ public final class EmailAlerter {
                 message.setSubject(subject);
                 message.setText(msgContent);
 
-                if (LOG.isInfoEnabled()) {
-                    LOG.info("About to send following Email Alert with message content: " + msgContent);
-                }
+                LogUtils.log(LOG, Level.INFO, () -> "About to send following Email Alert with message content: " + msgContent);
                 Transport.send(message);
 
             } catch (MessagingException e) {
@@ -152,9 +152,7 @@ public final class EmailAlerter {
             final boolean emailAlertsEnabled = emailAlertsType.isEnabled();
             if (emailAlertsEnabled) {
 
-                if (LOG.isInfoEnabled()) {
-                    LOG.info("Email Alert for emergency bot shutdown is enabled. Loading SMTP config...");
-                }
+                LogUtils.log(LOG, Level.INFO, () -> "Email Alert for emergency bot shutdown is enabled. Loading SMTP config...");
 
                 final SmtpConfigType smtpConfigType = emailAlertsType.getSmtpConfig();
                 if (smtpConfigType == null) {
@@ -164,35 +162,23 @@ public final class EmailAlerter {
                 }
 
                 final String smtpHost = smtpConfigType.getSmtpHost();
-                if (LOG.isInfoEnabled()) {
-                    LOG.info("SMTP host: " + smtpHost);
-                }
+                LogUtils.log(LOG, Level.INFO, () -> "SMTP host: " + smtpHost);
 
                 final int smtpTlsPort = smtpConfigType.getSmtpTlsPort();
-                if (LOG.isInfoEnabled()) {
-                    LOG.info("SMTP TLS Port: " + smtpTlsPort);
-                }
+                LogUtils.log(LOG, Level.INFO, () -> "SMTP TLS Port: " + smtpTlsPort);
 
                 final String accountUsername = smtpConfigType.getAccountUsername();
-                if (LOG.isInfoEnabled()) {
-                    LOG.info("Account username: " + accountUsername);
-                }
+                LogUtils.log(LOG, Level.INFO, () -> "Account username: " + accountUsername);
 
                 final String accountPassword = smtpConfigType.getAccountPassword();
                 /* uncomment below for green zone testing only */
-//                if (LOG.isInfoEnabled()) {
-//                    LOG.info("Account password: " + accountPassword);
-//                }
+//                    LogUtils.log(LOG, Level.INFO, () -> "Account password: " + accountPassword);
 
                 final String fromAddress = smtpConfigType.getFromAddr();
-                if (LOG.isInfoEnabled()) {
-                    LOG.info("From address: " + fromAddress);
-                }
+                LogUtils.log(LOG, Level.INFO, () -> "From address: " + fromAddress);
 
                 final String toAddress = smtpConfigType.getToAddr();
-                if (LOG.isInfoEnabled()) {
-                    LOG.info("To address: " + toAddress);
-                }
+                LogUtils.log(LOG, Level.INFO, () -> "To address: " + toAddress);
 
                 smtpConfig = new SmtpConfig(smtpHost, smtpTlsPort, accountUsername, accountPassword, fromAddress, toAddress);
                 sendEmailAlertsEnabled = true;

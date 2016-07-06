@@ -23,10 +23,19 @@
 
 package com.gazbert.bxbot.core.strategies;
 
-import com.gazbert.bxbot.core.api.trading.*;
 import com.gazbert.bxbot.core.api.strategy.StrategyConfig;
 import com.gazbert.bxbot.core.api.strategy.StrategyException;
 import com.gazbert.bxbot.core.api.strategy.TradingStrategy;
+import com.gazbert.bxbot.core.api.trading.ExchangeTimeoutException;
+import com.gazbert.bxbot.core.api.trading.Market;
+import com.gazbert.bxbot.core.api.trading.MarketOrder;
+import com.gazbert.bxbot.core.api.trading.MarketOrderBook;
+import com.gazbert.bxbot.core.api.trading.OpenOrder;
+import com.gazbert.bxbot.core.api.trading.OrderType;
+import com.gazbert.bxbot.core.api.trading.TradingApi;
+import com.gazbert.bxbot.core.api.trading.TradingApiException;
+import com.gazbert.bxbot.core.util.LogUtils;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import java.math.BigDecimal;
@@ -142,7 +151,7 @@ public class ExampleScalpingStrategy implements TradingStrategy {
 
     /**
      * Initialises the Trading Strategy.
-     * Called once by the Trading Engine when the bot starts up; a bit like a servlet init() method.
+     * Called once by the Trading Engine when the bot starts up; it's a bit like a servlet init() method.
      *
      * @param tradingApi the Trading API. Use this to make trades and stuff.
      * @param market     the market for this strategy. This is the market the strategy is currently running on - you wire
@@ -153,17 +162,13 @@ public class ExampleScalpingStrategy implements TradingStrategy {
     @Override
     public void init(TradingApi tradingApi, Market market, StrategyConfig config) {
 
-        if (LOG.isInfoEnabled()) {
-            LOG.info("Initialising Trading Strategy...");
-        }
+        LogUtils.log(LOG, Level.INFO, () -> "Initialising Trading Strategy...");
 
         this.tradingApi = tradingApi;
         this.market = market;
         getConfigForStrategy(config);
 
-        if (LOG.isInfoEnabled()) {
-            LOG.info("Trading Strategy initialised successfully!");
-        }
+        LogUtils.log(LOG, Level.INFO, () -> "Trading Strategy initialised successfully!");
     }
 
     /**
@@ -182,22 +187,18 @@ public class ExampleScalpingStrategy implements TradingStrategy {
     @Override
     public void execute() throws StrategyException {
 
-        if (LOG.isInfoEnabled()) {
-            LOG.info(market.getName() + " Checking order status...");
-        }
+        LogUtils.log(LOG, Level.INFO, () -> market.getName() + " Checking order status...");
 
         try {
             // Grab the latest order book for the market.
             final MarketOrderBook orderBook = tradingApi.getMarketOrders(market.getId());
 
-            // Cryptsy exchange used to return nothing sometimes! So we need to be defensive here to protect from NPEs
             final List<MarketOrder> buyOrders = orderBook.getBuyOrders();
             if (buyOrders.size() == 0) {
                 LOG.warn("Exchange returned empty Buy Orders. Ignoring this trade window. OrderBook: " + orderBook);
                 return;
             }
 
-            // Cryptsy exchange used to return nothing sometimes! So we need to be defensive here to protect from NPEs
             final List<MarketOrder> sellOrders = orderBook.getSellOrders();
             if (sellOrders.size() == 0) {
                 LOG.warn("Exchange returned empty Sell Orders. Ignoring this trade window. OrderBook: " + orderBook);
@@ -208,26 +209,23 @@ public class ExampleScalpingStrategy implements TradingStrategy {
             final BigDecimal currentBidPrice = buyOrders.get(0).getPrice();
             final BigDecimal currentAskPrice = sellOrders.get(0).getPrice();
 
-            if (LOG.isInfoEnabled()) {
-                LOG.info(market.getName() + " Current BID price=" + new DecimalFormat("#.########").format(currentBidPrice));
-                LOG.info(market.getName() + " Current ASK price=" + new DecimalFormat("#.########").format(currentAskPrice));
-            }
+            LogUtils.log(LOG, Level.INFO, () -> market.getName() + " Current BID price=" +
+                    new DecimalFormat("#.########").format(currentBidPrice));
+            LogUtils.log(LOG, Level.INFO, () -> market.getName() + " Current ASK price=" +
+                    new DecimalFormat("#.########").format(currentAskPrice));
 
             /*
              * Is this the first time the Strategy has been called? If yes, we initialise the OrderState so we can keep
              * track of orders during later trace cycles.
              */
             if (lastOrder == null) {
-                if (LOG.isInfoEnabled()) {
-                    LOG.info(market.getName() + " First time Strategy has been called - creating new OrderState object.");
-                }
+                LogUtils.log(LOG, Level.INFO, () -> market.getName() +
+                        " First time Strategy has been called - creating new OrderState object.");
                 lastOrder = new OrderState();
             }
 
             // Always handy to log what the last order was during each trace cycle.
-            if (LOG.isInfoEnabled()) {
-                LOG.info(market.getName() + " Last Order was: " + lastOrder);
-            }
+            LogUtils.log(LOG, Level.INFO, () -> market.getName() + " Last Order was: " + lastOrder);
 
             /*
              * Execute the appropriate algorithm based on the last order type.
@@ -244,7 +242,7 @@ public class ExampleScalpingStrategy implements TradingStrategy {
 
         } catch (ExchangeTimeoutException e) {
 
-            // Your timeout handling code could got here.
+            // Your timeout handling code could go here.
             // We are just going to log it and swallow it, and wait for next trade cycle.
             LOG.error(market.getName() + " Failed to get market orders because Exchange threw timeout exception. " +
                     "Waiting until next trade cycle.", e);
@@ -269,26 +267,20 @@ public class ExampleScalpingStrategy implements TradingStrategy {
      */
     private void executeAlgoForWhenLastOrderWasNone(BigDecimal currentBidPrice) throws StrategyException {
 
-        if (LOG.isInfoEnabled()) {
-            LOG.info(market.getName() + " OrderType is NONE - placing new BUY order at ["
+        LogUtils.log(LOG, Level.INFO, () -> market.getName() + " OrderType is NONE - placing new BUY order at ["
                     + new DecimalFormat("#.########").format(currentBidPrice) + "]");
-        }
 
         try {
 
             // Calculate the amount of altcoin to buy for given amount of BTC.
-            BigDecimal amountOfAltcoinToBuyForGivenBtc = getAmountOfAltcoinToBuyForGivenBtcAmount(btcBuyOrderAmount);
-
-            if (LOG.isInfoEnabled()) {
-                LOG.info(market.getName() + " Sending initial BUY order to exchange --->");
-            }
+            final BigDecimal amountOfAltcoinToBuyForGivenBtc = getAmountOfAltcoinToBuyForGivenBtcAmount(btcBuyOrderAmount);
 
             // Send the order to the exchange
+            LogUtils.log(LOG, Level.INFO, () -> market.getName() + " Sending initial BUY order to exchange --->");
+
             lastOrder.id = tradingApi.createOrder(market.getId(), OrderType.BUY, amountOfAltcoinToBuyForGivenBtc, currentBidPrice);
 
-            if (LOG.isInfoEnabled()) {
-                LOG.info(market.getName() + " Initial BUY Order sent successfully. ID: " + lastOrder.id);
-            }
+            LogUtils.log(LOG, Level.INFO, () -> market.getName() + " Initial BUY Order sent successfully. ID: " + lastOrder.id);
 
             // update last order details
             lastOrder.price = currentBidPrice;
@@ -297,7 +289,7 @@ public class ExampleScalpingStrategy implements TradingStrategy {
 
         } catch (ExchangeTimeoutException e) {
 
-            // Your timeout handling code could got here, e.g. you might want to check if the order actually
+            // Your timeout handling code could go here, e.g. you might want to check if the order actually
             // made it to the exchange? And if not, resend it...
             // We are just going to log it and swallow it, and wait for next trade cycle.
             LOG.error(market.getName() + " Initial order to BUY altcoin failed because Exchange threw timeout exception. " +
@@ -329,7 +321,7 @@ public class ExampleScalpingStrategy implements TradingStrategy {
 
         try {
 
-            // Fetch our current open orders and see if the buy order is still outstanding on the exchange
+            // Fetch our current open orders and see if the buy order is still outstanding/open on the exchange
             final List<OpenOrder> myOrders = tradingApi.getYourOpenOrders(market.getId());
             boolean lastOrderFound = false;
             for (final OpenOrder myOrder : myOrders) {
@@ -339,90 +331,73 @@ public class ExampleScalpingStrategy implements TradingStrategy {
                 }
             }
 
-            // if the order is not there, it must have all filled.
+            // If the order is not there, it must have all filled.
             if (!lastOrderFound) {
-                if (LOG.isInfoEnabled()) {
-                    LOG.info(market.getName() + " ^^^ Yay!!! Last BUY Order Id [" + lastOrder.id + "] filled at [" + lastOrder.price + "]");
-                }
+
+                LogUtils.log(LOG, Level.INFO, () -> market.getName() +
+                        " ^^^ Yay!!! Last BUY Order Id [" + lastOrder.id + "] filled at [" + lastOrder.price + "]");
 
                 /*
                  * The last buy order was filled, so lets see if we can send a new sell order...
                  *
                  * IMPORTANT - new sell order ASK price must be > (last order price + exchange fees) because:
                  *
-                 * 1. if we put sell amount in at same amount as previous buy and exchange barfs because we don't have
-                 *    enough to cover transaction fee! Results in stuck SELL order.
-                 * 2. we could be selling at a loss!
+                 * 1. if we put sell amount in as same amount as previous buy, the exchange barfs because we don't have
+                 *    enough units to cover the transaction fee.
+                 * 2. we could end up selling at a loss.
                  *
-                 * For this example code, we are just going to add 1% on top of original bid price (last order)
-                 * and also cover the exchanges fees. Your algo will have other ideas how much profit to make ;-)
+                 * For this example strategy, we're just going to add 1% on top of original bid price (last order)
+                 * and combine the exchange buy and sell fees. Your algo will have other ideas on how much profit to make ;-)
                  */
                 final BigDecimal percentProfitToMake = new BigDecimal("0.01");
-                if (LOG.isInfoEnabled()) {
-                    LOG.info(market.getName() + " Percentage profit to make on sell order is: " + percentProfitToMake);
-                }
+                LogUtils.log(LOG, Level.INFO, () -> market.getName() +
+                        " Percentage profit to make on sell order is: " + percentProfitToMake);
 
                 final BigDecimal buyOrderPercentageFee = tradingApi.getPercentageOfBuyOrderTakenForExchangeFee(market.getId());
-                if (LOG.isInfoEnabled()) {
-                    LOG.info(market.getName() + " Exchange fee in percent for buy order is: " + buyOrderPercentageFee);
-                }
+                LogUtils.log(LOG, Level.INFO, () -> market.getName() + " Exchange fee in percent for buy order is: " + buyOrderPercentageFee);
 
                 final BigDecimal sellOrderPercentageFee = tradingApi.getPercentageOfSellOrderTakenForExchangeFee(market.getId());
-                if (LOG.isInfoEnabled()) {
-                    LOG.info(market.getName() + " Exchange fee in percent for sell order is: " + sellOrderPercentageFee);
-                }
+                LogUtils.log(LOG, Level.INFO, () -> market.getName() + " Exchange fee in percent for sell order is: " + sellOrderPercentageFee);
 
                 final BigDecimal totalPercentageIncrease = percentProfitToMake.add(buyOrderPercentageFee).add(sellOrderPercentageFee);
-                if (LOG.isInfoEnabled()) {
-                    LOG.info(market.getName() + " Total percentage increase for new sell order is: " + totalPercentageIncrease);
-                }
+                LogUtils.log(LOG, Level.INFO, () -> market.getName() + " Total percentage increase for new sell order is: " + totalPercentageIncrease);
 
                 final BigDecimal amountToAdd = lastOrder.price.multiply(totalPercentageIncrease);
-                if (LOG.isInfoEnabled()) {
-                    LOG.info(market.getName() + " Amount to add last order price: " + amountToAdd);
-                }
+                LogUtils.log(LOG, Level.INFO, () -> market.getName() + " Amount to add last order price: " + amountToAdd);
 
                 /*
                  * Most exchanges (if not all) use 8 decimal places.
-                 * It's usually bes t to ROUND UP the ASK price in your calculations to maximise gains.
+                 * It's usually best to round up the ASK price in your calculations to maximise gains.
                  */
                 final BigDecimal newAskPrice = lastOrder.price.add(amountToAdd).setScale(8, RoundingMode.HALF_UP);
-                if (LOG.isInfoEnabled()) {
-                    LOG.info(market.getName() + " Placing new SELL order at ask price [" +
+                LogUtils.log(LOG, Level.INFO, () -> market.getName() + " Placing new SELL order at ask price [" +
                             new DecimalFormat("#.########").format(newAskPrice) + "]");
-                    LOG.info(market.getName() + " Sending new SELL order to exchange --->");
-                }
 
+                LogUtils.log(LOG, Level.INFO, () -> market.getName() + " Sending new SELL order to exchange --->");
 
                 // Build the new sell order
                 lastOrder.id = tradingApi.createOrder(market.getId(), OrderType.SELL, lastOrder.amount, newAskPrice);
-
-                if (LOG.isInfoEnabled()) {
-                    LOG.info(market.getName() + " New SELL Order sent successfully. ID: " + lastOrder.id);
-                }
+                LogUtils.log(LOG, Level.INFO, () -> market.getName() + " New SELL Order sent successfully. ID: " + lastOrder.id);
 
                 // update last order state
                 lastOrder.price = newAskPrice;
                 lastOrder.type = OrderType.SELL;
-
             } else {
 
                 /*
-                 * BUY order not filled yet.
+                 * BUY order has not filled yet.
                  * Could be nobody has jumped on it yet... the order is only part filled... or market has gone up and
-                 * we've been outbid and have a stuck buy order, in which case we have to wait for market to drop...
-                 * unless you tweak this code to cancel the current order and raise your bid; remember to deal with any
+                 * we've been outbid and have a stuck buy order, in which case we have, to wait for the market to fall...
+                 * unless you tweak this code to cancel the current order and raise your bid - remember to deal with any
                  * part-filled orders!
                  */
-                if (LOG.isInfoEnabled()) {
-                    LOG.info(market.getName() + " !!! Still have BUY Order " + lastOrder.id
+                LogUtils.log(LOG, Level.INFO, () -> market.getName() + " !!! Still have BUY Order " + lastOrder.id
                             + " waiting to fill at [" + lastOrder.price + "] - holding last BUY order...");
-                }
             }
 
         } catch (ExchangeTimeoutException e) {
 
-            // Your timeout handling code could got here, e.g. you might want to check if the order actually
+            // Your timeout handling code could go here, e.g. you might want to check if the order actually
             // made it to the exchange? And if not, resend it...
             // We are just going to log it and swallow it, and wait for next trade cycle.
             LOG.error(market.getName() + " New Order to SELL altcoin failed because Exchange threw timeout exception. " +
@@ -440,7 +415,7 @@ public class ExampleScalpingStrategy implements TradingStrategy {
 
     /**
      * <p>
-     * Algo for executing when last order we placed on the exchanges was a SELL.
+     * Algo for executing when last order we placed on the exchange was a SELL.
      * </p>
      *
      * <p>
@@ -457,7 +432,7 @@ public class ExampleScalpingStrategy implements TradingStrategy {
 
         try  {
 
-            // Fetch our current open orders and see if the sell order is still outstanding on the exchange
+            // Fetch our current open orders and see if the sell order is still outstanding/unfilled on the exchange
             final List<OpenOrder> myOrders = tradingApi.getYourOpenOrders(market.getId());
             boolean lastOrderFound = false;
             for (final OpenOrder myOrder : myOrders) {
@@ -469,62 +444,54 @@ public class ExampleScalpingStrategy implements TradingStrategy {
 
             // if the order is not there, it must have all filled.
             if (!lastOrderFound) {
-                if (LOG.isInfoEnabled()) {
-                    LOG.info(market.getName() + " ^^^ Yay!!! Last SELL Order Id [" + lastOrder.id + "] filled at [" + lastOrder.price + "]");
-                }
+
+                LogUtils.log(LOG, Level.INFO, () -> market.getName() +
+                        " ^^^ Yay!!! Last SELL Order Id [" + lastOrder.id + "] filled at [" + lastOrder.price + "]");
 
                 // Get amount of altcoin we can buy for given BTC amount.
                 final BigDecimal amountOfAltcoinToBuyForGivenBtc = getAmountOfAltcoinToBuyForGivenBtcAmount(btcBuyOrderAmount);
-
-                if (LOG.isInfoEnabled()) {
-                    LOG.info(market.getName() + " Placing new BUY order at bid price [" +
+                LogUtils.log(LOG, Level.INFO, () -> market.getName() + " Placing new BUY order at bid price [" +
                             new DecimalFormat("#.########").format(currentBidPrice) + "]");
-                    LOG.info(market.getName() + " Sending new BUY order to exchange --->");
-                }
+
+                LogUtils.log(LOG, Level.INFO, () -> market.getName() + " Sending new BUY order to exchange --->");
 
                 // Send the buy order to the exchange.
                 lastOrder.id = tradingApi.createOrder(market.getId(), OrderType.BUY, amountOfAltcoinToBuyForGivenBtc, currentBidPrice);
-
-                if (LOG.isInfoEnabled()) {
-                    LOG.info(market.getName() + " New BUY Order sent successfully. ID: " + lastOrder.id);
-                }
+                LogUtils.log(LOG, Level.INFO, () -> market.getName() + " New BUY Order sent successfully. ID: " + lastOrder.id);
 
                 // update last order details
                 lastOrder.price = currentBidPrice;
                 lastOrder.type = OrderType.BUY;
                 lastOrder.amount = amountOfAltcoinToBuyForGivenBtc;
-
             } else {
 
                 /*
                  * SELL order not filled yet.
                  * Could be nobody has jumped on it yet... it is only part filled... or market has gone down and we've
                  * been undercut and have a stuck sell order, in which case we have to wait for market to recover...
-                 * unless you tweak this code to cancel the current order and lower your ask; remember to deal with any
+                 * unless you tweak this code to cancel the current order and lower your ask - remember to deal with any
                  * part-filled orders!
                  */
                 if (currentAskPrice.compareTo(lastOrder.price) < 0) {
-                    if (LOG.isInfoEnabled()) {
-                        LOG.info(market.getName() + " <<< Current ask price [" + currentAskPrice
+                    LogUtils.log(LOG, Level.INFO, () -> market.getName() + " <<< Current ask price [" + currentAskPrice
                                 + "] is LOWER then last order price ["
                                 + lastOrder.price + "] - holding last SELL order...");
-                    }
+
                 } else if (currentAskPrice.compareTo(lastOrder.price) > 0) {
                     // TODO throw illegal state exception
                     LOG.error(market.getName() + " >>> Current ask price [" + currentAskPrice
                             + "] is HIGHER than last order price ["
                             + lastOrder.price + "] - IMPOSSIBLE! BX-bot must have sold?????");
+
                 } else if (currentAskPrice.compareTo(lastOrder.price) == 0) {
-                    if (LOG.isInfoEnabled()) {
-                        LOG.info(market.getName() + " === Current ask price [" + currentAskPrice
+                    LogUtils.log(LOG, Level.INFO, () -> market.getName() + " === Current ask price [" + currentAskPrice
                                 + "] is EQUAL to last order price ["
                                 + lastOrder.price + "] - holding last SELL order...");
-                    }
                 }
             }
         } catch (ExchangeTimeoutException e) {
 
-            // Your timeout handling code could got here, e.g. you might want to check if the order actually
+            // Your timeout handling code could go here, e.g. you might want to check if the order actually
             // made it to the exchange? And if not, resend it...
             // We are just going to log it and swallow it, and wait for next trade cycle.
             LOG.error(market.getName() + " New Order to BUY altcoin failed because Exchange threw timeout exception. " +
@@ -551,35 +518,30 @@ public class ExampleScalpingStrategy implements TradingStrategy {
     private BigDecimal getAmountOfAltcoinToBuyForGivenBtcAmount(BigDecimal amountOfBtcToTrade) throws
             TradingApiException, ExchangeTimeoutException {
 
-        if (LOG.isInfoEnabled()) {
-            LOG.info(market.getName() + " Calculating amount of altcoin to buy for " +
+        LogUtils.log(LOG, Level.INFO, () -> market.getName() + " Calculating amount of altcoin to buy for " +
                     new DecimalFormat("#.########").format(amountOfBtcToTrade) + " BTC");
-        }
 
         // Fetch the last trade price
         final BigDecimal lastTradePriceInBtcForOneAltcoin = tradingApi.getLatestMarketPrice(market.getId());
-        if (LOG.isInfoEnabled()) {
-            LOG.info(market.getName() + " Last trade price for 1 altcoin was: "
-                    + new DecimalFormat("#.########").format(lastTradePriceInBtcForOneAltcoin) + " BTC");
-        }
+        LogUtils.log(LOG, Level.INFO, () -> market.getName() + " Last trade price for 1 altcoin was: " +
+                new DecimalFormat("#.########").format(lastTradePriceInBtcForOneAltcoin) + " BTC");
 
         /*
          * Most exchanges (if not all) use 8 decimal places and typically round in favour of the exchange.
-         * It's usually safest to ROUND DOWN the order quantity in your calculations.
+         * It's usually safest to round down the order quantity in your calculations.
          */
         final BigDecimal amountOfAltcoinToBuyForGivenBtc = amountOfBtcToTrade.divide(
                 lastTradePriceInBtcForOneAltcoin, 8, RoundingMode.HALF_DOWN);
 
-        if (LOG.isInfoEnabled()) {
-            LOG.info(market.getName() + " Amount of altcoin to BUY for ["
-                    + new DecimalFormat("#.########").format(amountOfBtcToTrade)
-                    + " BTC] based on last market trade price: " + amountOfAltcoinToBuyForGivenBtc);
-        }
+        LogUtils.log(LOG, Level.INFO, () -> market.getName() + " Amount of altcoin to BUY for [" +
+                new DecimalFormat("#.########").format(amountOfBtcToTrade) +
+                " BTC] based on last market trade price: " + amountOfAltcoinToBuyForGivenBtc);
+
         return amountOfAltcoinToBuyForGivenBtc;
     }
 
     /**
-     * Loads the config for the strategy. We expect the btc-buy-order-amount' config item to be present in the
+     * Loads the config for the strategy. We expect the 'btc-buy-order-amount' config item to be present in the
      * ./config/strategies.xml config file.
      *
      * @param config the config for the Trading Strategy.
@@ -591,16 +553,11 @@ public class ExampleScalpingStrategy implements TradingStrategy {
             // game over - kill it off now.
             throw new IllegalArgumentException("Mandatory btc-buy-order-amount value missing in strategy.xml config.");
         }
-
-        if (LOG.isInfoEnabled()) {
-            LOG.info("<btc-buy-order-amount> from config is: " + btcBuyOrderAmountFromConfigAsString);
-        }
+        LogUtils.log(LOG, Level.INFO, () -> "<btc-buy-order-amount> from config is: " + btcBuyOrderAmountFromConfigAsString);
 
         // will fail fast if value is not a number!
         btcBuyOrderAmount = new BigDecimal(btcBuyOrderAmountFromConfigAsString);
-        if (LOG.isInfoEnabled()) {
-            LOG.info("btcBuyOrderAmount: " + btcBuyOrderAmount);
-        }
+        LogUtils.log(LOG, Level.INFO, () -> "btcBuyOrderAmount: " + btcBuyOrderAmount);
     }
 
     /**
@@ -612,8 +569,6 @@ public class ExampleScalpingStrategy implements TradingStrategy {
      * Typically, you would maintain order state in a database or use some other persistent datasource to recover from
      * restarts and for audit purposes. In this example, we are storing the state in memory to keep it simple.
      * </p>
-     *
-     * @author gazbert
      */
     private class OrderState {
 

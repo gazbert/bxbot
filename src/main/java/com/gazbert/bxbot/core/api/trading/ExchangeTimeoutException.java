@@ -48,7 +48,7 @@ public final class ExchangeTimeoutException extends Exception {
      *
      * @param msg the error message.
      */
-    public ExchangeTimeoutException(final String msg) {
+    public ExchangeTimeoutException(String msg) {
         super(msg);
     }
 
@@ -58,7 +58,7 @@ public final class ExchangeTimeoutException extends Exception {
      * @param msg the error message.
      * @param e   the original exception.
      */
-    public ExchangeTimeoutException(final String msg, final Throwable e) {
+    public ExchangeTimeoutException(String msg, Throwable e) {
         super(msg, e);
     }
 }

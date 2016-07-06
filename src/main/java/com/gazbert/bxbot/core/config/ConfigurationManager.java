@@ -23,6 +23,8 @@
 
 package com.gazbert.bxbot.core.config;
 
+import com.gazbert.bxbot.core.util.LogUtils;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.xml.sax.SAXException;
 
@@ -45,7 +47,6 @@ public final class ConfigurationManager {
 
     private static final Logger LOG = Logger.getLogger(ConfigurationManager.class);
 
-    // lockdown this util class
     private ConfigurationManager() {
     }
 
@@ -54,9 +55,7 @@ public final class ConfigurationManager {
      */
     public static <T> T loadConfig(Class<T> configClass, String xmlConfigFile, String xmlSchemaFile) {
 
-        if (LOG.isInfoEnabled()) {
-            LOG.info("Loading configuration for [" + configClass + "] from: " + xmlConfigFile + " ...");
-        }
+        LogUtils.log(LOG, Level.INFO, () -> "Loading configuration for [" + configClass + "] from: " + xmlConfigFile + " ...");
 
         try {
 
@@ -75,10 +74,8 @@ public final class ConfigurationManager {
                     new FileInputStream(xmlConfigFile));
 
             final T requestedConfig = (T) requestedConfigRootXmlElement.getValue();
+            LogUtils.log(LOG, Level.INFO, () -> "Loaded and set configuration for [" + configClass + "] successfully!");
 
-            if (LOG.isInfoEnabled()) {
-                LOG.info("Loaded and set configuration for [" + configClass + "] successfully!");
-            }
             return requestedConfig;
 
         } catch (JAXBException | SAXException e) {
