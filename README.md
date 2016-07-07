@@ -57,7 +57,8 @@ The bot has undergone basic unit testing on a _best-effort_ basis. The project h
 running on [Travis CI](https://travis-ci.org/).
 
 The latest stable build can be found on the [Releases](https://github.com/gazbert/BX-bot/releases) page. The SNAPSHOT builds are
-very much ["sid"](https://www.debian.org/releases/sid/) - be careful!
+active development builds and very much ["sid"](https://www.debian.org/releases/sid/) - the tests should always pass,
+but you might not have a working bot!
 
 ## Issue & Change Management
 Issues and new features will be managed using the project [Issue Tracker](https://github.com/gazbert/BX-bot/issues) - 
