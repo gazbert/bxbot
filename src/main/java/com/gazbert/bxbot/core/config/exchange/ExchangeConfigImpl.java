@@ -34,21 +34,15 @@ import java.util.Map;
  */
 public class ExchangeConfigImpl implements ExchangeConfig {
 
-    private NetworkConfigImpl networkConfig;
-
     /*
-     * Map of user defined configuration for the Strategy.
-     * Contains key-value String type pairs.
+     * Map of Authentication configuration for the Exchange Adapter.
+     * Contains key-value String pairs.
      */
     private Map<String, String> authenticationConfig = new HashMap<>();
 
-    public void setNetworkConfig(NetworkConfigImpl networkConfig) {
-        this.networkConfig = networkConfig;
-    }
+    /* Holds Network configuration for the Exchange Adapter */
+    private NetworkConfigImpl networkConfig;
 
-    public NetworkConfigImpl getNetworkConfig() {
-        return networkConfig;
-    }
 
     public Map<String, String> getAuthenticationConfig() {
         return authenticationConfig;
@@ -58,4 +52,11 @@ public class ExchangeConfigImpl implements ExchangeConfig {
         this.authenticationConfig = authenticationConfig;
     }
 
+    public void setNetworkConfig(NetworkConfigImpl networkConfig) {
+        this.networkConfig = networkConfig;
+    }
+
+    public NetworkConfigImpl getNetworkConfig() {
+        return networkConfig;
+    }
 }

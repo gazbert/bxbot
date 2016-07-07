@@ -17,16 +17,16 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for non-fatal-error-codesType complex type.
+ * <p>Java class for other-configType complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="non-fatal-error-codesType">
+ * &lt;complexType name="other-configType">
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="code" type="{http://www.w3.org/2001/XMLSchema}int" maxOccurs="unbounded"/>
+ *         &lt;element name="config-item" type="{}config-itemType" maxOccurs="unbounded"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -36,41 +36,41 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "non-fatal-error-codesType", propOrder = {
-    "code"
+@XmlType(name = "other-configType", propOrder = {
+    "configItem"
 })
-public class NonFatalErrorCodesType {
+public class OtherConfigType {
 
-    @XmlElement(type = Integer.class)
-    protected List<Integer> code;
+    @XmlElement(name = "config-item", required = true)
+    protected List<ConfigItemType> configItem;
 
     /**
-     * Gets the value of the code property.
+     * Gets the value of the configItem property.
      * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the code property.
+     * This is why there is not a <CODE>set</CODE> method for the configItem property.
      * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
-     *    getCode().add(newItem);
+     *    getConfigItem().add(newItem);
      * </pre>
      * 
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link Integer }
+     * {@link ConfigItemType }
      * 
      * 
      */
-    public List<Integer> getCodes() {
-        if (code == null) {
-            code = new ArrayList<Integer>();
+    public List<ConfigItemType> getConfigItems() {
+        if (configItem == null) {
+            configItem = new ArrayList<ConfigItemType>();
         }
-        return this.code;
+        return this.configItem;
     }
 
 }

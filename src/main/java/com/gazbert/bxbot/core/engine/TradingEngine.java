@@ -23,7 +23,6 @@
 
 package com.gazbert.bxbot.core.engine;
 
-import com.gazbert.bxbot.core.api.exchange.ExchangeConfig;
 import com.gazbert.bxbot.core.api.trading.BalanceInfo;
 import com.gazbert.bxbot.core.api.trading.ExchangeTimeoutException;
 import com.gazbert.bxbot.core.api.trading.Market;
@@ -39,6 +38,7 @@ import com.gazbert.bxbot.core.config.exchange.NetworkConfigImpl;
 import com.gazbert.bxbot.core.config.exchange.generated.ExchangeType;
 import com.gazbert.bxbot.core.config.exchange.generated.NetworkConfigType;
 import com.gazbert.bxbot.core.config.exchange.generated.NonFatalErrorCodesType;
+import com.gazbert.bxbot.core.config.exchange.generated.NonFatalErrorMessagesType;
 import com.gazbert.bxbot.core.config.market.generated.MarketType;
 import com.gazbert.bxbot.core.config.market.generated.MarketsType;
 import com.gazbert.bxbot.core.config.strategy.StrategyConfigImpl;
@@ -62,7 +62,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 
 /*
  * The main Trading Engine.
@@ -272,7 +271,7 @@ final public class TradingEngine {
                  */
                 final String WARNING_MSG = "A network error has occurred in Exchange Adapter! " +
                         "BX-bot will attempt next trade in " + tradeExecutionInterval + "s...";
-                LOG.error(WARNING_MSG, e); // TODO error or warn log level?
+                LOG.error(WARNING_MSG, e);
 
                 try {
                     Thread.sleep(tradeExecutionInterval * 1000);
@@ -487,10 +486,7 @@ final public class TradingEngine {
         tradingApi = ConfigurableComponentFactory.createComponent(exchangeType.getAdapter());
         LogUtils.log(LOG, Level.INFO, () ->"Trading Engine will use Exchange Adapter for: " + tradingApi.getImplName());
 
-        // TODO build up new exchange config wrapper and pass to adapter impl init() method
-        final ExchangeConfigImpl exchangeConfig = new ExchangeConfigImpl();
-
-        // Fetch and set optional network config
+        // Fetch optional network config
         final NetworkConfigType networkConfigType = exchangeType.getNetworkConfig();
         if (networkConfigType != null) {
 
@@ -500,16 +496,33 @@ final public class TradingEngine {
             // Grab optional non-fatal error codes
             final NonFatalErrorCodesType nonFatalErrorCodesType = networkConfigType.getNonFatalErrorCodes();
             if (nonFatalErrorCodesType != null) {
-                networkConfig.setNonFatalErrorCodes(nonFatalErrorCodesType.getCode());
+                networkConfig.setNonFatalErrorCodes(nonFatalErrorCodesType.getCodes());
+                LogUtils.log(LOG, Level.INFO, () ->
+                        "NetworkConfiguration NonFatalErrorCodes have been set: " + networkConfig.getNonFatalErrorCodes());
             } else {
                 LogUtils.log(LOG, Level.INFO, () ->
                         "No (optional) NetworkConfiguration NonFatalErrorCodes have been set for Exchange Adapter: "
                                 + tradingApi.getImplName());
             }
 
-            // TODO Grab optional non-fatal error messages
+            // Grab optional non-fatal error messages
+            final NonFatalErrorMessagesType nonFatalErrorMessagesType = networkConfigType.getNonFatalErrorMessages();
+            if (nonFatalErrorMessagesType != null) {
+                networkConfig.setNonFatalErrorMessages(nonFatalErrorMessagesType.getMessages());
+                LogUtils.log(LOG, Level.INFO, () ->
+                        "NetworkConfiguration NonFatalErrorMessages have been set: " + networkConfig.getNonFatalErrorMessages());
+            } else {
+                LogUtils.log(LOG, Level.INFO, () ->
+                        "No (optional) NetworkConfiguration NonFatalErrorMessages have been set for Exchange Adapter: "
+                                + tradingApi.getImplName());
+            }
 
-            // TODO Grab optional misc config
+            // TODO Fetch optional authentication config
+
+            // TODO Fetch optional 'other' config
+
+            // TODO build up new exchange config wrapper and pass to adapter impl init() method
+            final ExchangeConfigImpl exchangeConfig = new ExchangeConfigImpl();
         }
     }
 

@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /*
- *
+ * Encapsulates network configuration for an Exchange Adapter.
  */
 public class NetworkConfigImpl {
 
@@ -36,17 +36,17 @@ public class NetworkConfigImpl {
     private List<String> nonFatalErrorMessages;
 
 
+    public NetworkConfigImpl() {
+        nonFatalErrorCodes = new ArrayList<>();
+        nonFatalErrorMessages = new ArrayList<>();
+    }
+
     public Integer getConnectionTimeout() {
         return connectionTimeout;
     }
 
     public void setConnectionTimeout(Integer connectionTimeout) {
         this.connectionTimeout = connectionTimeout;
-    }
-
-    public NetworkConfigImpl() {
-        nonFatalErrorCodes = new ArrayList<>();
-        nonFatalErrorMessages = new ArrayList<>();
     }
 
     public List<Integer> getNonFatalErrorCodes() {

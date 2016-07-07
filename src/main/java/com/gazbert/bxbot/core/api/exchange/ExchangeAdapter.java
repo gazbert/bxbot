@@ -20,14 +20,14 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.gazbert.bxbot.core.api.exchange;
 
+package com.gazbert.bxbot.core.api.exchange;
 
 /**
  * <p>
- * All Exchange Adapters must implement this interface.
+ * All Exchange Adapters must implement this interface. It's main purpose is for the Trading Engine to pass the
+ * adapter its configuration on startup.
  * </p>
- * <p/>
  * <p>
  * The Trading Engine will send only 1 thread through the Exchange Adapter code at a time - you do not have to code for concurrency.
  * </p>

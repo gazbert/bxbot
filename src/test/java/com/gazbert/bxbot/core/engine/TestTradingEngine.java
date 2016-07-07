@@ -33,6 +33,7 @@ import com.gazbert.bxbot.core.config.engine.generated.EngineType;
 import com.gazbert.bxbot.core.config.exchange.generated.ExchangeType;
 import com.gazbert.bxbot.core.config.exchange.generated.NetworkConfigType;
 import com.gazbert.bxbot.core.config.exchange.generated.NonFatalErrorCodesType;
+import com.gazbert.bxbot.core.config.exchange.generated.NonFatalErrorMessagesType;
 import com.gazbert.bxbot.core.config.market.generated.MarketType;
 import com.gazbert.bxbot.core.config.market.generated.MarketsType;
 import com.gazbert.bxbot.core.config.strategy.StrategyConfigImpl;
@@ -142,7 +143,17 @@ public class TestTradingEngine {
         final NonFatalErrorCodesType nonFatalErrorCodesType = PowerMock.createMock(NonFatalErrorCodesType.class);
         expect(networkConfigType.getNonFatalErrorCodes()).andReturn(nonFatalErrorCodesType);
         final List<Integer> nonFatalNetworkErrorCodes = Arrays.asList(502,503,504);
-        expect(nonFatalErrorCodesType.getCode()).andReturn(nonFatalNetworkErrorCodes);
+        expect(nonFatalErrorCodesType.getCodes()).andReturn(nonFatalNetworkErrorCodes);
+
+        final NonFatalErrorMessagesType nonFatalErrorMessagesType = PowerMock.createMock(NonFatalErrorMessagesType.class);
+        expect(networkConfigType.getNonFatalErrorMessages()).andReturn(nonFatalErrorMessagesType);
+        final List<String> nonFatalNetworkErrorMessages = Arrays.asList(
+                "Connection reset",
+                "Connection refused",
+                "Remote host closed connection during handshake");
+        expect(nonFatalErrorMessagesType.getMessages()).andReturn(nonFatalNetworkErrorMessages);
+
+
 
 
 
