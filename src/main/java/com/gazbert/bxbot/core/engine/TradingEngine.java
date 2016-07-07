@@ -23,6 +23,7 @@
 
 package com.gazbert.bxbot.core.engine;
 
+import com.gazbert.bxbot.core.api.exchange.ExchangeConfig;
 import com.gazbert.bxbot.core.api.trading.BalanceInfo;
 import com.gazbert.bxbot.core.api.trading.ExchangeTimeoutException;
 import com.gazbert.bxbot.core.api.trading.Market;
@@ -33,7 +34,11 @@ import com.gazbert.bxbot.core.api.strategy.TradingStrategy;
 import com.gazbert.bxbot.core.config.ConfigurableComponentFactory;
 import com.gazbert.bxbot.core.config.ConfigurationManager;
 import com.gazbert.bxbot.core.config.engine.generated.EngineType;
+import com.gazbert.bxbot.core.config.exchange.ExchangeConfigImpl;
+import com.gazbert.bxbot.core.config.exchange.NetworkConfigImpl;
 import com.gazbert.bxbot.core.config.exchange.generated.ExchangeType;
+import com.gazbert.bxbot.core.config.exchange.generated.NetworkConfigType;
+import com.gazbert.bxbot.core.config.exchange.generated.NonFatalErrorCodesType;
 import com.gazbert.bxbot.core.config.market.generated.MarketType;
 import com.gazbert.bxbot.core.config.market.generated.MarketsType;
 import com.gazbert.bxbot.core.config.strategy.StrategyConfigImpl;
@@ -476,16 +481,36 @@ final public class TradingEngine {
      */
     private void loadExchangeAdapterConfig() {
 
-        final ExchangeType exchangeConfig = ConfigurationManager.loadConfig(ExchangeType.class,
+        final ExchangeType exchangeType = ConfigurationManager.loadConfig(ExchangeType.class,
                 EXCHANGE_CONFIG_XML_FILENAME, EXCHANGE_CONFIG_XSD_FILENAME);
 
-        tradingApi = ConfigurableComponentFactory.createComponent(exchangeConfig.getAdapter());
+        tradingApi = ConfigurableComponentFactory.createComponent(exchangeType.getAdapter());
         LogUtils.log(LOG, Level.INFO, () ->"Trading Engine will use Exchange Adapter for: " + tradingApi.getImplName());
 
-
-
         // TODO build up new exchange config wrapper and pass to adapter impl init() method
+        final ExchangeConfigImpl exchangeConfig = new ExchangeConfigImpl();
 
+        // Fetch and set optional network config
+        final NetworkConfigType networkConfigType = exchangeType.getNetworkConfig();
+        if (networkConfigType != null) {
+
+            final NetworkConfigImpl networkConfig = new NetworkConfigImpl();
+            networkConfig.setConnectionTimeout(networkConfigType.getConnectionTimeout());
+
+            // Grab optional non-fatal error codes
+            final NonFatalErrorCodesType nonFatalErrorCodesType = networkConfigType.getNonFatalErrorCodes();
+            if (nonFatalErrorCodesType != null) {
+                networkConfig.setNonFatalErrorCodes(nonFatalErrorCodesType.getCode());
+            } else {
+                LogUtils.log(LOG, Level.INFO, () ->
+                        "No (optional) NetworkConfiguration NonFatalErrorCodes have been set for Exchange Adapter: "
+                                + tradingApi.getImplName());
+            }
+
+            // TODO Grab optional non-fatal error messages
+
+            // TODO Grab optional misc config
+        }
     }
 
     /*

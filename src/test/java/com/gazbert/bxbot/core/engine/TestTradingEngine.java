@@ -31,6 +31,8 @@ import com.gazbert.bxbot.core.config.ConfigurableComponentFactory;
 import com.gazbert.bxbot.core.config.ConfigurationManager;
 import com.gazbert.bxbot.core.config.engine.generated.EngineType;
 import com.gazbert.bxbot.core.config.exchange.generated.ExchangeType;
+import com.gazbert.bxbot.core.config.exchange.generated.NetworkConfigType;
+import com.gazbert.bxbot.core.config.exchange.generated.NonFatalErrorCodesType;
 import com.gazbert.bxbot.core.config.market.generated.MarketType;
 import com.gazbert.bxbot.core.config.market.generated.MarketsType;
 import com.gazbert.bxbot.core.config.strategy.StrategyConfigImpl;
@@ -48,10 +50,7 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -83,6 +82,7 @@ public class TestTradingEngine {
     // Exchange Adapter config
     private static final String EXCHANGE_ADAPTER_IMPL_CLASS = "com.my.adapters.DummyBtceExchangeAdapter";
     private static final String EXCHANGE_ADAPTER_NAME = "My BTC-e Adapter";
+    private static final Integer EXCHANGE_ADAPTER_NETWORK_TIMEOUT = new Integer("30");
 
     // Engine config
     private static final String ENGINE_EMERGENCY_STOP_CURRENCY = "BTC";
@@ -134,6 +134,17 @@ public class TestTradingEngine {
         tradingApi = PowerMock.createMock(TradingApi.class);
         expect(ConfigurableComponentFactory.createComponent(EXCHANGE_ADAPTER_IMPL_CLASS)).andReturn(tradingApi);
         expect(tradingApi.getImplName()).andReturn(EXCHANGE_ADAPTER_NAME);
+
+        final NetworkConfigType networkConfigType = PowerMock.createMock(NetworkConfigType.class);
+        expect(exchangeType.getNetworkConfig()).andReturn(networkConfigType);
+        expect(networkConfigType.getConnectionTimeout()).andReturn(EXCHANGE_ADAPTER_NETWORK_TIMEOUT);
+
+        final NonFatalErrorCodesType nonFatalErrorCodesType = PowerMock.createMock(NonFatalErrorCodesType.class);
+        expect(networkConfigType.getNonFatalErrorCodes()).andReturn(nonFatalErrorCodesType);
+        final List<Integer> nonFatalNetworkErrorCodes = Arrays.asList(502,503,504);
+        expect(nonFatalErrorCodesType.getCode()).andReturn(nonFatalNetworkErrorCodes);
+
+
 
         // expect to load Engine config
         final EngineType engineType = PowerMock.createMock(EngineType.class);
