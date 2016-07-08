@@ -33,12 +33,11 @@ import com.gazbert.bxbot.core.api.strategy.TradingStrategy;
 import com.gazbert.bxbot.core.config.ConfigurableComponentFactory;
 import com.gazbert.bxbot.core.config.ConfigurationManager;
 import com.gazbert.bxbot.core.config.engine.generated.EngineType;
+import com.gazbert.bxbot.core.config.exchange.AuthenticationConfigImpl;
 import com.gazbert.bxbot.core.config.exchange.ExchangeConfigImpl;
 import com.gazbert.bxbot.core.config.exchange.NetworkConfigImpl;
-import com.gazbert.bxbot.core.config.exchange.generated.ExchangeType;
-import com.gazbert.bxbot.core.config.exchange.generated.NetworkConfigType;
-import com.gazbert.bxbot.core.config.exchange.generated.NonFatalErrorCodesType;
-import com.gazbert.bxbot.core.config.exchange.generated.NonFatalErrorMessagesType;
+import com.gazbert.bxbot.core.config.exchange.OtherConfigImpl;
+import com.gazbert.bxbot.core.config.exchange.generated.*;
 import com.gazbert.bxbot.core.config.market.generated.MarketType;
 import com.gazbert.bxbot.core.config.market.generated.MarketsType;
 import com.gazbert.bxbot.core.config.strategy.StrategyConfigImpl;
@@ -486,6 +485,8 @@ final public class TradingEngine {
         tradingApi = ConfigurableComponentFactory.createComponent(exchangeType.getAdapter());
         LogUtils.log(LOG, Level.INFO, () ->"Trading Engine will use Exchange Adapter for: " + tradingApi.getImplName());
 
+        final ExchangeConfigImpl exchangeConfig = new ExchangeConfigImpl();
+
         // Fetch optional network config
         final NetworkConfigType networkConfigType = exchangeType.getNetworkConfig();
         if (networkConfigType != null) {
@@ -517,12 +518,57 @@ final public class TradingEngine {
                                 + tradingApi.getImplName());
             }
 
-            // TODO Fetch optional authentication config
+            exchangeConfig.setNetworkConfig(networkConfig);
 
-            // TODO Fetch optional 'other' config
+        } else {
+            LogUtils.log(LOG, Level.INFO, () ->
+                    "No (optional) NetworkConfiguration has been set for Exchange Adapter: " + tradingApi.getImplName());
+        }
 
-            // TODO build up new exchange config wrapper and pass to adapter impl init() method
-            final ExchangeConfigImpl exchangeConfig = new ExchangeConfigImpl();
+        // Fetch optional authentication config
+        final AuthenticationConfigType authenticationConfigType = exchangeType.getAuthenticationConfig();
+        if (authenticationConfigType != null) {
+
+            final AuthenticationConfigImpl authenticationConfig = new AuthenticationConfigImpl();
+
+            final List<com.gazbert.bxbot.core.config.exchange.generated.ConfigItemType> configItems =
+                    authenticationConfigType.getConfigItems();
+
+            for (final com.gazbert.bxbot.core.config.exchange.generated.ConfigItemType configItem : configItems) {
+                authenticationConfig.addItem(configItem.getName(), configItem.getValue());
+            }
+
+            exchangeConfig.setAuthenticationConfig(authenticationConfig);
+
+            LogUtils.log(LOG, Level.INFO, () ->
+                    "AuthenticationConfiguration has been set: " + exchangeConfig.getAuthenticationConfig());
+
+        } else {
+            LogUtils.log(LOG, Level.INFO, () ->
+                    "No (optional) AuthenticationConfiguration has been set for Exchange Adapter: " + tradingApi.getImplName());
+        }
+
+        // Fetch optional 'other' config
+        final OtherConfigType otherConfigType = exchangeType.getOtherConfig();
+        if (otherConfigType != null) {
+
+            final OtherConfigImpl otherConfig = new OtherConfigImpl();
+
+            final List<com.gazbert.bxbot.core.config.exchange.generated.ConfigItemType> configItems =
+                    otherConfigType.getConfigItems();
+
+            for (final com.gazbert.bxbot.core.config.exchange.generated.ConfigItemType configItem : configItems) {
+                otherConfig.addItem(configItem.getName(), configItem.getValue());
+            }
+
+            exchangeConfig.setOtherConfig(otherConfig);
+
+            LogUtils.log(LOG, Level.INFO, () ->
+                    "OtherConfiguration has been set: " + exchangeConfig.getOtherConfig());
+
+        } else {
+            LogUtils.log(LOG, Level.INFO, () ->
+                    "No (optional) OtherConfiguration has been set for Exchange Adapter: " + tradingApi.getImplName());
         }
     }
 

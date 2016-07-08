@@ -30,10 +30,7 @@ import com.gazbert.bxbot.core.api.strategy.TradingStrategy;
 import com.gazbert.bxbot.core.config.ConfigurableComponentFactory;
 import com.gazbert.bxbot.core.config.ConfigurationManager;
 import com.gazbert.bxbot.core.config.engine.generated.EngineType;
-import com.gazbert.bxbot.core.config.exchange.generated.ExchangeType;
-import com.gazbert.bxbot.core.config.exchange.generated.NetworkConfigType;
-import com.gazbert.bxbot.core.config.exchange.generated.NonFatalErrorCodesType;
-import com.gazbert.bxbot.core.config.exchange.generated.NonFatalErrorMessagesType;
+import com.gazbert.bxbot.core.config.exchange.generated.*;
 import com.gazbert.bxbot.core.config.market.generated.MarketType;
 import com.gazbert.bxbot.core.config.market.generated.MarketsType;
 import com.gazbert.bxbot.core.config.strategy.StrategyConfigImpl;
@@ -84,6 +81,15 @@ public class TestTradingEngine {
     private static final String EXCHANGE_ADAPTER_IMPL_CLASS = "com.my.adapters.DummyBtceExchangeAdapter";
     private static final String EXCHANGE_ADAPTER_NAME = "My BTC-e Adapter";
     private static final Integer EXCHANGE_ADAPTER_NETWORK_TIMEOUT = new Integer("30");
+    private static final List<Integer> EXCHANGE_ADAPTER_NONFATAL_ERROR_CODES = Arrays.asList(502,503,504);
+    private static final List<String> EXCHANGE_ADAPTER_NONFATAL_ERROR_MESSAGES = Arrays.asList(
+            "Connection reset",
+            "Connection refused",
+            "Remote host closed connection during handshake");
+    private static final String EXCHANGE_ADAPTER_AUTHENTICATION_CONFIG_ITEM_NAME = "key";
+    private static final String EXCHANGE_ADAPTER_AUTHENTICATION_CONFIG_ITEM_VALUE = "myKey123";
+    private static final String EXCHANGE_ADAPTER_OTHER_CONFIG_ITEM_NAME = "sell-fee";
+    private static final String EXCHANGE_ADAPTER_OTHER_CONFIG_ITEM_VALUE = "0.25";
 
     // Engine config
     private static final String ENGINE_EMERGENCY_STOP_CURRENCY = "BTC";
@@ -136,25 +142,44 @@ public class TestTradingEngine {
         expect(ConfigurableComponentFactory.createComponent(EXCHANGE_ADAPTER_IMPL_CLASS)).andReturn(tradingApi);
         expect(tradingApi.getImplName()).andReturn(EXCHANGE_ADAPTER_NAME);
 
+        // Optional Exchange Adapter network config
         final NetworkConfigType networkConfigType = PowerMock.createMock(NetworkConfigType.class);
         expect(exchangeType.getNetworkConfig()).andReturn(networkConfigType);
         expect(networkConfigType.getConnectionTimeout()).andReturn(EXCHANGE_ADAPTER_NETWORK_TIMEOUT);
 
         final NonFatalErrorCodesType nonFatalErrorCodesType = PowerMock.createMock(NonFatalErrorCodesType.class);
         expect(networkConfigType.getNonFatalErrorCodes()).andReturn(nonFatalErrorCodesType);
-        final List<Integer> nonFatalNetworkErrorCodes = Arrays.asList(502,503,504);
-        expect(nonFatalErrorCodesType.getCodes()).andReturn(nonFatalNetworkErrorCodes);
+        expect(nonFatalErrorCodesType.getCodes()).andReturn(EXCHANGE_ADAPTER_NONFATAL_ERROR_CODES);
 
         final NonFatalErrorMessagesType nonFatalErrorMessagesType = PowerMock.createMock(NonFatalErrorMessagesType.class);
         expect(networkConfigType.getNonFatalErrorMessages()).andReturn(nonFatalErrorMessagesType);
-        final List<String> nonFatalNetworkErrorMessages = Arrays.asList(
-                "Connection reset",
-                "Connection refused",
-                "Remote host closed connection during handshake");
-        expect(nonFatalErrorMessagesType.getMessages()).andReturn(nonFatalNetworkErrorMessages);
+        expect(nonFatalErrorMessagesType.getMessages()).andReturn(EXCHANGE_ADAPTER_NONFATAL_ERROR_MESSAGES);
 
+        // Optional Exchange Adapter authentication config
+        final AuthenticationConfigType authenticationConfigType = PowerMock.createMock(AuthenticationConfigType.class);
+        expect(exchangeType.getAuthenticationConfig()).andReturn(authenticationConfigType);
 
+        final com.gazbert.bxbot.core.config.exchange.generated.ConfigItemType exchangeConfigItemType =
+                PowerMock.createMock(com.gazbert.bxbot.core.config.exchange.generated.ConfigItemType.class);
+        final List<com.gazbert.bxbot.core.config.exchange.generated.ConfigItemType> exchangeConfigItemTypes = new ArrayList<>();
+        exchangeConfigItemTypes.add(exchangeConfigItemType); // just 1 config item being loaded here
 
+        expect(authenticationConfigType.getConfigItems()).andReturn(exchangeConfigItemTypes);
+        expect(exchangeConfigItemType.getName()).andReturn(EXCHANGE_ADAPTER_AUTHENTICATION_CONFIG_ITEM_NAME);
+        expect(exchangeConfigItemType.getValue()).andReturn(EXCHANGE_ADAPTER_AUTHENTICATION_CONFIG_ITEM_VALUE);
+
+        // Optional Exchange Adapter 'other' config
+        final OtherConfigType otherConfigType = PowerMock.createMock(OtherConfigType.class);
+        expect(exchangeType.getOtherConfig()).andReturn(otherConfigType);
+
+        final com.gazbert.bxbot.core.config.exchange.generated.ConfigItemType otherConfigItemType =
+                PowerMock.createMock(com.gazbert.bxbot.core.config.exchange.generated.ConfigItemType.class);
+        final List<com.gazbert.bxbot.core.config.exchange.generated.ConfigItemType> otherConfigItemTypes = new ArrayList<>();
+        otherConfigItemTypes.add(otherConfigItemType); // just 1 config item being loaded here
+
+        expect(otherConfigType.getConfigItems()).andReturn(otherConfigItemTypes);
+        expect(otherConfigItemType.getName()).andReturn(EXCHANGE_ADAPTER_OTHER_CONFIG_ITEM_NAME);
+        expect(otherConfigItemType.getValue()).andReturn(EXCHANGE_ADAPTER_OTHER_CONFIG_ITEM_VALUE);
 
 
         // expect to load Engine config

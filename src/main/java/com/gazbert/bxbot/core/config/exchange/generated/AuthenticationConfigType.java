@@ -66,7 +66,7 @@ public class AuthenticationConfigType {
      * 
      * 
      */
-    public List<ConfigItemType> getConfigItem() {
+    public List<ConfigItemType> getConfigItems() {
         if (configItem == null) {
             configItem = new ArrayList<ConfigItemType>();
         }

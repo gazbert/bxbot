@@ -23,46 +23,34 @@
 
 package com.gazbert.bxbot.core.config.exchange;
 
-import com.gazbert.bxbot.core.api.exchange.ExchangeConfig;
+import java.util.HashMap;
+import java.util.Map;
 
 /*
- * Encapsulates configuration for an Exchange Adapter.
- * The configuration is loaded from the config/exchange.xml.
+ * Encapsulates 'other' (misc) configuration for an Exchange Adapter.
  */
-public class ExchangeConfigImpl implements ExchangeConfig {
+public class OtherConfigImpl {
 
-    /* Holds Authentication configuration for the Exchange Adapter. */
-    private AuthenticationConfigImpl authenticationConfig;
-
-    /* Holds Network configuration for the Exchange Adapter */
-    private NetworkConfigImpl networkConfig;
-
-    /* Holds Other (misc) configuration for the Exchange Adapter */
-    private OtherConfigImpl otherConfig;
+    private Map<String, String> items;
 
 
-    public AuthenticationConfigImpl getAuthenticationConfig() {
-        return authenticationConfig;
+    public OtherConfigImpl() {
+        items = new HashMap<>();
     }
 
-    public void setAuthenticationConfig(AuthenticationConfigImpl authenticationConfig) {
-        this.authenticationConfig = authenticationConfig;
+    public void addItem(String name, String value) {
+        items.put(name, value);
     }
 
-    public void setNetworkConfig(NetworkConfigImpl networkConfig) {
-        this.networkConfig = networkConfig;
+    public String getItem(String name) {
+        return items.get(name);
     }
 
-    public NetworkConfigImpl getNetworkConfig() {
-        return networkConfig;
+    @Override
+    public String toString() {
+        return OtherConfigImpl.class.getSimpleName()
+                + " ["
+                + "items=" + items
+                + "]";
     }
-
-    public OtherConfigImpl getOtherConfig() {
-        return otherConfig;
-    }
-
-    public void setOtherConfig(OtherConfigImpl otherConfig) {
-        this.otherConfig = otherConfig;
-    }
-
 }
