@@ -25,33 +25,22 @@ package com.gazbert.bxbot.core.api.exchange;
 
 /**
  * <p>
- * Encapsulates configuration for an Exchange Adapter.
+ * Encapsulates any (optional) 'other' configuration for an Exchange Adapter.
  * </p>
  *
  * <p>
- * Configuration comes from the config/exchange.xml file.
+ * Configuration comes from the exchange.xml file.
  * </p>
  *
  * @author gazbert
- * @since 07/07/2016
+ * @since 08/07/2016
  */
-public interface ExchangeConfig {
+public interface OtherConfig {
 
     /**
-     * Returns any (optional) authentication config.
-     * @return authentication config if present, null otherwise.
+     * Fetches a given config item by name.
+     * @param name the name of the item to fetch.
+     * @return the item value if found, null otherwise.
      */
-    AuthenticationConfig getAuthenticationConfig();
-
-    /**
-     * Returns any (optional) network config.
-     * @return network config if present, null otherwise.
-     */
-    NetworkConfig getNetworkConfig();
-
-    /**
-     * Returns any (optional) other (misc) config.
-     * @return other config if present, null otherwise.
-     */
-    OtherConfig getOtherConfig();
+    String getItem(String name);
 }

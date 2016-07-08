@@ -23,13 +23,14 @@
 
 package com.gazbert.bxbot.core.config.exchange;
 
+import com.gazbert.bxbot.core.api.exchange.AuthenticationConfig;
 import java.util.HashMap;
 import java.util.Map;
 
 /*
  * Encapsulates authentication configuration for an Exchange Adapter.
  */
-public class AuthenticationConfigImpl {
+public class AuthenticationConfigImpl implements AuthenticationConfig {
 
     private Map<String, String> items;
 
@@ -42,6 +43,7 @@ public class AuthenticationConfigImpl {
         items.put(name, value);
     }
 
+    @Override
     public String getItem(String name) {
         return items.get(name);
     }

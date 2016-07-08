@@ -483,7 +483,7 @@ final public class TradingEngine {
                 EXCHANGE_CONFIG_XML_FILENAME, EXCHANGE_CONFIG_XSD_FILENAME);
 
         tradingApi = ConfigurableComponentFactory.createComponent(exchangeType.getAdapter());
-        LogUtils.log(LOG, Level.INFO, () ->"Trading Engine will use Exchange Adapter for: " + tradingApi.getImplName());
+        LogUtils.log(LOG, Level.INFO, () -> "Trading Engine will use Exchange Adapter for: " + tradingApi.getImplName());
 
         final ExchangeConfigImpl exchangeConfig = new ExchangeConfigImpl();
 
@@ -498,8 +498,6 @@ final public class TradingEngine {
             final NonFatalErrorCodesType nonFatalErrorCodesType = networkConfigType.getNonFatalErrorCodes();
             if (nonFatalErrorCodesType != null) {
                 networkConfig.setNonFatalErrorCodes(nonFatalErrorCodesType.getCodes());
-                LogUtils.log(LOG, Level.INFO, () ->
-                        "NetworkConfiguration NonFatalErrorCodes have been set: " + networkConfig.getNonFatalErrorCodes());
             } else {
                 LogUtils.log(LOG, Level.INFO, () ->
                         "No (optional) NetworkConfiguration NonFatalErrorCodes have been set for Exchange Adapter: "
@@ -510,8 +508,6 @@ final public class TradingEngine {
             final NonFatalErrorMessagesType nonFatalErrorMessagesType = networkConfigType.getNonFatalErrorMessages();
             if (nonFatalErrorMessagesType != null) {
                 networkConfig.setNonFatalErrorMessages(nonFatalErrorMessagesType.getMessages());
-                LogUtils.log(LOG, Level.INFO, () ->
-                        "NetworkConfiguration NonFatalErrorMessages have been set: " + networkConfig.getNonFatalErrorMessages());
             } else {
                 LogUtils.log(LOG, Level.INFO, () ->
                         "No (optional) NetworkConfiguration NonFatalErrorMessages have been set for Exchange Adapter: "
@@ -519,6 +515,8 @@ final public class TradingEngine {
             }
 
             exchangeConfig.setNetworkConfig(networkConfig);
+            LogUtils.log(LOG, Level.INFO, () ->
+                    "NetworkConfiguration has been set: " + exchangeConfig.getNetworkConfig());
 
         } else {
             LogUtils.log(LOG, Level.INFO, () ->
@@ -539,7 +537,6 @@ final public class TradingEngine {
             }
 
             exchangeConfig.setAuthenticationConfig(authenticationConfig);
-
             LogUtils.log(LOG, Level.INFO, () ->
                     "AuthenticationConfiguration has been set: " + exchangeConfig.getAuthenticationConfig());
 
@@ -562,7 +559,6 @@ final public class TradingEngine {
             }
 
             exchangeConfig.setOtherConfig(otherConfig);
-
             LogUtils.log(LOG, Level.INFO, () ->
                     "OtherConfiguration has been set: " + exchangeConfig.getOtherConfig());
 

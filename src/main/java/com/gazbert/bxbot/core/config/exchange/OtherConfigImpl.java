@@ -23,13 +23,15 @@
 
 package com.gazbert.bxbot.core.config.exchange;
 
+import com.gazbert.bxbot.core.api.exchange.OtherConfig;
+
 import java.util.HashMap;
 import java.util.Map;
 
 /*
  * Encapsulates 'other' (misc) configuration for an Exchange Adapter.
  */
-public class OtherConfigImpl {
+public class OtherConfigImpl implements OtherConfig {
 
     private Map<String, String> items;
 
@@ -42,6 +44,7 @@ public class OtherConfigImpl {
         items.put(name, value);
     }
 
+    @Override
     public String getItem(String name) {
         return items.get(name);
     }

@@ -41,6 +41,7 @@ public class ExchangeConfigImpl implements ExchangeConfig {
     private OtherConfigImpl otherConfig;
 
 
+    @Override
     public AuthenticationConfigImpl getAuthenticationConfig() {
         return authenticationConfig;
     }
@@ -53,6 +54,7 @@ public class ExchangeConfigImpl implements ExchangeConfig {
         this.networkConfig = networkConfig;
     }
 
+    @Override
     public NetworkConfigImpl getNetworkConfig() {
         return networkConfig;
     }

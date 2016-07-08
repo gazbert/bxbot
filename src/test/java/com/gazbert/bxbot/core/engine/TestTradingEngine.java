@@ -23,7 +23,6 @@
 
 package com.gazbert.bxbot.core.engine;
 
-
 import com.gazbert.bxbot.core.api.trading.*;
 import com.gazbert.bxbot.core.api.strategy.StrategyException;
 import com.gazbert.bxbot.core.api.strategy.TradingStrategy;
@@ -56,7 +55,6 @@ import static junit.framework.TestCase.assertTrue;
 import static org.easymock.EasyMock.*;
 import static org.junit.Assert.assertFalse;
 
-
 /*
  * Tests the behaviour of the Trading Engine is as expected.
  *
@@ -65,8 +63,6 @@ import static org.junit.Assert.assertFalse;
  * TradingEngine.class is prepared so we can mock constructors for Market + StrategyConfigImpl object creation.
  *
  * There's a lot of time dependent stuff going on here; I hate these sorts of tests!
- *
- * TODO Break up the setupForEachTest into more manageable parts.
  *
  */
 @RunWith(PowerMockRunner.class)
@@ -120,8 +116,6 @@ public class TestTradingEngine {
 
 
     /*
-     * Brutal use of mocks, but need to be sure we get this right!
-     *
      * Mock out Config subsystem; we're not testing it here - has its own unit tests.
      *
      * Test scenarios use 1 market with 1 strategy with 1 config item to keep tests manageable.
@@ -129,12 +123,424 @@ public class TestTradingEngine {
      */
     @Before
     public void setupForEachTest() throws Exception {
-        
-        // Mock out the Config subsystem
+
         PowerMock.mockStatic(ConfigurationManager.class);
         PowerMock.mockStatic(ConfigurableComponentFactory.class);
-        
-        // expect to load Exchange Adapter config and then create it
+
+        setupExchangeAdapterConfigExpectations();
+        setupEngineConfigExpectations();
+        setupStrategyAndMarketConfigExpectations();
+    }
+
+    /*
+     * Tests Trading Engine is initialised as expected.
+     */
+    @Test
+    public void testEngineInitialisesSuccessfully() throws Exception {
+
+        // Expect Email Alerter to be initialised
+        PowerMock.mockStatic(EmailAlerter.class);
+        final EmailAlerter emailAlerter = PowerMock.createMock(EmailAlerter.class);
+        expect(EmailAlerter.getInstance()).andReturn(emailAlerter);
+
+        PowerMock.replayAll();
+
+        final TradingEngine tradingEngine = TradingEngine.newInstance();
+        assertFalse(tradingEngine.isRunning());
+
+        PowerMock.verifyAll();
+    }
+
+    /*
+     * Tests Trading Engine fails initialisation if a duplicate Market is loaded from config.
+     */
+    @Test (expected = IllegalArgumentException.class)
+    public void testEngineInitialisesFailsIfDuplicateMarketFoundInConfig() throws Exception {
+
+        // add a duplicate market - this is nasty, but no time to refactor...
+        marketTypes.add(marketType);
+        expect(marketType.getLabel()).andReturn(MARKET_LABEL);
+        expect(marketType.getId()).andReturn(MARKET_ID);
+        expect(marketType.getBaseCurrency()).andReturn(MARKET_BASE_CURRENCY);
+        expect(marketType.getCounterCurrency()).andReturn(MARKET_COUNTER_CURRENCY);
+        expect(marketType.isEnabled()).andReturn(MARKET_IS_ENABLED);
+
+        PowerMock.replayAll();
+
+        TradingEngine.newInstance();
+
+        PowerMock.verifyAll();
+    }
+
+    /*
+     * Tests the engine is shutdown if Emergency Stop Currency wallet balance on the exchange drops below
+     * configured limit.
+     */
+    @Test
+    public void testEngineShutsDownWhenEmergencyStopBalanceIfBreached() throws Exception {
+
+        final Map<String, BigDecimal> balancesAvailable = new HashMap<>();
+        // balance limit has been breached for BTC
+        balancesAvailable.put(ENGINE_EMERGENCY_STOP_CURRENCY, new BigDecimal("0.49999999"));
+
+        // Expect Email Alerter to be initialised
+        PowerMock.mockStatic(EmailAlerter.class);
+        final EmailAlerter emailAlerter = PowerMock.createMock(EmailAlerter.class);
+        expect(EmailAlerter.getInstance()).andReturn(emailAlerter);
+
+        // expect BalanceInfo to be fetched using Trading API
+        final BalanceInfo balanceInfo = PowerMock.createMock(BalanceInfo.class);
+        expect(tradingApi.getBalanceInfo()).andReturn(balanceInfo);
+        expect(balanceInfo.getBalancesAvailable()).andReturn(balancesAvailable);
+
+        // expect Email Alert to be sent
+        emailAlerter.sendMessage(eq(CRITICAL_EMAIL_ALERT_SUBJECT),
+                contains("EMERGENCY STOP triggered! - Current Emergency Stop Currency [BTC] wallet balance [0.49999999]" +
+                        " on exchange is lower than configured Emergency Stop balance [0.5] BTC"));
+
+        PowerMock.replayAll();
+
+        final TradingEngine tradingEngine = TradingEngine.newInstance();
+        tradingEngine.start();
+
+        // sleep for 1s and check if shutdown ok
+        Thread.sleep(1 * 1000);
+        assertFalse(tradingEngine.isRunning());
+
+        PowerMock.verifyAll();
+    }
+
+    /*
+     * Tests the engine starts up and executes trade cycles successfully.
+     * Scenario is 2 successful trade cycles and then we shut it down.
+     */
+    @Test
+    public void testEngineExecutesTradeCyclesAndCanBeShutdownSuccessfully() throws Exception {
+
+        final int numberOfTradeCycles = 2;
+        final Map<String, BigDecimal> balancesAvailable = new HashMap<>();
+        // balance limit NOT breached for BTC
+        balancesAvailable.put(ENGINE_EMERGENCY_STOP_CURRENCY, new BigDecimal("0.5"));
+
+        // Expect Email Alerter to be initialised
+        PowerMock.mockStatic(EmailAlerter.class);
+        final EmailAlerter emailAlerter = PowerMock.createMock(EmailAlerter.class);
+        expect(EmailAlerter.getInstance()).andReturn(emailAlerter);
+
+        // expect BalanceInfo to be fetched using Trading API
+        final BalanceInfo balanceInfo = PowerMock.createMock(BalanceInfo.class);
+        expect(tradingApi.getBalanceInfo()).andReturn(balanceInfo).times(numberOfTradeCycles);
+        expect(balanceInfo.getBalancesAvailable()).andReturn(balancesAvailable).times(numberOfTradeCycles);
+
+        // expect Trading Strategy to be invoked 2 times, once every 1s
+        tradingStrategy.execute();
+        expectLastCall().times(numberOfTradeCycles);
+
+        PowerMock.replayAll();
+
+        final TradingEngine tradingEngine = TradingEngine.newInstance();
+        final Executor executor = Executors.newSingleThreadExecutor();
+
+//        // java 7 way
+//        executor.execute(new Runnable() {
+//            @Override
+//            public void run() {
+//                tradingEngine.start();
+//            }
+//        });
+
+//        // java 8 lambda
+//        executor.execute(() -> tradingEngine.start());
+
+        // java 8 reference method
+        executor.execute(tradingEngine::start);
+
+        // sleep for 2s to let 2 trade cycles occur
+        Thread.sleep(numberOfTradeCycles * 1000);
+        assertTrue(tradingEngine.isRunning());
+
+        tradingEngine.shutdown();
+
+        // sleep for 1s and check if shutdown ok
+        Thread.sleep(1 * 1000);
+        assertFalse(tradingEngine.isRunning());
+
+        PowerMock.verifyAll();
+    }
+
+    /*
+     * Tests the engine starts up, executes 1 trade cycle successfully, but then receives StrategyException from
+     * Trading Strategy on the 2nd cycle. We expect the engine to shutdown.
+     */
+    @Test
+    public void testEngineShutsDownWhenItReceivesStrategyExceptionFromTradingStrategy() throws Exception {
+
+        final String exceptionErrorMsg = "Eeek! My strat just broke. Please shutdown!";
+        final Map<String, BigDecimal> balancesAvailable = new HashMap<>();
+        // balance limit NOT breached for BTC
+        balancesAvailable.put(ENGINE_EMERGENCY_STOP_CURRENCY, new BigDecimal("0.5"));
+        final BalanceInfo balanceInfo = PowerMock.createMock(BalanceInfo.class);
+
+        // Expect Email Alerter to be initialised
+        PowerMock.mockStatic(EmailAlerter.class);
+        final EmailAlerter emailAlerter = PowerMock.createMock(EmailAlerter.class);
+        expect(EmailAlerter.getInstance()).andReturn(emailAlerter);
+
+        // expect 1st trade cycle to be successful
+        expect(tradingApi.getBalanceInfo()).andReturn(balanceInfo);
+        expect(balanceInfo.getBalancesAvailable()).andReturn(balancesAvailable);
+        tradingStrategy.execute();
+
+        // expect StrategyException in 2nd trade cycle
+        expect(tradingApi.getBalanceInfo()).andReturn(balanceInfo);
+        expect(balanceInfo.getBalancesAvailable()).andReturn(balancesAvailable);
+        tradingStrategy.execute();
+        expectLastCall().andThrow(new StrategyException(exceptionErrorMsg));
+
+        // expect Email Alert to be sent
+        emailAlerter.sendMessage(eq(CRITICAL_EMAIL_ALERT_SUBJECT), contains("A FATAL error has occurred in Trading" +
+                " Strategy! Details: " + exceptionErrorMsg));
+
+        PowerMock.replayAll();
+
+        final TradingEngine tradingEngine = TradingEngine.newInstance();
+        tradingEngine.start();
+
+        // sleep for 1s and check if shutdown ok
+        Thread.sleep(1 * 1000);
+        assertFalse(tradingEngine.isRunning());
+
+        PowerMock.verifyAll();
+    }
+
+    /*
+     * Tests the engine starts up, executes 1 trade cycle successfully, but then receives unexpected Exception from
+     * Trading Strategy on the 2nd cycle. We expect the engine to shutdown.
+     */
+    @Test
+    public void testEngineShutsDownWhenItReceivesUnexpectedExceptionFromTradingStrategy() throws Exception {
+
+        final String exceptionErrorMsg = "Ah, curse your sudden but inevitable betrayal!";
+        final Map<String, BigDecimal> balancesAvailable = new HashMap<>();
+        // balance limit NOT breached for BTC
+        balancesAvailable.put(ENGINE_EMERGENCY_STOP_CURRENCY, new BigDecimal("0.5"));
+        final BalanceInfo balanceInfo = PowerMock.createMock(BalanceInfo.class);
+
+        // Expect Email Alerter to be initialised
+        PowerMock.mockStatic(EmailAlerter.class);
+        final EmailAlerter emailAlerter = PowerMock.createMock(EmailAlerter.class);
+        expect(EmailAlerter.getInstance()).andReturn(emailAlerter);
+
+        // expect 1st trade cycle to be successful
+        expect(tradingApi.getBalanceInfo()).andReturn(balanceInfo);
+        expect(balanceInfo.getBalancesAvailable()).andReturn(balancesAvailable);
+        tradingStrategy.execute();
+
+        // expect unexpected Exception in 2nd trade cycle
+        expect(tradingApi.getBalanceInfo()).andReturn(balanceInfo);
+        expect(balanceInfo.getBalancesAvailable()).andReturn(balancesAvailable);
+        tradingStrategy.execute();
+        expectLastCall().andThrow(new IllegalArgumentException(exceptionErrorMsg));
+
+        // expect Email Alert to be sent
+        emailAlerter.sendMessage(eq(CRITICAL_EMAIL_ALERT_SUBJECT), contains("An unexpected FATAL error has occurred in" +
+                " Exchange Adapter or Trading Strategy! Details: " + exceptionErrorMsg));
+
+        PowerMock.replayAll();
+
+        final TradingEngine tradingEngine = TradingEngine.newInstance();
+        tradingEngine.start();
+
+        // sleep for 1s and check if shutdown ok
+        Thread.sleep(1 * 1000);
+        assertFalse(tradingEngine.isRunning());
+
+        PowerMock.verifyAll();
+    }
+
+    /*
+     * Tests the engine starts up, executes 1 trade cycle successfully, but then receives unexpected Exception from
+     * Exchange Adapter on the 2nd cycle. We expect the engine to shutdown.
+     */
+    @Test
+    public void testEngineShutsDownWhenItReceivesUnexpectedExceptionFromExchangeAdapter() throws Exception {
+
+        final String exceptionErrorMsg = "I had to rewire the grav thrust because somebody won't replace that crappy compression coil.";
+        final Map<String, BigDecimal> balancesAvailable = new HashMap<>();
+        // balance limit NOT breached for BTC
+        balancesAvailable.put(ENGINE_EMERGENCY_STOP_CURRENCY, new BigDecimal("0.5"));
+        final BalanceInfo balanceInfo = PowerMock.createMock(BalanceInfo.class);
+
+        // Expect Email Alerter to be initialised
+        PowerMock.mockStatic(EmailAlerter.class);
+        final EmailAlerter emailAlerter = PowerMock.createMock(EmailAlerter.class);
+        expect(EmailAlerter.getInstance()).andReturn(emailAlerter);
+
+        // expect 1st trade cycle to be successful
+        expect(tradingApi.getBalanceInfo()).andReturn(balanceInfo);
+        expect(balanceInfo.getBalancesAvailable()).andReturn(balancesAvailable);
+        tradingStrategy.execute();
+
+        // expect unexpected Exception in 2nd trade cycle
+        expect(tradingApi.getBalanceInfo()).andThrow(new IllegalStateException(exceptionErrorMsg));
+
+        // expect Email Alert to be sent
+        emailAlerter.sendMessage(eq(CRITICAL_EMAIL_ALERT_SUBJECT), contains("An unexpected FATAL error has occurred in" +
+                " Exchange Adapter or Trading Strategy! Details: " + exceptionErrorMsg));
+
+        PowerMock.replayAll();
+
+        final TradingEngine tradingEngine = TradingEngine.newInstance();
+        tradingEngine.start();
+
+        // sleep for 1s and check if shutdown ok
+        Thread.sleep(1 * 1000);
+        assertFalse(tradingEngine.isRunning());
+
+        PowerMock.verifyAll();
+    }
+
+    /*
+     * Tests the engine starts up, executes 1 trade cycle successfully, but then receives TradingApiException from
+     * Exchange Adapter on the 2nd cycle. We expect the engine to shutdown.
+     */
+    @Test
+    public void testEngineShutsDownWhenItReceivesTradingApiExceptionFromExchangeAdapter() throws Exception {
+
+        final String exceptionErrorMsg = "Ten percent of nothin' is ... let me do the math here ... nothin' into nothin' ... carry the nothin' ...";
+        final Map<String, BigDecimal> balancesAvailable = new HashMap<>();
+        // balance limit NOT breached for BTC
+        balancesAvailable.put(ENGINE_EMERGENCY_STOP_CURRENCY, new BigDecimal("0.5"));
+        final BalanceInfo balanceInfo = PowerMock.createMock(BalanceInfo.class);
+
+        // Expect Email Alerter to be initialised
+        PowerMock.mockStatic(EmailAlerter.class);
+        final EmailAlerter emailAlerter = PowerMock.createMock(EmailAlerter.class);
+        expect(EmailAlerter.getInstance()).andReturn(emailAlerter);
+
+        // expect 1st trade cycle to be successful
+        expect(tradingApi.getBalanceInfo()).andReturn(balanceInfo);
+        expect(balanceInfo.getBalancesAvailable()).andReturn(balancesAvailable);
+        tradingStrategy.execute();
+
+        // expect TradingApiException in 2nd trade cycle
+        expect(tradingApi.getBalanceInfo()).andThrow(new TradingApiException(exceptionErrorMsg));
+
+        // expect Email Alert to be sent
+        emailAlerter.sendMessage(eq(CRITICAL_EMAIL_ALERT_SUBJECT), contains("A FATAL error has occurred in Exchange" +
+                " Adapter! Details: " + exceptionErrorMsg));
+
+        PowerMock.replayAll();
+
+        final TradingEngine tradingEngine = TradingEngine.newInstance();
+        tradingEngine.start();
+
+        // sleep for 1s and check if shutdown ok
+        Thread.sleep(1 * 1000);
+        assertFalse(tradingEngine.isRunning());
+
+        PowerMock.verifyAll();
+    }
+
+    /*
+     * Tests the engine continues to execute next trade cycle if it receives a ExchangeTimeoutException.
+     * Scenario is 1 successful trade cycle, 2nd cycle Exchange Adapter throws ExchangeTimeoutException, engine stays alive and
+     * successfully executes 3rd trade cycle.
+     */
+    @Test
+    public void testEngineExecutesNextTradeCyclesAfterReceivingExchangeTimeoutException() throws Exception {
+
+        final String exceptionErrorMsg = "Man walks down the street in a hat like that, you know he's not afraid of anything...";
+        final int numberOfTradeCycles = 3;
+        final BalanceInfo balanceInfo = PowerMock.createMock(BalanceInfo.class);
+        final Map<String, BigDecimal> balancesAvailable = new HashMap<>();
+        // balance limit NOT breached for BTC
+        balancesAvailable.put(ENGINE_EMERGENCY_STOP_CURRENCY, new BigDecimal("0.5"));
+
+        // Expect Email Alerter to be initialised
+        PowerMock.mockStatic(EmailAlerter.class);
+        final EmailAlerter emailAlerter = PowerMock.createMock(EmailAlerter.class);
+        expect(EmailAlerter.getInstance()).andReturn(emailAlerter);
+
+        // expect 1st trade cycle to be successful
+        expect(tradingApi.getBalanceInfo()).andReturn(balanceInfo);
+        expect(balanceInfo.getBalancesAvailable()).andReturn(balancesAvailable);
+        tradingStrategy.execute();
+
+        // expect BalanceInfo fetch to fail with ExchangeTimeoutException on 2nd cycle
+        expect(tradingApi.getBalanceInfo()).andThrow(new ExchangeTimeoutException(exceptionErrorMsg));
+
+        // expect 3rd trade cycle to be successful
+        expect(tradingApi.getBalanceInfo()).andReturn(balanceInfo);
+        expect(balanceInfo.getBalancesAvailable()).andReturn(balancesAvailable);
+        tradingStrategy.execute();
+
+        PowerMock.replayAll();
+
+        final TradingEngine tradingEngine = TradingEngine.newInstance();
+        final Executor executor = Executors.newSingleThreadExecutor();
+        executor.execute(tradingEngine::start);
+
+        // sleep for 3s to let 3 trade cycles occur
+        Thread.sleep(numberOfTradeCycles * 1000);
+        assertTrue(tradingEngine.isRunning());
+
+        tradingEngine.shutdown();
+
+        // sleep for 1s and check if shutdown ok
+        Thread.sleep(1 * 1000);
+        assertFalse(tradingEngine.isRunning());
+
+        PowerMock.verifyAll();
+    }
+
+    /*
+     * Tests the engine cannot be started more than once.
+     */
+    @Test (expected = IllegalStateException.class)
+    public void testEngineCannotBeStartedMoreThanOnce() throws Exception {
+
+        final int numberOfTradeCycles = 1;
+        final Map<String, BigDecimal> balancesAvailable = new HashMap<>();
+        // balance limit NOT breached for BTC
+        balancesAvailable.put(ENGINE_EMERGENCY_STOP_CURRENCY, new BigDecimal("0.5"));
+
+        // Expect Email Alerter to be initialised
+        PowerMock.mockStatic(EmailAlerter.class);
+        final EmailAlerter emailAlerter = PowerMock.createMock(EmailAlerter.class);
+        expect(EmailAlerter.getInstance()).andReturn(emailAlerter);
+
+        // expect BalanceInfo to be fetched using Trading API
+        final BalanceInfo balanceInfo = PowerMock.createMock(BalanceInfo.class);
+        expect(tradingApi.getBalanceInfo()).andReturn(balanceInfo).times(numberOfTradeCycles);
+        expect(balanceInfo.getBalancesAvailable()).andReturn(balancesAvailable).times(numberOfTradeCycles);
+
+        // expect Trading Strategy to be invoked 1 time
+        tradingStrategy.execute();
+        expectLastCall().times(numberOfTradeCycles);
+
+        PowerMock.replayAll();
+
+        final TradingEngine tradingEngine = TradingEngine.newInstance();
+        final Executor executor = Executors.newSingleThreadExecutor();
+        executor.execute(tradingEngine::start);
+
+        // sleep for 1s to let 1 trade cycles occur
+        Thread.sleep(numberOfTradeCycles * 1000);
+        assertTrue(tradingEngine.isRunning());
+
+        // try start the engine again
+        tradingEngine.start();
+
+        PowerMock.verifyAll();
+    }
+
+    // ------------------------------------------------------------------------------------------------
+    //  private utils
+    // ------------------------------------------------------------------------------------------------
+
+    private void setupExchangeAdapterConfigExpectations() throws Exception {
+
         final ExchangeType exchangeType = PowerMock.createMock(ExchangeType.class);
         expect(ConfigurationManager.loadConfig(eq(ExchangeType.class), anyString(), anyString())).andReturn(exchangeType);
         expect(exchangeType.getAdapter()).andReturn(EXCHANGE_ADAPTER_IMPL_CLASS);
@@ -180,16 +586,22 @@ public class TestTradingEngine {
         expect(otherConfigType.getConfigItems()).andReturn(otherConfigItemTypes);
         expect(otherConfigItemType.getName()).andReturn(EXCHANGE_ADAPTER_OTHER_CONFIG_ITEM_NAME);
         expect(otherConfigItemType.getValue()).andReturn(EXCHANGE_ADAPTER_OTHER_CONFIG_ITEM_VALUE);
+    }
 
+    private void setupEngineConfigExpectations() throws Exception {
 
-        // expect to load Engine config
         final EngineType engineType = PowerMock.createMock(EngineType.class);
         expect(ConfigurationManager.loadConfig(eq(EngineType.class), anyString(), anyString())).andReturn(engineType);
         expect(engineType.getEmergencyStopCurrency()).andReturn(ENGINE_EMERGENCY_STOP_CURRENCY);
         expect(engineType.getEmergencyStopBalance()).andReturn(ENGINE_EMERGENCY_STOP_BALANCE);
         expect(engineType.getTradeCycleInterval()).andReturn(ENGINE_TRADE_CYCLE_INTERVAL);
-        
-        // expect to load Strategies config
+    }
+
+    /*
+     * Brutal use of mocks, but need to be sure we get this right!
+     */
+    private void setupStrategyAndMarketConfigExpectations() throws Exception {
+
         final TradingStrategiesType tradingStrategiesType = PowerMock.createMock(TradingStrategiesType.class);
         final StrategyType strategyType = PowerMock.createMock(StrategyType.class);
         final List<StrategyType> strategyTypes = new ArrayList<>();
@@ -242,442 +654,5 @@ public class TestTradingEngine {
         PowerMock.replay(strategyConfig);
         tradingStrategy.init(tradingApi, market, strategyConfig);
         expect(strategyType.getLabel()).andReturn(STRATEGY_LABEL).anyTimes(); // might be called if logging
-    }
-
-    /*
-     * Tests Trading Engine is initialised as expected.
-     */
-    @Test
-    public void testEngineInitialisesSuccessfully() throws Exception {
-
-        // Expect Email Alerter to be initialised
-        PowerMock.mockStatic(EmailAlerter.class);
-        final EmailAlerter emailAlerter = PowerMock.createMock(EmailAlerter.class);
-        expect(EmailAlerter.getInstance()).andReturn(emailAlerter);
-
-        // activate mocks
-        PowerMock.replayAll();
-
-        // run test
-        final TradingEngine tradingEngine = TradingEngine.newInstance();
-
-        // it should not be started yet though
-        assertFalse(tradingEngine.isRunning());
-
-        // mocks all called as expected?
-        PowerMock.verifyAll();
-    }
-
-    /*
-     * Tests Trading Engine fails initialisation if a duplicate Market is loaded from config.
-     */
-    @Test (expected = IllegalArgumentException.class)
-    public void testEngineInitialisesFailsIfDuplicateMarketFoundInConfig() throws Exception {
-
-        // add a duplicate market - this is nasty, but no time to refactor...
-        marketTypes.add(marketType);
-        expect(marketType.getLabel()).andReturn(MARKET_LABEL);
-        expect(marketType.getId()).andReturn(MARKET_ID);
-        expect(marketType.getBaseCurrency()).andReturn(MARKET_BASE_CURRENCY);
-        expect(marketType.getCounterCurrency()).andReturn(MARKET_COUNTER_CURRENCY);
-        expect(marketType.isEnabled()).andReturn(MARKET_IS_ENABLED);
-
-        // activate mocks
-        PowerMock.replayAll();
-
-        // run test
-        TradingEngine.newInstance();
-
-        // mocks all called as expected?
-        PowerMock.verifyAll();
-    }
-
-    /*
-     * Tests the engine is shutdown if Emergency Stop Currency wallet balance on the exchange drops below
-     * configured limit.
-     */
-    @Test
-    public void testEngineShutsDownWhenEmergencyStopBalanceIfBreached() throws Exception {
-
-        final Map<String, BigDecimal> balancesAvailable = new HashMap<>();
-        // balance limit has been breached for BTC
-        balancesAvailable.put(ENGINE_EMERGENCY_STOP_CURRENCY, new BigDecimal("0.49999999"));
-
-        // Expect Email Alerter to be initialised
-        PowerMock.mockStatic(EmailAlerter.class);
-        final EmailAlerter emailAlerter = PowerMock.createMock(EmailAlerter.class);
-        expect(EmailAlerter.getInstance()).andReturn(emailAlerter);
-
-        // expect BalanceInfo to be fetched using Trading API
-        final BalanceInfo balanceInfo = PowerMock.createMock(BalanceInfo.class);
-        expect(tradingApi.getBalanceInfo()).andReturn(balanceInfo);
-        expect(balanceInfo.getBalancesAvailable()).andReturn(balancesAvailable);
-
-        // expect Email Alert to be sent
-        emailAlerter.sendMessage(eq(CRITICAL_EMAIL_ALERT_SUBJECT),
-                contains("EMERGENCY STOP triggered! - Current Emergency Stop Currency [BTC] wallet balance [0.49999999]" +
-                        " on exchange is lower than configured Emergency Stop balance [0.5] BTC"));
-
-        // activate mocks
-        PowerMock.replayAll();
-
-        // run test
-        final TradingEngine tradingEngine = TradingEngine.newInstance();
-        tradingEngine.start();
-
-        // sleep for 1s and check if shutdown ok
-        Thread.sleep(1 * 1000);
-        assertFalse(tradingEngine.isRunning());
-
-        // mocks all called as expected?
-        PowerMock.verifyAll();
-    }
-
-    /*
-     * Tests the engine starts up and executes trade cycles successfully.
-     * Scenario is 2 successful trade cycles and then we shut it down.
-     */
-    @Test
-    public void testEngineExecutesTradeCyclesAndCanBeShutdownSuccessfully() throws Exception {
-
-        final int numberOfTradeCycles = 2;
-        final Map<String, BigDecimal> balancesAvailable = new HashMap<>();
-        // balance limit NOT breached for BTC
-        balancesAvailable.put(ENGINE_EMERGENCY_STOP_CURRENCY, new BigDecimal("0.5"));
-
-        // Expect Email Alerter to be initialised
-        PowerMock.mockStatic(EmailAlerter.class);
-        final EmailAlerter emailAlerter = PowerMock.createMock(EmailAlerter.class);
-        expect(EmailAlerter.getInstance()).andReturn(emailAlerter);
-
-        // expect BalanceInfo to be fetched using Trading API
-        final BalanceInfo balanceInfo = PowerMock.createMock(BalanceInfo.class);
-        expect(tradingApi.getBalanceInfo()).andReturn(balanceInfo).times(numberOfTradeCycles);
-        expect(balanceInfo.getBalancesAvailable()).andReturn(balancesAvailable).times(numberOfTradeCycles);
-
-        // expect Trading Strategy to be invoked 2 times, once every 1s
-        tradingStrategy.execute();
-        expectLastCall().times(numberOfTradeCycles);
-
-        // activate mocks
-        PowerMock.replayAll();
-
-        // run test
-        final TradingEngine tradingEngine = TradingEngine.newInstance();
-        final Executor executor = Executors.newSingleThreadExecutor();
-
-//        // java 7 way
-//        executor.execute(new Runnable() {
-//            @Override
-//            public void run() {
-//                tradingEngine.start();
-//            }
-//        });
-
-//        // java 8 lambda
-//        executor.execute(() -> tradingEngine.start());
-
-        // java 8 reference method
-        executor.execute(tradingEngine::start);
-
-        // sleep for 2s to let 2 trade cycles occur
-        Thread.sleep(numberOfTradeCycles * 1000);
-        assertTrue(tradingEngine.isRunning());
-
-        // shut it down
-        tradingEngine.shutdown();
-
-        // sleep for 1s and check if shutdown ok
-        Thread.sleep(1 * 1000);
-        assertFalse(tradingEngine.isRunning());
-
-        // mocks all called as expected?
-        PowerMock.verifyAll();
-    }
-
-    /*
-     * Tests the engine starts up, executes 1 trade cycle successfully, but then receives StrategyException from
-     * Trading Strategy on the 2nd cycle. We expect the engine to shutdown.
-     */
-    @Test
-    public void testEngineShutsDownWhenItReceivesStrategyExceptionFromTradingStrategy() throws Exception {
-
-        final String exceptionErrorMsg = "Eeek! My strat just broke. Please shutdown!";
-        final Map<String, BigDecimal> balancesAvailable = new HashMap<>();
-        // balance limit NOT breached for BTC
-        balancesAvailable.put(ENGINE_EMERGENCY_STOP_CURRENCY, new BigDecimal("0.5"));
-        final BalanceInfo balanceInfo = PowerMock.createMock(BalanceInfo.class);
-
-        // Expect Email Alerter to be initialised
-        PowerMock.mockStatic(EmailAlerter.class);
-        final EmailAlerter emailAlerter = PowerMock.createMock(EmailAlerter.class);
-        expect(EmailAlerter.getInstance()).andReturn(emailAlerter);
-
-        // expect 1st trade cycle to be successful
-        expect(tradingApi.getBalanceInfo()).andReturn(balanceInfo);
-        expect(balanceInfo.getBalancesAvailable()).andReturn(balancesAvailable);
-        tradingStrategy.execute();
-
-        // expect StrategyException in 2nd trade cycle
-        expect(tradingApi.getBalanceInfo()).andReturn(balanceInfo);
-        expect(balanceInfo.getBalancesAvailable()).andReturn(balancesAvailable);
-        tradingStrategy.execute();
-        expectLastCall().andThrow(new StrategyException(exceptionErrorMsg));
-
-        // expect Email Alert to be sent
-        emailAlerter.sendMessage(eq(CRITICAL_EMAIL_ALERT_SUBJECT), contains("A FATAL error has occurred in Trading" +
-                " Strategy! Details: " + exceptionErrorMsg));
-
-        // activate mocks
-        PowerMock.replayAll();
-
-        // run test
-        final TradingEngine tradingEngine = TradingEngine.newInstance();
-        tradingEngine.start();
-
-        // sleep for 1s and check if shutdown ok
-        Thread.sleep(1 * 1000);
-        assertFalse(tradingEngine.isRunning());
-
-        // mocks all called as expected?
-        PowerMock.verifyAll();
-    }
-
-    /*
-     * Tests the engine starts up, executes 1 trade cycle successfully, but then receives unexpected Exception from
-     * Trading Strategy on the 2nd cycle. We expect the engine to shutdown.
-     */
-    @Test
-    public void testEngineShutsDownWhenItReceivesUnexpectedExceptionFromTradingStrategy() throws Exception {
-
-        final String exceptionErrorMsg = "Ah, curse your sudden but inevitable betrayal!";
-        final Map<String, BigDecimal> balancesAvailable = new HashMap<>();
-        // balance limit NOT breached for BTC
-        balancesAvailable.put(ENGINE_EMERGENCY_STOP_CURRENCY, new BigDecimal("0.5"));
-        final BalanceInfo balanceInfo = PowerMock.createMock(BalanceInfo.class);
-
-        // Expect Email Alerter to be initialised
-        PowerMock.mockStatic(EmailAlerter.class);
-        final EmailAlerter emailAlerter = PowerMock.createMock(EmailAlerter.class);
-        expect(EmailAlerter.getInstance()).andReturn(emailAlerter);
-
-        // expect 1st trade cycle to be successful
-        expect(tradingApi.getBalanceInfo()).andReturn(balanceInfo);
-        expect(balanceInfo.getBalancesAvailable()).andReturn(balancesAvailable);
-        tradingStrategy.execute();
-
-        // expect unexpected Exception in 2nd trade cycle
-        expect(tradingApi.getBalanceInfo()).andReturn(balanceInfo);
-        expect(balanceInfo.getBalancesAvailable()).andReturn(balancesAvailable);
-        tradingStrategy.execute();
-        expectLastCall().andThrow(new IllegalArgumentException(exceptionErrorMsg));
-
-        // expect Email Alert to be sent
-        emailAlerter.sendMessage(eq(CRITICAL_EMAIL_ALERT_SUBJECT), contains("An unexpected FATAL error has occurred in" +
-                " Exchange Adapter or Trading Strategy! Details: " + exceptionErrorMsg));
-
-        // activate mocks
-        PowerMock.replayAll();
-
-        // run test
-        final TradingEngine tradingEngine = TradingEngine.newInstance();
-        tradingEngine.start();
-
-        // sleep for 1s and check if shutdown ok
-        Thread.sleep(1 * 1000);
-        assertFalse(tradingEngine.isRunning());
-
-        // mocks all called as expected?
-        PowerMock.verifyAll();
-    }
-
-    /*
-     * Tests the engine starts up, executes 1 trade cycle successfully, but then receives unexpected Exception from
-     * Exchange Adapter on the 2nd cycle. We expect the engine to shutdown.
-     */
-    @Test
-    public void testEngineShutsDownWhenItReceivesUnexpectedExceptionFromExchangeAdapter() throws Exception {
-
-        final String exceptionErrorMsg = "I had to rewire the grav thrust because somebody won't replace that crappy compression coil.";
-        final Map<String, BigDecimal> balancesAvailable = new HashMap<>();
-        // balance limit NOT breached for BTC
-        balancesAvailable.put(ENGINE_EMERGENCY_STOP_CURRENCY, new BigDecimal("0.5"));
-        final BalanceInfo balanceInfo = PowerMock.createMock(BalanceInfo.class);
-
-        // Expect Email Alerter to be initialised
-        PowerMock.mockStatic(EmailAlerter.class);
-        final EmailAlerter emailAlerter = PowerMock.createMock(EmailAlerter.class);
-        expect(EmailAlerter.getInstance()).andReturn(emailAlerter);
-
-        // expect 1st trade cycle to be successful
-        expect(tradingApi.getBalanceInfo()).andReturn(balanceInfo);
-        expect(balanceInfo.getBalancesAvailable()).andReturn(balancesAvailable);
-        tradingStrategy.execute();
-
-        // expect unexpected Exception in 2nd trade cycle
-        expect(tradingApi.getBalanceInfo()).andThrow(new IllegalStateException(exceptionErrorMsg));
-
-        // expect Email Alert to be sent
-        emailAlerter.sendMessage(eq(CRITICAL_EMAIL_ALERT_SUBJECT), contains("An unexpected FATAL error has occurred in" +
-                " Exchange Adapter or Trading Strategy! Details: " + exceptionErrorMsg));
-
-        // activate mocks
-        PowerMock.replayAll();
-
-        // run test
-        final TradingEngine tradingEngine = TradingEngine.newInstance();
-        tradingEngine.start();
-
-        // sleep for 1s and check if shutdown ok
-        Thread.sleep(1 * 1000);
-        assertFalse(tradingEngine.isRunning());
-
-        // mocks all called as expected?
-        PowerMock.verifyAll();
-    }
-
-    /*
-     * Tests the engine starts up, executes 1 trade cycle successfully, but then receives TradingApiException from
-     * Exchange Adapter on the 2nd cycle. We expect the engine to shutdown.
-     */
-    @Test
-    public void testEngineShutsDownWhenItReceivesTradingApiExceptionFromExchangeAdapter() throws Exception {
-
-        final String exceptionErrorMsg = "Ten percent of nothin' is ... let me do the math here ... nothin' into nothin' ... carry the nothin' ...";
-        final Map<String, BigDecimal> balancesAvailable = new HashMap<>();
-        // balance limit NOT breached for BTC
-        balancesAvailable.put(ENGINE_EMERGENCY_STOP_CURRENCY, new BigDecimal("0.5"));
-        final BalanceInfo balanceInfo = PowerMock.createMock(BalanceInfo.class);
-
-        // Expect Email Alerter to be initialised
-        PowerMock.mockStatic(EmailAlerter.class);
-        final EmailAlerter emailAlerter = PowerMock.createMock(EmailAlerter.class);
-        expect(EmailAlerter.getInstance()).andReturn(emailAlerter);
-
-        // expect 1st trade cycle to be successful
-        expect(tradingApi.getBalanceInfo()).andReturn(balanceInfo);
-        expect(balanceInfo.getBalancesAvailable()).andReturn(balancesAvailable);
-        tradingStrategy.execute();
-
-        // expect TradingApiException in 2nd trade cycle
-        expect(tradingApi.getBalanceInfo()).andThrow(new TradingApiException(exceptionErrorMsg));
-
-        // expect Email Alert to be sent
-        emailAlerter.sendMessage(eq(CRITICAL_EMAIL_ALERT_SUBJECT), contains("A FATAL error has occurred in Exchange" +
-                " Adapter! Details: " + exceptionErrorMsg));
-
-        // activate mocks
-        PowerMock.replayAll();
-
-        // run test
-        final TradingEngine tradingEngine = TradingEngine.newInstance();
-        tradingEngine.start();
-
-        // sleep for 1s and check if shutdown ok
-        Thread.sleep(1 * 1000);
-        assertFalse(tradingEngine.isRunning());
-
-        // mocks all called as expected?
-        PowerMock.verifyAll();
-    }
-
-    /*
-     * Tests the engine continues to execute next trade cycle if it receives a ExchangeTimeoutException.
-     * Scenario is 1 successful trade cycle, 2nd cycle Exchange Adapter throws ExchangeTimeoutException, engine stays alive and
-     * successfully executes 3rd trade cycle.
-     */
-    @Test
-    public void testEngineExecutesNextTradeCyclesAfterReceivingExchangeTimeoutException() throws Exception {
-
-        final String exceptionErrorMsg = "Man walks down the street in a hat like that, you know he's not afraid of anything...";
-        final int numberOfTradeCycles = 3;
-        final BalanceInfo balanceInfo = PowerMock.createMock(BalanceInfo.class);
-        final Map<String, BigDecimal> balancesAvailable = new HashMap<>();
-        // balance limit NOT breached for BTC
-        balancesAvailable.put(ENGINE_EMERGENCY_STOP_CURRENCY, new BigDecimal("0.5"));
-
-        // Expect Email Alerter to be initialised
-        PowerMock.mockStatic(EmailAlerter.class);
-        final EmailAlerter emailAlerter = PowerMock.createMock(EmailAlerter.class);
-        expect(EmailAlerter.getInstance()).andReturn(emailAlerter);
-
-        // expect 1st trade cycle to be successful
-        expect(tradingApi.getBalanceInfo()).andReturn(balanceInfo);
-        expect(balanceInfo.getBalancesAvailable()).andReturn(balancesAvailable);
-        tradingStrategy.execute();
-
-        // expect BalanceInfo fetch to fail with ExchangeTimeoutException on 2nd cycle
-        expect(tradingApi.getBalanceInfo()).andThrow(new ExchangeTimeoutException(exceptionErrorMsg));
-
-        // expect 3rd trade cycle to be successful
-        expect(tradingApi.getBalanceInfo()).andReturn(balanceInfo);
-        expect(balanceInfo.getBalancesAvailable()).andReturn(balancesAvailable);
-        tradingStrategy.execute();
-
-        // activate mocks
-        PowerMock.replayAll();
-
-        // run test
-        final TradingEngine tradingEngine = TradingEngine.newInstance();
-        final Executor executor = Executors.newSingleThreadExecutor();
-        executor.execute(tradingEngine::start);
-
-        // sleep for 3s to let 3 trade cycles occur
-        Thread.sleep(numberOfTradeCycles * 1000);
-        assertTrue(tradingEngine.isRunning());
-
-        // shut it down
-        tradingEngine.shutdown();
-
-        // sleep for 1s and check if shutdown ok
-        Thread.sleep(1 * 1000);
-        assertFalse(tradingEngine.isRunning());
-
-        // mocks all called as expected?
-        PowerMock.verifyAll();
-    }
-
-    /*
-     * Tests the engine cannot be started more than once.
-     */
-    @Test (expected = IllegalStateException.class)
-    public void testEngineCannotBeStartedMoreThanOnce() throws Exception {
-
-        final int numberOfTradeCycles = 1;
-        final Map<String, BigDecimal> balancesAvailable = new HashMap<>();
-        // balance limit NOT breached for BTC
-        balancesAvailable.put(ENGINE_EMERGENCY_STOP_CURRENCY, new BigDecimal("0.5"));
-
-        // Expect Email Alerter to be initialised
-        PowerMock.mockStatic(EmailAlerter.class);
-        final EmailAlerter emailAlerter = PowerMock.createMock(EmailAlerter.class);
-        expect(EmailAlerter.getInstance()).andReturn(emailAlerter);
-
-        // expect BalanceInfo to be fetched using Trading API
-        final BalanceInfo balanceInfo = PowerMock.createMock(BalanceInfo.class);
-        expect(tradingApi.getBalanceInfo()).andReturn(balanceInfo).times(numberOfTradeCycles);
-        expect(balanceInfo.getBalancesAvailable()).andReturn(balancesAvailable).times(numberOfTradeCycles);
-
-        // expect Trading Strategy to be invoked 1 time
-        tradingStrategy.execute();
-        expectLastCall().times(numberOfTradeCycles);
-
-        // activate mocks
-        PowerMock.replayAll();
-
-        // run test
-        final TradingEngine tradingEngine = TradingEngine.newInstance();
-        final Executor executor = Executors.newSingleThreadExecutor();
-        executor.execute(tradingEngine::start);
-
-        // sleep for 1s to let 1 trade cycles occur
-        Thread.sleep(numberOfTradeCycles * 1000);
-        assertTrue(tradingEngine.isRunning());
-
-        // try start the engine again
-        tradingEngine.start();
-
-        // mocks all called as expected?
-        PowerMock.verifyAll();
     }
 }
