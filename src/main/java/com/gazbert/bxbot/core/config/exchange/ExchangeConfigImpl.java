@@ -67,4 +67,13 @@ public class ExchangeConfigImpl implements ExchangeConfig {
         this.otherConfig = otherConfig;
     }
 
+    @Override
+    public String toString() {
+        return ExchangeConfigImpl.class.getSimpleName()
+                + " ["
+                + "authenticationConfig=" + authenticationConfig
+                + ", networkConfig=" + networkConfig
+                + ", otherConfig=" + otherConfig
+                + "]";
+    }
 }

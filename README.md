@@ -61,8 +61,8 @@ active development builds and very much ["sid"](https://www.debian.org/releases/
 but you might not have a working bot!
 
 ## Issue & Change Management
-Issues and new features will be managed using the project [Issue Tracker](https://github.com/gazbert/BX-bot/issues) - 
-please submit bugs here.
+Issues and new features will be managed using the project [Issue Tracker](https://github.com/gazbert/BX-bot/issues) -
+submit bugs here.
  
 You are welcome to take on any new features or fix any bugs!
 
@@ -268,7 +268,7 @@ The email is sent using TLS.
 #### Logging
 Logging for the bot is provided by [log4j](http://logging.apache.org/log4j/1.2/). You can configure the logging levels 
 in the `resources/log4j.properties` file. I recommend running at INFO level. DEBUG level logging will produce a *lot* of
-output from the Exchange Adapters; very handy for debugging, but not so good for your disk space!
+output from the Exchange Adapters; it's very handy for debugging, but not so good for your disk space!
 
 ### How do I write my own Trading Strategy?
 _"Battle not with monsters, lest ye become a monster, and if you gaze into the abyss, the abyss gazes also into you."_ - Friedrich Nietzsche

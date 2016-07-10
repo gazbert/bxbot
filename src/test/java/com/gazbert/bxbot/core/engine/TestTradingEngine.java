@@ -23,6 +23,8 @@
 
 package com.gazbert.bxbot.core.engine;
 
+import com.gazbert.bxbot.core.api.exchange.ExchangeAdapter;
+import com.gazbert.bxbot.core.api.exchange.ExchangeConfig;
 import com.gazbert.bxbot.core.api.trading.*;
 import com.gazbert.bxbot.core.api.strategy.StrategyException;
 import com.gazbert.bxbot.core.api.strategy.TradingStrategy;
@@ -107,7 +109,7 @@ public class TestTradingEngine {
     private static final boolean MARKET_IS_ENABLED = true;
 
     // Mocks used by all tests
-    private TradingApi tradingApi;
+    private ExchangeAdapter exchangeAdapter;
     private TradingStrategy tradingStrategy;
 
     // Hack to expose these fields for testing duplicate Markets error condition.
@@ -190,7 +192,7 @@ public class TestTradingEngine {
 
         // expect BalanceInfo to be fetched using Trading API
         final BalanceInfo balanceInfo = PowerMock.createMock(BalanceInfo.class);
-        expect(tradingApi.getBalanceInfo()).andReturn(balanceInfo);
+        expect(exchangeAdapter.getBalanceInfo()).andReturn(balanceInfo);
         expect(balanceInfo.getBalancesAvailable()).andReturn(balancesAvailable);
 
         // expect Email Alert to be sent
@@ -229,7 +231,7 @@ public class TestTradingEngine {
 
         // expect BalanceInfo to be fetched using Trading API
         final BalanceInfo balanceInfo = PowerMock.createMock(BalanceInfo.class);
-        expect(tradingApi.getBalanceInfo()).andReturn(balanceInfo).times(numberOfTradeCycles);
+        expect(exchangeAdapter.getBalanceInfo()).andReturn(balanceInfo).times(numberOfTradeCycles);
         expect(balanceInfo.getBalancesAvailable()).andReturn(balancesAvailable).times(numberOfTradeCycles);
 
         // expect Trading Strategy to be invoked 2 times, once every 1s
@@ -287,12 +289,12 @@ public class TestTradingEngine {
         expect(EmailAlerter.getInstance()).andReturn(emailAlerter);
 
         // expect 1st trade cycle to be successful
-        expect(tradingApi.getBalanceInfo()).andReturn(balanceInfo);
+        expect(exchangeAdapter.getBalanceInfo()).andReturn(balanceInfo);
         expect(balanceInfo.getBalancesAvailable()).andReturn(balancesAvailable);
         tradingStrategy.execute();
 
         // expect StrategyException in 2nd trade cycle
-        expect(tradingApi.getBalanceInfo()).andReturn(balanceInfo);
+        expect(exchangeAdapter.getBalanceInfo()).andReturn(balanceInfo);
         expect(balanceInfo.getBalancesAvailable()).andReturn(balancesAvailable);
         tradingStrategy.execute();
         expectLastCall().andThrow(new StrategyException(exceptionErrorMsg));
@@ -332,12 +334,12 @@ public class TestTradingEngine {
         expect(EmailAlerter.getInstance()).andReturn(emailAlerter);
 
         // expect 1st trade cycle to be successful
-        expect(tradingApi.getBalanceInfo()).andReturn(balanceInfo);
+        expect(exchangeAdapter.getBalanceInfo()).andReturn(balanceInfo);
         expect(balanceInfo.getBalancesAvailable()).andReturn(balancesAvailable);
         tradingStrategy.execute();
 
         // expect unexpected Exception in 2nd trade cycle
-        expect(tradingApi.getBalanceInfo()).andReturn(balanceInfo);
+        expect(exchangeAdapter.getBalanceInfo()).andReturn(balanceInfo);
         expect(balanceInfo.getBalancesAvailable()).andReturn(balancesAvailable);
         tradingStrategy.execute();
         expectLastCall().andThrow(new IllegalArgumentException(exceptionErrorMsg));
@@ -377,12 +379,12 @@ public class TestTradingEngine {
         expect(EmailAlerter.getInstance()).andReturn(emailAlerter);
 
         // expect 1st trade cycle to be successful
-        expect(tradingApi.getBalanceInfo()).andReturn(balanceInfo);
+        expect(exchangeAdapter.getBalanceInfo()).andReturn(balanceInfo);
         expect(balanceInfo.getBalancesAvailable()).andReturn(balancesAvailable);
         tradingStrategy.execute();
 
         // expect unexpected Exception in 2nd trade cycle
-        expect(tradingApi.getBalanceInfo()).andThrow(new IllegalStateException(exceptionErrorMsg));
+        expect(exchangeAdapter.getBalanceInfo()).andThrow(new IllegalStateException(exceptionErrorMsg));
 
         // expect Email Alert to be sent
         emailAlerter.sendMessage(eq(CRITICAL_EMAIL_ALERT_SUBJECT), contains("An unexpected FATAL error has occurred in" +
@@ -419,12 +421,12 @@ public class TestTradingEngine {
         expect(EmailAlerter.getInstance()).andReturn(emailAlerter);
 
         // expect 1st trade cycle to be successful
-        expect(tradingApi.getBalanceInfo()).andReturn(balanceInfo);
+        expect(exchangeAdapter.getBalanceInfo()).andReturn(balanceInfo);
         expect(balanceInfo.getBalancesAvailable()).andReturn(balancesAvailable);
         tradingStrategy.execute();
 
         // expect TradingApiException in 2nd trade cycle
-        expect(tradingApi.getBalanceInfo()).andThrow(new TradingApiException(exceptionErrorMsg));
+        expect(exchangeAdapter.getBalanceInfo()).andThrow(new TradingApiException(exceptionErrorMsg));
 
         // expect Email Alert to be sent
         emailAlerter.sendMessage(eq(CRITICAL_EMAIL_ALERT_SUBJECT), contains("A FATAL error has occurred in Exchange" +
@@ -463,15 +465,15 @@ public class TestTradingEngine {
         expect(EmailAlerter.getInstance()).andReturn(emailAlerter);
 
         // expect 1st trade cycle to be successful
-        expect(tradingApi.getBalanceInfo()).andReturn(balanceInfo);
+        expect(exchangeAdapter.getBalanceInfo()).andReturn(balanceInfo);
         expect(balanceInfo.getBalancesAvailable()).andReturn(balancesAvailable);
         tradingStrategy.execute();
 
         // expect BalanceInfo fetch to fail with ExchangeTimeoutException on 2nd cycle
-        expect(tradingApi.getBalanceInfo()).andThrow(new ExchangeTimeoutException(exceptionErrorMsg));
+        expect(exchangeAdapter.getBalanceInfo()).andThrow(new ExchangeTimeoutException(exceptionErrorMsg));
 
         // expect 3rd trade cycle to be successful
-        expect(tradingApi.getBalanceInfo()).andReturn(balanceInfo);
+        expect(exchangeAdapter.getBalanceInfo()).andReturn(balanceInfo);
         expect(balanceInfo.getBalancesAvailable()).andReturn(balancesAvailable);
         tradingStrategy.execute();
 
@@ -512,7 +514,7 @@ public class TestTradingEngine {
 
         // expect BalanceInfo to be fetched using Trading API
         final BalanceInfo balanceInfo = PowerMock.createMock(BalanceInfo.class);
-        expect(tradingApi.getBalanceInfo()).andReturn(balanceInfo).times(numberOfTradeCycles);
+        expect(exchangeAdapter.getBalanceInfo()).andReturn(balanceInfo).times(numberOfTradeCycles);
         expect(balanceInfo.getBalancesAvailable()).andReturn(balancesAvailable).times(numberOfTradeCycles);
 
         // expect Trading Strategy to be invoked 1 time
@@ -544,9 +546,9 @@ public class TestTradingEngine {
         final ExchangeType exchangeType = PowerMock.createMock(ExchangeType.class);
         expect(ConfigurationManager.loadConfig(eq(ExchangeType.class), anyString(), anyString())).andReturn(exchangeType);
         expect(exchangeType.getAdapter()).andReturn(EXCHANGE_ADAPTER_IMPL_CLASS);
-        tradingApi = PowerMock.createMock(TradingApi.class);
-        expect(ConfigurableComponentFactory.createComponent(EXCHANGE_ADAPTER_IMPL_CLASS)).andReturn(tradingApi);
-        expect(tradingApi.getImplName()).andReturn(EXCHANGE_ADAPTER_NAME);
+        exchangeAdapter = PowerMock.createMock(ExchangeAdapter.class);
+        expect(ConfigurableComponentFactory.createComponent(EXCHANGE_ADAPTER_IMPL_CLASS)).andReturn(exchangeAdapter);
+        expect(exchangeAdapter.getImplName()).andReturn(EXCHANGE_ADAPTER_NAME);
 
         // Optional Exchange Adapter network config
         final NetworkConfigType networkConfigType = PowerMock.createMock(NetworkConfigType.class);
@@ -586,6 +588,9 @@ public class TestTradingEngine {
         expect(otherConfigType.getConfigItems()).andReturn(otherConfigItemTypes);
         expect(otherConfigItemType.getName()).andReturn(EXCHANGE_ADAPTER_OTHER_CONFIG_ITEM_NAME);
         expect(otherConfigItemType.getValue()).andReturn(EXCHANGE_ADAPTER_OTHER_CONFIG_ITEM_VALUE);
+
+        // Expect adapter to be initialised
+        exchangeAdapter.init(anyObject(ExchangeConfig.class));
     }
 
     private void setupEngineConfigExpectations() throws Exception {
@@ -652,7 +657,7 @@ public class TestTradingEngine {
 
         PowerMock.replay(market);
         PowerMock.replay(strategyConfig);
-        tradingStrategy.init(tradingApi, market, strategyConfig);
+        tradingStrategy.init(exchangeAdapter, market, strategyConfig);
         expect(strategyType.getLabel()).andReturn(STRATEGY_LABEL).anyTimes(); // might be called if logging
     }
 }

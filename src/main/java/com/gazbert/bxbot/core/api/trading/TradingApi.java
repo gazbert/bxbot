@@ -55,7 +55,7 @@ public interface TradingApi {
      * Returns the current version of the API.
      * @return the API version.
      */
-    static String getVersion() {
+    default String getVersion() {
         return "1.0";
     }
 

@@ -23,7 +23,17 @@
 
 package com.gazbert.bxbot.core.exchanges;
 
-import com.gazbert.bxbot.core.api.trading.*;
+import com.gazbert.bxbot.core.api.exchange.AuthenticationConfig;
+import com.gazbert.bxbot.core.api.exchange.ExchangeConfig;
+import com.gazbert.bxbot.core.api.exchange.NetworkConfig;
+import com.gazbert.bxbot.core.api.exchange.OtherConfig;
+import com.gazbert.bxbot.core.api.trading.BalanceInfo;
+import com.gazbert.bxbot.core.api.trading.ExchangeTimeoutException;
+import com.gazbert.bxbot.core.api.trading.MarketOrderBook;
+import com.gazbert.bxbot.core.api.trading.OpenOrder;
+import com.gazbert.bxbot.core.api.trading.OrderType;
+import com.gazbert.bxbot.core.api.trading.TradingApiException;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.api.easymock.PowerMock;
@@ -67,9 +77,6 @@ import static org.junit.Assert.*;
 @PrepareForTest(ItBitExchangeAdapter.class)
 public class TestItBitExchangeAdapter {
 
-    // Valid config location - expected on runtime classpath in the ./src/test/resources folder.
-    private static final String VALID_CONFIG_LOCATION = "itbit/itbit-config.properties";
-
     // Canned test data
     private static final String MARKET_ID = "XBTUSD";
     private static final String WALLET_ID = "62827e93-f19b-67bf-8d2f-663fa4f0f1ad";
@@ -97,14 +104,43 @@ public class TestItBitExchangeAdapter {
     private static final String CANCEL_ORDER = "wallets/" + WALLET_ID + "/orders/" + ORDER_ID_TO_CANCEL;
 
     // Mocked out methods
-    private static final String MOCKED_GET_CONFIG_LOCATION_METHOD = "getConfigFileLocation";
     private static final String MOCKED_GET_REQUEST_PARAM_MAP_METHOD = "getRequestParamMap";
     private static final String MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD = "sendAuthenticatedRequestToExchange";
     private static final String MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD = "sendPublicRequestToExchange";
 
     // Mocked out state
     private static final String MOCKED_WALLET_ID_FIELD_NAME = "walletId";
-    
+
+    // Exchange Adapter config for the tests
+    private ExchangeConfig exchangeConfig;
+    private AuthenticationConfig authenticationConfig;
+    private NetworkConfig networkConfig;
+    private OtherConfig otherConfig;
+
+
+    /*
+     * Create some exchange config - the TradingEngine would normally do this.
+     */
+    @Before
+    public void setupBeforeEachTest() throws Exception {
+
+        authenticationConfig = PowerMock.createMock(AuthenticationConfig.class);
+        expect(authenticationConfig.getItem("userId")).andReturn("your_user_id");
+        expect(authenticationConfig.getItem("key")).andReturn("your_client_key");
+        expect(authenticationConfig.getItem("secret")).andReturn("your_client_secret");
+
+        networkConfig = PowerMock.createMock(NetworkConfig.class);
+        expect(networkConfig.getConnectionTimeout()).andReturn(30);
+
+        otherConfig = PowerMock.createMock(OtherConfig.class);
+        expect(otherConfig.getItem("buy-fee")).andReturn("0.5");
+        expect(otherConfig.getItem("sell-fee")).andReturn("0.5");
+
+        exchangeConfig = PowerMock.createMock(ExchangeConfig.class);
+        expect(exchangeConfig.getAuthenticationConfig()).andReturn(authenticationConfig);
+        expect(exchangeConfig.getNetworkConfig()).andReturn(networkConfig);
+        expect(exchangeConfig.getOtherConfig()).andReturn(otherConfig);
+    }
 
     // ------------------------------------------------------------------------------------------------
     //  Create Orders tests
@@ -131,14 +167,15 @@ public class TestItBitExchangeAdapter {
         final ItBitExchangeAdapter exchangeAdapter =  PowerMock.createPartialMockAndInvokeDefaultConstructor(
                 ItBitExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD,
                 MOCKED_GET_REQUEST_PARAM_MAP_METHOD);
-
         PowerMock.expectPrivate(exchangeAdapter, MOCKED_GET_REQUEST_PARAM_MAP_METHOD).andReturn(requestParamMap);
         PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq("POST"),
                 eq(NEW_ORDER), eq(requestParamMap)).andReturn(exchangeResponse);
 
         PowerMock.replayAll();
 
-        Whitebox.setInternalState(exchangeAdapter, MOCKED_WALLET_ID_FIELD_NAME, WALLET_ID); 
+        Whitebox.setInternalState(exchangeAdapter, MOCKED_WALLET_ID_FIELD_NAME, WALLET_ID);
+        exchangeAdapter.init(exchangeConfig);
+
         final String orderId = exchangeAdapter.createOrder(MARKET_ID, OrderType.BUY, BUY_ORDER_QUANTITY, BUY_ORDER_PRICE);
         assertTrue(orderId.equals("8a9ac32f-c2bd-4316-87d8-4219dc5e8041"));
 
@@ -173,7 +210,9 @@ public class TestItBitExchangeAdapter {
 
         PowerMock.replayAll();
 
-        Whitebox.setInternalState(exchangeAdapter, MOCKED_WALLET_ID_FIELD_NAME, WALLET_ID); 
+        Whitebox.setInternalState(exchangeAdapter, MOCKED_WALLET_ID_FIELD_NAME, WALLET_ID);
+        exchangeAdapter.init(exchangeConfig);
+
         final String orderId = exchangeAdapter.createOrder(MARKET_ID, OrderType.SELL, SELL_ORDER_QUANTITY, SELL_ORDER_PRICE);
         assertTrue(orderId.equals("8a7ac32f-c2bd-4316-87d8-4219dc5e8031"));
 
@@ -191,7 +230,9 @@ public class TestItBitExchangeAdapter {
                 " you've got to be willing to pay the ultimate price. It's not tragic to die doing what you love."));
 
         PowerMock.replayAll();
-        Whitebox.setInternalState(exchangeAdapter, MOCKED_WALLET_ID_FIELD_NAME, WALLET_ID); 
+        Whitebox.setInternalState(exchangeAdapter, MOCKED_WALLET_ID_FIELD_NAME, WALLET_ID);
+        exchangeAdapter.init(exchangeConfig);
+
         exchangeAdapter.createOrder(MARKET_ID, OrderType.SELL, SELL_ORDER_QUANTITY, SELL_ORDER_PRICE);
         PowerMock.verifyAll();
     }
@@ -207,7 +248,9 @@ public class TestItBitExchangeAdapter {
                 " and hesitation will cause your worst fears to come true."));
 
         PowerMock.replayAll();
-        Whitebox.setInternalState(exchangeAdapter, MOCKED_WALLET_ID_FIELD_NAME, WALLET_ID); 
+        Whitebox.setInternalState(exchangeAdapter, MOCKED_WALLET_ID_FIELD_NAME, WALLET_ID);
+        exchangeAdapter.init(exchangeConfig);
+
         exchangeAdapter.createOrder(MARKET_ID, OrderType.BUY, BUY_ORDER_QUANTITY, BUY_ORDER_PRICE);
         PowerMock.verifyAll();
     }
@@ -233,6 +276,7 @@ public class TestItBitExchangeAdapter {
 
         PowerMock.replayAll();
         Whitebox.setInternalState(exchangeAdapter, MOCKED_WALLET_ID_FIELD_NAME, WALLET_ID);
+        exchangeAdapter.init(exchangeConfig);
 
         // marketId arg not needed for cancelling orders on this exchange.
         final boolean success = exchangeAdapter.cancelOrder(ORDER_ID_TO_CANCEL, null);
@@ -253,6 +297,7 @@ public class TestItBitExchangeAdapter {
 
         PowerMock.replayAll();
         Whitebox.setInternalState(exchangeAdapter, MOCKED_WALLET_ID_FIELD_NAME, WALLET_ID);
+        exchangeAdapter.init(exchangeConfig);
 
         // marketId arg not needed for cancelling orders on this exchange.
         exchangeAdapter.cancelOrder(ORDER_ID_TO_CANCEL, null);
@@ -274,6 +319,7 @@ public class TestItBitExchangeAdapter {
 
         PowerMock.replayAll();
         Whitebox.setInternalState(exchangeAdapter, MOCKED_WALLET_ID_FIELD_NAME, WALLET_ID);
+        exchangeAdapter.init(exchangeConfig);
 
         // marketId arg not needed for cancelling orders on this exchange.
         exchangeAdapter.cancelOrder(ORDER_ID_TO_CANCEL, null);
@@ -308,7 +354,9 @@ public class TestItBitExchangeAdapter {
 
         PowerMock.replayAll();
 
-        Whitebox.setInternalState(exchangeAdapter, MOCKED_WALLET_ID_FIELD_NAME, WALLET_ID); 
+        Whitebox.setInternalState(exchangeAdapter, MOCKED_WALLET_ID_FIELD_NAME, WALLET_ID);
+        exchangeAdapter.init(exchangeConfig);
+
         final List<OpenOrder> openOrders = exchangeAdapter.getYourOpenOrders(MARKET_ID);
 
         // assert some key stuff; we're not testing GSON here.
@@ -383,6 +431,7 @@ public class TestItBitExchangeAdapter {
 
         PowerMock.replayAll();
 
+        exchangeAdapter.init(exchangeConfig);
         final MarketOrderBook marketOrderBook = exchangeAdapter.getMarketOrders(MARKET_ID);
 
         // assert some key stuff; we're not testing GSON here.
@@ -438,6 +487,7 @@ public class TestItBitExchangeAdapter {
                 andThrow(new IllegalArgumentException("I have to return some videotapes"));
 
         PowerMock.replayAll();
+        exchangeAdapter.init(exchangeConfig);
         exchangeAdapter.getMarketOrders(MARKET_ID);
         PowerMock.verifyAll();
     }
@@ -462,9 +512,11 @@ public class TestItBitExchangeAdapter {
 
         PowerMock.replayAll();
 
+        exchangeAdapter.init(exchangeConfig);
         final BigDecimal latestMarketPrice = exchangeAdapter.getLatestMarketPrice(MARKET_ID).setScale(
                 8, BigDecimal.ROUND_HALF_UP);
         assertTrue(latestMarketPrice.compareTo(new BigDecimal("237.70000000")) == 0);
+
         PowerMock.verifyAll();
     }
 
@@ -528,6 +580,7 @@ public class TestItBitExchangeAdapter {
 
         PowerMock.replayAll();
 
+        exchangeAdapter.init(exchangeConfig);
         final BalanceInfo balanceInfo = exchangeAdapter.getBalanceInfo();
 
         // assert some key stuff; we're not testing GSON here.
@@ -579,12 +632,11 @@ public class TestItBitExchangeAdapter {
     @Test
     public void testGettingExchangeSellingFeeIsAsExpected() throws Exception {
 
-        // Partial mock the adapter so we can manipulate config location
-        PowerMock.mockStaticPartial(ItBitExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD);
-        PowerMock.expectPrivate(ItBitExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD).andReturn(VALID_CONFIG_LOCATION);
         PowerMock.replayAll();
 
         final ItBitExchangeAdapter exchangeAdapter = new ItBitExchangeAdapter();
+        exchangeAdapter.init(exchangeConfig);
+
         final BigDecimal sellPercentageFee = exchangeAdapter.getPercentageOfSellOrderTakenForExchangeFee(MARKET_ID);
         assertTrue(sellPercentageFee.compareTo(new BigDecimal("0.005")) == 0);
 
@@ -594,12 +646,11 @@ public class TestItBitExchangeAdapter {
     @Test
     public void testGettingExchangeBuyingFeeIsAsExpected() throws Exception {
 
-        // Partial mock the adapter so we can manipulate config location
-        PowerMock.mockStaticPartial(ItBitExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD);
-        PowerMock.expectPrivate(ItBitExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD).andReturn(VALID_CONFIG_LOCATION);
         PowerMock.replayAll();
 
         final ItBitExchangeAdapter exchangeAdapter = new ItBitExchangeAdapter();
+        exchangeAdapter.init(exchangeConfig);
+
         final BigDecimal buyPercentageFee = exchangeAdapter.getPercentageOfBuyOrderTakenForExchangeFee(MARKET_ID);
         assertTrue(buyPercentageFee.compareTo(new BigDecimal("0.005")) == 0);
 
@@ -609,118 +660,125 @@ public class TestItBitExchangeAdapter {
     @Test
     public void testGettingImplNameIsAsExpected() throws Exception {
 
-        // Partial mock the adapter so we can manipulate config location
-        PowerMock.mockStaticPartial(ItBitExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD);
-        PowerMock.expectPrivate(ItBitExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD).andReturn(VALID_CONFIG_LOCATION);
         PowerMock.replayAll();
 
         final ItBitExchangeAdapter exchangeAdapter = new ItBitExchangeAdapter();
+        exchangeAdapter.init(exchangeConfig);
+
         assertTrue(exchangeAdapter.getImplName().equals("itBit REST API v1"));
         PowerMock.verifyAll();
     }
 
     // ------------------------------------------------------------------------------------------------
-    //  Initialisation tests - assume config property files are located under src/test/resources
+    //  Initialisation tests
     // ------------------------------------------------------------------------------------------------
 
     @Test
     public void testExchangeAdapterInitialisesSuccessfully() throws Exception {
 
-        // Partial mock the adapter so we can manipulate config location
-        PowerMock.mockStaticPartial(ItBitExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD);
-        PowerMock.expectPrivate(ItBitExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD).andReturn(VALID_CONFIG_LOCATION);
         PowerMock.replayAll();
         final ItBitExchangeAdapter exchangeAdapter = new ItBitExchangeAdapter();
+        exchangeAdapter.init(exchangeConfig);
         assertNotNull(exchangeAdapter);
-        PowerMock.verifyAll();
+        PowerMock.verify();
     }
 
     @Test (expected = IllegalArgumentException.class)
     public void testExchangeAdapterThrowsExceptionIfUserIdConfigIsMissing() throws Exception {
 
-        // Partial mock the adapter so we can manipulate config location
-        PowerMock.mockStaticPartial(ItBitExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD);
-        PowerMock.expectPrivate(ItBitExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD).andReturn(
-                "itbit/missing-userid-itbit-config.properties");
+        PowerMock.reset(authenticationConfig);
+        expect(authenticationConfig.getItem("userId")).andReturn(null);
+        expect(authenticationConfig.getItem("key")).andReturn("your_client_key");
+        expect(authenticationConfig.getItem("secret")).andReturn("your_client_secret");
         PowerMock.replayAll();
-        new ItBitExchangeAdapter();
-        PowerMock.verifyAll();
+
+        final ItBitExchangeAdapter exchangeAdapter = new ItBitExchangeAdapter();
+        exchangeAdapter.init(exchangeConfig);
+
+        PowerMock.verify();
     }
 
     @Test (expected = IllegalArgumentException.class)
     public void testExchangeAdapterThrowsExceptionIfClientKeyConfigIsMissing() throws Exception {
 
-        // Partial mock the adapter so we can manipulate config location
-        PowerMock.mockStaticPartial(ItBitExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD);
-        PowerMock.expectPrivate(ItBitExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD).andReturn(
-                "itbit/missing-clientkey-itbit-config.properties");
+        PowerMock.reset(authenticationConfig);
+        expect(authenticationConfig.getItem("userId")).andReturn("your-user-id");
+        expect(authenticationConfig.getItem("key")).andReturn(null);
+        expect(authenticationConfig.getItem("secret")).andReturn("your_client_secret");
         PowerMock.replayAll();
-        new ItBitExchangeAdapter();
+
+        final ItBitExchangeAdapter exchangeAdapter = new ItBitExchangeAdapter();
+        exchangeAdapter.init(exchangeConfig);
         PowerMock.verifyAll();
     }
 
     @Test (expected = IllegalArgumentException.class)
     public void testExchangeAdapterThrowsExceptionIfClientSecretConfigIsMissing() throws Exception {
 
-        // Partial mock the adapter so we can manipulate config location
-        PowerMock.mockStaticPartial(ItBitExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD);
-        PowerMock.expectPrivate(ItBitExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD).andReturn(
-                "itbit/missing-clientsecret-itbit-config.properties");
+        PowerMock.reset(authenticationConfig);
+        expect(authenticationConfig.getItem("userId")).andReturn("userId");
+        expect(authenticationConfig.getItem("key")).andReturn("your_client_key");
+        expect(authenticationConfig.getItem("secret")).andReturn("");
         PowerMock.replayAll();
-        new ItBitExchangeAdapter();
+
+        final ItBitExchangeAdapter exchangeAdapter = new ItBitExchangeAdapter();
+        exchangeAdapter.init(exchangeConfig);
         PowerMock.verifyAll();
     }
 
     @Test (expected = IllegalArgumentException.class)
     public void testExchangeAdapterThrowsExceptionIfBuyFeeIsMissing() throws Exception {
 
-        // Partial mock the adapter so we can manipulate config location
-        PowerMock.mockStaticPartial(ItBitExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD);
-        PowerMock.expectPrivate(ItBitExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD).andReturn(
-                "itbit/missing-buyfee-itbit-config.properties");
+        PowerMock.reset(otherConfig);
+        expect(otherConfig.getItem("buy-fee")).andReturn("");
+        expect(otherConfig.getItem("sell-fee")).andReturn("0.5");
         PowerMock.replayAll();
-        new ItBitExchangeAdapter();
+
+        final ItBitExchangeAdapter exchangeAdapter = new ItBitExchangeAdapter();
+        exchangeAdapter.init(exchangeConfig);
         PowerMock.verifyAll();
     }
 
     @Test (expected = IllegalArgumentException.class)
     public void testExchangeAdapterThrowsExceptionIfSellFeeIsMissing() throws Exception {
 
-        // Partial mock the adapter so we can manipulate config location
-        PowerMock.mockStaticPartial(ItBitExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD);
-        PowerMock.expectPrivate(ItBitExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD).andReturn(
-                "itbit/missing-sellfee-itbit-config.properties");
+        PowerMock.reset(otherConfig);
+        expect(otherConfig.getItem("buy-fee")).andReturn("0.5");
+        expect(otherConfig.getItem("sell-fee")).andReturn(null);
         PowerMock.replayAll();
-        new ItBitExchangeAdapter();
+
+        final ItBitExchangeAdapter exchangeAdapter = new ItBitExchangeAdapter();
+        exchangeAdapter.init(exchangeConfig);
         PowerMock.verifyAll();
     }
 
     @Test (expected = IllegalArgumentException.class)
     public void testExchangeAdapterThrowsExceptionIfTimeoutConfigIsMissing() throws Exception {
 
-        // Partial mock the adapter so we can manipulate config location
-        PowerMock.mockStaticPartial(ItBitExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD);
-        PowerMock.expectPrivate(ItBitExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD).andReturn(
-                "itbit/missing-timeout-itbit-config.properties");
+        PowerMock.reset(networkConfig);
+        expect(networkConfig.getConnectionTimeout()).andReturn(0);
         PowerMock.replayAll();
-        new ItBitExchangeAdapter();
+
+        final ItBitExchangeAdapter exchangeAdapter = new ItBitExchangeAdapter();
+        exchangeAdapter.init(exchangeConfig);
         PowerMock.verifyAll();
     }
-    
+
+    // TODO add the non-fatal error codes/message tests....
+
     /*
      * Used for making real API calls to the exchange in order to grab JSON responses.
      * Have left this in; it might come in useful.
-     * It expects VALID_CONFIG_LOCATION to contain the correct credentials.
+     * It expects exchange.xml config to contain the correct credentials.
      */
 //    @Test
     public void runIntegrationTest() throws Exception {
 
-        // Partial mock the adapter so we can manipulate config location
-        PowerMock.mockStaticPartial(ItBitExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD);
-        PowerMock.expectPrivate(ItBitExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD).andReturn(VALID_CONFIG_LOCATION);
-        PowerMock.replayAll();
+//        PowerMock.replayAll();
 
-//        final TradingApi exchangeAdapter = new ItBitExchangeAdapter();
+//        final ExchangeAdapter exchangeAdapter = new ItBitExchangeAdapter();
+//        exchangeAdapter.init(exchangeConfig);
+
 //        exchangeAdapter.getImplName();
 //        exchangeAdapter.getPercentageOfBuyOrderTakenForExchangeFee(MARKET_ID);
 //        exchangeAdapter.getPercentageOfSellOrderTakenForExchangeFee(MARKET_ID);
@@ -733,6 +791,6 @@ public class TestItBitExchangeAdapter {
 //        final String orderId = exchangeAdapter.createOrder(MARKET_ID, OrderType.SELL, SELL_ORDER_QUANTITY, SELL_ORDER_PRICE);
 //        exchangeAdapter.cancelOrder(orderId, MARKET_ID);
 
-        PowerMock.verifyAll();
+//        PowerMock.verifyAll();
     }    
 }

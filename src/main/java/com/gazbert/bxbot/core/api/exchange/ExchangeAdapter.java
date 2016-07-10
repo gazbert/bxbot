@@ -23,6 +23,8 @@
 
 package com.gazbert.bxbot.core.api.exchange;
 
+import com.gazbert.bxbot.core.api.trading.TradingApi;
+
 /**
  * <p>
  * All Exchange Adapters must implement this interface. It's main purpose is for the Trading Engine to pass the
@@ -35,7 +37,7 @@ package com.gazbert.bxbot.core.api.exchange;
  * @author gazbert
  * @since 07/07/2016
  */
-public interface ExchangeAdapter {
+public interface ExchangeAdapter extends TradingApi {
 
     /**
      * Called once by the Trading Engine when it starts up.

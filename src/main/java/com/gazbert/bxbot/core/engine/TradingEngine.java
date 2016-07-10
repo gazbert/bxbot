@@ -23,10 +23,10 @@
 
 package com.gazbert.bxbot.core.engine;
 
+import com.gazbert.bxbot.core.api.exchange.ExchangeAdapter;
 import com.gazbert.bxbot.core.api.trading.BalanceInfo;
 import com.gazbert.bxbot.core.api.trading.ExchangeTimeoutException;
 import com.gazbert.bxbot.core.api.trading.Market;
-import com.gazbert.bxbot.core.api.trading.TradingApi;
 import com.gazbert.bxbot.core.api.trading.TradingApiException;
 import com.gazbert.bxbot.core.api.strategy.StrategyException;
 import com.gazbert.bxbot.core.api.strategy.TradingStrategy;
@@ -83,8 +83,7 @@ final public class TradingEngine {
     private static final Logger LOG = Logger.getLogger(TradingEngine.class);
 
     /*
-     * Location of the config files (relative to project root) used by the bot.
-     * TODO - move these onto classpath?
+     * Location of the config files (relative to project/installation root) used by the bot.
      */
     private static final String ENGINE_CONFIG_XML_FILENAME = "config/engine.xml";
     private static final String ENGINE_CONFIG_XSD_FILENAME = "config/schemas/engine.xsd";
@@ -110,7 +109,7 @@ final public class TradingEngine {
     private static final String CAUSE_ERROR_MSG_LABEL = " Cause: " ;
 
     /*
-     *System Newline separator.
+     * System Newline separator.
      */
     private static final String NEWLINE = System.getProperty("line.separator");
 
@@ -177,9 +176,9 @@ final public class TradingEngine {
     private EmailAlerter emailAlerter;
 
     /*
-     * The Trading API for interfacing with the exchange - this is provided by the Exchange Adapter.
+     * The Exchange Adapter integrating with the exchange - it also provides the TradingApi impl.
      */
-    private TradingApi tradingApi;
+    private ExchangeAdapter exchangeAdapter;
 
 
     /*
@@ -369,7 +368,7 @@ final public class TradingEngine {
 
         BalanceInfo balanceInfo;
         try {
-            balanceInfo = tradingApi.getBalanceInfo();
+            balanceInfo = exchangeAdapter.getBalanceInfo();
         } catch (TradingApiException e) {
             final String errorMsg = "Failed to get Balance info from exchange to perform Emergency Stop check - letting"
                     + " Trade Engine error policy decide what to do next...";
@@ -428,7 +427,7 @@ final public class TradingEngine {
         msgContent.append("Exchange Adapter:");
         msgContent.append(NEWLINE);
         msgContent.append(NEWLINE);
-        msgContent.append(tradingApi.getClass().getName());
+        msgContent.append(exchangeAdapter.getClass().getName());
         msgContent.append(NEWLINE);
         msgContent.append(NEWLINE);
 
@@ -482,8 +481,8 @@ final public class TradingEngine {
         final ExchangeType exchangeType = ConfigurationManager.loadConfig(ExchangeType.class,
                 EXCHANGE_CONFIG_XML_FILENAME, EXCHANGE_CONFIG_XSD_FILENAME);
 
-        tradingApi = ConfigurableComponentFactory.createComponent(exchangeType.getAdapter());
-        LogUtils.log(LOG, Level.INFO, () -> "Trading Engine will use Exchange Adapter for: " + tradingApi.getImplName());
+        exchangeAdapter = ConfigurableComponentFactory.createComponent(exchangeType.getAdapter());
+        LogUtils.log(LOG, Level.INFO, () -> "Trading Engine will use Exchange Adapter for: " + exchangeAdapter.getImplName());
 
         final ExchangeConfigImpl exchangeConfig = new ExchangeConfigImpl();
 
@@ -501,7 +500,7 @@ final public class TradingEngine {
             } else {
                 LogUtils.log(LOG, Level.INFO, () ->
                         "No (optional) NetworkConfiguration NonFatalErrorCodes have been set for Exchange Adapter: "
-                                + tradingApi.getImplName());
+                                + exchangeAdapter.getImplName());
             }
 
             // Grab optional non-fatal error messages
@@ -511,7 +510,7 @@ final public class TradingEngine {
             } else {
                 LogUtils.log(LOG, Level.INFO, () ->
                         "No (optional) NetworkConfiguration NonFatalErrorMessages have been set for Exchange Adapter: "
-                                + tradingApi.getImplName());
+                                + exchangeAdapter.getImplName());
             }
 
             exchangeConfig.setNetworkConfig(networkConfig);
@@ -520,7 +519,7 @@ final public class TradingEngine {
 
         } else {
             LogUtils.log(LOG, Level.INFO, () ->
-                    "No (optional) NetworkConfiguration has been set for Exchange Adapter: " + tradingApi.getImplName());
+                    "No (optional) NetworkConfiguration has been set for Exchange Adapter: " + exchangeAdapter.getImplName());
         }
 
         // Fetch optional authentication config
@@ -542,7 +541,7 @@ final public class TradingEngine {
 
         } else {
             LogUtils.log(LOG, Level.INFO, () ->
-                    "No (optional) AuthenticationConfiguration has been set for Exchange Adapter: " + tradingApi.getImplName());
+                    "No (optional) AuthenticationConfiguration has been set for Exchange Adapter: " + exchangeAdapter.getImplName());
         }
 
         // Fetch optional 'other' config
@@ -564,8 +563,11 @@ final public class TradingEngine {
 
         } else {
             LogUtils.log(LOG, Level.INFO, () ->
-                    "No (optional) OtherConfiguration has been set for Exchange Adapter: " + tradingApi.getImplName());
+                    "No (optional) OtherConfiguration has been set for Exchange Adapter: " + exchangeAdapter.getImplName());
         }
+
+        // Finally initialise the adapter
+        exchangeAdapter.init(exchangeConfig);
     }
 
     /*
@@ -675,7 +677,7 @@ final public class TradingEngine {
                  * Trading Strategy execution list.
                  */
                 final TradingStrategy strategyImpl = ConfigurableComponentFactory.createComponent(tradingStrategyClassname);
-                strategyImpl.init(tradingApi, market, strategyConfig);
+                strategyImpl.init(exchangeAdapter, market, strategyConfig);
 
                 LogUtils.log(LOG, Level.INFO, () -> "Initialized trading strategy successfully. Name: [" + tradingStrategy.getLabel()
                             + "] Class: " + tradingStrategy.getClassName());

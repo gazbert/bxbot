@@ -585,13 +585,12 @@ public class ExampleScalpingStrategy implements TradingStrategy {
         /**
          *  Price to buy/sell at - default to zero.
          */
-        private BigDecimal price = new BigDecimal(0);
+        private BigDecimal price = BigDecimal.ZERO;
 
         /**
          * Number of units to buy/sell - default to zero.
          */
-        private BigDecimal amount = new BigDecimal(0);
-
+        private BigDecimal amount = BigDecimal.ZERO;
         @Override
         public String toString() {
             return OrderState.class.getSimpleName()

@@ -23,6 +23,11 @@
 
 package com.gazbert.bxbot.core.exchanges;
 
+import com.gazbert.bxbot.core.api.exchange.AuthenticationConfig;
+import com.gazbert.bxbot.core.api.exchange.ExchangeAdapter;
+import com.gazbert.bxbot.core.api.exchange.ExchangeConfig;
+import com.gazbert.bxbot.core.api.exchange.NetworkConfig;
+import com.gazbert.bxbot.core.api.exchange.OtherConfig;
 import com.gazbert.bxbot.core.api.trading.BalanceInfo;
 import com.gazbert.bxbot.core.api.trading.ExchangeTimeoutException;
 import com.gazbert.bxbot.core.api.trading.MarketOrder;
@@ -40,8 +45,6 @@ import org.apache.log4j.Logger;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import javax.xml.bind.DatatypeConverter;
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -59,7 +62,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 /**
  * <p>
@@ -91,7 +93,7 @@ import java.util.Properties;
  * </p>
  *
  * <p>
- * Exchange fees are loaded from the itbit-config.properties file on startup; they are not fetched from the exchange at
+ * Exchange fees are loaded from the exchange.xml file on startup; they are not fetched from the exchange at
  * runtime as the itBit REST API v1 does not support this. The fees are used across all markets. Make sure you keep an
  * eye on the <a href="https://www.itbit.com/h/fees">exchange fees</a> and update the config accordingly.
  * There are different exchange fees for <a href="https://www.itbit.com/h/fees-maker-taker-model">Takers and Makers</a>
@@ -118,7 +120,7 @@ import java.util.Properties;
  *
  * @author gazbert
  */
-public final class ItBitExchangeAdapter extends  AbstractExchangeAdapter implements TradingApi {
+public final class ItBitExchangeAdapter extends  AbstractExchangeAdapter implements ExchangeAdapter {
 
     private static final Logger LOG = Logger.getLogger(ItBitExchangeAdapter.class);
 
@@ -149,18 +151,32 @@ public final class ItBitExchangeAdapter extends  AbstractExchangeAdapter impleme
     private static final String UNEXPECTED_IO_ERROR_MSG = "Failed to connect to Exchange due to unexpected IO error.";
 
     /**
+     * Fatal error message for when AuthenticationConfig is missing in the exchange.xml config file.
+     */
+    private static final String AUTHENTICATION_CONFIG_MISSING = "AuthenticationConfig is missing for adapter in exchange.xml file.";
+
+    /**
+     * Fatal error message for when NetworkConfig is missing in the exchange.xml config file.
+     */
+    private static final String NETWORK_CONFIG_MISSING = "NetworkConfig is missing for adapter in exchange.xml file.";
+
+    /**
+     * Fatal error message for when OtherConfig is missing in the exchange.xml config file.
+     */
+    private static final String OTHER_CONFIG_MISSING = "OtherConfig is missing for adapter in exchange.xml file.";
+
+    /**
      * Used for building error messages for missing config.
      */
     private static final String CONFIG_IS_NULL_OR_ZERO_LENGTH = " cannot be null or zero length! HINT: is the value set in the ";
 
     /**
-     * Your itBit API keys and connection timeout config.
-     * This file must be on BX-bot's runtime classpath located at: ./resources/itbit/itbit-config.properties
+     * Your itBit API keys, connection timeout, and buy/sell fees are located in the config/exchange.xml config file.
      */
-    private static final String CONFIG_FILE = "itbit/itbit-config.properties";
+    private static final String EXCHANGE_CONFIG_FILE = "config/exchange.xml";
 
     /**
-     * Name of client id property in config file.
+     * Name of user id property in config file.
      */
     private static final String USER_ID_PROPERTY_NAME = "userId";
 
@@ -246,15 +262,15 @@ public final class ItBitExchangeAdapter extends  AbstractExchangeAdapter impleme
     private Gson gson;
 
 
-    /**
-     * Constructor initialises the Exchange Adapter for using the itBit API.
-     */
-    public ItBitExchangeAdapter() {
+    @Override
+    public void init(ExchangeConfig config) {
 
-        // set the initial nonce used in the secure messaging.
-        nonce = System.currentTimeMillis() / 1000;
+        LogUtils.log(LOG, Level.INFO, () -> "About to initialise BTC-e ExchangeConfig: " + config);
+        setAuthenticationConfig(config);
+        setNetworkConfig(config);
+        setOtherConfig(config);
 
-        loadConfig();
+        nonce = System.currentTimeMillis() / 1000; // set the initial nonce used in the secure messaging.
         initSecureMessageLayer();
         initGson();
     }
@@ -560,7 +576,7 @@ public final class ItBitExchangeAdapter extends  AbstractExchangeAdapter impleme
             ExchangeTimeoutException {
 
         // itBit does not provide API call for fetching % buy fee; it only provides the fee monetary value for a
-        // given order via /wallets/{walletId}/trades API call. We load the % fee statically from itbit-config.properties
+        // given order via /wallets/{walletId}/trades API call. We load the % fee statically from exchange.xml file.
         return buyFeePercentage;
     }
 
@@ -569,7 +585,7 @@ public final class ItBitExchangeAdapter extends  AbstractExchangeAdapter impleme
             ExchangeTimeoutException {
 
         // itBit does not provide API call for fetching % sell fee; it only provides the fee monetary value for a
-        // given order via/wallets/{walletId}/trades API call. We load the % fee statically from itbit-config.properties
+        // given order via/wallets/{walletId}/trades API call. We load the % fee statically from exchange.xml file.
         return sellFeePercentage;
     }
 
@@ -1006,121 +1022,92 @@ public final class ItBitExchangeAdapter extends  AbstractExchangeAdapter impleme
     //  Config methods
     // ------------------------------------------------------------------------------------------------
 
-    /**
-     * Loads Exchange Adapter config.
-     */
-    private void loadConfig() {
+    private void setAuthenticationConfig(ExchangeConfig exchangeConfig) {
 
-        final String configFile = getConfigFileLocation();
-        final Properties configEntries = new Properties();
-        final InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream(configFile);
-
-        if (inputStream == null) {
-            final String errorMsg = "Cannot find itBit config at: " + configFile + " HINT: is it on BX-bot's classpath?";
+        final AuthenticationConfig authenticationConfig = exchangeConfig.getAuthenticationConfig();
+        if (authenticationConfig == null) {
+            final String errorMsg = AUTHENTICATION_CONFIG_MISSING + exchangeConfig;
             LOG.error(errorMsg);
-            throw new IllegalStateException(errorMsg);
+            throw new IllegalArgumentException(errorMsg);
         }
 
-        try {
-            configEntries.load(inputStream);
-
-            /*
-             * Grab the user id
-             */
-            userId = configEntries.getProperty(USER_ID_PROPERTY_NAME);
-
-            // WARNING: careful when you log this
-//            if (LOG.isInfoEnabled()) {
-//                LOG.info(USER_ID_PROPERTY_NAME + ": " + userId);
-//            }
-
-            if (userId == null || userId.length() == 0) {
-                final String errorMsg = USER_ID_PROPERTY_NAME + CONFIG_IS_NULL_OR_ZERO_LENGTH + configFile + "?";
-                LOG.error(errorMsg);
-                throw new IllegalArgumentException(errorMsg);
-            }
-
-            /*
-             * Grab the public key
-             */
-            key = configEntries.getProperty(KEY_PROPERTY_NAME);
-
-            // WARNING: careful when you log this
-//            if (LOG.isInfoEnabled()) {
-//                LOG.info(KEY_PROPERTY_NAME + ": " + key);
-//            }
-
-            if (key == null || key.length() == 0) {
-                final String errorMsg = KEY_PROPERTY_NAME + CONFIG_IS_NULL_OR_ZERO_LENGTH + configFile + "?";
-                LOG.error(errorMsg);
-                throw new IllegalArgumentException(errorMsg);
-            }
-
-            /*
-             * Grab the private key
-             */
-            secret = configEntries.getProperty(SECRET_PROPERTY_NAME);
-
-            // WARNING: careful when you log this
-//            if (LOG.isInfoEnabled()) {
-//                LOG.info(SECRET_PROPERTY_NAME + ": " + secret);
-//            }
-
-            if (secret == null || secret.length() == 0) {
-                final String errorMsg = SECRET_PROPERTY_NAME + CONFIG_IS_NULL_OR_ZERO_LENGTH + configFile + "?";
-                LOG.error(errorMsg);
-                throw new IllegalArgumentException(errorMsg);
-            }
-
-            // Grab the buy fee
-            final String buyFeeInConfig = configEntries.getProperty(BUY_FEE_PROPERTY_NAME);
-            if (buyFeeInConfig == null || buyFeeInConfig.length() == 0) {
-                final String errorMsg = BUY_FEE_PROPERTY_NAME + CONFIG_IS_NULL_OR_ZERO_LENGTH + configFile + "?";
-                LOG.error(errorMsg);
-                throw new IllegalArgumentException(errorMsg);
-            }
-            LogUtils.log(LOG, Level.INFO, () -> BUY_FEE_PROPERTY_NAME + ": " + buyFeeInConfig + "%");
-
-            buyFeePercentage = new BigDecimal(buyFeeInConfig).divide(new BigDecimal("100"), 8, BigDecimal.ROUND_HALF_UP);
-            LogUtils.log(LOG, Level.INFO, () -> "Buy fee % in BigDecimal format: " + buyFeePercentage);
-
-            // Grab the sell fee
-            final String sellFeeInConfig = configEntries.getProperty(SELL_FEE_PROPERTY_NAME);
-            if (sellFeeInConfig == null || sellFeeInConfig.length() == 0) {
-                final String errorMsg = SELL_FEE_PROPERTY_NAME + CONFIG_IS_NULL_OR_ZERO_LENGTH + configFile + "?";
-                LOG.error(errorMsg);
-                throw new IllegalArgumentException(errorMsg);
-            }
-            LogUtils.log(LOG, Level.INFO, () -> SELL_FEE_PROPERTY_NAME + ": " + sellFeeInConfig + "%");
-
-            sellFeePercentage = new BigDecimal(sellFeeInConfig).divide(new BigDecimal("100"), 8, BigDecimal.ROUND_HALF_UP);
-            LogUtils.log(LOG, Level.INFO, () -> "Sell fee % in BigDecimal format: " + sellFeePercentage);
-
-            /*
-             * Grab the connection timeout
-             */
-            connectionTimeout = Integer.parseInt( // will barf if not a number; we want this to fail fast.
-                    configEntries.getProperty(CONNECTION_TIMEOUT_PROPERTY_NAME));
-            if (connectionTimeout == 0) {
-                final String errorMsg = CONNECTION_TIMEOUT_PROPERTY_NAME + " cannot be 0 value!"
-                        + " HINT: is the value set in the " + configFile + "?";
-                LOG.error(errorMsg);
-                throw new IllegalArgumentException(errorMsg);
-            }
-            LogUtils.log(LOG, Level.INFO, () -> CONNECTION_TIMEOUT_PROPERTY_NAME + ": " + connectionTimeout);
-
-        } catch (IOException e) {
-            final String errorMsg = "Failed to load Exchange config: " + configFile;
-            LOG.error(errorMsg, e);
-            throw new IllegalStateException(errorMsg, e);
-        } finally {
-            try {
-                inputStream.close();
-            } catch (IOException e) {
-                final String errorMsg = "Failed to close input stream for: " + configFile;
-                LOG.error(errorMsg, e);
-            }
+        userId = authenticationConfig.getItem(USER_ID_PROPERTY_NAME);
+        // WARNING: careful when you log this
+//        LogUtils.log(LOG, Level.INFO, () -> USER_ID_PROPERTY_NAME + ": " + userId);
+        if (userId == null || userId.length() == 0) {
+            final String errorMsg = USER_ID_PROPERTY_NAME + CONFIG_IS_NULL_OR_ZERO_LENGTH + EXCHANGE_CONFIG_FILE + " ?";
+            LOG.error(errorMsg);
+            throw new IllegalArgumentException(errorMsg);
         }
+
+        key = authenticationConfig.getItem(KEY_PROPERTY_NAME);
+        // WARNING: careful when you log this
+//        LogUtils.log(LOG, Level.INFO, () -> KEY_PROPERTY_NAME + ": " + key);
+        if (key == null || key.length() == 0) {
+            final String errorMsg = KEY_PROPERTY_NAME + CONFIG_IS_NULL_OR_ZERO_LENGTH + EXCHANGE_CONFIG_FILE + " ?";
+            LOG.error(errorMsg);
+            throw new IllegalArgumentException(errorMsg);
+        }
+
+        secret = authenticationConfig.getItem(SECRET_PROPERTY_NAME);
+        // WARNING: careful when you log this
+//        LogUtils.log(LOG, Level.INFO, () -> SECRET_PROPERTY_NAME + ": " + secret);
+        if (secret == null || secret.length() == 0) {
+            final String errorMsg = SECRET_PROPERTY_NAME + CONFIG_IS_NULL_OR_ZERO_LENGTH + EXCHANGE_CONFIG_FILE + " ?";
+            LOG.error(errorMsg);
+            throw new IllegalArgumentException(errorMsg);
+        }
+    }
+
+    private void setNetworkConfig(ExchangeConfig exchangeConfig) {
+
+        final NetworkConfig networkConfig = exchangeConfig.getNetworkConfig();
+        if (networkConfig == null) {
+            final String errorMsg = NETWORK_CONFIG_MISSING + exchangeConfig;
+            LOG.error(errorMsg);
+            throw new IllegalArgumentException(errorMsg);
+        }
+
+        connectionTimeout = networkConfig.getConnectionTimeout();
+        if (connectionTimeout == 0) {
+            final String errorMsg = CONNECTION_TIMEOUT_PROPERTY_NAME + " cannot be 0 value!"
+                    + " HINT: is the value set in the " + EXCHANGE_CONFIG_FILE + " ?";
+            LOG.error(errorMsg);
+            throw new IllegalArgumentException(errorMsg);
+        }
+        LogUtils.log(LOG, Level.INFO, () -> CONNECTION_TIMEOUT_PROPERTY_NAME + ": " + connectionTimeout);
+
+        // TODO extract and set the non-fatal error codes and messages
+    }
+
+    private void setOtherConfig(ExchangeConfig exchangeConfig) {
+
+        final OtherConfig otherConfig = exchangeConfig.getOtherConfig();
+        if (otherConfig == null) {
+            final String errorMsg = OTHER_CONFIG_MISSING + exchangeConfig;
+            LOG.error(errorMsg);
+            throw new IllegalArgumentException(errorMsg);
+        }
+
+        final String buyFeeInConfig = otherConfig.getItem(BUY_FEE_PROPERTY_NAME);
+        if (buyFeeInConfig == null || buyFeeInConfig.length() == 0) {
+            final String errorMsg = BUY_FEE_PROPERTY_NAME + CONFIG_IS_NULL_OR_ZERO_LENGTH + EXCHANGE_CONFIG_FILE + " ?";
+            LOG.error(errorMsg);
+            throw new IllegalArgumentException(errorMsg);
+        }
+        LogUtils.log(LOG, Level.INFO, () -> BUY_FEE_PROPERTY_NAME + ": " + buyFeeInConfig + "%");
+        buyFeePercentage = new BigDecimal(buyFeeInConfig).divide(new BigDecimal("100"), 8, BigDecimal.ROUND_HALF_UP);
+        LogUtils.log(LOG, Level.INFO, () -> "Buy fee % in BigDecimal format: " + buyFeePercentage);
+
+        final String sellFeeInConfig = otherConfig.getItem(SELL_FEE_PROPERTY_NAME);
+        if (sellFeeInConfig == null || sellFeeInConfig.length() == 0) {
+            final String errorMsg = SELL_FEE_PROPERTY_NAME + CONFIG_IS_NULL_OR_ZERO_LENGTH + EXCHANGE_CONFIG_FILE + " ?";
+            LOG.error(errorMsg);
+            throw new IllegalArgumentException(errorMsg);
+        }
+        LogUtils.log(LOG, Level.INFO, () -> SELL_FEE_PROPERTY_NAME + ": " + sellFeeInConfig + "%");
+        sellFeePercentage = new BigDecimal(sellFeeInConfig).divide(new BigDecimal("100"), 8, BigDecimal.ROUND_HALF_UP);
+        LogUtils.log(LOG, Level.INFO, () -> "Sell fee % in BigDecimal format: " + sellFeePercentage);
     }
 
     // ------------------------------------------------------------------------------------------------
@@ -1136,13 +1123,6 @@ public final class ItBitExchangeAdapter extends  AbstractExchangeAdapter impleme
         // https://api.itbit.com/v1/wallets?userId=56DA621F --> https://api.itbit.com/v1/wallets?userId\u003d56DA621F
         final GsonBuilder gsonBuilder = new GsonBuilder().disableHtmlEscaping();
         gson = gsonBuilder.create();
-    }
-
-    /*
-     * Hack for unit-testing config loading.
-     */
-    private static String getConfigFileLocation() {
-        return CONFIG_FILE;
     }
 
     /*
