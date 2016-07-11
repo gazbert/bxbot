@@ -28,14 +28,7 @@ import com.gazbert.bxbot.core.api.exchange.ExchangeAdapter;
 import com.gazbert.bxbot.core.api.exchange.ExchangeConfig;
 import com.gazbert.bxbot.core.api.exchange.NetworkConfig;
 import com.gazbert.bxbot.core.api.exchange.OtherConfig;
-import com.gazbert.bxbot.core.api.trading.BalanceInfo;
-import com.gazbert.bxbot.core.api.trading.ExchangeTimeoutException;
-import com.gazbert.bxbot.core.api.trading.MarketOrder;
-import com.gazbert.bxbot.core.api.trading.MarketOrderBook;
-import com.gazbert.bxbot.core.api.trading.OpenOrder;
-import com.gazbert.bxbot.core.api.trading.OrderType;
-import com.gazbert.bxbot.core.api.trading.TradingApi;
-import com.gazbert.bxbot.core.api.trading.TradingApiException;
+import com.gazbert.bxbot.core.api.trading.*;
 import com.gazbert.bxbot.core.util.LogUtils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -57,11 +50,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * <p>
@@ -206,6 +195,16 @@ public final class ItBitExchangeAdapter extends  AbstractExchangeAdapter impleme
     private static final String CONNECTION_TIMEOUT_PROPERTY_NAME = "connection-timeout";
 
     /**
+     * Name of non-fatal-error-codes property in config file.
+     */
+    private static final String NON_FATAL_ERROR_CODES_PROPERTY_NAME = "non-fatal-error-codes";
+
+    /**
+     * Name of non-fatal-error-messages property in config file.
+     */
+    private static final String NON_FATAL_ERROR_MESSAGES_PROPERTY_NAME = "non-fatal-error-messages";
+
+    /**
      * Nonce used for sending authenticated messages to the exchange.
      */
     private static long nonce = 0;
@@ -219,6 +218,18 @@ public final class ItBitExchangeAdapter extends  AbstractExchangeAdapter impleme
      * The connection timeout in SECONDS for terminating hung connections to the exchange.
      */
     private int connectionTimeout;
+
+    /**
+     * HTTP status codes for non-fatal network connection failures.
+     * Used to decide to throw {@link ExchangeNetworkException}.
+     */
+    private Set<Integer> nonFatalNetworkErrorCodes;
+
+    /**
+     * java.io exception messages for non-fatal network connection failures.
+     * Used to decide to throw {@link ExchangeNetworkException}.
+     */
+    private Set<String> nonFatalNetworkErrorMessages;
 
     /**
      * Exchange buy fees in % in {@link BigDecimal} format.
@@ -265,7 +276,7 @@ public final class ItBitExchangeAdapter extends  AbstractExchangeAdapter impleme
     @Override
     public void init(ExchangeConfig config) {
 
-        LogUtils.log(LOG, Level.INFO, () -> "About to initialise BTC-e ExchangeConfig: " + config);
+        LogUtils.log(LOG, Level.INFO, () -> "About to initialise itBit ExchangeConfig: " + config);
         setAuthenticationConfig(config);
         setNetworkConfig(config);
         setOtherConfig(config);
@@ -273,6 +284,16 @@ public final class ItBitExchangeAdapter extends  AbstractExchangeAdapter impleme
         nonce = System.currentTimeMillis() / 1000; // set the initial nonce used in the secure messaging.
         initSecureMessageLayer();
         initGson();
+    }
+
+    @Override
+    protected Set<Integer> getNonFatalErrorCodes() {
+        return nonFatalNetworkErrorCodes;
+    }
+
+    @Override
+    protected Set<String> getNonFatalErrorMessages() {
+        return nonFatalNetworkErrorMessages;
     }
 
     // ------------------------------------------------------------------------------------------------
@@ -1077,7 +1098,19 @@ public final class ItBitExchangeAdapter extends  AbstractExchangeAdapter impleme
         }
         LogUtils.log(LOG, Level.INFO, () -> CONNECTION_TIMEOUT_PROPERTY_NAME + ": " + connectionTimeout);
 
-        // TODO extract and set the non-fatal error codes and messages
+        nonFatalNetworkErrorCodes = new HashSet<>();
+        final List<Integer> nonFatalErrorCodesFromConfig = networkConfig.getNonFatalErrorCodes();
+        if (nonFatalErrorCodesFromConfig != null) {
+            nonFatalNetworkErrorCodes.addAll(nonFatalErrorCodesFromConfig);
+        }
+        LogUtils.log(LOG, Level.INFO, () -> NON_FATAL_ERROR_CODES_PROPERTY_NAME + ": " + nonFatalNetworkErrorCodes);
+
+        nonFatalNetworkErrorMessages = new HashSet<>();
+        final List<String> nonFatalErrorMessagesFromConfig = networkConfig.getNonFatalErrorMessages();
+        if (nonFatalErrorMessagesFromConfig != null) {
+            nonFatalNetworkErrorMessages.addAll(nonFatalErrorMessagesFromConfig);
+        }
+        LogUtils.log(LOG, Level.INFO, () -> NON_FATAL_ERROR_MESSAGES_PROPERTY_NAME + ": " + nonFatalNetworkErrorMessages);
     }
 
     private void setOtherConfig(ExchangeConfig exchangeConfig) {

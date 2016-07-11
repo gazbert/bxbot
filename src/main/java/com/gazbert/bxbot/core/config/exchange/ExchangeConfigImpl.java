@@ -72,7 +72,10 @@ public class ExchangeConfigImpl implements ExchangeConfig {
         return ExchangeConfigImpl.class.getSimpleName()
                 + " ["
                 + "authenticationConfig=" + authenticationConfig
-                + ", networkConfig=" + networkConfig
+
+                // WARNING - careful showing this!
+//                + ", networkConfig=" + networkConfig
+
                 + ", otherConfig=" + otherConfig
                 + "]";
     }

@@ -47,13 +47,7 @@ import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 /**
  * <p>
@@ -210,6 +204,18 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
         loadConfig();
         initSecureMessageLayer();
         initGson();
+    }
+
+    @Override
+    protected Set<Integer> getNonFatalErrorCodes() {
+        // TODO - get from config
+        return new HashSet<>();
+    }
+
+    @Override
+    protected Set<String> getNonFatalErrorMessages() {
+        // TODO - get from config
+        return new HashSet<>();
     }
 
     // ------------------------------------------------------------------------------------------------

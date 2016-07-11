@@ -9,7 +9,7 @@
 #
 # You need the Java runtime installed - Oracle JDK 1.8 is supported.
 #
-# This script expects *all* the jar files to live in the LIB_DIR.
+# This script expects all the jar files to live in the LIB_DIR.
 #
 # Change the bxbot_core, log4j, javamail, and gson (if you are using the inbuilt Exchange Adapters) vars to
 # the versions you want to run. They have been given sensible defaults.
@@ -17,9 +17,6 @@
 # Set bxbot_strategies var if you have a jar with your own Trading Strategies.
 #
 # Set bxbot_exchanges var if you have a jar with your own Exchange Adapters.
-#
-# If you are using the inbuit Exchange Adapters, you will need to add your trade keys in the appropriate exchange
-# config file, e.g. RESOURCES_DIR/btce/btce-config.properties
 #
 
 LIB_DIR=./libs
@@ -35,7 +32,7 @@ javamail=javax.mail-1.5.4.jar
 gson=gson-2.3.1.jar
 
 # The BX-bot core jar (mandatory)
-bxbot_core=bxbot-core-0.1-beta.5-SNAPSHOT.jar
+bxbot_core=bxbot-core-0.2-beta-SNAPSHOT.jar
 
 # Your Trading Strategies (optional)
 # Needed if you're not using the sample included with the bot OR you have not included your strats in the bxbot_core jar.

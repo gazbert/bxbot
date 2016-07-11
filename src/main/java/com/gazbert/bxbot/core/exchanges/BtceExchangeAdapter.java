@@ -57,15 +57,8 @@ import java.net.URLEncoder;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Properties;
-import java.util.Set;
-import java.util.UUID;
 
 /**
  * <p>
@@ -199,6 +192,18 @@ public final class BtceExchangeAdapter extends AbstractExchangeAdapter implement
         loadConfig();
         initSecureMessageLayer();
         initGson();
+    }
+
+    @Override
+    protected Set<Integer> getNonFatalErrorCodes() {
+        // TODO - get from config
+        return new HashSet<>();
+    }
+
+    @Override
+    protected Set<String> getNonFatalErrorMessages() {
+        // TODO - get from config
+        return new HashSet<>();
     }
 
     // ------------------------------------------------------------------------------------------------

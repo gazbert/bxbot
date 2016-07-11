@@ -39,6 +39,7 @@ import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Base class for shared Exchange Adapter functionality.
@@ -151,32 +152,21 @@ abstract class AbstractExchangeAdapter {
 
         } catch (IOException e) {
 
-            // TODO rework this stuff to read network retry codes from exchange adapter config
+            // Check if this is a non-fatal network error
+            final Set<String> nonFatalNetworkErrorMessages = getNonFatalErrorMessages();
+            final Set<Integer> nonFatalNetworkErrorCodes = getNonFatalErrorCodes();
+
             try {
 
-                /*
-                 * Occasionally get this on Bitfinex, Huobi, OKCoin,
-                 */
-                if (e.getMessage() != null &&
-                        (e.getMessage().contains("Connection reset") ||
-                                e.getMessage().contains("Remote host closed connection during handshake") ||
-                                e.getMessage().contains("Unexpected end of file from server") ||
-                                e.getMessage().contains("Connection refused"))) {
+                if (nonFatalNetworkErrorMessages != null && e.getMessage() != null &&
+                        nonFatalNetworkErrorMessages.contains(e.getMessage())) {
 
                     final String errorMsg = "Failed to connect to Exchange. SSL Connection was refused or reset by the server.";
                     LOG.error(errorMsg, e);
                     throw new ExchangeTimeoutException(errorMsg, e);
-                /*
-                 * Exchange sometimes fails with these codes, but recovers by next request...
-                 */
-                } else if (exchangeConnection != null && (exchangeConnection.getResponseCode() == 502
-                        || exchangeConnection.getResponseCode() == 503
-                        || exchangeConnection.getResponseCode() == 504
 
-                        // Cloudflare related
-                        || exchangeConnection.getResponseCode() == 520
-                        || exchangeConnection.getResponseCode() == 522
-                        || exchangeConnection.getResponseCode() == 525)) {
+                } else if (nonFatalNetworkErrorCodes != null && exchangeConnection != null &&
+                        nonFatalNetworkErrorCodes.contains(exchangeConnection.getResponseCode())) {
 
                     final String errorMsg = IO_5XX_TIMEOUT_ERROR_MSG;
                     LOG.error(errorMsg, e);
@@ -199,6 +189,22 @@ abstract class AbstractExchangeAdapter {
             }
         }
     }
+
+    /**
+     * Adapters can return an optional set of HTTP status codes that will trigger throwing a
+     * {@link ExchangeTimeoutException} if a network failure occurs when connecting to the exchange.
+     *
+     * @return a set of non-fatal error codes.
+     */
+    protected abstract Set<Integer> getNonFatalErrorCodes();
+
+    /**
+     * Adapters can return an optional set of java.io exception messages that will trigger throwing a
+     * {@link ExchangeTimeoutException} if a network failure occurs when connecting to the exchange.
+     *
+     * @return a set of non-fatal error codes.
+     */
+    protected abstract Set<String> getNonFatalErrorMessages();
 
     /**
      * Wrapper for holding Exchange HTTP response.

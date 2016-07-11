@@ -57,12 +57,7 @@ import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 /**
  * <p>
@@ -202,6 +197,18 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
         loadConfig();
         initSecureMessageLayer();
         initGson();
+    }
+
+    @Override
+    protected Set<Integer> getNonFatalErrorCodes() {
+        // TODO - get from config
+        return new HashSet<>();
+    }
+
+    @Override
+    protected Set<String> getNonFatalErrorMessages() {
+        // TODO - get from config
+        return new HashSet<>();
     }
 
     // ------------------------------------------------------------------------------------------------

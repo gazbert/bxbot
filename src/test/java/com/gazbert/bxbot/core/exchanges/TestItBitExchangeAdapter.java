@@ -48,6 +48,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.DecimalFormat;
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -112,6 +113,13 @@ public class TestItBitExchangeAdapter {
     private static final String MOCKED_WALLET_ID_FIELD_NAME = "walletId";
 
     // Exchange Adapter config for the tests
+    private static final String USERID = "userId123";
+    private static final String KEY = "key123";
+    private static final String SECRET = "notGonnaTellYa";
+    private static final List<Integer> nonFatalNetworkErrorCodes = Arrays.asList(502, 503, 504);
+    private static final List<String> nonFatalNetworkErrorMessages = Arrays.asList(
+            "Connection refused", "Connection reset", "Remote host closed connection during handshake");
+
     private ExchangeConfig exchangeConfig;
     private AuthenticationConfig authenticationConfig;
     private NetworkConfig networkConfig;
@@ -122,15 +130,17 @@ public class TestItBitExchangeAdapter {
      * Create some exchange config - the TradingEngine would normally do this.
      */
     @Before
-    public void setupBeforeEachTest() throws Exception {
+    public void setupForEachTest() throws Exception {
 
         authenticationConfig = PowerMock.createMock(AuthenticationConfig.class);
-        expect(authenticationConfig.getItem("userId")).andReturn("your_user_id");
-        expect(authenticationConfig.getItem("key")).andReturn("your_client_key");
-        expect(authenticationConfig.getItem("secret")).andReturn("your_client_secret");
+        expect(authenticationConfig.getItem("userId")).andReturn(USERID);
+        expect(authenticationConfig.getItem("key")).andReturn(KEY);
+        expect(authenticationConfig.getItem("secret")).andReturn(SECRET);
 
         networkConfig = PowerMock.createMock(NetworkConfig.class);
         expect(networkConfig.getConnectionTimeout()).andReturn(30);
+        expect(networkConfig.getNonFatalErrorCodes()).andReturn(nonFatalNetworkErrorCodes);
+        expect(networkConfig.getNonFatalErrorMessages()).andReturn(nonFatalNetworkErrorMessages);
 
         otherConfig = PowerMock.createMock(OtherConfig.class);
         expect(otherConfig.getItem("buy-fee")).andReturn("0.5");
@@ -764,21 +774,18 @@ public class TestItBitExchangeAdapter {
         PowerMock.verifyAll();
     }
 
-    // TODO add the non-fatal error codes/message tests....
-
     /*
      * Used for making real API calls to the exchange in order to grab JSON responses.
      * Have left this in; it might come in useful.
-     * It expects exchange.xml config to contain the correct credentials.
+     * You'll need to change the USERID, KEY, SECRET, constants to real-world values.
      */
 //    @Test
     public void runIntegrationTest() throws Exception {
 
 //        PowerMock.replayAll();
-
 //        final ExchangeAdapter exchangeAdapter = new ItBitExchangeAdapter();
 //        exchangeAdapter.init(exchangeConfig);
-
+//
 //        exchangeAdapter.getImplName();
 //        exchangeAdapter.getPercentageOfBuyOrderTakenForExchangeFee(MARKET_ID);
 //        exchangeAdapter.getPercentageOfSellOrderTakenForExchangeFee(MARKET_ID);

@@ -536,8 +536,10 @@ final public class TradingEngine {
             }
 
             exchangeConfig.setAuthenticationConfig(authenticationConfig);
-            LogUtils.log(LOG, Level.INFO, () ->
-                    "AuthenticationConfiguration has been set: " + exchangeConfig.getAuthenticationConfig());
+
+            // WARNING - careful when you log this
+//            LogUtils.log(LOG, Level.INFO, () ->
+//                    "AuthenticationConfiguration has been set: " + exchangeConfig.getAuthenticationConfig());
 
         } else {
             LogUtils.log(LOG, Level.INFO, () ->
