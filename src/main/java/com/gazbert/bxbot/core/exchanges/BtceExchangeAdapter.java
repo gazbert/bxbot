@@ -126,21 +126,6 @@ public final class BtceExchangeAdapter extends AbstractExchangeAdapter implement
     private static final String UNEXPECTED_IO_ERROR_MSG = "Failed to connect to Exchange due to unexpected IO error.";
 
     /**
-     * Fatal error message for when AuthenticationConfig is missing in the exchange.xml config file.
-     */
-    private static final String AUTHENTICATION_CONFIG_MISSING = "AuthenticationConfig is missing for adapter in exchange.xml file.";
-
-    /**
-     * Used for building error messages for missing config.
-     */
-    private static final String CONFIG_IS_NULL_OR_ZERO_LENGTH = " cannot be null or zero length! HINT: is the value set in the ";
-
-    /**
-     * Your BTC-e API keys, network config, are located in the config/exchange.xml config file.
-     */
-    private static final String EXCHANGE_CONFIG_FILE = "config/exchange.xml";
-
-    /**
      * Name of public key property in config file.
      */
     private static final String KEY_PROPERTY_NAME = "key";
@@ -990,30 +975,9 @@ public final class BtceExchangeAdapter extends AbstractExchangeAdapter implement
 
     private void setAuthenticationConfig(ExchangeConfig exchangeConfig) {
 
-        final AuthenticationConfig authenticationConfig = exchangeConfig.getAuthenticationConfig();
-        if (authenticationConfig == null) {
-            final String errorMsg = AUTHENTICATION_CONFIG_MISSING + exchangeConfig;
-            LOG.error(errorMsg);
-            throw new IllegalArgumentException(errorMsg);
-        }
-
-        key = authenticationConfig.getItem(KEY_PROPERTY_NAME);
-        // WARNING: careful when you log this
-//        LogUtils.log(LOG, Level.INFO, () -> KEY_PROPERTY_NAME + ": " + key);
-        if (key == null || key.length() == 0) {
-            final String errorMsg = KEY_PROPERTY_NAME + CONFIG_IS_NULL_OR_ZERO_LENGTH + EXCHANGE_CONFIG_FILE + " ?";
-            LOG.error(errorMsg);
-            throw new IllegalArgumentException(errorMsg);
-        }
-
-        secret = authenticationConfig.getItem(SECRET_PROPERTY_NAME);
-        // WARNING: careful when you log this
-//        LogUtils.log(LOG, Level.INFO, () -> SECRET_PROPERTY_NAME + ": " + secret);
-        if (secret == null || secret.length() == 0) {
-            final String errorMsg = SECRET_PROPERTY_NAME + CONFIG_IS_NULL_OR_ZERO_LENGTH + EXCHANGE_CONFIG_FILE + " ?";
-            LOG.error(errorMsg);
-            throw new IllegalArgumentException(errorMsg);
-        }
+        final AuthenticationConfig authenticationConfig = getAuthenticationConfig(exchangeConfig);
+        key = getAuthenticationConfigItem(authenticationConfig, KEY_PROPERTY_NAME);
+        secret = getAuthenticationConfigItem(authenticationConfig, SECRET_PROPERTY_NAME);
     }
 
     // ------------------------------------------------------------------------------------------------

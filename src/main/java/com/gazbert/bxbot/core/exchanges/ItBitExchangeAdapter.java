@@ -61,7 +61,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * <p>
@@ -149,26 +148,6 @@ public final class ItBitExchangeAdapter extends  AbstractExchangeAdapter impleme
      * Unexpected IO error message for logging.
      */
     private static final String UNEXPECTED_IO_ERROR_MSG = "Failed to connect to Exchange due to unexpected IO error.";
-
-    /**
-     * Fatal error message for when AuthenticationConfig is missing in the exchange.xml config file.
-     */
-    private static final String AUTHENTICATION_CONFIG_MISSING = "AuthenticationConfig is missing for adapter in exchange.xml file.";
-
-    /**
-     * Fatal error message for when OtherConfig is missing in the exchange.xml config file.
-     */
-    private static final String OTHER_CONFIG_MISSING = "OtherConfig is missing for adapter in exchange.xml file.";
-
-    /**
-     * Used for building error messages for missing config.
-     */
-    private static final String CONFIG_IS_NULL_OR_ZERO_LENGTH = " cannot be null or zero length! HINT: is the value set in the ";
-
-    /**
-     * Your itBit API keys, network config, and buy/sell fees are located in the config/exchange.xml config file.
-     */
-    private static final String EXCHANGE_CONFIG_FILE = "config/exchange.xml";
 
     /**
      * Name of user id property in config file.
@@ -1009,67 +988,21 @@ public final class ItBitExchangeAdapter extends  AbstractExchangeAdapter impleme
 
     private void setAuthenticationConfig(ExchangeConfig exchangeConfig) {
 
-        final AuthenticationConfig authenticationConfig = exchangeConfig.getAuthenticationConfig();
-        if (authenticationConfig == null) {
-            final String errorMsg = AUTHENTICATION_CONFIG_MISSING + exchangeConfig;
-            LOG.error(errorMsg);
-            throw new IllegalArgumentException(errorMsg);
-        }
-
-        userId = authenticationConfig.getItem(USER_ID_PROPERTY_NAME);
-        // WARNING: careful when you log this
-//        LogUtils.log(LOG, Level.INFO, () -> USER_ID_PROPERTY_NAME + ": " + userId);
-        if (userId == null || userId.length() == 0) {
-            final String errorMsg = USER_ID_PROPERTY_NAME + CONFIG_IS_NULL_OR_ZERO_LENGTH + EXCHANGE_CONFIG_FILE + " ?";
-            LOG.error(errorMsg);
-            throw new IllegalArgumentException(errorMsg);
-        }
-
-        key = authenticationConfig.getItem(KEY_PROPERTY_NAME);
-        // WARNING: careful when you log this
-//        LogUtils.log(LOG, Level.INFO, () -> KEY_PROPERTY_NAME + ": " + key);
-        if (key == null || key.length() == 0) {
-            final String errorMsg = KEY_PROPERTY_NAME + CONFIG_IS_NULL_OR_ZERO_LENGTH + EXCHANGE_CONFIG_FILE + " ?";
-            LOG.error(errorMsg);
-            throw new IllegalArgumentException(errorMsg);
-        }
-
-        secret = authenticationConfig.getItem(SECRET_PROPERTY_NAME);
-        // WARNING: careful when you log this
-//        LogUtils.log(LOG, Level.INFO, () -> SECRET_PROPERTY_NAME + ": " + secret);
-        if (secret == null || secret.length() == 0) {
-            final String errorMsg = SECRET_PROPERTY_NAME + CONFIG_IS_NULL_OR_ZERO_LENGTH + EXCHANGE_CONFIG_FILE + " ?";
-            LOG.error(errorMsg);
-            throw new IllegalArgumentException(errorMsg);
-        }
+        final AuthenticationConfig authenticationConfig = getAuthenticationConfig(exchangeConfig);
+        userId = getAuthenticationConfigItem(authenticationConfig, USER_ID_PROPERTY_NAME);
+        key = getAuthenticationConfigItem(authenticationConfig, KEY_PROPERTY_NAME);
+        secret = getAuthenticationConfigItem(authenticationConfig, SECRET_PROPERTY_NAME);
     }
 
     private void setOtherConfig(ExchangeConfig exchangeConfig) {
 
-        final OtherConfig otherConfig = exchangeConfig.getOtherConfig();
-        if (otherConfig == null) {
-            final String errorMsg = OTHER_CONFIG_MISSING + exchangeConfig;
-            LOG.error(errorMsg);
-            throw new IllegalArgumentException(errorMsg);
-        }
+        final OtherConfig otherConfig = getOtherConfig(exchangeConfig);
 
-        final String buyFeeInConfig = otherConfig.getItem(BUY_FEE_PROPERTY_NAME);
-        if (buyFeeInConfig == null || buyFeeInConfig.length() == 0) {
-            final String errorMsg = BUY_FEE_PROPERTY_NAME + CONFIG_IS_NULL_OR_ZERO_LENGTH + EXCHANGE_CONFIG_FILE + " ?";
-            LOG.error(errorMsg);
-            throw new IllegalArgumentException(errorMsg);
-        }
-        LogUtils.log(LOG, Level.INFO, () -> BUY_FEE_PROPERTY_NAME + ": " + buyFeeInConfig + "%");
+        final String buyFeeInConfig = getOtherConfigItem(otherConfig, BUY_FEE_PROPERTY_NAME);
         buyFeePercentage = new BigDecimal(buyFeeInConfig).divide(new BigDecimal("100"), 8, BigDecimal.ROUND_HALF_UP);
         LogUtils.log(LOG, Level.INFO, () -> "Buy fee % in BigDecimal format: " + buyFeePercentage);
 
-        final String sellFeeInConfig = otherConfig.getItem(SELL_FEE_PROPERTY_NAME);
-        if (sellFeeInConfig == null || sellFeeInConfig.length() == 0) {
-            final String errorMsg = SELL_FEE_PROPERTY_NAME + CONFIG_IS_NULL_OR_ZERO_LENGTH + EXCHANGE_CONFIG_FILE + " ?";
-            LOG.error(errorMsg);
-            throw new IllegalArgumentException(errorMsg);
-        }
-        LogUtils.log(LOG, Level.INFO, () -> SELL_FEE_PROPERTY_NAME + ": " + sellFeeInConfig + "%");
+        final String sellFeeInConfig = getOtherConfigItem(otherConfig, SELL_FEE_PROPERTY_NAME);
         sellFeePercentage = new BigDecimal(sellFeeInConfig).divide(new BigDecimal("100"), 8, BigDecimal.ROUND_HALF_UP);
         LogUtils.log(LOG, Level.INFO, () -> "Sell fee % in BigDecimal format: " + sellFeePercentage);
     }

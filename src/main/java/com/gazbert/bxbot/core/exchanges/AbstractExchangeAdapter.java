@@ -22,8 +22,10 @@
  */
 package com.gazbert.bxbot.core.exchanges;
 
+import com.gazbert.bxbot.core.api.exchange.AuthenticationConfig;
 import com.gazbert.bxbot.core.api.exchange.ExchangeConfig;
 import com.gazbert.bxbot.core.api.exchange.NetworkConfig;
+import com.gazbert.bxbot.core.api.exchange.OtherConfig;
 import com.gazbert.bxbot.core.api.trading.ExchangeTimeoutException;
 import com.gazbert.bxbot.core.api.trading.TradingApiException;
 import com.gazbert.bxbot.core.util.LogUtils;
@@ -71,9 +73,24 @@ abstract class AbstractExchangeAdapter {
     private static final String IO_5XX_TIMEOUT_ERROR_MSG = "Failed to connect to Exchange due to 5xx timeout.";
 
     /**
+     * Fatal error message for when AuthenticationConfig is missing in the exchange.xml config file.
+     */
+    private static final String AUTHENTICATION_CONFIG_MISSING = "AuthenticationConfig is missing for adapter in exchange.xml file.";
+
+    /**
      * Fatal error message for when NetworkConfig is missing in the exchange.xml config file.
      */
     private static final String NETWORK_CONFIG_MISSING = "NetworkConfig is missing for adapter in exchange.xml file.";
+
+    /**
+     * Fatal error message for when OtherConfig is missing in the exchange.xml config file.
+     */
+    private static final String OTHER_CONFIG_MISSING = "OtherConfig is missing for adapter in exchange.xml file.";
+
+    /**
+     * Used for building error messages for missing config.
+     */
+    private static final String CONFIG_IS_NULL_OR_ZERO_LENGTH = " cannot be null or zero length! HINT: is the value set in the ";
 
     /**
      * Name of connection timeout property in config file.
@@ -89,6 +106,11 @@ abstract class AbstractExchangeAdapter {
      * Name of non-fatal-error-messages property in config file.
      */
     private static final String NON_FATAL_ERROR_MESSAGES_PROPERTY_NAME = "non-fatal-error-messages";
+
+    /**
+     * Exchange Adapter config file location.
+     */
+    private static final String EXCHANGE_CONFIG_FILE = "config/exchange.xml";
 
     /**
      * The connection timeout in SECONDS for terminating hung connections to the exchange.
@@ -238,7 +260,8 @@ abstract class AbstractExchangeAdapter {
 
     /**
      * Sets the network config for the exchange adapter. This helper method expects the network config to be present.
-     * @param exchangeConfig the exchange config containing the network config.
+     *
+     * @param exchangeConfig the exchange config.
      * @throws IllegalArgumentException if the network config is not set.
      */
     void setNetworkConfig(ExchangeConfig exchangeConfig) {
@@ -269,6 +292,73 @@ abstract class AbstractExchangeAdapter {
             nonFatalNetworkErrorMessages.addAll(nonFatalErrorMessagesFromConfig);
         }
         LogUtils.log(LOG, Level.INFO, () -> NON_FATAL_ERROR_MESSAGES_PROPERTY_NAME + ": " + nonFatalNetworkErrorMessages);
+    }
+
+    /**
+     * Fetches the authentication config for the exchange adapter.
+     *
+     * @param exchangeConfig the exchange adapter config.
+     * @return the authentication config for the adapter.
+     * @throws IllegalArgumentException if authentication config is not set in exchange adapter config.
+     */
+    AuthenticationConfig getAuthenticationConfig(ExchangeConfig exchangeConfig) {
+
+        final AuthenticationConfig authenticationConfig = exchangeConfig.getAuthenticationConfig();
+        if (authenticationConfig == null) {
+            final String errorMsg = AUTHENTICATION_CONFIG_MISSING + exchangeConfig;
+            LOG.error(errorMsg);
+            throw new IllegalArgumentException(errorMsg);
+        }
+        return authenticationConfig;
+    }
+
+    /**
+     * Fetches the 'other' misc config for the exchange adapter.
+     *
+     * @param exchangeConfig the exchange adapter config.
+     * @return the 'other' misc config for the adapter.
+     * @throws IllegalArgumentException if 'other' misc config is not set.
+     */
+    OtherConfig getOtherConfig(ExchangeConfig exchangeConfig) {
+
+        final OtherConfig otherConfig = exchangeConfig.getOtherConfig();
+        if (otherConfig == null) {
+            final String errorMsg = OTHER_CONFIG_MISSING + exchangeConfig;
+            LOG.error(errorMsg);
+            throw new IllegalArgumentException(errorMsg);
+        }
+        return otherConfig;
+    }
+
+    /**
+     * Fetches an authentication item value from the adapter config.
+     *
+     * @param authenticationConfig the authentication config for the adapter.
+     * @param itemName the config item name, e.g. key. secret, client-id
+     * @return the config item value.
+     * @throws IllegalArgumentException if authentication item is not set.
+     */
+    String getAuthenticationConfigItem(AuthenticationConfig authenticationConfig, String itemName) {
+
+        final String itemValue = authenticationConfig.getItem(itemName);
+        // WARNING: careful when you log this
+//        LogUtils.log(LOG, Level.INFO, () -> itemName + ": " + itemValue);
+        return assertItemExists(itemName, itemValue);
+    }
+
+    /**
+     * Fetches an 'other' misc config item value from the adapter config.
+     *
+     * @param otherConfig the 'other' misc config for the adapter.
+     * @param itemName the config item name, e.g. buy-fee, sell-fee
+     * @return the config item value.
+     * @throws IllegalArgumentException if authentication item is not set.
+     */
+    String getOtherConfigItem(OtherConfig otherConfig, String itemName) {
+
+        final String itemValue = otherConfig.getItem(itemName);
+        LogUtils.log(LOG, Level.INFO, () -> itemName + ": " + itemValue);
+        return assertItemExists(itemName, itemValue);
     }
 
     /**
@@ -307,5 +397,18 @@ abstract class AbstractExchangeAdapter {
                     + ", payload=" + payload
                     + "]";
         }
+    }
+
+    // ------------------------------------------------------------------------------------------------
+    //  Util methods
+    // ------------------------------------------------------------------------------------------------
+
+    private static String assertItemExists(String itemName, String itemValue) {
+        if (itemValue == null || itemValue.length() == 0) {
+            final String errorMsg = itemName + CONFIG_IS_NULL_OR_ZERO_LENGTH + EXCHANGE_CONFIG_FILE + " ?";
+            LOG.error(errorMsg);
+            throw new IllegalArgumentException(errorMsg);
+        }
+        return itemValue;
     }
 }
