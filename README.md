@@ -390,6 +390,9 @@ interfaces. This allows for:
 1. the Trading Strategies to invoke your adapter's implementation of the [TradingApi](https://github.com/gazbert/BX-bot/blob/master/src/main/java/com/gazbert/bxbot/core/api/trading/TradingApi.java)
    during each trade cycle.
 
+[AbstractExchangeAdapter](https://github.com/gazbert/BX-bot/blob/master/src/main/java/com/gazbert/bxbot/core/exchanges/AbstractExchangeAdapter.java)
+is a handy base class that all the sample Exchange Adapters extend - it could be useful.
+
 The Trading Engine will only send 1 thread through your Exchange Adapter; you do not have to code for concurrency.
 
 The project Javadoc will be useful too. It can be found in the `./target/apidocs` folder after running the Maven build -
