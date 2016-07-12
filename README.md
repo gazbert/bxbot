@@ -132,24 +132,26 @@ section for more details.
 
 The `<authentication-config>` section is optional. If present, at least 1 `config-item` must be set - these are repeating
 key/value String pairs. This section can be used to configure the adapter with the exchange trading API credentials - see
-the sample exchange.xml config files for each exchange.
+the sample `exchange.xml` config files for what credentials to set.
 
 The `<network-config>` section is optional. If present, the `<connection-timeout`, `non-fatal-error-codes`, and
 `non-fatal-error-messages` sections must be set.
 
 The `<connection-timeout` is the timeout value that the exchange adapter will wait on socket connect/socket read when
 communicating with the exchange. Once this threshold has been breached, the exchange adapter will give up and throw a
-Trading API TimeoutException. The exchange adapter is single threaded: if one request gets blocked, it will block all
-subsequent requests from getting to the exchange. This timeout prevents an indefinite block.
+Trading API TimeoutException. The sample Exchange Adapters are single threaded: if a request gets blocked, it will
+block all subsequent requests from getting to the exchange. This timeout value prevents an indefinite block.
 
 The `non-fatal-error-codes` section contains a list of HTTP status codes that will trigger the adapter to throw a
-non-fatal Trading API TimeoutException.
+non-fatal Trading API TimeoutException. This allows the bot to recover from temporary network issues.
+See the sample `exchange.xml` config files for status codes to use.
 
 The `non-fatal-error-messages` section contains a list of java.io exception messages that will trigger the adapter to
-throw a non-fatal Trading API TimeoutException.
+throw a non-fatal Trading API TimeoutException. This allows the bot to recover from temporary network issues.
+See the sample `exchange.xml` config files for messages to use.
 
 The `other-config` section is optional. If present, at least 1 `config-item` must be set - these are repeating
-key/value String pairs. This section can be used to specify additional config for adapter, e.g. buy/sell fees.
+key/value String pairs. This section can be used to specify additional config for the adapter, e.g. buy/sell fees.
 
 BX-bot only supports 1 Exchange Adapter for each instance of the bot; you will need to create multiple (runtime) 
 instances of the bot to run against different exchanges.
@@ -377,13 +379,14 @@ You can also create your own jar for your strats, e.g. `my-strats.jar`, and incl
 see the _Installation Guide_ for how to do this.
 
 ### How do I write my own Exchange Adapter?
-The best place to start is with the Bitstamp Exchange Adapter provided - see the latest [BitstampExchangeAdapter](https://github.com/gazbert/BX-bot/blob/master/src/main/java/com/gazbert/bxbot/core/exchanges/BitstampExchangeAdapter.java)
-for an example.
+The best place to start is with one of the sample Exchange Adapters provided - see the latest [BitstampExchangeAdapter](https://github.com/gazbert/BX-bot/blob/master/src/main/java/com/gazbert/bxbot/core/exchanges/BitstampExchangeAdapter.java)
+for example.
 
 Your adapter must implement the [TradingApi](https://github.com/gazbert/BX-bot/blob/master/src/main/java/com/gazbert/bxbot/core/api/trading/TradingApi.java)
-interface. See the Javadoc for details of the API. This allows for:
+and the [ExchangeAdapter](https://github.com/gazbert/BX-bot/blob/master/src/main/java/com/gazbert/bxbot/core/api/exchange/ExchangeAdapter.java)
+interfaces. This allows for:
 
-1. the main Trading Engine to inject your adapter on startup of the bot and initialise with config via the [ExchangeAdapter](https://github.com/gazbert/BX-bot/blob/master/src/main/java/com/gazbert/bxbot/core/api/exchange/ExchangeAdapter.java) init method.
+1. the main Trading Engine to inject your adapter on startup and initialise it with config from the `exchange.xml` file.
 1. the Trading Strategies to invoke your adapter's implementation of the [TradingApi](https://github.com/gazbert/BX-bot/blob/master/src/main/java/com/gazbert/bxbot/core/api/trading/TradingApi.java)
    during each trade cycle.
 
@@ -394,7 +397,13 @@ see the _Build Guide_ section.
 
 ##### Error Handling
 Your Exchange Adapter implementation should throw a [TradingApiException](https://github.com/gazbert/BX-bot/blob/master/src/main/java/com/gazbert/bxbot/core/api/trading/TradingApiException.java)
-whenever it breaks; the Trading Strategies will catch this and decide how they want to proceed.
+whenever it breaks; the Trading Strategies should catch this and decide how they want to proceed.
+
+The Trading API provides an [ExchangeTimeoutException](https://github.com/gazbert/BX-bot/blob/master/src/main/java/com/gazbert/bxbot/core/api/trading/TradingApiException.java)
+for adapters to throw when cannot connect to the exchange to make Trading API calls. This allows for
+the bot to recover from temporary network failures. The `exchange.xml` config file has an optional `network-config`
+section, which contains `non-fatal-error-codes` and `non-fatal-error-messages` elements - these can be used to tell the
+adapter when to throw the exception.
 
 The first release of the bot is _single-threaded_ for simplicity. The downside to this is that if an API call to the 
 exchange gets blocked on IO, BX-bot will get stuck until your Exchange Adapter frees the block. The Trading API provides
