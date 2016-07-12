@@ -23,6 +23,9 @@
 
 package com.gazbert.bxbot.core.exchanges;
 
+import com.gazbert.bxbot.core.api.exchange.AuthenticationConfig;
+import com.gazbert.bxbot.core.api.exchange.ExchangeAdapter;
+import com.gazbert.bxbot.core.api.exchange.ExchangeConfig;
 import com.gazbert.bxbot.core.api.trading.BalanceInfo;
 import com.gazbert.bxbot.core.api.trading.ExchangeTimeoutException;
 import com.gazbert.bxbot.core.api.trading.MarketOrder;
@@ -43,8 +46,6 @@ import org.apache.log4j.Logger;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
@@ -57,7 +58,11 @@ import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -94,7 +99,7 @@ import java.util.*;
  *
  * @author gazbert
  */
-public final class BitstampExchangeAdapter extends AbstractExchangeAdapter implements TradingApi {
+public final class BitstampExchangeAdapter extends AbstractExchangeAdapter implements ExchangeAdapter {
 
     private static final Logger LOG = Logger.getLogger(BitstampExchangeAdapter.class);
 
@@ -114,15 +119,19 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
     private static final String UNEXPECTED_IO_ERROR_MSG = "Failed to connect to Exchange due to unexpected IO error.";
 
     /**
+     * Fatal error message for when AuthenticationConfig is missing in the exchange.xml config file.
+     */
+    private static final String AUTHENTICATION_CONFIG_MISSING = "AuthenticationConfig is missing for adapter in exchange.xml file.";
+
+    /**
      * Used for building error messages for missing config.
      */
     private static final String CONFIG_IS_NULL_OR_ZERO_LENGTH = " cannot be null or zero length! HINT: is the value set in the ";
 
     /**
-     * Your Bitstamp API keys and connection timeout config.
-     * This file must be on BX-bot's runtime classpath located at: ./resources/bitstamp/bitstamp-config.properties
+     * Your Bitstamp API keys, network config, are located in the config/exchange.xml config file.
      */
-    private static final String CONFIG_FILE = "bitstamp/bitstamp-config.properties";
+    private static final String EXCHANGE_CONFIG_FILE = "config/exchange.xml";
 
     /**
      * Name of client id property in config file.
@@ -140,19 +149,9 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
     private static final String SECRET_PROPERTY_NAME = "secret";
 
     /**
-     * Name of connection timeout property in config file.
-     */
-    private static final String CONNECTION_TIMEOUT_PROPERTY_NAME = "connection-timeout";
-
-    /**
      * Nonce used for sending authenticated messages to the exchange.
      */
     private static long nonce = 0;
-
-    /**
-     * The connection timeout in SECONDS for terminating hung connections to the exchange.
-     */
-    private int connectionTimeout;
 
     /**
      * Used to indicate if we have initialised the MAC authentication protocol.
@@ -186,29 +185,16 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
     private Gson gson;
 
 
-    /**
-     * Constructor initialises the Exchange Adapter for using the Bitstamp API.
-     */
-    public BitstampExchangeAdapter() {
+    @Override
+    public void init(ExchangeConfig config) {
 
-        // set the initial nonce used in the secure messaging.
-        nonce = System.currentTimeMillis() / 1000;
+        LogUtils.log(LOG, Level.INFO, () -> "About to initialise Bitstamp ExchangeConfig: " + config);
+        setAuthenticationConfig(config);
+        setNetworkConfig(config);
 
-        loadConfig();
+        nonce = System.currentTimeMillis() / 1000; // set the initial nonce used in the secure messaging.
         initSecureMessageLayer();
         initGson();
-    }
-
-    @Override
-    protected Set<Integer> getNonFatalErrorCodes() {
-        // TODO - get from config
-        return new HashSet<>();
-    }
-
-    @Override
-    protected Set<String> getNonFatalErrorMessages() {
-        // TODO - get from config
-        return new HashSet<>();
     }
 
     // ------------------------------------------------------------------------------------------------
@@ -643,7 +629,7 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
 
             // MUST have the trailing slash even if no params... else exchange barfs!
             final URL url = new URL(API_BASE_URL + apiMethod + "/");
-            return sendNetworkRequest(url, "GET", null, requestHeaders, connectionTimeout);
+            return sendNetworkRequest(url, "GET", null, requestHeaders);
 
         } catch (MalformedURLException e) {
             final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
@@ -715,7 +701,7 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
             requestHeaders.put("Content-Type", "application/x-www-form-urlencoded");
 
             final URL url = new URL(API_BASE_URL + apiMethod + "/"); // MUST have the trailing slash else exchange barfs...
-            return sendNetworkRequest(url, "POST", postData, requestHeaders, connectionTimeout);
+            return sendNetworkRequest(url, "POST", postData, requestHeaders);
 
         } catch (MalformedURLException | UnsupportedEncodingException e) {
             final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
@@ -768,97 +754,40 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
     //  Config methods
     // ------------------------------------------------------------------------------------------------
 
-    /**
-     * Loads Exchange Adapter config.
-     */
-    private void loadConfig() {
+    private void setAuthenticationConfig(ExchangeConfig exchangeConfig) {
 
-        final String configFile = getConfigFileLocation();
-        final Properties configEntries = new Properties();
-        final InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream(configFile);
-
-        if (inputStream == null) {
-            final String errorMsg = "Cannot find Bitstamp config at: " + configFile + " HINT: is it on BX-bot's classpath?";
+        final AuthenticationConfig authenticationConfig = exchangeConfig.getAuthenticationConfig();
+        if (authenticationConfig == null) {
+            final String errorMsg = AUTHENTICATION_CONFIG_MISSING + exchangeConfig;
             LOG.error(errorMsg);
-            throw new IllegalStateException(errorMsg);
+            throw new IllegalArgumentException(errorMsg);
         }
 
-        try {
-            configEntries.load(inputStream);
+        clientId = authenticationConfig.getItem(CLIENT_ID_PROPERTY_NAME);
+        // WARNING: careful when you log this
+//        LogUtils.log(LOG, Level.INFO, () -> CLIENT_ID_PROPERTY_NAME + ": " + clientId);
+        if (clientId == null || clientId.length() == 0) {
+            final String errorMsg = CLIENT_ID_PROPERTY_NAME + CONFIG_IS_NULL_OR_ZERO_LENGTH + EXCHANGE_CONFIG_FILE + " ?";
+            LOG.error(errorMsg);
+            throw new IllegalArgumentException(errorMsg);
+        }
 
-            /*
-             * Grab the client id
-             */
-            clientId = configEntries.getProperty(CLIENT_ID_PROPERTY_NAME);
+        key = authenticationConfig.getItem(KEY_PROPERTY_NAME);
+        // WARNING: careful when you log this
+//        LogUtils.log(LOG, Level.INFO, () -> KEY_PROPERTY_NAME + ": " + key);
+        if (key == null || key.length() == 0) {
+            final String errorMsg = KEY_PROPERTY_NAME + CONFIG_IS_NULL_OR_ZERO_LENGTH + EXCHANGE_CONFIG_FILE + " ?";
+            LOG.error(errorMsg);
+            throw new IllegalArgumentException(errorMsg);
+        }
 
-            // WARNING: careful when you log this
-//            if (LOG.isInfoEnabled()) {
-//                LOG.info(CLIENT_ID_PROPERTY_NAME + ": " + clientId);
-//            }
-
-            if (clientId == null || clientId.length() == 0) {
-                final String errorMsg = CLIENT_ID_PROPERTY_NAME + CONFIG_IS_NULL_OR_ZERO_LENGTH + configFile + "?";
-                LOG.error(errorMsg);
-                throw new IllegalArgumentException(errorMsg);
-            }     
-            
-            /*
-             * Grab the key
-             */
-            key = configEntries.getProperty(KEY_PROPERTY_NAME);
-
-            // WARNING: careful when you log this
-//            if (LOG.isInfoEnabled()) {
-//                LOG.info(KEY_PROPERTY_NAME + ": " + key);
-//            }
-
-            if (key == null || key.length() == 0) {
-                final String errorMsg = KEY_PROPERTY_NAME + CONFIG_IS_NULL_OR_ZERO_LENGTH + configFile + "?";
-                LOG.error(errorMsg);
-                throw new IllegalArgumentException(errorMsg);
-            }
-            
-            /*
-             * Grab the secret
-             */
-            secret = configEntries.getProperty(SECRET_PROPERTY_NAME);
-
-            // WARNING: careful when you log this
-//            if (LOG.isInfoEnabled()) {
-//                LOG.info(SECRET_PROPERTY_NAME + ": " + secret);
-//            }
-
-            if (secret == null || secret.length() == 0) {
-                final String errorMsg = SECRET_PROPERTY_NAME + CONFIG_IS_NULL_OR_ZERO_LENGTH + configFile + "?";
-                LOG.error(errorMsg);
-                throw new IllegalArgumentException(errorMsg);
-            }           
-                       
-            /*
-             * Grab the connection timeout
-             */
-            connectionTimeout = Integer.parseInt( // will barf if not a number; we want this to fail fast.
-                    configEntries.getProperty(CONNECTION_TIMEOUT_PROPERTY_NAME));
-            if (connectionTimeout == 0) {
-                final String errorMsg = CONNECTION_TIMEOUT_PROPERTY_NAME + " cannot be 0 value!"
-                        + " HINT: is the value set in the " + configFile + "?";
-                LOG.error(errorMsg);
-                throw new IllegalArgumentException(errorMsg);
-            }
-
-            LogUtils.log(LOG, Level.INFO, () -> CONNECTION_TIMEOUT_PROPERTY_NAME + ": " + connectionTimeout);
-
-        } catch (IOException e) {
-            final String errorMsg = "Failed to load Exchange config: " + configFile;
-            LOG.error(errorMsg, e);
-            throw new IllegalStateException(errorMsg, e);
-        } finally {
-            try {
-                inputStream.close();
-            } catch (IOException e) {
-                final String errorMsg = "Failed to close input stream for: " + configFile;
-                LOG.error(errorMsg, e);
-            }
+        secret = authenticationConfig.getItem(SECRET_PROPERTY_NAME);
+        // WARNING: careful when you log this
+//        LogUtils.log(LOG, Level.INFO, () -> SECRET_PROPERTY_NAME + ": " + secret);
+        if (secret == null || secret.length() == 0) {
+            final String errorMsg = SECRET_PROPERTY_NAME + CONFIG_IS_NULL_OR_ZERO_LENGTH + EXCHANGE_CONFIG_FILE + " ?";
+            LOG.error(errorMsg);
+            throw new IllegalArgumentException(errorMsg);
         }
     }
 
@@ -873,13 +802,6 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
         final GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.registerTypeAdapter(Date.class, new BitstampDateDeserializer());
         gson = gsonBuilder.create();
-    }
-
-    /*
-     * Hack for unit-testing config loading.
-     */
-    private static String getConfigFileLocation() {
-        return CONFIG_FILE;
     }
 
     /*

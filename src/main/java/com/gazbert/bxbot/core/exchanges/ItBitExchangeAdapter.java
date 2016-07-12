@@ -26,9 +26,15 @@ package com.gazbert.bxbot.core.exchanges;
 import com.gazbert.bxbot.core.api.exchange.AuthenticationConfig;
 import com.gazbert.bxbot.core.api.exchange.ExchangeAdapter;
 import com.gazbert.bxbot.core.api.exchange.ExchangeConfig;
-import com.gazbert.bxbot.core.api.exchange.NetworkConfig;
 import com.gazbert.bxbot.core.api.exchange.OtherConfig;
-import com.gazbert.bxbot.core.api.trading.*;
+import com.gazbert.bxbot.core.api.trading.BalanceInfo;
+import com.gazbert.bxbot.core.api.trading.ExchangeTimeoutException;
+import com.gazbert.bxbot.core.api.trading.MarketOrder;
+import com.gazbert.bxbot.core.api.trading.MarketOrderBook;
+import com.gazbert.bxbot.core.api.trading.OpenOrder;
+import com.gazbert.bxbot.core.api.trading.OrderType;
+import com.gazbert.bxbot.core.api.trading.TradingApi;
+import com.gazbert.bxbot.core.api.trading.TradingApiException;
 import com.gazbert.bxbot.core.util.LogUtils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -50,7 +56,12 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
 import java.time.Instant;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * <p>
@@ -145,11 +156,6 @@ public final class ItBitExchangeAdapter extends  AbstractExchangeAdapter impleme
     private static final String AUTHENTICATION_CONFIG_MISSING = "AuthenticationConfig is missing for adapter in exchange.xml file.";
 
     /**
-     * Fatal error message for when NetworkConfig is missing in the exchange.xml config file.
-     */
-    private static final String NETWORK_CONFIG_MISSING = "NetworkConfig is missing for adapter in exchange.xml file.";
-
-    /**
      * Fatal error message for when OtherConfig is missing in the exchange.xml config file.
      */
     private static final String OTHER_CONFIG_MISSING = "OtherConfig is missing for adapter in exchange.xml file.";
@@ -160,7 +166,7 @@ public final class ItBitExchangeAdapter extends  AbstractExchangeAdapter impleme
     private static final String CONFIG_IS_NULL_OR_ZERO_LENGTH = " cannot be null or zero length! HINT: is the value set in the ";
 
     /**
-     * Your itBit API keys, connection timeout, and buy/sell fees are located in the config/exchange.xml config file.
+     * Your itBit API keys, network config, and buy/sell fees are located in the config/exchange.xml config file.
      */
     private static final String EXCHANGE_CONFIG_FILE = "config/exchange.xml";
 
@@ -190,21 +196,6 @@ public final class ItBitExchangeAdapter extends  AbstractExchangeAdapter impleme
     private static final String SELL_FEE_PROPERTY_NAME = "sell-fee";
 
     /**
-     * Name of connection timeout property in config file.
-     */
-    private static final String CONNECTION_TIMEOUT_PROPERTY_NAME = "connection-timeout";
-
-    /**
-     * Name of non-fatal-error-codes property in config file.
-     */
-    private static final String NON_FATAL_ERROR_CODES_PROPERTY_NAME = "non-fatal-error-codes";
-
-    /**
-     * Name of non-fatal-error-messages property in config file.
-     */
-    private static final String NON_FATAL_ERROR_MESSAGES_PROPERTY_NAME = "non-fatal-error-messages";
-
-    /**
      * Nonce used for sending authenticated messages to the exchange.
      */
     private static long nonce = 0;
@@ -213,23 +204,6 @@ public final class ItBitExchangeAdapter extends  AbstractExchangeAdapter impleme
      * The UUID of the wallet in use on the exchange.
      */
     private String walletId;
-
-    /**
-     * The connection timeout in SECONDS for terminating hung connections to the exchange.
-     */
-    private int connectionTimeout;
-
-    /**
-     * HTTP status codes for non-fatal network connection failures.
-     * Used to decide to throw {@link ExchangeNetworkException}.
-     */
-    private Set<Integer> nonFatalNetworkErrorCodes;
-
-    /**
-     * java.io exception messages for non-fatal network connection failures.
-     * Used to decide to throw {@link ExchangeNetworkException}.
-     */
-    private Set<String> nonFatalNetworkErrorMessages;
 
     /**
      * Exchange buy fees in % in {@link BigDecimal} format.
@@ -284,16 +258,6 @@ public final class ItBitExchangeAdapter extends  AbstractExchangeAdapter impleme
         nonce = System.currentTimeMillis() / 1000; // set the initial nonce used in the secure messaging.
         initSecureMessageLayer();
         initGson();
-    }
-
-    @Override
-    protected Set<Integer> getNonFatalErrorCodes() {
-        return nonFatalNetworkErrorCodes;
-    }
-
-    @Override
-    protected Set<String> getNonFatalErrorMessages() {
-        return nonFatalNetworkErrorMessages;
     }
 
     // ------------------------------------------------------------------------------------------------
@@ -835,7 +799,7 @@ public final class ItBitExchangeAdapter extends  AbstractExchangeAdapter impleme
         try {
 
             final URL url = new URL(PUBLIC_API_BASE_URL + apiMethod);
-            return sendNetworkRequest(url, "GET", null, requestHeaders, connectionTimeout);
+            return sendNetworkRequest(url, "GET", null, requestHeaders);
 
         } catch (MalformedURLException e) {
             final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
@@ -1002,7 +966,7 @@ public final class ItBitExchangeAdapter extends  AbstractExchangeAdapter impleme
             LogUtils.log(LOG, Level.DEBUG, () -> "X-Auth-Nonce: " + Long.toString(nonce));
 
             final URL url = new URL(invocationUrl);
-            return sendNetworkRequest(url, httpMethod, requestBody, requestHeaders, connectionTimeout);
+            return sendNetworkRequest(url, httpMethod, requestBody, requestHeaders);
 
         } catch (MalformedURLException e) {
             final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
@@ -1078,39 +1042,6 @@ public final class ItBitExchangeAdapter extends  AbstractExchangeAdapter impleme
             LOG.error(errorMsg);
             throw new IllegalArgumentException(errorMsg);
         }
-    }
-
-    private void setNetworkConfig(ExchangeConfig exchangeConfig) {
-
-        final NetworkConfig networkConfig = exchangeConfig.getNetworkConfig();
-        if (networkConfig == null) {
-            final String errorMsg = NETWORK_CONFIG_MISSING + exchangeConfig;
-            LOG.error(errorMsg);
-            throw new IllegalArgumentException(errorMsg);
-        }
-
-        connectionTimeout = networkConfig.getConnectionTimeout();
-        if (connectionTimeout == 0) {
-            final String errorMsg = CONNECTION_TIMEOUT_PROPERTY_NAME + " cannot be 0 value!"
-                    + " HINT: is the value set in the " + EXCHANGE_CONFIG_FILE + " ?";
-            LOG.error(errorMsg);
-            throw new IllegalArgumentException(errorMsg);
-        }
-        LogUtils.log(LOG, Level.INFO, () -> CONNECTION_TIMEOUT_PROPERTY_NAME + ": " + connectionTimeout);
-
-        nonFatalNetworkErrorCodes = new HashSet<>();
-        final List<Integer> nonFatalErrorCodesFromConfig = networkConfig.getNonFatalErrorCodes();
-        if (nonFatalErrorCodesFromConfig != null) {
-            nonFatalNetworkErrorCodes.addAll(nonFatalErrorCodesFromConfig);
-        }
-        LogUtils.log(LOG, Level.INFO, () -> NON_FATAL_ERROR_CODES_PROPERTY_NAME + ": " + nonFatalNetworkErrorCodes);
-
-        nonFatalNetworkErrorMessages = new HashSet<>();
-        final List<String> nonFatalErrorMessagesFromConfig = networkConfig.getNonFatalErrorMessages();
-        if (nonFatalErrorMessagesFromConfig != null) {
-            nonFatalNetworkErrorMessages.addAll(nonFatalErrorMessagesFromConfig);
-        }
-        LogUtils.log(LOG, Level.INFO, () -> NON_FATAL_ERROR_MESSAGES_PROPERTY_NAME + ": " + nonFatalNetworkErrorMessages);
     }
 
     private void setOtherConfig(ExchangeConfig exchangeConfig) {

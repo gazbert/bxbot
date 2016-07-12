@@ -29,12 +29,13 @@
  * </p>
  *
  * <p>
- * The Trading Strategies will use the Exchange Adapters to make trades on the exchange.
+ * Trading Strategies will use Exchange Adapters to execute trades on the exchange via the
+ * {@link com.gazbert.bxbot.core.api.trading.TradingApi}.
  * </p>
  *
  * <p>
- * Each Exchange Adapter must provide an implementation of the {@link com.gazbert.bxbot.core.api.trading.TradingApi} for the
- * exchange it is integrating with.
+ * The Trading Engine will initialise Exchange Adapters via the
+ * {@link com.gazbert.bxbot.core.api.exchange.ExchangeAdapter}.
  * </p>
  *
  * <p>
@@ -44,7 +45,8 @@
  *
  * Your Exchange Adapter must:
  * <ol>
- * <li>implement the {@link com.gazbert.bxbot.core.api.trading.TradingApi} interface.
+ * <li>implement the {@link com.gazbert.bxbot.core.api.exchange.ExchangeAdapter} and
+ *     {@link com.gazbert.bxbot.core.api.trading.TradingApi} interfaces.
  * <li>be placed on the Trading Engine's runtime classpath: keep it here, or in a separate jar file.</li>
  * <li>include a configuration entry in the ./config/exchanges.xml.template file.</li>
  * </ol>

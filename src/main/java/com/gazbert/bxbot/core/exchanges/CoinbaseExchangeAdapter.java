@@ -227,18 +227,6 @@ public final class CoinbaseExchangeAdapter extends AbstractExchangeAdapter imple
         initGson();
     }
 
-    @Override
-    protected Set<Integer> getNonFatalErrorCodes() {
-        // TODO - get from config
-        return new HashSet<>();
-    }
-
-    @Override
-    protected Set<String> getNonFatalErrorMessages() {
-        // TODO - get from config
-        return new HashSet<>();
-    }
-
     // ------------------------------------------------------------------------------------------------
     // Coinbase API Calls adapted to the Trading API.
     // See https://docs.exchange.coinbase.com/#api
@@ -700,7 +688,7 @@ public final class CoinbaseExchangeAdapter extends AbstractExchangeAdapter imple
         try {
 
             final URL url = new URL(PUBLIC_API_BASE_URL + apiMethod + queryString);
-            return sendNetworkRequest(url, "GET", null, requestHeaders, connectionTimeout);
+            return sendNetworkRequest(url, "GET", null, requestHeaders);
 
         } catch (MalformedURLException e) {
             final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
@@ -835,7 +823,7 @@ public final class CoinbaseExchangeAdapter extends AbstractExchangeAdapter imple
             requestHeaders.put("CB-ACCESS-PASSPHRASE", passphrase);
 
             final URL url = new URL(invocationUrl);
-            return sendNetworkRequest(url, httpMethod, requestBody, requestHeaders, connectionTimeout);
+            return sendNetworkRequest(url, httpMethod, requestBody, requestHeaders);
 
         } catch (MalformedURLException e) {
             final String errorMsg = UNEXPECTED_IO_ERROR_MSG;

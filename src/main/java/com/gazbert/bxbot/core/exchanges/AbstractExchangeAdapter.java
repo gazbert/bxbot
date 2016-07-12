@@ -22,6 +22,8 @@
  */
 package com.gazbert.bxbot.core.exchanges;
 
+import com.gazbert.bxbot.core.api.exchange.ExchangeConfig;
+import com.gazbert.bxbot.core.api.exchange.NetworkConfig;
 import com.gazbert.bxbot.core.api.trading.ExchangeTimeoutException;
 import com.gazbert.bxbot.core.api.trading.TradingApiException;
 import com.gazbert.bxbot.core.util.LogUtils;
@@ -38,6 +40,8 @@ import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -67,13 +71,59 @@ abstract class AbstractExchangeAdapter {
     private static final String IO_5XX_TIMEOUT_ERROR_MSG = "Failed to connect to Exchange due to 5xx timeout.";
 
     /**
+     * Fatal error message for when NetworkConfig is missing in the exchange.xml config file.
+     */
+    private static final String NETWORK_CONFIG_MISSING = "NetworkConfig is missing for adapter in exchange.xml file.";
+
+    /**
+     * Name of connection timeout property in config file.
+     */
+    private static final String CONNECTION_TIMEOUT_PROPERTY_NAME = "connection-timeout";
+
+    /**
+     * Name of non-fatal-error-codes property in config file.
+     */
+    private static final String NON_FATAL_ERROR_CODES_PROPERTY_NAME = "non-fatal-error-codes";
+
+    /**
+     * Name of non-fatal-error-messages property in config file.
+     */
+    private static final String NON_FATAL_ERROR_MESSAGES_PROPERTY_NAME = "non-fatal-error-messages";
+
+    /**
+     * The connection timeout in SECONDS for terminating hung connections to the exchange.
+     */
+    private int connectionTimeout;
+
+    /**
+     * HTTP status codes for non-fatal network connection failures.
+     * Used to decide to throw {@link ExchangeTimeoutException}.
+     */
+    private Set<Integer> nonFatalNetworkErrorCodes;
+
+    /**
+     * java.io exception messages for non-fatal network connection failures.
+     * Used to decide to throw {@link ExchangeTimeoutException}.
+     */
+    private Set<String> nonFatalNetworkErrorMessages;
+
+
+    /**
+     * Constructor set some sensible defaults for the network config.
+     */
+    protected AbstractExchangeAdapter() {
+        connectionTimeout = 30;
+        nonFatalNetworkErrorCodes = new HashSet<>();
+        nonFatalNetworkErrorMessages = new HashSet<>();
+    }
+
+    /**
      * Makes a request to the Exchange.
      *
      * @param url               the URL to invoke.
      * @param postData          optional post data to send. This can be null.
      * @param httpMethod        the HTTP method to use, e.g. GET, POST, DELETE
      * @param requestHeaders    optional request headers to set on the {@link URLConnection} used to invoke the Exchange.
-     * @param connectionTimeout timeout value before a 'stuck' connection is terminated. Value must be in seconds.
      * @return the response from the Exchange.
      * @throws ExchangeTimeoutException if a timeout occurred trying to connect to the exchange. The timeout limit is
      *                                  implementation specific for each Exchange Adapter. This allows for recovery from
@@ -81,8 +131,7 @@ abstract class AbstractExchangeAdapter {
      * @throws TradingApiException      if the API call failed for any reason other than a timeout. This means something
      *                                  really bad as happened.
      */
-    ExchangeHttpResponse sendNetworkRequest(URL url, String httpMethod, String postData,
-                                            Map<String, String> requestHeaders, int connectionTimeout)
+    ExchangeHttpResponse sendNetworkRequest(URL url, String httpMethod, String postData, Map<String, String> requestHeaders)
             throws TradingApiException, ExchangeTimeoutException {
 
         HttpURLConnection exchangeConnection = null;
@@ -146,16 +195,13 @@ abstract class AbstractExchangeAdapter {
 
         } catch (FileNotFoundException e) {
             // Huobi started throwing this as of 8 Nov 2015 :-/
-            final String errorMsg = "Failed to connect to Exchange. It's not there!";
+            final String errorMsg = "Failed to connect to Exchange. It's not there Jim!";
             LOG.error(errorMsg, e);
             throw new ExchangeTimeoutException(errorMsg, e);
 
         } catch (IOException e) {
 
             // Check if this is a non-fatal network error
-            final Set<String> nonFatalNetworkErrorMessages = getNonFatalErrorMessages();
-            final Set<Integer> nonFatalNetworkErrorCodes = getNonFatalErrorCodes();
-
             try {
 
                 if (nonFatalNetworkErrorMessages != null && e.getMessage() != null &&
@@ -191,20 +237,39 @@ abstract class AbstractExchangeAdapter {
     }
 
     /**
-     * Adapters can return an optional set of HTTP status codes that will trigger throwing a
-     * {@link ExchangeTimeoutException} if a network failure occurs when connecting to the exchange.
-     *
-     * @return a set of non-fatal error codes.
+     * Sets the network config for the exchange adapter. This helper method expects the network config to be present.
+     * @param exchangeConfig the exchange config containing the network config.
+     * @throws IllegalArgumentException if the network config is not set.
      */
-    protected abstract Set<Integer> getNonFatalErrorCodes();
+    void setNetworkConfig(ExchangeConfig exchangeConfig) {
 
-    /**
-     * Adapters can return an optional set of java.io exception messages that will trigger throwing a
-     * {@link ExchangeTimeoutException} if a network failure occurs when connecting to the exchange.
-     *
-     * @return a set of non-fatal error codes.
-     */
-    protected abstract Set<String> getNonFatalErrorMessages();
+        final NetworkConfig networkConfig = exchangeConfig.getNetworkConfig();
+        if (networkConfig == null) {
+            final String errorMsg = NETWORK_CONFIG_MISSING + exchangeConfig;
+            LOG.error(errorMsg);
+            throw new IllegalArgumentException(errorMsg);
+        }
+
+        connectionTimeout = networkConfig.getConnectionTimeout();
+        if (connectionTimeout == 0) {
+            final String errorMsg = CONNECTION_TIMEOUT_PROPERTY_NAME + " cannot be 0 value." + exchangeConfig;
+            LOG.error(errorMsg);
+            throw new IllegalArgumentException(errorMsg);
+        }
+        LogUtils.log(LOG, Level.INFO, () -> CONNECTION_TIMEOUT_PROPERTY_NAME + ": " + connectionTimeout);
+
+        final List<Integer> nonFatalErrorCodesFromConfig = networkConfig.getNonFatalErrorCodes();
+        if (nonFatalErrorCodesFromConfig != null) {
+            nonFatalNetworkErrorCodes.addAll(nonFatalErrorCodesFromConfig);
+        }
+        LogUtils.log(LOG, Level.INFO, () -> NON_FATAL_ERROR_CODES_PROPERTY_NAME + ": " + nonFatalNetworkErrorCodes);
+
+        final List<String> nonFatalErrorMessagesFromConfig = networkConfig.getNonFatalErrorMessages();
+        if (nonFatalErrorMessagesFromConfig != null) {
+            nonFatalNetworkErrorMessages.addAll(nonFatalErrorMessagesFromConfig);
+        }
+        LogUtils.log(LOG, Level.INFO, () -> NON_FATAL_ERROR_MESSAGES_PROPERTY_NAME + ": " + nonFatalNetworkErrorMessages);
+    }
 
     /**
      * Wrapper for holding Exchange HTTP response.

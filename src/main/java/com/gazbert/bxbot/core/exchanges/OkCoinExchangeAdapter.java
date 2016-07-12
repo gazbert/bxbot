@@ -206,18 +206,6 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
         initGson();
     }
 
-    @Override
-    protected Set<Integer> getNonFatalErrorCodes() {
-        // TODO - get from config
-        return new HashSet<>();
-    }
-
-    @Override
-    protected Set<String> getNonFatalErrorMessages() {
-        // TODO - get from config
-        return new HashSet<>();
-    }
-
     // ------------------------------------------------------------------------------------------------
     // OKCoin REST Spot Trading API Calls adapted to the Trading API.
     // See https://www.okcoin.com/about/rest_getStarted.do
@@ -786,7 +774,7 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
         try {
 
             final URL url = new URL(PUBLIC_API_BASE_URL + apiMethod + queryString);
-            return sendNetworkRequest(url, "GET", null, requestHeaders, connectionTimeout);
+            return sendNetworkRequest(url, "GET", null, requestHeaders);
 
         } catch (MalformedURLException e) {
             final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
@@ -881,7 +869,7 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
             requestHeaders.put("Content-Type", "application/x-www-form-urlencoded");
 
             final URL url = new URL(AUTHENTICATED_API_URL + apiMethod);
-            return sendNetworkRequest(url, "POST", payload.toString(), requestHeaders, connectionTimeout);
+            return sendNetworkRequest(url, "POST", payload.toString(), requestHeaders);
 
         } catch (MalformedURLException e) {
             final String errorMsg = UNEXPECTED_IO_ERROR_MSG;

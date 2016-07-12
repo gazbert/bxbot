@@ -233,8 +233,8 @@ public class TestItBitExchangeAdapter {
     public void testCreateOrderHandlesExchangeTimeoutException() throws Exception {
 
         // Partial mock so we do not send stuff down the wire
-        final ItBitExchangeAdapter exchangeAdapter =  PowerMock.createPartialMock(ItBitExchangeAdapter.class,
-                MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
+        final ItBitExchangeAdapter exchangeAdapter =  PowerMock.createPartialMockAndInvokeDefaultConstructor(
+                ItBitExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
         PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq("POST"),
                 eq(NEW_ORDER),anyObject(Map.class)).andThrow(new ExchangeTimeoutException(" If you want the ultimate," +
                 " you've got to be willing to pay the ultimate price. It's not tragic to die doing what you love."));
@@ -251,8 +251,8 @@ public class TestItBitExchangeAdapter {
     public void testCreateOrderHandlesUnexpectedException() throws Exception {
 
         // Partial mock so we do not send stuff down the wire
-        final ItBitExchangeAdapter exchangeAdapter =  PowerMock.createPartialMock(ItBitExchangeAdapter.class,
-                MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
+        final ItBitExchangeAdapter exchangeAdapter =  PowerMock.createPartialMockAndInvokeDefaultConstructor(
+                ItBitExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
         PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq("POST"),
                 eq(NEW_ORDER), anyObject(Map.class)).andThrow(new IllegalArgumentException("Fear causes hesitation," +
                 " and hesitation will cause your worst fears to come true."));
@@ -298,8 +298,8 @@ public class TestItBitExchangeAdapter {
     public void testCancelOrderHandlesExchangeTimeoutException() throws Exception {
 
         // Partial mock so we do not send stuff down the wire
-        final ItBitExchangeAdapter exchangeAdapter =  PowerMock.createPartialMock(ItBitExchangeAdapter.class,
-                MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
+        final ItBitExchangeAdapter exchangeAdapter =  PowerMock.createPartialMockAndInvokeDefaultConstructor(
+                ItBitExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
 
         PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq("DELETE"),
                 eq(CANCEL_ORDER), eq(null)).andThrow(
@@ -318,8 +318,8 @@ public class TestItBitExchangeAdapter {
     public void testCancelOrderHandlesUnexpectedException() throws Exception {
 
         // Partial mock so we do not send stuff down the wire
-        final ItBitExchangeAdapter exchangeAdapter =  PowerMock.createPartialMock(ItBitExchangeAdapter.class,
-                MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
+        final ItBitExchangeAdapter exchangeAdapter =  PowerMock.createPartialMockAndInvokeDefaultConstructor(
+                ItBitExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
 
         PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD,
                 eq("DELETE"), eq(CANCEL_ORDER), eq(null)).andThrow(
@@ -491,8 +491,8 @@ public class TestItBitExchangeAdapter {
     public void testGettingMarketOrdersHandlesUnexpectedException() throws Exception {
 
         // Partial mock so we do not send stuff down the wire
-        final ItBitExchangeAdapter exchangeAdapter = PowerMock.createPartialMock(ItBitExchangeAdapter.class,
-                MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD);
+        final ItBitExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
+                ItBitExchangeAdapter.class, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD);
         PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD, ORDER_BOOK).
                 andThrow(new IllegalArgumentException("I have to return some videotapes"));
 

@@ -51,7 +51,13 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
 import java.time.Instant;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 
 /**
  * <p>
@@ -196,18 +202,6 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter imple
         loadConfig();
         initSecureMessageLayer();
         initGson();
-    }
-
-    @Override
-    protected Set<Integer> getNonFatalErrorCodes() {
-        // TODO - get from config
-        return new HashSet<>();
-    }
-
-    @Override
-    protected Set<String> getNonFatalErrorMessages() {
-        // TODO - get from config
-        return new HashSet<>();
     }
 
     // ------------------------------------------------------------------------------------------------
@@ -876,7 +870,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter imple
         try {
 
             final URL url = new URL(PUBLIC_API_BASE_URL + apiMethod);
-            return sendNetworkRequest(url, "GET", null, requestHeaders, connectionTimeout);
+            return sendNetworkRequest(url, "GET", null, requestHeaders);
 
         } catch (MalformedURLException e) {
             final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
@@ -974,7 +968,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter imple
             requestHeaders.put("Content-Type", "application/json");
 
             final URL url = new URL(AUTHENTICATED_API_URL + apiMethod);
-            return sendNetworkRequest(url, "POST", paramsInJson, requestHeaders, connectionTimeout);
+            return sendNetworkRequest(url, "POST", paramsInJson, requestHeaders);
 
         } catch (MalformedURLException | UnsupportedEncodingException e) {
 

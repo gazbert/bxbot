@@ -293,18 +293,6 @@ public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implemen
         initGson();
     }
 
-    @Override
-    protected Set<Integer> getNonFatalErrorCodes() {
-        // TODO - get from config
-        return new HashSet<>();
-    }
-
-    @Override
-    protected Set<String> getNonFatalErrorMessages() {
-        // TODO - get from config
-        return new HashSet<>();
-    }
-
     // ------------------------------------------------------------------------------------------------
     // Huobi REST Trade API Calls adapted to the Trading API.
     // See https://github.com/huobiapi/API_Docs_en/wiki/REST-Trade-API-Method
@@ -998,7 +986,7 @@ public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implemen
         try {
 
             final URL url = new URL(PUBLIC_API_BASE_URL + apiMethod);
-            return sendNetworkRequest(url, "GET", null, requestHeaders, connectionTimeout);
+            return sendNetworkRequest(url, "GET", null, requestHeaders);
 
         } catch (MalformedURLException e) {
             final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
@@ -1102,7 +1090,7 @@ public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implemen
             requestHeaders.put("Content-Type", "application/x-www-form-urlencoded");
 
             final URL url = new URL(AUTHENTICATED_API_URL);
-            return sendNetworkRequest(url, "POST", payloadBuilder.toString(), requestHeaders, connectionTimeout);
+            return sendNetworkRequest(url, "POST", payloadBuilder.toString(), requestHeaders);
 
         } catch (MalformedURLException e) {
 

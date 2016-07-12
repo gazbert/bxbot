@@ -40,8 +40,6 @@ dependency injection framework to achieve this; the long term goal is to convert
 The bot was designed to fail hard and fast if any unexpected errors occur in the Exchange Adapters or Trading Strategies:
 it will log the error, send an email alert (if configured), and then shutdown.
 
-The first release of BX-bot is _single-threaded_ for simplicity; I am working on a concurrent version.
-
 ## Dependencies
 BX-bot requires [Oracle JDK 1.8](http://www.oracle.com/technetwork/java/javase/downloads/index-jsp-138363.html) for the
 development and runtime environment.
@@ -90,6 +88,37 @@ You specify the Exchange Adapter you want BX-bot to use in the `exchange.xml` fi
 <exchange>
     <name>BTC-e</name>
     <adapter>com.gazbert.bxbot.core.exchanges.BtceExchangeAdapter</adapter>
+    <authentication-config>
+        <config-item>
+            <name>key</name>
+            <value>your-api-key</value>
+        </config-item>
+        <config-item>
+            <name>secret</name>
+            <value>your-secret-key</value>
+        </config-item>
+    </authentication-config>
+    <network-config>
+        <connection-timeout>30</connection-timeout>
+        <non-fatal-error-codes>
+            <code>502</code>
+            <code>503</code>
+        </non-fatal-error-codes>
+        <non-fatal-error-messages>
+            <message>Connection reset</message>
+            <message>Connection refused</message>
+        </non-fatal-error-messages>
+    </network-config>
+    <other-config>
+        <config-item>
+            <name>buy-fee</name>
+            <value>0.5</value>
+        </config-item>
+        <config-item>
+            <name>sell-fee</name>
+            <value>0.5</value>
+        </config-item>
+    </other-config>
 </exchange>
 ```
 
@@ -100,6 +129,27 @@ The `<name>` value is for descriptive use only. It is used in the log statements
 For the `<adapter>` value, you must specify the fully qualified name of the Exchange Adapter class for the Trading Engine
 to inject on startup. The class must be on the runtime classpath. See the _How do I write my own Exchange Adapter?_ 
 section for more details.
+
+The `<authentication-config>` section is optional. If present, at least 1 `config-item` must be set - these are repeating
+key/value String pairs. This section can be used to configure the adapter with the exchange trading API credentials - see
+the sample exchange.xml config files for each exchange.
+
+The `<network-config>` section is optional. If present, the `<connection-timeout`, `non-fatal-error-codes`, and
+`non-fatal-error-messages` sections must be set.
+
+The `<connection-timeout` is the timeout value that the exchange adapter will wait on socket connect/socket read when
+communicating with the exchange. Once this threshold has been breached, the exchange adapter will give up and throw a
+Trading API TimeoutException. The exchange adapter is single threaded: if one request gets blocked, it will block all
+subsequent requests from getting to the exchange. This timeout prevents an indefinite block.
+
+The `non-fatal-error-codes` section contains a list of HTTP status codes that will trigger the adapter to throw a
+non-fatal Trading API TimeoutException.
+
+The `non-fatal-error-messages` section contains a list of java.io exception messages that will trigger the adapter to
+throw a non-fatal Trading API TimeoutException.
+
+The `other-config` section is optional. If present, at least 1 `config-item` must be set - these are repeating
+key/value String pairs. This section can be used to specify additional config for adapter, e.g. buy/sell fees.
 
 BX-bot only supports 1 Exchange Adapter for each instance of the bot; you will need to create multiple (runtime) 
 instances of the bot to run against different exchanges.
@@ -140,8 +190,7 @@ selling. E.g. in a BTC/USD market, the first currency (BTC) is the base currency
 counter currency.
 
 The `<counter-currency>` value is the currency short code for the counter currency in the currency pair. This is also known
-as the quote currency. E.g. in a BTC/USD market, the first currency (BTC) is the base currency and the second currency 
-(USD) is the counter currency.
+as the quote currency.
 
 The `<enabled>` value allows you to toggle trading on the market. Remember, config changes are only applied on startup.
 
@@ -230,8 +279,8 @@ the exchange drops below this value, the Trading Engine will log it, send an Ema
 
 The `<trade-cycle-interval>` value is the interval in _seconds_ that the Trading Engine will wait/sleep before executing
 each trade cycle. The minimum value is 1 second. Some exchanges allow you to hit them harder than others. However, while
-their API documentation might say one thing, the reality is you might get socket timeouts and 50x responses if you hit it
-too hard - you cannot perform HFT over the public internet! I have EMA/MACD strats running every 5mins and 'scalping' 
+their API documentation might say one thing, the reality is you might get socket timeouts and 5xx responses if you hit it
+too hard - you cannot perform HFT over the public internet! I have EMA/MACD strats running every 5 mins and 'scalping'
 strats running every 60s on BTC-e. You'll need to experiment with the trade cycle interval for different exchanges.
 
 ##### Email Alerts
@@ -334,7 +383,7 @@ for an example.
 Your adapter must implement the [TradingApi](https://github.com/gazbert/BX-bot/blob/master/src/main/java/com/gazbert/bxbot/core/api/trading/TradingApi.java)
 interface. See the Javadoc for details of the API. This allows for:
 
-1. the main Trading Engine to inject your adapter on startup of the bot.
+1. the main Trading Engine to inject your adapter on startup of the bot and initialise with config via the [ExchangeAdapter](https://github.com/gazbert/BX-bot/blob/master/src/main/java/com/gazbert/bxbot/core/api/exchange/ExchangeAdapter.java) init method.
 1. the Trading Strategies to invoke your adapter's implementation of the [TradingApi](https://github.com/gazbert/BX-bot/blob/master/src/main/java/com/gazbert/bxbot/core/api/trading/TradingApi.java)
    during each trade cycle.
 
