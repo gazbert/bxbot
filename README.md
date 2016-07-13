@@ -40,6 +40,8 @@ dependency injection framework to achieve this; the long term goal is to convert
 The bot was designed to fail hard and fast if any unexpected errors occur in the Exchange Adapters or Trading Strategies:
 it will log the error, send an email alert (if configured), and then shutdown.
 
+The first release of BX-bot is single-threaded for simplicity; I am working on a concurrent version.
+
 ## Dependencies
 BX-bot requires [Oracle JDK 1.8](http://www.oracle.com/technetwork/java/javase/downloads/index-jsp-138363.html) for the
 development and runtime environment.
@@ -135,7 +137,7 @@ key/value String pairs. This section is used by the inbuilt Exchange Adapters to
 the sample `exchange.xml` config files for details.
 
 The `<network-config>` section is optional. If present, the `<connection-timeout>`, `<non-fatal-error-codes>`, and
-`<non-fatal-error-messages>` sections must be set. This section is used by the inbuilt Exchange Adapters to configure
+`<non-fatal-error-messages>` sections must be set. This section is used by the inbuilt Exchange Adapters to set
 their network configuration as detailed below:
 
 * The `<connection-timeout>` is the timeout value that the exchange adapter will wait on socket connect/socket read when
