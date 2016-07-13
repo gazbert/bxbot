@@ -23,7 +23,17 @@
 
 package com.gazbert.bxbot.core.exchanges;
 
-import com.gazbert.bxbot.core.api.trading.*;
+import com.gazbert.bxbot.core.api.exchange.AuthenticationConfig;
+import com.gazbert.bxbot.core.api.exchange.ExchangeConfig;
+import com.gazbert.bxbot.core.api.exchange.NetworkConfig;
+import com.gazbert.bxbot.core.api.exchange.OtherConfig;
+import com.gazbert.bxbot.core.api.trading.BalanceInfo;
+import com.gazbert.bxbot.core.api.trading.ExchangeNetworkException;
+import com.gazbert.bxbot.core.api.trading.MarketOrderBook;
+import com.gazbert.bxbot.core.api.trading.OpenOrder;
+import com.gazbert.bxbot.core.api.trading.OrderType;
+import com.gazbert.bxbot.core.api.trading.TradingApiException;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.api.easymock.PowerMock;
@@ -36,6 +46,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.DecimalFormat;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -63,9 +74,6 @@ import static org.junit.Assert.*;
 @PowerMockIgnore("javax.crypto.*")
 @PrepareForTest(OkCoinExchangeAdapter.class)
 public class TestOkcoinExchangeAdapter {
-
-    // Valid config location - expected on runtime classpath in the ./src/test/resources folder.
-    private static final String VALID_CONFIG_LOCATION = "okcoin/okcoin-config.properties";
 
     // Canned JSON responses from exchange - expected to reside on filesystem relative to project root
     private static final String DEPTH_JSON_RESPONSE = "./src/test/exchange-data/okcoin/depth.json";
@@ -97,11 +105,47 @@ public class TestOkcoinExchangeAdapter {
     private static final String ORDER_ID_TO_CANCEL = "99671870";
 
     // Mocked out methods
-    private static final String MOCKED_GET_CONFIG_LOCATION_METHOD = "getConfigFileLocation";
     private static final String MOCKED_GET_REQUEST_PARAM_MAP_METHOD = "getRequestParamMap";
     private static final String MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD = "sendAuthenticatedRequestToExchange";
     private static final String MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD = "sendPublicRequestToExchange";
 
+    // Exchange Adapter config for the tests
+    private static final String KEY = "key123";
+    private static final String SECRET = "notGonnaTellYa";
+    private static final List<Integer> nonFatalNetworkErrorCodes = Arrays.asList(502, 503, 504);
+    private static final List<String> nonFatalNetworkErrorMessages = Arrays.asList(
+            "Connection refused", "Connection reset", "Remote host closed connection during handshake");
+
+    private ExchangeConfig exchangeConfig;
+    private AuthenticationConfig authenticationConfig;
+    private NetworkConfig networkConfig;
+    private OtherConfig otherConfig;
+
+
+    /*
+     * Create some exchange config - the TradingEngine would normally do this.
+     */
+    @Before
+    public void setupForEachTest() throws Exception {
+
+        authenticationConfig = PowerMock.createMock(AuthenticationConfig.class);
+        expect(authenticationConfig.getItem("key")).andReturn(KEY);
+        expect(authenticationConfig.getItem("secret")).andReturn(SECRET);
+
+        networkConfig = PowerMock.createMock(NetworkConfig.class);
+        expect(networkConfig.getConnectionTimeout()).andReturn(30);
+        expect(networkConfig.getNonFatalErrorCodes()).andReturn(nonFatalNetworkErrorCodes);
+        expect(networkConfig.getNonFatalErrorMessages()).andReturn(nonFatalNetworkErrorMessages);
+
+        otherConfig = PowerMock.createMock(OtherConfig.class);
+        expect(otherConfig.getItem("buy-fee")).andReturn("0.2");
+        expect(otherConfig.getItem("sell-fee")).andReturn("0.2");
+
+        exchangeConfig = PowerMock.createMock(ExchangeConfig.class);
+        expect(exchangeConfig.getAuthenticationConfig()).andReturn(authenticationConfig);
+        expect(exchangeConfig.getNetworkConfig()).andReturn(networkConfig);
+        expect(exchangeConfig.getOtherConfig()).andReturn(otherConfig);
+    }
 
     // ------------------------------------------------------------------------------------------------
     //  Cancel Order tests
@@ -130,6 +174,7 @@ public class TestOkcoinExchangeAdapter {
                 eq(requestParamMap)).andReturn(exchangeResponse);
 
         PowerMock.replayAll();
+        exchangeAdapter.init(exchangeConfig);
 
         final boolean success = exchangeAdapter.cancelOrder(ORDER_ID_TO_CANCEL, MARKET_ID);
         assertTrue(success);
@@ -152,6 +197,8 @@ public class TestOkcoinExchangeAdapter {
                 anyObject(Map.class)).andReturn(exchangeResponse);
 
         PowerMock.replayAll();
+        exchangeAdapter.init(exchangeConfig);
+
         assertFalse(exchangeAdapter.cancelOrder(ORDER_ID_TO_CANCEL, MARKET_ID));
         PowerMock.verifyAll();
     }
@@ -160,14 +207,16 @@ public class TestOkcoinExchangeAdapter {
     public void testCancelOrderHandlesExchangeNetworkException() throws Exception {
 
         // Partial mock so we do not send stuff down the wire
-        final OkCoinExchangeAdapter exchangeAdapter =  PowerMock.createPartialMock(OkCoinExchangeAdapter.class,
-                MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
+        final OkCoinExchangeAdapter exchangeAdapter =  PowerMock.createPartialMockAndInvokeDefaultConstructor(
+                OkCoinExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
         PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(CANCEL_ORDER),
                 anyObject(Map.class)).
                 andThrow(new ExchangeNetworkException("I’ve thought of an ending for my book – “And he lived happily " +
                         "ever after… to the end of his days."));
 
         PowerMock.replayAll();
+        exchangeAdapter.init(exchangeConfig);
+
         exchangeAdapter.cancelOrder(ORDER_ID_TO_CANCEL, MARKET_ID);
         PowerMock.verifyAll();
     }
@@ -176,14 +225,16 @@ public class TestOkcoinExchangeAdapter {
     public void testCancelOrderHandlesUnexpectedException() throws Exception {
 
         // Partial mock so we do not send stuff down the wire
-        final OkCoinExchangeAdapter exchangeAdapter =  PowerMock.createPartialMock(OkCoinExchangeAdapter.class,
-                MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
+        final OkCoinExchangeAdapter exchangeAdapter =  PowerMock.createPartialMockAndInvokeDefaultConstructor(
+                OkCoinExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
         PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(CANCEL_ORDER),
                 anyObject(Map.class)).
                 andThrow(new IllegalStateException("A Balrog. A demon of the ancient world. This foe is beyond any of" +
                         " you. Run!"));
 
         PowerMock.replayAll();
+        exchangeAdapter.init(exchangeConfig);
+
         exchangeAdapter.cancelOrder(ORDER_ID_TO_CANCEL, MARKET_ID);
         PowerMock.verifyAll();
     }
@@ -217,6 +268,7 @@ public class TestOkcoinExchangeAdapter {
                 eq(requestParamMap)).andReturn(exchangeResponse);
 
         PowerMock.replayAll();
+        exchangeAdapter.init(exchangeConfig);
 
         final String orderId = exchangeAdapter.createOrder(MARKET_ID, OrderType.BUY, BUY_ORDER_QUANTITY, BUY_ORDER_PRICE);
         assertTrue(orderId.equals("99646259"));
@@ -249,6 +301,7 @@ public class TestOkcoinExchangeAdapter {
                 eq(requestParamMap)).andReturn(exchangeResponse);
 
         PowerMock.replayAll();
+        exchangeAdapter.init(exchangeConfig);
 
         final String orderId = exchangeAdapter.createOrder(MARKET_ID, OrderType.SELL, SELL_ORDER_QUANTITY, SELL_ORDER_PRICE);
         assertTrue(orderId.equals("99646257"));
@@ -271,6 +324,8 @@ public class TestOkcoinExchangeAdapter {
                 anyObject(Map.class)).andReturn(exchangeResponse);
 
         PowerMock.replayAll();
+        exchangeAdapter.init(exchangeConfig);
+
         exchangeAdapter.createOrder(MARKET_ID, OrderType.SELL, SELL_ORDER_QUANTITY, SELL_ORDER_PRICE);
         PowerMock.verifyAll();
     }
@@ -279,8 +334,8 @@ public class TestOkcoinExchangeAdapter {
     public void testCreateOrderHandlesExchangeNetworkException() throws Exception {
 
         // Partial mock so we do not send stuff down the wire
-        final OkCoinExchangeAdapter exchangeAdapter =  PowerMock.createPartialMock(OkCoinExchangeAdapter.class,
-                MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
+        final OkCoinExchangeAdapter exchangeAdapter =  PowerMock.createPartialMockAndInvokeDefaultConstructor(
+                OkCoinExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
         PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(TRADE),
                 anyObject(Map.class)).
                 andThrow(new ExchangeNetworkException("It’s like in the great stories, Mr. Frodo, the ones that really " +
@@ -290,6 +345,8 @@ public class TestOkcoinExchangeAdapter {
                         " fighting for."));
 
         PowerMock.replayAll();
+        exchangeAdapter.init(exchangeConfig);
+
         exchangeAdapter.createOrder(MARKET_ID, OrderType.SELL, SELL_ORDER_QUANTITY, SELL_ORDER_PRICE);
         PowerMock.verifyAll();
     }
@@ -298,8 +355,8 @@ public class TestOkcoinExchangeAdapter {
     public void testCreateOrderHandlesUnexpectedException() throws Exception {
 
         // Partial mock so we do not send stuff down the wire
-        final OkCoinExchangeAdapter exchangeAdapter =  PowerMock.createPartialMock(OkCoinExchangeAdapter.class,
-                MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
+        final OkCoinExchangeAdapter exchangeAdapter =  PowerMock.createPartialMockAndInvokeDefaultConstructor(
+                OkCoinExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
         PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(TRADE),
                 anyObject(Map.class)).
                 andThrow(new IllegalArgumentException("We needs it. Must have the precious. They stole it from us. " +
@@ -308,6 +365,8 @@ public class TestOkcoinExchangeAdapter {
                         " And a thief. Murderer. Go away... I hate you... Leave now and never come back.”"));
 
         PowerMock.replayAll();
+        exchangeAdapter.init(exchangeConfig);
+
         exchangeAdapter.createOrder(MARKET_ID, OrderType.BUY, BUY_ORDER_QUANTITY, BUY_ORDER_PRICE);
         PowerMock.verifyAll();
     }
@@ -339,6 +398,7 @@ public class TestOkcoinExchangeAdapter {
                 eq(requestParamMap)).andReturn(exchangeResponse);
 
         PowerMock.replayAll();
+        exchangeAdapter.init(exchangeConfig);
 
         final List<OpenOrder> openOrders = exchangeAdapter.getYourOpenOrders(MARKET_ID);
 
@@ -373,6 +433,8 @@ public class TestOkcoinExchangeAdapter {
                 anyObject(Map.class)).andReturn(exchangeResponse);
 
         PowerMock.replayAll();
+        exchangeAdapter.init(exchangeConfig);
+
         exchangeAdapter.getYourOpenOrders("junk_market_id");
         PowerMock.verifyAll();
     }
@@ -381,16 +443,16 @@ public class TestOkcoinExchangeAdapter {
     public void testGettingYourOpenOrdersHandlesExchangeNetworkException() throws Exception {
 
         // Partial mock so we do not send stuff down the wire
-        final OkCoinExchangeAdapter exchangeAdapter =  PowerMock.createPartialMock(OkCoinExchangeAdapter.class,
-                MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
+        final OkCoinExchangeAdapter exchangeAdapter =  PowerMock.createPartialMockAndInvokeDefaultConstructor(
+                OkCoinExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
         PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(ORDER_INFO),
                 anyObject(Map.class)).andThrow(new ExchangeNetworkException("If more of us valued food and cheer and" +
                 " song above hoarded gold, it would be a merrier world."));
 
         PowerMock.replayAll();
+        exchangeAdapter.init(exchangeConfig);
 
         exchangeAdapter.getYourOpenOrders(MARKET_ID);
-
         PowerMock.verifyAll();
     }
 
@@ -398,8 +460,8 @@ public class TestOkcoinExchangeAdapter {
     public void testGettingYourOpenOrdersHandlesUnexpectedException() throws Exception {
 
         // Partial mock so we do not send stuff down the wire
-        final OkCoinExchangeAdapter exchangeAdapter =  PowerMock.createPartialMock(OkCoinExchangeAdapter.class,
-                MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
+        final OkCoinExchangeAdapter exchangeAdapter =  PowerMock.createPartialMockAndInvokeDefaultConstructor(
+                OkCoinExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
         PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(ORDER_INFO),
                 anyObject(Map.class)).
                 andThrow(new IllegalStateException("The Road goes ever on and on\n" +
@@ -408,9 +470,9 @@ public class TestOkcoinExchangeAdapter {
                         "And I must follow, if I can"));
 
         PowerMock.replayAll();
+        exchangeAdapter.init(exchangeConfig);
 
         exchangeAdapter.getYourOpenOrders(MARKET_ID);
-
         PowerMock.verifyAll();
     }
 
@@ -440,6 +502,7 @@ public class TestOkcoinExchangeAdapter {
                 eq(requestParamMap)).andReturn(exchangeResponse);
 
         PowerMock.replayAll();
+        exchangeAdapter.init(exchangeConfig);
 
         final MarketOrderBook marketOrderBook = exchangeAdapter.getMarketOrders(MARKET_ID);
 
@@ -473,14 +536,16 @@ public class TestOkcoinExchangeAdapter {
     public void testGettingMarketOrdersHandlesExchangeNetworkException() throws Exception {
 
         // Partial mock so we do not send stuff down the wire
-        final OkCoinExchangeAdapter exchangeAdapter =  PowerMock.createPartialMock(OkCoinExchangeAdapter.class,
-                MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD);
+        final OkCoinExchangeAdapter exchangeAdapter =  PowerMock.createPartialMockAndInvokeDefaultConstructor(
+                OkCoinExchangeAdapter.class, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD);
         PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD, eq(DEPTH),
                 anyObject(Map.class)).
                 andThrow(new ExchangeNetworkException("All we have to decide is what to do with the time that is given" +
                         " to us."));
 
         PowerMock.replayAll();
+        exchangeAdapter.init(exchangeConfig);
+
         exchangeAdapter.getMarketOrders(MARKET_ID);
         PowerMock.verifyAll();
     }
@@ -489,14 +554,16 @@ public class TestOkcoinExchangeAdapter {
     public void testGettingMarketOrdersHandlesUnexpectedException() throws Exception {
 
         // Partial mock so we do not send stuff down the wire
-        final OkCoinExchangeAdapter exchangeAdapter =  PowerMock.createPartialMock(OkCoinExchangeAdapter.class,
-                MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD);
+        final OkCoinExchangeAdapter exchangeAdapter =  PowerMock.createPartialMockAndInvokeDefaultConstructor(
+                OkCoinExchangeAdapter.class, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD);
         PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD, eq(DEPTH),
                 anyObject(Map.class)).
                 andThrow(new IllegalArgumentException("The board is set, the pieces are moving. We come to it at last, " +
                         "the great battle of our time."));
 
         PowerMock.replayAll();
+        exchangeAdapter.init(exchangeConfig);
+
         exchangeAdapter.getMarketOrders(MARKET_ID);
         PowerMock.verifyAll();
     }
@@ -527,6 +594,8 @@ public class TestOkcoinExchangeAdapter {
                 eq(requestParamMap)).andReturn(exchangeResponse);
 
         PowerMock.replayAll();
+        exchangeAdapter.init(exchangeConfig);
+
         final BigDecimal latestMarketPrice = exchangeAdapter.getLatestMarketPrice(MARKET_ID).setScale(8, BigDecimal.ROUND_HALF_UP);
         assertTrue(latestMarketPrice.compareTo(new BigDecimal("231.35")) == 0);
         PowerMock.verifyAll();
@@ -536,14 +605,16 @@ public class TestOkcoinExchangeAdapter {
     public void testGettingLatestMarketPriceHandlesExchangeNetworkException() throws Exception {
 
         // Partial mock so we do not send stuff down the wire
-        final OkCoinExchangeAdapter exchangeAdapter =  PowerMock.createPartialMock(OkCoinExchangeAdapter.class,
-                MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD);
+        final OkCoinExchangeAdapter exchangeAdapter =  PowerMock.createPartialMockAndInvokeDefaultConstructor(
+                OkCoinExchangeAdapter.class, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD);
         PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD, eq(TICKER),
                 anyObject(Map.class)).
                 andThrow(new ExchangeNetworkException("I would rather share one lifetime with you than face all the" +
                         " Ages of this world alone."));
 
         PowerMock.replayAll();
+        exchangeAdapter.init(exchangeConfig);
+
         exchangeAdapter.getLatestMarketPrice(MARKET_ID);
         PowerMock.verifyAll();
     }
@@ -552,8 +623,8 @@ public class TestOkcoinExchangeAdapter {
     public void testGettingLatestMarketPriceHandlesUnexpectedException() throws Exception {
 
         // Partial mock so we do not send stuff down the wire
-        final OkCoinExchangeAdapter exchangeAdapter =  PowerMock.createPartialMock(OkCoinExchangeAdapter.class,
-                MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD);
+        final OkCoinExchangeAdapter exchangeAdapter =  PowerMock.createPartialMockAndInvokeDefaultConstructor(
+                OkCoinExchangeAdapter.class, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD);
         PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD, eq(TICKER),
                 anyObject(Map.class)).
                 andThrow(new IllegalArgumentException("What has happened before will happen again. What has been done " +
@@ -563,6 +634,8 @@ public class TestOkcoinExchangeAdapter {
                         " happens between now and then."));
 
         PowerMock.replayAll();
+        exchangeAdapter.init(exchangeConfig);
+
         exchangeAdapter.getLatestMarketPrice(MARKET_ID);
         PowerMock.verifyAll();
     }
@@ -587,6 +660,7 @@ public class TestOkcoinExchangeAdapter {
                 eq(null)).andReturn(exchangeResponse);
 
         PowerMock.replayAll();
+        exchangeAdapter.init(exchangeConfig);
 
         final BalanceInfo balanceInfo = exchangeAdapter.getBalanceInfo();
 
@@ -615,6 +689,8 @@ public class TestOkcoinExchangeAdapter {
                 anyObject(Map.class)).andReturn(exchangeResponse);
 
         PowerMock.replayAll();
+        exchangeAdapter.init(exchangeConfig);
+
         exchangeAdapter.getBalanceInfo();
         PowerMock.verifyAll();
     }
@@ -623,13 +699,15 @@ public class TestOkcoinExchangeAdapter {
     public void testGettingBalanceInfoHandlesExchangeNetworkException() throws Exception {
 
         // Partial mock so we do not send stuff down the wire
-        final OkCoinExchangeAdapter exchangeAdapter =  PowerMock.createPartialMock(OkCoinExchangeAdapter.class,
-                MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
+        final OkCoinExchangeAdapter exchangeAdapter =  PowerMock.createPartialMockAndInvokeDefaultConstructor(
+                OkCoinExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
         PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(USERINFO),
                 eq(null)).andThrow(new ExchangeNetworkException("There is only one Lord of the Ring, only one who can" +
                 " bend it to his will. And he does not share power."));
 
         PowerMock.replayAll();
+        exchangeAdapter.init(exchangeConfig);
+
         exchangeAdapter.getBalanceInfo();
         PowerMock.verifyAll();
     }
@@ -638,14 +716,16 @@ public class TestOkcoinExchangeAdapter {
     public void testGettingBalanceInfoHandlesUnexpectedException() throws Exception {
 
         // Partial mock so we do not send stuff down the wire
-        final OkCoinExchangeAdapter exchangeAdapter =  PowerMock.createPartialMock(OkCoinExchangeAdapter.class,
-                MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
+        final OkCoinExchangeAdapter exchangeAdapter =  PowerMock.createPartialMockAndInvokeDefaultConstructor(
+                OkCoinExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
         PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(USERINFO), eq(null)).
                 andThrow(new IllegalStateException("It's a dangerous business, Frodo, going out your door. You step " +
                         "onto the road, and if you don't keep your feet, there's no knowing where you might be swept " +
                         "off to."));
 
         PowerMock.replayAll();
+        exchangeAdapter.init(exchangeConfig);
+
         exchangeAdapter.getBalanceInfo();
         PowerMock.verifyAll();
     }
@@ -657,12 +737,11 @@ public class TestOkcoinExchangeAdapter {
     @Test
     public void testGettingExchangeSellingFeeIsAsExpected() throws Exception {
 
-        // Partial mock the adapter so we can manipulate config location
-        PowerMock.mockStaticPartial(OkCoinExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD);
-        PowerMock.expectPrivate(OkCoinExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD).andReturn(VALID_CONFIG_LOCATION);
         PowerMock.replayAll();
 
         final OkCoinExchangeAdapter exchangeAdapter = new OkCoinExchangeAdapter();
+        exchangeAdapter.init(exchangeConfig);
+
         final BigDecimal sellPercentageFee = exchangeAdapter.getPercentageOfSellOrderTakenForExchangeFee(MARKET_ID);
         assertTrue(sellPercentageFee.compareTo(new BigDecimal("0.002")) == 0);
 
@@ -672,12 +751,11 @@ public class TestOkcoinExchangeAdapter {
     @Test
     public void testGettingExchangeBuyingFeeIsAsExpected() throws Exception {
 
-        // Partial mock the adapter so we can manipulate config location
-        PowerMock.mockStaticPartial(OkCoinExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD);
-        PowerMock.expectPrivate(OkCoinExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD).andReturn(VALID_CONFIG_LOCATION);
         PowerMock.replayAll();
 
         final OkCoinExchangeAdapter exchangeAdapter = new OkCoinExchangeAdapter();
+        exchangeAdapter.init(exchangeConfig);
+
         final BigDecimal buyPercentageFee = exchangeAdapter.getPercentageOfBuyOrderTakenForExchangeFee(MARKET_ID);
         assertTrue(buyPercentageFee.compareTo(new BigDecimal("0.002")) == 0);
 
@@ -687,29 +765,25 @@ public class TestOkcoinExchangeAdapter {
     @Test
     public void testGettingImplNameIsAsExpected() throws Exception {
 
-        // Partial mock the adapter so we can manipulate config location
-        PowerMock.mockStaticPartial(OkCoinExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD);
-        PowerMock.expectPrivate(OkCoinExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD).andReturn(VALID_CONFIG_LOCATION);
         PowerMock.replayAll();
 
         final OkCoinExchangeAdapter exchangeAdapter = new OkCoinExchangeAdapter();
-        assertTrue(exchangeAdapter.getImplName().equals("OKCoin REST Spot Trading API v1"));
+        exchangeAdapter.init(exchangeConfig);
 
+        assertTrue(exchangeAdapter.getImplName().equals("OKCoin REST Spot Trading API v1"));
         PowerMock.verifyAll();
     }
 
     // ------------------------------------------------------------------------------------------------
-    //  Initialisation tests - assume config property files are located under src/test/resources
+    //  Initialisation tests
     // ------------------------------------------------------------------------------------------------
 
     @Test
     public void testExchangeAdapterInitialisesSuccessfully() throws Exception {
 
-        // Partial mock the adapter so we can manipulate config location
-        PowerMock.mockStaticPartial(OkCoinExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD);
-        PowerMock.expectPrivate(OkCoinExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD).andReturn(VALID_CONFIG_LOCATION);
         PowerMock.replayAll();
         final OkCoinExchangeAdapter exchangeAdapter = new OkCoinExchangeAdapter();
+        exchangeAdapter.init(exchangeConfig);
         assertNotNull(exchangeAdapter);
         PowerMock.verifyAll();
     }
@@ -717,77 +791,78 @@ public class TestOkcoinExchangeAdapter {
     @Test (expected = IllegalArgumentException.class)
     public void testExchangeAdapterThrowsExceptionIfPublicKeyConfigIsMissing() throws Exception {
 
-        // Partial mock the adapter so we can manipulate config location
-        PowerMock.mockStaticPartial(OkCoinExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD);
-        PowerMock.expectPrivate(OkCoinExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD).andReturn(
-                "okcoin/missing-public-key-okcoin-config.properties");
+        PowerMock.reset(authenticationConfig);
+        expect(authenticationConfig.getItem("key")).andReturn(null);
+        expect(authenticationConfig.getItem("secret")).andReturn("your_client_secret");
+
         PowerMock.replayAll();
-        new OkCoinExchangeAdapter();
+        final OkCoinExchangeAdapter exchangeAdapter = new OkCoinExchangeAdapter();
+        exchangeAdapter.init(exchangeConfig);
         PowerMock.verifyAll();
     }
 
     @Test (expected = IllegalArgumentException.class)
     public void testExchangeAdapterThrowsExceptionIfSecretConfigIsMissing() throws Exception {
 
-        // Partial mock the adapter so we can manipulate config location
-        PowerMock.mockStaticPartial(OkCoinExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD);
-        PowerMock.expectPrivate(OkCoinExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD).andReturn(
-                "okcoin/missing-secret-okcoin-config.properties");
+        PowerMock.reset(authenticationConfig);
+        expect(authenticationConfig.getItem("key")).andReturn("your_client_key");
+        expect(authenticationConfig.getItem("secret")).andReturn(null);
         PowerMock.replayAll();
-        new OkCoinExchangeAdapter();
+
+        final OkCoinExchangeAdapter exchangeAdapter = new OkCoinExchangeAdapter();
+        exchangeAdapter.init(exchangeConfig);
         PowerMock.verifyAll();
     }
 
     @Test (expected = IllegalArgumentException.class)
     public void testExchangeAdapterThrowsExceptionIfTimeoutConfigIsMissing() throws Exception {
 
-        // Partial mock the adapter so we can manipulate config location
-        PowerMock.mockStaticPartial(OkCoinExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD);
-        PowerMock.expectPrivate(OkCoinExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD).andReturn(
-                "okcoin/missing-timeout-okcoin-config.properties");
+        PowerMock.reset(networkConfig);
+        expect(networkConfig.getConnectionTimeout()).andReturn(0);
         PowerMock.replayAll();
-        new OkCoinExchangeAdapter();
+
+        final OkCoinExchangeAdapter exchangeAdapter = new OkCoinExchangeAdapter();
+        exchangeAdapter.init(exchangeConfig);
         PowerMock.verifyAll();
     }
 
     @Test (expected = IllegalArgumentException.class)
     public void testExchangeAdapterThrowsExceptionIfBuyFeeIsMissing() throws Exception {
 
-        // Partial mock the adapter so we can manipulate config location
-        PowerMock.mockStaticPartial(OkCoinExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD);
-        PowerMock.expectPrivate(OkCoinExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD).andReturn(
-                "okcoin/missing-buy-fee-okcoin-config.properties");
+        PowerMock.reset(otherConfig);
+        expect(otherConfig.getItem("buy-fee")).andReturn("");
+        expect(otherConfig.getItem("sell-fee")).andReturn("0.2");
         PowerMock.replayAll();
-        new OkCoinExchangeAdapter();
+
+        final OkCoinExchangeAdapter exchangeAdapter = new OkCoinExchangeAdapter();
+        exchangeAdapter.init(exchangeConfig);
         PowerMock.verifyAll();
     }
 
     @Test (expected = IllegalArgumentException.class)
     public void testExchangeAdapterThrowsExceptionIfSellFeeIsMissing() throws Exception {
 
-        // Partial mock the adapter so we can manipulate config location
-        PowerMock.mockStaticPartial(OkCoinExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD);
-        PowerMock.expectPrivate(OkCoinExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD).andReturn(
-                "okcoin/missing-sell-fee-okcoin-config.properties");
+        PowerMock.reset(otherConfig);
+        expect(otherConfig.getItem("buy-fee")).andReturn("0.2");
+        expect(otherConfig.getItem("sell-fee")).andReturn(null);
         PowerMock.replayAll();
-        new OkCoinExchangeAdapter();
+
+        final OkCoinExchangeAdapter exchangeAdapter = new OkCoinExchangeAdapter();
+        exchangeAdapter.init(exchangeConfig);
         PowerMock.verifyAll();
     }
 
     /*
      * Used for making real API calls to the exchange in order to grab JSON responses.
      * Have left this in; it might come in useful.
-     * It expects VALID_CONFIG_LOCATION to contain the correct credentials.
+     * You'll need to change the KEY, SECRET, constants to real-world values.
      */
 //    @Test
     public void runIntegrationTest() throws Exception {
 
-        // Partial mock the adapter so we can manipulate config location
-        PowerMock.mockStaticPartial(OkCoinExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD);
-        PowerMock.expectPrivate(OkCoinExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD).andReturn(VALID_CONFIG_LOCATION);
-        PowerMock.replayAll();
-
-//        final TradingApi exchangeAdapter = new OkCoinExchangeAdapter();
+//        PowerMock.replayAll();
+//        final ExchangeAdapter exchangeAdapter = new OkCoinExchangeAdapter();
+//        exchangeAdapter.init(exchangeConfig);
 //        exchangeAdapter.getImplName();
 //        exchangeAdapter.getPercentageOfBuyOrderTakenForExchangeFee(MARKET_ID);
 //        exchangeAdapter.getPercentageOfSellOrderTakenForExchangeFee(MARKET_ID);
@@ -800,6 +875,6 @@ public class TestOkcoinExchangeAdapter {
 //        final String orderId = exchangeAdapter.createOrder(MARKET_ID, OrderType.SELL, SELL_ORDER_QUANTITY, SELL_ORDER_PRICE);
 //        exchangeAdapter.cancelOrder(orderId, MARKET_ID);
 
-        PowerMock.verifyAll();
+//        PowerMock.verifyAll();
     }
 }

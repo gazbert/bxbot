@@ -23,6 +23,10 @@
 
 package com.gazbert.bxbot.core.exchanges;
 
+import com.gazbert.bxbot.core.api.exchange.AuthenticationConfig;
+import com.gazbert.bxbot.core.api.exchange.ExchangeAdapter;
+import com.gazbert.bxbot.core.api.exchange.ExchangeConfig;
+import com.gazbert.bxbot.core.api.exchange.OtherConfig;
 import com.gazbert.bxbot.core.api.trading.BalanceInfo;
 import com.gazbert.bxbot.core.api.trading.ExchangeNetworkException;
 import com.gazbert.bxbot.core.api.trading.MarketOrder;
@@ -37,8 +41,6 @@ import com.google.gson.GsonBuilder;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -47,7 +49,12 @@ import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -70,7 +77,7 @@ import java.util.*;
  * </p>
  *
  * <p>
- * The exchange % buy and sell fees are currently loaded statically from the okcoin-config.properties file on startup;
+ * The exchange % buy and sell fees are currently loaded statically from the exchange.xml file on startup;
  * they are not fetched from the exchange at runtime as the OKCoin API does not support this - it only provides the fee
  * monetary value for a given order id via the order_fee.do API call. The fees are used across all markets.
  * Make sure you keep an eye on the <a href="https://www.okcoin.com/about/fees.do">exchange fees</a> and update the
@@ -90,7 +97,7 @@ import java.util.*;
  *
  * @author gazbert
  */
-public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter implements TradingApi {
+public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter implements ExchangeAdapter {
 
     private static final Logger LOG = Logger.getLogger(OkCoinExchangeAdapter.class);
 
@@ -120,17 +127,6 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
     private static final String UNEXPECTED_IO_ERROR_MSG = "Failed to connect to Exchange due to unexpected IO error.";
 
     /**
-     * Used for building error messages for missing config.
-     */
-    private static final String CONFIG_IS_NULL_OR_ZERO_LENGTH = " cannot be null or zero length! HINT: is the value set in the ";
-
-    /**
-     * Your OKCoin API keys and connection timeout config.
-     * This file must be on BX-bot's runtime classpath located at: ./resources/okcoin/okcoin-config.properties
-     */
-    private static final String CONFIG_FILE = "okcoin/okcoin-config.properties";
-
-    /**
      * Name of PUBLIC key prop in config file.
      */
     private static final String KEY_PROPERTY_NAME = "key";
@@ -149,16 +145,6 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
      * Name of sell fee property in config file.
      */
     private static final String SELL_FEE_PROPERTY_NAME = "sell-fee";
-
-    /**
-     * Name of connection timeout property in config file.
-     */
-    private static final String CONNECTION_TIMEOUT_PROPERTY_NAME = "connection-timeout";
-
-    /**
-     * The connection timeout in SECONDS for terminating hung connections to the exchange.
-     */
-    private int connectionTimeout;
 
     /**
      * Exchange buy fees in % in {@link BigDecimal} format.
@@ -197,11 +183,14 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
     private Gson gson;
 
 
-    /**
-     * Constructor initialises the Exchange Adapter for using the OKCoin API.
-     */
-    public OkCoinExchangeAdapter() {
-        loadConfig();
+    @Override
+    public void init(ExchangeConfig config) {
+
+        LogUtils.log(LOG, Level.INFO, () -> "About to initialise OKCoin ExchangeConfig: " + config);
+        setAuthenticationConfig(config);
+        setNetworkConfig(config);
+        setOtherConfig(config);
+
         initSecureMessageLayer();
         initGson();
     }
@@ -946,105 +935,24 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
     //  Config methods
     // ------------------------------------------------------------------------------------------------
 
-    /**
-     * Loads Exchange Adapter config.
-     */
-    private void loadConfig() {
+    private void setAuthenticationConfig(ExchangeConfig exchangeConfig) {
 
-        final String configFile = getConfigFileLocation();
-        final Properties configEntries = new Properties();
-        final InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream(configFile);
+        final AuthenticationConfig authenticationConfig = getAuthenticationConfig(exchangeConfig);
+        key = getAuthenticationConfigItem(authenticationConfig, KEY_PROPERTY_NAME);
+        secret = getAuthenticationConfigItem(authenticationConfig, SECRET_PROPERTY_NAME);
+    }
 
-        if (inputStream == null) {
-            final String errorMsg = "Cannot find OKCoin config at: " + configFile + " HINT: is it on BX-bot's classpath?";
-            LOG.error(errorMsg);
-            throw new IllegalStateException(errorMsg);
-        }
+    private void setOtherConfig(ExchangeConfig exchangeConfig) {
 
-        try {
-            configEntries.load(inputStream);
+        final OtherConfig otherConfig = getOtherConfig(exchangeConfig);
 
-            /*
-             * Grab the public key
-             */
-            key = configEntries.getProperty(KEY_PROPERTY_NAME);
+        final String buyFeeInConfig = getOtherConfigItem(otherConfig, BUY_FEE_PROPERTY_NAME);
+        buyFeePercentage = new BigDecimal(buyFeeInConfig).divide(new BigDecimal("100"), 8, BigDecimal.ROUND_HALF_UP);
+        LogUtils.log(LOG, Level.INFO, () -> "Buy fee % in BigDecimal format: " + buyFeePercentage);
 
-            // WARNING: careful when you log this
-//            if (LOG.isInfoEnabled()) {
-//                LOG.info(KEY_PROPERTY_NAME + ": " + key);
-//            }
-
-            if (key == null || key.length() == 0) {
-                final String errorMsg = KEY_PROPERTY_NAME + CONFIG_IS_NULL_OR_ZERO_LENGTH + configFile + "?";
-                LOG.error(errorMsg);
-                throw new IllegalArgumentException(errorMsg);
-            }
-
-            /*
-             * Grab the private key
-             */
-            secret = configEntries.getProperty(SECRET_PROPERTY_NAME);
-
-            // WARNING: careful when you log this
-//            if (LOG.isInfoEnabled()) {
-//                LOG.info(SECRET_PROPERTY_NAME + ": " + secret);
-//            }
-
-            if (secret == null || secret.length() == 0) {
-                final String errorMsg = SECRET_PROPERTY_NAME + CONFIG_IS_NULL_OR_ZERO_LENGTH + configFile + "?";
-                LOG.error(errorMsg);
-                throw new IllegalArgumentException(errorMsg);
-            }
-
-            // Grab the buy fee
-            final String buyFeeInConfig = configEntries.getProperty(BUY_FEE_PROPERTY_NAME);
-            if (buyFeeInConfig == null || buyFeeInConfig.length() == 0) {
-                final String errorMsg = BUY_FEE_PROPERTY_NAME + CONFIG_IS_NULL_OR_ZERO_LENGTH + configFile + "?";
-                LOG.error(errorMsg);
-                throw new IllegalArgumentException(errorMsg);
-            }
-            LogUtils.log(LOG, Level.INFO, () -> BUY_FEE_PROPERTY_NAME + ": " + buyFeeInConfig + "%");
-
-            buyFeePercentage = new BigDecimal(buyFeeInConfig).divide(new BigDecimal("100"), 8, BigDecimal.ROUND_HALF_UP);
-            LogUtils.log(LOG, Level.INFO, () -> "Buy fee % in BigDecimal format: " + buyFeePercentage);
-
-            // Grab the sell fee
-            final String sellFeeInConfig = configEntries.getProperty(SELL_FEE_PROPERTY_NAME);
-            if (sellFeeInConfig == null || sellFeeInConfig.length() == 0) {
-                final String errorMsg = SELL_FEE_PROPERTY_NAME + CONFIG_IS_NULL_OR_ZERO_LENGTH + configFile + "?";
-                LOG.error(errorMsg);
-                throw new IllegalArgumentException(errorMsg);
-            }
-            LogUtils.log(LOG, Level.INFO, () -> SELL_FEE_PROPERTY_NAME + ": " + sellFeeInConfig + "%");
-
-            sellFeePercentage = new BigDecimal(sellFeeInConfig).divide(new BigDecimal("100"), 8, BigDecimal.ROUND_HALF_UP);
-            LogUtils.log(LOG, Level.INFO, () -> "Sell fee % in BigDecimal format: " + sellFeePercentage);
-
-            /*
-             * Grab the connection timeout
-             */
-            connectionTimeout = Integer.parseInt( // will barf if not a number; we want this to fail fast.
-                    configEntries.getProperty(CONNECTION_TIMEOUT_PROPERTY_NAME));
-            if (connectionTimeout == 0) {
-                final String errorMsg = CONNECTION_TIMEOUT_PROPERTY_NAME + " cannot be 0 value!"
-                        + " HINT: is the value set in the " + configFile + "?";
-                LOG.error(errorMsg);
-                throw new IllegalArgumentException(errorMsg);
-            }
-            LogUtils.log(LOG, Level.INFO, () -> CONNECTION_TIMEOUT_PROPERTY_NAME + ": " + connectionTimeout);
-
-        } catch (IOException e) {
-            final String errorMsg = "Failed to load Exchange config: " + configFile;
-            LOG.error(errorMsg, e);
-            throw new IllegalStateException(errorMsg, e);
-        } finally {
-            try {
-                inputStream.close();
-            } catch (IOException e) {
-                final String errorMsg = "Failed to close input stream for: " + configFile;
-                LOG.error(errorMsg, e);
-            }
-        }
+        final String sellFeeInConfig = getOtherConfigItem(otherConfig, SELL_FEE_PROPERTY_NAME);
+        sellFeePercentage = new BigDecimal(sellFeeInConfig).divide(new BigDecimal("100"), 8, BigDecimal.ROUND_HALF_UP);
+        LogUtils.log(LOG, Level.INFO, () -> "Sell fee % in BigDecimal format: " + sellFeePercentage);
     }
 
     // ------------------------------------------------------------------------------------------------
@@ -1057,13 +965,6 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
     private void initGson() {
         final GsonBuilder gsonBuilder = new GsonBuilder();
         gson = gsonBuilder.create();
-    }
-
-    /*
-     * Hack for unit-testing config loading.
-     */
-    private static String getConfigFileLocation() {
-        return CONFIG_FILE;
     }
 
     /*
