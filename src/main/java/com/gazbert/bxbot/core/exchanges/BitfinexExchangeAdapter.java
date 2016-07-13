@@ -24,7 +24,7 @@
 package com.gazbert.bxbot.core.exchanges;
 
 import com.gazbert.bxbot.core.api.trading.BalanceInfo;
-import com.gazbert.bxbot.core.api.trading.ExchangeTimeoutException;
+import com.gazbert.bxbot.core.api.trading.ExchangeNetworkException;
 import com.gazbert.bxbot.core.api.trading.MarketOrder;
 import com.gazbert.bxbot.core.api.trading.MarketOrderBook;
 import com.gazbert.bxbot.core.api.trading.OpenOrder;
@@ -93,7 +93,7 @@ import java.util.Properties;
  * </p>
  *
  * <p>
- * The {@link TradingApi} calls will throw a {@link ExchangeTimeoutException} if a network error occurs trying to
+ * The {@link TradingApi} calls will throw a {@link ExchangeNetworkException} if a network error occurs trying to
  * connect to the exchange. A {@link TradingApiException} is thrown for <em>all</em> other failures.
  * </p>
  *
@@ -210,7 +210,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter imple
     // ------------------------------------------------------------------------------------------------
 
     @Override
-    public MarketOrderBook getMarketOrders(String marketId) throws TradingApiException, ExchangeTimeoutException {
+    public MarketOrderBook getMarketOrders(String marketId) throws TradingApiException, ExchangeNetworkException {
 
         try {
             final ExchangeHttpResponse response = sendPublicRequestToExchange("book/" + marketId);
@@ -243,7 +243,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter imple
 
             return new MarketOrderBook(marketId, sellOrders, buyOrders);
 
-        } catch (ExchangeTimeoutException | TradingApiException e) {
+        } catch (ExchangeNetworkException | TradingApiException e) {
             throw e;
         } catch (Exception e) {
             LOG.error(UNEXPECTED_ERROR_MSG, e);
@@ -252,7 +252,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter imple
     }
 
     @Override
-    public List<OpenOrder> getYourOpenOrders(String marketId) throws TradingApiException, ExchangeTimeoutException {
+    public List<OpenOrder> getYourOpenOrders(String marketId) throws TradingApiException, ExchangeNetworkException {
 
         try {
             final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("orders", null);
@@ -292,7 +292,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter imple
             }
             return ordersToReturn;
 
-        } catch (ExchangeTimeoutException | TradingApiException e) {
+        } catch (ExchangeNetworkException | TradingApiException e) {
             throw e;
         } catch (Exception e) {
             LOG.error(UNEXPECTED_ERROR_MSG, e);
@@ -302,7 +302,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter imple
 
     @Override
     public String createOrder(String marketId, OrderType orderType, BigDecimal quantity, BigDecimal price) throws
-            TradingApiException, ExchangeTimeoutException {
+            TradingApiException, ExchangeNetworkException {
 
         try {
             final Map<String, Object> params = getRequestParamMap();
@@ -353,7 +353,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter imple
                 return Long.toString(createOrderResponse.order_id);
             }
 
-        } catch (ExchangeTimeoutException | TradingApiException e) {
+        } catch (ExchangeNetworkException | TradingApiException e) {
             throw e;
         } catch (Exception e) {
             LOG.error(UNEXPECTED_ERROR_MSG, e);
@@ -365,7 +365,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter imple
      * marketId is not needed for cancelling orders on this exchange.
      */
     @Override
-    public boolean cancelOrder(String orderId, String marketIdNotNeeded) throws TradingApiException, ExchangeTimeoutException {
+    public boolean cancelOrder(String orderId, String marketIdNotNeeded) throws TradingApiException, ExchangeNetworkException {
 
         try {
             final Map<String, Object> params = getRequestParamMap();
@@ -378,7 +378,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter imple
             gson.fromJson(response.getPayload(), BitfinexCancelOrderResponse.class);
             return true;
 
-        } catch (ExchangeTimeoutException | TradingApiException e) {
+        } catch (ExchangeNetworkException | TradingApiException e) {
             if (e.getCause() != null && e.getCause().getMessage().contains("400")) {
                 final String errorMsg = "Failed to cancel order on exchange. Did not recognise Order Id: " + orderId;
                 LOG.error(errorMsg, e);
@@ -393,7 +393,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter imple
     }
 
     @Override
-    public BigDecimal getLatestMarketPrice(String marketId) throws TradingApiException, ExchangeTimeoutException {
+    public BigDecimal getLatestMarketPrice(String marketId) throws TradingApiException, ExchangeNetworkException {
 
         try {
             final ExchangeHttpResponse response = sendPublicRequestToExchange("pubticker/" + marketId);
@@ -402,7 +402,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter imple
             final BitfinexTicker ticker = gson.fromJson(response.getPayload(), BitfinexTicker.class);
             return ticker.last_price;
 
-        } catch (ExchangeTimeoutException | TradingApiException e) {
+        } catch (ExchangeNetworkException | TradingApiException e) {
             throw e;
         } catch (Exception e) {
             LOG.error(UNEXPECTED_ERROR_MSG, e);
@@ -411,7 +411,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter imple
     }
 
     @Override
-    public BalanceInfo getBalanceInfo() throws TradingApiException, ExchangeTimeoutException {
+    public BalanceInfo getBalanceInfo() throws TradingApiException, ExchangeNetworkException {
 
         try {
             final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("balances", null);
@@ -440,7 +440,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter imple
             // 2nd arg of BalanceInfo constructor for reserved/on-hold balances is not provided by exchange.
             return new BalanceInfo(balancesAvailable, new HashMap<>());
 
-        } catch (ExchangeTimeoutException | TradingApiException e) {
+        } catch (ExchangeNetworkException | TradingApiException e) {
             throw e;
         } catch (Exception e) {
             LOG.error(UNEXPECTED_ERROR_MSG, e);
@@ -450,7 +450,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter imple
 
     @Override
     public BigDecimal getPercentageOfBuyOrderTakenForExchangeFee(String marketId) throws TradingApiException,
-            ExchangeTimeoutException {
+            ExchangeNetworkException {
 
         try {
             final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("account_infos", null);
@@ -463,7 +463,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter imple
             // adapt the % into BigDecimal format
             return fee.divide(new BigDecimal("100"), 8, BigDecimal.ROUND_HALF_UP);
 
-        } catch (ExchangeTimeoutException | TradingApiException e) {
+        } catch (ExchangeNetworkException | TradingApiException e) {
             throw e;
         } catch (Exception e) {
             LOG.error(UNEXPECTED_ERROR_MSG, e);
@@ -473,7 +473,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter imple
 
     @Override
     public BigDecimal getPercentageOfSellOrderTakenForExchangeFee(String marketId) throws TradingApiException,
-            ExchangeTimeoutException {
+            ExchangeNetworkException {
 
         try {
             final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("account_infos", null);
@@ -486,7 +486,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter imple
             // adapt the % into BigDecimal format
             return fee.divide(new BigDecimal("100"), 8, BigDecimal.ROUND_HALF_UP);
 
-        } catch (ExchangeTimeoutException | TradingApiException e) {
+        } catch (ExchangeNetworkException | TradingApiException e) {
             throw e;
         } catch (Exception e) {
             LOG.error(UNEXPECTED_ERROR_MSG, e);
@@ -858,10 +858,10 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter imple
      *
      * @param apiMethod the API method to call.
      * @return the response from the exchange.
-     * @throws ExchangeTimeoutException if there is a network issue connecting to exchange.
+     * @throws ExchangeNetworkException if there is a network issue connecting to exchange.
      * @throws TradingApiException if anything unexpected happens.
      */
-    private ExchangeHttpResponse sendPublicRequestToExchange(String apiMethod) throws ExchangeTimeoutException, TradingApiException {
+    private ExchangeHttpResponse sendPublicRequestToExchange(String apiMethod) throws ExchangeNetworkException, TradingApiException {
 
         // Request headers required by Exchange
         final Map<String, String> requestHeaders = new HashMap<>();
@@ -913,11 +913,11 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter imple
      * @param apiMethod the API method to call.
      * @param params the query param args to use in the API call.
      * @return the response from the exchange.
-     * @throws ExchangeTimeoutException if there is a network issue connecting to exchange.
+     * @throws ExchangeNetworkException if there is a network issue connecting to exchange.
      * @throws TradingApiException if anything unexpected happens.
      */
     private ExchangeHttpResponse sendAuthenticatedRequestToExchange(String apiMethod, Map<String, Object> params)
-            throws ExchangeTimeoutException, TradingApiException {
+            throws ExchangeNetworkException, TradingApiException {
 
         if (!initializedMACAuthentication) {
             final String errorMsg = "MAC Message security layer has not been initialized.";

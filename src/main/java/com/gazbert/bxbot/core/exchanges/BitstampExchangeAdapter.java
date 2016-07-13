@@ -27,7 +27,7 @@ import com.gazbert.bxbot.core.api.exchange.AuthenticationConfig;
 import com.gazbert.bxbot.core.api.exchange.ExchangeAdapter;
 import com.gazbert.bxbot.core.api.exchange.ExchangeConfig;
 import com.gazbert.bxbot.core.api.trading.BalanceInfo;
-import com.gazbert.bxbot.core.api.trading.ExchangeTimeoutException;
+import com.gazbert.bxbot.core.api.trading.ExchangeNetworkException;
 import com.gazbert.bxbot.core.api.trading.MarketOrder;
 import com.gazbert.bxbot.core.api.trading.MarketOrderBook;
 import com.gazbert.bxbot.core.api.trading.OpenOrder;
@@ -87,7 +87,7 @@ import java.util.Map;
  * </p>
  *
  * <p>
- * The {@link TradingApi} calls will throw a {@link ExchangeTimeoutException} if a network error occurs trying to
+ * The {@link TradingApi} calls will throw a {@link ExchangeNetworkException} if a network error occurs trying to
  * connect to the exchange. A {@link TradingApiException} is thrown for <em>all</em> other failures.
  * </p>
  *
@@ -188,7 +188,7 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
     // ------------------------------------------------------------------------------------------------
 
     @Override
-    public MarketOrderBook getMarketOrders(String marketId) throws TradingApiException, ExchangeTimeoutException {
+    public MarketOrderBook getMarketOrders(String marketId) throws TradingApiException, ExchangeNetworkException {
 
         try {
             final ExchangeHttpResponse response = sendPublicRequestToExchange("order_book");
@@ -222,7 +222,7 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
 
             return new MarketOrderBook(marketId, sellOrders, buyOrders);
 
-        } catch (ExchangeTimeoutException | TradingApiException e) {
+        } catch (ExchangeNetworkException | TradingApiException e) {
             throw e;
         } catch (Exception e) {
             LOG.error(UNEXPECTED_ERROR_MSG, e);
@@ -231,7 +231,7 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
     }
 
     @Override
-    public List<OpenOrder> getYourOpenOrders(String marketId) throws TradingApiException, ExchangeTimeoutException {
+    public List<OpenOrder> getYourOpenOrders(String marketId) throws TradingApiException, ExchangeNetworkException {
 
         try {
             final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("open_orders", null);
@@ -267,7 +267,7 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
             }
             return ordersToReturn;
 
-        } catch (ExchangeTimeoutException | TradingApiException e) {
+        } catch (ExchangeNetworkException | TradingApiException e) {
             throw e;
         } catch (Exception e) {
             LOG.error(UNEXPECTED_ERROR_MSG, e);
@@ -277,7 +277,7 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
 
     @Override
     public String createOrder(String marketId, OrderType orderType, BigDecimal quantity, BigDecimal price) throws
-            TradingApiException, ExchangeTimeoutException {
+            TradingApiException, ExchangeNetworkException {
 
         try {
             final Map<String, String> params = getRequestParamMap();
@@ -316,7 +316,7 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
                 return Long.toString(createOrderResponse.id);
             }
 
-        } catch (ExchangeTimeoutException | TradingApiException e) {
+        } catch (ExchangeNetworkException | TradingApiException e) {
             throw e;
         } catch (Exception e) {
             LOG.error(UNEXPECTED_ERROR_MSG, e);
@@ -328,7 +328,7 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
      * marketId is not needed for cancelling orders on this exchange.
      */
     @Override
-    public boolean cancelOrder(String orderId, String marketIdNotNeeded) throws TradingApiException, ExchangeTimeoutException {
+    public boolean cancelOrder(String orderId, String marketIdNotNeeded) throws TradingApiException, ExchangeNetworkException {
 
         try {
             final Map<String, String> params = getRequestParamMap();
@@ -346,7 +346,7 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
                 return false;
             }
 
-        } catch (ExchangeTimeoutException | TradingApiException e) {
+        } catch (ExchangeNetworkException | TradingApiException e) {
             throw e;
         } catch (Exception e) {
             LOG.error(UNEXPECTED_ERROR_MSG, e);
@@ -355,7 +355,7 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
     }
 
     @Override
-    public BigDecimal getLatestMarketPrice(String marketId) throws TradingApiException, ExchangeTimeoutException {
+    public BigDecimal getLatestMarketPrice(String marketId) throws TradingApiException, ExchangeNetworkException {
 
         try {
             final ExchangeHttpResponse response = sendPublicRequestToExchange("ticker");
@@ -364,7 +364,7 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
             final BitstampTicker bitstampTicker = gson.fromJson(response.getPayload(), BitstampTicker.class);
             return bitstampTicker.last;
 
-        } catch (ExchangeTimeoutException | TradingApiException e) {
+        } catch (ExchangeNetworkException | TradingApiException e) {
             throw e;
         } catch (Exception e) {
             LOG.error(UNEXPECTED_ERROR_MSG, e);
@@ -373,7 +373,7 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
     }
 
     @Override
-    public BalanceInfo getBalanceInfo() throws TradingApiException, ExchangeTimeoutException {
+    public BalanceInfo getBalanceInfo() throws TradingApiException, ExchangeNetworkException {
 
         try {
             final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("balance", null);
@@ -392,7 +392,7 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
 
             return new BalanceInfo(balancesAvailable, balancesOnOrder);
 
-        } catch (ExchangeTimeoutException | TradingApiException e) {
+        } catch (ExchangeNetworkException | TradingApiException e) {
             throw e;
         } catch (Exception e) {
             LOG.error(UNEXPECTED_ERROR_MSG, e);
@@ -402,7 +402,7 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
 
     @Override
     public BigDecimal getPercentageOfBuyOrderTakenForExchangeFee(String marketId) throws TradingApiException,
-            ExchangeTimeoutException {
+            ExchangeNetworkException {
 
         try {
             final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("balance", null);
@@ -414,7 +414,7 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
             // adapt the % into BigDecimal format
             return fee.divide(new BigDecimal("100"), 8, BigDecimal.ROUND_HALF_UP);
 
-        } catch (ExchangeTimeoutException | TradingApiException e) {
+        } catch (ExchangeNetworkException | TradingApiException e) {
             throw e;
         } catch (Exception e) {
             LOG.error(UNEXPECTED_ERROR_MSG, e);
@@ -424,7 +424,7 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
 
     @Override
     public BigDecimal getPercentageOfSellOrderTakenForExchangeFee(String marketId) throws TradingApiException,
-            ExchangeTimeoutException {
+            ExchangeNetworkException {
 
         try {
             final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("balance", null);
@@ -436,7 +436,7 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
             // adapt the % into BigDecimal format
             return fee.divide(new BigDecimal("100"), 8, BigDecimal.ROUND_HALF_UP);
 
-        } catch (ExchangeTimeoutException | TradingApiException e) {
+        } catch (ExchangeNetworkException | TradingApiException e) {
             throw e;
         } catch (Exception e) {
             LOG.error(UNEXPECTED_ERROR_MSG, e);
@@ -601,10 +601,10 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
      *
      * @param apiMethod the API method to call.
      * @return the response from the exchange.
-     * @throws ExchangeTimeoutException if there is a network issue connecting to exchange.
+     * @throws ExchangeNetworkException if there is a network issue connecting to exchange.
      * @throws TradingApiException if anything unexpected happens.
      */
-    private ExchangeHttpResponse sendPublicRequestToExchange(String apiMethod) throws ExchangeTimeoutException, TradingApiException {
+    private ExchangeHttpResponse sendPublicRequestToExchange(String apiMethod) throws ExchangeNetworkException, TradingApiException {
 
         // Request headers required by Exchange
         final Map<String, String> requestHeaders = new HashMap<>();
@@ -629,11 +629,11 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
      * @param apiMethod the API method to call.
      * @param params the query param args to use in the API call.
      * @return the response from the exchange.
-     * @throws ExchangeTimeoutException if there is a network issue connecting to exchange.
+     * @throws ExchangeNetworkException if there is a network issue connecting to exchange.
      * @throws TradingApiException if anything unexpected happens.
      */
     private ExchangeHttpResponse sendAuthenticatedRequestToExchange(String apiMethod, Map<String, String> params) throws
-            ExchangeTimeoutException, TradingApiException {
+            ExchangeNetworkException, TradingApiException {
 
         if (!initializedMACAuthentication) {
             final String errorMsg = "MAC Message security layer has not been initialized.";

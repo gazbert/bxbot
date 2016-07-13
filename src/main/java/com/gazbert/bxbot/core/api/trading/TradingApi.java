@@ -70,34 +70,32 @@ public interface TradingApi {
      *
      * @param marketId the id of the market.
      * @return the market order book.
-     * @throws ExchangeTimeoutException if a timeout occurred trying to connect to the exchange. The timeout limit is
-     *                                  implementation specific for each Exchange Adapter; see the documentation for the
+     * @throws ExchangeNetworkException if a network error occurred trying to connect to the exchange. This is
+     *                                  implementation specific for each Exchange Adapter - see the documentation for the
      *                                  adapter you are using. You could retry the API call, or exit from your Trading Strategy
      *                                  and let the Trading Engine execute your Trading Strategy at the next trade cycle.
-     *                                  This allows the you to recover from temporary network issues.
-     * @throws TradingApiException      if the API call failed for any reason other than a timeout. This means something
+     * @throws TradingApiException      if the API call failed for any reason other than a network error. This means something
      *                                  bad as happened; you would probably want to wrap this exception in a 
      *                                  {@link StrategyException} and let the Trading Engine shutdown the bot immediately 
      *                                  to prevent unexpected losses.
      */
-    MarketOrderBook getMarketOrders(String marketId) throws ExchangeTimeoutException, TradingApiException;
+    MarketOrderBook getMarketOrders(String marketId) throws ExchangeNetworkException, TradingApiException;
 
     /**
      * Fetches <em>your</em> current open orders, i.e. the orders placed by the bot.
      *
      * @param marketId the id of the market.
      * @return your current open orders.
-     * @throws ExchangeTimeoutException if a timeout occurred trying to connect to the exchange. The timeout limit is
-     *                                  implementation specific for each Exchange Adapter; see the documentation for the
+     * @throws ExchangeNetworkException if a network error occurred trying to connect to the exchange. This is
+     *                                  implementation specific for each Exchange Adapter - see the documentation for the
      *                                  adapter you are using. You could retry the API call, or exit from your Trading Strategy
      *                                  and let the Trading Engine execute your Trading Strategy at the next trade cycle.
-     *                                  This allows the you to recover from temporary network issues.
-     * @throws TradingApiException      if the API call failed for any reason other than a timeout. This means something
+     * @throws TradingApiException      if the API call failed for any reason other than a network error. This means something
      *                                  bad as happened; you would probably want to wrap this exception in a
      *                                  {@link StrategyException} and let the Trading Engine shutdown the bot immediately
      *                                  to prevent unexpected losses.
      */
-    List<OpenOrder> getYourOpenOrders(String marketId) throws ExchangeTimeoutException, TradingApiException;
+    List<OpenOrder> getYourOpenOrders(String marketId) throws ExchangeNetworkException, TradingApiException;
 
     /**
      * Places an order on the exchange.
@@ -107,18 +105,17 @@ public interface TradingApi {
      * @param quantity  amount of units you are buying/selling in this order.
      * @param price     the price per unit you are buying/selling at.
      * @return the id of the order.
-     * @throws ExchangeTimeoutException if a timeout occurred trying to connect to the exchange. The timeout limit is
-     *                                  implementation specific for each Exchange Adapter; see the documentation for the
+     * @throws ExchangeNetworkException if a network error occurred trying to connect to the exchange. This is
+     *                                  implementation specific for each Exchange Adapter - see the documentation for the
      *                                  adapter you are using. You could retry the API call, or exit from your Trading Strategy
      *                                  and let the Trading Engine execute your Trading Strategy at the next trade cycle.
-     *                                  This allows the you to recover from temporary network issues.
-     * @throws TradingApiException      if the API call failed for any reason other than a timeout. This means something
+     * @throws TradingApiException      if the API call failed for any reason other than a network error. This means something
      *                                  bad as happened; you would probably want to wrap this exception in a
      *                                  {@link StrategyException} and let the Trading Engine shutdown the bot immediately
      *                                  to prevent unexpected losses.
      */
     String createOrder(String marketId, OrderType orderType, BigDecimal quantity, BigDecimal price)
-            throws ExchangeTimeoutException, TradingApiException;
+            throws ExchangeNetworkException, TradingApiException;
 
     /**
      * Cancels your existing order on the exchange.
@@ -126,17 +123,16 @@ public interface TradingApi {
      * @param orderId your order Id.
      * @param marketId the id of the market the order was placed on, e.g. btc_usd
      * @return true if order cancelled ok, false otherwise.
-     * @throws ExchangeTimeoutException if a timeout occurred trying to connect to the exchange. The timeout limit is
-     *                                  implementation specific for each Exchange Adapter; see the documentation for the
+     * @throws ExchangeNetworkException if a network error occurred trying to connect to the exchange. This is
+     *                                  implementation specific for each Exchange Adapter - see the documentation for the
      *                                  adapter you are using. You could retry the API call, or exit from your Trading Strategy
      *                                  and let the Trading Engine execute your Trading Strategy at the next trade cycle.
-     *                                  This allows the you to recover from temporary network issues.
-     * @throws TradingApiException      if the API call failed for any reason other than a timeout. This means something
+     * @throws TradingApiException      if the API call failed for any reason other than a network error. This means something
      *                                  bad as happened; you would probably want to wrap this exception in a
      *                                  {@link StrategyException} and let the Trading Engine shutdown the bot immediately
      *                                  to prevent unexpected losses.
      */
-    boolean cancelOrder(String orderId, String marketId) throws ExchangeTimeoutException, TradingApiException;
+    boolean cancelOrder(String orderId, String marketId) throws ExchangeNetworkException, TradingApiException;
 
     /**
      * Fetches the latest price for a given market.
@@ -144,33 +140,31 @@ public interface TradingApi {
      *
      * @param marketId the id of the market.
      * @return the latest market price.
-     * @throws ExchangeTimeoutException if a timeout occurred trying to connect to the exchange. The timeout limit is
-     *                                  implementation specific for each Exchange Adapter; see the documentation for the
+     * @throws ExchangeNetworkException if a network error occurred trying to connect to the exchange. This is
+     *                                  implementation specific for each Exchange Adapter - see the documentation for the
      *                                  adapter you are using. You could retry the API call, or exit from your Trading Strategy
      *                                  and let the Trading Engine execute your Trading Strategy at the next trade cycle.
-     *                                  This allows the you to recover from temporary network issues.
-     * @throws TradingApiException      if the API call failed for any reason other than a timeout. This means something
+     * @throws TradingApiException      if the API call failed for any reason other than a network error. This means something
      *                                  bad as happened; you would probably want to wrap this exception in a
      *                                  {@link StrategyException} and let the Trading Engine shutdown the bot immediately
      *                                  to prevent unexpected losses.
      */
-    BigDecimal getLatestMarketPrice(String marketId) throws ExchangeTimeoutException, TradingApiException;
+    BigDecimal getLatestMarketPrice(String marketId) throws ExchangeNetworkException, TradingApiException;
 
     /**
      * Fetches the balance of your wallets on the exchange.
      *
      * @return your wallet balance info.
-     * @throws ExchangeTimeoutException if a timeout occurred trying to connect to the exchange. The timeout limit is
-     *                                  implementation specific for each Exchange Adapter; see the documentation for the
+     * @throws ExchangeNetworkException if a network error occurred trying to connect to the exchange. This is
+     *                                  implementation specific for each Exchange Adapter - see the documentation for the
      *                                  adapter you are using. You could retry the API call, or exit from your Trading Strategy
      *                                  and let the Trading Engine execute your Trading Strategy at the next trade cycle.
-     *                                  This allows the you to recover from temporary network issues.
-     * @throws TradingApiException      if the API call failed for any reason other than a timeout. This means something
+     * @throws TradingApiException      if the API call failed for any reason other than a network error. This means something
      *                                  bad as happened; you would probably want to wrap this exception in a
      *                                  {@link StrategyException} and let the Trading Engine shutdown the bot immediately
      *                                  to prevent unexpected losses.
      */
-    BalanceInfo getBalanceInfo() throws ExchangeTimeoutException, TradingApiException;
+    BalanceInfo getBalanceInfo() throws ExchangeNetworkException, TradingApiException;
 
     /**
      * Returns the exchange BUY order fee for a given market id.
@@ -179,17 +173,16 @@ public interface TradingApi {
      * 0.0033.
      * @param marketId the id of the market.
      * @return the % of the BUY order that the exchange uses to calculate its fee as a {@link BigDecimal}.
-     * @throws ExchangeTimeoutException if a timeout occurred trying to connect to the exchange. The timeout limit is
-     *                                  implementation specific for each Exchange Adapter; see the documentation for the
+     * @throws ExchangeNetworkException if a network error occurred trying to connect to the exchange. This is
+     *                                  implementation specific for each Exchange Adapter - see the documentation for the
      *                                  adapter you are using. You could retry the API call, or exit from your Trading Strategy
      *                                  and let the Trading Engine execute your Trading Strategy at the next trade cycle.
-     *                                  This allows the you to recover from temporary network issues.
-     * @throws TradingApiException      if the API call failed for any reason other than a timeout. This means something
+     * @throws TradingApiException      if the API call failed for any reason other than a network error. This means something
      *                                  bad as happened; you would probably want to wrap this exception in a
      *                                  {@link StrategyException} and let the Trading Engine shutdown the bot immediately
      *                                  to prevent unexpected losses.
      */
-    BigDecimal getPercentageOfBuyOrderTakenForExchangeFee(String marketId) throws TradingApiException, ExchangeTimeoutException;
+    BigDecimal getPercentageOfBuyOrderTakenForExchangeFee(String marketId) throws TradingApiException, ExchangeNetworkException;
 
     /**
      * Returns the exchange SELL order fee for a given market id.
@@ -198,15 +191,14 @@ public interface TradingApi {
      * 0.0033.
      * @param marketId the id of the market.
      * @return the % of the SELL order that the exchange uses to calculate its fee as a {@link BigDecimal}.
-     * @throws ExchangeTimeoutException if a timeout occurred trying to connect to the exchange. The timeout limit is
-     *                                  implementation specific for each Exchange Adapter; see the documentation for the
+     * @throws ExchangeNetworkException if a network error occurred trying to connect to the exchange. This is
+     *                                  implementation specific for each Exchange Adapter - see the documentation for the
      *                                  adapter you are using. You could retry the API call, or exit from your Trading Strategy
      *                                  and let the Trading Engine execute your Trading Strategy at the next trade cycle.
-     *                                  This allows the you to recover from temporary network issues.
-     * @throws TradingApiException      if the API call failed for any reason other than a timeout. This means something
+     * @throws TradingApiException      if the API call failed for any reason other than a network error. This means something
      *                                  bad as happened; you would probably want to wrap this exception in a
      *                                  {@link StrategyException} and let the Trading Engine shutdown the bot immediately
      *                                  to prevent unexpected losses.
      */
-    BigDecimal getPercentageOfSellOrderTakenForExchangeFee(String marketId) throws TradingApiException, ExchangeTimeoutException;
+    BigDecimal getPercentageOfSellOrderTakenForExchangeFee(String marketId) throws TradingApiException, ExchangeNetworkException;
 }

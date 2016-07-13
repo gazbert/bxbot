@@ -27,24 +27,21 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-public class TestTimeoutException {
+public class TestExchangeNetworkException {
 
-    private static final String ERROR_MSG = "Timeout connecting to exchange";
+    private static final String ERROR_MSG = "Network timeout connecting to exchange";
     private static final RuntimeException CAUSE = new RuntimeException("The cause of the exception");
 
     @Test
     public void testCreationOfExceptionIsAsExpected() {
-
-        final ExchangeTimeoutException exception = new ExchangeTimeoutException(ERROR_MSG);
+        final ExchangeNetworkException exception = new ExchangeNetworkException(ERROR_MSG);
         assertEquals(ERROR_MSG, exception.getMessage());
     }
 
     @Test
     public void testCreationOfExceptionWithCauseIsAsExpected() {
-
-        final ExchangeTimeoutException exception = new ExchangeTimeoutException(ERROR_MSG, CAUSE);
+        final ExchangeNetworkException exception = new ExchangeNetworkException(ERROR_MSG, CAUSE);
         assertEquals(ERROR_MSG, exception.getMessage());
         assertEquals(CAUSE, exception.getCause());
     }
-
 }

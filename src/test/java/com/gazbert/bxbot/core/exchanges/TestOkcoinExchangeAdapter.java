@@ -156,15 +156,15 @@ public class TestOkcoinExchangeAdapter {
         PowerMock.verifyAll();
     }
 
-    @Test (expected = ExchangeTimeoutException.class )
-    public void testCancelOrderHandlesExchangeTimeoutException() throws Exception {
+    @Test (expected = ExchangeNetworkException.class )
+    public void testCancelOrderHandlesExchangeNetworkException() throws Exception {
 
         // Partial mock so we do not send stuff down the wire
         final OkCoinExchangeAdapter exchangeAdapter =  PowerMock.createPartialMock(OkCoinExchangeAdapter.class,
                 MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
         PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(CANCEL_ORDER),
                 anyObject(Map.class)).
-                andThrow(new ExchangeTimeoutException("I’ve thought of an ending for my book – “And he lived happily " +
+                andThrow(new ExchangeNetworkException("I’ve thought of an ending for my book – “And he lived happily " +
                         "ever after… to the end of his days."));
 
         PowerMock.replayAll();
@@ -275,15 +275,15 @@ public class TestOkcoinExchangeAdapter {
         PowerMock.verifyAll();
     }
 
-    @Test (expected = ExchangeTimeoutException.class )
-    public void testCreateOrderHandlesExchangeTimeoutException() throws Exception {
+    @Test (expected = ExchangeNetworkException.class )
+    public void testCreateOrderHandlesExchangeNetworkException() throws Exception {
 
         // Partial mock so we do not send stuff down the wire
         final OkCoinExchangeAdapter exchangeAdapter =  PowerMock.createPartialMock(OkCoinExchangeAdapter.class,
                 MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
         PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(TRADE),
                 anyObject(Map.class)).
-                andThrow(new ExchangeTimeoutException("It’s like in the great stories, Mr. Frodo, the ones that really " +
+                andThrow(new ExchangeNetworkException("It’s like in the great stories, Mr. Frodo, the ones that really " +
                         "mattered. Full of darkness and danger, they were... Those were the stories that stayed" +
                         " with you, that meant something, even if you were too small to understand why. But I think, " +
                         "Mr. Frodo, I do understand... There’s some good in this world, Mr. Frodo, and it’s worth" +
@@ -377,14 +377,14 @@ public class TestOkcoinExchangeAdapter {
         PowerMock.verifyAll();
     }
 
-    @Test (expected = ExchangeTimeoutException.class )
-    public void testGettingYourOpenOrdersHandlesExchangeTimeoutException() throws Exception {
+    @Test (expected = ExchangeNetworkException.class )
+    public void testGettingYourOpenOrdersHandlesExchangeNetworkException() throws Exception {
 
         // Partial mock so we do not send stuff down the wire
         final OkCoinExchangeAdapter exchangeAdapter =  PowerMock.createPartialMock(OkCoinExchangeAdapter.class,
                 MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
         PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(ORDER_INFO),
-                anyObject(Map.class)).andThrow(new ExchangeTimeoutException("If more of us valued food and cheer and" +
+                anyObject(Map.class)).andThrow(new ExchangeNetworkException("If more of us valued food and cheer and" +
                 " song above hoarded gold, it would be a merrier world."));
 
         PowerMock.replayAll();
@@ -469,15 +469,15 @@ public class TestOkcoinExchangeAdapter {
         PowerMock.verifyAll();
     }
 
-    @Test (expected = ExchangeTimeoutException.class )
-    public void testGettingMarketOrdersHandlesExchangeTimeoutException() throws Exception {
+    @Test (expected = ExchangeNetworkException.class )
+    public void testGettingMarketOrdersHandlesExchangeNetworkException() throws Exception {
 
         // Partial mock so we do not send stuff down the wire
         final OkCoinExchangeAdapter exchangeAdapter =  PowerMock.createPartialMock(OkCoinExchangeAdapter.class,
                 MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD);
         PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD, eq(DEPTH),
                 anyObject(Map.class)).
-                andThrow(new ExchangeTimeoutException("All we have to decide is what to do with the time that is given" +
+                andThrow(new ExchangeNetworkException("All we have to decide is what to do with the time that is given" +
                         " to us."));
 
         PowerMock.replayAll();
@@ -532,15 +532,15 @@ public class TestOkcoinExchangeAdapter {
         PowerMock.verifyAll();
     }
 
-    @Test (expected = ExchangeTimeoutException.class )
-    public void testGettingLatestMarketPriceHandlesExchangeTimeoutException() throws Exception {
+    @Test (expected = ExchangeNetworkException.class )
+    public void testGettingLatestMarketPriceHandlesExchangeNetworkException() throws Exception {
 
         // Partial mock so we do not send stuff down the wire
         final OkCoinExchangeAdapter exchangeAdapter =  PowerMock.createPartialMock(OkCoinExchangeAdapter.class,
                 MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD);
         PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD, eq(TICKER),
                 anyObject(Map.class)).
-                andThrow(new ExchangeTimeoutException("I would rather share one lifetime with you than face all the" +
+                andThrow(new ExchangeNetworkException("I would rather share one lifetime with you than face all the" +
                         " Ages of this world alone."));
 
         PowerMock.replayAll();
@@ -619,14 +619,14 @@ public class TestOkcoinExchangeAdapter {
         PowerMock.verifyAll();
     }
 
-    @Test (expected = ExchangeTimeoutException.class )
-    public void testGettingBalanceInfoHandlesExchangeTimeoutException() throws Exception {
+    @Test (expected = ExchangeNetworkException.class )
+    public void testGettingBalanceInfoHandlesExchangeNetworkException() throws Exception {
 
         // Partial mock so we do not send stuff down the wire
         final OkCoinExchangeAdapter exchangeAdapter =  PowerMock.createPartialMock(OkCoinExchangeAdapter.class,
                 MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
         PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(USERINFO),
-                eq(null)).andThrow(new ExchangeTimeoutException("There is only one Lord of the Ring, only one who can" +
+                eq(null)).andThrow(new ExchangeNetworkException("There is only one Lord of the Ring, only one who can" +
                 " bend it to his will. And he does not share power."));
 
         PowerMock.replayAll();

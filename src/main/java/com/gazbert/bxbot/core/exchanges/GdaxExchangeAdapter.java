@@ -23,8 +23,12 @@
 
 package com.gazbert.bxbot.core.exchanges;
 
+import com.gazbert.bxbot.core.api.exchange.AuthenticationConfig;
+import com.gazbert.bxbot.core.api.exchange.ExchangeAdapter;
+import com.gazbert.bxbot.core.api.exchange.ExchangeConfig;
+import com.gazbert.bxbot.core.api.exchange.OtherConfig;
 import com.gazbert.bxbot.core.api.trading.BalanceInfo;
-import com.gazbert.bxbot.core.api.trading.ExchangeTimeoutException;
+import com.gazbert.bxbot.core.api.trading.ExchangeNetworkException;
 import com.gazbert.bxbot.core.api.trading.MarketOrder;
 import com.gazbert.bxbot.core.api.trading.MarketOrderBook;
 import com.gazbert.bxbot.core.api.trading.OpenOrder;
@@ -40,8 +44,6 @@ import org.apache.log4j.Logger;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import javax.xml.bind.DatatypeConverter;
-import java.io.IOException;
-import java.io.InputStream;
 import java.math.BigDecimal;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -52,43 +54,47 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
 import java.time.Instant;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
- * Exchange Adapter for integrating with the Coinbase exchange.
- * The Coinbase API is documented <a href="https://docs.exchange.coinbase.com/">here</a>.
+ * Exchange Adapter for integrating with the GDAX (formerly Coinbase) exchange.
+ * The GDAX API is documented <a href="https://www.gdax.com/">here</a>.
  * </p>
  *
  * <p>
  * <strong>
  * DISCLAIMER:
  * This Exchange Adapter is provided as-is; it might have bugs in it and you could lose money. Despite running live
- * on Coinbase, it has only been unit tested up until the point of calling the
+ * on GDAX, it has only been unit tested up until the point of calling the
  * {@link #sendPublicRequestToExchange(String, Map)} and
  * {@link #sendAuthenticatedRequestToExchange(String, String, Map)} methods. Use it at our own risk!
  * </strong>
  * </p>
  *
  * <p>
- * This adapter only supports the Coinbase <a href="https://docs.exchange.coinbase.com/#api">REST API</a>. The design
+ * This adapter only supports the GDAX <a href="https://docs.gdax.com/#api">REST API</a>. The design
  * of the API and documentation is excellent.
  * </p>
  *
  * <p>
- * The adapter currently only supports <a href="https://docs.exchange.coinbase.com/#place-a-new-order">Limit Orders</a>.
+ * The adapter currently only supports <a href="https://docs.gdax.com/#place-a-new-order">Limit Orders</a>.
  * It was originally developed and tested for BTC-GBP market, but it should work for BTC-USD.
  * </p>
  *
  * <p>
- * Exchange fees are loaded from the coinbase-config.properties file on startup; they are not fetched from the exchange
- * at runtime as the Coinbase REST API does not support this. The fees are used across all markets. Make sure you keep
- * an eye on the <a href="https://docs.exchange.coinbase.com/#fees">exchange fees</a> and update the config accordingly.
+ * Exchange fees are loaded from the exchange.xml file on startup; they are not fetched from the exchange
+ * at runtime as the GDAX REST API does not support this. The fees are used across all markets. Make sure you keep
+ * an eye on the <a href="https://docs.gdax.com/#fees">exchange fees</a> and update the config accordingly.
  * This adapter will use the <em>Taker</em> fees to keep things simple for now.
  * </p>
  *
  * <p>
- * NOTE: Coinbase requires all price values to be limited to 2 decimal places when creating orders.
+ * NOTE: GDAX requires all price values to be limited to 2 decimal places when creating orders.
  * This adapter truncates any prices with more than 2 decimal places and rounds using
  * {@link java.math.RoundingMode#HALF_EVEN}, E.g. 250.176 would be sent to the exchange as 250.18.
  * </p>
@@ -100,46 +106,35 @@ import java.util.*;
  * </p>
  *
  * <p>
- * The {@link TradingApi} calls will throw a {@link ExchangeTimeoutException} if a network error occurs trying to
+ * The {@link TradingApi} calls will throw a {@link ExchangeNetworkException} if a network error occurs trying to
  * connect to the exchange. A {@link TradingApiException} is thrown for <em>all</em> other failures.
  * </p>
  *
  * @author gazbert
  */
-public final class CoinbaseExchangeAdapter extends AbstractExchangeAdapter implements TradingApi {
+public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implements ExchangeAdapter {
 
-    private static final Logger LOG = Logger.getLogger(CoinbaseExchangeAdapter.class);
+    private static final Logger LOG = Logger.getLogger(GdaxExchangeAdapter.class);
 
     /**
      * The public API URI.
      */
-    private static final String PUBLIC_API_BASE_URL = "https://api.exchange.coinbase.com/";
+    private static final String PUBLIC_API_BASE_URL = "https://api.gdax.com/";
 
     /**
-     * The Authenticated API URI - it is the same as the Authenticated URL as of 12 Oct 2015.
+     * The Authenticated API URI - it is the same as the Authenticated URL as of 12 Jul 2016.
      */
     private static final String AUTHENTICATED_API_URL = PUBLIC_API_BASE_URL;
 
     /**
      * Used for reporting unexpected errors.
      */
-    private static final String UNEXPECTED_ERROR_MSG = "Unexpected error has occurred in Coinbase Exchange Adapter. ";
+    private static final String UNEXPECTED_ERROR_MSG = "Unexpected error has occurred in GDAX Exchange Adapter. ";
 
     /**
      * Unexpected IO error message for logging.
      */
     private static final String UNEXPECTED_IO_ERROR_MSG = "Failed to connect to Exchange due to unexpected IO error.";
-
-    /**
-     * Used for building error messages for missing config.
-     */
-    private static final String CONFIG_IS_NULL_OR_ZERO_LENGTH = " cannot be null or zero length! HINT: is the value set in the ";
-
-    /**
-     * Your Coinbase API keys and connection timeout config.
-     * This file must be on BX-bot's runtime classpath located at: ./resources/coinbase/coinbase-config.properties
-     */
-    private static final String CONFIG_FILE = "coinbase/coinbase-config.properties";
 
     /**
      * Name of passphrase prop in config file.
@@ -167,11 +162,6 @@ public final class CoinbaseExchangeAdapter extends AbstractExchangeAdapter imple
     private static final String SELL_FEE_PROPERTY_NAME = "sell-fee";
 
     /**
-     * Name of connection timeout property in config file.
-     */
-    private static final String CONNECTION_TIMEOUT_PROPERTY_NAME = "connection-timeout";
-
-    /**
      * Exchange buy fees in % in {@link BigDecimal} format.
      */
     private BigDecimal buyFeePercentage;
@@ -180,11 +170,6 @@ public final class CoinbaseExchangeAdapter extends AbstractExchangeAdapter imple
      * Exchange sell fees in % in {@link BigDecimal} format.
      */
     private BigDecimal sellFeePercentage;
-
-    /**
-     * The connection timeout in SECONDS for terminating hung connections to the exchange.
-     */
-    private int connectionTimeout;
 
     /**
      * Used to indicate if we have initialised the MAC authentication protocol.
@@ -213,33 +198,36 @@ public final class CoinbaseExchangeAdapter extends AbstractExchangeAdapter imple
     private Mac mac;
 
     /**
-     * GSON engine used for parsing JSON in Coinbase API call responses.
+     * GSON engine used for parsing JSON in GDAX API call responses.
      */
     private Gson gson;
 
 
-    /**
-     * Constructor initialises the Exchange Adapter for using the Coinbase API.
-     */
-    public CoinbaseExchangeAdapter() {
-        loadConfig();
+    @Override
+    public void init(ExchangeConfig config) {
+
+        LogUtils.log(LOG, Level.INFO, () -> "About to initialise GDAX ExchangeConfig: " + config);
+        setAuthenticationConfig(config);
+        setNetworkConfig(config);
+        setOtherConfig(config);
+
         initSecureMessageLayer();
         initGson();
     }
 
     // ------------------------------------------------------------------------------------------------
-    // Coinbase API Calls adapted to the Trading API.
-    // See https://docs.exchange.coinbase.com/#api
+    // GDAX API Calls adapted to the Trading API.
+    // See https://docs.gdax.com/#api
     // ------------------------------------------------------------------------------------------------
 
     @Override
     public String createOrder(String marketId, OrderType orderType, BigDecimal quantity, BigDecimal price) throws
-            TradingApiException, ExchangeTimeoutException {
+            TradingApiException, ExchangeNetworkException {
 
         try {
 
             /*
-             * Build Limit Order: https://docs.exchange.coinbase.com/#place-a-new-order
+             * Build Limit Order: https://docs.gdax.com/#place-a-new-order
              *
              * stp param optional           - (Self-trade prevention flag) defaults to 'dc' Decrease & Cancel
              * post_only param optional     - defaults to 'false'
@@ -274,7 +262,7 @@ public final class CoinbaseExchangeAdapter extends AbstractExchangeAdapter imple
 
             if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
 
-                final CoinbaseOrder createOrderResponse = gson.fromJson(response.getPayload(), CoinbaseOrder.class);
+                final GdaxOrder createOrderResponse = gson.fromJson(response.getPayload(), GdaxOrder.class);
                 if (createOrderResponse != null && (createOrderResponse.id != null && !createOrderResponse.id.isEmpty())) {
                     return createOrderResponse.id;
                 } else {
@@ -289,7 +277,7 @@ public final class CoinbaseExchangeAdapter extends AbstractExchangeAdapter imple
                 throw new TradingApiException(errorMsg);
             }
 
-        } catch (ExchangeTimeoutException | TradingApiException e) {
+        } catch (ExchangeNetworkException | TradingApiException e) {
             throw e;
         } catch (Exception e) {
             LOG.error(UNEXPECTED_ERROR_MSG, e);
@@ -301,7 +289,7 @@ public final class CoinbaseExchangeAdapter extends AbstractExchangeAdapter imple
      * marketId is not needed for cancelling orders on this exchange.
      */
     @Override
-    public boolean cancelOrder(String orderId, String marketIdNotNeeded) throws TradingApiException, ExchangeTimeoutException {
+    public boolean cancelOrder(String orderId, String marketIdNotNeeded) throws TradingApiException, ExchangeNetworkException {
 
         try {
 
@@ -324,7 +312,7 @@ public final class CoinbaseExchangeAdapter extends AbstractExchangeAdapter imple
                 return false;
             }
 
-        } catch (ExchangeTimeoutException | TradingApiException e) {
+        } catch (ExchangeNetworkException | TradingApiException e) {
             throw e;
         } catch (Exception e) {
             LOG.error(UNEXPECTED_ERROR_MSG, e);
@@ -333,7 +321,7 @@ public final class CoinbaseExchangeAdapter extends AbstractExchangeAdapter imple
     }
 
     @Override
-    public List<OpenOrder> getYourOpenOrders(String marketId) throws TradingApiException, ExchangeTimeoutException {
+    public List<OpenOrder> getYourOpenOrders(String marketId) throws TradingApiException, ExchangeNetworkException {
 
         try {
 
@@ -344,11 +332,11 @@ public final class CoinbaseExchangeAdapter extends AbstractExchangeAdapter imple
 
             if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
 
-                final CoinbaseOrder[] coinbaseOpenOrders = gson.fromJson(response.getPayload(), CoinbaseOrder[].class);
+                final GdaxOrder[] gdaxOpenOrders = gson.fromJson(response.getPayload(), GdaxOrder[].class);
 
                 // adapt
                 final List<OpenOrder> ordersToReturn = new ArrayList<>();
-                for (final CoinbaseOrder openOrder : coinbaseOpenOrders) {
+                for (final GdaxOrder openOrder : gdaxOpenOrders) {
                     OrderType orderType;
                     switch (openOrder.side) {
                         case "buy":
@@ -368,9 +356,9 @@ public final class CoinbaseExchangeAdapter extends AbstractExchangeAdapter imple
                             marketId,
                             orderType,
                             openOrder.price,
-                            openOrder.size.subtract(openOrder.filled_size), // quantity remaining - not provided by Coinbase
+                            openOrder.size.subtract(openOrder.filled_size), // quantity remaining - not provided by GDAX
                             openOrder.size,                                 // orig quantity
-                            openOrder.price.multiply(openOrder.size)        // total - not provided by Coinbase
+                            openOrder.price.multiply(openOrder.size)        // total - not provided by GDAX
                     );
 
                     ordersToReturn.add(order);
@@ -382,7 +370,7 @@ public final class CoinbaseExchangeAdapter extends AbstractExchangeAdapter imple
                 throw new TradingApiException(errorMsg);
             }
 
-        } catch (ExchangeTimeoutException | TradingApiException e) {
+        } catch (ExchangeNetworkException | TradingApiException e) {
             throw e;
         } catch (Exception e) {
             LOG.error(UNEXPECTED_ERROR_MSG, e);
@@ -391,7 +379,7 @@ public final class CoinbaseExchangeAdapter extends AbstractExchangeAdapter imple
     }
 
     @Override
-    public MarketOrderBook getMarketOrders(String marketId) throws TradingApiException, ExchangeTimeoutException {
+    public MarketOrderBook getMarketOrders(String marketId) throws TradingApiException, ExchangeNetworkException {
 
         try {
 
@@ -403,27 +391,27 @@ public final class CoinbaseExchangeAdapter extends AbstractExchangeAdapter imple
 
             if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
 
-                final CoinbaseBookWrapper orderBook = gson.fromJson(response.getPayload(), CoinbaseBookWrapper.class);
+                final GdaxBookWrapper orderBook = gson.fromJson(response.getPayload(), GdaxBookWrapper.class);
 
                 // adapt BUYs
                 final List<MarketOrder> buyOrders = new ArrayList<>();
-                for (CoinbaseMarketOrder coinbaseBuyOrder : orderBook.bids) {
+                for (GdaxMarketOrder gdaxBuyOrder : orderBook.bids) {
                     final MarketOrder buyOrder = new MarketOrder(
                             OrderType.BUY,
-                            coinbaseBuyOrder.get(0),
-                            coinbaseBuyOrder.get(1),
-                            coinbaseBuyOrder.get(0).multiply(coinbaseBuyOrder.get(1)));
+                            gdaxBuyOrder.get(0),
+                            gdaxBuyOrder.get(1),
+                            gdaxBuyOrder.get(0).multiply(gdaxBuyOrder.get(1)));
                     buyOrders.add(buyOrder);
                 }
 
                 // adapt SELLs
                 final List<MarketOrder> sellOrders = new ArrayList<>();
-                for (CoinbaseMarketOrder coinbaseSellOrder : orderBook.asks) {
+                for (GdaxMarketOrder gdaxSellOrder : orderBook.asks) {
                     final MarketOrder sellOrder = new MarketOrder(
                             OrderType.SELL,
-                            coinbaseSellOrder.get(0),
-                            coinbaseSellOrder.get(1),
-                            coinbaseSellOrder.get(0).multiply(coinbaseSellOrder.get(1)));
+                            gdaxSellOrder.get(0),
+                            gdaxSellOrder.get(1),
+                            gdaxSellOrder.get(0).multiply(gdaxSellOrder.get(1)));
                     sellOrders.add(sellOrder);
                 }
 
@@ -435,7 +423,7 @@ public final class CoinbaseExchangeAdapter extends AbstractExchangeAdapter imple
                 throw new TradingApiException(errorMsg);
             }
 
-        } catch (ExchangeTimeoutException | TradingApiException e) {
+        } catch (ExchangeNetworkException | TradingApiException e) {
             throw e;
         } catch (Exception e) {
             LOG.error(UNEXPECTED_ERROR_MSG, e);
@@ -444,7 +432,7 @@ public final class CoinbaseExchangeAdapter extends AbstractExchangeAdapter imple
     }
 
     @Override
-    public BalanceInfo getBalanceInfo() throws TradingApiException, ExchangeTimeoutException {
+    public BalanceInfo getBalanceInfo() throws TradingApiException, ExchangeNetworkException {
 
         try {
             final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("GET", "accounts", null);
@@ -452,15 +440,15 @@ public final class CoinbaseExchangeAdapter extends AbstractExchangeAdapter imple
 
             if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
 
-                final CoinbaseAccount[] coinbaseAccounts = gson.fromJson(response.getPayload(), CoinbaseAccount[].class);
+                final GdaxAccount[] gdaxAccounts = gson.fromJson(response.getPayload(), GdaxAccount[].class);
 
                 // adapt
                 final HashMap<String, BigDecimal> balancesAvailable = new HashMap<>();
                 final HashMap<String, BigDecimal> balancesOnHold = new HashMap<>();
 
-                for (final CoinbaseAccount coinbaseAccount : coinbaseAccounts) {
-                    balancesAvailable.put(coinbaseAccount.currency, coinbaseAccount.available);
-                    balancesOnHold.put(coinbaseAccount.currency, coinbaseAccount.hold);
+                for (final GdaxAccount gdaxAccount : gdaxAccounts) {
+                    balancesAvailable.put(gdaxAccount.currency, gdaxAccount.available);
+                    balancesOnHold.put(gdaxAccount.currency, gdaxAccount.hold);
                 }
                 return new BalanceInfo(balancesAvailable, balancesOnHold);
 
@@ -470,7 +458,7 @@ public final class CoinbaseExchangeAdapter extends AbstractExchangeAdapter imple
                 throw new TradingApiException(errorMsg);
             }
 
-        } catch (ExchangeTimeoutException | TradingApiException e) {
+        } catch (ExchangeNetworkException | TradingApiException e) {
             throw e;
         } catch (Exception e) {
             LOG.error(UNEXPECTED_ERROR_MSG, e);
@@ -479,7 +467,7 @@ public final class CoinbaseExchangeAdapter extends AbstractExchangeAdapter imple
     }
 
     @Override
-    public BigDecimal getLatestMarketPrice(String marketId) throws ExchangeTimeoutException, TradingApiException {
+    public BigDecimal getLatestMarketPrice(String marketId) throws ExchangeNetworkException, TradingApiException {
 
         try {
 
@@ -487,15 +475,15 @@ public final class CoinbaseExchangeAdapter extends AbstractExchangeAdapter imple
             LogUtils.log(LOG, Level.DEBUG, () -> "getLatestMarketPrice() response: " + response);
 
             if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
-                final CoinbaseTicker coinbaseTicker = gson.fromJson(response.getPayload(), CoinbaseTicker.class);
-                return coinbaseTicker.price;
+                final GdaxTicker gdaxTicker = gson.fromJson(response.getPayload(), GdaxTicker.class);
+                return gdaxTicker.price;
             } else {
                 final String errorMsg = "Failed to get market ticker from exchange. Details: " + response;
                 LOG.error(errorMsg);
                 throw new TradingApiException(errorMsg);
             }
 
-        } catch (ExchangeTimeoutException | TradingApiException e) {
+        } catch (ExchangeNetworkException | TradingApiException e) {
             throw e;
         } catch (Exception e) {
             LOG.error(UNEXPECTED_ERROR_MSG, e);
@@ -505,38 +493,38 @@ public final class CoinbaseExchangeAdapter extends AbstractExchangeAdapter imple
 
     @Override
     public BigDecimal getPercentageOfBuyOrderTakenForExchangeFee(String marketId) throws TradingApiException,
-            ExchangeTimeoutException {
+            ExchangeNetworkException {
 
-        // Coinbase does not provide API call for fetching % buy fee; it only provides the fee monetary value for a
-        // given order via e.g. /orders/<order-id> API call. We load the % fee statically from coinbase-config.properties
+        // GDAX does not provide API call for fetching % buy fee; it only provides the fee monetary value for a
+        // given order via e.g. /orders/<order-id> API call. We load the % fee statically from exchange.xml
         return buyFeePercentage;
     }
 
     @Override
     public BigDecimal getPercentageOfSellOrderTakenForExchangeFee(String marketId) throws TradingApiException,
-            ExchangeTimeoutException {
+            ExchangeNetworkException {
 
-        // Coinbase does not provide API call for fetching % sell fee; it only provides the fee monetary value for a
-        // given order via e.g. /orders/<order-id> API call. We load the % fee statically from coinbase-config.properties
+        // GDAX does not provide API call for fetching % sell fee; it only provides the fee monetary value for a
+        // given order via e.g. /orders/<order-id> API call. We load the % fee statically from exchange.xml
         return sellFeePercentage;
     }
 
     @Override
     public String getImplName() {
-        return "Coinbase REST API v1";
+        return "GDAX REST API v1";
     }
 
     // ------------------------------------------------------------------------------------------------
     //  GSON classes for JSON responses.
-    //  See https://docs.exchange.coinbase.com/#api
+    //  See https://docs.gdax.com/#api
     // ------------------------------------------------------------------------------------------------
 
     /**
-     * GSON class for Coinbase '/orders' API call response.
+     * GSON class for GDAX '/orders' API call response.
      *
-     * There are other critters in here different to what is spec'd: https://docs.exchange.coinbase.com/#list-orders
+     * There are other critters in here different to what is spec'd: https://docs.gdax.com/#list-orders
      */
-    private static class CoinbaseOrder {
+    private static class GdaxOrder {
 
         public String id;
         public BigDecimal price;
@@ -556,7 +544,7 @@ public final class CoinbaseExchangeAdapter extends AbstractExchangeAdapter imple
 
         @Override
         public String toString() {
-            return CoinbaseOrder.class.getSimpleName()
+            return GdaxOrder.class.getSimpleName()
                     + " ["
                     + "id=" + id
                     + ", price=" + price
@@ -577,17 +565,17 @@ public final class CoinbaseExchangeAdapter extends AbstractExchangeAdapter imple
     }
 
     /**
-     * GSON class for Coinbase '/products/{marketId}/book' API call response.
+     * GSON class for GDAX '/products/{marketId}/book' API call response.
      */
-    private static class CoinbaseBookWrapper {
+    private static class GdaxBookWrapper {
 
         public long sequence;
-        public List<CoinbaseMarketOrder> bids;
-        public List<CoinbaseMarketOrder> asks;
+        public List<GdaxMarketOrder> bids;
+        public List<GdaxMarketOrder> asks;
 
         @Override
         public String toString() {
-            return CoinbaseBookWrapper.class.getSimpleName()
+            return GdaxBookWrapper.class.getSimpleName()
                     + " ["
                     + "bids=" + bids
                     + ", asks=" + asks
@@ -599,14 +587,14 @@ public final class CoinbaseExchangeAdapter extends AbstractExchangeAdapter imple
      * GSON class for holding Market Orders. First element in array is price, second element is amount, third is number
      * of orders.
      */
-    private static class CoinbaseMarketOrder extends ArrayList<BigDecimal> {
+    private static class GdaxMarketOrder extends ArrayList<BigDecimal> {
         private static final long serialVersionUID = -4919711220797077759L;
     }
 
     /**
-     * GSON class for Coinbase '/products/{marketId}/ticker' API call response.
+     * GSON class for GDAX '/products/{marketId}/ticker' API call response.
      */
-    private static class CoinbaseTicker {
+    private static class GdaxTicker {
 
         public long trade_id;
         public BigDecimal price;
@@ -615,7 +603,7 @@ public final class CoinbaseExchangeAdapter extends AbstractExchangeAdapter imple
 
         @Override
         public String toString() {
-            return CoinbaseTicker.class.getSimpleName()
+            return GdaxTicker.class.getSimpleName()
                     + " ["
                     + "trade_id=" + trade_id
                     + ", price=" + price
@@ -626,9 +614,9 @@ public final class CoinbaseExchangeAdapter extends AbstractExchangeAdapter imple
     }
 
     /**
-     * GSON class for Coinbase '/accounts' API call response.
+     * GSON class for GDAX '/accounts' API call response.
      */
-    private static class CoinbaseAccount {
+    private static class GdaxAccount {
 
         public String id;
         public String currency;
@@ -639,7 +627,7 @@ public final class CoinbaseExchangeAdapter extends AbstractExchangeAdapter imple
 
         @Override
         public String toString() {
-            return CoinbaseAccount.class.getSimpleName()
+            return GdaxAccount.class.getSimpleName()
                     + " ["
                     + "id=" + id
                     + ", currency=" + currency
@@ -656,16 +644,16 @@ public final class CoinbaseExchangeAdapter extends AbstractExchangeAdapter imple
     // ------------------------------------------------------------------------------------------------
 
     /**
-     * Makes a public API call to the Coinbase exchange.
+     * Makes a public API call to the GDAX exchange.
      *
      * @param apiMethod the API method to call.
      * @param params any (optional) query param args to use in the API call.
      * @return the response from the exchange.
-     * @throws ExchangeTimeoutException if there is a network issue connecting to exchange.
+     * @throws ExchangeNetworkException if there is a network issue connecting to exchange.
      * @throws TradingApiException if anything unexpected happens.
      */
     private ExchangeHttpResponse sendPublicRequestToExchange(String apiMethod, Map<String, String> params)
-            throws ExchangeTimeoutException, TradingApiException {
+            throws ExchangeNetworkException, TradingApiException {
 
         if (params == null) {
             params = new HashMap<>(); // no params, so empty query string
@@ -699,12 +687,12 @@ public final class CoinbaseExchangeAdapter extends AbstractExchangeAdapter imple
 
     /**
      * <p>
-     * Makes an authenticated API call to the Coinbase exchange.
+     * Makes an authenticated API call to the GDAX exchange.
      * </p>
      *
      * <p>
-     * The Coinbase authentication process is complex, but well documented
-     * <a href="https://docs.exchange.coinbase.com/#creating-a-request">here</a>.
+     * The GDAX authentication process is complex, but well documented
+     * <a href="https://docs.gdax.com/#creating-a-request">here</a>.
      * </p>
      *
      * <pre>
@@ -739,12 +727,12 @@ public final class CoinbaseExchangeAdapter extends AbstractExchangeAdapter imple
      * @param apiMethod the API method to call.
      * @param params the query param args to use in the API call.
      * @return the response from the exchange.
-     * @throws ExchangeTimeoutException if there is a network issue connecting to exchange.
+     * @throws ExchangeNetworkException if there is a network issue connecting to exchange.
      * @throws TradingApiException if anything unexpected happens.
      */
     private ExchangeHttpResponse sendAuthenticatedRequestToExchange(
             String httpMethod, String apiMethod, Map<String, String> params) throws
-            ExchangeTimeoutException, TradingApiException {
+            ExchangeNetworkException, TradingApiException {
 
         if (!initializedMACAuthentication) {
             final String errorMsg = "MAC Message security layer has not been initialized.";
@@ -842,7 +830,7 @@ public final class CoinbaseExchangeAdapter extends AbstractExchangeAdapter imple
         // Setup the MAC
         try {
 
-            // Coinbase secret is in Base64 so we must decode it first.
+            // GDAX secret is in Base64 so we must decode it first.
             final byte[] decodedBase64Secret = DatatypeConverter.parseBase64Binary(secret);
 
             final SecretKeySpec keyspec = new SecretKeySpec(decodedBase64Secret, "HmacSHA256");
@@ -864,121 +852,25 @@ public final class CoinbaseExchangeAdapter extends AbstractExchangeAdapter imple
     //  Config methods
     // ------------------------------------------------------------------------------------------------
 
-    /**
-     * Loads Exchange Adapter config.
-     */
-    private void loadConfig() {
+    private void setAuthenticationConfig(ExchangeConfig exchangeConfig) {
 
-        final String configFile = getConfigFileLocation();
-        final Properties configEntries = new Properties();
-        final InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream(configFile);
+        final AuthenticationConfig authenticationConfig = getAuthenticationConfig(exchangeConfig);
+        passphrase = getAuthenticationConfigItem(authenticationConfig, PASSPHRASE_PROPERTY_NAME);
+        key = getAuthenticationConfigItem(authenticationConfig, KEY_PROPERTY_NAME);
+        secret = getAuthenticationConfigItem(authenticationConfig, SECRET_PROPERTY_NAME);
+    }
 
-        if (inputStream == null) {
-            final String errorMsg = "Cannot find Coinbase config at: " + configFile + " HINT: is it on BX-bot's classpath?";
-            LOG.error(errorMsg);
-            throw new IllegalStateException(errorMsg);
-        }
+    private void setOtherConfig(ExchangeConfig exchangeConfig) {
 
-        try {
-            configEntries.load(inputStream);
+        final OtherConfig otherConfig = getOtherConfig(exchangeConfig);
 
-            /*
-             * Grab the passphrase
-             */
-            passphrase = configEntries.getProperty(PASSPHRASE_PROPERTY_NAME);
+        final String buyFeeInConfig = getOtherConfigItem(otherConfig, BUY_FEE_PROPERTY_NAME);
+        buyFeePercentage = new BigDecimal(buyFeeInConfig).divide(new BigDecimal("100"), 8, BigDecimal.ROUND_HALF_UP);
+        LogUtils.log(LOG, Level.INFO, () -> "Buy fee % in BigDecimal format: " + buyFeePercentage);
 
-            // WARNING: careful when you log this
-//            if (LOG.isInfoEnabled()) {
-//                LOG.info(PASSPHRASE_PROPERTY_NAME + ": " + passphrase);
-//            }
-
-            if (passphrase == null || passphrase.length() == 0) {
-                final String errorMsg = PASSPHRASE_PROPERTY_NAME + CONFIG_IS_NULL_OR_ZERO_LENGTH + configFile + "?";
-                LOG.error(errorMsg);
-                throw new IllegalArgumentException(errorMsg);
-            }
-
-            /*
-             * Grab the public key
-             */
-            key = configEntries.getProperty(KEY_PROPERTY_NAME);
-
-            // WARNING: careful when you log this
-//            if (LOG.isInfoEnabled()) {
-//                LOG.info(KEY_PROPERTY_NAME + ": " + key);
-//            }
-
-            if (key == null || key.length() == 0) {
-                final String errorMsg = KEY_PROPERTY_NAME + CONFIG_IS_NULL_OR_ZERO_LENGTH + configFile + "?";
-                LOG.error(errorMsg);
-                throw new IllegalArgumentException(errorMsg);
-            }
-
-            /*
-             * Grab the private key
-             */
-            secret = configEntries.getProperty(SECRET_PROPERTY_NAME);
-
-            // WARNING: careful when you log this
-//            if (LOG.isInfoEnabled()) {
-//                LOG.info(SECRET_PROPERTY_NAME + ": " + secret);
-//            }
-
-            if (secret == null || secret.length() == 0) {
-                final String errorMsg = SECRET_PROPERTY_NAME + CONFIG_IS_NULL_OR_ZERO_LENGTH + configFile + "?";
-                LOG.error(errorMsg);
-                throw new IllegalArgumentException(errorMsg);
-            }
-
-            // Grab the buy fee
-            final String buyFeeInConfig = configEntries.getProperty(BUY_FEE_PROPERTY_NAME);
-            if (buyFeeInConfig == null || buyFeeInConfig.length() == 0) {
-                final String errorMsg = BUY_FEE_PROPERTY_NAME + CONFIG_IS_NULL_OR_ZERO_LENGTH + configFile + "?";
-                LOG.error(errorMsg);
-                throw new IllegalArgumentException(errorMsg);
-            }
-            LogUtils.log(LOG, Level.INFO, () -> BUY_FEE_PROPERTY_NAME + ": " + buyFeeInConfig + "%");
-
-            buyFeePercentage = new BigDecimal(buyFeeInConfig).divide(new BigDecimal("100"), 8, BigDecimal.ROUND_HALF_UP);
-            LogUtils.log(LOG, Level.INFO, () -> "Buy fee % in BigDecimal format: " + buyFeePercentage);
-
-            // Grab the sell fee
-            final String sellFeeInConfig = configEntries.getProperty(SELL_FEE_PROPERTY_NAME);
-            if (sellFeeInConfig == null || sellFeeInConfig.length() == 0) {
-                final String errorMsg = SELL_FEE_PROPERTY_NAME + CONFIG_IS_NULL_OR_ZERO_LENGTH + configFile + "?";
-                LOG.error(errorMsg);
-                throw new IllegalArgumentException(errorMsg);
-            }
-            LogUtils.log(LOG, Level.INFO, () -> SELL_FEE_PROPERTY_NAME + ": " + sellFeeInConfig + "%");
-
-            sellFeePercentage = new BigDecimal(sellFeeInConfig).divide(new BigDecimal("100"), 8, BigDecimal.ROUND_HALF_UP);
-            LogUtils.log(LOG, Level.INFO, () -> "Sell fee % in BigDecimal format: " + sellFeePercentage);
-
-            /*
-             * Grab the connection timeout
-             */
-            connectionTimeout = Integer.parseInt( // will barf if not a number; we want this to fail fast.
-                    configEntries.getProperty(CONNECTION_TIMEOUT_PROPERTY_NAME));
-            if (connectionTimeout == 0) {
-                final String errorMsg = CONNECTION_TIMEOUT_PROPERTY_NAME + " cannot be 0 value!"
-                        + " HINT: is the value set in the " + configFile + "?";
-                LOG.error(errorMsg);
-                throw new IllegalArgumentException(errorMsg);
-            }
-            LogUtils.log(LOG, Level.INFO, () -> CONNECTION_TIMEOUT_PROPERTY_NAME + ": " + connectionTimeout);
-
-        } catch (IOException e) {
-            final String errorMsg = "Failed to load Exchange config: " + configFile;
-            LOG.error(errorMsg, e);
-            throw new IllegalStateException(errorMsg, e);
-        } finally {
-            try {
-                inputStream.close();
-            } catch (IOException e) {
-                final String errorMsg = "Failed to close input stream for: " + configFile;
-                LOG.error(errorMsg, e);
-            }
-        }
+        final String sellFeeInConfig = getOtherConfigItem(otherConfig, SELL_FEE_PROPERTY_NAME);
+        sellFeePercentage = new BigDecimal(sellFeeInConfig).divide(new BigDecimal("100"), 8, BigDecimal.ROUND_HALF_UP);
+        LogUtils.log(LOG, Level.INFO, () -> "Sell fee % in BigDecimal format: " + sellFeePercentage);
     }
 
     // ------------------------------------------------------------------------------------------------
@@ -991,13 +883,6 @@ public final class CoinbaseExchangeAdapter extends AbstractExchangeAdapter imple
     private void initGson() {
         final GsonBuilder gsonBuilder = new GsonBuilder();
         gson = gsonBuilder.create();
-    }
-
-    /*
-     * Hack for unit-testing config loading.
-     */
-    private static String getConfigFileLocation() {
-        return CONFIG_FILE;
     }
 
     /*

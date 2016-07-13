@@ -26,7 +26,7 @@ package com.gazbert.bxbot.core.strategies;
 import com.gazbert.bxbot.core.api.strategy.StrategyConfig;
 import com.gazbert.bxbot.core.api.strategy.StrategyException;
 import com.gazbert.bxbot.core.api.strategy.TradingStrategy;
-import com.gazbert.bxbot.core.api.trading.ExchangeTimeoutException;
+import com.gazbert.bxbot.core.api.trading.ExchangeNetworkException;
 import com.gazbert.bxbot.core.api.trading.Market;
 import com.gazbert.bxbot.core.api.trading.MarketOrder;
 import com.gazbert.bxbot.core.api.trading.MarketOrderBook;
@@ -240,11 +240,11 @@ public class ExampleScalpingStrategy implements TradingStrategy {
                 executeAlgoForWhenLastOrderWasNone(currentBidPrice);
             }
 
-        } catch (ExchangeTimeoutException e) {
+        } catch (ExchangeNetworkException e) {
 
             // Your timeout handling code could go here.
             // We are just going to log it and swallow it, and wait for next trade cycle.
-            LOG.error(market.getName() + " Failed to get market orders because Exchange threw timeout exception. " +
+            LOG.error(market.getName() + " Failed to get market orders because Exchange threw network exception. " +
                     "Waiting until next trade cycle.", e);
 
         } catch (TradingApiException e) {
@@ -287,12 +287,12 @@ public class ExampleScalpingStrategy implements TradingStrategy {
             lastOrder.type = OrderType.BUY;
             lastOrder.amount = amountOfAltcoinToBuyForGivenBtc;
 
-        } catch (ExchangeTimeoutException e) {
+        } catch (ExchangeNetworkException e) {
 
             // Your timeout handling code could go here, e.g. you might want to check if the order actually
             // made it to the exchange? And if not, resend it...
             // We are just going to log it and swallow it, and wait for next trade cycle.
-            LOG.error(market.getName() + " Initial order to BUY altcoin failed because Exchange threw timeout exception. " +
+            LOG.error(market.getName() + " Initial order to BUY altcoin failed because Exchange threw network exception. " +
                     "Waiting until next trade cycle.", e);
 
         } catch (TradingApiException e) {
@@ -395,12 +395,12 @@ public class ExampleScalpingStrategy implements TradingStrategy {
                             + " waiting to fill at [" + lastOrder.price + "] - holding last BUY order...");
             }
 
-        } catch (ExchangeTimeoutException e) {
+        } catch (ExchangeNetworkException e) {
 
             // Your timeout handling code could go here, e.g. you might want to check if the order actually
             // made it to the exchange? And if not, resend it...
             // We are just going to log it and swallow it, and wait for next trade cycle.
-            LOG.error(market.getName() + " New Order to SELL altcoin failed because Exchange threw timeout exception. " +
+            LOG.error(market.getName() + " New Order to SELL altcoin failed because Exchange threw network exception. " +
                     "Waiting until next trade cycle. Last Order: " + lastOrder, e);
 
         } catch (TradingApiException e) {
@@ -489,12 +489,12 @@ public class ExampleScalpingStrategy implements TradingStrategy {
                                 + lastOrder.price + "] - holding last SELL order...");
                 }
             }
-        } catch (ExchangeTimeoutException e) {
+        } catch (ExchangeNetworkException e) {
 
             // Your timeout handling code could go here, e.g. you might want to check if the order actually
             // made it to the exchange? And if not, resend it...
             // We are just going to log it and swallow it, and wait for next trade cycle.
-            LOG.error(market.getName() + " New Order to BUY altcoin failed because Exchange threw timeout exception. " +
+            LOG.error(market.getName() + " New Order to BUY altcoin failed because Exchange threw network exception. " +
                     "Waiting until next trade cycle. Last Order: " + lastOrder, e);
 
         } catch (TradingApiException e) {
@@ -513,10 +513,10 @@ public class ExampleScalpingStrategy implements TradingStrategy {
      * @param amountOfBtcToTrade the amount of BTC we have to trade (buy) with.
      * @return the amount of altcoin we can buy for the given BTC amount.
      * @throws TradingApiException if an unexpected error occurred contacting the exchange.
-     * @throws ExchangeTimeoutException if a request to the exchange has timed out.
+     * @throws ExchangeNetworkException if a request to the exchange has timed out.
      */
     private BigDecimal getAmountOfAltcoinToBuyForGivenBtcAmount(BigDecimal amountOfBtcToTrade) throws
-            TradingApiException, ExchangeTimeoutException {
+            TradingApiException, ExchangeNetworkException {
 
         LogUtils.log(LOG, Level.INFO, () -> market.getName() + " Calculating amount of altcoin to buy for " +
                     new DecimalFormat("#.########").format(amountOfBtcToTrade) + " BTC");

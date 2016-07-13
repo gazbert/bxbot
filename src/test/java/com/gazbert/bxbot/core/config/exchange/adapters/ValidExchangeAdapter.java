@@ -38,32 +38,32 @@ public class ValidExchangeAdapter implements TradingApi {
     }
 
     @Override
-    public MarketOrderBook getMarketOrders(String marketId) throws ExchangeTimeoutException, TradingApiException {
+    public MarketOrderBook getMarketOrders(String marketId) throws ExchangeNetworkException, TradingApiException {
         return null;
     }
 
     @Override
-    public List<OpenOrder> getYourOpenOrders(String marketId) throws ExchangeTimeoutException, TradingApiException {
+    public List<OpenOrder> getYourOpenOrders(String marketId) throws ExchangeNetworkException, TradingApiException {
         return null;
     }
 
     @Override
-    public String createOrder(String marketId, OrderType orderType, BigDecimal quantity, BigDecimal price) throws ExchangeTimeoutException, TradingApiException {
+    public String createOrder(String marketId, OrderType orderType, BigDecimal quantity, BigDecimal price) throws ExchangeNetworkException, TradingApiException {
         return null;
     }
 
     @Override
-    public boolean cancelOrder(String orderId, String marketId) throws ExchangeTimeoutException, TradingApiException {
+    public boolean cancelOrder(String orderId, String marketId) throws ExchangeNetworkException, TradingApiException {
         return false;
     }
 
     @Override
-    public BigDecimal getLatestMarketPrice(String marketId) throws ExchangeTimeoutException, TradingApiException {
+    public BigDecimal getLatestMarketPrice(String marketId) throws ExchangeNetworkException, TradingApiException {
         return null;
     }
 
     @Override
-    public BalanceInfo getBalanceInfo() throws ExchangeTimeoutException, TradingApiException {
+    public BalanceInfo getBalanceInfo() throws ExchangeNetworkException, TradingApiException {
         return null;
     }
 

@@ -34,17 +34,14 @@ public class TestTradingApiException {
 
     @Test
     public void testCreationOfExceptionIsAsExpected() {
-
-        final ExchangeTimeoutException exception = new ExchangeTimeoutException(ERROR_MSG);
+        final TradingApiException exception = new TradingApiException(ERROR_MSG);
         assertEquals(ERROR_MSG, exception.getMessage());
     }
 
     @Test
     public void testCreationOfExceptionWithCauseIsAsExpected() {
-
-        final ExchangeTimeoutException exception = new ExchangeTimeoutException(ERROR_MSG, CAUSE);
+        final TradingApiException exception = new TradingApiException(ERROR_MSG, CAUSE);
         assertEquals(ERROR_MSG, exception.getMessage());
         assertEquals(CAUSE, exception.getCause());
     }
-
 }

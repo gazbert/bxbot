@@ -194,15 +194,15 @@ public class TestHuobiExchangeAdapter {
         PowerMock.verifyAll();
     }
 
-    @Test (expected = ExchangeTimeoutException.class )
-    public void testCreateOrderHandlesExchangeTimeoutException() throws Exception {
+    @Test (expected = ExchangeNetworkException.class )
+    public void testCreateOrderHandlesExchangeNetworkException() throws Exception {
 
         // Partial mock so we do not send stuff down the wire
         final HuobiExchangeAdapter exchangeAdapter = PowerMock.createPartialMock(HuobiExchangeAdapter.class,
                 MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
         PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(SELL_ORDER),
                 eq(AUTHENTICATED_REQUESTS_MARKET_ID), anyObject(Map.class)).
-                andThrow(new ExchangeTimeoutException("Gentlemen, at this moment, I want you all to forget the" +
+                andThrow(new ExchangeNetworkException("Gentlemen, at this moment, I want you all to forget the" +
                         " flight plan. From this moment on, we are improvising a new mission: How do we get our " +
                         "people home?"));
 
@@ -281,15 +281,15 @@ public class TestHuobiExchangeAdapter {
         PowerMock.verifyAll();
     }
 
-    @Test (expected = ExchangeTimeoutException.class )
-    public void testCancelOrderHandlesExchangeTimeoutException() throws Exception {
+    @Test (expected = ExchangeNetworkException.class )
+    public void testCancelOrderHandlesExchangeNetworkException() throws Exception {
 
         // Partial mock so we do not send stuff down the wire
         final HuobiExchangeAdapter exchangeAdapter = PowerMock.createPartialMock(HuobiExchangeAdapter.class,
                 MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
         PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(CANCEL_ORDER),
                 eq(AUTHENTICATED_REQUESTS_MARKET_ID), anyObject(Map.class)).
-                andThrow(new ExchangeTimeoutException("You know, they say when you talk to God it's prayer," +
+                andThrow(new ExchangeNetworkException("You know, they say when you talk to God it's prayer," +
                         " but when God talks to you, it's schizophrenia."));
 
         PowerMock.replayAll();
@@ -374,14 +374,14 @@ public class TestHuobiExchangeAdapter {
         PowerMock.verifyAll();
     }
 
-    @Test (expected = ExchangeTimeoutException.class )
-    public void testGettingYourOpenOrdersHandlesExchangeTimeoutException() throws Exception {
+    @Test (expected = ExchangeNetworkException.class )
+    public void testGettingYourOpenOrdersHandlesExchangeNetworkException() throws Exception {
 
         // Partial mock so we do not send stuff down the wire
         final HuobiExchangeAdapter exchangeAdapter = PowerMock.createPartialMock(HuobiExchangeAdapter.class,
                 MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
         PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(GET_ORDERS),
-                eq(AUTHENTICATED_REQUESTS_MARKET_ID), anyObject(Map.class)).andThrow(new ExchangeTimeoutException(
+                eq(AUTHENTICATED_REQUESTS_MARKET_ID), anyObject(Map.class)).andThrow(new ExchangeNetworkException(
                 "I don't care about what anything was DESIGNED to do, I care about what it CAN do."));
 
         PowerMock.replayAll();
@@ -466,14 +466,14 @@ public class TestHuobiExchangeAdapter {
         PowerMock.verifyAll();
     }
 
-    @Test (expected = ExchangeTimeoutException.class )
-    public void testGettingMarketOrdersHandlesExchangeTimeoutException() throws Exception {
+    @Test (expected = ExchangeNetworkException.class )
+    public void testGettingMarketOrdersHandlesExchangeNetworkException() throws Exception {
 
         // Partial mock so we do not send stuff down the wire
         final HuobiExchangeAdapter exchangeAdapter = PowerMock.createPartialMock(HuobiExchangeAdapter.class,
                 MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD);
         PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD, eq(ORDER_BOOK))
-                .andThrow(new ExchangeTimeoutException("Don't you worry. If they could get a washing machine" +
+                .andThrow(new ExchangeNetworkException("Don't you worry. If they could get a washing machine" +
                         " to fly, my Jimmy could land it."));
 
         PowerMock.replayAll();
@@ -533,14 +533,14 @@ public class TestHuobiExchangeAdapter {
         PowerMock.verifyAll();
     }
 
-    @Test (expected = ExchangeTimeoutException.class )
-    public void testGettingLatestMarketPriceHandlesExchangeTimeoutException() throws Exception {
+    @Test (expected = ExchangeNetworkException.class )
+    public void testGettingLatestMarketPriceHandlesExchangeNetworkException() throws Exception {
 
         // Partial mock so we do not send stuff down the wire
         final HuobiExchangeAdapter exchangeAdapter = PowerMock.createPartialMock(HuobiExchangeAdapter.class,
                 MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD);
         PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD, eq(TICKER)).
-                andThrow(new ExchangeTimeoutException("You're about to jump out a perfectly good airplane Jonny," +
+                andThrow(new ExchangeNetworkException("You're about to jump out a perfectly good airplane Jonny," +
                         " how do you feel about that?"));
 
         PowerMock.replayAll();
@@ -615,15 +615,15 @@ public class TestHuobiExchangeAdapter {
         PowerMock.verifyAll();
     }
 
-    @Test (expected = ExchangeTimeoutException.class )
-    public void testGettingBalanceInfoHandlesExchangeTimeoutException() throws Exception {
+    @Test (expected = ExchangeNetworkException.class )
+    public void testGettingBalanceInfoHandlesExchangeNetworkException() throws Exception {
 
         // Partial mock so we do not send stuff down the wire
         final HuobiExchangeAdapter exchangeAdapter = PowerMock.createPartialMock(HuobiExchangeAdapter.class,
                 MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
         PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD,
                 eq(GET_ACCOUNT_INFO), eq(AUTHENTICATED_REQUESTS_MARKET_ID), eq(null)).andThrow(
-                new ExchangeTimeoutException(" Look at it! It's a once in a lifetime opportunity, man! Let me go" +
+                new ExchangeNetworkException(" Look at it! It's a once in a lifetime opportunity, man! Let me go" +
                         " out there and let me get one wave, just one wave before you take me in." +
                         " I mean, come on man, where I am I gonna go? Cliffs on both sides! " +
                         "I'm not gonna paddle my way to New Zealand! Come on, compadre. Come on!"));

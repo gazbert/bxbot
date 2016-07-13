@@ -27,7 +27,7 @@ import com.gazbert.bxbot.core.api.exchange.AuthenticationConfig;
 import com.gazbert.bxbot.core.api.exchange.ExchangeAdapter;
 import com.gazbert.bxbot.core.api.exchange.ExchangeConfig;
 import com.gazbert.bxbot.core.api.trading.BalanceInfo;
-import com.gazbert.bxbot.core.api.trading.ExchangeTimeoutException;
+import com.gazbert.bxbot.core.api.trading.ExchangeNetworkException;
 import com.gazbert.bxbot.core.api.trading.MarketOrder;
 import com.gazbert.bxbot.core.api.trading.MarketOrderBook;
 import com.gazbert.bxbot.core.api.trading.OpenOrder;
@@ -95,7 +95,7 @@ import java.util.UUID;
  * </p>
  * <p>
  * <p>
- * The {@link TradingApi} calls will throw a {@link ExchangeTimeoutException} if a network error occurs trying to
+ * The {@link TradingApi} calls will throw a {@link ExchangeNetworkException} if a network error occurs trying to
  * connect to the exchange. A {@link TradingApiException} is thrown for <em>all</em> other failures.
  * </p>
  *
@@ -185,7 +185,7 @@ public final class BtceExchangeAdapter extends AbstractExchangeAdapter implement
     // ------------------------------------------------------------------------------------------------
 
     @Override
-    public MarketOrderBook getMarketOrders(String marketId) throws TradingApiException, ExchangeTimeoutException {
+    public MarketOrderBook getMarketOrders(String marketId) throws TradingApiException, ExchangeNetworkException {
 
         try {
             final ExchangeHttpResponse response = sendPublicRequestToExchange("depth", marketId);
@@ -220,7 +220,7 @@ public final class BtceExchangeAdapter extends AbstractExchangeAdapter implement
 
             return new MarketOrderBook(marketId, sellOrders, buyOrders);
 
-        } catch (ExchangeTimeoutException | TradingApiException e) {
+        } catch (ExchangeNetworkException | TradingApiException e) {
             throw e;
         } catch (Exception e) {
             LOG.error(UNEXPECTED_ERROR_MSG, e);
@@ -229,7 +229,7 @@ public final class BtceExchangeAdapter extends AbstractExchangeAdapter implement
     }
 
     @Override
-    public List<OpenOrder> getYourOpenOrders(String marketId) throws TradingApiException, ExchangeTimeoutException {
+    public List<OpenOrder> getYourOpenOrders(String marketId) throws TradingApiException, ExchangeNetworkException {
 
         try {
             final Map<String, String> params = getRequestParamMap();
@@ -282,7 +282,7 @@ public final class BtceExchangeAdapter extends AbstractExchangeAdapter implement
             }
             return ordersToReturn;
 
-        } catch (ExchangeTimeoutException | TradingApiException e) {
+        } catch (ExchangeNetworkException | TradingApiException e) {
             throw e;
         } catch (Exception e) {
             LOG.error(UNEXPECTED_ERROR_MSG, e);
@@ -292,7 +292,7 @@ public final class BtceExchangeAdapter extends AbstractExchangeAdapter implement
 
     @Override
     public String createOrder(String marketId, OrderType orderType, BigDecimal quantity, BigDecimal price) throws
-            TradingApiException, ExchangeTimeoutException {
+            TradingApiException, ExchangeNetworkException {
 
         try {
             final Map<String, String> params = getRequestParamMap();
@@ -344,7 +344,7 @@ public final class BtceExchangeAdapter extends AbstractExchangeAdapter implement
                 LOG.error(errorMsg);
                 throw new TradingApiException(errorMsg);
             }
-        } catch (ExchangeTimeoutException | TradingApiException e) {
+        } catch (ExchangeNetworkException | TradingApiException e) {
             throw e;
         } catch (Exception e) {
             LOG.error(UNEXPECTED_ERROR_MSG, e);
@@ -356,7 +356,7 @@ public final class BtceExchangeAdapter extends AbstractExchangeAdapter implement
      * marketId is not needed for cancelling orders on this exchange.
      */
     @Override
-    public boolean cancelOrder(String orderId, String marketIdNotNeeded) throws TradingApiException, ExchangeTimeoutException {
+    public boolean cancelOrder(String orderId, String marketIdNotNeeded) throws TradingApiException, ExchangeNetworkException {
 
         try {
             final Map<String, String> params = getRequestParamMap();
@@ -374,7 +374,7 @@ public final class BtceExchangeAdapter extends AbstractExchangeAdapter implement
             } else {
                 return true;
             }
-        } catch (ExchangeTimeoutException | TradingApiException e) {
+        } catch (ExchangeNetworkException | TradingApiException e) {
             throw e;
         } catch (Exception e) {
             LOG.error(UNEXPECTED_ERROR_MSG, e);
@@ -383,7 +383,7 @@ public final class BtceExchangeAdapter extends AbstractExchangeAdapter implement
     }
 
     @Override
-    public BigDecimal getLatestMarketPrice(String marketId) throws TradingApiException, ExchangeTimeoutException {
+    public BigDecimal getLatestMarketPrice(String marketId) throws TradingApiException, ExchangeNetworkException {
 
         try {
             final ExchangeHttpResponse response = sendPublicRequestToExchange("ticker", marketId);
@@ -392,7 +392,7 @@ public final class BtceExchangeAdapter extends AbstractExchangeAdapter implement
             final BtceTickerWrapper btceTicker = gson.fromJson(response.getPayload(), BtceTickerWrapper.class);
             return btceTicker.ticker.last;
 
-        } catch (ExchangeTimeoutException | TradingApiException e) {
+        } catch (ExchangeNetworkException | TradingApiException e) {
             throw e;
         } catch (Exception e) {
             LOG.error(UNEXPECTED_ERROR_MSG, e);
@@ -401,7 +401,7 @@ public final class BtceExchangeAdapter extends AbstractExchangeAdapter implement
     }
 
     @Override
-    public BalanceInfo getBalanceInfo() throws TradingApiException, ExchangeTimeoutException {
+    public BalanceInfo getBalanceInfo() throws TradingApiException, ExchangeNetworkException {
 
         try {
             final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("getInfo", null);
@@ -418,7 +418,7 @@ public final class BtceExchangeAdapter extends AbstractExchangeAdapter implement
             // 2nd arg of reserved balances not provided by exchange.
             return new BalanceInfo(balancesAvailable, new HashMap<>());
 
-        } catch (ExchangeTimeoutException | TradingApiException e) {
+        } catch (ExchangeNetworkException | TradingApiException e) {
             throw e;
         } catch (Exception e) {
             LOG.error(UNEXPECTED_ERROR_MSG, e);
@@ -428,7 +428,7 @@ public final class BtceExchangeAdapter extends AbstractExchangeAdapter implement
 
     @Override
     public BigDecimal getPercentageOfBuyOrderTakenForExchangeFee(String marketId) throws TradingApiException,
-            ExchangeTimeoutException {
+            ExchangeNetworkException {
 
         try {
             final ExchangeHttpResponse response = sendPublicRequestToExchange("fee", marketId);
@@ -439,7 +439,7 @@ public final class BtceExchangeAdapter extends AbstractExchangeAdapter implement
             // adapt the % into BigDecimal format
             return fees.get(marketId).divide(new BigDecimal("100"), 8, BigDecimal.ROUND_HALF_UP);
 
-        } catch (ExchangeTimeoutException | TradingApiException e) {
+        } catch (ExchangeNetworkException | TradingApiException e) {
             throw e;
         } catch (Exception e) {
             LOG.error(UNEXPECTED_ERROR_MSG, e);
@@ -449,7 +449,7 @@ public final class BtceExchangeAdapter extends AbstractExchangeAdapter implement
 
     @Override
     public BigDecimal getPercentageOfSellOrderTakenForExchangeFee(String marketId) throws TradingApiException,
-            ExchangeTimeoutException {
+            ExchangeNetworkException {
 
         try {
             final ExchangeHttpResponse response = sendPublicRequestToExchange("fee", marketId);
@@ -460,7 +460,7 @@ public final class BtceExchangeAdapter extends AbstractExchangeAdapter implement
             // adapt the % into BigDecimal format
             return fees.get(marketId).divide(new BigDecimal("100"), 8, BigDecimal.ROUND_HALF_UP);
 
-        } catch (ExchangeTimeoutException | TradingApiException e) {
+        } catch (ExchangeNetworkException | TradingApiException e) {
             throw e;
         } catch (Exception e) {
             LOG.error(UNEXPECTED_ERROR_MSG, e);
@@ -847,11 +847,11 @@ public final class BtceExchangeAdapter extends AbstractExchangeAdapter implement
      * @param apiMethod the API method to call.
      * @param resource  to use in the API call.
      * @return the response from the exchange.
-     * @throws ExchangeTimeoutException if there is a network issue connecting to exchange.
+     * @throws ExchangeNetworkException if there is a network issue connecting to exchange.
      * @throws TradingApiException      if anything unexpected happens.
      */
     private ExchangeHttpResponse sendPublicRequestToExchange(String apiMethod, String resource) throws TradingApiException,
-            ExchangeTimeoutException {
+            ExchangeNetworkException {
 
         // Request headers required by Exchange
         final Map<String, String> requestHeaders = new HashMap<>();
@@ -875,11 +875,11 @@ public final class BtceExchangeAdapter extends AbstractExchangeAdapter implement
      * @param apiMethod the API method to call.
      * @param params    the query param args to use in the API call.
      * @return the response from the exchange.
-     * @throws ExchangeTimeoutException if there is a network issue connecting to exchange.
+     * @throws ExchangeNetworkException if there is a network issue connecting to exchange.
      * @throws TradingApiException      if anything unexpected happens.
      */
     private ExchangeHttpResponse sendAuthenticatedRequestToExchange(String apiMethod, Map<String, String> params)
-            throws TradingApiException, ExchangeTimeoutException {
+            throws TradingApiException, ExchangeNetworkException {
 
         if (!initializedMACAuthentication) {
             final String errorMsg = "MAC Message security layer has not been initialized.";

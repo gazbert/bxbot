@@ -423,7 +423,7 @@ public class TestExampleScalpingStrategy {
         final BigDecimal amountOfUnitsToBuy = new BigDecimal("33.33333333");
         expect(market.getId()).andReturn(MARKET_ID);
         expect(tradingApi.createOrder(MARKET_ID, OrderType.BUY, amountOfUnitsToBuy, bidSpotPrice)).andThrow(
-                new ExchangeTimeoutException("Timeout waiting for exchange!"));
+                new ExchangeNetworkException("Timeout waiting for exchange!"));
 
         PowerMock.replayAll();
 
@@ -480,7 +480,7 @@ public class TestExampleScalpingStrategy {
         final BigDecimal amountOfUnitsToBuy = new BigDecimal("33.33333333");
         expect(market.getId()).andReturn(MARKET_ID);
         expect(tradingApi.createOrder(MARKET_ID, OrderType.BUY, amountOfUnitsToBuy, bidSpotPrice)).andThrow(
-                new ExchangeTimeoutException("Timeout waiting for exchange!"));
+                new ExchangeNetworkException("Timeout waiting for exchange!"));
 
         PowerMock.replayAll();
 
@@ -543,7 +543,7 @@ public class TestExampleScalpingStrategy {
         final BigDecimal newAskPrice = lastOrderPrice.multiply(totalPercentageGainRequired).add(lastOrderPrice).setScale(8, RoundingMode.HALF_UP);
         expect(market.getId()).andReturn(MARKET_ID).atLeastOnce();
         expect(tradingApi.createOrder(MARKET_ID, OrderType.SELL, lastOrderAmount, newAskPrice)).andThrow(
-                new ExchangeTimeoutException("Timeout waiting for exchange!"));
+                new ExchangeNetworkException("Timeout waiting for exchange!"));
 
         PowerMock.replayAll();
 

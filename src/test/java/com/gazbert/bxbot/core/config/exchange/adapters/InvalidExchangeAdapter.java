@@ -28,7 +28,7 @@ import com.gazbert.bxbot.core.api.trading.*;
 import java.util.List;
 
 /*
- * An invalid (but useless!) Exchange Adapter for unit testing.
+ * An invalid (and useless!) Exchange Adapter for unit testing.
  * Invalid because it does not implement the TradingApi interface.
  */
 public class InvalidExchangeAdapter {
@@ -37,11 +37,11 @@ public class InvalidExchangeAdapter {
         return null;
     }
 
-    public MarketOrderBook getMarketOrders(String marketId) throws ExchangeTimeoutException, TradingApiException {
+    public MarketOrderBook getMarketOrders(String marketId) throws ExchangeNetworkException, TradingApiException {
         return null;
     }
 
-    public List<OpenOrder> getYourOpenOrders(String marketId) throws ExchangeTimeoutException, TradingApiException {
+    public List<OpenOrder> getYourOpenOrders(String marketId) throws ExchangeNetworkException, TradingApiException {
         return null;
     }
 }

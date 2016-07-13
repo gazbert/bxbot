@@ -25,7 +25,7 @@ package com.gazbert.bxbot.core.engine;
 
 import com.gazbert.bxbot.core.api.exchange.ExchangeAdapter;
 import com.gazbert.bxbot.core.api.trading.BalanceInfo;
-import com.gazbert.bxbot.core.api.trading.ExchangeTimeoutException;
+import com.gazbert.bxbot.core.api.trading.ExchangeNetworkException;
 import com.gazbert.bxbot.core.api.trading.Market;
 import com.gazbert.bxbot.core.api.trading.TradingApiException;
 import com.gazbert.bxbot.core.api.strategy.StrategyException;
@@ -260,7 +260,7 @@ final public class TradingEngine {
                     Thread.currentThread().interrupt();
                 }
 
-            } catch (ExchangeTimeoutException e) {
+            } catch (ExchangeNetworkException e) {
 
                 /*
                  * We have a network connection issue reported by Exchange Adapter when called directly from
@@ -360,7 +360,7 @@ final public class TradingEngine {
      * - Unforeseen bugs in the Trading Engine and Exchange Adapter
      * - the exchange sending corrupt order book data and the Trading Strategy being misled... this has happened.
      */
-    private boolean isEmergencyStopLimitBreached() throws TradingApiException, ExchangeTimeoutException {
+    private boolean isEmergencyStopLimitBreached() throws TradingApiException, ExchangeNetworkException {
 
         boolean isEmergencyStopLimitBreached = true;
 

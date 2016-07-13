@@ -24,7 +24,7 @@
 package com.gazbert.bxbot.core.exchanges;
 
 import com.gazbert.bxbot.core.api.trading.BalanceInfo;
-import com.gazbert.bxbot.core.api.trading.ExchangeTimeoutException;
+import com.gazbert.bxbot.core.api.trading.ExchangeNetworkException;
 import com.gazbert.bxbot.core.api.trading.MarketOrder;
 import com.gazbert.bxbot.core.api.trading.MarketOrderBook;
 import com.gazbert.bxbot.core.api.trading.OpenOrder;
@@ -42,7 +42,8 @@ import com.google.gson.JsonParseException;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.net.MalformedURLException;
@@ -52,7 +53,14 @@ import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 
 /**
  * <p>
@@ -124,7 +132,7 @@ import java.util.*;
  * </p>
  *
  * <p>
- * The {@link TradingApi} calls will throw a {@link ExchangeTimeoutException} if a network error occurs trying to
+ * The {@link TradingApi} calls will throw a {@link ExchangeNetworkException} if a network error occurs trying to
  * connect to the exchange. A {@link TradingApiException} is thrown for <em>all</em> other failures.
  * </p>
  *
@@ -300,7 +308,7 @@ public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implemen
 
     @Override
     public String createOrder(String marketId, OrderType orderType, BigDecimal quantity, BigDecimal price) throws
-            TradingApiException, ExchangeTimeoutException {
+            TradingApiException, ExchangeNetworkException {
 
         try {
             final String marketIdForAuthenticatedRequest = getAuthenticatedMarketIdForGivenPublicMarketId(marketId);
@@ -338,7 +346,7 @@ public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implemen
                 throw new TradingApiException(errorMsg);
             }
 
-        } catch (ExchangeTimeoutException | TradingApiException e) {
+        } catch (ExchangeNetworkException | TradingApiException e) {
             throw e;
         } catch (Exception e) {
             LOG.error(UNEXPECTED_ERROR_MSG, e);
@@ -347,7 +355,7 @@ public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implemen
     }
 
     @Override
-    public boolean cancelOrder(String orderId, String marketId) throws TradingApiException, ExchangeTimeoutException {
+    public boolean cancelOrder(String orderId, String marketId) throws TradingApiException, ExchangeNetworkException {
 
         try {
             final String marketIdForAuthenticatedRequest = getAuthenticatedMarketIdForGivenPublicMarketId(marketId);
@@ -369,7 +377,7 @@ public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implemen
                 return false;
             }
 
-        } catch (ExchangeTimeoutException | TradingApiException e) {
+        } catch (ExchangeNetworkException | TradingApiException e) {
             throw e;
         } catch (Exception e) {
             LOG.error(UNEXPECTED_ERROR_MSG, e);
@@ -378,7 +386,7 @@ public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implemen
     }
 
     @Override
-    public List<OpenOrder> getYourOpenOrders(String marketId) throws TradingApiException, ExchangeTimeoutException {
+    public List<OpenOrder> getYourOpenOrders(String marketId) throws TradingApiException, ExchangeNetworkException {
 
         try {
             final String marketIdForAuthenticatedRequest = getAuthenticatedMarketIdForGivenPublicMarketId(marketId);
@@ -430,7 +438,7 @@ public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implemen
                 final String errorMsg = "Failed to get Open Order Info from exchange  - server busy. Error response: "
                         + response;
                 LOG.error(errorMsg);
-                throw new ExchangeTimeoutException(errorMsg);
+                throw new ExchangeNetworkException(errorMsg);
 
             } else {
                 final String errorMsg = "Failed to get Open Order Info from exchange. Error response: " + response;
@@ -438,7 +446,7 @@ public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implemen
                 throw new TradingApiException(errorMsg);
             }
 
-        } catch (ExchangeTimeoutException | TradingApiException e) {
+        } catch (ExchangeNetworkException | TradingApiException e) {
             throw e;
         } catch (Exception e) {
             LOG.error(UNEXPECTED_ERROR_MSG, e);
@@ -447,7 +455,7 @@ public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implemen
     }
 
     @Override
-    public MarketOrderBook getMarketOrders(String marketId) throws TradingApiException, ExchangeTimeoutException {
+    public MarketOrderBook getMarketOrders(String marketId) throws TradingApiException, ExchangeNetworkException {
 
         try {
 
@@ -493,7 +501,7 @@ public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implemen
 
             return new MarketOrderBook(marketId, sellOrders, buyOrders);
 
-        } catch (ExchangeTimeoutException | TradingApiException e) {
+        } catch (ExchangeNetworkException | TradingApiException e) {
             throw e;
         } catch (Exception e) {
             LOG.error(UNEXPECTED_ERROR_MSG, e);
@@ -502,7 +510,7 @@ public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implemen
     }
 
     @Override
-    public BalanceInfo getBalanceInfo() throws TradingApiException, ExchangeTimeoutException {
+    public BalanceInfo getBalanceInfo() throws TradingApiException, ExchangeNetworkException {
 
         try {
 
@@ -529,7 +537,7 @@ public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implemen
                 final String errorMsg = "Failed to get Balance Info from exchange  - server busy. Error response: "
                         + response;
                 LOG.error(errorMsg);
-                throw new ExchangeTimeoutException(errorMsg);
+                throw new ExchangeNetworkException(errorMsg);
 
             } else {
                 final String errorMsg = "Failed to get Balance Info from exchange. Error response: " + response;
@@ -537,7 +545,7 @@ public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implemen
                 throw new TradingApiException(errorMsg);
             }
 
-        } catch (ExchangeTimeoutException | TradingApiException e) {
+        } catch (ExchangeNetworkException | TradingApiException e) {
             throw e;
         } catch (Exception e) {
             LOG.error(UNEXPECTED_ERROR_MSG, e);
@@ -546,7 +554,7 @@ public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implemen
     }
 
     @Override
-    public BigDecimal getLatestMarketPrice(String marketId) throws ExchangeTimeoutException, TradingApiException {
+    public BigDecimal getLatestMarketPrice(String marketId) throws ExchangeNetworkException, TradingApiException {
 
         try {
 
@@ -569,7 +577,7 @@ public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implemen
             final HuobiTickerWrapper tickerWrapper = gson.fromJson(response.getPayload(), HuobiTickerWrapper.class);
             return tickerWrapper.ticker.last;
 
-        } catch (ExchangeTimeoutException | TradingApiException e) {
+        } catch (ExchangeNetworkException | TradingApiException e) {
             throw e;
         } catch (Exception e) {
             LOG.error(UNEXPECTED_ERROR_MSG, e);
@@ -579,7 +587,7 @@ public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implemen
 
     @Override
     public BigDecimal getPercentageOfBuyOrderTakenForExchangeFee(String marketId) throws TradingApiException,
-            ExchangeTimeoutException {
+            ExchangeNetworkException {
 
         // Huobi does not provide API call for fetching % buy fee; it only provides the fee monetary value for a
         // given order via order_info API call. We load the % fee statically from huobi-config.properties
@@ -588,7 +596,7 @@ public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implemen
 
     @Override
     public BigDecimal getPercentageOfSellOrderTakenForExchangeFee(String marketId) throws TradingApiException,
-            ExchangeTimeoutException {
+            ExchangeNetworkException {
 
         // Huobi does not provide API call for fetching % sell fee; it only provides the fee monetary value for a
         // given order via order_info API call. We load the % fee statically from huobi-config.properties
@@ -973,11 +981,11 @@ public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implemen
      *
      * @param apiMethod the API method to call.
      * @return the response from the exchange.
-     * @throws ExchangeTimeoutException if there is a network issue connecting to exchange.
+     * @throws ExchangeNetworkException if there is a network issue connecting to exchange.
      * @throws TradingApiException      if anything unexpected happens.
      */
     private AbstractExchangeAdapter.ExchangeHttpResponse sendPublicRequestToExchange(String apiMethod)
-            throws ExchangeTimeoutException, TradingApiException {
+            throws ExchangeNetworkException, TradingApiException {
 
         // Request headers required by Exchange
         final Map<String, String> requestHeaders = new HashMap<>();
@@ -1025,12 +1033,12 @@ public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implemen
      * @param marketId the (optional) market id to use in the API method call.
      * @param params    the query param args to use in the API call.
      * @return the response from the exchange.
-     * @throws ExchangeTimeoutException if there is a network issue connecting to exchange.
+     * @throws ExchangeNetworkException if there is a network issue connecting to exchange.
      * @throws TradingApiException      if anything unexpected happens.
      */
     @SuppressWarnings("deprecation")
     private ExchangeHttpResponse sendAuthenticatedRequestToExchange(String apiMethod, String marketId, Map<String, String> params)
-            throws ExchangeTimeoutException, TradingApiException {
+            throws ExchangeNetworkException, TradingApiException {
 
         if (!initializedSecureMessagingLayer) {
             final String errorMsg = "Message security layer has not been initialized.";

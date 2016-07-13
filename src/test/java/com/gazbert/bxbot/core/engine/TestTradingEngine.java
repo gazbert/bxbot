@@ -445,12 +445,12 @@ public class TestTradingEngine {
     }
 
     /*
-     * Tests the engine continues to execute next trade cycle if it receives a ExchangeTimeoutException.
-     * Scenario is 1 successful trade cycle, 2nd cycle Exchange Adapter throws ExchangeTimeoutException, engine stays alive and
+     * Tests the engine continues to execute next trade cycle if it receives a ExchangeNetworkException.
+     * Scenario is 1 successful trade cycle, 2nd cycle Exchange Adapter throws ExchangeNetworkException, engine stays alive and
      * successfully executes 3rd trade cycle.
      */
     @Test
-    public void testEngineExecutesNextTradeCyclesAfterReceivingExchangeTimeoutException() throws Exception {
+    public void testEngineExecutesNextTradeCyclesAfterReceivingExchangeNetworkException() throws Exception {
 
         final String exceptionErrorMsg = "Man walks down the street in a hat like that, you know he's not afraid of anything...";
         final int numberOfTradeCycles = 3;
@@ -469,8 +469,8 @@ public class TestTradingEngine {
         expect(balanceInfo.getBalancesAvailable()).andReturn(balancesAvailable);
         tradingStrategy.execute();
 
-        // expect BalanceInfo fetch to fail with ExchangeTimeoutException on 2nd cycle
-        expect(exchangeAdapter.getBalanceInfo()).andThrow(new ExchangeTimeoutException(exceptionErrorMsg));
+        // expect BalanceInfo fetch to fail with ExchangeNetworkException on 2nd cycle
+        expect(exchangeAdapter.getBalanceInfo()).andThrow(new ExchangeNetworkException(exceptionErrorMsg));
 
         // expect 3rd trade cycle to be successful
         expect(exchangeAdapter.getBalanceInfo()).andReturn(balanceInfo);

@@ -26,7 +26,7 @@ import com.gazbert.bxbot.core.api.exchange.AuthenticationConfig;
 import com.gazbert.bxbot.core.api.exchange.ExchangeConfig;
 import com.gazbert.bxbot.core.api.exchange.NetworkConfig;
 import com.gazbert.bxbot.core.api.exchange.OtherConfig;
-import com.gazbert.bxbot.core.api.trading.ExchangeTimeoutException;
+import com.gazbert.bxbot.core.api.trading.ExchangeNetworkException;
 import com.gazbert.bxbot.core.api.trading.TradingApiException;
 import com.gazbert.bxbot.core.util.LogUtils;
 import org.apache.log4j.Level;
@@ -119,13 +119,13 @@ abstract class AbstractExchangeAdapter {
 
     /**
      * HTTP status codes for non-fatal network connection failures.
-     * Used to decide to throw {@link ExchangeTimeoutException}.
+     * Used to decide to throw {@link ExchangeNetworkException}.
      */
     private Set<Integer> nonFatalNetworkErrorCodes;
 
     /**
      * java.io exception messages for non-fatal network connection failures.
-     * Used to decide to throw {@link ExchangeTimeoutException}.
+     * Used to decide to throw {@link ExchangeNetworkException}.
      */
     private Set<String> nonFatalNetworkErrorMessages;
 
@@ -147,14 +147,13 @@ abstract class AbstractExchangeAdapter {
      * @param httpMethod        the HTTP method to use, e.g. GET, POST, DELETE
      * @param requestHeaders    optional request headers to set on the {@link URLConnection} used to invoke the Exchange.
      * @return the response from the Exchange.
-     * @throws ExchangeTimeoutException if a timeout occurred trying to connect to the exchange. The timeout limit is
-     *                                  implementation specific for each Exchange Adapter. This allows for recovery from
-     *                                  temporary network issues.
-     * @throws TradingApiException      if the API call failed for any reason other than a timeout. This means something
+     * @throws ExchangeNetworkException if a network error occurred trying to connect to the exchange.
+     *                                  This exception allows for recovery from temporary network issues.
+     * @throws TradingApiException      if the API call failed for any reason other than a network error. This means something
      *                                  really bad as happened.
      */
     ExchangeHttpResponse sendNetworkRequest(URL url, String httpMethod, String postData, Map<String, String> requestHeaders)
-            throws TradingApiException, ExchangeTimeoutException {
+            throws TradingApiException, ExchangeNetworkException {
 
         HttpURLConnection exchangeConnection = null;
         final StringBuilder exchangeResponse = new StringBuilder();
@@ -213,13 +212,13 @@ abstract class AbstractExchangeAdapter {
         } catch (SocketTimeoutException e) {
             final String errorMsg = IO_SOCKET_TIMEOUT_ERROR_MSG;
             LOG.error(errorMsg, e);
-            throw new ExchangeTimeoutException(errorMsg, e);
+            throw new ExchangeNetworkException(errorMsg, e);
 
         } catch (FileNotFoundException e) {
             // Huobi started throwing this as of 8 Nov 2015 :-/
             final String errorMsg = "Failed to connect to Exchange. It's not there Jim!";
             LOG.error(errorMsg, e);
-            throw new ExchangeTimeoutException(errorMsg, e);
+            throw new ExchangeNetworkException(errorMsg, e);
 
         } catch (IOException e) {
 
@@ -231,14 +230,14 @@ abstract class AbstractExchangeAdapter {
 
                     final String errorMsg = "Failed to connect to Exchange. SSL Connection was refused or reset by the server.";
                     LOG.error(errorMsg, e);
-                    throw new ExchangeTimeoutException(errorMsg, e);
+                    throw new ExchangeNetworkException(errorMsg, e);
 
                 } else if (nonFatalNetworkErrorCodes != null && exchangeConnection != null &&
                         nonFatalNetworkErrorCodes.contains(exchangeConnection.getResponseCode())) {
 
                     final String errorMsg = IO_5XX_TIMEOUT_ERROR_MSG;
                     LOG.error(errorMsg, e);
-                    throw new ExchangeTimeoutException(errorMsg, e);
+                    throw new ExchangeNetworkException(errorMsg, e);
 
                 } else {
                     final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
