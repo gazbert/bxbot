@@ -23,7 +23,18 @@
 
 package com.gazbert.bxbot.core.exchanges;
 
-import com.gazbert.bxbot.core.api.trading.*;
+import com.gazbert.bxbot.core.api.exchange.AuthenticationConfig;
+import com.gazbert.bxbot.core.api.exchange.ExchangeAdapter;
+import com.gazbert.bxbot.core.api.exchange.ExchangeConfig;
+import com.gazbert.bxbot.core.api.exchange.NetworkConfig;
+import com.gazbert.bxbot.core.api.exchange.OtherConfig;
+import com.gazbert.bxbot.core.api.trading.BalanceInfo;
+import com.gazbert.bxbot.core.api.trading.ExchangeNetworkException;
+import com.gazbert.bxbot.core.api.trading.MarketOrderBook;
+import com.gazbert.bxbot.core.api.trading.OpenOrder;
+import com.gazbert.bxbot.core.api.trading.OrderType;
+import com.gazbert.bxbot.core.api.trading.TradingApiException;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.api.easymock.PowerMock;
@@ -37,6 +48,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.DecimalFormat;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -64,9 +76,6 @@ import static org.junit.Assert.*;
 @PowerMockIgnore("javax.crypto.*")
 @PrepareForTest(HuobiExchangeAdapter.class)
 public class TestHuobiExchangeAdapter {
-
-    // Valid config location - expected on runtime classpath in the ./src/test/resources folder.
-    private static final String VALID_CONFIG_LOCATION = "huobi/huobi-config.properties";
 
     // Canned JSON responses from exchange - expected to reside on filesystem relative to project root
     private static final String GET_ACCOUNT_INFO_JSON_RESPONSE = "./src/test/exchange-data/huobi/get_account_info.json";
@@ -100,7 +109,6 @@ public class TestHuobiExchangeAdapter {
     private static final String ORDER_ID_TO_CANCEL = "38471901";
 
     // Mocked out methods
-    private static final String MOCKED_GET_CONFIG_LOCATION_METHOD = "getConfigFileLocation";
     private static final String MOCKED_GET_REQUEST_PARAM_MAP_METHOD = "getRequestParamMap";
     private static final String MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD = "sendAuthenticatedRequestToExchange";
     private static final String MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD = "sendPublicRequestToExchange";
@@ -108,6 +116,44 @@ public class TestHuobiExchangeAdapter {
     // Mocked out state
     private static final String MOCKED_ACCOUNT_INFO_MARKET_FIELD_NAME = "accountInfoMarket";
 
+    // Exchange Adapter config for the tests
+    private static final String KEY = "key123";
+    private static final String SECRET = "notGonnaTellYa";
+    private static final List<Integer> nonFatalNetworkErrorCodes = Arrays.asList(502, 503, 504);
+    private static final List<String> nonFatalNetworkErrorMessages = Arrays.asList(
+            "Connection refused", "Connection reset", "Remote host closed connection during handshake");
+
+    private ExchangeConfig exchangeConfig;
+    private AuthenticationConfig authenticationConfig;
+    private NetworkConfig networkConfig;
+    private OtherConfig otherConfig;
+
+
+    /*
+     * Create some exchange config - the TradingEngine would normally do this.
+     */
+    @Before
+    public void setupForEachTest() throws Exception {
+
+        authenticationConfig = PowerMock.createMock(AuthenticationConfig.class);
+        expect(authenticationConfig.getItem("key")).andReturn(KEY);
+        expect(authenticationConfig.getItem("secret")).andReturn(SECRET);
+
+        networkConfig = PowerMock.createMock(NetworkConfig.class);
+        expect(networkConfig.getConnectionTimeout()).andReturn(30);
+        expect(networkConfig.getNonFatalErrorCodes()).andReturn(nonFatalNetworkErrorCodes);
+        expect(networkConfig.getNonFatalErrorMessages()).andReturn(nonFatalNetworkErrorMessages);
+
+        otherConfig = PowerMock.createMock(OtherConfig.class);
+        expect(otherConfig.getItem("buy-fee")).andReturn("0.2");
+        expect(otherConfig.getItem("sell-fee")).andReturn("0.2");
+        expect(otherConfig.getItem("account-info-market")).andReturn("usd");
+
+        exchangeConfig = PowerMock.createMock(ExchangeConfig.class);
+        expect(exchangeConfig.getAuthenticationConfig()).andReturn(authenticationConfig);
+        expect(exchangeConfig.getNetworkConfig()).andReturn(networkConfig);
+        expect(exchangeConfig.getOtherConfig()).andReturn(otherConfig);
+    }
 
     // ------------------------------------------------------------------------------------------------
     //  Create Orders tests
@@ -137,6 +183,7 @@ public class TestHuobiExchangeAdapter {
                 eq(AUTHENTICATED_REQUESTS_MARKET_ID), eq(requestParamMap)).andReturn(exchangeResponse);
 
         PowerMock.replayAll();
+        exchangeAdapter.init(exchangeConfig);
 
         final String orderId = exchangeAdapter.createOrder(MARKET_ID, OrderType.BUY, BUY_ORDER_QUANTITY, BUY_ORDER_PRICE);
         assertTrue(orderId.equals("38367448"));
@@ -168,6 +215,7 @@ public class TestHuobiExchangeAdapter {
                 eq(AUTHENTICATED_REQUESTS_MARKET_ID), eq(requestParamMap)).andReturn(exchangeResponse);
 
         PowerMock.replayAll();
+        exchangeAdapter.init(exchangeConfig);
 
         final String orderId = exchangeAdapter.createOrder(MARKET_ID, OrderType.SELL, SELL_ORDER_QUANTITY, SELL_ORDER_PRICE);
         assertTrue(orderId.equals("38367447"));
@@ -190,6 +238,8 @@ public class TestHuobiExchangeAdapter {
                 eq(AUTHENTICATED_REQUESTS_MARKET_ID), anyObject(Map.class)).andReturn(exchangeResponse);
 
         PowerMock.replayAll();
+        exchangeAdapter.init(exchangeConfig);
+
         exchangeAdapter.createOrder(MARKET_ID, OrderType.SELL, SELL_ORDER_QUANTITY, SELL_ORDER_PRICE);
         PowerMock.verifyAll();
     }
@@ -198,8 +248,8 @@ public class TestHuobiExchangeAdapter {
     public void testCreateOrderHandlesExchangeNetworkException() throws Exception {
 
         // Partial mock so we do not send stuff down the wire
-        final HuobiExchangeAdapter exchangeAdapter = PowerMock.createPartialMock(HuobiExchangeAdapter.class,
-                MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
+        final HuobiExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
+                HuobiExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
         PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(SELL_ORDER),
                 eq(AUTHENTICATED_REQUESTS_MARKET_ID), anyObject(Map.class)).
                 andThrow(new ExchangeNetworkException("Gentlemen, at this moment, I want you all to forget the" +
@@ -207,6 +257,8 @@ public class TestHuobiExchangeAdapter {
                         "people home?"));
 
         PowerMock.replayAll();
+        exchangeAdapter.init(exchangeConfig);
+
         exchangeAdapter.createOrder(MARKET_ID, OrderType.SELL, SELL_ORDER_QUANTITY, SELL_ORDER_PRICE);
         PowerMock.verifyAll();
     }
@@ -215,8 +267,8 @@ public class TestHuobiExchangeAdapter {
     public void testCreateOrderHandlesUnexpectedException() throws Exception {
 
         // Partial mock so we do not send stuff down the wire
-        final HuobiExchangeAdapter exchangeAdapter = PowerMock.createPartialMock(HuobiExchangeAdapter.class,
-                MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
+        final HuobiExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
+                HuobiExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
         PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(BUY_ORDER),
                 eq(AUTHENTICATED_REQUESTS_MARKET_ID), anyObject(Map.class)).
                 andThrow(new IllegalArgumentException("Houston. We're getting our first look at the service module" +
@@ -224,6 +276,8 @@ public class TestHuobiExchangeAdapter {
                         " panel is blown out, right up. Right up to our heat shield."));
 
         PowerMock.replayAll();
+        exchangeAdapter.init(exchangeConfig);
+
         exchangeAdapter.createOrder(MARKET_ID, OrderType.BUY, BUY_ORDER_QUANTITY, BUY_ORDER_PRICE);
         PowerMock.verifyAll();
     }
@@ -255,6 +309,7 @@ public class TestHuobiExchangeAdapter {
                 eq(AUTHENTICATED_REQUESTS_MARKET_ID), eq(requestParamMap)).andReturn(exchangeResponse);
 
         PowerMock.replayAll();
+        exchangeAdapter.init(exchangeConfig);
 
         final boolean success = exchangeAdapter.cancelOrder(ORDER_ID_TO_CANCEL, MARKET_ID);
         assertTrue(success);
@@ -277,6 +332,8 @@ public class TestHuobiExchangeAdapter {
                 eq(AUTHENTICATED_REQUESTS_MARKET_ID), anyObject(Map.class)).andReturn(exchangeResponse);
 
         PowerMock.replayAll();
+        exchangeAdapter.init(exchangeConfig);
+
         assertFalse(exchangeAdapter.cancelOrder(ORDER_ID_TO_CANCEL, MARKET_ID));
         PowerMock.verifyAll();
     }
@@ -285,14 +342,16 @@ public class TestHuobiExchangeAdapter {
     public void testCancelOrderHandlesExchangeNetworkException() throws Exception {
 
         // Partial mock so we do not send stuff down the wire
-        final HuobiExchangeAdapter exchangeAdapter = PowerMock.createPartialMock(HuobiExchangeAdapter.class,
-                MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
+        final HuobiExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
+                HuobiExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
         PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(CANCEL_ORDER),
                 eq(AUTHENTICATED_REQUESTS_MARKET_ID), anyObject(Map.class)).
                 andThrow(new ExchangeNetworkException("You know, they say when you talk to God it's prayer," +
                         " but when God talks to you, it's schizophrenia."));
 
         PowerMock.replayAll();
+        exchangeAdapter.init(exchangeConfig);
+
         exchangeAdapter.cancelOrder(ORDER_ID_TO_CANCEL, MARKET_ID);
         PowerMock.verifyAll();
     }
@@ -301,13 +360,15 @@ public class TestHuobiExchangeAdapter {
     public void testCancelOrderHandlesUnexpectedException() throws Exception {
 
         // Partial mock so we do not send stuff down the wire
-        final HuobiExchangeAdapter exchangeAdapter = PowerMock.createPartialMock(HuobiExchangeAdapter.class,
-                MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
+        final HuobiExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
+                HuobiExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
         PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(CANCEL_ORDER),
                 eq(AUTHENTICATED_REQUESTS_MARKET_ID), anyObject(Map.class)).
                 andThrow(new IllegalStateException("Sorry, nobody down here but the FBI's most unwanted."));
 
         PowerMock.replayAll();
+        exchangeAdapter.init(exchangeConfig);
+
         exchangeAdapter.cancelOrder(ORDER_ID_TO_CANCEL, MARKET_ID);
         PowerMock.verifyAll();
     }
@@ -338,6 +399,7 @@ public class TestHuobiExchangeAdapter {
                 eq(AUTHENTICATED_REQUESTS_MARKET_ID), eq(requestParamMap)).andReturn(exchangeResponse);
 
         PowerMock.replayAll();
+        exchangeAdapter.init(exchangeConfig);
 
         final List<OpenOrder> openOrders = exchangeAdapter.getYourOpenOrders(MARKET_ID);
 
@@ -370,6 +432,8 @@ public class TestHuobiExchangeAdapter {
                 eq("junk_market_id"), anyObject(Map.class)).andReturn(exchangeResponse);
 
         PowerMock.replayAll();
+        exchangeAdapter.init(exchangeConfig);
+
         exchangeAdapter.getYourOpenOrders("junk_market_id");
         PowerMock.verifyAll();
     }
@@ -378,13 +442,15 @@ public class TestHuobiExchangeAdapter {
     public void testGettingYourOpenOrdersHandlesExchangeNetworkException() throws Exception {
 
         // Partial mock so we do not send stuff down the wire
-        final HuobiExchangeAdapter exchangeAdapter = PowerMock.createPartialMock(HuobiExchangeAdapter.class,
-                MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
+        final HuobiExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
+                HuobiExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
         PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(GET_ORDERS),
                 eq(AUTHENTICATED_REQUESTS_MARKET_ID), anyObject(Map.class)).andThrow(new ExchangeNetworkException(
                 "I don't care about what anything was DESIGNED to do, I care about what it CAN do."));
 
         PowerMock.replayAll();
+        exchangeAdapter.init(exchangeConfig);
+
         exchangeAdapter.getYourOpenOrders(MARKET_ID);
         PowerMock.verifyAll();
     }
@@ -393,14 +459,16 @@ public class TestHuobiExchangeAdapter {
     public void testGettingYourOpenOrdersHandlesUnexpectedException() throws Exception {
 
         // Partial mock so we do not send stuff down the wire
-        final HuobiExchangeAdapter exchangeAdapter = PowerMock.createPartialMock(HuobiExchangeAdapter.class,
-                MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
+        final HuobiExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
+                HuobiExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
         PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(GET_ORDERS),
                 eq(AUTHENTICATED_REQUESTS_MARKET_ID), anyObject(Map.class)).
                 andThrow(new IllegalStateException("TWe've never lost an American in space, we're sure as hell " +
                         "not gonna lose one on my watch! Failure is not an option."));
 
         PowerMock.replayAll();
+        exchangeAdapter.init(exchangeConfig);
+
         exchangeAdapter.getYourOpenOrders(MARKET_ID);
         PowerMock.verifyAll();
     }
@@ -424,6 +492,7 @@ public class TestHuobiExchangeAdapter {
                 .andReturn(exchangeResponse);
 
         PowerMock.replayAll();
+        exchangeAdapter.init(exchangeConfig);
 
         final MarketOrderBook marketOrderBook = exchangeAdapter.getMarketOrders(MARKET_ID);
 
@@ -456,12 +525,11 @@ public class TestHuobiExchangeAdapter {
     @Test (expected = TradingApiException.class)
     public void testGettingMarketOrdersForInvalidMarket() throws Exception {
 
-        // Partial mock the adapter so we can manipulate config location
-        PowerMock.mockStaticPartial(HuobiExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD);
-        PowerMock.expectPrivate(HuobiExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD).andReturn(VALID_CONFIG_LOCATION);
         PowerMock.replayAll();
 
         final HuobiExchangeAdapter exchangeAdapter = new HuobiExchangeAdapter();
+        exchangeAdapter.init(exchangeConfig);
+
         exchangeAdapter.getMarketOrders("junk_market_id");
         PowerMock.verifyAll();
     }
@@ -470,13 +538,15 @@ public class TestHuobiExchangeAdapter {
     public void testGettingMarketOrdersHandlesExchangeNetworkException() throws Exception {
 
         // Partial mock so we do not send stuff down the wire
-        final HuobiExchangeAdapter exchangeAdapter = PowerMock.createPartialMock(HuobiExchangeAdapter.class,
-                MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD);
+        final HuobiExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
+                HuobiExchangeAdapter.class, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD);
         PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD, eq(ORDER_BOOK))
                 .andThrow(new ExchangeNetworkException("Don't you worry. If they could get a washing machine" +
                         " to fly, my Jimmy could land it."));
 
         PowerMock.replayAll();
+        exchangeAdapter.init(exchangeConfig);
+
         exchangeAdapter.getMarketOrders(MARKET_ID);
         PowerMock.verifyAll();
     }
@@ -485,12 +555,14 @@ public class TestHuobiExchangeAdapter {
     public void testGettingMarketOrdersHandlesUnexpectedException() throws Exception {
 
         // Partial mock so we do not send stuff down the wire
-        final HuobiExchangeAdapter exchangeAdapter = PowerMock.createPartialMock(HuobiExchangeAdapter.class,
-                MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD);
+        final HuobiExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
+                HuobiExchangeAdapter.class, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD);
         PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD, eq(ORDER_BOOK))
                 .andThrow(new IllegalArgumentException("Houston, we have a problem."));
 
         PowerMock.replayAll();
+        exchangeAdapter.init(exchangeConfig);
+
         exchangeAdapter.getMarketOrders(MARKET_ID);
         PowerMock.verifyAll();
     }
@@ -514,6 +586,8 @@ public class TestHuobiExchangeAdapter {
                 andReturn(exchangeResponse);
 
         PowerMock.replayAll();
+        exchangeAdapter.init(exchangeConfig);
+
         final BigDecimal latestMarketPrice = exchangeAdapter.getLatestMarketPrice(MARKET_ID).
                 setScale(8, BigDecimal.ROUND_HALF_UP);
         assertTrue(latestMarketPrice.compareTo(new BigDecimal("240.31")) == 0);
@@ -523,12 +597,11 @@ public class TestHuobiExchangeAdapter {
     @Test (expected = TradingApiException.class)
     public void testGettingLatestMarketPriceForInvalidMarket() throws Exception {
 
-        // Partial mock the adapter so we can manipulate config location
-        PowerMock.mockStaticPartial(HuobiExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD);
-        PowerMock.expectPrivate(HuobiExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD).andReturn(VALID_CONFIG_LOCATION);
         PowerMock.replayAll();
 
         final HuobiExchangeAdapter exchangeAdapter = new HuobiExchangeAdapter();
+        exchangeAdapter.init(exchangeConfig);
+
         exchangeAdapter.getLatestMarketPrice("junk_market_id");
         PowerMock.verifyAll();
     }
@@ -537,13 +610,15 @@ public class TestHuobiExchangeAdapter {
     public void testGettingLatestMarketPriceHandlesExchangeNetworkException() throws Exception {
 
         // Partial mock so we do not send stuff down the wire
-        final HuobiExchangeAdapter exchangeAdapter = PowerMock.createPartialMock(HuobiExchangeAdapter.class,
-                MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD);
+        final HuobiExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
+                HuobiExchangeAdapter.class, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD);
         PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD, eq(TICKER)).
                 andThrow(new ExchangeNetworkException("You're about to jump out a perfectly good airplane Jonny," +
                         " how do you feel about that?"));
 
         PowerMock.replayAll();
+        exchangeAdapter.init(exchangeConfig);
+
         exchangeAdapter.getLatestMarketPrice(MARKET_ID);
         PowerMock.verifyAll();
     }
@@ -552,13 +627,15 @@ public class TestHuobiExchangeAdapter {
     public void testGettingLatestMarketPriceHandlesUnexpectedException() throws Exception {
 
         // Partial mock so we do not send stuff down the wire
-        final HuobiExchangeAdapter exchangeAdapter = PowerMock.createPartialMock(HuobiExchangeAdapter.class,
-                MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD);
+        final HuobiExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
+                HuobiExchangeAdapter.class, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD);
         PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD, eq(TICKER)).
                 andThrow(new IllegalArgumentException("You know nothing. In fact, you know less than nothing." +
                         " If you knew that you knew nothing, then that would be something, but you don't."));
 
         PowerMock.replayAll();
+        exchangeAdapter.init(exchangeConfig);
+
         exchangeAdapter.getLatestMarketPrice(MARKET_ID);
         PowerMock.verifyAll();
     }
@@ -582,6 +659,7 @@ public class TestHuobiExchangeAdapter {
                 eq(GET_ACCOUNT_INFO), eq(AUTHENTICATED_REQUESTS_MARKET_ID), anyObject(Map.class)).andReturn(exchangeResponse);
 
         PowerMock.replayAll();
+        exchangeAdapter.init(exchangeConfig);
 
         Whitebox.setInternalState(exchangeAdapter, MOCKED_ACCOUNT_INFO_MARKET_FIELD_NAME, AUTHENTICATED_REQUESTS_MARKET_ID);
         final BalanceInfo balanceInfo = exchangeAdapter.getBalanceInfo();
@@ -610,6 +688,8 @@ public class TestHuobiExchangeAdapter {
                 eq(GET_ACCOUNT_INFO), eq("junk-market-id"), anyObject(Map.class)).andReturn(exchangeResponse);
 
         PowerMock.replayAll();
+        exchangeAdapter.init(exchangeConfig);
+
         Whitebox.setInternalState(exchangeAdapter, MOCKED_ACCOUNT_INFO_MARKET_FIELD_NAME, "junk-market-id");
         exchangeAdapter.getBalanceInfo();
         PowerMock.verifyAll();
@@ -619,8 +699,8 @@ public class TestHuobiExchangeAdapter {
     public void testGettingBalanceInfoHandlesExchangeNetworkException() throws Exception {
 
         // Partial mock so we do not send stuff down the wire
-        final HuobiExchangeAdapter exchangeAdapter = PowerMock.createPartialMock(HuobiExchangeAdapter.class,
-                MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
+        final HuobiExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
+                HuobiExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
         PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD,
                 eq(GET_ACCOUNT_INFO), eq(AUTHENTICATED_REQUESTS_MARKET_ID), eq(null)).andThrow(
                 new ExchangeNetworkException(" Look at it! It's a once in a lifetime opportunity, man! Let me go" +
@@ -629,6 +709,8 @@ public class TestHuobiExchangeAdapter {
                         "I'm not gonna paddle my way to New Zealand! Come on, compadre. Come on!"));
 
         PowerMock.replayAll();
+        exchangeAdapter.init(exchangeConfig);
+
         Whitebox.setInternalState(exchangeAdapter, MOCKED_ACCOUNT_INFO_MARKET_FIELD_NAME, AUTHENTICATED_REQUESTS_MARKET_ID);
         exchangeAdapter.getBalanceInfo();
         PowerMock.verifyAll();
@@ -638,14 +720,16 @@ public class TestHuobiExchangeAdapter {
     public void testGettingBalanceInfoHandlesUnexpectedException() throws Exception {
 
         // Partial mock so we do not send stuff down the wire
-        final HuobiExchangeAdapter exchangeAdapter = PowerMock.createPartialMock(HuobiExchangeAdapter.class,
-                MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
+        final HuobiExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
+                HuobiExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
         PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD,
                 eq(GET_ACCOUNT_INFO), eq(AUTHENTICATED_REQUESTS_MARKET_ID), eq(null)).
                 andThrow(new IllegalStateException("That's, ahh... that's a surfboard all right! Looks like a " +
                         "'57 Chevy I used to have."));
 
         PowerMock.replayAll();
+        exchangeAdapter.init(exchangeConfig);
+
         Whitebox.setInternalState(exchangeAdapter, MOCKED_ACCOUNT_INFO_MARKET_FIELD_NAME, AUTHENTICATED_REQUESTS_MARKET_ID);
         exchangeAdapter.getBalanceInfo();
         PowerMock.verifyAll();
@@ -658,12 +742,11 @@ public class TestHuobiExchangeAdapter {
     @Test
     public void testGettingExchangeSellingFeeIsAsExpected() throws Exception {
 
-        // Partial mock the adapter so we can manipulate config location
-        PowerMock.mockStaticPartial(HuobiExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD);
-        PowerMock.expectPrivate(HuobiExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD).andReturn(VALID_CONFIG_LOCATION);
         PowerMock.replayAll();
 
         final HuobiExchangeAdapter exchangeAdapter = new HuobiExchangeAdapter();
+        exchangeAdapter.init(exchangeConfig);
+
         final BigDecimal sellPercentageFee = exchangeAdapter.getPercentageOfSellOrderTakenForExchangeFee(MARKET_ID);
         assertTrue(sellPercentageFee.compareTo(new BigDecimal("0.002")) == 0);
 
@@ -673,12 +756,11 @@ public class TestHuobiExchangeAdapter {
     @Test
     public void testGettingExchangeBuyingFeeIsAsExpected() throws Exception {
 
-        // Partial mock the adapter so we can manipulate config location
-        PowerMock.mockStaticPartial(HuobiExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD);
-        PowerMock.expectPrivate(HuobiExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD).andReturn(VALID_CONFIG_LOCATION);
         PowerMock.replayAll();
 
         final HuobiExchangeAdapter exchangeAdapter = new HuobiExchangeAdapter();
+        exchangeAdapter.init(exchangeConfig);
+
         final BigDecimal buyPercentageFee = exchangeAdapter.getPercentageOfBuyOrderTakenForExchangeFee(MARKET_ID);
         assertTrue(buyPercentageFee.compareTo(new BigDecimal("0.002")) == 0);
 
@@ -688,29 +770,26 @@ public class TestHuobiExchangeAdapter {
     @Test
     public void testGettingImplNameIsAsExpected() throws Exception {
 
-        // Partial mock the adapter so we can manipulate config location
-        PowerMock.mockStaticPartial(HuobiExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD);
-        PowerMock.expectPrivate(HuobiExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD).andReturn(VALID_CONFIG_LOCATION);
         PowerMock.replayAll();
 
         final HuobiExchangeAdapter exchangeAdapter = new HuobiExchangeAdapter();
+        exchangeAdapter.init(exchangeConfig);
+
         assertTrue(exchangeAdapter.getImplName().equals("Huobi REST Trade API v3"));
 
         PowerMock.verifyAll();
     }
 
     // ------------------------------------------------------------------------------------------------
-    //  Initialisation tests - assume config property files are located under src/test/resources
+    //  Initialisation tests
     // ------------------------------------------------------------------------------------------------
 
     @Test
     public void testExchangeAdapterInitialisesSuccessfully() throws Exception {
 
-        // Partial mock the adapter so we can manipulate config location
-        PowerMock.mockStaticPartial(HuobiExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD);
-        PowerMock.expectPrivate(HuobiExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD).andReturn(VALID_CONFIG_LOCATION);
         PowerMock.replayAll();
         final HuobiExchangeAdapter exchangeAdapter = new HuobiExchangeAdapter();
+        exchangeAdapter.init(exchangeConfig);
         assertNotNull(exchangeAdapter);
         PowerMock.verifyAll();
     }
@@ -718,89 +797,94 @@ public class TestHuobiExchangeAdapter {
     @Test (expected = IllegalArgumentException.class)
     public void testExchangeAdapterThrowsExceptionIfPublicKeyConfigIsMissing() throws Exception {
 
-        // Partial mock the adapter so we can manipulate config location
-        PowerMock.mockStaticPartial(HuobiExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD);
-        PowerMock.expectPrivate(HuobiExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD).andReturn(
-                "huobi/missing-public-key-huobi-config.properties");
+        PowerMock.reset(authenticationConfig);
+        expect(authenticationConfig.getItem("key")).andReturn(null);
+        expect(authenticationConfig.getItem("secret")).andReturn("your_client_secret");
         PowerMock.replayAll();
-        new HuobiExchangeAdapter();
+
+        final ExchangeAdapter exchangeAdapter = new HuobiExchangeAdapter();
+        exchangeAdapter.init(exchangeConfig);
         PowerMock.verifyAll();
     }
 
     @Test (expected = IllegalArgumentException.class)
     public void testExchangeAdapterThrowsExceptionIfSecretConfigIsMissing() throws Exception {
 
-        // Partial mock the adapter so we can manipulate config location
-        PowerMock.mockStaticPartial(HuobiExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD);
-        PowerMock.expectPrivate(HuobiExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD).andReturn(
-                "huobi/missing-secret-huobi-config.properties");
+        PowerMock.reset(authenticationConfig);
+        expect(authenticationConfig.getItem("key")).andReturn("your-client-key");
+        expect(authenticationConfig.getItem("secret")).andReturn(null);
         PowerMock.replayAll();
-        new HuobiExchangeAdapter();
+
+        final ExchangeAdapter exchangeAdapter = new HuobiExchangeAdapter();
+        exchangeAdapter.init(exchangeConfig);
         PowerMock.verifyAll();
     }
 
     @Test (expected = IllegalArgumentException.class)
     public void testExchangeAdapterThrowsExceptionIfTimeoutConfigIsMissing() throws Exception {
 
-        // Partial mock the adapter so we can manipulate config location
-        PowerMock.mockStaticPartial(HuobiExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD);
-        PowerMock.expectPrivate(HuobiExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD).andReturn(
-                "huobi/missing-timeout-huobi-config.properties");
+        PowerMock.reset(networkConfig);
+        expect(networkConfig.getConnectionTimeout()).andReturn(0);
         PowerMock.replayAll();
-        new HuobiExchangeAdapter();
+
+        final ExchangeAdapter exchangeAdapter = new HuobiExchangeAdapter();
+        exchangeAdapter.init(exchangeConfig);
         PowerMock.verifyAll();
     }
 
     @Test (expected = IllegalArgumentException.class)
     public void testExchangeAdapterThrowsExceptionIfAccountInfoMarketConfigIsMissing() throws Exception {
 
-        // Partial mock the adapter so we can manipulate config location
-        PowerMock.mockStaticPartial(HuobiExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD);
-        PowerMock.expectPrivate(HuobiExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD).andReturn(
-                "huobi/missing-account-info-market-huobi-config.properties");
+        PowerMock.reset(otherConfig);
+        expect(otherConfig.getItem("buy-fee")).andReturn("0.2");
+        expect(otherConfig.getItem("sell-fee")).andReturn("0.2");
+        expect(otherConfig.getItem("account-info-market")).andReturn(null);
         PowerMock.replayAll();
-        new HuobiExchangeAdapter();
+
+        final ExchangeAdapter exchangeAdapter = new HuobiExchangeAdapter();
+        exchangeAdapter.init(exchangeConfig);
         PowerMock.verifyAll();
     }
 
     @Test (expected = IllegalArgumentException.class)
     public void testExchangeAdapterThrowsExceptionIfBuyFeeIsMissing() throws Exception {
 
-        // Partial mock the adapter so we can manipulate config location
-        PowerMock.mockStaticPartial(HuobiExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD);
-        PowerMock.expectPrivate(HuobiExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD).andReturn(
-                "huobi/missing-buy-fee-huobi-config.properties");
+        PowerMock.reset(otherConfig);
+        expect(otherConfig.getItem("buy-fee")).andReturn("");
+        expect(otherConfig.getItem("sell-fee")).andReturn("0.2");
+        expect(otherConfig.getItem("account-info-market")).andReturn("usd");
         PowerMock.replayAll();
-        new HuobiExchangeAdapter();
+
+        final ExchangeAdapter exchangeAdapter = new HuobiExchangeAdapter();
+        exchangeAdapter.init(exchangeConfig);
         PowerMock.verifyAll();
     }
 
     @Test (expected = IllegalArgumentException.class)
     public void testExchangeAdapterThrowsExceptionIfSellFeeIsMissing() throws Exception {
 
-        // Partial mock the adapter so we can manipulate config location
-        PowerMock.mockStaticPartial(HuobiExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD);
-        PowerMock.expectPrivate(HuobiExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD).andReturn(
-                "huobi/missing-sell-fee-huobi-config.properties");
+        PowerMock.reset(otherConfig);
+        expect(otherConfig.getItem("buy-fee")).andReturn("0.2");
+        expect(otherConfig.getItem("sell-fee")).andReturn(null);
+        expect(otherConfig.getItem("account-info-market")).andReturn("usd");
         PowerMock.replayAll();
-        new HuobiExchangeAdapter();
+
+        final ExchangeAdapter exchangeAdapter = new HuobiExchangeAdapter();
+        exchangeAdapter.init(exchangeConfig);
         PowerMock.verifyAll();
     }
 
     /*
      * Used for making real API calls to the exchange in order to grab JSON responses.
      * Have left this in; it might come in useful.
-     * It expects VALID_CONFIG_LOCATION to contain the correct credentials.
+     * You'll need to change the KEY, SECRET, constants to real-world values.
      */
 //    @Test
     public void runIntegrationTest() throws Exception {
 
-        // Partial mock the adapter so we can manipulate config location
-        PowerMock.mockStaticPartial(HuobiExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD);
-        PowerMock.expectPrivate(HuobiExchangeAdapter.class, MOCKED_GET_CONFIG_LOCATION_METHOD).andReturn(VALID_CONFIG_LOCATION);
-        PowerMock.replayAll();
-
-//        final TradingApi exchangeAdapter = new HuobiExchangeAdapter();
+//        PowerMock.replayAll();
+//        final ExchangeAdapter exchangeAdapter = new HuobiExchangeAdapter();
+//        exchangeAdapter.init(exchangeConfig);
 //        exchangeAdapter.getImplName();
 //        exchangeAdapter.getPercentageOfBuyOrderTakenForExchangeFee(MARKET_ID);
 //        exchangeAdapter.getPercentageOfSellOrderTakenForExchangeFee(MARKET_ID);
@@ -813,6 +897,6 @@ public class TestHuobiExchangeAdapter {
 //        final String orderId = exchangeAdapter.createOrder(MARKET_ID, OrderType.SELL, SELL_ORDER_QUANTITY, SELL_ORDER_PRICE);
 //        exchangeAdapter.cancelOrder(orderId, MARKET_ID);
 
-        PowerMock.verifyAll();
+//        PowerMock.verifyAll();
     }
 }

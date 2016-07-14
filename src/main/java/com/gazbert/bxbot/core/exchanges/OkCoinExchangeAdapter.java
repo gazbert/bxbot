@@ -455,7 +455,7 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
             ExchangeNetworkException {
 
         // OKCoin does not provide API call for fetching % buy fee; it only provides the fee monetary value for a
-        // given order via order_fee.do API call. We load the % fee statically from okcoin-config.properties
+        // given order via order_fee.do API call. We load the % fee statically from exchange.xml file
         return buyFeePercentage;
     }
 
@@ -464,7 +464,7 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
             ExchangeNetworkException {
 
         // OKCoin does not provide API call for fetching % sell fee; it only provides the fee monetary value for a
-        // given order via order_fee.do API call. We load the % fee statically from okcoin-config.properties
+        // given order via order_fee.do API call. We load the % fee statically from exchange.xml file
         return sellFeePercentage;
     }
 
@@ -868,28 +868,6 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
     }
 
     /**
-     * Sorts the request params alphabetically (uses natural ordering) and returns them as a query string.
-     *
-     * @param params the request params to sort.
-     * @return the query string containing the sorted request params.
-     */
-    private String createAlphabeticallySortedQueryString(Map<String, String> params) {
-
-        final List<String> keys = new ArrayList<>(params.keySet());
-        Collections.sort(keys); // OKCoin required natural/alphabetical ordering of params
-
-        final StringBuilder sortedQueryString = new StringBuilder();
-        for (final String param : keys) {
-            if (sortedQueryString.length() > 0) {
-                sortedQueryString.append("&");
-            }
-            //noinspection deprecation
-            sortedQueryString.append(param).append("=").append(params.get(param));
-        }
-        return sortedQueryString.toString();
-    }
-
-    /**
      * Creates an MD5 hash for a given string and returns the hash as an uppercase string.
      *
      * @param stringToHash the string to create the MD5 hash for.
@@ -897,8 +875,7 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
      */
     private String createMd5HashAndReturnAsUpperCaseString(String stringToHash) {
 
-        final char HEX_DIGITS[] = {'0', '1', '2', '3', '4', '5',
-                '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
+        final char HEX_DIGITS[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
 
         if (stringToHash == null || stringToHash.isEmpty()) {
             return "";

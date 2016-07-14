@@ -42,10 +42,8 @@ import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.net.UnknownHostException;
+import java.util.*;
 
 /**
  * Base class for shared Exchange Adapter functionality.
@@ -216,7 +214,13 @@ abstract class AbstractExchangeAdapter {
 
         } catch (FileNotFoundException e) {
             // Huobi started throwing this as of 8 Nov 2015 :-/
-            final String errorMsg = "Failed to connect to Exchange. It's not there Jim!";
+            final String errorMsg = "Failed to connect to Exchange. It's dead Jim!";
+            LOG.error(errorMsg, e);
+            throw new ExchangeNetworkException(errorMsg, e);
+
+        } catch (UnknownHostException e) {
+            // EC2 started throwing these for BTC-e, GDAX, as of 14 July 2016 :-/
+            final String errorMsg = "Failed to connect to Exchange. It's dead Jim!";
             LOG.error(errorMsg, e);
             throw new ExchangeNetworkException(errorMsg, e);
 
@@ -358,6 +362,28 @@ abstract class AbstractExchangeAdapter {
         final String itemValue = otherConfig.getItem(itemName);
         LogUtils.log(LOG, Level.INFO, () -> itemName + ": " + itemValue);
         return assertItemExists(itemName, itemValue);
+    }
+
+    /**
+     * Sorts the request params alphabetically (uses natural ordering) and returns them as a query string.
+     *
+     * @param params the request params to sort.
+     * @return the query string containing the sorted request params.
+     */
+    String createAlphabeticallySortedQueryString(Map<String, String> params) {
+
+        final List<String> keys = new ArrayList<>(params.keySet());
+        Collections.sort(keys); // use natural/alphabetical ordering of params
+
+        final StringBuilder sortedQueryString = new StringBuilder();
+        for (final String param : keys) {
+            if (sortedQueryString.length() > 0) {
+                sortedQueryString.append("&");
+            }
+            //noinspection deprecation
+            sortedQueryString.append(param).append("=").append(params.get(param));
+        }
+        return sortedQueryString.toString();
     }
 
     /**
