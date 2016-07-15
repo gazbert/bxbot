@@ -35,4 +35,5 @@ hs_err_pid*
 /resources/okcoin/okcoin-config.properties
 /resources/huobi/huobi-config.properties
 /resources/itbit/itbit-config.properties
-/resources/gdax/coinbase-config.properties
+/resources/gdax/gdax-config.properties
+/resources/kraken/kraken-config.properties
