@@ -466,7 +466,7 @@ To start, stop, and query the bot's status, use `./bxbot.sh [start|stop|status]`
 ## Coming Soon...
 The following features are in the pipeline:
 
-- [FIX](https://docs.gdax.com/#fix-api) exchange adapter for [GDAX](https://docs.gdax.com/#fix-api).
+- [FIX](https://en.wikipedia.org/wiki/Financial_Information_eXchange) exchange adapter for [GDAX](https://docs.gdax.com/#fix-api).
 - REST exchange adapter for [Kraken](https://www.kraken.com).
 - Convert bot into [Spring Boot](http://projects.spring.io/spring-boot/) app. This will include a new REST API for administering the bot.
 - Web UI (written in [AngularJS](https://angularjs.org/) and [Bootstrap](http://getbootstrap.com/)) for administering 

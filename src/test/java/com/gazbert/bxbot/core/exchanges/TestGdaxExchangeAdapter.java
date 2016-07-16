@@ -627,13 +627,11 @@ public class TestGdaxExchangeAdapter {
     public void testGettingExchangeSellingFeeIsAsExpected() throws Exception {
 
         PowerMock.replayAll();
-
         final GdaxExchangeAdapter exchangeAdapter = new GdaxExchangeAdapter();
         exchangeAdapter.init(exchangeConfig);
 
         final BigDecimal sellPercentageFee = exchangeAdapter.getPercentageOfSellOrderTakenForExchangeFee(MARKET_ID);
         assertTrue(sellPercentageFee.compareTo(new BigDecimal("0.0025")) == 0);
-
         PowerMock.verifyAll();
     }
 
@@ -641,13 +639,11 @@ public class TestGdaxExchangeAdapter {
     public void testGettingExchangeBuyingFeeIsAsExpected() throws Exception {
 
         PowerMock.replayAll();
-
         final GdaxExchangeAdapter exchangeAdapter = new GdaxExchangeAdapter();
         exchangeAdapter.init(exchangeConfig);
 
         final BigDecimal buyPercentageFee = exchangeAdapter.getPercentageOfBuyOrderTakenForExchangeFee(MARKET_ID);
         assertTrue(buyPercentageFee.compareTo(new BigDecimal("0.0025")) == 0);
-
         PowerMock.verifyAll();
     }
 
@@ -655,11 +651,10 @@ public class TestGdaxExchangeAdapter {
     public void testGettingImplNameIsAsExpected() throws Exception {
 
         PowerMock.replayAll();
-
         final GdaxExchangeAdapter exchangeAdapter = new GdaxExchangeAdapter();
         exchangeAdapter.init(exchangeConfig);
-        assertTrue(exchangeAdapter.getImplName().equals("GDAX REST API v1"));
 
+        assertTrue(exchangeAdapter.getImplName().equals("GDAX REST API v1"));
         PowerMock.verifyAll();
     }
 
