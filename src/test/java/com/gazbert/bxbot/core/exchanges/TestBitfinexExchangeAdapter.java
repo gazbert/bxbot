@@ -823,6 +823,7 @@ public class TestBitfinexExchangeAdapter {
 //        final ExchangeAdapter exchangeAdapter = new BitfinexExchangeAdapter();
 //        exchangeAdapter.init(exchangeConfig);
 //        exchangeAdapter.getImplName();
+//        exchangeAdapter.getMarketOrders(MARKET_ID);
 //        exchangeAdapter.getPercentageOfBuyOrderTakenForExchangeFee(MARKET_ID);
 //        exchangeAdapter.getPercentageOfSellOrderTakenForExchangeFee(MARKET_ID);
 //        exchangeAdapter.getLatestMarketPrice(MARKET_ID);
