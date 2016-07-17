@@ -37,10 +37,17 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.net.*;
 import java.security.InvalidKeyException;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Base64;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * TODO Work in progress...
@@ -99,19 +106,34 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
     private static final Logger LOG = Logger.getLogger(KrakenExchangeAdapter.class);
 
     /**
+     * The base URI for all Kraken API calls.
+     */
+    private static final String KRAKEN_BASE_URI = "https://api.kraken.com/";
+
+    /**
      * The version of the Kraken API being used.
      */
     private static final String KRAKEN_API_VERSION = "0";
 
     /**
+     * The public API path part of the Kraken base URI.
+     */
+    private static final String KRAKEN_PUBLIC_PATH = "/public/";
+
+    /**
+     * The private API path part of the Kraken base URI.
+     */
+    private static final String KRAKEN_PRIVATE_PATH = "/private/";
+
+    /**
      * The public API URI.
      */
-    private static final String PUBLIC_API_BASE_URL = "https://api.kraken.com/" + KRAKEN_API_VERSION + "/public/";
+    private static final String PUBLIC_API_BASE_URL = KRAKEN_BASE_URI + KRAKEN_API_VERSION + KRAKEN_PUBLIC_PATH;
 
     /**
      * The Authenticated API URI.
      */
-    private static final String AUTHENTICATED_API_URL = "https://api.kraken.com/" + KRAKEN_API_VERSION + "/private/";
+    private static final String AUTHENTICATED_API_URL = KRAKEN_BASE_URI + KRAKEN_API_VERSION + KRAKEN_PRIVATE_PATH;
 
     /**
      * Used for reporting unexpected errors.
@@ -287,7 +309,20 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
 
     @Override
     public BalanceInfo getBalanceInfo() throws TradingApiException, ExchangeNetworkException {
-        throw new UnsupportedOperationException("Not developed yet!");
+
+        try {
+
+            final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("Balance", null);
+            LogUtils.log(LOG, Level.DEBUG, () -> "getBalanceInfo() response: " + response);
+
+            throw new UnsupportedOperationException("Not developed yet!");
+
+        } catch (ExchangeNetworkException | TradingApiException e) {
+            throw e;
+        } catch (Exception e) {
+            LOG.error(UNEXPECTED_ERROR_MSG, e);
+            throw new TradingApiException(UNEXPECTED_ERROR_MSG, e);
+        }
     }
 
     @Override
@@ -314,6 +349,20 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
 
     /**
      * GSON class for Market Order Book response.
+     *
+     * All Kraken responses have the following format:
+     *
+     * <pre>
+     *
+     * error = array of error messages in the format of:
+     *
+     * <char-severity code><string-error category>:<string-error type>[:<string-extra info>]
+     *    - severity code can be E for error or W for warning
+     *
+     * result = result of API call (may not be present if errors occur)
+     *
+     * </pre>
+     *
      */
     private static class KrakenMarketOrderBookResponse {
 
@@ -416,6 +465,17 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
      * </p>
      *
      * <pre>
+     * Kraken requires the following HTTP headers to bet set:
+     *
+     * API-Key = API key
+     * API-Sign = Message signature using HMAC-SHA512 of (URI path + SHA256(nonce + POST data)) and base64 decoded secret API key
+     *
+     * The nonce must always increasing unsigned 64 bit integer.
+     *
+     * Note: Sometimes requests can arrive out of order or NTP can cause your clock to rewind, resulting in nonce issues.
+     * If you encounter this issue, you can change the nonce window in your account API settings page.
+     * The amount to set it to depends upon how you increment the nonce. Depending on your connectivity, a setting that
+     * would accommodate 3-15 seconds of network issues is suggested.
      *
      * </pre>
      *
@@ -425,10 +485,73 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
      * @throws ExchangeNetworkException if there is a network issue connecting to exchange.
      * @throws TradingApiException if anything unexpected happens.
      */
-    private ExchangeHttpResponse sendAuthenticatedRequestToExchange(String apiMethod, Map<String, Object> params)
+    private ExchangeHttpResponse sendAuthenticatedRequestToExchange(String apiMethod, Map<String, String> params)
             throws ExchangeNetworkException, TradingApiException {
 
-        throw new UnsupportedOperationException("Not developed yet!");
+        if (!initializedMACAuthentication) {
+            final String errorMsg = "MAC Message security layer has not been initialized.";
+            LOG.error(errorMsg);
+            throw new IllegalStateException(errorMsg);
+        }
+
+        try {
+
+            if (params == null) {
+                // create empty map for non param API calls, e.g. "trades"
+                params = new HashMap<>();
+            }
+
+            // The nonce is required by Kraken in every request.
+            // It MUST be incremented each time and the nonce param MUST match the value used in signature.
+            nonce++;
+            params.put("nonce", Long.toString(nonce));
+
+            // Current adapter does not support optional 2FA
+            // params.put("otp", "false");
+
+            // Build the URL with query param args in it - yuk!
+            String postData = "";
+            for (final String param : params.keySet()) {
+                if (postData.length() > 0) {
+                    postData += "&";
+                }
+                //noinspection deprecation
+                postData += param + "=" + URLEncoder.encode(params.get(param));
+            }
+
+             // And now the tricky part... ;-o
+
+            final byte[] pathInBytes = ("/" + KRAKEN_API_VERSION + KRAKEN_PRIVATE_PATH + apiMethod).getBytes("UTF-8");
+            final String noncePrependedToPostData = Long.toString(nonce) + postData;
+
+            // Create sha256 hash of nonce and post data:
+            final MessageDigest md = MessageDigest.getInstance("SHA-256");
+            md.update(noncePrependedToPostData.getBytes("UTF-8"));
+            final BigInteger messageHash = new BigInteger(md.digest());
+
+            // Create hmac_sha512 digest of path and previous sha256 hash
+            mac.reset(); // force reset
+            mac.update(pathInBytes);
+            mac.update(messageHash.toByteArray());
+
+            // Signature in Base64
+            final String signature = Base64.getEncoder().encodeToString((new BigInteger(mac.doFinal())).toByteArray());
+
+            // Request headers required by Exchange
+            final Map<String, String> requestHeaders = new HashMap<>();
+            requestHeaders.put("Content-Type", "application/x-www-form-urlencoded");
+            requestHeaders.put("API-Key", key);
+            requestHeaders.put("API-Sign", signature);
+
+            final URL url = new URL(AUTHENTICATED_API_URL + apiMethod);
+            return sendNetworkRequest(url, "POST", postData, requestHeaders);
+
+        } catch (MalformedURLException | NoSuchAlgorithmException | UnsupportedEncodingException e) {
+
+            final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
+            LOG.error(errorMsg, e);
+            throw new TradingApiException(errorMsg, e);
+        }
     }
 
     /**
@@ -438,13 +561,15 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
      */
     private void initSecureMessageLayer() {
 
-        // Setup the MAC
         try {
-            final SecretKeySpec keyspec = new SecretKeySpec(secret.getBytes("UTF-8"), "HmacSHA512");
+            // Kraken secret key is in Base64, so we need to decode it first
+            final byte[] base64DecodedSecret = Base64.getDecoder().decode(secret);
+
+            final SecretKeySpec keyspec = new SecretKeySpec(base64DecodedSecret, "HmacSHA512");
             mac = Mac.getInstance("HmacSHA512");
             mac.init(keyspec);
             initializedMACAuthentication = true;
-        } catch (UnsupportedEncodingException | NoSuchAlgorithmException e) {
+        } catch (NoSuchAlgorithmException e) {
             final String errorMsg = "Failed to setup MAC security. HINT: Is HmacSHA512 installed?";
             LOG.error(errorMsg, e);
             throw new IllegalStateException(errorMsg, e);
@@ -460,7 +585,6 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
     // ------------------------------------------------------------------------------------------------
 
     private void setAuthenticationConfig(ExchangeConfig exchangeConfig) {
-
         final AuthenticationConfig authenticationConfig = getAuthenticationConfig(exchangeConfig);
         key = getAuthenticationConfigItem(authenticationConfig, KEY_PROPERTY_NAME);
         secret = getAuthenticationConfigItem(authenticationConfig, SECRET_PROPERTY_NAME);
