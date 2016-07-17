@@ -466,13 +466,12 @@ To start, stop, and query the bot's status, use `./bxbot.sh [start|stop|status]`
 ## Coming Soon...
 The following features are in the pipeline:
 
+- REST Exchange Adapter for [Kraken](https://www.kraken.com).
+- [FIX](https://en.wikipedia.org/wiki/Financial_Information_eXchange) Exchange Adapter for [GDAX](https://docs.gdax.com/#fix-api).
 - Convert bot into [Spring Boot](http://projects.spring.io/spring-boot/) app. This will include a new REST API for administering the bot.
 - Web UI (written in [AngularJS](https://angularjs.org/) and [Bootstrap](http://getbootstrap.com/)) for administering 
   the bot; it will consume the new Spring Boot app REST API. 
 - Android app for administering the bot; it will consume the new Spring Boot app REST API.
-- iOS app for administering the bot; it will consume the new Spring Boot app REST API.
-- Trade repository API for Trading Strategies to record and analyse their trades - SQL, [MongoDB](https://www.mongodb.org/),
-  and [Neo4J](http://neo4j.com/) will be supported.
 
 See the main project [Issue Tracker](https://github.com/gazbert/BX-bot/issues) for timescales and progress.
 
