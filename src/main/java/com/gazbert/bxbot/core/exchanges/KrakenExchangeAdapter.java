@@ -30,24 +30,21 @@ import com.gazbert.bxbot.core.api.trading.*;
 import com.gazbert.bxbot.core.util.LogUtils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.*;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * TODO Work in progress...
@@ -148,7 +145,12 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
     /**
      * Error message for when API call to get Market Orders fails.
      */
-    private static final String FAILED_TO_GET_MARKET_ORDERS = "Failed to get market order book from exchange. Details: ";
+    private static final String FAILED_TO_GET_MARKET_ORDERS = "Failed to get Market Order Book from exchange. Details: ";
+
+    /**
+     * Error message for when API call to get Balance fails.
+     */
+    private static final String FAILED_TO_GET_BALANCE = "Failed to get Balance from exchange. Details: ";
 
     /**
      * Name of PUBLIC key prop in config file.
@@ -222,21 +224,19 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
 
             if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
 
-                final KrakenMarketOrderBookResponse orderBookResponse = gson.fromJson(response.getPayload(),
-                        KrakenMarketOrderBookResponse.class);
+                final Type resultType = new TypeToken<KrakenResponse<KrakenMarketOrderBookResult>>() {}.getType();
+                final KrakenResponse krakenResponse = gson.fromJson(response.getPayload(), resultType);
 
-                final List<String> errors = orderBookResponse.error;
+                final List<String> errors = krakenResponse.error;
                 if (errors == null || errors.isEmpty()) {
 
                     // Assume we'll always get something here if errors array is empty; else blow fast wih NPE
-                    final KrakenMarketOrderBookResult krakenOrderBookResult = orderBookResponse.result;
+                    final KrakenMarketOrderBookResult krakenOrderBookResult = (KrakenMarketOrderBookResult) krakenResponse.result;
 
-                    // TODO Exchange returns the marketId as the key into the result map - being defensive here
-                    // or just get grab first value we get regardless? What do the other API calls return?
+                    // TODO Exchange returns the marketId as the key into the result map - be defensive here or just get grab first entry and assume we'll always get the (correct) 1 returned?
                     final KrakenOrderBook krakenOrderBook = krakenOrderBookResult.get(marketId);
                     if (krakenOrderBook != null) {
 
-                        // adapt BUYs
                         final List<MarketOrder> buyOrders = new ArrayList<>();
                         for (KrakenMarketOrder krakenBuyOrder : krakenOrderBook.bids) {
                             final MarketOrder buyOrder = new MarketOrder(
@@ -247,7 +247,6 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
                             buyOrders.add(buyOrder);
                         }
 
-                        // adapt SELLs
                         final List<MarketOrder> sellOrders = new ArrayList<>();
                         for (KrakenMarketOrder krakenSellOrder : krakenOrderBook.asks) {
                             final MarketOrder sellOrder = new MarketOrder(
@@ -315,7 +314,44 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
             final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("Balance", null);
             LogUtils.log(LOG, Level.DEBUG, () -> "getBalanceInfo() response: " + response);
 
-            throw new UnsupportedOperationException("Not developed yet!");
+            if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
+
+                final Type resultType = new TypeToken<KrakenResponse<KrakenBalanceResult>>() {}.getType();
+                final KrakenResponse krakenResponse = gson.fromJson(response.getPayload(), resultType);
+
+                final List<String> errors = krakenResponse.error;
+                if (errors == null || errors.isEmpty()) {
+
+                    // Assume we'll always get something here if errors array is empty; else blow fast wih NPE
+                    final KrakenBalanceResult balanceResult = (KrakenBalanceResult) krakenResponse.result;
+                    if (balanceResult != null) {
+
+                        final Map<String, BigDecimal> balancesAvailable = new HashMap<>();
+                        final Set<Map.Entry<String, BigDecimal>> entries = balanceResult.entrySet();
+                        for (final Map.Entry<String, BigDecimal> entry : entries) {
+                            balancesAvailable.put(entry.getKey(), entry.getValue());
+                        }
+
+                        // 2nd arg of BalanceInfo constructor for reserved/on-hold balances is not provided by exchange.
+                        return new BalanceInfo(balancesAvailable, new HashMap<>());
+
+                    } else {
+                        final String errorMsg =  FAILED_TO_GET_BALANCE + response;
+                        LOG.error(errorMsg);
+                        throw new TradingApiException(errorMsg);
+                    }
+
+                } else {
+                    final String errorMsg = FAILED_TO_GET_BALANCE + response;
+                    LOG.error(errorMsg);
+                    throw new TradingApiException(errorMsg);
+                }
+
+            } else {
+                final String errorMsg = FAILED_TO_GET_BALANCE + response;
+                LOG.error(errorMsg);
+                throw new TradingApiException(errorMsg);
+            }
 
         } catch (ExchangeNetworkException | TradingApiException e) {
             throw e;
@@ -348,7 +384,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
     // ------------------------------------------------------------------------------------------------
 
     /**
-     * GSON class for Market Order Book response.
+     * GSON base class for all Kraken responses.
      *
      * All Kraken responses have the following format:
      *
@@ -363,16 +399,18 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
      *
      * </pre>
      *
+     * The result Type is what varies with each API call.
+     *
      */
-    private static class KrakenMarketOrderBookResponse {
+    private static class KrakenResponse<T> {
 
         // field names map to the JSON arg names
         public List<String> error;
-        public KrakenMarketOrderBookResult result;
+        public T result; // TODO fix up the Generics abuse ;-o
 
         @Override
         public String toString() {
-            return KrakenMarketOrderBookResponse.class.getSimpleName()
+            return KrakenResponse.class.getSimpleName()
                     + " ["
                     + "error=" + error
                     + ", result=" + result
@@ -381,9 +419,15 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
     }
 
     /**
-     * GSON class that wraps Market Order Book.
+     * GSON class that wraps Depth API call result - the Market Order Book.
      */
     private static class KrakenMarketOrderBookResult extends HashMap<String, KrakenOrderBook> {
+    }
+
+    /**
+     * GSON class that wraps a Balance API call result.
+     */
+    private static class KrakenBalanceResult extends HashMap<String, BigDecimal> {
     }
 
     /**

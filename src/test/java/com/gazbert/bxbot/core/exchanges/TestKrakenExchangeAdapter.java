@@ -73,10 +73,14 @@ import static org.junit.Assert.*;
 public class TestKrakenExchangeAdapter {
 
     // Canned JSON responses from exchange - expected to reside on filesystem relative to project root
-    private static final String DEPTH_JSON_RESPONSE = "./src/test/exchange-data/kraken/depth.json";
+    private static final String DEPTH_JSON_RESPONSE = "./src/test/exchange-data/kraken/Depth.json";
+    private static final String DEPTH_ERROR_JSON_RESPONSE = "./src/test/exchange-data/kraken/Depth-error.json";
+    private static final String BALANCE_JSON_RESPONSE = "./src/test/exchange-data/kraken/Balance.json";
+    private static final String BALANCE_ERROR_JSON_RESPONSE = "./src/test/exchange-data/kraken/Balance-error.json";
 
     // Exchange API calls
     private static final String DEPTH = "Depth";
+    private static final String BALANCE = "Balance";
 
     // Canned test data
     private static final String MARKET_ID = "XXBTZUSD";
@@ -87,7 +91,7 @@ public class TestKrakenExchangeAdapter {
     private static final String MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD = "sendPublicRequestToExchange";
 
     // Exchange Adapter config for the tests
-    private static final String KEY = "key123";
+    private static final String KEY =  "key123";
     private static final String SECRET = "notGonnaTellYa";
     private static final List<Integer> nonFatalNetworkErrorCodes = Arrays.asList(502, 503, 504);
     private static final List<String> nonFatalNetworkErrorMessages = Arrays.asList(
@@ -176,6 +180,34 @@ public class TestKrakenExchangeAdapter {
         PowerMock.verifyAll();
     }
 
+    @Test (expected = TradingApiException.class)
+    public void testGettingMarketOrdersHandlesErrorResponse() throws Exception {
+
+        // Load the canned response from the exchange
+        final byte[] encoded = Files.readAllBytes(Paths.get(DEPTH_ERROR_JSON_RESPONSE));
+        final AbstractExchangeAdapter.ExchangeHttpResponse exchangeResponse =
+                new AbstractExchangeAdapter.ExchangeHttpResponse(200, "OK", new String(encoded, StandardCharsets.UTF_8));
+
+        // Mock out param map so we can assert the contents passed to the transport layer are what we expect.
+        final Map<String, String> requestParamMap = PowerMock.createMock(Map.class);
+        expect(requestParamMap.put("pair", MARKET_ID)).andStubReturn(null);
+
+        // Partial mock so we do not send stuff down the wire
+        final KrakenExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
+                KrakenExchangeAdapter.class, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD,
+                MOCKED_GET_REQUEST_PARAM_MAP_METHOD);
+
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_GET_REQUEST_PARAM_MAP_METHOD).andReturn(requestParamMap);
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD, eq(DEPTH),
+                eq(requestParamMap)).andReturn(exchangeResponse);
+
+        PowerMock.replayAll();
+        exchangeAdapter.init(exchangeConfig);
+
+        exchangeAdapter.getMarketOrders(MARKET_ID);
+        PowerMock.verifyAll();
+    }
+
     @Test (expected = ExchangeNetworkException.class )
     public void testGettingMarketOrdersHandlesExchangeNetworkException() throws Exception {
 
@@ -210,6 +242,94 @@ public class TestKrakenExchangeAdapter {
         exchangeAdapter.init(exchangeConfig);
 
         exchangeAdapter.getMarketOrders(MARKET_ID);
+        PowerMock.verifyAll();
+    }
+
+    // ------------------------------------------------------------------------------------------------
+    //  Get Balance Info tests
+    // ------------------------------------------------------------------------------------------------
+
+    @Test
+    public void testGettingBalanceInfoSuccessfully() throws Exception {
+
+        // Load the canned response from the exchange
+        final byte[] encoded = Files.readAllBytes(Paths.get(BALANCE_JSON_RESPONSE));
+        final AbstractExchangeAdapter.ExchangeHttpResponse exchangeResponse =
+                new AbstractExchangeAdapter.ExchangeHttpResponse(200, "OK", new String(encoded, StandardCharsets.UTF_8));
+
+        // Partial mock so we do not send stuff down the wire
+        final KrakenExchangeAdapter exchangeAdapter =  PowerMock.createPartialMockAndInvokeDefaultConstructor(
+                KrakenExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
+
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(BALANCE),
+                eq(null)).andReturn(exchangeResponse);
+
+        PowerMock.replayAll();
+        exchangeAdapter.init(exchangeConfig);
+
+        final BalanceInfo balanceInfo = exchangeAdapter.getBalanceInfo();
+
+        // assert some key stuff; we're not testing GSON here.
+        assertTrue(balanceInfo.getBalancesAvailable().get("XXBT").compareTo(new BigDecimal("1.1000000000")) == 0);
+        assertTrue(balanceInfo.getBalancesAvailable().get("ZUSD").compareTo(new BigDecimal("1000.12")) == 0);
+
+        // Kraken does not provide on-hold balances
+        assertNull(balanceInfo.getBalancesOnHold().get("XXBT"));
+        assertNull(balanceInfo.getBalancesOnHold().get("ZUSD"));
+
+        PowerMock.verifyAll();
+    }
+
+    @Test (expected = TradingApiException.class)
+    public void testGettingBalanceInfoHandlesExchangeErrorResponse() throws Exception {
+
+        // Load the canned response from the exchange
+        final byte[] encoded = Files.readAllBytes(Paths.get(BALANCE_ERROR_JSON_RESPONSE));
+        final AbstractExchangeAdapter.ExchangeHttpResponse exchangeResponse =
+                new AbstractExchangeAdapter.ExchangeHttpResponse(200, "OK", new String(encoded, StandardCharsets.UTF_8));
+
+        // Partial mock so we do not send stuff down the wire
+        final KrakenExchangeAdapter exchangeAdapter =  PowerMock.createPartialMockAndInvokeDefaultConstructor(
+                KrakenExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(BALANCE),
+                anyObject(Map.class)).andReturn(exchangeResponse);
+
+        PowerMock.replayAll();
+        exchangeAdapter.init(exchangeConfig);
+
+        exchangeAdapter.getBalanceInfo();
+        PowerMock.verifyAll();
+    }
+
+    @Test (expected = ExchangeNetworkException.class )
+    public void testGettingBalanceInfoHandlesExchangeNetworkException() throws Exception {
+
+        // Partial mock so we do not send stuff down the wire
+        final KrakenExchangeAdapter exchangeAdapter =  PowerMock.createPartialMockAndInvokeDefaultConstructor(
+                KrakenExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(BALANCE),
+                eq(null)).andThrow(new ExchangeNetworkException("All the gods, all the heavens, all the hells, are within you."));
+
+        PowerMock.replayAll();
+        exchangeAdapter.init(exchangeConfig);
+
+        exchangeAdapter.getBalanceInfo();
+        PowerMock.verifyAll();
+    }
+
+    @Test (expected = TradingApiException.class)
+    public void testGettingBalanceInfoHandlesUnexpectedException() throws Exception {
+
+        // Partial mock so we do not send stuff down the wire
+        final KrakenExchangeAdapter exchangeAdapter =  PowerMock.createPartialMockAndInvokeDefaultConstructor(
+                KrakenExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(BALANCE), eq(null)).
+                andThrow(new IllegalStateException("Are those friendlies? I hope they are friendlies..."));
+
+        PowerMock.replayAll();
+        exchangeAdapter.init(exchangeConfig);
+
+        exchangeAdapter.getBalanceInfo();
         PowerMock.verifyAll();
     }
 
@@ -287,6 +407,7 @@ public class TestKrakenExchangeAdapter {
 //        PowerMock.replayAll();
 //        final ExchangeAdapter exchangeAdapter = new KrakenExchangeAdapter();
 //        exchangeAdapter.init(exchangeConfig);
+
 //        exchangeAdapter.getImplName();
 //        exchangeAdapter.getMarketOrders(MARKET_ID);
 //        exchangeAdapter.getBalanceInfo();
