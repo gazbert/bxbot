@@ -33,14 +33,14 @@ import com.gazbert.bxbot.core.api.strategy.TradingStrategy;
 import com.gazbert.bxbot.core.config.ConfigurableComponentFactory;
 import com.gazbert.bxbot.core.config.ConfigurationManager;
 import com.gazbert.bxbot.core.config.engine.generated.EngineType;
-import com.gazbert.bxbot.core.config.exchange.AuthenticationConfigImpl;
-import com.gazbert.bxbot.core.config.exchange.ExchangeConfigImpl;
-import com.gazbert.bxbot.core.config.exchange.NetworkConfigImpl;
-import com.gazbert.bxbot.core.config.exchange.OtherConfigImpl;
+import com.gazbert.bxbot.core.config.exchange.AuthenticationConfig;
+import com.gazbert.bxbot.core.config.exchange.ExchangeConfig;
+import com.gazbert.bxbot.core.config.exchange.NetworkConfig;
+import com.gazbert.bxbot.core.config.exchange.OtherConfig;
 import com.gazbert.bxbot.core.config.exchange.generated.*;
 import com.gazbert.bxbot.core.config.market.generated.MarketType;
 import com.gazbert.bxbot.core.config.market.generated.MarketsType;
-import com.gazbert.bxbot.core.config.strategy.StrategyConfigImpl;
+import com.gazbert.bxbot.core.config.strategy.StrategyConfigItems;
 import com.gazbert.bxbot.core.config.strategy.generated.ConfigItemType;
 import com.gazbert.bxbot.core.config.strategy.generated.ConfigurationType;
 import com.gazbert.bxbot.core.config.strategy.generated.StrategyType;
@@ -484,13 +484,13 @@ final public class TradingEngine {
         exchangeAdapter = ConfigurableComponentFactory.createComponent(exchangeType.getAdapter());
         LogUtils.log(LOG, Level.INFO, () -> "Trading Engine will use Exchange Adapter for: " + exchangeAdapter.getImplName());
 
-        final ExchangeConfigImpl exchangeConfig = new ExchangeConfigImpl();
+        final ExchangeConfig exchangeConfig = new ExchangeConfig();
 
         // Fetch optional network config
         final NetworkConfigType networkConfigType = exchangeType.getNetworkConfig();
         if (networkConfigType != null) {
 
-            final NetworkConfigImpl networkConfig = new NetworkConfigImpl();
+            final NetworkConfig networkConfig = new NetworkConfig();
             networkConfig.setConnectionTimeout(networkConfigType.getConnectionTimeout());
 
             // Grab optional non-fatal error codes
@@ -526,7 +526,7 @@ final public class TradingEngine {
         final AuthenticationConfigType authenticationConfigType = exchangeType.getAuthenticationConfig();
         if (authenticationConfigType != null) {
 
-            final AuthenticationConfigImpl authenticationConfig = new AuthenticationConfigImpl();
+            final AuthenticationConfig authenticationConfig = new AuthenticationConfig();
 
             final List<com.gazbert.bxbot.core.config.exchange.generated.ConfigItemType> configItems =
                     authenticationConfigType.getConfigItems();
@@ -550,7 +550,7 @@ final public class TradingEngine {
         final OtherConfigType otherConfigType = exchangeType.getOtherConfig();
         if (otherConfigType != null) {
 
-            final OtherConfigImpl otherConfig = new OtherConfigImpl();
+            final OtherConfig otherConfig = new OtherConfig();
 
             final List<com.gazbert.bxbot.core.config.exchange.generated.ConfigItemType> configItems =
                     otherConfigType.getConfigItems();
@@ -661,7 +661,7 @@ final public class TradingEngine {
                 final String tradingStrategyClassname = tradingStrategy.getClassName();
 
                 // Grab optional config for the Trading Strategy
-                final StrategyConfigImpl strategyConfig = new StrategyConfigImpl();
+                final StrategyConfigItems strategyConfig = new StrategyConfigItems();
                 final ConfigurationType config = tradingStrategy.getConfiguration();
                 if (config != null) {
                     final List<ConfigItemType> configItems = config.getConfigItem();

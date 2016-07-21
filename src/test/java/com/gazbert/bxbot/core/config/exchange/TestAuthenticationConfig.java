@@ -23,36 +23,31 @@
 
 package com.gazbert.bxbot.core.config.exchange;
 
-import com.gazbert.bxbot.core.api.exchange.AuthenticationConfig;
-import java.util.HashMap;
-import java.util.Map;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 
 /*
- * Encapsulates authentication configuration for an Exchange Adapter.
+ * Tests a AuthenticationConfig domain object behaves as expected.
  */
-public class AuthenticationConfigImpl implements AuthenticationConfig {
+public class TestAuthenticationConfig {
 
-    private Map<String, String> items;
+    private static final String API_KEY_CONFIG_ITEM_KEY = "api-key";
+    private static final String API_KEY_CONFIG_ITEM_VALUE = "apiKey--123";
+
+    private static final String SECRET_CONFIG_ITEM_KEY = "secret";
+    private static final String SECRET_FEE_CONFIG_ITEM_VALUE = "secret-key";
 
 
-    public AuthenticationConfigImpl() {
-        items = new HashMap<>();
-    }
+    @Test
+    public void testAddingAndFetchingAuthenticationConfig() throws Exception {
 
-    public void addItem(String name, String value) {
-        items.put(name, value);
-    }
+        final AuthenticationConfig authenticationConfig = new AuthenticationConfig();
+        authenticationConfig.addItem(API_KEY_CONFIG_ITEM_KEY, API_KEY_CONFIG_ITEM_VALUE);
+        authenticationConfig.addItem(SECRET_CONFIG_ITEM_KEY, SECRET_FEE_CONFIG_ITEM_VALUE);
 
-    @Override
-    public String getItem(String name) {
-        return items.get(name);
-    }
-
-    @Override
-    public String toString() {
-        return AuthenticationConfigImpl.class.getSimpleName()
-                + " ["
-                + "items=" + items
-                + "]";
+        assertEquals(2, authenticationConfig.getItems().size());
+        assertEquals(API_KEY_CONFIG_ITEM_VALUE, authenticationConfig.getItem(API_KEY_CONFIG_ITEM_KEY));
+        assertEquals(SECRET_FEE_CONFIG_ITEM_VALUE, authenticationConfig.getItem(SECRET_CONFIG_ITEM_KEY));
     }
 }

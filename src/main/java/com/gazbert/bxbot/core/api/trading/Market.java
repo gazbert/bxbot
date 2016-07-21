@@ -23,6 +23,9 @@
 
 package com.gazbert.bxbot.core.api.trading;
 
+import com.google.common.base.MoreObjects;
+import com.google.common.base.Objects;
+
 /**
  * Domain class representing a Market.
  *
@@ -169,35 +172,25 @@ public final class Market {
     }
 
     @Override
-    public boolean equals(Object obj) {
-
-        if (obj == this) {
-            return true;
-        }
-
-        if (!(obj instanceof Market)) {
-            return false;
-        }
-
-        final Market that = (Market) obj;
-        return (this.getId() == null ? that.getId() == null : this.getId().equals(that.getId()));
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Market market = (Market) o;
+        return Objects.equal(id, market.id);
     }
 
     @Override
     public int hashCode() {
-        int result = 17;
-        result = 31 * result + (getId() == null ? 0 : getId().hashCode());
-        return result;
+        return Objects.hashCode(id);
     }
 
     @Override
     public String toString() {
-        return Market.class.getSimpleName()
-                + " ["
-                + "name=" + name
-                + ", id=" + id
-                + ", baseCurrency=" + baseCurrency
-                + ", counterCurrency=" + counterCurrency
-                + "]";
+        return MoreObjects.toStringHelper(this)
+                .add("name", name)
+                .add("id", id)
+                .add("baseCurrency", baseCurrency)
+                .add("counterCurrency", counterCurrency)
+                .toString();
     }
 }

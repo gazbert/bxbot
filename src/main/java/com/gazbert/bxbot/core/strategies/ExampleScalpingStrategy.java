@@ -35,6 +35,7 @@ import com.gazbert.bxbot.core.api.trading.OrderType;
 import com.gazbert.bxbot.core.api.trading.TradingApi;
 import com.gazbert.bxbot.core.api.trading.TradingApiException;
 import com.gazbert.bxbot.core.util.LogUtils;
+import com.google.common.base.MoreObjects;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
@@ -591,15 +592,15 @@ public class ExampleScalpingStrategy implements TradingStrategy {
          * Number of units to buy/sell - default to zero.
          */
         private BigDecimal amount = BigDecimal.ZERO;
+
         @Override
         public String toString() {
-            return OrderState.class.getSimpleName()
-                    + " ["
-                    + "id=" + id
-                    + ", type=" + type
-                    + ", price=" + price
-                    + ", amount=" + amount
-                    + "]";
+            return MoreObjects.toStringHelper(this)
+                    .add("id", id)
+                    .add("type", type)
+                    .add("price", price)
+                    .add("amount", amount)
+                    .toString();
         }
     }
 }

@@ -21,52 +21,51 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.core.mail;
+package com.gazbert.bxbot.core.config.strategy;
 
-/*
- * SMTP configuration used for sending email alerts.
+import com.gazbert.bxbot.core.api.strategy.StrategyConfig;
+import com.google.common.base.MoreObjects;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
+/**
+ * Domain object representing (optional) Strategy Config Items.
+ * <p>
+ * The configuration is loaded from the strategies.xml file.
+ *
+ * @author gazbert
+ * @since 20/07/2016
  */
-public final class SmtpConfig {
+public final class StrategyConfigItems implements StrategyConfig {
 
-    private String smtpHost;
-    private int smtpTlsPort;
-    private String accountUsername;
-    private String accountPassword;
-    private String fromAddress;
-    private String toAddress;
+    private Map<String, String> configItems = new HashMap<>();
 
-    SmtpConfig(String smtpHost, int smtpTlsPort, String accountUsername, String accountPassword,
-               String fromAddress, String toAddress) {
-
-        this.smtpHost = smtpHost;
-        this.smtpTlsPort = smtpTlsPort;
-        this.accountUsername = accountUsername;
-        this.accountPassword = accountPassword;
-        this.fromAddress = fromAddress;
-        this.toAddress = toAddress;
+    @Override
+    public String getConfigItem(String key) {
+        return configItems.get(key);
     }
 
-    String getSmtpHost() {
-        return smtpHost;
+    @Override
+    public int getNumberOfConfigItems() {
+        return configItems.size();
     }
 
-    int getSmtpTlsPort() {
-        return smtpTlsPort;
+    @Override
+    public Set<String> getConfigItemKeys() {
+        return Collections.unmodifiableSet(configItems.keySet());
     }
 
-    String getAccountUsername() {
-        return accountUsername;
+    public void addConfigItem(String key, String value) {
+        configItems.put(key, value);
     }
 
-    String getAccountPassword() {
-        return accountPassword;
-    }
-
-    String getFromAddress() {
-        return fromAddress;
-    }
-
-    String getToAddress() {
-        return toAddress;
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("configItems", configItems)
+                .toString();
     }
 }

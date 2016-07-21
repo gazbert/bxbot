@@ -36,6 +36,7 @@ import com.gazbert.bxbot.core.api.trading.OrderType;
 import com.gazbert.bxbot.core.api.trading.TradingApi;
 import com.gazbert.bxbot.core.api.trading.TradingApiException;
 import com.gazbert.bxbot.core.util.LogUtils;
+import com.google.common.base.MoreObjects;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.apache.log4j.Level;
@@ -487,10 +488,9 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
 
         @Override
         public String toString() {
-            return OKCoinCancelOrderResponse.class.getSimpleName()
-                    + " ["
-                    + "order_id=" + order_id
-                    + "]";
+            return MoreObjects.toStringHelper(this)
+                    .add("order_id", order_id)
+                    .toString();
         }
     }
 
@@ -503,10 +503,9 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
 
         @Override
         public String toString() {
-            return OKCoinTradeResponse.class.getSimpleName()
-                    + " ["
-                    + "order_id=" + order_id
-                    + "]";
+            return MoreObjects.toStringHelper(this)
+                    .add("order_id", order_id)
+                    .toString();
         }
     }
 
@@ -522,8 +521,9 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
 
         @Override
         public String toString() {
-            return OKCoinUserInfoWrapper.class.getSimpleName()
-                    + " [orders=" + orders + "]";
+            return MoreObjects.toStringHelper(this)
+                    .add("orders", orders)
+                    .toString();
         }
     }
 
@@ -544,22 +544,20 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
         public String symbol; // e.g. 'btc_usd'
         public String type; // 'sell' or 'buy'
 
-
         @Override
         public String toString() {
-            return OKCoinOpenOrder.class.getSimpleName()
-                    + " ["
-                    + "amount=" + amount
-                    + ", avg_price=" + avg_price
-                    + ", create_date=" + create_date
-                    + ", deal_amount=" + deal_amount
-                    + ", order_id=" + order_id
-                    + ", orders_id=" + orders_id
-                    + ", price=" + price
-                    + ", status=" + status
-                    + ", symbol=" + symbol
-                    + ", type=" + type
-                    + "]";
+            return MoreObjects.toStringHelper(this)
+                    .add("amount", amount)
+                    .add("avg_price", avg_price)
+                    .add("create_date", create_date)
+                    .add("deal_amount", deal_amount)
+                    .add("order_id", order_id)
+                    .add("orders_id", orders_id)
+                    .add("price", price)
+                    .add("status", status)
+                    .add("symbol", symbol)
+                    .add("type", type)
+                    .toString();
         }
     }
 
@@ -573,13 +571,11 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
 
         @Override
         public String toString() {
-            return OKCoinFundsInfo.class.getSimpleName()
-                    + " ["
-                    + "asks=" + asks
-                    + ", bids=" + bids
-                    + "]";
+            return MoreObjects.toStringHelper(this)
+                    .add("asks", asks)
+                    .add("bids", bids)
+                    .toString();
         }
-
     }
 
     /**
@@ -600,8 +596,9 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
 
         @Override
         public String toString() {
-            return OKCoinUserInfoWrapper.class.getSimpleName()
-                    + " [info=" + info + "]";
+            return MoreObjects.toStringHelper(this)
+                    .add("info", info)
+                    .toString();
         }
     }
 
@@ -615,8 +612,9 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
 
         @Override
         public String toString() {
-            return OKCoinUserInfo.class.getSimpleName()
-                    + " [funds=" + funds + "]";
+            return MoreObjects.toStringHelper(this)
+                    .add("funds", funds)
+                    .toString();
         }
     }
 
@@ -631,12 +629,11 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
 
         @Override
         public String toString() {
-            return OKCoinFundsInfo.class.getSimpleName()
-                    + " ["
-                    + "asset=" + asset
-                    + ", free=" + free
-                    + ", freezed=" + freezed
-                    + "]";
+            return MoreObjects.toStringHelper(this)
+                    .add("asset", asset)
+                    .add("free", free)
+                    .add("freezed", freezed)
+                    .toString();
         }
     }
 
@@ -650,11 +647,10 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
 
         @Override
         public String toString() {
-            return OKCoinAssetInfo.class.getSimpleName()
-                    + " ["
-                    + "net=" + net
-                    + ", total=" + total
-                    + "]";
+            return MoreObjects.toStringHelper(this)
+                    .add("net", net)
+                    .add("total", total)
+                    .toString();
         }
     }
 
@@ -675,10 +671,10 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
 
         @Override
         public String toString() {
-            return OKCoinTickerWrapper.class.getSimpleName() + " ["
-                    + ", date=" + date
-                    + ", ticker=" + ticker
-                    + "]";
+            return MoreObjects.toStringHelper(this)
+                    .add("date", date)
+                    .add("ticker", ticker)
+                    .toString();
         }
     }
 
@@ -696,14 +692,14 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
 
         @Override
         public String toString() {
-            return OKCoinTicker.class.getSimpleName() + " ["
-                    + "buy=" + buy
-                    + ", high=" + high
-                    + ", last=" + last
-                    + ", low=" + low
-                    + ", sell=" + sell
-                    + ", vol=" + vol
-                    + "]";
+            return MoreObjects.toStringHelper(this)
+                    .add("buy", buy)
+                    .add("high", high)
+                    .add("last", last)
+                    .add("low", low)
+                    .add("sell", sell)
+                    .add("vol", vol)
+                    .toString();
         }
     }
 
@@ -715,14 +711,12 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
         public int error_code; // will be 0 if not an error response
         public boolean result; // will be JSON boolean value in response: true or false
 
-
         @Override
         public String toString() {
-            return OKCoinMessageBase.class.getSimpleName()
-                    + " ["
-                    + "result=" + result
-                    + ", error_code=" + error_code
-                    + "]";
+            return MoreObjects.toStringHelper(this)
+                    .add("error_code", error_code)
+                    .add("result", result)
+                    .toString();
         }
     }
 

@@ -36,6 +36,7 @@ import com.gazbert.bxbot.core.api.trading.OrderType;
 import com.gazbert.bxbot.core.api.trading.TradingApi;
 import com.gazbert.bxbot.core.api.trading.TradingApiException;
 import com.gazbert.bxbot.core.util.LogUtils;
+import com.google.common.base.MoreObjects;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.apache.log4j.Level;
@@ -612,23 +613,22 @@ public final class ItBitExchangeAdapter extends  AbstractExchangeAdapter impleme
 
         @Override
         public String toString() {
-            return this.getClass().getSimpleName()
-                    + " ["
-                    + "id=" + id
-                    + ", walletId=" + walletId
-                    + ", side=" + side
-                    + ", instrument=" + instrument
-                    + ", type=" + type
-                    + ", amount=" + amount
-                    + ", displayAmount=" + displayAmount
-                    + ", price=" + price
-                    + ", volumeWeightedAveragePrice=" + volumeWeightedAveragePrice
-                    + ", amountFilled=" + amountFilled
-                    + ", createdTime=" + createdTime
-                    + ", status=" + status
-                    + ", metadata=" + metadata
-                    + ", clientOrderIdentifier=" + clientOrderIdentifier
-                    + "]";
+            return MoreObjects.toStringHelper(this)
+                    .add("id", id)
+                    .add("walletId", walletId)
+                    .add("side", side)
+                    .add("instrument", instrument)
+                    .add("type", type)
+                    .add("amount", amount)
+                    .add("displayAmount", displayAmount)
+                    .add("price", price)
+                    .add("volumeWeightedAveragePrice", volumeWeightedAveragePrice)
+                    .add("amountFilled", amountFilled)
+                    .add("createdTime", createdTime)
+                    .add("status", status)
+                    .add("metadata", metadata)
+                    .add("clientOrderIdentifier", clientOrderIdentifier)
+                    .toString();
         }
     }
 
@@ -649,11 +649,10 @@ public final class ItBitExchangeAdapter extends  AbstractExchangeAdapter impleme
 
         @Override
         public String toString() {
-            return ItBitOrderBookWrapper.class.getSimpleName()
-                    + " ["
-                    + "bids=" + bids
-                    + ", asks=" + asks
-                    + "]";
+            return MoreObjects.toStringHelper(this)
+                    .add("bids", bids)
+                    .add("asks", asks)
+                    .toString();
         }
     }
 
@@ -691,26 +690,25 @@ public final class ItBitExchangeAdapter extends  AbstractExchangeAdapter impleme
 
         @Override
         public String toString() {
-            return ItBitTicker.class.getSimpleName()
-                    + " ["
-                    + "pair=" + pair
-                    + ", bid=" + bid
-                    + ", bidAmt=" + bidAmt
-                    + ", ask=" + ask
-                    + ", askAmt=" + askAmt
-                    + ", lastPrice=" + lastPrice
-                    + ", lastAmt=" + lastAmt
-                    + ", lastvolume24hAmt=" + lastvolume24hAmt
-                    + ", volumeToday=" + volumeToday
-                    + ", high24h=" + high24h
-                    + ", low24h=" + low24h
-                    + ", highToday=" + highToday
-                    + ", lowToday=" + lowToday
-                    + ", openToday=" + openToday
-                    + ", vwapToday=" + vwapToday
-                    + ", vwap24h=" + vwap24h
-                    + ", serverTimeUTC=" + serverTimeUTC
-                    + "]";
+            return MoreObjects.toStringHelper(this)
+                    .add("pair", pair)
+                    .add("bid", bid)
+                    .add("bidAmt", bidAmt)
+                    .add("ask", ask)
+                    .add("askAmt", askAmt)
+                    .add("lastPrice", lastPrice)
+                    .add("lastAmt", lastAmt)
+                    .add("lastvolume24hAmt", lastvolume24hAmt)
+                    .add("volumeToday", volumeToday)
+                    .add("high24h", high24h)
+                    .add("low24h", low24h)
+                    .add("highToday", highToday)
+                    .add("lowToday", lowToday)
+                    .add("openToday", openToday)
+                    .add("vwapToday", vwapToday)
+                    .add("vwap24h", vwap24h)
+                    .add("serverTimeUTC", serverTimeUTC)
+                    .toString();
         }
     }
 
@@ -727,13 +725,12 @@ public final class ItBitExchangeAdapter extends  AbstractExchangeAdapter impleme
 
         @Override
         public String toString() {
-            return ItBitWallet.class.getSimpleName()
-                    + " ["
-                    + "id=" + id
-                    + ", userId=" + userId
-                    + ", name=" + name
-                    + ", balances=" + balances
-                    + "]";
+            return MoreObjects.toStringHelper(this)
+                    .add("id", id)
+                    .add("userId", userId)
+                    .add("name", name)
+                    .add("balances", balances)
+                    .toString();
         }
     }
 
@@ -748,12 +745,11 @@ public final class ItBitExchangeAdapter extends  AbstractExchangeAdapter impleme
 
         @Override
         public String toString() {
-            return ItBitBalance.class.getSimpleName()
-                    + " ["
-                    + "availableBalance=" + availableBalance
-                    + ", totalBalance=" + totalBalance
-                    + ", currency=" + currency
-                    + "]";
+            return MoreObjects.toStringHelper(this)
+                    .add("availableBalance", availableBalance)
+                    .add("totalBalance", totalBalance)
+                    .add("currency", currency)
+                    .toString();
         }
     }
 

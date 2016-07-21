@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2015 Gareth Jon Lynch
+ * Copyright (c) 2016 Gareth Jon Lynch
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -21,56 +21,50 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.core.config.strategy;
+package com.gazbert.bxbot.core.config.exchange;
 
-import com.gazbert.bxbot.core.api.strategy.StrategyConfig;
+import com.google.common.base.MoreObjects;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
-/*
- * Encapsulates any (optional) configuration for a Trading Strategy.
- * Basically decorates a map of key-value pairs.
- * The configuration is loaded from the config/strategies.xml.
+/**
+ * Domain object representing the Exchange 'other' (misc) config.
+ * <p>
+ * The configuration is loaded from the exchange.xml file.
+ *
+ * @author gazbert
+ * @since 20/07/2016
  */
-public final class StrategyConfigImpl implements StrategyConfig {
+public class OtherConfig implements com.gazbert.bxbot.core.api.exchange.OtherConfig {
 
-    /*
-     * Map of user defined configuration for the Strategy.
-     * Contains key-value String type pairs.
-     */
-    private Map<String, String> config = new HashMap<>();
+    private Map<String, String> items;
 
+    public OtherConfig() {
+        items = new HashMap<>();
+    }
 
-    @Override
-    public String getConfigItem(String key) {
-        return config.get(key);
+    public void addItem(String name, String value) {
+        items.put(name, value);
     }
 
     @Override
-    public int getNumberOfConfigItems() {
-        return config.size();
+    public String getItem(String name) {
+        return items.get(name);
     }
 
-    @Override
-    public Set<String> getConfigItemKeys() {
-        return Collections.unmodifiableSet(config.keySet());
+    public Map<String, String> getItems() {
+        return items;
     }
 
-    /*
-     * Sets a config item.
-     */
-    public void addConfigItem(String key, String value) {
-        config.put(key, value);
+    public void setItems(Map<String, String> items) {
+        this.items = items;
     }
 
     @Override
     public String toString() {
-        return StrategyConfigImpl.class.getSimpleName()
-                + " ["
-                + "config=" + config
-                + "]";
+        return MoreObjects.toStringHelper(this)
+                .add("items", items)
+                .toString();
     }
 }

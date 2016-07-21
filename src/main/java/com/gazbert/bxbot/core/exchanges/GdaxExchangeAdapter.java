@@ -36,6 +36,7 @@ import com.gazbert.bxbot.core.api.trading.OrderType;
 import com.gazbert.bxbot.core.api.trading.TradingApi;
 import com.gazbert.bxbot.core.api.trading.TradingApiException;
 import com.gazbert.bxbot.core.util.LogUtils;
+import com.google.common.base.MoreObjects;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.apache.log4j.Level;
@@ -541,26 +542,24 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
         public String status;          // e.g. "open"
         public boolean settled;
 
-
         @Override
         public String toString() {
-            return GdaxOrder.class.getSimpleName()
-                    + " ["
-                    + "id=" + id
-                    + ", price=" + price
-                    + ", size=" + size
-                    + ", product_id=" + product_id
-                    + ", side=" + side
-                    + ", stp=" + stp
-                    + ", type=" + type
-                    + ", time_in_force=" + time_in_force
-                    + ", post_only=" + post_only
-                    + ", created_at=" + created_at
-                    + ", fill_fees=" + fill_fees
-                    + ", filled_size=" + filled_size
-                    + ", status=" + status
-                    + ", settled=" + settled
-                    + "]";
+            return MoreObjects.toStringHelper(this)
+                    .add("id", id)
+                    .add("price", price)
+                    .add("size", size)
+                    .add("product_id", product_id)
+                    .add("side", side)
+                    .add("stp", stp)
+                    .add("type", type)
+                    .add("time_in_force", time_in_force)
+                    .add("post_only", post_only)
+                    .add("created_at", created_at)
+                    .add("fill_fees", fill_fees)
+                    .add("filled_size", filled_size)
+                    .add("status", status)
+                    .add("settled", settled)
+                    .toString();
         }
     }
 
@@ -575,11 +574,11 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
 
         @Override
         public String toString() {
-            return GdaxBookWrapper.class.getSimpleName()
-                    + " ["
-                    + "bids=" + bids
-                    + ", asks=" + asks
-                    + "]";
+            return MoreObjects.toStringHelper(this)
+                    .add("sequence", sequence)
+                    .add("bids", bids)
+                    .add("asks", asks)
+                    .toString();
         }
     }
 
@@ -603,13 +602,12 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
 
         @Override
         public String toString() {
-            return GdaxTicker.class.getSimpleName()
-                    + " ["
-                    + "trade_id=" + trade_id
-                    + ", price=" + price
-                    + ", size=" + size
-                    + ", time=" + time
-                    + "]";
+            return MoreObjects.toStringHelper(this)
+                    .add("trade_id", trade_id)
+                    .add("price", price)
+                    .add("size", size)
+                    .add("time", time)
+                    .toString();
         }
     }
 
@@ -627,15 +625,14 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
 
         @Override
         public String toString() {
-            return GdaxAccount.class.getSimpleName()
-                    + " ["
-                    + "id=" + id
-                    + ", currency=" + currency
-                    + ", balance=" + balance
-                    + ", hold=" + hold
-                    + ", available=" + available
-                    + ", profile_id=" + profile_id
-                    + "]";
+            return MoreObjects.toStringHelper(this)
+                    .add("id", id)
+                    .add("currency", currency)
+                    .add("balance", balance)
+                    .add("hold", hold)
+                    .add("available", available)
+                    .add("profile_id", profile_id)
+                    .toString();
         }
     }
 

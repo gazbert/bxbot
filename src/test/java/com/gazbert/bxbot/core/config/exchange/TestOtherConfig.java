@@ -23,37 +23,31 @@
 
 package com.gazbert.bxbot.core.config.exchange;
 
-import com.gazbert.bxbot.core.api.exchange.OtherConfig;
+import org.junit.Test;
 
-import java.util.HashMap;
-import java.util.Map;
+import static org.junit.Assert.assertEquals;
 
 /*
- * Encapsulates 'other' (misc) configuration for an Exchange Adapter.
+ * Tests a OtherConfig domain object behaves as expected.
  */
-public class OtherConfigImpl implements OtherConfig {
+public class TestOtherConfig {
 
-    private Map<String, String> items;
+    private static final String BUY_FEE_CONFIG_ITEM_KEY = "buy-fee";
+    private static final String BUY_FEE_CONFIG_ITEM_VALUE = "0.20";
+
+    private static final String SELL_FEE_CONFIG_ITEM_KEY = "sell-fee";
+    private static final String SELL_FEE_CONFIG_ITEM_VALUE = "0.25";
 
 
-    public OtherConfigImpl() {
-        items = new HashMap<>();
-    }
+    @Test
+    public void testAddingAndFetchingOtherConfigItems() throws Exception {
 
-    public void addItem(String name, String value) {
-        items.put(name, value);
-    }
+        final OtherConfig strategyConfig = new OtherConfig();
+        strategyConfig.addItem(BUY_FEE_CONFIG_ITEM_KEY, BUY_FEE_CONFIG_ITEM_VALUE);
+        strategyConfig.addItem(SELL_FEE_CONFIG_ITEM_KEY, SELL_FEE_CONFIG_ITEM_VALUE);
 
-    @Override
-    public String getItem(String name) {
-        return items.get(name);
-    }
-
-    @Override
-    public String toString() {
-        return OtherConfigImpl.class.getSimpleName()
-                + " ["
-                + "items=" + items
-                + "]";
+        assertEquals(2, strategyConfig.getItems().size());
+        assertEquals(BUY_FEE_CONFIG_ITEM_VALUE, strategyConfig.getItem(BUY_FEE_CONFIG_ITEM_KEY));
+        assertEquals(SELL_FEE_CONFIG_ITEM_VALUE, strategyConfig.getItem(SELL_FEE_CONFIG_ITEM_KEY));
     }
 }

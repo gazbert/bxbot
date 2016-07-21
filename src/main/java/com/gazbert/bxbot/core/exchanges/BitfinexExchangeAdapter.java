@@ -35,6 +35,7 @@ import com.gazbert.bxbot.core.api.trading.OrderType;
 import com.gazbert.bxbot.core.api.trading.TradingApi;
 import com.gazbert.bxbot.core.api.trading.TradingApiException;
 import com.gazbert.bxbot.core.util.LogUtils;
+import com.google.common.base.MoreObjects;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.apache.log4j.Level;
@@ -493,11 +494,10 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter imple
 
         @Override
         public String toString() {
-            return BitfinexOrderBook.class.getSimpleName()
-                    + " ["
-                    + "bids=" + Arrays.toString(bids)
-                    + ", asks=" + Arrays.toString(asks)
-                    + "]";
+            return MoreObjects.toStringHelper(this)
+                    .add("bids", bids)
+                    .add("asks", asks)
+                    .toString();
         }
     }
 
@@ -513,12 +513,11 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter imple
 
         @Override
         public String toString() {
-            return BitfinexMarketOrder.class.getSimpleName()
-                    + " ["
-                    + "price=" + price
-                    + ", amount=" + amount
-                    + ", timestamp=" + timestamp
-                    + "]";
+            return MoreObjects.toStringHelper(this)
+                    .add("price", price)
+                    .add("amount", amount)
+                    .add("timestamp", timestamp)
+                    .toString();
         }
     }
 
@@ -552,24 +551,23 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter imple
 
         @Override
         public String toString() {
-            return BitfinexOpenOrder.class.getSimpleName()
-                    + " ["
-                    + "id=" + id
-                    + ", symbol=" + symbol
-                    + ", exchange=" + exchange
-                    + ", price=" + price
-                    + ", avg_execution_price=" + avg_execution_price
-                    + ", side=" + side
-                    + ", type=" + type
-                    + ", timestamp=" + timestamp
-                    + ", is_live=" + is_live
-                    + ", is_cancelled=" + is_cancelled
-                    + ", is_hidden=" + is_hidden
-                    + ", was_forced=" + was_forced
-                    + ", original_amount=" + original_amount
-                    + ", remaining_amount=" + remaining_amount
-                    + ", executed_amount=" + executed_amount
-                    + "]";
+            return MoreObjects.toStringHelper(this)
+                    .add("id", id)
+                    .add("symbol", symbol)
+                    .add("exchange", exchange)
+                    .add("price", price)
+                    .add("avg_execution_price", avg_execution_price)
+                    .add("side", side)
+                    .add("type", type)
+                    .add("timestamp", timestamp)
+                    .add("is_live", is_live)
+                    .add("is_cancelled", is_cancelled)
+                    .add("is_hidden", is_hidden)
+                    .add("was_forced", was_forced)
+                    .add("original_amount", original_amount)
+                    .add("remaining_amount", remaining_amount)
+                    .add("executed_amount", executed_amount)
+                    .toString();
         }
     }
 
@@ -589,17 +587,16 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter imple
 
         @Override
         public String toString() {
-            return BitfinexTicker.class.getSimpleName()
-                    + " [" +
-                    "mid=" + mid
-                    + ", bid=" + bid
-                    + ", ask=" + ask
-                    + ", last_price=" + last_price
-                    + ", low=" + low
-                    + ", high=" + high
-                    + ", volume=" + volume
-                    + ", timestamp=" + timestamp
-                    + "]";
+            return MoreObjects.toStringHelper(this)
+                    .add("mid", mid)
+                    .add("bid", bid)
+                    .add("ask", ask)
+                    .add("last_price", last_price)
+                    .add("low", low)
+                    .add("high", high)
+                    .add("volume", volume)
+                    .add("timestamp", timestamp)
+                    .toString();
         }
     }
 
@@ -651,10 +648,11 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter imple
 
         @Override
         public String toString() {
-            return BitfinexAccountInfo.class.getSimpleName()
-                    + " [maker_fees=" + maker_fees
-                    + ", taker_fees=" + taker_fees
-                    + ", fees=" + fees + "]";
+            return MoreObjects.toStringHelper(this)
+                    .add("maker_fees", maker_fees)
+                    .add("taker_fees", taker_fees)
+                    .add("fees", fees)
+                    .toString();
         }
     }
 
@@ -677,10 +675,11 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter imple
 
         @Override
         public String toString() {
-            return BitfinexAccountBalance.class.getSimpleName()
-                    + " [pairs=" + pairs
-                    + ", maker_fees=" + maker_fees
-                    + ", taker_fees=" + taker_fees + "]";
+            return MoreObjects.toStringHelper(this)
+                    .add("pairs", pairs)
+                    .add("maker_fees", maker_fees)
+                    .add("taker_fees", taker_fees)
+                    .toString();
         }
     }
 
@@ -729,11 +728,12 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter imple
 
         @Override
         public String toString() {
-            return BitfinexAccountBalance.class.getSimpleName()
-                    + " [type=" + type
-                    + ", currency=" + currency
-                    + ", amount=" + amount
-                    + ", available=" + available + "]";
+            return MoreObjects.toStringHelper(this)
+                    .add("type", type)
+                    .add("currency", currency)
+                    .add("amount", amount)
+                    .add("available", available)
+                    .toString();
         }
     }
 
@@ -761,25 +761,24 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter imple
 
         @Override
         public String toString() {
-            return BitfinexNewOrderResponse.class.getSimpleName()
-                    + " ["
-                    + "id=" + id
-                    + ", symbol=" + symbol
-                    + ", exchange=" + exchange
-                    + ", price=" + price
-                    + ", avg_execution_price=" + avg_execution_price
-                    + ", side=" + side
-                    + ", type=" + type
-                    + ", timestamp=" + timestamp
-                    + ", is_live=" + is_live
-                    + ", is_cancelled=" + is_cancelled
-                    + ", is_hidden=" + is_hidden
-                    + ", was_forced=" + was_forced
-                    + ", original_amount=" + original_amount
-                    + ", remaining_amount=" + remaining_amount
-                    + ", executed_amount=" + executed_amount
-                    + ", order_id=" + order_id
-                    + "]";
+            return MoreObjects.toStringHelper(this)
+                    .add("id", id)
+                    .add("symbol", symbol)
+                    .add("exchange", exchange)
+                    .add("price", price)
+                    .add("avg_execution_price", avg_execution_price)
+                    .add("side", side)
+                    .add("type", type)
+                    .add("timestamp", timestamp)
+                    .add("is_live", is_live)
+                    .add("is_cancelled", is_cancelled)
+                    .add("is_hidden", is_hidden)
+                    .add("was_forced", was_forced)
+                    .add("original_amount", original_amount)
+                    .add("remaining_amount", remaining_amount)
+                    .add("executed_amount", executed_amount)
+                    .add("order_id", order_id)
+                    .toString();
         }
     }
 
@@ -806,24 +805,23 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter imple
 
         @Override
         public String toString() {
-            return BitfinexCancelOrderResponse.class.getSimpleName()
-                    + " ["
-                    + "id=" + id
-                    + ", symbol=" + symbol
-                    + ", exchange=" + exchange
-                    + ", price=" + price
-                    + ", avg_execution_price=" + avg_execution_price
-                    + ", side=" + side
-                    + ", type=" + type
-                    + ", timestamp=" + timestamp
-                    + ", is_live=" + is_live
-                    + ", is_cancelled=" + is_cancelled
-                    + ", is_hidden=" + is_hidden
-                    + ", was_forced=" + was_forced
-                    + ", original_amount=" + original_amount
-                    + ", remaining_amount=" + remaining_amount
-                    + ", executed_amount=" + executed_amount
-                    + "]";
+            return MoreObjects.toStringHelper(this)
+                    .add("id", id)
+                    .add("symbol", symbol)
+                    .add("exchange", exchange)
+                    .add("price", price)
+                    .add("avg_execution_price", avg_execution_price)
+                    .add("side", side)
+                    .add("type", type)
+                    .add("timestamp", timestamp)
+                    .add("is_live", is_live)
+                    .add("is_cancelled", is_cancelled)
+                    .add("is_hidden", is_hidden)
+                    .add("was_forced", was_forced)
+                    .add("original_amount", original_amount)
+                    .add("remaining_amount", remaining_amount)
+                    .add("executed_amount", executed_amount)
+                    .toString();
         }
     }
 

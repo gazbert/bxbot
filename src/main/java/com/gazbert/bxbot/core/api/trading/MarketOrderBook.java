@@ -23,6 +23,8 @@
 
 package com.gazbert.bxbot.core.api.trading;
 
+import com.google.common.base.MoreObjects;
+
 import java.util.List;
 
 /**
@@ -130,11 +132,10 @@ public final class MarketOrderBook {
 
     @Override
     public String toString() {
-        return MarketOrderBook.class.getSimpleName()
-                + " ["
-                + "marketId=" + marketId
-                + ", sellOrders=" + sellOrders
-                + ", buyOrders=" + buyOrders
-                + "]";
+        return MoreObjects.toStringHelper(this)
+                .add("marketId", marketId)
+                .add("sellOrders", sellOrders)
+                .add("buyOrders", buyOrders)
+                .toString();
     }
 }

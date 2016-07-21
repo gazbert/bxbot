@@ -49,20 +49,16 @@ public final class EmailAlerter {
 
     private static final Logger LOG = Logger.getLogger(EmailAlerter.class);
 
-    /*
-     * The Email Alerter singleton.
-     */
     private static volatile EmailAlerter EMAIL_ALERTER_SINGLETON;
 
     /*
      * Location of the config files (relative to project root).
-     * TODO - move these onto classpath?
      */
     private static final String EMAIL_ALERTS_CONFIG_XML_FILENAME = "config/email-alerts.xml";
     private static final String EMAIL_ALERTS_CONFIG_XSD_FILENAME = "config/schemas/email-alerts.xsd";
 
     /*
-     * SMTP config loaded from the bot .config/email-alerts.xml config file. This will be null is no config provided.
+     * SMTP config loaded from the bot .config/email-alerts.xml config file. This will be null if no config provided.
      */
     private SmtpConfig smtpConfig;
 
@@ -91,9 +87,6 @@ public final class EmailAlerter {
         }
     }
 
-    /*
-     * Returns the single instance of the Email Alerter.
-     */
     public static EmailAlerter getInstance() {
 
         if (EMAIL_ALERTER_SINGLETON == null) {

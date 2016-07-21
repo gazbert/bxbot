@@ -23,6 +23,9 @@
 
 package com.gazbert.bxbot.core.api.trading;
 
+import com.google.common.base.MoreObjects;
+import com.google.common.base.Objects;
+
 import java.math.BigDecimal;
 import java.util.Date;
 
@@ -244,17 +247,31 @@ public final class OpenOrder {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        OpenOrder openOrder = (OpenOrder) o;
+        return Objects.equal(id, openOrder.id) &&
+                Objects.equal(marketId, openOrder.marketId) &&
+                type == openOrder.type;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id, marketId, type);
+    }
+
+    @Override
     public String toString() {
-        return OpenOrder.class.getSimpleName()
-                + " ["
-                + "id=" + id
-                + ", creationDate=" + creationDate
-                + ", marketId=" + marketId
-                + ", type=" + type
-                + ", price=" + price
-                + ", quantity=" + quantity
-                + ", originalQuantity=" + originalQuantity
-                + ", total=" + total
-                + "]";
+        return MoreObjects.toStringHelper(this)
+                .add("id", id)
+                .add("creationDate", creationDate)
+                .add("marketId", marketId)
+                .add("type", type)
+                .add("price", price)
+                .add("quantity", quantity)
+                .add("originalQuantity", originalQuantity)
+                .add("total", total)
+                .toString();
     }
 }

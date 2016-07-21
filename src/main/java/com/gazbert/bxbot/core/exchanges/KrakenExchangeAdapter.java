@@ -28,6 +28,7 @@ import com.gazbert.bxbot.core.api.exchange.ExchangeAdapter;
 import com.gazbert.bxbot.core.api.exchange.ExchangeConfig;
 import com.gazbert.bxbot.core.api.trading.*;
 import com.gazbert.bxbot.core.util.LogUtils;
+import com.google.common.base.MoreObjects;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
@@ -410,11 +411,10 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
 
         @Override
         public String toString() {
-            return KrakenResponse.class.getSimpleName()
-                    + " ["
-                    + "error=" + error
-                    + ", result=" + result
-                    + "]";
+            return MoreObjects.toStringHelper(this)
+                    .add("error", error)
+                    .add("result", result)
+                    .toString();
         }
     }
 
@@ -441,11 +441,10 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
 
         @Override
         public String toString() {
-            return KrakenOrderBook.class.getSimpleName()
-                    + " ["
-                    + "bids=" + Arrays.toString(bids)
-                    + ", asks=" + Arrays.toString(asks)
-                    + "]";
+            return MoreObjects.toStringHelper(this)
+                    .add("bids", bids)
+                    .add("asks", asks)
+                    .toString();
         }
     }
 

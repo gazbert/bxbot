@@ -35,6 +35,7 @@ import com.gazbert.bxbot.core.api.trading.OrderType;
 import com.gazbert.bxbot.core.api.trading.TradingApi;
 import com.gazbert.bxbot.core.api.trading.TradingApiException;
 import com.gazbert.bxbot.core.util.LogUtils;
+import com.google.common.base.MoreObjects;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializationContext;
@@ -469,12 +470,14 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
 
         @Override
         public String toString() {
-            return BitstampBalance.class.getSimpleName() + " [btc_reserved=" + btc_reserved
-                    + ", fee=" + fee
-                    + ", btc_available=" + btc_available
-                    + ", usd_reserved=" + usd_reserved
-                    + ", usd_balance=" + usd_balance
-                    + ", usd_available=" + usd_available + "]";
+            return MoreObjects.toStringHelper(this)
+                    .add("btc_reserved", btc_reserved)
+                    .add("fee", fee)
+                    .add("btc_available", btc_available)
+                    .add("usd_reserved", usd_reserved)
+                    .add("usd_balance", usd_balance)
+                    .add("usd_available", usd_available)
+                    .toString();
         }
     }
 
@@ -503,10 +506,11 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
 
         @Override
         public String toString() {
-            return BitstampOrderBook.class.getSimpleName() + " [timestamp=" + timestamp
-                    + ", bids=" + bids
-                    + ", asks=" + asks
-                    + "]";
+            return MoreObjects.toStringHelper(this)
+                    .add("timestamp", timestamp)
+                    .add("bids", bids)
+                    .add("asks", asks)
+                    .toString();
         }
     }
 
@@ -526,15 +530,16 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
 
         @Override
         public String toString() {
-            return BitstampTicker.class.getSimpleName() + " [high=" + high
-                    + ", last=" + last
-                    + ", timestamp=" + timestamp
-                    + ", bid=" + bid
-                    + ", vwap=" + vwap
-                    + ", volume=" + volume
-                    + ", low=" + low
-                    + ", ask=" + ask
-                    + "]";
+            return MoreObjects.toStringHelper(this)
+                    .add("high", high)
+                    .add("last", last)
+                    .add("timestamp", timestamp)
+                    .add("bid", bid)
+                    .add("vwap", vwap)
+                    .add("volume", volume)
+                    .add("low", low)
+                    .add("ask", ask)
+                    .toString();
         }
     }
 
@@ -551,14 +556,13 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
 
         @Override
         public String toString() {
-            return BitstampOrderResponse.class.getSimpleName()
-                    + " ["
-                    + "id=" + id
-                    + ", datetime=" + datetime
-                    + ", type=" + type
-                    + ", price=" + price
-                    + ", amount=" + amount
-                    + "]";
+            return MoreObjects.toStringHelper(this)
+                    .add("id", id)
+                    .add("datetime", datetime)
+                    .add("type", type)
+                    .add("price", price)
+                    .add("amount", amount)
+                    .toString();
         }
     }
 

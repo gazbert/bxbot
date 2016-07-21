@@ -23,21 +23,27 @@
 
 package com.gazbert.bxbot.core.config.exchange;
 
-import com.gazbert.bxbot.core.api.exchange.NetworkConfig;
+import com.google.common.base.MoreObjects;
+
 import java.util.ArrayList;
 import java.util.List;
 
-/*
- * Encapsulates network configuration for an Exchange Adapter.
+/**
+ * Domain object representing the Exchange Network config.
+ * <p>
+ * The configuration is loaded from the exchange.xml file.
+ *
+ * @author gazbert
+ * @since 20/07/2016
  */
-public class NetworkConfigImpl implements NetworkConfig {
+public class NetworkConfig implements com.gazbert.bxbot.core.api.exchange.NetworkConfig {
 
     private Integer connectionTimeout;
     private List<Integer> nonFatalErrorCodes;
     private List<String> nonFatalErrorMessages;
 
 
-    public NetworkConfigImpl() {
+    public NetworkConfig() {
         nonFatalErrorCodes = new ArrayList<>();
         nonFatalErrorMessages = new ArrayList<>();
     }
@@ -71,11 +77,10 @@ public class NetworkConfigImpl implements NetworkConfig {
 
     @Override
     public String toString() {
-        return NetworkConfigImpl.class.getSimpleName()
-                + " ["
-                + "connectionTimeout=" + connectionTimeout
-                + ", nonFatalErrorCodes=" + nonFatalErrorCodes
-                + ", nonFatalErrorMessages=" + nonFatalErrorMessages
-                + "]";
+        return MoreObjects.toStringHelper(this)
+                .add("connectionTimeout", connectionTimeout)
+                .add("nonFatalErrorCodes", nonFatalErrorCodes)
+                .add("nonFatalErrorMessages", nonFatalErrorMessages)
+                .toString();
     }
 }

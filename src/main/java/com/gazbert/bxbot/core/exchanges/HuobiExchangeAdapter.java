@@ -36,6 +36,7 @@ import com.gazbert.bxbot.core.api.trading.OrderType;
 import com.gazbert.bxbot.core.api.trading.TradingApi;
 import com.gazbert.bxbot.core.api.trading.TradingApiException;
 import com.gazbert.bxbot.core.util.LogUtils;
+import com.google.common.base.MoreObjects;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializationContext;
@@ -604,10 +605,9 @@ public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implemen
 
         @Override
         public String toString() {
-            return HuobiCancelOrderResponse.class.getSimpleName()
-                    + " ["
-                    + "result=" + result
-                    + "]";
+            return MoreObjects.toStringHelper(this)
+                    .add("result", result)
+                    .toString();
         }
     }
 
@@ -621,11 +621,10 @@ public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implemen
 
         @Override
         public String toString() {
-            return HuobiOrderResponse.class.getSimpleName()
-                    + " ["
-                    + "result=" + result
-                    + ", id=" + id
-                    + "]";
+            return MoreObjects.toStringHelper(this)
+                    .add("result", result)
+                    .add("id", id)
+                    .toString();
         }
     }
 
@@ -638,10 +637,9 @@ public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implemen
 
         @Override
         public String toString() {
-            return HuobiOpenOrderResponseWrapper.class.getSimpleName()
-                    + " ["
-                    + "openOrders=" + Arrays.toString(openOrders)
-                    + "]";
+            return MoreObjects.toStringHelper(this)
+                    .add("openOrders", openOrders)
+                    .toString();
         }
     }
 
@@ -659,15 +657,14 @@ public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implemen
 
         @Override
         public String toString() {
-            return HuobiOpenOrder.class.getSimpleName()
-                    + " ["
-                    + "id=" + id
-                    + ", type=" + type
-                    + ", order_price=" + order_price
-                    + ", order_amount=" + order_amount
-                    + ", processed_amount=" + processed_amount
-                    + ", order_time=" + order_time
-                    + "]";
+            return MoreObjects.toStringHelper(this)
+                    .add("id", id)
+                    .add("type", type)
+                    .add("order_price", order_price)
+                    .add("order_amount", order_amount)
+                    .add("processed_amount", processed_amount)
+                    .add("order_time", order_time)
+                    .toString();
         }
     }
 
@@ -695,23 +692,22 @@ public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implemen
 
         @Override
         public String toString() {
-            return HuobiOrderBookWrapper.class.getSimpleName()
-                    + " ["
-                    + "total=" + total
-                    + ", p_high=" + p_high
-                    + ", p_open=" + p_open
-                    + ", p_new=" + p_new
-                    + ", p_low=" + p_low
-                    + ", top_buy=" + top_buy
-                    + ", buys=" + buys
-                    + ", top_sell=" + top_sell
-                    + ", amount=" + amount
-                    + ", level=" + level
-                    + ", sells=" + sells
-                    + ", trades=" + trades
-                    + ", amp=" + amp
-                    + ", p_last=" + p_last
-                    + "]";
+            return MoreObjects.toStringHelper(this)
+                    .add("total", total)
+                    .add("p_high", p_high)
+                    .add("p_open", p_open)
+                    .add("p_new", p_new)
+                    .add("p_low", p_low)
+                    .add("top_buy", top_buy)
+                    .add("buys", buys)
+                    .add("top_sell", top_sell)
+                    .add("amount", amount)
+                    .add("level", level)
+                    .add("sells", sells)
+                    .add("trades", trades)
+                    .add("amp", amp)
+                    .add("p_last", p_last)
+                    .toString();
         }
     }
 
@@ -726,12 +722,11 @@ public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implemen
 
         @Override
         public String toString() {
-            return HuobiMarketOrder.class.getSimpleName()
-                    + " ["
-                    + "amount=" + amount
-                    + ", level=" + level
-                    + ", price=" + price
-                    + "]";
+            return MoreObjects.toStringHelper(this)
+                    .add("amount", amount)
+                    .add("level", level)
+                    .add("price", price)
+                    .toString();
         }
     }
 
@@ -744,10 +739,9 @@ public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implemen
 
         @Override
         public String toString() {
-            return HuobiTopMarketOrder.class.getSimpleName()
-                    + " ["
-                    + "accu=" + accu
-                    + "]";
+            return MoreObjects.toStringHelper(this)
+                    .add("accu", accu)
+                    .toString();
         }
     }
 
@@ -764,14 +758,13 @@ public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implemen
 
         @Override
         public String toString() {
-            return HuobiTrade.class.getSimpleName()
-                    + " ["
-                    + "amount=" + amount
-                    + ", time=" + time
-                    + ", price=" + price
-                    + ", en_type=" + en_type
-                    + ", type=" + type
-                    + "]";
+            return MoreObjects.toStringHelper(this)
+                    .add("amount", amount)
+                    .add("time", time)
+                    .add("price", price)
+                    .add("en_type", en_type)
+                    .add("type", type)
+                    .toString();
         }
     }
 
@@ -785,11 +778,10 @@ public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implemen
 
         @Override
         public String toString() {
-            return HuobiTickerWrapper.class.getSimpleName()
-                    + " ["
-                    + "time=" + time
-                    + ", ticker=" + ticker
-                    + "]";
+            return MoreObjects.toStringHelper(this)
+                    .add("time", time)
+                    .add("ticker", ticker)
+                    .toString();
         }
     }
 
@@ -807,15 +799,14 @@ public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implemen
 
         @Override
         public String toString() {
-            return HuobiTicker.class.getSimpleName()
-                    + " ["
-                    + "vol=" + vol
-                    + ", last=" + last
-                    + ", buy=" + buy
-                    + ", sell=" + sell
-                    + ", high=" + high
-                    + ", low=" + low
-                    + "]";
+            return MoreObjects.toStringHelper(this)
+                    .add("vol", vol)
+                    .add("last", last)
+                    .add("buy", buy)
+                    .add("sell", sell)
+                    .add("high", high)
+                    .add("low", low)
+                    .toString();
         }
     }
 
@@ -838,20 +829,19 @@ public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implemen
 
         @Override
         public String toString() {
-            return HuobiAccountInfo.class.getSimpleName()
-                    + " ["
-                    + "total=" + total
-                    + ", net_asset=" + net_asset
-                    + ", available_cny_display=" + available_cny_display
-                    + ", available_btc_display=" + available_btc_display
-                    + ", available_usd_display=" + available_usd_display
-                    + ", frozen_cny_display=" + frozen_cny_display
-                    + ", frozen_btc_display=" + frozen_btc_display
-                    + ", frozen_usd_display=" + frozen_usd_display
-                    + ", loan_cny_display=" + loan_cny_display
-                    + ", loan_btc_display=" + loan_btc_display
-                    + ", loan_usd_display=" + loan_usd_display
-                    + "]";
+            return MoreObjects.toStringHelper(this)
+                    .add("total", total)
+                    .add("net_asset", net_asset)
+                    .add("available_cny_display", available_cny_display)
+                    .add("available_btc_display", available_btc_display)
+                    .add("available_usd_display", available_usd_display)
+                    .add("frozen_cny_display", frozen_cny_display)
+                    .add("frozen_btc_display", frozen_btc_display)
+                    .add("frozen_usd_display", frozen_usd_display)
+                    .add("loan_cny_display", loan_cny_display)
+                    .add("loan_btc_display", loan_btc_display)
+                    .add("loan_usd_display", loan_usd_display)
+                    .toString();
         }
     }
 
@@ -866,12 +856,11 @@ public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implemen
 
         @Override
         public String toString() {
-            return HuobiMessageBase.class.getSimpleName()
-                    + " ["
-                    + "code=" + code
-                    + ", message=" + message
-                    + ", msg=" + msg
-                    + "]";
+            return MoreObjects.toStringHelper(this)
+                    .add("code", code)
+                    .add("message", message)
+                    .add("msg", msg)
+                    .toString();
         }
     }
 

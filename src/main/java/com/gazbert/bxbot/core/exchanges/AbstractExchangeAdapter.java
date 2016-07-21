@@ -29,6 +29,7 @@ import com.gazbert.bxbot.core.api.exchange.OtherConfig;
 import com.gazbert.bxbot.core.api.trading.ExchangeNetworkException;
 import com.gazbert.bxbot.core.api.trading.TradingApiException;
 import com.gazbert.bxbot.core.util.LogUtils;
+import com.google.common.base.MoreObjects;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
@@ -415,12 +416,11 @@ abstract class AbstractExchangeAdapter {
 
         @Override
         public String toString() {
-            return AbstractExchangeAdapter.ExchangeHttpResponse.class.getSimpleName()
-                    + " ["
-                    + "statusCode=" + statusCode
-                    + ", reasonPhrase=" + reasonPhrase
-                    + ", payload=" + payload
-                    + "]";
+            return MoreObjects.toStringHelper(this)
+                    .add("statusCode", statusCode)
+                    .add("reasonPhrase", reasonPhrase)
+                    .add("payload", payload)
+                    .toString();
         }
     }
 

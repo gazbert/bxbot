@@ -28,7 +28,10 @@ log4j=log4j-1.2.17.jar
 # javamail (mandatory)
 javamail=javax.mail-1.5.4.jar
 
-# GSON (optional - only needed if you use the inbuilt Exchange Adapters; the script assumes you are)
+# Google Guava (mandatory)
+guava=guava-19.0.jar
+
+# Google GSON (optional - only needed if you use the inbuilt Exchange Adapters; the script assumes you are)
 gson=gson-2.3.1.jar
 
 # The BX-bot core jar (mandatory)
@@ -43,7 +46,7 @@ bxbot_strategies=
 bxbot_exchanges=
 
 # Runtime classpath
-CLASSPATH=${LIB_DIR}/${log4j}:${LIB_DIR}/${javamail}:${LIB_DIR}/${gson}:${LIB_DIR}/${bxbot_core}:\
+CLASSPATH=${LIB_DIR}/${log4j}:${LIB_DIR}/${javamail}:${LIB_DIR}/${guava}:${LIB_DIR}/${gson}:${LIB_DIR}/${bxbot_core}:\
 ${LIB_DIR}/${bxbot_strategies}:${LIB_DIR}/${bxbot_exchanges}:${RESOURCES_DIR}
 
 # PID file for checking if bot is running

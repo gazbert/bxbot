@@ -29,9 +29,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 /*
- * Test the Strategy Config behaves as expected.
+ * Test the StrategyConfigItems behaves as expected.
  */
-public class TestStrategyConfig {
+public class TestStrategyConfigItems {
 
     private static final String BUY_PRICE_CONFIG_ITEM_KEY = "buyPrice";
     private static final String BUY_PRICE_CONFIG_ITEM_VALUE = "671.15";
@@ -43,16 +43,12 @@ public class TestStrategyConfig {
     @Test
     public void testAddingAndFetchingConfigItems() throws Exception {
 
-        final StrategyConfigImpl strategyConfig = new StrategyConfigImpl();
+        final StrategyConfigItems strategyConfig = new StrategyConfigItems();
         strategyConfig.addConfigItem(BUY_PRICE_CONFIG_ITEM_KEY, BUY_PRICE_CONFIG_ITEM_VALUE);
         strategyConfig.addConfigItem(AMOUNT_TO_BUY_CONFIG_ITEM_KEY, AMOUNT_TO_BUY_CONFIG_ITEM_VALUE);
 
         assertEquals(2, strategyConfig.getNumberOfConfigItems());
         assertEquals(BUY_PRICE_CONFIG_ITEM_VALUE, strategyConfig.getConfigItem(BUY_PRICE_CONFIG_ITEM_KEY));
         assertEquals(AMOUNT_TO_BUY_CONFIG_ITEM_VALUE, strategyConfig.getConfigItem(AMOUNT_TO_BUY_CONFIG_ITEM_KEY));
-
-        assertEquals(2, strategyConfig.getConfigItemKeys().size());
-        assertTrue(strategyConfig.getConfigItemKeys().contains(BUY_PRICE_CONFIG_ITEM_KEY));
-        assertTrue(strategyConfig.getConfigItemKeys().contains(AMOUNT_TO_BUY_CONFIG_ITEM_KEY));
     }
 }

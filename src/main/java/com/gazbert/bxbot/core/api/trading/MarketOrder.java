@@ -23,6 +23,8 @@
 
 package com.gazbert.bxbot.core.api.trading;
 
+import com.google.common.base.MoreObjects;
+
 import java.math.BigDecimal;
 
 /**
@@ -146,12 +148,11 @@ public final class MarketOrder {
 
     @Override
     public String toString() {
-        return MarketOrder.class.getSimpleName()
-                + " ["
-                + "type=" + type
-                + ", price=" + price
-                + ", quantity=" + quantity
-                + ", total=" + total
-                + "]";
+        return MoreObjects.toStringHelper(this)
+                .add("type", type)
+                .add("price", price)
+                .add("quantity", quantity)
+                .add("total", total)
+                .toString();
     }
 }

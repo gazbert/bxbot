@@ -23,6 +23,8 @@
 
 package com.gazbert.bxbot.core.api.trading;
 
+import com.google.common.base.MoreObjects;
+
 import java.math.BigDecimal;
 import java.util.Map;
 
@@ -104,11 +106,10 @@ public final class BalanceInfo {
 
     @Override
     public String toString() {
-        return BalanceInfo.class.getSimpleName()
-                + " ["
-                + "balancesAvailable=" + balancesAvailable
-                + ", balancesOnHold=" + balancesOnHold
-                + "]";
+        return MoreObjects.toStringHelper(this)
+                .add("balancesAvailable", balancesAvailable)
+                .add("balancesOnHold", balancesOnHold)
+                .toString();
     }
 }
 

@@ -35,6 +35,7 @@ import com.gazbert.bxbot.core.api.trading.OrderType;
 import com.gazbert.bxbot.core.api.trading.TradingApi;
 import com.gazbert.bxbot.core.api.trading.TradingApiException;
 import com.gazbert.bxbot.core.util.LogUtils;
+import com.google.common.base.MoreObjects;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializationContext;
@@ -194,7 +195,6 @@ public final class BtceExchangeAdapter extends AbstractExchangeAdapter implement
             final BtceMarketOrderBookWrapper marketOrderWrapper = gson.fromJson(response.getPayload(),
                     BtceMarketOrderBookWrapper.class);
 
-            // adapt BUYs
             final List<MarketOrder> buyOrders = new ArrayList<>();
             final List<List<BigDecimal>> btceBuyOrders = marketOrderWrapper.orderBook.bids;
             for (final List<BigDecimal> order : btceBuyOrders) {
@@ -206,7 +206,6 @@ public final class BtceExchangeAdapter extends AbstractExchangeAdapter implement
                 buyOrders.add(buyOrder);
             }
 
-            // adapt SELLs
             final List<MarketOrder> sellOrders = new ArrayList<>();
             final List<List<BigDecimal>> btceSellOrders = marketOrderWrapper.orderBook.asks;
             for (final List<BigDecimal> order : btceSellOrders) {
@@ -239,48 +238,58 @@ public final class BtceExchangeAdapter extends AbstractExchangeAdapter implement
             LogUtils.log(LOG, Level.DEBUG, () -> "getYourOpenOrders() response: " + response);
 
             final BtceOpenOrderResponseWrapper myOpenOrders = gson.fromJson(response.getPayload(), BtceOpenOrderResponseWrapper.class);
-            final List<OpenOrder> ordersToReturn = new ArrayList<>();
 
-            // this sucks!
-            if (myOpenOrders.success == 0 && myOpenOrders.error.equalsIgnoreCase("no orders")) {
-                LogUtils.log(LOG, Level.DEBUG, () -> "No Open Orders");
+            if (myOpenOrders.success == 1) {
+
+                final List<OpenOrder> ordersToReturn = new ArrayList<>();
+
+                // this sucks!
+                if (myOpenOrders.error.equalsIgnoreCase("no orders")) {
+                    LogUtils.log(LOG, Level.DEBUG, () -> "No Open Orders");
+
+                } else {
+                    LogUtils.log(LOG, Level.DEBUG, () -> "BtceOpenOrderResponseWrapper: " + myOpenOrders);
+
+                    // adapt - and we really have to this time... jeez...
+                    final BtceOpenOrders btceOrders = myOpenOrders.openOrders;
+                    final Set<Entry<Long, BtceOpenOrder>> entries = btceOrders.entrySet();
+                    for (final Entry<Long, BtceOpenOrder> entry : entries) {
+                        final Long orderId = entry.getKey();
+                        final BtceOpenOrder orderDetails = entry.getValue();
+
+                        OrderType orderType;
+                        final String btceOrderType = orderDetails.type;
+                        if (btceOrderType.equalsIgnoreCase(OrderType.BUY.getStringValue())) {
+                            orderType = OrderType.BUY;
+                        } else if (btceOrderType.equalsIgnoreCase(OrderType.SELL.getStringValue())) {
+                            orderType = OrderType.SELL;
+                        } else {
+                            throw new TradingApiException(
+                                    "Unrecognised order type received in getYourOpenOrders(). Value: " + btceOrderType);
+                        }
+
+                        final OpenOrder order = new OpenOrder(
+                                Long.toString(orderId),
+                                new Date(orderDetails.timestamp_created),
+                                marketId,
+                                orderType,
+                                orderDetails.rate,
+                                orderDetails.amount,
+                                null, // orig_quantity - not provided by btce :-(
+                                orderDetails.rate.multiply(orderDetails.amount) // total - not provided by btce :-(
+                        );
+
+                        ordersToReturn.add(order);
+                    }
+                }
+                return ordersToReturn;
 
             } else {
-                LogUtils.log(LOG, Level.DEBUG, () -> "BtceOpenOrderResponseWrapper: " + myOpenOrders);
 
-                // adapt (and we really have to this time... jeez...
-                final BtceOpenOrders btceOrders = myOpenOrders.openOrders;
-                final Set<Entry<Long, BtceOpenOrder>> entries = btceOrders.entrySet();
-                for (final Entry<Long, BtceOpenOrder> entry : entries) {
-                    final Long orderId = entry.getKey();
-                    final BtceOpenOrder orderDetails = entry.getValue();
-
-                    OrderType orderType;
-                    final String btceOrderType = orderDetails.type;
-                    if (btceOrderType.equalsIgnoreCase(OrderType.BUY.getStringValue())) {
-                        orderType = OrderType.BUY;
-                    } else if (btceOrderType.equalsIgnoreCase(OrderType.SELL.getStringValue())) {
-                        orderType = OrderType.SELL;
-                    } else {
-                        throw new TradingApiException(
-                                "Unrecognised order type received in getYourOpenOrders(). Value: " + btceOrderType);
-                    }
-
-                    final OpenOrder order = new OpenOrder(
-                            Long.toString(orderId),
-                            new Date(orderDetails.timestamp_created),
-                            marketId,
-                            orderType,
-                            orderDetails.rate,
-                            orderDetails.amount,
-                            null, // orig_quantity - not provided by btce :-(
-                            orderDetails.rate.multiply(orderDetails.amount) // total - not provided by btce :-(
-                    );
-
-                    ordersToReturn.add(order);
-                }
+                final String errorMsg = "Failed to get Open Orders from exchange. Error response: " + response;
+                LOG.error(errorMsg);
+                throw new TradingApiException(errorMsg);
             }
-            return ordersToReturn;
 
         } catch (ExchangeNetworkException | TradingApiException e) {
             throw e;
@@ -339,6 +348,7 @@ public final class BtceExchangeAdapter extends AbstractExchangeAdapter implement
                     return "INSTAFILL__" + UUID.randomUUID().toString();
                 }
                 return Long.toString(orderId);
+
             } else {
                 final String errorMsg = "Failed to place order on exchange. Error response: " + createOrderResponseWrapper.error;
                 LOG.error(errorMsg);
@@ -369,7 +379,7 @@ public final class BtceExchangeAdapter extends AbstractExchangeAdapter implement
             final BtceCancelledOrderWrapper cancelOrderResponse = gson.fromJson(response.getPayload(), BtceCancelledOrderWrapper.class);
 
             if (cancelOrderResponse.success == 0) {
-                LOG.error("Failed to cancel order: " + cancelOrderResponse.error);
+                LOG.error("Failed to cancel order: " + cancelOrderResponse);
                 return false;
             } else {
                 return true;
@@ -409,14 +419,20 @@ public final class BtceExchangeAdapter extends AbstractExchangeAdapter implement
 
             final BtceInfoWrapper info = gson.fromJson(response.getPayload(), BtceInfoWrapper.class);
 
-            // adapt
-            final HashMap<String, BigDecimal> balancesAvailable = new HashMap<>();
-            for (final Entry<String, BigDecimal> fund : info.info.funds.entrySet()) {
-                balancesAvailable.put(fund.getKey().toUpperCase(), fund.getValue());
-            }
+            if (info.success == 1) {
+                final HashMap<String, BigDecimal> balancesAvailable = new HashMap<>();
+                for (final Entry<String, BigDecimal> fund : info.info.funds.entrySet()) {
+                    balancesAvailable.put(fund.getKey().toUpperCase(), fund.getValue());
+                }
 
-            // 2nd arg of reserved balances not provided by exchange.
-            return new BalanceInfo(balancesAvailable, new HashMap<>());
+                // 2nd arg of reserved balances not provided by exchange.
+                return new BalanceInfo(balancesAvailable, new HashMap<>());
+
+            } else {
+                final String errorMsg = "Failed to get Balance Info from exchange. Error response: " + response;
+                LOG.error(errorMsg);
+                throw new TradingApiException(errorMsg);
+            }
 
         } catch (ExchangeNetworkException | TradingApiException e) {
             throw e;
@@ -492,11 +508,10 @@ public final class BtceExchangeAdapter extends AbstractExchangeAdapter implement
 
         @Override
         public String toString() {
-            return BtceMessageBase.class.getSimpleName()
-                    + " ["
-                    + "success=" + success
-                    + ", error=" + error
-                    + "]";
+            return MoreObjects.toStringHelper(this)
+                    .add("success", success)
+                    .add("error", error)
+                    .toString();
         }
     }
 
@@ -506,6 +521,13 @@ public final class BtceExchangeAdapter extends AbstractExchangeAdapter implement
     private static class BtceInfoWrapper extends BtceMessageBase {
         @SerializedName("return")
         public BtceInfo info;
+
+        @Override
+        public String toString() {
+            return MoreObjects.toStringHelper(this)
+                    .add("info", info)
+                    .toString();
+        }
     }
 
     /**
@@ -522,11 +544,13 @@ public final class BtceExchangeAdapter extends AbstractExchangeAdapter implement
 
         @Override
         public String toString() {
-            return BtceInfo.class.getSimpleName() + " [funds=" + funds
-                    + ", rights=" + rights
-                    + ", transaction_count=" + transaction_count
-                    + ", open_orders=" + open_orders
-                    + ", server_time=" + server_time + "]";
+            return MoreObjects.toStringHelper(this)
+                    .add("funds", funds)
+                    .add("rights", rights)
+                    .add("transaction_count", transaction_count)
+                    .add("open_orders", open_orders)
+                    .add("server_time", server_time)
+                    .toString();
         }
     }
 
@@ -557,10 +581,9 @@ public final class BtceExchangeAdapter extends AbstractExchangeAdapter implement
 
         @Override
         public String toString() {
-            return BtceMarketOrderBookWrapper.class.getSimpleName()
-                    + " ["
-                    + "orderBook=" + orderBook
-                    + "]";
+            return MoreObjects.toStringHelper(this)
+                    .add("orderBook", orderBook)
+                    .toString();
         }
     }
 
@@ -583,11 +606,10 @@ public final class BtceExchangeAdapter extends AbstractExchangeAdapter implement
 
         @Override
         public String toString() {
-            return BtceOrderBook.class.getSimpleName()
-                    + " ["
-                    + "bids=" + bids
-                    + ", asks=" + asks
-                    + "]";
+            return MoreObjects.toStringHelper(this)
+                    .add("bids", bids)
+                    .add("asks", asks)
+                    .toString();
         }
     }
 
@@ -600,10 +622,9 @@ public final class BtceExchangeAdapter extends AbstractExchangeAdapter implement
 
         @Override
         public String toString() {
-            return BtceCreateOrderResponseWrapper.class.getSimpleName()
-                    + " ["
-                    + "orderResponse=" + orderResponse
-                    + "]";
+            return MoreObjects.toStringHelper(this)
+                    .add("orderResponse", orderResponse)
+                    .toString();
         }
     }
 
@@ -619,12 +640,12 @@ public final class BtceExchangeAdapter extends AbstractExchangeAdapter implement
 
         @Override
         public String toString() {
-            return BtceCreateOrderResponse.class.getSimpleName()
-                    + " [received=" + received
-                    + ", remains=" + remains
-                    + ", order_id=" + order_id
-                    + ", funds=" + funds
-                    + "]";
+            return MoreObjects.toStringHelper(this)
+                    .add("received", received)
+                    .add("remains", remains)
+                    .add("order_id", order_id)
+                    .add("funds", funds)
+                    .toString();
         }
     }
 
@@ -663,10 +684,9 @@ public final class BtceExchangeAdapter extends AbstractExchangeAdapter implement
 
         @Override
         public String toString() {
-            return BtceOpenOrderResponseWrapper.class.getSimpleName()
-                    + " ["
-                    + "openOrders=" + openOrders
-                    + "]";
+            return MoreObjects.toStringHelper(this)
+                    .add("openOrders", openOrders)
+                    .toString();
         }
     }
 
@@ -692,14 +712,14 @@ public final class BtceExchangeAdapter extends AbstractExchangeAdapter implement
 
         @Override
         public String toString() {
-            return BtceOpenOrder.class.getSimpleName()
-                    + " [pair=" + pair
-                    + ", type=" + type
-                    + ", amount=" + amount
-                    + ", rate=" + rate
-                    + ", timestamp_created=" + timestamp_created
-                    + ", status=" + status
-                    + "]";
+            return MoreObjects.toStringHelper(this)
+                    .add("pair", pair)
+                    .add("type", type)
+                    .add("amount", amount)
+                    .add("rate", rate)
+                    .add("timestamp_created", timestamp_created)
+                    .add("status", status)
+                    .toString();
         }
     }
 
@@ -732,10 +752,9 @@ public final class BtceExchangeAdapter extends AbstractExchangeAdapter implement
 
         @Override
         public String toString() {
-            return BtceCancelledOrderWrapper.class.getSimpleName()
-                    + " ["
-                    + "cancelledOrder=" + cancelledOrder
-                    + "]";
+            return MoreObjects.toStringHelper(this)
+                    .add("cancelledOrder", cancelledOrder)
+                    .toString();
         }
     }
 
@@ -749,11 +768,10 @@ public final class BtceExchangeAdapter extends AbstractExchangeAdapter implement
 
         @Override
         public String toString() {
-            return BtceCancelledOrder.class.getSimpleName()
-                    + " ["
-                    + "order_id=" + order_id
-                    + ", funds=" + funds
-                    + "]";
+            return MoreObjects.toStringHelper(this)
+                    .add("order_id", order_id)
+                    .add("funds", funds)
+                    .toString();
         }
     }
 
@@ -767,10 +785,9 @@ public final class BtceExchangeAdapter extends AbstractExchangeAdapter implement
 
         @Override
         public String toString() {
-            return BtceTickerWrapper.class.getSimpleName()
-                    + " ["
-                    + "ticker=" + ticker
-                    + "]";
+            return MoreObjects.toStringHelper(this)
+                    .add("ticker", ticker)
+                    .toString();
         }
     }
 
@@ -791,18 +808,17 @@ public final class BtceExchangeAdapter extends AbstractExchangeAdapter implement
 
         @Override
         public String toString() {
-            return BtceTicker.class.getSimpleName()
-                    + " ["
-                    + "high=" + high
-                    + ", low=" + low
-                    + ", avg=" + avg
-                    + ", vol=" + vol
-                    + ", vol_cur=" + vol_cur
-                    + ", last=" + last
-                    + ", buy=" + buy
-                    + ", sell=" + sell
-                    + ", updated=" + updated
-                    + "]";
+            return MoreObjects.toStringHelper(this)
+                    .add("high", high)
+                    .add("low", low)
+                    .add("avg", avg)
+                    .add("vol", vol)
+                    .add("vol_cur", vol_cur)
+                    .add("last", last)
+                    .add("buy", buy)
+                    .add("sell", sell)
+                    .add("updated", updated)
+                    .toString();
         }
     }
 

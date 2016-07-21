@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2015 Gareth Jon Lynch
+ * Copyright (c) 2016 Gareth Jon Lynch
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -21,52 +21,51 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.core.mail;
+package com.gazbert.bxbot.core.config.exchange;
 
-/*
- * SMTP configuration used for sending email alerts.
+import com.google.common.base.MoreObjects;
+
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * Domain object representing the Exchange Authentication config.
+ * <p>
+ * The configuration is loaded from the exchange.xml file.
+ *
+ * @author gazbert
+ * @since 20/07/2016
  */
-public final class SmtpConfig {
+public class AuthenticationConfig implements com.gazbert.bxbot.core.api.exchange.AuthenticationConfig {
 
-    private String smtpHost;
-    private int smtpTlsPort;
-    private String accountUsername;
-    private String accountPassword;
-    private String fromAddress;
-    private String toAddress;
+    private Map<String, String> items;
 
-    SmtpConfig(String smtpHost, int smtpTlsPort, String accountUsername, String accountPassword,
-               String fromAddress, String toAddress) {
-
-        this.smtpHost = smtpHost;
-        this.smtpTlsPort = smtpTlsPort;
-        this.accountUsername = accountUsername;
-        this.accountPassword = accountPassword;
-        this.fromAddress = fromAddress;
-        this.toAddress = toAddress;
+    public AuthenticationConfig() {
+        items = new HashMap<>();
     }
 
-    String getSmtpHost() {
-        return smtpHost;
+    public void addItem(String name, String value) {
+        items.put(name, value);
     }
 
-    int getSmtpTlsPort() {
-        return smtpTlsPort;
+    @Override
+    public String getItem(String name) {
+        return items.get(name);
     }
 
-    String getAccountUsername() {
-        return accountUsername;
+    public Map<String, String> getItems() {
+        return items;
     }
 
-    String getAccountPassword() {
-        return accountPassword;
+    public void setItems(Map<String, String> items) {
+        this.items = items;
     }
 
-    String getFromAddress() {
-        return fromAddress;
-    }
-
-    String getToAddress() {
-        return toAddress;
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                // WARNING - careful showing this!
+                // .add("items", items)
+                .toString();
     }
 }

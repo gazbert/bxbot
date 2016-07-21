@@ -34,7 +34,7 @@ import com.gazbert.bxbot.core.config.engine.generated.EngineType;
 import com.gazbert.bxbot.core.config.exchange.generated.*;
 import com.gazbert.bxbot.core.config.market.generated.MarketType;
 import com.gazbert.bxbot.core.config.market.generated.MarketsType;
-import com.gazbert.bxbot.core.config.strategy.StrategyConfigImpl;
+import com.gazbert.bxbot.core.config.strategy.StrategyConfigItems;
 import com.gazbert.bxbot.core.config.strategy.generated.ConfigItemType;
 import com.gazbert.bxbot.core.config.strategy.generated.ConfigurationType;
 import com.gazbert.bxbot.core.config.strategy.generated.StrategyType;
@@ -62,13 +62,13 @@ import static org.junit.Assert.assertFalse;
  *
  * The Exchange Adapter and Configuration subsystem are mocked out; they have their own unit tests.
  *
- * TradingEngine.class is prepared so we can mock constructors for Market + StrategyConfigImpl object creation.
+ * TradingEngine.class is prepared so we can mock constructors for Market + StrategyConfigItems object creation.
  *
  * There's a lot of time dependent stuff going on here; I hate these sorts of tests!
  *
  */
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ConfigurationManager.class, ConfigurableComponentFactory.class, Market.class, StrategyConfigImpl.class,
+@PrepareForTest({ConfigurationManager.class, ConfigurableComponentFactory.class, Market.class, StrategyConfigItems.class,
         TradingEngine.class, BalanceInfo.class, SmtpConfig.class, EmailAlerter.class})
 public class TestTradingEngine {
     
@@ -637,8 +637,8 @@ public class TestTradingEngine {
         expect(strategyType.getClassName()).andReturn(STRATEGY_IMPL_CLASS).atLeastOnce(); // might be called +1 if logging
 
         // expect the Trading API Market domain object to be created
-        final StrategyConfigImpl strategyConfig = PowerMock.createMock(StrategyConfigImpl.class);
-        PowerMock.expectNew(StrategyConfigImpl.class).andStubReturn(strategyConfig);
+        final StrategyConfigItems strategyConfig = PowerMock.createMock(StrategyConfigItems.class);
+        PowerMock.expectNew(StrategyConfigItems.class).andStubReturn(strategyConfig);
 
         // expect to load up Strategy config
         final ConfigurationType configurationType = PowerMock.createMock(ConfigurationType.class);

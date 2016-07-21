@@ -23,60 +23,56 @@
 
 package com.gazbert.bxbot.core.config.exchange;
 
-import com.gazbert.bxbot.core.api.exchange.ExchangeConfig;
+import com.google.common.base.MoreObjects;
 
-/*
- * Encapsulates configuration for an Exchange Adapter.
- * The configuration is loaded from the config/exchange.xml.
+/**
+ * Domain object representing the overall Exchange config.
+ * <p>
+ * The configuration is loaded from the exchange.xml file.
+ *
+ * @author gazbert
+ * @since 20/07/2016
  */
-public class ExchangeConfigImpl implements ExchangeConfig {
+public class ExchangeConfig implements com.gazbert.bxbot.core.api.exchange.ExchangeConfig {
 
-    /* Holds Authentication configuration for the Exchange Adapter. */
-    private AuthenticationConfigImpl authenticationConfig;
-
-    /* Holds Network configuration for the Exchange Adapter */
-    private NetworkConfigImpl networkConfig;
-
-    /* Holds Other (misc) configuration for the Exchange Adapter */
-    private OtherConfigImpl otherConfig;
-
+    private AuthenticationConfig authenticationConfig;
+    private NetworkConfig networkConfig;
+    private OtherConfig otherConfig;
 
     @Override
-    public AuthenticationConfigImpl getAuthenticationConfig() {
+    public AuthenticationConfig getAuthenticationConfig() {
         return authenticationConfig;
     }
 
-    public void setAuthenticationConfig(AuthenticationConfigImpl authenticationConfig) {
+    public void setAuthenticationConfig(AuthenticationConfig authenticationConfig) {
         this.authenticationConfig = authenticationConfig;
     }
 
-    public void setNetworkConfig(NetworkConfigImpl networkConfig) {
+    public void setNetworkConfig(NetworkConfig networkConfig) {
         this.networkConfig = networkConfig;
     }
 
     @Override
-    public NetworkConfigImpl getNetworkConfig() {
+    public NetworkConfig getNetworkConfig() {
         return networkConfig;
     }
 
-    public OtherConfigImpl getOtherConfig() {
+    public OtherConfig getOtherConfig() {
         return otherConfig;
     }
 
-    public void setOtherConfig(OtherConfigImpl otherConfig) {
+    public void setOtherConfig(OtherConfig otherConfig) {
         this.otherConfig = otherConfig;
     }
 
     @Override
     public String toString() {
-        return ExchangeConfigImpl.class.getSimpleName()
-                + " ["
-                + "authenticationConfig=" + authenticationConfig
-
+        return MoreObjects.toStringHelper(this)
                 // WARNING - careful showing this!
-//                + ", networkConfig=" + networkConfig
+                //.add("authenticationConfig", authenticationConfig)
 
-                + ", otherConfig=" + otherConfig
-                + "]";
+                .add("networkConfig", networkConfig)
+                .add("otherConfig", otherConfig)
+                .toString();
     }
 }
