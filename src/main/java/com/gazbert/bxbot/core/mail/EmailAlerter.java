@@ -42,7 +42,7 @@ import java.util.Properties;
 
 /*
  * A simple mail sender using SMTP and TLS.
- * The configuration for sending the email is loaded from the .config/email-alerts.xml config file.
+ * The configuration for sending the email is loaded from the email-alerts.xml config file.
  * It sends plain/text email only.
  */
 public final class EmailAlerter {
@@ -51,26 +51,19 @@ public final class EmailAlerter {
 
     private static volatile EmailAlerter EMAIL_ALERTER_SINGLETON;
 
-    /*
-     * Location of the config files (relative to project root).
-     */
+    /* Location of the XML config file relative to project/installation root. */
     private static final String EMAIL_ALERTS_CONFIG_XML_FILENAME = "config/email-alerts.xml";
-    private static final String EMAIL_ALERTS_CONFIG_XSD_FILENAME = "config/schemas/email-alerts.xsd";
 
-    /*
-     * SMTP config loaded from the bot .config/email-alerts.xml config file. This will be null if no config provided.
-     */
+    /* Location of the XSD config file in the main/resources folder. */
+    private static final String EMAIL_ALERTS_CONFIG_XSD_FILENAME = "com/gazbert/bxbot/core/config/emailalerts/email-alerts.xsd";
+
+    /* SMTP config loaded from the bot .config/email-alerts.xml config file. This will be null if no config provided. */
     private SmtpConfig smtpConfig;
 
-    /*
-     * Properties for configuring the SMTP session.
-     */
+    /* Properties for configuring the SMTP session. */
     private Properties props;
 
-    /*
-     * Flag to indicate if Email Alerts are enabled.
-     * Defaults to false unless set in config.
-     */
+    /* Flag to indicate if Email Alerts are enabled. Defaults to false unless set in config. */
     private boolean sendEmailAlertsEnabled;
 
 

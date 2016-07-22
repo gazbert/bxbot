@@ -39,7 +39,7 @@ import static org.junit.Assert.assertTrue;
 public class TestEngineConfigurationManagement {
 
     /* Production XSD */
-    private static final String XML_SCHEMA_FILENAME = "config/schemas/engine.xsd";
+    private static final String XML_SCHEMA_FILENAME = "com/gazbert/bxbot/core/config/engine/engine.xsd";
 
     /* Test XML config */
     private static final String VALID_XML_CONFIG_FILENAME = "src/test/config/engine/valid-engine.xml";

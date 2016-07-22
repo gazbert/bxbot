@@ -23,13 +23,11 @@
             <includes>
                 <include>README.md</include>
                 <include>LICENSE</include>
-                <include>third_party_licenses.tct</include>
+                <include>third_party_licenses.txt</include>
                 <include>contributors.txt</include>
                 <include>bxbot.sh</include>
                 <include>config/*.xml</include>
-                <include>config/schemas/*.xsd</include>
                 <include>resources/log4j.properties</include>
-                <include>resources/**/*.properties</include>
             </includes>
         </fileSet>
 

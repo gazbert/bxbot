@@ -456,7 +456,7 @@ A Maven `pom.xml` is included for building the bot.
 1. Clone the BX-bot repo locally.
 1. Open the `./config` XML files and configure them as required.
 1. If you plan on using Trading Strategies or Exchange Adapters that are packaged in separate jar files, you'll need to add
-   the dependency in the `pom.xml` file - see the commented out dependencies examples inside it.
+   the dependency in the `pom.xml` file - see the commented out dependency examples inside it.
 1. Run `mvn assembly:assembly` to build the bot and produce the distribution artifacts `bxbot-core-<version>-dist.tar.gz`
    and `bxbot-core-<version>-dist.zip`. Take a look at the Javadoc in the `./target/apidocs` folder after running this.
 

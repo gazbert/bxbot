@@ -37,7 +37,7 @@ import static org.junit.Assert.assertNotNull;
 public class TestExchangeConfigurationManagement {
 
     /* Production XSD */
-    private static final String XML_SCHEMA_FILENAME = "config/schemas/exchange.xsd";
+    private static final String XML_SCHEMA_FILENAME = "com/gazbert/bxbot/core/config/exchange/exchange.xsd";
 
     /* Test XML config */
     private static final String VALID_XML_CONFIG_FILENAME = "src/test/config/exchange/valid-exchange.xml";

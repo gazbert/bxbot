@@ -40,7 +40,7 @@ import static org.junit.Assert.assertTrue;
 public class TestEmailAlertsConfigurationManagement {
 
     /* Production XSD */
-    private static final String XML_SCHEMA_FILENAME = "config/schemas/email-alerts.xsd";
+    private static final String XML_SCHEMA_LOCATION = "com/gazbert/bxbot/core/config/emailalerts/email-alerts.xsd";
 
     /* Test XML config */
     private static final String VALID_XML_CONFIG_FILENAME = "src/test/config/emailalerts/valid-email-alerts.xml";
@@ -53,7 +53,7 @@ public class TestEmailAlertsConfigurationManagement {
     public void testLoadingValidXmlConfigFileIsSuccessful() {
 
         final EmailAlertsType emailAlertsType = ConfigurationManager.loadConfig(EmailAlertsType.class,
-                VALID_XML_CONFIG_FILENAME, XML_SCHEMA_FILENAME);
+                VALID_XML_CONFIG_FILENAME, XML_SCHEMA_LOCATION);
 
         final SmtpConfigType smtpConfigType = emailAlertsType.getSmtpConfig();
         assertTrue(emailAlertsType.isEnabled());
@@ -69,12 +69,12 @@ public class TestEmailAlertsConfigurationManagement {
     public void testLoadingValidXmlConfigFileWithoutSmtpConfigIsSuccessful() {
 
         final EmailAlertsType emailAlertsType = ConfigurationManager.loadConfig(EmailAlertsType.class,
-                VALID_XML_CONFIG_WITHOUT_EMAIL_ALERTS_FILENAME, XML_SCHEMA_FILENAME);
+                VALID_XML_CONFIG_WITHOUT_EMAIL_ALERTS_FILENAME, XML_SCHEMA_LOCATION);
         assertFalse(emailAlertsType.isEnabled());
     }
 
     @Test(expected = IllegalStateException.class)
     public void testLoadingMissingXmlConfigThrowsException() {
-        ConfigurationManager.loadConfig(EngineType.class, MISSING_XML_CONFIG_FILENAME, XML_SCHEMA_FILENAME);
+        ConfigurationManager.loadConfig(EngineType.class, MISSING_XML_CONFIG_FILENAME, XML_SCHEMA_LOCATION);
     }
 }

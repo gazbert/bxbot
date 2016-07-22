@@ -83,19 +83,20 @@ final public class TradingEngine {
     private static final Logger LOG = Logger.getLogger(TradingEngine.class);
 
     /*
-     * Location of the config files (relative to project/installation root) used by the bot.
+     * Location of the XML config files relative to project/installation root.
      */
     private static final String ENGINE_CONFIG_XML_FILENAME = "config/engine.xml";
-    private static final String ENGINE_CONFIG_XSD_FILENAME = "config/schemas/engine.xsd";
-
     private static final String EXCHANGE_CONFIG_XML_FILENAME = "config/exchange.xml";
-    private static final String EXCHANGE_CONFIG_XSD_FILENAME = "config/schemas/exchange.xsd";
-
     private static final String MARKETS_CONFIG_XML_FILENAME = "config/markets.xml";
-    private static final String MARKETS_CONFIG_XSD_FILENAME = "config/schemas/markets.xsd";
-
     private static final String STRATEGIES_CONFIG_XML_FILENAME = "config/strategies.xml";
-    private static final String STRATEGIES_CONFIG_XSD_FILENAME = "config/schemas/strategies.xsd";
+
+    /*
+     * XSD schema files for validating the XML config - their location in the main/resources folder.
+     */
+    private static final String ENGINE_CONFIG_XSD_FILENAME = "com/gazbert/bxbot/core/config/engine/engine.xsd";
+    private static final String EXCHANGE_CONFIG_XSD_FILENAME = "com/gazbert/bxbot/core/config/exchange/exchange.xsd";
+    private static final String MARKETS_CONFIG_XSD_FILENAME = "com/gazbert/bxbot/core/config/market/markets.xsd";
+    private static final String STRATEGIES_CONFIG_XSD_FILENAME = "com/gazbert/bxbot/core/config/strategy/strategies.xsd";
 
     /*
      * Subject for Email Alerts sent by the engine.

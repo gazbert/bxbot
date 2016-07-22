@@ -33,11 +33,12 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.InputStream;
 
 
 /*
@@ -64,8 +65,10 @@ public final class ConfigurationManager {
 
             // optional schema validation
             if (xmlSchemaFile != null) {
+                final InputStream xsdStream = ConfigurationManager.class.getClassLoader().getResourceAsStream(xmlSchemaFile);
+                final StreamSource xsdSource = new StreamSource(xsdStream);
                 final SchemaFactory sf = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-                final Schema schema = sf.newSchema(new File(xmlSchemaFile));
+                final Schema schema = sf.newSchema(xsdSource);
                 unmarshaller.setSchema(schema);
             }
 
