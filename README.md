@@ -76,16 +76,18 @@ The bot provides a plugin framework for the:
 1. Markets to trade on.
 1. Trading Strategies to execute.
 
-It uses XML configuration files. These live in the `config` folder.
+It uses XML configuration files. These live in the [`config`](https://github.com/gazbert/BX-bot/tree/master/config) folder.
 
 Config changes are only applied at startup; they are _not_ hot.
 
 All configuration elements are mandatory unless specified otherwise.
 
-Sample configurations for running on different exchanges can be found in the `config/samples` folder.
+Sample configurations for running on different exchanges can be found in the 
+[`config/samples`](https://github.com/gazbert/BX-bot/tree/master/config/samples)folder.
 
 ##### Exchange Adapters
-You specify the Exchange Adapter you want BX-bot to use in the `exchange.xml` file. 
+You specify the Exchange Adapter you want BX-bot to use in the 
+[`exchange.xml`](https://github.com/gazbert/BX-bot/blob/master/config/exchange.xml) file. 
 
 ```xml
 <exchange>
@@ -163,7 +165,8 @@ BX-bot only supports 1 Exchange Adapter for each instance of the bot; you will n
 instances of the bot to run against different exchanges.
 
 ##### Markets
-You specify which markets you want to trade on in the `markets.xml` file.
+You specify which markets you want to trade on in the 
+[`markets.xml`](https://github.com/gazbert/BX-bot/blob/master/config/markets.xml) file.
 
 ```xml
 <markets>      
@@ -206,7 +209,8 @@ The `<trading-strategy>` value _must_ match a strategy `<id>` defined in your `s
 Currently, BX-bot only supports 1 `<trading-strategy>` per `<market>`.
 
 ##### Strategies #####
-You specify the Trading Strategies you wish to use in the `strategies.xml` file.
+You specify the Trading Strategies you wish to use in the 
+[`strategies.xml`](https://github.com/gazbert/BX-bot/blob/master/config/strategies.xml) file.
 
 ```xml
 <trading-strategies>
@@ -265,7 +269,7 @@ The `<configuration>` section is optional. It allows you to set custom key/value
 to your Trading Strategy when the bot starts up; see the _How do I write my own Trading Strategy?_ section.
 
 ##### Engine
-The `engine.xml` file is used to configure the Trading Engine.
+The [`engine.xml`](https://github.com/gazbert/BX-bot/blob/master/config/engine.xml) file is used to configure the Trading Engine.
 
 ```xml
 <engine>
@@ -292,7 +296,8 @@ too hard - you cannot perform HFT over the public internet! I might have EMA/MAC
 strats running every 60s on BTC-e. You'll need to experiment with the trade cycle interval for different exchanges.
 
 ##### Email Alerts
-You specify the Email Alerts config in the `email-alerts.xml` file.
+You specify the Email Alerts config in the 
+[`email-alerts.xml`](https://github.com/gazbert/BX-bot/blob/master/config/email-alerts.xml) file.
 
 ```xml
 <email-alerts>
@@ -451,7 +456,7 @@ A Maven `pom.xml` is included for building the bot.
 1. Clone the BX-bot repo locally.
 1. Open the `./config` XML files and configure them as required.
 1. If you plan on using Trading Strategies or Exchange Adapters that are packaged in separate jar files, you'll need to add
-   the dependency in the `pom.xml` file - see the commented out examples.
+   the dependency in the `pom.xml` file - see the commented out dependencies examples inside it.
 1. Run `mvn assembly:assembly` to build the bot and produce the distribution artifacts `bxbot-core-<version>-dist.tar.gz`
    and `bxbot-core-<version>-dist.zip`. Take a look at the Javadoc in the `./target/apidocs` folder after running this.
 

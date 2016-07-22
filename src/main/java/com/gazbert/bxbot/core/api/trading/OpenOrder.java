@@ -30,7 +30,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 /**
- * Domain class representing one of your Open (active) Orders on the exchange.
+ * Domain class representing an Open (active) Order on the exchange.
  *
  * @author gazbert
  */

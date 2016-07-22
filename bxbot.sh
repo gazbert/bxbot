@@ -11,16 +11,18 @@
 #
 # This script expects all the jar files to live in the LIB_DIR.
 #
-# Change the bxbot_core, log4j, javamail, and gson (if you are using the inbuilt Exchange Adapters) vars to
+# Change the bxbot_core, log4j, javamail, guava, and gson (if you are using the inbuilt Exchange Adapters) vars to
 # the versions you want to run. They have been given sensible defaults.
 #
 # Set bxbot_strategies var if you have a jar with your own Trading Strategies.
 #
 # Set bxbot_exchanges var if you have a jar with your own Exchange Adapters.
 #
-
 LIB_DIR=./libs
 RESOURCES_DIR=./resources
+
+# The BX-bot core jar (mandatory)
+bxbot_core=bxbot-core-0.2-beta.2-SNAPSHOT.jar
 
 # log4j (mandatory)
 log4j=log4j-1.2.17.jar
@@ -31,11 +33,8 @@ javamail=javax.mail-1.5.4.jar
 # Google Guava (mandatory)
 guava=guava-19.0.jar
 
-# Google GSON (optional - only needed if you use the inbuilt Exchange Adapters; the script assumes you are)
+# Google GSON (optional - only needed if you use the inbuilt Exchange Adapters; this script assumes you are)
 gson=gson-2.3.1.jar
-
-# The BX-bot core jar (mandatory)
-bxbot_core=bxbot-core-0.2-beta.2-SNAPSHOT.jar
 
 # Your Trading Strategies (optional)
 # Needed if you're not using the sample included with the bot OR you have not included your strats in the bxbot_core jar.
