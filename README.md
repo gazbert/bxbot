@@ -341,7 +341,7 @@ output from the Exchange Adapters; it's very handy for debugging, but not so goo
 _"Battle not with monsters, lest ye become a monster, and if you gaze into the abyss, the abyss gazes also into you."_ - Friedrich Nietzsche
 
 The best place to start is with the sample Trading Strategy provided - see the latest 
-[`BasicScalpingExampleStrategy'](https://github.com/gazbert/BX-bot/blob/master/src/main/java/com/gazbert/bxbot/core/strategies/ExampleScalpingStrategy.java).
+[`BasicScalpingExampleStrategy`](https://github.com/gazbert/BX-bot/blob/master/src/main/java/com/gazbert/bxbot/core/strategies/ExampleScalpingStrategy.java).
 More information can be found
 [here](http://www.investopedia.com/articles/active-trading/101014/basics-algorithmic-trading-concepts-and-examples.asp).
 
