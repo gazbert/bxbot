@@ -292,8 +292,8 @@ the exchange drops below this value, the Trading Engine will log it, send an Ema
 The `<trade-cycle-interval>` value is the interval in _seconds_ that the Trading Engine will wait/sleep before executing
 each trade cycle. The minimum value is 1 second. Some exchanges allow you to hit them harder than others. However, while
 their API documentation might say one thing, the reality is you might get socket timeouts and 5xx responses if you hit it
-too hard - you cannot perform [low latency]("https://en.wikipedia.org/wiki/Low_latency_(capital_markets)") trading  
-over the public internet ;-) I might have EMA/MACD strats running every 5 mins and 'scalping'
+too hard - you cannot perform [low latency]("https://en.wikipedia.org/wiki/Low_latency_(capital_markets)") trading over 
+the public internet ;-) I might have EMA/MACD strats running every 5 mins and 'scalping'
 strats running every 60s on BTC-e. You'll need to experiment with the trade cycle interval for different exchanges.
 
 ##### Email Alerts
@@ -332,7 +332,7 @@ The email is sent using TLS.
 Logging for the bot is provided by [log4j](http://logging.apache.org/log4j). The log file is written to `logs/bxbot.log` 
 and uses a rolling policy: once a file reaches 100MB, it is archived, and a new log file started. Only the last 
 20 archives are kept. The logging level is set at INFO. You can change this default logging configuration in the 
-`resources/log4j2.xml` file.
+[`resources/log4j2.xml`](https://github.com/gazbert/BX-bot/blob/master/resources/log4j2.xml) file.
 
 I recommend running at INFO level. DEBUG level logging will produce a *lot* of
 output from the Exchange Adapters; it's very handy for debugging, but not so good for your disk space!
