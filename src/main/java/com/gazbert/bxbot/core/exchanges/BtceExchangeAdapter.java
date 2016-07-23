@@ -26,26 +26,12 @@ package com.gazbert.bxbot.core.exchanges;
 import com.gazbert.bxbot.core.api.exchange.AuthenticationConfig;
 import com.gazbert.bxbot.core.api.exchange.ExchangeAdapter;
 import com.gazbert.bxbot.core.api.exchange.ExchangeConfig;
-import com.gazbert.bxbot.core.api.trading.BalanceInfo;
-import com.gazbert.bxbot.core.api.trading.ExchangeNetworkException;
-import com.gazbert.bxbot.core.api.trading.MarketOrder;
-import com.gazbert.bxbot.core.api.trading.MarketOrderBook;
-import com.gazbert.bxbot.core.api.trading.OpenOrder;
-import com.gazbert.bxbot.core.api.trading.OrderType;
-import com.gazbert.bxbot.core.api.trading.TradingApi;
-import com.gazbert.bxbot.core.api.trading.TradingApiException;
-import com.gazbert.bxbot.core.util.LogUtils;
+import com.gazbert.bxbot.core.api.trading.*;
 import com.google.common.base.MoreObjects;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
+import com.google.gson.*;
 import com.google.gson.annotations.SerializedName;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -59,14 +45,8 @@ import java.net.URLEncoder;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
-import java.util.UUID;
 
 /**
  * <p>
@@ -104,7 +84,7 @@ import java.util.UUID;
  */
 public final class BtceExchangeAdapter extends AbstractExchangeAdapter implements ExchangeAdapter {
 
-    private static final Logger LOG = Logger.getLogger(BtceExchangeAdapter.class);
+    private static final Logger LOG = LogManager.getLogger();
 
     /**
      * The Authenticated API URI.
@@ -171,7 +151,7 @@ public final class BtceExchangeAdapter extends AbstractExchangeAdapter implement
     @Override
     public void init(ExchangeConfig config) {
 
-        LogUtils.log(LOG, Level.INFO, () -> "About to initialise BTC-e ExchangeConfig: " + config);
+        LOG.info(() -> "About to initialise BTC-e ExchangeConfig: " + config);
         setAuthenticationConfig(config);
         setNetworkConfig(config);
 
@@ -190,7 +170,7 @@ public final class BtceExchangeAdapter extends AbstractExchangeAdapter implement
 
         try {
             final ExchangeHttpResponse response = sendPublicRequestToExchange("depth", marketId);
-            LogUtils.log(LOG, Level.DEBUG, () -> "getMarketOrders() response(): " + response);
+            LOG.debug(() -> "Market Orders response: " + response);
 
             final BtceMarketOrderBookWrapper marketOrderWrapper = gson.fromJson(response.getPayload(),
                     BtceMarketOrderBookWrapper.class);
@@ -235,7 +215,7 @@ public final class BtceExchangeAdapter extends AbstractExchangeAdapter implement
             params.put("pair", marketId);
 
             final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("ActiveOrders", params);
-            LogUtils.log(LOG, Level.DEBUG, () -> "getYourOpenOrders() response: " + response);
+            LOG.debug(() -> "Open Orders response: " + response);
 
             final BtceOpenOrderResponseWrapper myOpenOrders = gson.fromJson(response.getPayload(), BtceOpenOrderResponseWrapper.class);
 
@@ -245,10 +225,10 @@ public final class BtceExchangeAdapter extends AbstractExchangeAdapter implement
 
                 // this sucks!
                 if (myOpenOrders.error.equalsIgnoreCase("no orders")) {
-                    LogUtils.log(LOG, Level.DEBUG, () -> "No Open Orders");
+                    LOG.debug(() -> "No Open Orders");
 
                 } else {
-                    LogUtils.log(LOG, Level.DEBUG, () -> "BtceOpenOrderResponseWrapper: " + myOpenOrders);
+                    LOG.debug(() -> "BtceOpenOrderResponseWrapper: " + myOpenOrders);
 
                     // adapt - and we really have to this time... jeez...
                     final BtceOpenOrders btceOrders = myOpenOrders.openOrders;
@@ -329,7 +309,7 @@ public final class BtceExchangeAdapter extends AbstractExchangeAdapter implement
                 throw new IllegalArgumentException(errorMsg);
             }
 
-            LogUtils.log(LOG, Level.DEBUG, () -> "createOrder() response: " + response);
+            LOG.debug(() -> "Create Order response: " + response);
 
             final BtceCreateOrderResponseWrapper createOrderResponseWrapper = gson.fromJson(response.getPayload(),
                     BtceCreateOrderResponseWrapper.class);
@@ -374,7 +354,7 @@ public final class BtceExchangeAdapter extends AbstractExchangeAdapter implement
             final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("CancelOrder", params);
 
             // useful to log diff types of error response in JSON response
-            LogUtils.log(LOG, Level.DEBUG, () -> "cancelOrder() response: " + response);
+            LOG.debug(() -> "Cancel Order response: " + response);
 
             final BtceCancelledOrderWrapper cancelOrderResponse = gson.fromJson(response.getPayload(), BtceCancelledOrderWrapper.class);
 
@@ -397,7 +377,7 @@ public final class BtceExchangeAdapter extends AbstractExchangeAdapter implement
 
         try {
             final ExchangeHttpResponse response = sendPublicRequestToExchange("ticker", marketId);
-            LogUtils.log(LOG, Level.DEBUG, () -> "getLatestMarketPrice() response: " + response);
+            LOG.debug(() -> "Latest Market Price response: " + response);
 
             final BtceTickerWrapper btceTicker = gson.fromJson(response.getPayload(), BtceTickerWrapper.class);
             return btceTicker.ticker.last;
@@ -415,7 +395,7 @@ public final class BtceExchangeAdapter extends AbstractExchangeAdapter implement
 
         try {
             final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("getInfo", null);
-            LogUtils.log(LOG, Level.DEBUG, () -> "getBalanceInfo() response: " + response);
+            LOG.debug(() -> "Balance Info response: " + response);
 
             final BtceInfoWrapper info = gson.fromJson(response.getPayload(), BtceInfoWrapper.class);
 
@@ -448,7 +428,7 @@ public final class BtceExchangeAdapter extends AbstractExchangeAdapter implement
 
         try {
             final ExchangeHttpResponse response = sendPublicRequestToExchange("fee", marketId);
-            LogUtils.log(LOG, Level.DEBUG, () -> "getPercentageOfBuyOrderTakenForExchangeFee() response: " + response);
+            LOG.debug(() -> "Buy Fee response: " + response);
 
             final BtceFees fees = gson.fromJson(response.getPayload(), BtceFees.class);
 
@@ -469,7 +449,7 @@ public final class BtceExchangeAdapter extends AbstractExchangeAdapter implement
 
         try {
             final ExchangeHttpResponse response = sendPublicRequestToExchange("fee", marketId);
-            LogUtils.log(LOG, Level.DEBUG, () -> "getPercentageOfSellOrderTakenForExchangeFee() response: " + response);
+            LOG.debug(() -> "Sell Fee response: " + response);
 
             final BtceFees fees = gson.fromJson(response.getPayload(), BtceFees.class);
 

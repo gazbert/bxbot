@@ -26,20 +26,12 @@ package com.gazbert.bxbot.core.exchanges;
 import com.gazbert.bxbot.core.api.exchange.AuthenticationConfig;
 import com.gazbert.bxbot.core.api.exchange.ExchangeAdapter;
 import com.gazbert.bxbot.core.api.exchange.ExchangeConfig;
-import com.gazbert.bxbot.core.api.trading.BalanceInfo;
-import com.gazbert.bxbot.core.api.trading.ExchangeNetworkException;
-import com.gazbert.bxbot.core.api.trading.MarketOrder;
-import com.gazbert.bxbot.core.api.trading.MarketOrderBook;
-import com.gazbert.bxbot.core.api.trading.OpenOrder;
-import com.gazbert.bxbot.core.api.trading.OrderType;
-import com.gazbert.bxbot.core.api.trading.TradingApi;
-import com.gazbert.bxbot.core.api.trading.TradingApiException;
-import com.gazbert.bxbot.core.util.LogUtils;
+import com.gazbert.bxbot.core.api.trading.*;
 import com.google.common.base.MoreObjects;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -53,19 +45,14 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * <p>
  * Exchange Adapter for integrating with the Bitfinex exchange.
  * The Bitfinex API is documented <a href="https://www.bitfinex.com/pages/api">here</a>.
  * </p>
- *
+ * <p>
  * <p>
  * <strong>
  * DISCLAIMER:
@@ -75,24 +62,24 @@ import java.util.Map;
  * methods. Use it at our own risk!
  * </strong>
  * </p>
- *
+ * <p>
  * <p>
  * The adapter uses v1 of the Bitfinex API - it is limited to 60 API calls per minute. It only supports 'exchange'
  * accounts; it does <em>not</em> support 'trading' (margin trading) accounts or 'deposit' (liquidity SWAPs) accounts.
  * Furthermore, the adapter does not support sending 'hidden' orders.
  * </p>
- *
+ * <p>
  * <p>
  * There are different exchange fees for Takers and Makers - see <a href="https://www.bitfinex.com/pages/fees">here.</a>
  * This adapter will use the <em>Taker</em> fees to keep things simple for now.
  * </p>
- *
+ * <p>
  * <p>
  * The Exchange Adapter is <em>not</em> thread safe. It expects to be called using a single thread in order to
  * preserve trade execution order. The {@link URLConnection} achieves this by blocking/waiting on the input stream
  * (response) for each API call.
  * </p>
- *
+ * <p>
  * <p>
  * The {@link TradingApi} calls will throw a {@link ExchangeNetworkException} if a network error occurs trying to
  * connect to the exchange. A {@link TradingApiException} is thrown for <em>all</em> other failures.
@@ -102,7 +89,7 @@ import java.util.Map;
  */
 public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter implements ExchangeAdapter {
 
-    private static final Logger LOG = Logger.getLogger(BitfinexExchangeAdapter.class);
+    private static final Logger LOG = LogManager.getLogger();
 
     /**
      * The version of the Bitfinex API being used.
@@ -174,7 +161,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter imple
     @Override
     public void init(ExchangeConfig config) {
 
-        LogUtils.log(LOG, Level.INFO, () -> "About to initialise Bitfinex ExchangeConfig: " + config);
+        LOG.info(() -> "About to initialise Bitfinex ExchangeConfig: " + config);
         setAuthenticationConfig(config);
         setNetworkConfig(config);
 
@@ -193,8 +180,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter imple
 
         try {
             final ExchangeHttpResponse response = sendPublicRequestToExchange("book/" + marketId);
-
-            LogUtils.log(LOG, Level.DEBUG, () -> "getMarketOrders() response: " + response);
+            LOG.debug(() -> "Market Orders response: " + response);
 
             final BitfinexOrderBook orderBook = gson.fromJson(response.getPayload(), BitfinexOrderBook.class);
 
@@ -235,7 +221,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter imple
 
         try {
             final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("orders", null);
-            LogUtils.log(LOG, Level.DEBUG, () -> "getYourOpenOrders() response: " + response);
+            LOG.debug(() -> "Open Orders response: " + response);
 
             final BitfinexOpenOrders bitfinexOpenOrders = gson.fromJson(response.getPayload(), BitfinexOpenOrders.class);
 
@@ -320,7 +306,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter imple
             //params.put("is_hidden", "false");
 
             final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("order/new", params);
-            LogUtils.log(LOG, Level.DEBUG, () -> "createOrder() response: " + response);
+            LOG.debug(() -> "Create Order response: " + response);
 
             final BitfinexNewOrderResponse createOrderResponse = gson.fromJson(response.getPayload(), BitfinexNewOrderResponse.class);
             final long id = createOrderResponse.order_id;
@@ -349,9 +335,9 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter imple
         try {
             final Map<String, Object> params = getRequestParamMap();
             params.put("order_id", Long.parseLong(orderId));
-            final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("order/cancel", params);
 
-            LogUtils.log(LOG, Level.DEBUG, () -> "cancelOrder() response: " + response);
+            final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("order/cancel", params);
+            LOG.debug(() -> "Cancel Order response: " + response);
 
             // Exchange returns order id and other details if successful, a 400 HTTP Status if the order id was not recognised.
             gson.fromJson(response.getPayload(), BitfinexCancelOrderResponse.class);
@@ -376,7 +362,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter imple
 
         try {
             final ExchangeHttpResponse response = sendPublicRequestToExchange("pubticker/" + marketId);
-            LogUtils.log(LOG, Level.DEBUG, () -> "getLatestMarketPrice() response: " + response);
+            LOG.debug(() -> "Latest Market Price response: " + response);
 
             final BitfinexTicker ticker = gson.fromJson(response.getPayload(), BitfinexTicker.class);
             return ticker.last_price;
@@ -394,7 +380,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter imple
 
         try {
             final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("balances", null);
-            LogUtils.log(LOG, Level.DEBUG, () -> "getBalanceInfo() response: " + response);
+            LOG.debug(() -> "Balance Info response: " + response);
 
             final BitfinexBalances allAccountBalances = gson.fromJson(response.getPayload(), BitfinexBalances.class);
 
@@ -433,7 +419,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter imple
 
         try {
             final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("account_infos", null);
-            LogUtils.log(LOG, Level.DEBUG, () -> "getPercentageOfBuyOrderTakenForExchangeFee() response: " + response);
+            LOG.debug(() -> "Buy Fee response: " + response);
 
             // Nightmare to adapt! Just take the top-level taker fees.
             final BitfinexAccountInfos bitfinexAccountInfos = gson.fromJson(response.getPayload(), BitfinexAccountInfos.class);
@@ -456,7 +442,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter imple
 
         try {
             final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("account_infos", null);
-            LogUtils.log(LOG, Level.DEBUG, () -> "getPercentageOfSellOrderTakenForExchangeFee() response: " + response);
+            LOG.debug(() -> "Sell Fee response: " + response);
 
             // Nightmare to adapt! Just take the top-level taker fees.
             final BitfinexAccountInfos bitfinexAccountInfos = gson.fromJson(response.getPayload(), BitfinexAccountInfos.class);
@@ -602,11 +588,11 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter imple
 
     /**
      * GSON class for holding Bitfinex response from 'account_infos' API call.
-     *
+     * <p>
      * This is a lot of work to just get the exchange fees!
-     *
+     * <p>
      * We want the taker fees.
-     *
+     * <p>
      * <pre>
      *  [
      *      {
@@ -835,7 +821,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter imple
      * @param apiMethod the API method to call.
      * @return the response from the exchange.
      * @throws ExchangeNetworkException if there is a network issue connecting to exchange.
-     * @throws TradingApiException if anything unexpected happens.
+     * @throws TradingApiException      if anything unexpected happens.
      */
     private ExchangeHttpResponse sendPublicRequestToExchange(String apiMethod) throws ExchangeNetworkException, TradingApiException {
 
@@ -859,7 +845,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter imple
      * <p>
      * Makes an authenticated API call to the Bitfinex exchange.
      * </p>
-     *
+     * <p>
      * <pre>
      * Bitfinex Example:
      *
@@ -887,10 +873,10 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter imple
      * </pre>
      *
      * @param apiMethod the API method to call.
-     * @param params the query param args to use in the API call.
+     * @param params    the query param args to use in the API call.
      * @return the response from the exchange.
      * @throws ExchangeNetworkException if there is a network issue connecting to exchange.
-     * @throws TradingApiException if anything unexpected happens.
+     * @throws TradingApiException      if anything unexpected happens.
      */
     private ExchangeHttpResponse sendAuthenticatedRequestToExchange(String apiMethod, Map<String, Object> params)
             throws ExchangeNetworkException, TradingApiException {

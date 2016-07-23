@@ -22,19 +22,20 @@ LIB_DIR=./libs
 RESOURCES_DIR=./resources
 
 # The BX-bot core jar (mandatory)
-bxbot_core=bxbot-core-0.2-beta.2-SNAPSHOT.jar
+bxbot_core=bxbot-core-0.2-beta.2.jar
 
 # log4j (mandatory)
-log4j=log4j-1.2.17.jar
+log4j_api=log4j-api-2.6.2.jar
+log4j_core=log4j-core-2.6.2.jar
 
 # javamail (mandatory)
-javamail=javax.mail-1.5.4.jar
+javamail=javax.mail-1.5.5.jar
 
 # Google Guava (mandatory)
 guava=guava-19.0.jar
 
 # Google GSON (optional - only needed if you use the inbuilt Exchange Adapters; this script assumes you are)
-gson=gson-2.3.1.jar
+gson=gson-2.7.jar
 
 # Your Trading Strategies (optional)
 # Needed if you're not using the sample included with the bot OR you have not included your strats in the bxbot_core jar.
@@ -45,8 +46,8 @@ bxbot_strategies=
 bxbot_exchanges=
 
 # Runtime classpath
-CLASSPATH=${LIB_DIR}/${log4j}:${LIB_DIR}/${javamail}:${LIB_DIR}/${guava}:${LIB_DIR}/${gson}:${LIB_DIR}/${bxbot_core}:\
-${LIB_DIR}/${bxbot_strategies}:${LIB_DIR}/${bxbot_exchanges}:${RESOURCES_DIR}
+CLASSPATH=${LIB_DIR}/${log4j_api}:${LIB_DIR}/${log4j_core}:${LIB_DIR}/${javamail}:${LIB_DIR}/${guava}:${LIB_DIR}/${gson}:\
+${LIB_DIR}/${bxbot_core}:${LIB_DIR}/${bxbot_strategies}:${LIB_DIR}/${bxbot_exchanges}:${RESOURCES_DIR}
 
 # PID file for checking if bot is running
 PID_FILE=./.bxbot.pid

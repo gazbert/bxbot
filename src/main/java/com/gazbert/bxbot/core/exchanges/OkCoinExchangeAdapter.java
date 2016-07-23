@@ -27,20 +27,12 @@ import com.gazbert.bxbot.core.api.exchange.AuthenticationConfig;
 import com.gazbert.bxbot.core.api.exchange.ExchangeAdapter;
 import com.gazbert.bxbot.core.api.exchange.ExchangeConfig;
 import com.gazbert.bxbot.core.api.exchange.OtherConfig;
-import com.gazbert.bxbot.core.api.trading.BalanceInfo;
-import com.gazbert.bxbot.core.api.trading.ExchangeNetworkException;
-import com.gazbert.bxbot.core.api.trading.MarketOrder;
-import com.gazbert.bxbot.core.api.trading.MarketOrderBook;
-import com.gazbert.bxbot.core.api.trading.OpenOrder;
-import com.gazbert.bxbot.core.api.trading.OrderType;
-import com.gazbert.bxbot.core.api.trading.TradingApi;
-import com.gazbert.bxbot.core.api.trading.TradingApiException;
-import com.gazbert.bxbot.core.util.LogUtils;
+import com.gazbert.bxbot.core.api.trading.*;
 import com.google.common.base.MoreObjects;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.math.BigDecimal;
 import java.net.MalformedURLException;
@@ -50,19 +42,14 @@ import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * <p>
  * Exchange Adapter for integrating with the OKCoin exchange.
  * The OKCoin API is documented <a href="https://www.okcoin.com/about/rest_getStarted.do">here</a>.
  * </p>
- *
+ * <p>
  * <p>
  * <strong>
  * DISCLAIMER:
@@ -72,11 +59,11 @@ import java.util.Map;
  * methods. Use it at our own risk!
  * </strong>
  * </p>
- *
+ * <p>
  * <p>
  * It only supports the REST implementation of the <a href="https://www.okcoin.com/about/rest_api.do#stapi">Spot Trading API</a>.
  * </p>
- *
+ * <p>
  * <p>
  * The exchange % buy and sell fees are currently loaded statically from the exchange.xml file on startup;
  * they are not fetched from the exchange at runtime as the OKCoin API does not support this - it only provides the fee
@@ -84,13 +71,13 @@ import java.util.Map;
  * Make sure you keep an eye on the <a href="https://www.okcoin.com/about/fees.do">exchange fees</a> and update the
  * config accordingly.
  * </p>
- *
+ * <p>
  * <p>
  * The Exchange Adapter is <em>not</em> thread safe. It expects to be called using a single thread in order to
  * preserve trade execution order. The {@link URLConnection} achieves this by blocking/waiting on the input stream
  * (response) for each API call.
  * </p>
- *
+ * <p>
  * <p>
  * The {@link TradingApi} calls will throw a {@link ExchangeNetworkException} if a network error occurs trying to
  * connect to the exchange. A {@link TradingApiException} is thrown for <em>all</em> other failures.
@@ -100,7 +87,7 @@ import java.util.Map;
  */
 public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter implements ExchangeAdapter {
 
-    private static final Logger LOG = Logger.getLogger(OkCoinExchangeAdapter.class);
+    private static final Logger LOG = LogManager.getLogger();
 
     /**
      * The version of the OKCoin API being used.
@@ -187,7 +174,7 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
     @Override
     public void init(ExchangeConfig config) {
 
-        LogUtils.log(LOG, Level.INFO, () -> "About to initialise OKCoin ExchangeConfig: " + config);
+        LOG.info(() -> "About to initialise OKCoin ExchangeConfig: " + config);
         setAuthenticationConfig(config);
         setNetworkConfig(config);
         setOtherConfig(config);
@@ -229,7 +216,7 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
             params.put("amount", new DecimalFormat("#.########").format(quantity));
 
             final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("trade.do", params);
-            LogUtils.log(LOG, Level.DEBUG, () -> "createOrder() response: " + response);
+            LOG.debug(() -> "Create Order response: " + response);
 
             final OKCoinTradeResponse createOrderResponse = gson.fromJson(response.getPayload(), OKCoinTradeResponse.class);
             if (createOrderResponse.result) {
@@ -257,7 +244,7 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
             params.put("symbol", marketId);
 
             final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("cancel_order.do", params);
-            LogUtils.log(LOG, Level.DEBUG, () -> "cancelOrder() response: " + response);
+            LOG.debug(() -> "Cancel Order response: " + response);
 
             final OKCoinCancelOrderResponse cancelOrderResponse = gson.fromJson(response.getPayload(), OKCoinCancelOrderResponse.class);
             if (cancelOrderResponse.result) {
@@ -286,7 +273,7 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
             params.put("order_id", "-1"); // -1 means bring back all the orders
 
             final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("order_info.do", params);
-            LogUtils.log(LOG, Level.DEBUG, () -> "getYourOpenOrders() response: " + response);
+            LOG.debug(() -> "Open Orders response: " + response);
 
             final OKCoinOrderInfoWrapper orderInfoWrapper = gson.fromJson(response.getPayload(), OKCoinOrderInfoWrapper.class);
             if (orderInfoWrapper.result) {
@@ -345,7 +332,7 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
             params.put("symbol", marketId);
 
             final ExchangeHttpResponse response = sendPublicRequestToExchange("depth.do", params);
-            LogUtils.log(LOG, Level.DEBUG, () -> "getMarketOrders() response: " + response);
+            LOG.debug(() -> "Market Orders response: " + response);
 
             final OKCoinDepthWrapper orderBook = gson.fromJson(response.getPayload(), OKCoinDepthWrapper.class);
 
@@ -376,7 +363,7 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
             Collections.sort(sellOrders, (thisOrder, thatOrder) -> {
                 if (thisOrder.getPrice().compareTo(thatOrder.getPrice()) < 0) {
                     return -1;
-                } else if(thisOrder.getPrice().compareTo(thatOrder.getPrice()) > 0) {
+                } else if (thisOrder.getPrice().compareTo(thatOrder.getPrice()) > 0) {
                     return 1;
                 } else {
                     return 0; // same price
@@ -401,7 +388,7 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
             params.put("symbol", marketId);
 
             final ExchangeHttpResponse response = sendPublicRequestToExchange("ticker.do", params);
-            LogUtils.log(LOG, Level.DEBUG, () -> "getLatestMarketPrice() response: " + response);
+            LOG.debug(() -> "Latest Market Price response: " + response);
 
             final OKCoinTickerWrapper tickerWrapper = gson.fromJson(response.getPayload(), OKCoinTickerWrapper.class);
             return tickerWrapper.ticker.last;
@@ -419,7 +406,7 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
 
         try {
             final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("userinfo.do", null);
-            LogUtils.log(LOG, Level.DEBUG, () -> "getBalanceInfo() response: " + response);
+            LOG.debug(() -> "Balance Info response: " + response);
 
             final OKCoinUserInfoWrapper userInfoWrapper = gson.fromJson(response.getPayload(), OKCoinUserInfoWrapper.class);
             if (userInfoWrapper.result) {
@@ -728,10 +715,10 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
      * Makes a public API call to the OKCoin exchange.
      *
      * @param apiMethod the API method to call.
-     * @param params the query param args to use in the API call
+     * @param params    the query param args to use in the API call
      * @return the response from the exchange.
      * @throws ExchangeNetworkException if there is a network issue connecting to exchange.
-     * @throws TradingApiException if anything unexpected happens.
+     * @throws TradingApiException      if anything unexpected happens.
      */
     private ExchangeHttpResponse sendPublicRequestToExchange(String apiMethod, Map<String, String> params) throws
             ExchangeNetworkException, TradingApiException {
@@ -770,13 +757,13 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
      * <p>
      * Makes an authenticated API call to the OKCoin exchange.
      * </p>
-     *
+     * <p>
      * <p>
      * A tricky one to build!
      * </p>
-     *
+     * <p>
      * <h2>POST payload generation</h2>
-     *
+     * <p>
      * <pre>
      * All parameters except for "sign" must be signed. The parameters must be re-ordered according to the
      * initials of the parameter name, alphabetically. For example, if the request parameters are
@@ -787,9 +774,9 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
      * The result string is:
      * amount=1.0&api_key=c821db84-6fbd-11e4-a9e3-c86000d26d7c&price=680&symbol=btc_usd&type=buy
      * </pre>
-     *
+     * <p>
      * <h2>Signature creation</h2>
-     *
+     * <p>
      * <pre>
      * 'secretKey' is required to generate MD5 signature. Add the 'secret_Key' to the above string to generate the
      * final string to be signed, such as:
@@ -802,10 +789,10 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
      * </pre>
      *
      * @param apiMethod the API method to call.
-     * @param params the query param args to use in the API call.
+     * @param params    the query param args to use in the API call.
      * @return the response from the exchange.
      * @throws ExchangeNetworkException if there is a network issue connecting to exchange.
-     * @throws TradingApiException if anything unexpected happens.
+     * @throws TradingApiException      if anything unexpected happens.
      */
     private ExchangeHttpResponse sendAuthenticatedRequestToExchange(String apiMethod, Map<String, String> params)
             throws ExchangeNetworkException, TradingApiException {
@@ -845,7 +832,7 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
                 //noinspection deprecation
                 payload.append(param).append("=").append(URLEncoder.encode(params.get(param)));
             }
-            LogUtils.log(LOG, Level.DEBUG, () -> "Using following URL encoded POST payload for API call: " + payload);
+            LOG.debug(() -> "Using following URL encoded POST payload for API call: " + payload);
 
             // Request headers required by Exchange
             final Map<String, String> requestHeaders = new HashMap<>();
@@ -919,11 +906,11 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
 
         final String buyFeeInConfig = getOtherConfigItem(otherConfig, BUY_FEE_PROPERTY_NAME);
         buyFeePercentage = new BigDecimal(buyFeeInConfig).divide(new BigDecimal("100"), 8, BigDecimal.ROUND_HALF_UP);
-        LogUtils.log(LOG, Level.INFO, () -> "Buy fee % in BigDecimal format: " + buyFeePercentage);
+        LOG.info(() -> "Buy fee % in BigDecimal format: " + buyFeePercentage);
 
         final String sellFeeInConfig = getOtherConfigItem(otherConfig, SELL_FEE_PROPERTY_NAME);
         sellFeePercentage = new BigDecimal(sellFeeInConfig).divide(new BigDecimal("100"), 8, BigDecimal.ROUND_HALF_UP);
-        LogUtils.log(LOG, Level.INFO, () -> "Sell fee % in BigDecimal format: " + sellFeePercentage);
+        LOG.info(() -> "Sell fee % in BigDecimal format: " + sellFeePercentage);
     }
 
     // ------------------------------------------------------------------------------------------------

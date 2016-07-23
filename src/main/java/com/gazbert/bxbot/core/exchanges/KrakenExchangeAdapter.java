@@ -27,13 +27,12 @@ import com.gazbert.bxbot.core.api.exchange.AuthenticationConfig;
 import com.gazbert.bxbot.core.api.exchange.ExchangeAdapter;
 import com.gazbert.bxbot.core.api.exchange.ExchangeConfig;
 import com.gazbert.bxbot.core.api.trading.*;
-import com.gazbert.bxbot.core.util.LogUtils;
 import com.google.common.base.MoreObjects;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -49,12 +48,12 @@ import java.util.*;
 
 /**
  * TODO Work in progress...
- *
+ * <p>
  * <p>
  * Exchange Adapter for integrating with the Kraken exchange.
  * The Kraken API is documented <a href="https://www.kraken.com/en-gb/help/api">here</a>.
  * </p>
- *
+ * <p>
  * <p>
  * <strong>
  * DISCLAIMER:
@@ -64,19 +63,19 @@ import java.util.*;
  * methods. Use it at our own risk!
  * </strong>
  * </p>
- *
+ * <p>
  * <p>
  * TODO API version
  * </p>
- *
+ * <p>
  * <p>
  * TODO Fees
  * </p>
- *
+ * <p>
  * <p>
  * TODO Call rate limit
  * </p>
- *
+ * <p>
  * <p>
  * TODO update this...
  * Kraken markets assets (currencies) can be referenced using their ISO4217-A3 names in the case of ISO registered names,
@@ -84,13 +83,13 @@ import java.util.*;
  * E.g. you can access the XBT/USD market using either of the following ids: 'XBTUSD' or 'XXBTZUSD'. The exchange always
  * returns market id back in the latter format, i.e. 'XXBTZUSD'.
  * </p>
- *
+ * <p>
  * <p>
  * The Exchange Adapter is <em>not</em> thread safe. It expects to be called using a single thread in order to
  * preserve trade execution order. The {@link URLConnection} achieves this by blocking/waiting on the input stream
  * (response) for each API call.
  * </p>
- *
+ * <p>
  * <p>
  * The {@link TradingApi} calls will throw a {@link ExchangeNetworkException} if a network error occurs trying to
  * connect to the exchange. A {@link TradingApiException} is thrown for <em>all</em> other failures.
@@ -101,7 +100,7 @@ import java.util.*;
  */
 public final class KrakenExchangeAdapter extends AbstractExchangeAdapter implements ExchangeAdapter {
 
-    private static final Logger LOG = Logger.getLogger(KrakenExchangeAdapter.class);
+    private static final Logger LOG = LogManager.getLogger();
 
     /**
      * The base URI for all Kraken API calls.
@@ -198,7 +197,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
     @Override
     public void init(ExchangeConfig config) {
 
-        LogUtils.log(LOG, Level.INFO, () -> "About to initialise Kraken ExchangeConfig: " + config);
+        LOG.info(() -> "About to initialise Kraken ExchangeConfig: " + config);
         setAuthenticationConfig(config);
         setNetworkConfig(config);
 
@@ -221,11 +220,12 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
             params.put("pair", marketId);
 
             final ExchangeHttpResponse response = sendPublicRequestToExchange("Depth", params);
-            LogUtils.log(LOG, Level.DEBUG, () -> "getMarketOrders() response: " + response);
+            LOG.debug(() -> "Market Orders response: " + response);
 
             if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
 
-                final Type resultType = new TypeToken<KrakenResponse<KrakenMarketOrderBookResult>>() {}.getType();
+                final Type resultType = new TypeToken<KrakenResponse<KrakenMarketOrderBookResult>>() {
+                }.getType();
                 final KrakenResponse krakenResponse = gson.fromJson(response.getPayload(), resultType);
 
                 final List<String> errors = krakenResponse.error;
@@ -261,7 +261,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
                         return new MarketOrderBook(marketId, sellOrders, buyOrders);
 
                     } else {
-                        final String errorMsg =  FAILED_TO_GET_MARKET_ORDERS + response;
+                        final String errorMsg = FAILED_TO_GET_MARKET_ORDERS + response;
                         LOG.error(errorMsg);
                         throw new TradingApiException(errorMsg);
                     }
@@ -313,11 +313,12 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
         try {
 
             final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("Balance", null);
-            LogUtils.log(LOG, Level.DEBUG, () -> "getBalanceInfo() response: " + response);
+            LOG.debug(() -> "Balance Info response: " + response);
 
             if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
 
-                final Type resultType = new TypeToken<KrakenResponse<KrakenBalanceResult>>() {}.getType();
+                final Type resultType = new TypeToken<KrakenResponse<KrakenBalanceResult>>() {
+                }.getType();
                 final KrakenResponse krakenResponse = gson.fromJson(response.getPayload(), resultType);
 
                 final List<String> errors = krakenResponse.error;
@@ -337,7 +338,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
                         return new BalanceInfo(balancesAvailable, new HashMap<>());
 
                     } else {
-                        final String errorMsg =  FAILED_TO_GET_BALANCE + response;
+                        final String errorMsg = FAILED_TO_GET_BALANCE + response;
                         LOG.error(errorMsg);
                         throw new TradingApiException(errorMsg);
                     }
@@ -386,9 +387,9 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
 
     /**
      * GSON base class for all Kraken responses.
-     *
+     * <p>
      * All Kraken responses have the following format:
-     *
+     * <p>
      * <pre>
      *
      * error = array of error messages in the format of:
@@ -399,9 +400,8 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
      * result = result of API call (may not be present if errors occur)
      *
      * </pre>
-     *
+     * <p>
      * The result Type is what varies with each API call.
-     *
      */
     private static class KrakenResponse<T> {
 
@@ -464,10 +464,10 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
      * Makes a public API call to the Kraken exchange.
      *
      * @param apiMethod the API method to call.
-     * @param params any (optional) query param args to use in the API call.
+     * @param params    any (optional) query param args to use in the API call.
      * @return the response from the exchange.
      * @throws ExchangeNetworkException if there is a network issue connecting to exchange.
-     * @throws TradingApiException if anything unexpected happens.
+     * @throws TradingApiException      if anything unexpected happens.
      */
     private ExchangeHttpResponse sendPublicRequestToExchange(String apiMethod, Map<String, String> params)
             throws ExchangeNetworkException, TradingApiException {
@@ -506,7 +506,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
      * <p>
      * Makes an authenticated API call to the Kraken exchange.
      * </p>
-     *
+     * <p>
      * <pre>
      * Kraken requires the following HTTP headers to bet set:
      *
@@ -523,10 +523,10 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
      * </pre>
      *
      * @param apiMethod the API method to call.
-     * @param params the query param args to use in the API call.
+     * @param params    the query param args to use in the API call.
      * @return the response from the exchange.
      * @throws ExchangeNetworkException if there is a network issue connecting to exchange.
-     * @throws TradingApiException if anything unexpected happens.
+     * @throws TradingApiException      if anything unexpected happens.
      */
     private ExchangeHttpResponse sendAuthenticatedRequestToExchange(String apiMethod, Map<String, String> params)
             throws ExchangeNetworkException, TradingApiException {
@@ -562,7 +562,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
                 postData += param + "=" + URLEncoder.encode(params.get(param));
             }
 
-             // And now the tricky part... ;-o
+            // And now the tricky part... ;-o
 
             final byte[] pathInBytes = ("/" + KRAKEN_API_VERSION + KRAKEN_PRIVATE_PATH + apiMethod).getBytes("UTF-8");
             final String noncePrependedToPostData = Long.toString(nonce) + postData;

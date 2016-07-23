@@ -27,7 +27,7 @@
                 <include>contributors.txt</include>
                 <include>bxbot.sh</include>
                 <include>config/*.xml</include>
-                <include>resources/log4j.properties</include>
+                <include>resources/log4j2.xml</include>
             </includes>
         </fileSet>
 

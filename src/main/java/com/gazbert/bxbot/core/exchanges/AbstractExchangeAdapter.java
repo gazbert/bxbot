@@ -28,22 +28,12 @@ import com.gazbert.bxbot.core.api.exchange.NetworkConfig;
 import com.gazbert.bxbot.core.api.exchange.OtherConfig;
 import com.gazbert.bxbot.core.api.trading.ExchangeNetworkException;
 import com.gazbert.bxbot.core.api.trading.TradingApiException;
-import com.gazbert.bxbot.core.util.LogUtils;
 import com.google.common.base.MoreObjects;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.SocketTimeoutException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.net.UnknownHostException;
+import java.io.*;
+import java.net.*;
 import java.util.*;
 
 /**
@@ -54,7 +44,7 @@ import java.util.*;
  */
 abstract class AbstractExchangeAdapter {
 
-    private static final Logger LOG = Logger.getLogger(AbstractExchangeAdapter.class);
+    private static final Logger LOG = LogManager.getLogger();
 
     /**
      * Unexpected IO error message for logging.
@@ -141,10 +131,10 @@ abstract class AbstractExchangeAdapter {
     /**
      * Makes a request to the Exchange.
      *
-     * @param url               the URL to invoke.
-     * @param postData          optional post data to send. This can be null.
-     * @param httpMethod        the HTTP method to use, e.g. GET, POST, DELETE
-     * @param requestHeaders    optional request headers to set on the {@link URLConnection} used to invoke the Exchange.
+     * @param url            the URL to invoke.
+     * @param postData       optional post data to send. This can be null.
+     * @param httpMethod     the HTTP method to use, e.g. GET, POST, DELETE
+     * @param requestHeaders optional request headers to set on the {@link URLConnection} used to invoke the Exchange.
      * @return the response from the Exchange.
      * @throws ExchangeNetworkException if a network error occurred trying to connect to the exchange.
      *                                  This exception allows for recovery from temporary network issues.
@@ -159,7 +149,7 @@ abstract class AbstractExchangeAdapter {
 
         try {
 
-            LogUtils.log(LOG, Level.DEBUG, () -> "Using following URL for API call: " + url);
+            LOG.debug(() -> "Using following URL for API call: " + url);
 
             exchangeConnection = (HttpURLConnection) url.openConnection();
             exchangeConnection.setUseCaches(false);
@@ -173,7 +163,7 @@ abstract class AbstractExchangeAdapter {
             if (requestHeaders != null) {
                 for (final Map.Entry<String, String> requestHeader : requestHeaders.entrySet()) {
                     exchangeConnection.setRequestProperty(requestHeader.getKey(), requestHeader.getValue());
-                    LogUtils.log(LOG, Level.DEBUG, () -> "Setting following request header: " + requestHeader);
+                    LOG.debug(() -> "Setting following request header: " + requestHeader);
                 }
             }
 
@@ -183,7 +173,7 @@ abstract class AbstractExchangeAdapter {
             exchangeConnection.setReadTimeout(timeoutInMillis);
 
             if (httpMethod.equalsIgnoreCase("POST") && postData != null) {
-                LogUtils.log(LOG, Level.DEBUG, () -> "Doing POST with request body: " + postData);
+                LOG.debug(() -> "Doing POST with request body: " + postData);
                 final OutputStreamWriter outputPostStream = new OutputStreamWriter(exchangeConnection.getOutputStream());
                 outputPostStream.write(postData);
                 outputPostStream.close();
@@ -283,19 +273,19 @@ abstract class AbstractExchangeAdapter {
             LOG.error(errorMsg);
             throw new IllegalArgumentException(errorMsg);
         }
-        LogUtils.log(LOG, Level.INFO, () -> CONNECTION_TIMEOUT_PROPERTY_NAME + ": " + connectionTimeout);
+        LOG.info(() -> CONNECTION_TIMEOUT_PROPERTY_NAME + ": " + connectionTimeout);
 
         final List<Integer> nonFatalErrorCodesFromConfig = networkConfig.getNonFatalErrorCodes();
         if (nonFatalErrorCodesFromConfig != null) {
             nonFatalNetworkErrorCodes.addAll(nonFatalErrorCodesFromConfig);
         }
-        LogUtils.log(LOG, Level.INFO, () -> NON_FATAL_ERROR_CODES_PROPERTY_NAME + ": " + nonFatalNetworkErrorCodes);
+        LOG.info(() -> NON_FATAL_ERROR_CODES_PROPERTY_NAME + ": " + nonFatalNetworkErrorCodes);
 
         final List<String> nonFatalErrorMessagesFromConfig = networkConfig.getNonFatalErrorMessages();
         if (nonFatalErrorMessagesFromConfig != null) {
             nonFatalNetworkErrorMessages.addAll(nonFatalErrorMessagesFromConfig);
         }
-        LogUtils.log(LOG, Level.INFO, () -> NON_FATAL_ERROR_MESSAGES_PROPERTY_NAME + ": " + nonFatalNetworkErrorMessages);
+        LOG.info(() -> NON_FATAL_ERROR_MESSAGES_PROPERTY_NAME + ": " + nonFatalNetworkErrorMessages);
     }
 
     /**
@@ -338,7 +328,7 @@ abstract class AbstractExchangeAdapter {
      * Fetches an authentication item value from the adapter config.
      *
      * @param authenticationConfig the authentication config for the adapter.
-     * @param itemName the config item name, e.g. key. secret, client-id
+     * @param itemName             the config item name, e.g. key. secret, client-id
      * @return the config item value.
      * @throws IllegalArgumentException if authentication item is not set.
      */
@@ -346,7 +336,7 @@ abstract class AbstractExchangeAdapter {
 
         final String itemValue = authenticationConfig.getItem(itemName);
         // WARNING: careful when you log this
-//        LogUtils.log(LOG, Level.INFO, () -> itemName + ": " + itemValue);
+//        LOG.info( () -> itemName + ": " + itemValue);
         return assertItemExists(itemName, itemValue);
     }
 
@@ -354,14 +344,14 @@ abstract class AbstractExchangeAdapter {
      * Fetches an 'other' misc config item value from the adapter config.
      *
      * @param otherConfig the 'other' misc config for the adapter.
-     * @param itemName the config item name, e.g. buy-fee, sell-fee
+     * @param itemName    the config item name, e.g. buy-fee, sell-fee
      * @return the config item value.
      * @throws IllegalArgumentException if authentication item is not set.
      */
     String getOtherConfigItem(OtherConfig otherConfig, String itemName) {
 
         final String itemValue = otherConfig.getItem(itemName);
-        LogUtils.log(LOG, Level.INFO, () -> itemName + ": " + itemValue);
+        LOG.info(() -> itemName + ": " + itemValue);
         return assertItemExists(itemName, itemValue);
     }
 

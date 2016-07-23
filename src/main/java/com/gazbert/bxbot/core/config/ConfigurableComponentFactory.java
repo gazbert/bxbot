@@ -23,16 +23,16 @@
 
 package com.gazbert.bxbot.core.config;
 
-import com.gazbert.bxbot.core.util.LogUtils;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /*
  * Factory for creating user components defined in the bot configuration files. These are the
  * Exchange Adapters and Trading Strategies.
  */
 public abstract class ConfigurableComponentFactory {
-    private static final Logger LOG = Logger.getLogger(ConfigurableComponentFactory.class);
+
+    private static final Logger LOG = LogManager.getLogger();
 
     private ConfigurableComponentFactory() {
     }
@@ -44,7 +44,7 @@ public abstract class ConfigurableComponentFactory {
         try {
             final Class componentClass = Class.forName(componentClassName);
             final Object rawComponentObject = componentClass.newInstance();
-            LogUtils.log(LOG, Level.INFO, () -> "Created successfully the Component class for: " + componentClassName);
+            LOG.info(() -> "Created successfully the Component class for: " + componentClassName);
 
             // should be one of ours
             return (T) rawComponentObject;

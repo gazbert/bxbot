@@ -24,9 +24,8 @@
 package com.gazbert.bxbot.core;
 
 import com.gazbert.bxbot.core.engine.TradingEngine;
-import com.gazbert.bxbot.core.util.LogUtils;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /*
  * BX-bot is a simple algo trading bot for running on Bitcoin exchanges.
@@ -41,11 +40,10 @@ import org.apache.log4j.Logger;
  */
 public final class BXBot {
 
-    private static final Logger LOG = Logger.getLogger(BXBot.class);
+    private static final Logger LOG = LogManager.getLogger();
 
     public static void main(String[] args) {
-
-        LogUtils.log(LOG, Level.INFO, () -> "Starting BX-bot...");
+        LOG.info(() -> "Starting BX-bot...");
         TradingEngine.newInstance().start();
     }
 }

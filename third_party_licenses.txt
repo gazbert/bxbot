@@ -2,7 +2,7 @@ Used in Product
 ===============
 * GSON     - https://github.com/google/gson                - https://github.com/google/gson/blob/master/LICENSE
 * Guava    - https://github.com/google/guava/              - https://github.com/google/guava/blob/master/COPYING
-* log4j    - http://logging.apache.org/log4j/1.2/          - http://www.apache.org/licenses/LICENSE-2.0
+* log4j    - http://logging.apache.org/log4j/2.x/          - https://logging.apache.org/log4j/2.0/license.html
 * JavaMail - https://java.net/projects/javamail/pages/Home - https://glassfish.java.net/public/CDDL+GPL_1_1.html
 
 Used for building & testing

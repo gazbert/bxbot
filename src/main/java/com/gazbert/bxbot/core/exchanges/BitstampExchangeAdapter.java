@@ -26,24 +26,11 @@ package com.gazbert.bxbot.core.exchanges;
 import com.gazbert.bxbot.core.api.exchange.AuthenticationConfig;
 import com.gazbert.bxbot.core.api.exchange.ExchangeAdapter;
 import com.gazbert.bxbot.core.api.exchange.ExchangeConfig;
-import com.gazbert.bxbot.core.api.trading.BalanceInfo;
-import com.gazbert.bxbot.core.api.trading.ExchangeNetworkException;
-import com.gazbert.bxbot.core.api.trading.MarketOrder;
-import com.gazbert.bxbot.core.api.trading.MarketOrderBook;
-import com.gazbert.bxbot.core.api.trading.OpenOrder;
-import com.gazbert.bxbot.core.api.trading.OrderType;
-import com.gazbert.bxbot.core.api.trading.TradingApi;
-import com.gazbert.bxbot.core.api.trading.TradingApiException;
-import com.gazbert.bxbot.core.util.LogUtils;
+import com.gazbert.bxbot.core.api.trading.*;
 import com.google.common.base.MoreObjects;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParseException;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import com.google.gson.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -59,18 +46,14 @@ import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * <p>
  * Exchange Adapter for integrating with the Bitstamp exchange.
  * The Bitstamp API is documented <a href="https://www.bitstamp.net/api/">here</a>.
  * </p>
- *
+ * <p>
  * <p>
  * <strong>
  * DISCLAIMER:
@@ -80,18 +63,18 @@ import java.util.Map;
  * methods. Use it at our own risk!
  * </strong>
  * </p>
- *
+ * <p>
  * <p>
  * This Exchange Adapter is <em>not</em> thread safe. It expects to be called using a single thread in order to
  * preserve trade execution order. The {@link URLConnection} achieves this by blocking/waiting on the input stream
  * (response) for each API call.
  * </p>
- *
+ * <p>
  * <p>
  * The {@link TradingApi} calls will throw a {@link ExchangeNetworkException} if a network error occurs trying to
  * connect to the exchange. A {@link TradingApiException} is thrown for <em>all</em> other failures.
  * </p>
- *
+ * <p>
  * <p>
  * NOTE: Bitstamp requires all price values to be limited to 2 decimal places when creating orders. This adapter
  * truncates any prices with more than 2 decimal places and rounds using {@link java.math.RoundingMode#HALF_EVEN},
@@ -102,7 +85,7 @@ import java.util.Map;
  */
 public final class BitstampExchangeAdapter extends AbstractExchangeAdapter implements ExchangeAdapter {
 
-    private static final Logger LOG = Logger.getLogger(BitstampExchangeAdapter.class);
+    private static final Logger LOG = LogManager.getLogger();
 
     /**
      * The Authenticated API URI.
@@ -174,7 +157,7 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
     @Override
     public void init(ExchangeConfig config) {
 
-        LogUtils.log(LOG, Level.INFO, () -> "About to initialise Bitstamp ExchangeConfig: " + config);
+        LOG.info(() -> "About to initialise Bitstamp ExchangeConfig: " + config);
         setAuthenticationConfig(config);
         setNetworkConfig(config);
 
@@ -193,7 +176,7 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
 
         try {
             final ExchangeHttpResponse response = sendPublicRequestToExchange("order_book");
-            LogUtils.log(LOG, Level.DEBUG, () -> "getMarketOrders() response: " + response);
+            LOG.debug(() -> "Market Orders response: " + response);
 
             final BitstampOrderBook bitstampOrderBook = gson.fromJson(response.getPayload(), BitstampOrderBook.class);
 
@@ -236,7 +219,7 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
 
         try {
             final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("open_orders", null);
-            LogUtils.log(LOG, Level.DEBUG, () -> "getYourOpenOrders() response: " + response);
+            LOG.debug(() -> "Open Orders response: " + response);
 
             final BitstampOrderResponse[] myOpenOrders = gson.fromJson(response.getPayload(), BitstampOrderResponse[].class);
 
@@ -305,7 +288,7 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
                 throw new IllegalArgumentException(errorMsg);
             }
 
-            LogUtils.log(LOG, Level.DEBUG, () -> "createOrder() response: " + response);
+            LOG.debug(() -> "Create Order response: " + response);
 
             final BitstampOrderResponse createOrderResponse = gson.fromJson(response.getPayload(), BitstampOrderResponse.class);
             final long id = createOrderResponse.id;
@@ -336,7 +319,7 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
             params.put("id", orderId);
 
             final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("cancel_order", params);
-            LogUtils.log(LOG, Level.DEBUG, () -> "cancelOrder() response: " + response);
+            LOG.debug(() -> "Cancel Order response: " + response);
 
             // Returns 'true' if order has been found and canceled.
             if (response.getPayload().equalsIgnoreCase("true")) {
@@ -360,7 +343,7 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
 
         try {
             final ExchangeHttpResponse response = sendPublicRequestToExchange("ticker");
-            LogUtils.log(LOG, Level.DEBUG, () -> "getLatestMarketPrice() response: " + response);
+            LOG.debug(() -> "Latest Market Price response: " + response);
 
             final BitstampTicker bitstampTicker = gson.fromJson(response.getPayload(), BitstampTicker.class);
             return bitstampTicker.last;
@@ -378,7 +361,7 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
 
         try {
             final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("balance", null);
-            LogUtils.log(LOG, Level.DEBUG, () -> "getBalanceInfo() response: " + response);
+            LOG.debug(() -> "Balance Info response: " + response);
 
             final BitstampBalance balances = gson.fromJson(response.getPayload(), BitstampBalance.class);
 
@@ -407,7 +390,7 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
 
         try {
             final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("balance", null);
-            LogUtils.log(LOG, Level.DEBUG, () -> "getPercentageOfBuyOrderTakenForExchangeFee() response: " + response);
+            LOG.debug(() -> "Buy Fee response: " + response);
 
             final BitstampBalance balances = gson.fromJson(response.getPayload(), BitstampBalance.class);
             final BigDecimal fee = balances.fee;
@@ -429,7 +412,7 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
 
         try {
             final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("balance", null);
-            LogUtils.log(LOG, Level.DEBUG, () -> "getPercentageOfSellOrderTakenForExchangeFee() response: " + response);
+            LOG.debug(() -> "Sell Fee response: " + response);
 
             final BitstampBalance balances = gson.fromJson(response.getPayload(), BitstampBalance.class);
             final BigDecimal fee = balances.fee;
@@ -485,7 +468,7 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
      * <p>
      * GSON class for holding Bitstamp Order Book response from order_book API call.
      * </p>
-     *
+     * <p>
      * <p>
      * JSON looks like:
      * <pre>
@@ -606,7 +589,7 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
      * @param apiMethod the API method to call.
      * @return the response from the exchange.
      * @throws ExchangeNetworkException if there is a network issue connecting to exchange.
-     * @throws TradingApiException if anything unexpected happens.
+     * @throws TradingApiException      if anything unexpected happens.
      */
     private ExchangeHttpResponse sendPublicRequestToExchange(String apiMethod) throws ExchangeNetworkException, TradingApiException {
 
@@ -629,12 +612,12 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
 
     /**
      * Makes authenticated API call to Bitstamp exchange.
-     * 
+     *
      * @param apiMethod the API method to call.
-     * @param params the query param args to use in the API call.
+     * @param params    the query param args to use in the API call.
      * @return the response from the exchange.
      * @throws ExchangeNetworkException if there is a network issue connecting to exchange.
-     * @throws TradingApiException if anything unexpected happens.
+     * @throws TradingApiException      if anything unexpected happens.
      */
     private ExchangeHttpResponse sendAuthenticatedRequestToExchange(String apiMethod, Map<String, String> params) throws
             ExchangeNetworkException, TradingApiException {

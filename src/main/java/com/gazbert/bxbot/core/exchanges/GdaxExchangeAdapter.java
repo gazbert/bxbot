@@ -27,46 +27,30 @@ import com.gazbert.bxbot.core.api.exchange.AuthenticationConfig;
 import com.gazbert.bxbot.core.api.exchange.ExchangeAdapter;
 import com.gazbert.bxbot.core.api.exchange.ExchangeConfig;
 import com.gazbert.bxbot.core.api.exchange.OtherConfig;
-import com.gazbert.bxbot.core.api.trading.BalanceInfo;
-import com.gazbert.bxbot.core.api.trading.ExchangeNetworkException;
-import com.gazbert.bxbot.core.api.trading.MarketOrder;
-import com.gazbert.bxbot.core.api.trading.MarketOrderBook;
-import com.gazbert.bxbot.core.api.trading.OpenOrder;
-import com.gazbert.bxbot.core.api.trading.OrderType;
-import com.gazbert.bxbot.core.api.trading.TradingApi;
-import com.gazbert.bxbot.core.api.trading.TradingApiException;
-import com.gazbert.bxbot.core.util.LogUtils;
+import com.gazbert.bxbot.core.api.trading.*;
 import com.google.common.base.MoreObjects;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import javax.xml.bind.DatatypeConverter;
 import java.math.BigDecimal;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.net.URLEncoder;
+import java.net.*;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * <p>
  * Exchange Adapter for integrating with the GDAX (formerly Coinbase) exchange.
  * The GDAX API is documented <a href="https://www.gdax.com/">here</a>.
  * </p>
- *
+ * <p>
  * <p>
  * <strong>
  * DISCLAIMER:
@@ -76,36 +60,36 @@ import java.util.Map;
  * {@link #sendAuthenticatedRequestToExchange(String, String, Map)} methods. Use it at our own risk!
  * </strong>
  * </p>
- *
+ * <p>
  * <p>
  * This adapter only supports the GDAX <a href="https://docs.gdax.com/#api">REST API</a>. The design
  * of the API and documentation is excellent.
  * </p>
- *
+ * <p>
  * <p>
  * The adapter currently only supports <a href="https://docs.gdax.com/#place-a-new-order">Limit Orders</a>.
  * It was originally developed and tested for BTC-GBP market, but it should work for BTC-USD.
  * </p>
- *
+ * <p>
  * <p>
  * Exchange fees are loaded from the exchange.xml file on startup; they are not fetched from the exchange
  * at runtime as the GDAX REST API does not support this. The fees are used across all markets. Make sure you keep
  * an eye on the <a href="https://docs.gdax.com/#fees">exchange fees</a> and update the config accordingly.
  * This adapter will use the <em>Taker</em> fees to keep things simple for now.
  * </p>
- *
+ * <p>
  * <p>
  * NOTE: GDAX requires all price values to be limited to 2 decimal places when creating orders.
  * This adapter truncates any prices with more than 2 decimal places and rounds using
  * {@link java.math.RoundingMode#HALF_EVEN}, E.g. 250.176 would be sent to the exchange as 250.18.
  * </p>
- *
+ * <p>
  * <p>
  * The Exchange Adapter is <em>not</em> thread safe. It expects to be called using a single thread in order to
  * preserve trade execution order. The {@link URLConnection} achieves this by blocking/waiting on the input stream
  * (response) for each API call.
  * </p>
- *
+ * <p>
  * <p>
  * The {@link TradingApi} calls will throw a {@link ExchangeNetworkException} if a network error occurs trying to
  * connect to the exchange. A {@link TradingApiException} is thrown for <em>all</em> other failures.
@@ -115,7 +99,7 @@ import java.util.Map;
  */
 public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implements ExchangeAdapter {
 
-    private static final Logger LOG = Logger.getLogger(GdaxExchangeAdapter.class);
+    private static final Logger LOG = LogManager.getLogger();
 
     /**
      * The public API URI.
@@ -207,7 +191,7 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
     @Override
     public void init(ExchangeConfig config) {
 
-        LogUtils.log(LOG, Level.INFO, () -> "About to initialise GDAX ExchangeConfig: " + config);
+        LOG.info(() -> "About to initialise GDAX ExchangeConfig: " + config);
         setAuthenticationConfig(config);
         setNetworkConfig(config);
         setOtherConfig(config);
@@ -259,7 +243,7 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
             params.put("size", new DecimalFormat("#.########").format(quantity));
 
             final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("POST", "orders", params);
-            LogUtils.log(LOG, Level.DEBUG, () -> "createOrder() response: " + response);
+            LOG.debug(() -> "Create Order response: " + response);
 
             if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
 
@@ -295,7 +279,7 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
         try {
 
             final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("DELETE", "orders/" + orderId, null);
-            LogUtils.log(LOG, Level.DEBUG, () -> "cancelOrder() response: " + response);
+            LOG.debug(() -> "Cancel Order response: " + response);
 
             if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
 
@@ -329,7 +313,7 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
             // we use default request no-param call - only open or un-settled orders are returned.
             // As soon as an order is no longer open and settled, it will no longer appear in the default request.
             final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("GET", "orders", null);
-            LogUtils.log(LOG, Level.DEBUG, () -> "getYourOpenOrders() response: " + response);
+            LOG.debug(() -> "Open Orders response: " + response);
 
             if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
 
@@ -388,7 +372,7 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
             params.put("level", "2"); //  "2" = Top 50 bids and asks (aggregated)
 
             final ExchangeHttpResponse response = sendPublicRequestToExchange("products/" + marketId + "/book", params);
-            LogUtils.log(LOG, Level.DEBUG, () -> "getMarketOrders() response: " + response);
+            LOG.debug(() -> "Market Orders response: " + response);
 
             if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
 
@@ -437,7 +421,7 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
 
         try {
             final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("GET", "accounts", null);
-            LogUtils.log(LOG, Level.DEBUG, () -> "getBalanceInfo() response: " + response);
+            LOG.debug(() -> "Balance Info response: " + response);
 
             if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
 
@@ -473,7 +457,7 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
         try {
 
             final ExchangeHttpResponse response = sendPublicRequestToExchange("products/" + marketId + "/ticker", null);
-            LogUtils.log(LOG, Level.DEBUG, () -> "getLatestMarketPrice() response: " + response);
+            LOG.debug(() -> "Latest Market Price response: " + response);
 
             if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
                 final GdaxTicker gdaxTicker = gson.fromJson(response.getPayload(), GdaxTicker.class);
@@ -522,7 +506,7 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
 
     /**
      * GSON class for GDAX '/orders' API call response.
-     *
+     * <p>
      * There are other critters in here different to what is spec'd: https://docs.gdax.com/#list-orders
      */
     private static class GdaxOrder {
@@ -644,10 +628,10 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
      * Makes a public API call to the GDAX exchange.
      *
      * @param apiMethod the API method to call.
-     * @param params any (optional) query param args to use in the API call.
+     * @param params    any (optional) query param args to use in the API call.
      * @return the response from the exchange.
      * @throws ExchangeNetworkException if there is a network issue connecting to exchange.
-     * @throws TradingApiException if anything unexpected happens.
+     * @throws TradingApiException      if anything unexpected happens.
      */
     private ExchangeHttpResponse sendPublicRequestToExchange(String apiMethod, Map<String, String> params)
             throws ExchangeNetworkException, TradingApiException {
@@ -686,12 +670,12 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
      * <p>
      * Makes an authenticated API call to the GDAX exchange.
      * </p>
-     *
+     * <p>
      * <p>
      * The GDAX authentication process is complex, but well documented
      * <a href="https://docs.gdax.com/#creating-a-request">here</a>.
      * </p>
-     *
+     * <p>
      * <pre>
      * All REST requests must contain the following headers:
      *
@@ -721,11 +705,11 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
      * </pre>
      *
      * @param httpMethod the HTTP method to use, e.g. GET, POST, DELETE
-     * @param apiMethod the API method to call.
-     * @param params the query param args to use in the API call.
+     * @param apiMethod  the API method to call.
+     * @param params     the query param args to use in the API call.
      * @return the response from the exchange.
      * @throws ExchangeNetworkException if there is a network issue connecting to exchange.
-     * @throws TradingApiException if anything unexpected happens.
+     * @throws TradingApiException      if anything unexpected happens.
      */
     private ExchangeHttpResponse sendAuthenticatedRequestToExchange(
             String httpMethod, String apiMethod, Map<String, String> params) throws
@@ -745,7 +729,7 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
             }
 
             // Get UNIX time in secs
-            final String timestamp = Long.toString(System.currentTimeMillis()/1000);
+            final String timestamp = Long.toString(System.currentTimeMillis() / 1000);
 
             // Build the request
             final String invocationUrl;
@@ -753,8 +737,8 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
 
             switch (httpMethod) {
 
-                case "GET" :
-                    LogUtils.log(LOG, Level.DEBUG, () -> "Building secure GET request...");
+                case "GET":
+                    LOG.debug(() -> "Building secure GET request...");
                     // Build (optional) query param string
                     final StringBuilder queryParamBuilder = new StringBuilder();
                     for (final String param : params.keySet()) {
@@ -765,7 +749,7 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
                     }
 
                     final String queryParams = queryParamBuilder.toString();
-                    LogUtils.log(LOG, Level.DEBUG, () -> "Query param string: " + queryParams);
+                    LOG.debug(() -> "Query param string: " + queryParams);
 
                     if (params.isEmpty()) {
                         invocationUrl = AUTHENTICATED_API_URL + apiMethod;
@@ -774,14 +758,14 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
                     }
                     break;
 
-                case "POST" :
-                    LogUtils.log(LOG, Level.DEBUG, () -> "Building secure POST request...");
+                case "POST":
+                    LOG.debug(() -> "Building secure POST request...");
                     invocationUrl = AUTHENTICATED_API_URL + apiMethod;
                     requestBody = gson.toJson(params);
                     break;
 
-                case "DELETE" :
-                    LogUtils.log(LOG, Level.DEBUG, () -> "Building secure DELETE request...");
+                case "DELETE":
+                    LOG.debug(() -> "Building secure DELETE request...");
                     invocationUrl = AUTHENTICATED_API_URL + apiMethod;
                     break;
 
@@ -792,7 +776,6 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
             // Build the signature string
             final StringBuilder signatureBuilder = new StringBuilder(timestamp);
             signatureBuilder.append(httpMethod.toUpperCase()).append("/").append(apiMethod).append(requestBody);
-            LogUtils.log(LOG, Level.DEBUG, () -> "Signature String: " + signatureBuilder);
 
             // Sign the signature string and Base64 encode it
             mac.reset();
@@ -863,11 +846,11 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
 
         final String buyFeeInConfig = getOtherConfigItem(otherConfig, BUY_FEE_PROPERTY_NAME);
         buyFeePercentage = new BigDecimal(buyFeeInConfig).divide(new BigDecimal("100"), 8, BigDecimal.ROUND_HALF_UP);
-        LogUtils.log(LOG, Level.INFO, () -> "Buy fee % in BigDecimal format: " + buyFeePercentage);
+        LOG.info(() -> "Buy fee % in BigDecimal format: " + buyFeePercentage);
 
         final String sellFeeInConfig = getOtherConfigItem(otherConfig, SELL_FEE_PROPERTY_NAME);
         sellFeePercentage = new BigDecimal(sellFeeInConfig).divide(new BigDecimal("100"), 8, BigDecimal.ROUND_HALF_UP);
-        LogUtils.log(LOG, Level.INFO, () -> "Sell fee % in BigDecimal format: " + sellFeePercentage);
+        LOG.info(() -> "Sell fee % in BigDecimal format: " + sellFeePercentage);
     }
 
     // ------------------------------------------------------------------------------------------------

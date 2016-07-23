@@ -27,20 +27,12 @@ import com.gazbert.bxbot.core.api.exchange.AuthenticationConfig;
 import com.gazbert.bxbot.core.api.exchange.ExchangeAdapter;
 import com.gazbert.bxbot.core.api.exchange.ExchangeConfig;
 import com.gazbert.bxbot.core.api.exchange.OtherConfig;
-import com.gazbert.bxbot.core.api.trading.BalanceInfo;
-import com.gazbert.bxbot.core.api.trading.ExchangeNetworkException;
-import com.gazbert.bxbot.core.api.trading.MarketOrder;
-import com.gazbert.bxbot.core.api.trading.MarketOrderBook;
-import com.gazbert.bxbot.core.api.trading.OpenOrder;
-import com.gazbert.bxbot.core.api.trading.OrderType;
-import com.gazbert.bxbot.core.api.trading.TradingApi;
-import com.gazbert.bxbot.core.api.trading.TradingApiException;
-import com.gazbert.bxbot.core.util.LogUtils;
+import com.gazbert.bxbot.core.api.trading.*;
 import com.google.common.base.MoreObjects;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -57,18 +49,14 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * <p>
  * Exchange Adapter for integrating with the itBit exchange.
  * The itBit API is documented <a href="https://www.itbit.com/h/api">here</a>.
  * </p>
- *
+ * <p>
  * <p>
  * <strong>
  * DISCLAIMER:
@@ -78,20 +66,20 @@ import java.util.Map;
  * methods. Use it at our own risk!
  * </strong>
  * </p>
- *
+ * <p>
  * <p>
  * The adapter only supports the REST implementation of the <a href="https://api.itbit.com/docs">Trading API</a>.
  * </p>
- *
+ * <p>
  * <p>The itBit exchange uses XBT for the Bitcoin currency code instead of the usual BTC. So, if you were to call
  * {@link #getBalanceInfo()}, you would need to use XBT (instead of BTC) as the key when fetching your Bitcoin balance
  * info from the returned maps.</p>
- *
+ * <p>
  * <p>
  * The adapter also assumes that only 1 exchange account wallet has been created on the exchange. If there is more
  * than 1, it will use the first one it finds when performing the {@link #getBalanceInfo()} call.
  * </p>
- *
+ * <p>
  * <p>
  * Exchange fees are loaded from the exchange.xml file on startup; they are not fetched from the exchange at
  * runtime as the itBit REST API v1 does not support this. The fees are used across all markets. Make sure you keep an
@@ -99,20 +87,20 @@ import java.util.Map;
  * There are different exchange fees for <a href="https://www.itbit.com/h/fees-maker-taker-model">Takers and Makers</a>
  * - this adapter will use the <em>Taker</em> fees to keep things simple for now.
  * </p>
- *
+ * <p>
  * <p>
  * NOTE: ItBit requires all price values to be limited to 2 decimal places and amount values to be limited to 4 decimal
  * places when creating orders. This adapter truncates any prices with more than 2 decimal places and rounds using
  * {@link java.math.RoundingMode#HALF_EVEN}, E.g. 250.176 would be sent to the exchange as 250.18. The same is done for
  * the order amount, but to 4 decimal places.
  * </p>
- *
+ * <p>
  * <p>
  * The Exchange Adapter is <em>not</em> thread safe. It expects to be called using a single thread in order to
  * preserve trade execution order. The {@link URLConnection} achieves this by blocking/waiting on the input stream
  * (response) for each API call.
  * </p>
- *
+ * <p>
  * <p>
  * The {@link TradingApi} calls will throw a {@link ExchangeNetworkException} if a network error occurs trying to
  * connect to the exchange. A {@link TradingApiException} is thrown for <em>all</em> other failures.
@@ -120,9 +108,9 @@ import java.util.Map;
  *
  * @author gazbert
  */
-public final class ItBitExchangeAdapter extends  AbstractExchangeAdapter implements ExchangeAdapter {
+public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implements ExchangeAdapter {
 
-    private static final Logger LOG = Logger.getLogger(ItBitExchangeAdapter.class);
+    private static final Logger LOG = LogManager.getLogger();
 
     /**
      * The version of the itBit API being used.
@@ -230,7 +218,7 @@ public final class ItBitExchangeAdapter extends  AbstractExchangeAdapter impleme
     @Override
     public void init(ExchangeConfig config) {
 
-        LogUtils.log(LOG, Level.INFO, () -> "About to initialise itBit ExchangeConfig: " + config);
+        LOG.info(() -> "About to initialise itBit ExchangeConfig: " + config);
         setAuthenticationConfig(config);
         setNetworkConfig(config);
         setOtherConfig(config);
@@ -273,7 +261,7 @@ public final class ItBitExchangeAdapter extends  AbstractExchangeAdapter impleme
 
             // This param is unique for itBit - no other Exchange Adapter I've coded requires this :-/
             // A bit hacky below, but I'm not tweaking the Trading API createOrder() call just for itBit.
-            params.put("currency", marketId.substring(0,3));
+            params.put("currency", marketId.substring(0, 3));
 
             if (orderType == OrderType.BUY) {
                 params.put("side", "buy");
@@ -294,7 +282,7 @@ public final class ItBitExchangeAdapter extends  AbstractExchangeAdapter impleme
 
             final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange(
                     "POST", "wallets/" + walletId + "/orders", params);
-            LogUtils.log(LOG, Level.DEBUG, () -> "createOrder() response: " + response);
+            LOG.debug(() -> "Create Order response: " + response);
 
             if (response.getStatusCode() == HttpURLConnection.HTTP_CREATED) {
                 final ItBitNewOrderResponse itBitNewOrderResponse = gson.fromJson(response.getPayload(),
@@ -329,7 +317,7 @@ public final class ItBitExchangeAdapter extends  AbstractExchangeAdapter impleme
 
             final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange(
                     "DELETE", "wallets/" + walletId + "/orders/" + orderId, null);
-            LogUtils.log(LOG, Level.DEBUG, () -> "cancelOrder() response: " + response);
+            LOG.debug(() -> "Cancel Order response: " + response);
 
             if (response.getStatusCode() == HttpURLConnection.HTTP_ACCEPTED) {
                 gson.fromJson(response.getPayload(), ItBitCancelOrderResponse.class);
@@ -363,7 +351,7 @@ public final class ItBitExchangeAdapter extends  AbstractExchangeAdapter impleme
 
             final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange(
                     "GET", "wallets/" + walletId + "/orders", params);
-            LogUtils.log(LOG, Level.DEBUG, () -> "getYourOpenOrders() response: " + response);
+            LOG.debug(() -> "Open Orders response: " + response);
 
             if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
 
@@ -417,7 +405,7 @@ public final class ItBitExchangeAdapter extends  AbstractExchangeAdapter impleme
 
         try {
             final ExchangeHttpResponse response = sendPublicRequestToExchange("/markets/" + marketId + "/order_book");
-            LogUtils.log(LOG, Level.DEBUG, () -> "getMarketOrders() response: " + response);
+            LOG.debug(() -> "Market Orders response: " + response);
 
             if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
 
@@ -466,7 +454,7 @@ public final class ItBitExchangeAdapter extends  AbstractExchangeAdapter impleme
         try {
 
             final ExchangeHttpResponse response = sendPublicRequestToExchange("/markets/" + marketId + "/ticker");
-            LogUtils.log(LOG, Level.DEBUG, () -> "getLatestMarketPrice() response: " + response);
+            LOG.debug(() -> "Latest Market Price response: " + response);
 
             if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
 
@@ -495,7 +483,7 @@ public final class ItBitExchangeAdapter extends  AbstractExchangeAdapter impleme
             params.put("userId", userId);
 
             final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("GET", "wallets", params);
-            LogUtils.log(LOG, Level.DEBUG, () -> "getBalanceInfo() response: " + response);
+            LOG.debug(() -> "Balance Info response: " + response);
 
             if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
 
@@ -569,7 +557,7 @@ public final class ItBitExchangeAdapter extends  AbstractExchangeAdapter impleme
      * GSON class for holding itBit order returned from:
      * "Cancel Order" /wallets/{walletId}/orders/{orderId} API call.
      * </p>
-     *
+     * <p>
      * <p>
      * No payload returned by exchange on success.
      * </p>
@@ -582,7 +570,7 @@ public final class ItBitExchangeAdapter extends  AbstractExchangeAdapter impleme
      * GSON class for holding itBit new order response from:
      * "Create New Order" POST /wallets/{walletId}/orders API call.
      * </p>
-     *
+     * <p>
      * <p>
      * It is exactly the same as order returned in Get Orders response.
      * </p>
@@ -763,7 +751,7 @@ public final class ItBitExchangeAdapter extends  AbstractExchangeAdapter impleme
      * @param apiMethod the API method to call.
      * @return the response from the exchange.
      * @throws ExchangeNetworkException if there is a network issue connecting to exchange.
-     * @throws TradingApiException if anything unexpected happens.
+     * @throws TradingApiException      if anything unexpected happens.
      */
     private ExchangeHttpResponse sendPublicRequestToExchange(String apiMethod) throws ExchangeNetworkException, TradingApiException {
 
@@ -787,18 +775,18 @@ public final class ItBitExchangeAdapter extends  AbstractExchangeAdapter impleme
      * <p>
      * Makes an authenticated API call to the itBit exchange.
      * </p>
-     *
+     * <p>
      * <p>
      * Quite complex, but well documented
      * <a href="https://api.itbit.com/docs#faq-2.-how-do-i-sign-a-request?">here.</a>
      * </p>
      *
      * @param httpMethod the HTTP method to use, e.g. GET, POST, DELETE
-     * @param apiMethod the API method to call.
-     * @param params the query param args to use in the API call.
+     * @param apiMethod  the API method to call.
+     * @param params     the query param args to use in the API call.
      * @return the response from the exchange.
      * @throws ExchangeNetworkException if there is a network issue connecting to exchange.
-     * @throws TradingApiException if anything unexpected happens.
+     * @throws TradingApiException      if anything unexpected happens.
      */
     private ExchangeHttpResponse sendAuthenticatedRequestToExchange(String httpMethod, String apiMethod, Map<String, String> params)
             throws ExchangeNetworkException, TradingApiException {
@@ -836,8 +824,8 @@ public final class ItBitExchangeAdapter extends  AbstractExchangeAdapter impleme
 
             switch (httpMethod) {
 
-                case "GET" :
-                    LogUtils.log(LOG, Level.DEBUG, () -> "Building secure GET request...");
+                case "GET":
+                    LOG.debug(() -> "Building secure GET request...");
 
                     // Build (optional) query param string
                     final StringBuilder queryParamBuilder = new StringBuilder();
@@ -852,7 +840,7 @@ public final class ItBitExchangeAdapter extends  AbstractExchangeAdapter impleme
                     }
 
                     final String queryParams = queryParamBuilder.toString();
-                    LogUtils.log(LOG, Level.DEBUG, () -> "Query param string: " + queryParams);
+                    LOG.debug(() -> "Query param string: " + queryParams);
 
                     if (params.isEmpty()) {
                         invocationUrl = AUTHENTICATED_API_URL + apiMethod;
@@ -865,8 +853,8 @@ public final class ItBitExchangeAdapter extends  AbstractExchangeAdapter impleme
                     signatureParamList.add(requestBodyForSignature); // request body is empty JSON string for a GET
                     break;
 
-                case "POST" :
-                    LogUtils.log(LOG, Level.DEBUG, () -> "Building secure POST request...");
+                case "POST":
+                    LOG.debug(() -> "Building secure POST request...");
 
                     invocationUrl = AUTHENTICATED_API_URL + apiMethod;
                     signatureParamList.add(invocationUrl);
@@ -875,8 +863,8 @@ public final class ItBitExchangeAdapter extends  AbstractExchangeAdapter impleme
                     signatureParamList.add(requestBody);
                     break;
 
-                case "DELETE" :
-                    LogUtils.log(LOG, Level.DEBUG, () -> "Building secure DELETE request...");
+                case "DELETE":
+                    LOG.debug(() -> "Building secure DELETE request...");
 
                     invocationUrl = AUTHENTICATED_API_URL + apiMethod;
                     signatureParamList.add(invocationUrl);
@@ -899,19 +887,15 @@ public final class ItBitExchangeAdapter extends  AbstractExchangeAdapter impleme
              * '["GET","https://api.itbit.com/v1/wallets/7e037345-1288-4c39-12fe-d0f99a475a98","","5","1405385860202"]'
              */
             final String signatureParamsInJson = gson.toJson(signatureParamList);
-            LogUtils.log(LOG, Level.DEBUG, () -> "Signature params in JSON: " + signatureParamsInJson);
+            LOG.debug(() -> "Signature params in JSON: " + signatureParamsInJson);
 
             // Prepend the string version of the nonce to the JSON-encoded array string
             final String noncePrependedToJson = Long.toString(nonce) + signatureParamsInJson;
-            LogUtils.log(LOG, Level.DEBUG, () -> "Nonce prepended to Signature params in JSON: " + noncePrependedToJson);
 
             // Construct the SHA-256 hash of the noncePrependedToJson. Call this the message hash.
             final MessageDigest md = MessageDigest.getInstance("SHA-256");
             md.update(noncePrependedToJson.getBytes());
             final BigInteger messageHash = new BigInteger(md.digest());
-            LogUtils.log(LOG, Level.DEBUG, () -> "Message SHA-256 Hash: " + messageHash);
-
-            LogUtils.log(LOG, Level.DEBUG, () -> "Invocation URL in SHA-512 HMAC: " + invocationUrl);
 
             // Prepend the UTF-8 encoded request URL to the message hash.
             // Generate the SHA-512 HMAC of the prependRequestUrlToMsgHash using your API secret as the key.
@@ -920,7 +904,6 @@ public final class ItBitExchangeAdapter extends  AbstractExchangeAdapter impleme
             mac.update(messageHash.toByteArray());
 
             final String signature = DatatypeConverter.printBase64Binary((new BigInteger(mac.doFinal())).toByteArray());
-            LogUtils.log(LOG, Level.DEBUG, () -> "Signature in Base64: " + signature);
 
             // Request headers required by Exchange
             final Map<String, String> requestHeaders = new HashMap<>();
@@ -930,15 +913,9 @@ public final class ItBitExchangeAdapter extends  AbstractExchangeAdapter impleme
             // Generate the authorization header by concatenating the client key with a colon separator (‘:’)
             // and the signature. The resulting string should look like "clientkey:signature".
             requestHeaders.put("Authorization", key + ":" + signature);
-            LogUtils.log(LOG, Level.DEBUG, () -> "Authorization: " + key + ":" + signature);
 
-            // Add timestamp header
             requestHeaders.put("X-Auth-Timestamp", unixTime);
-            LogUtils.log(LOG, Level.DEBUG, () -> "X-Auth-Timestamp: " + unixTime);
-
-            // Add nonce header
             requestHeaders.put("X-Auth-Nonce", Long.toString(nonce));
-            LogUtils.log(LOG, Level.DEBUG, () -> "X-Auth-Nonce: " + Long.toString(nonce));
 
             final URL url = new URL(invocationUrl);
             return sendNetworkRequest(url, httpMethod, requestBody, requestHeaders);
@@ -996,11 +973,11 @@ public final class ItBitExchangeAdapter extends  AbstractExchangeAdapter impleme
 
         final String buyFeeInConfig = getOtherConfigItem(otherConfig, BUY_FEE_PROPERTY_NAME);
         buyFeePercentage = new BigDecimal(buyFeeInConfig).divide(new BigDecimal("100"), 8, BigDecimal.ROUND_HALF_UP);
-        LogUtils.log(LOG, Level.INFO, () -> "Buy fee % in BigDecimal format: " + buyFeePercentage);
+        LOG.info(() -> "Buy fee % in BigDecimal format: " + buyFeePercentage);
 
         final String sellFeeInConfig = getOtherConfigItem(otherConfig, SELL_FEE_PROPERTY_NAME);
         sellFeePercentage = new BigDecimal(sellFeeInConfig).divide(new BigDecimal("100"), 8, BigDecimal.ROUND_HALF_UP);
-        LogUtils.log(LOG, Level.INFO, () -> "Sell fee % in BigDecimal format: " + sellFeePercentage);
+        LOG.info(() -> "Sell fee % in BigDecimal format: " + sellFeePercentage);
     }
 
     // ------------------------------------------------------------------------------------------------

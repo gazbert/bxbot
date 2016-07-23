@@ -27,25 +27,11 @@ import com.gazbert.bxbot.core.api.exchange.AuthenticationConfig;
 import com.gazbert.bxbot.core.api.exchange.ExchangeAdapter;
 import com.gazbert.bxbot.core.api.exchange.ExchangeConfig;
 import com.gazbert.bxbot.core.api.exchange.OtherConfig;
-import com.gazbert.bxbot.core.api.trading.BalanceInfo;
-import com.gazbert.bxbot.core.api.trading.ExchangeNetworkException;
-import com.gazbert.bxbot.core.api.trading.MarketOrder;
-import com.gazbert.bxbot.core.api.trading.MarketOrderBook;
-import com.gazbert.bxbot.core.api.trading.OpenOrder;
-import com.gazbert.bxbot.core.api.trading.OrderType;
-import com.gazbert.bxbot.core.api.trading.TradingApi;
-import com.gazbert.bxbot.core.api.trading.TradingApiException;
-import com.gazbert.bxbot.core.util.LogUtils;
+import com.gazbert.bxbot.core.api.trading.*;
 import com.google.common.base.MoreObjects;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import com.google.gson.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
@@ -56,12 +42,7 @@ import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * <p>
@@ -70,7 +51,7 @@ import java.util.Map;
  * This adapter only supports Limit Orders using the
  * <a href="https://github.com/huobiapi/API_Docs_en/wiki/REST-Trade-API-Method">REST Trade API v3</a>.
  * </p>
- *
+ * <p>
  * <p>
  * <strong>
  * DISCLAIMER:
@@ -80,18 +61,18 @@ import java.util.Map;
  * methods. Use it at our own risk!
  * </strong>
  * </p>
- *
+ * <p>
  * <p>
  * This adapter only supports trading BTC, i.e. BTC-CNY and BTC-USD markets. It does not support trading of LTC-CNY.
  * </p>
- *
+ * <p>
  * <p>
  * The public exchange calls {@link #getMarketOrders(String)} and {@link #getLatestMarketPrice(String)} expect market id
  * values of 'BTC-CNY' or 'BTC-USD' only. See Huobi
  * <a href="https://github.com/huobiapi/API_Docs_en/wiki/REST-Candlestick-Chart">ticker</a> and
  * <a href="https://github.com/huobiapi/API_Docs_en/wiki/REST-Order-Book-and-TAS">detail</a> API docs.
  * </p>
- *
+ * <p>
  * <p>
  * The private authenticated calls {@link #getYourOpenOrders(String)},
  * {@link #getBalanceInfo()}, {@link #createOrder(String, OrderType, BigDecimal, BigDecimal)}, and
@@ -100,7 +81,7 @@ import java.util.Map;
  * {@link #getAuthenticatedMarketIdForGivenPublicMarketId(String)} util methods maps the TradingAPI methods' marketId
  * args to the corresponding authenticated request marketId.
  * </p>
- *
+ * <p>
  * <p>
  * The private authenticated call {@link #getBalanceInfo()} uses the 'account-info-market' property value defined in the
  * exchange.xml file when it fetches wallet balance info from the exchange.
@@ -110,7 +91,7 @@ import java.util.Map;
  * For example, if the {@link TradingApi} calls pass in 'BTC-USD' as the marketId, then the exchange.xml
  * 'account-info-market' property must be set to 'usd'.
  * </p>
- *
+ * <p>
  * <p>
  * The exchange % buy and sell fees are currently loaded statically from the exchange.xml file on startup;
  * they are not fetched from the exchange at runtime as the Huobi API does not support this - it only provides the fee
@@ -118,20 +99,20 @@ import java.util.Map;
  * Make sure you keep an eye on the <a href="https://www.huobi.com/about/detail">exchange fees</a> and update the
  * config accordingly. This adapter will use the <em>Taker</em> fees to keep things simple for now.
  * </p>
- *
+ * <p>
  * <p>
  * NOTE: Huobi requires all price values to be limited to 2 decimal places and amount values to be limited to 4 decimal
  * places when creating orders. This adapter truncates any prices with more than 2 decimal places and rounds using
  * {@link java.math.RoundingMode#HALF_EVEN}, E.g. 250.176 would be sent to the exchange as 250.18. The same is done for
  * the order amount, but to 4 decimal places.
  * </p
- *
+ * <p>
  * <p>
  * The Exchange Adapter is <em>not</em> thread safe. It expects to be called using a single thread in order to
  * preserve trade execution order. The {@link URLConnection} achieves this by blocking/waiting on the input stream
  * (response) for each API call.
  * </p>
- *
+ * <p>
  * <p>
  * The {@link TradingApi} calls will throw a {@link ExchangeNetworkException} if a network error occurs trying to
  * connect to the exchange. A {@link TradingApiException} is thrown for <em>all</em> other failures.
@@ -141,7 +122,7 @@ import java.util.Map;
  */
 public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implements ExchangeAdapter {
 
-    private static final Logger LOG = Logger.getLogger(HuobiExchangeAdapter.class);
+    private static final Logger LOG = LogManager.getLogger();
 
     /**
      * The version of the Huobi API being used.
@@ -275,7 +256,7 @@ public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implemen
     @Override
     public void init(ExchangeConfig config) {
 
-        LogUtils.log(LOG, Level.INFO, () -> "About to initialise Huobi ExchangeConfig: " + config);
+        LOG.info(() -> "About to initialise Huobi ExchangeConfig: " + config);
         setAuthenticationConfig(config);
         setNetworkConfig(config);
         setOtherConfig(config);
@@ -318,7 +299,7 @@ public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implemen
             }
 
             final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange(apiCall, marketIdForAuthenticatedRequest, params);
-            LogUtils.log(LOG, Level.DEBUG, () -> "createOrder() response: " + response);
+            LOG.debug(() -> "Create Order response: " + response);
 
             final HuobiOrderResponse createOrderResponse = gson.fromJson(response.getPayload(), HuobiOrderResponse.class);
             if (createOrderResponse.result != null && createOrderResponse.result.equalsIgnoreCase("success")) {
@@ -349,7 +330,7 @@ public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implemen
 
             final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("cancel_order",
                     marketIdForAuthenticatedRequest, params);
-            LogUtils.log(LOG, Level.DEBUG, () -> "cancelOrder() response: " + response);
+            LOG.debug(() -> "Cancel Order response: " + response);
 
             final HuobiCancelOrderResponse cancelOrderResponse = gson.fromJson(response.getPayload(), HuobiCancelOrderResponse.class);
             if (cancelOrderResponse.result != null && cancelOrderResponse.result.equalsIgnoreCase("success")) {
@@ -379,7 +360,7 @@ public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implemen
 
             final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("get_orders",
                     marketIdForAuthenticatedRequest, params);
-            LogUtils.log(LOG, Level.DEBUG, () -> "getYourOpenOrders() response: " + response);
+            LOG.debug(() -> "Open Orders response: " + response);
 
             final HuobiOpenOrderResponseWrapper huobiOpenOrdersWrapper
                     = gson.fromJson(response.getPayload(), HuobiOpenOrderResponseWrapper.class);
@@ -456,7 +437,7 @@ public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implemen
             }
 
             final ExchangeHttpResponse response = sendPublicRequestToExchange(apiCall);
-            LogUtils.log(LOG, Level.DEBUG, () -> "getMarketOrders() response: " + response);
+            LOG.debug(() -> "Market Orders response: " + response);
 
             final HuobiOrderBookWrapper orderBook = gson.fromJson(response.getPayload(), HuobiOrderBookWrapper.class);
 
@@ -498,7 +479,7 @@ public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implemen
         try {
 
             final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("get_account_info", accountInfoMarket, null);
-            LogUtils.log(LOG, Level.DEBUG, () -> "getBalanceInfo() response: " + response);
+            LOG.debug(() -> "Balance Info response: " + response);
 
             final HuobiAccountInfo huobiAccountInfo = gson.fromJson(response.getPayload(), HuobiAccountInfo.class);
             if (huobiAccountInfo.code == 0) {
@@ -555,7 +536,7 @@ public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implemen
             }
 
             final ExchangeHttpResponse response = sendPublicRequestToExchange(apiCall);
-            LogUtils.log(LOG, Level.DEBUG, () -> "getLatestMarketPrice() response: " + response);
+            LOG.debug(() -> "Latest Market Price response: " + response);
 
             final HuobiTickerWrapper tickerWrapper = gson.fromJson(response.getPayload(), HuobiTickerWrapper.class);
             return tickerWrapper.ticker.last;
@@ -670,7 +651,7 @@ public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implemen
 
     /**
      * GSON class for REST Order Book (detail_btc_json.js) API call response.
-     *
+     * <p>
      * This one is a bit crazy...
      */
     private static class HuobiOrderBookWrapper {
@@ -867,7 +848,7 @@ public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implemen
     /**
      * Custom GSON deserializer required as exchange returns JSON object for failed fetches of open orders,
      * but an array of open orders for successful fetches... :-/
-     *
+     * <p>
      * <p>
      * Error response:
      * <pre>
@@ -878,7 +859,7 @@ public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implemen
      * }
      * </pre>
      * </p>
-     *
+     * <p>
      * <p>
      * Success response:
      * <pre>
@@ -916,15 +897,15 @@ public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implemen
                 for (Map.Entry<String, JsonElement> jsonOrder : jsonObject.entrySet()) {
 
                     final String key = jsonOrder.getKey();
-                    switch(key) {
-                        case "code" :
+                    switch (key) {
+                        case "code":
                             huobiOpenOrderResponseWrapper.code = context.deserialize(jsonOrder.getValue(), Integer.class);
                             break;
-                        case "message" :
+                        case "message":
                             huobiOpenOrderResponseWrapper.message = context.deserialize(jsonOrder.getValue(), String.class);
                             break;
-                        case "msg" :
-                            huobiOpenOrderResponseWrapper.msg =  context.deserialize(jsonOrder.getValue(), String.class);
+                        case "msg":
+                            huobiOpenOrderResponseWrapper.msg = context.deserialize(jsonOrder.getValue(), String.class);
                             break;
                         default:
                             throw new IllegalArgumentException("Failed to unmarshal getYourOpenOrder Response from exchange. " +
@@ -978,12 +959,12 @@ public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implemen
      * <p>
      * Makes an authenticated API call to the Huobi exchange.
      * </p>
-     *
+     * <p>
      * <p>
      * Authentication process is documented
      * <a href="https://github.com/huobiapi/API_Docs_en/wiki/REST-Trade-API-Method">here</a>.
      * </p>
-     *
+     * <p>
      * <pre>
      * MD5 signatures must be lowercase.
      *
@@ -1001,7 +982,7 @@ public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implemen
      * </pre>
      *
      * @param apiMethod the API method to call.
-     * @param marketId the (optional) market id to use in the API method call.
+     * @param marketId  the (optional) market id to use in the API method call.
      * @param params    the query param args to use in the API call.
      * @return the response from the exchange.
      * @throws ExchangeNetworkException if there is a network issue connecting to exchange.
@@ -1137,11 +1118,11 @@ public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implemen
 
         final String buyFeeInConfig = getOtherConfigItem(otherConfig, BUY_FEE_PROPERTY_NAME);
         buyFeePercentage = new BigDecimal(buyFeeInConfig).divide(new BigDecimal("100"), 8, BigDecimal.ROUND_HALF_UP);
-        LogUtils.log(LOG, Level.INFO, () -> "Buy fee % in BigDecimal format: " + buyFeePercentage);
+        LOG.info(() -> "Buy fee % in BigDecimal format: " + buyFeePercentage);
 
         final String sellFeeInConfig = getOtherConfigItem(otherConfig, SELL_FEE_PROPERTY_NAME);
         sellFeePercentage = new BigDecimal(sellFeeInConfig).divide(new BigDecimal("100"), 8, BigDecimal.ROUND_HALF_UP);
-        LogUtils.log(LOG, Level.INFO, () -> "Sell fee % in BigDecimal format: " + sellFeePercentage);
+        LOG.info(() -> "Sell fee % in BigDecimal format: " + sellFeePercentage);
 
         accountInfoMarket = getOtherConfigItem(otherConfig, ACCOUNT_INFO_MARKET_PROPERTY_NAME);
     }
@@ -1166,7 +1147,7 @@ public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implemen
      * Telling users to use one marketId for 'public' API calls and another marketId for 'authenticated' API calls is a
      * big no-no.
      * </p>
-     *
+     * <p>
      * <p>
      * This is a real pain... why does the Huobi API require the fiat currency for the authenticated
      * requests' 'market' id param?
@@ -1182,7 +1163,7 @@ public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implemen
         if (publicRequestMarketId.equals(PublicExchangeCallMarket.BTC_USD.getStringValue())) {
             authenticatedRequestMarketId = AuthenticatedExchangeCallMarket.USD.getStringValue();
 
-        } else  if (publicRequestMarketId.equals(PublicExchangeCallMarket.BTC_CNY.getStringValue())) {
+        } else if (publicRequestMarketId.equals(PublicExchangeCallMarket.BTC_CNY.getStringValue())) {
             authenticatedRequestMarketId = AuthenticatedExchangeCallMarket.CNY.getStringValue();
 
         } else {
