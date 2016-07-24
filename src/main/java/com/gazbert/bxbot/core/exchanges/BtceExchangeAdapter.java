@@ -393,33 +393,38 @@ public final class BtceExchangeAdapter extends AbstractExchangeAdapter implement
     @Override
     public BalanceInfo getBalanceInfo() throws TradingApiException, ExchangeNetworkException {
 
-        try {
-            final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("getInfo", null);
-            LOG.debug(() -> "Balance Info response: " + response);
+        // TODO rip this out after Spring Boot stand-up testing!
+        final HashMap<String, BigDecimal> balancesAvailable = new HashMap<>();
+        balancesAvailable.put("BTC", new BigDecimal("1.1"));
+        return new BalanceInfo(balancesAvailable, new HashMap<>());
 
-            final BtceInfoWrapper info = gson.fromJson(response.getPayload(), BtceInfoWrapper.class);
-
-            if (info.success == 1) {
-                final HashMap<String, BigDecimal> balancesAvailable = new HashMap<>();
-                for (final Entry<String, BigDecimal> fund : info.info.funds.entrySet()) {
-                    balancesAvailable.put(fund.getKey().toUpperCase(), fund.getValue());
-                }
-
-                // 2nd arg of reserved balances not provided by exchange.
-                return new BalanceInfo(balancesAvailable, new HashMap<>());
-
-            } else {
-                final String errorMsg = "Failed to get Balance Info from exchange. Error response: " + response;
-                LOG.error(errorMsg);
-                throw new TradingApiException(errorMsg);
-            }
-
-        } catch (ExchangeNetworkException | TradingApiException e) {
-            throw e;
-        } catch (Exception e) {
-            LOG.error(UNEXPECTED_ERROR_MSG, e);
-            throw new TradingApiException(UNEXPECTED_ERROR_MSG, e);
-        }
+//        try {
+//            final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("getInfo", null);
+//            LOG.debug(() -> "Balance Info response: " + response);
+//
+//            final BtceInfoWrapper info = gson.fromJson(response.getPayload(), BtceInfoWrapper.class);
+//
+//            if (info.success == 1) {
+//                final HashMap<String, BigDecimal> balancesAvailable = new HashMap<>();
+//                for (final Entry<String, BigDecimal> fund : info.info.funds.entrySet()) {
+//                    balancesAvailable.put(fund.getKey().toUpperCase(), fund.getValue());
+//                }
+//
+//                // 2nd arg of reserved balances not provided by exchange.
+//                return new BalanceInfo(balancesAvailable, new HashMap<>());
+//
+//            } else {
+//                final String errorMsg = "Failed to get Balance Info from exchange. Error response: " + response;
+//                LOG.error(errorMsg);
+//                throw new TradingApiException(errorMsg);
+//            }
+//
+//        } catch (ExchangeNetworkException | TradingApiException e) {
+//            throw e;
+//        } catch (Exception e) {
+//            LOG.error(UNEXPECTED_ERROR_MSG, e);
+//            throw new TradingApiException(UNEXPECTED_ERROR_MSG, e);
+//        }
     }
 
     @Override

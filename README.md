@@ -35,7 +35,8 @@ and released under the [MIT license](http://opensource.org/licenses/MIT).
 - Strategy API - Trading Strategies implement this for the Trading Engine to execute them.
  
 Trading Strategies and Exchange Adapters are injected by the Trading Engine on startup. The bot uses a crude XML based
-dependency injection framework to achieve this; the long term goal is to convert it to a [Spring Boot](http://projects.spring.io/spring-boot/) app.
+dependency injection framework to achieve this; the long term goal is to convert it to a  
+[Spring Boot](http://projects.spring.io/spring-boot/) app to run in a microservice system.
 
 The bot was designed to fail hard and fast if any unexpected errors occur in the Exchange Adapters or Trading Strategies:
 it will log the error, send an email alert (if configured), and then shutdown.
@@ -54,10 +55,10 @@ See the [`pom.xml`](https://github.com/gazbert/BX-bot/blob/master/pom.xml) for d
 ## Testing
 [![Build Status](https://travis-ci.org/gazbert/BX-bot.svg?branch=master)](https://travis-ci.org/gazbert/BX-bot)
 
-The bot has undergone basic unit testing on a _best-effort_ basis. The project has a continuous integration build 
+The bot has undergone basic unit testing on a _best-effort_ basis - there is a continuous integration build 
 running on [Travis CI](https://travis-ci.org/).
 
-The latest stable build can be found on the [Releases](https://github.com/gazbert/BX-bot/releases) page. The SNAPSHOT builds are
+The latest stable build can always be found on the [Releases](https://github.com/gazbert/BX-bot/releases) page. The SNAPSHOT builds are
 active development builds and very much ["sid"](https://www.debian.org/releases/sid/) - the tests should always pass,
 but you might not have a working bot!
 
@@ -65,7 +66,7 @@ but you might not have a working bot!
 Issues and new features will be managed using the project [Issue Tracker](https://github.com/gazbert/BX-bot/issues) -
 submit bugs here.
  
-You are welcome to take on any new features or fix any bugs!
+You are welcome to take on any new features or fix bugs!
 
 ## User Guide
 
@@ -477,8 +478,10 @@ The following features are in the pipeline:
 - Exchange Adapter for [Kraken](https://www.kraken.com).
 - Convert bot into [Spring Boot](http://projects.spring.io/spring-boot/) app. 
 - REST API for configuring the bot.
-- Web UI (written in [AngularJS](https://angularjs.org/)) for administering the bot. 
-- Android app for administering the bot.
+- Admin app - a microservice for configuring and managing bots in the cloud.
+- Web UI (written in [AngularJS](https://angularjs.org/)) for administering bots.
+- Trade Analysis app - a microservice that will feed off trading events sent by the bots.
+- Android app for administering bots.
 
 See the main project [Issue Tracker](https://github.com/gazbert/BX-bot/issues) for timescales and progress.
 

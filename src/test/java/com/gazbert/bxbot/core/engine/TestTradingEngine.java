@@ -242,19 +242,6 @@ public class TestTradingEngine {
 
         final TradingEngine tradingEngine = TradingEngine.newInstance();
         final Executor executor = Executors.newSingleThreadExecutor();
-
-//        // java 7 way
-//        executor.execute(new Runnable() {
-//            @Override
-//            public void run() {
-//                tradingEngine.start();
-//            }
-//        });
-
-//        // java 8 lambda
-//        executor.execute(() -> tradingEngine.start());
-
-        // java 8 reference method
         executor.execute(tradingEngine::start);
 
         // sleep for 2s to let 2 trade cycles occur

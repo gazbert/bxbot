@@ -24,26 +24,17 @@
 package com.gazbert.bxbot.core;
 
 import com.gazbert.bxbot.core.engine.TradingEngine;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /*
  * BX-bot is a simple algo trading bot for running on Bitcoin exchanges.
- *
- * It is made up of 3 components:
- *
- * 1. The data stream unit (the part of the systems that receives data (e.g. order book, news wire) from
- *    external sources) - the Exchange Adapters.
- * 2. The decision or strategy unit - the Trading Strategies.
- * 3. The execution unit - the Trading Engine.
- *
  */
-public final class BXBot {
-
-    private static final Logger LOG = LogManager.getLogger();
+@SpringBootApplication
+public class BXBot {
 
     public static void main(String[] args) {
-        LOG.info(() -> "Starting BX-bot...");
+        SpringApplication.run(BXBot.class, args);
         TradingEngine.newInstance().start();
     }
 }

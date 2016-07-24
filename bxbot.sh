@@ -11,43 +11,15 @@
 #
 # This script expects all the jar files to live in the LIB_DIR.
 #
-# Change the bxbot_core, log4j, javamail, guava, and gson (if you are using the inbuilt Exchange Adapters) vars to
-# the versions you want to run. They have been given sensible defaults.
-#
-# Set bxbot_strategies var if you have a jar with your own Trading Strategies.
-#
-# Set bxbot_exchanges var if you have a jar with your own Exchange Adapters.
+# Change the bxbot_core var to the version you want to run; it has been defaulted to the last stable release.
 #
 LIB_DIR=./libs
-RESOURCES_DIR=./resources
 
-# The BX-bot core jar (mandatory)
-bxbot_core=bxbot-core-0.2-beta.2.jar
+# log4j2 config file location
+log4j2_config=./resources/log4j2.xml
 
-# log4j (mandatory)
-log4j_api=log4j-api-2.6.2.jar
-log4j_core=log4j-core-2.6.2.jar
-
-# javamail (mandatory)
-javamail=javax.mail-1.5.5.jar
-
-# Google Guava (mandatory)
-guava=guava-19.0.jar
-
-# Google GSON (optional - only needed if you use the inbuilt Exchange Adapters; this script assumes you are)
-gson=gson-2.7.jar
-
-# Your Trading Strategies (optional)
-# Needed if you're not using the sample included with the bot OR you have not included your strats in the bxbot_core jar.
-bxbot_strategies=
-
-# Your Exchange Adapters (optional)
-# Needed if you're not using the inbuilt Exchange Adapters OR you have not included your adapters in the bxbot_core jar.
-bxbot_exchanges=
-
-# Runtime classpath
-CLASSPATH=${LIB_DIR}/${log4j_api}:${LIB_DIR}/${log4j_core}:${LIB_DIR}/${javamail}:${LIB_DIR}/${guava}:${LIB_DIR}/${gson}:\
-${LIB_DIR}/${bxbot_core}:${LIB_DIR}/${bxbot_strategies}:${LIB_DIR}/${bxbot_exchanges}:${RESOURCES_DIR}
+# The BX-bot core jar (Spring Boot app containing all the dependencies)
+bxbot_core=bxbot-core-0.3-beta-SNAPSHOT.jar
 
 # PID file for checking if bot is running
 PID_FILE=./.bxbot.pid
@@ -60,7 +32,7 @@ case "$1" in
           echo "BX-bot is already running with PID: $pid"
        else
           echo "Starting BX-bot..."
-          java -cp ${CLASSPATH} com.gazbert.bxbot.core.BXBot 2>&1 >/dev/null &
+          java -Dlog4j.configurationFile=file:${log4j2_config} -jar ${LIB_DIR}/${bxbot_core} 2>&1 >/dev/null &
 
           echo "BX-bot started with PID: $!"
           echo $! > ${PID_FILE}

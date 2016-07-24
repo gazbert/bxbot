@@ -17,6 +17,11 @@ and a new log file started. Only the last 20 archives are kept. The logging leve
             </Policies>
             <DefaultRolloverStrategy max="20"/>
         </RollingFile>
+        <Console name="STDOUT" target="SYSTEM_OUT">
+            <PatternLayout>
+                <Pattern>%-4r [%t] %d %-5p %c{1} %M() - %m%n</Pattern>
+            </PatternLayout>
+        </Console>
     </Appenders>
     <Loggers>
         <!--
@@ -25,6 +30,7 @@ and a new log file started. Only the last 20 archives are kept. The logging leve
         -->
         <Root level="info">
             <AppenderRef ref="BXBot_RollingFile"/>
+            <AppenderRef ref="STDOUT"/>
         </Root>
     </Loggers>
 </Configuration>

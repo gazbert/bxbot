@@ -1,6 +1,7 @@
 <assembly xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0"
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0 http://maven.apache.org/xsd/assembly-1.1.0.xsd">
+
     <id>dist</id>
     <formats>
         <format>tar.gz</format>
@@ -10,6 +11,9 @@
     <dependencySets>
         <dependencySet>
             <outputDirectory>libs</outputDirectory>
+            <includes>
+                <include>com.gazbert.bxbot:*</include>
+            </includes>
             <useProjectArtifact>true</useProjectArtifact>
             <unpack>false</unpack>
             <scope>runtime</scope>
@@ -27,6 +31,7 @@
                 <include>contributors.txt</include>
                 <include>bxbot.sh</include>
                 <include>config/*.xml</include>
+                <include>config/application.properties</include>
                 <include>resources/log4j2.xml</include>
             </includes>
         </fileSet>

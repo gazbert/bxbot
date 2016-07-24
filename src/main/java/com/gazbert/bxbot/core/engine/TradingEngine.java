@@ -232,7 +232,6 @@ final public class TradingEngine {
 
             try {
 
-                LOG.info(() -> "");
                 LOG.info(() -> "*** Starting next trade cycle... ***");
 
                 // Emergency Stop Check MUST run at start of every trade cycle.

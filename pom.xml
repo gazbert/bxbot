@@ -6,7 +6,7 @@
     <groupId>com.gazbert.bxbot</groupId>
     <artifactId>bxbot-core</artifactId>
     <packaging>jar</packaging>
-    <version>0.2-beta.2</version>
+    <version>0.3-beta-SNAPSHOT</version>
     <name>BX-bot</name>
     <description>BX-bot is a simple Java algorithmic trading bot for trading Bitcoin on cryptocurrency exchanges.
     </description>
@@ -37,10 +37,42 @@
         <powermock.version>1.6.2</powermock.version>
     </properties>
 
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>1.3.6.RELEASE</version>
+    </parent>
+
     <dependencies>
         <!--
         Product dependencies
         -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+
+        <!-- This seems to be the only way I can get my existing log4j2 dependencies to work... :-/ -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-logging</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-log4j2</artifactId>
+        </dependency>
+
+        <!-- My existing log4j2 dependencies -->
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-api</artifactId>
@@ -51,6 +83,7 @@
             <artifactId>log4j-core</artifactId>
             <version>2.6.2</version>
         </dependency>
+
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
@@ -79,7 +112,7 @@
         <!--<dependency>-->
             <!--<groupId>com.gazbert.bxbot</groupId>-->
             <!--<artifactId>bxbot-strategies</artifactId>-->
-            <!--<version>2.0-SNAPSHOT</version>-->
+            <!--<version>3.0-SNAPSHOT</version>-->
             <!--<scope>runtime</scope>-->
         <!--</dependency>-->
 
@@ -204,6 +237,18 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+
+            <!--
+            Spring Boot plugin will include any optional Trading Strategy and Exchange Adapter dependency jars
+            when it builds the single uber jar.
+            -->
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <goals>
+                    <goal>repackage</goal>
+                </goals>
             </plugin>
         </plugins>
     </build>

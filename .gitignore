@@ -37,3 +37,7 @@ hs_err_pid*
 /resources/itbit/itbit-config.properties
 /resources/gdax/gdax-config.properties
 /resources/kraken/kraken-config.properties
+
+# not for github
+TestingStrategy.java
+
