@@ -11,7 +11,7 @@
 #
 # This script expects all the jar files to live in the LIB_DIR.
 #
-# Change the bxbot_core var to the version you want to run; it has been defaulted to the last stable release.
+# You can change the bxbot_core var to the version you want to run; it has been defaulted to the current release.
 #
 LIB_DIR=./libs
 

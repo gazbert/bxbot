@@ -35,8 +35,8 @@ and released under the [MIT license](http://opensource.org/licenses/MIT).
 - Strategy API - Trading Strategies implement this for the Trading Engine to execute them.
  
 Trading Strategies and Exchange Adapters are injected by the Trading Engine on startup. The bot uses a crude XML based
-dependency injection framework to achieve this; the long term goal is to convert it to a  
-[Spring Boot](http://projects.spring.io/spring-boot/) app to run in a microservice system.
+dependency injection framework to achieve this; the long term goal is to convert it to a [Spring Boot](http://projects.spring.io/spring-boot/)
+app to run in a microservice system.
 
 The bot was designed to fail hard and fast if any unexpected errors occur in the Exchange Adapters or Trading Strategies:
 it will log the error, send an email alert (if configured), and then shutdown.
@@ -468,9 +468,7 @@ A Maven `pom.xml` is included for building the bot.
 1. Copy either the `bxbot-core-<version>-dist.tar.gz` or `bxbot-core-<version>-dist.zip` onto the machine you 
    want to run the bot.
 1. Unzip it into a folder, e.g. `bxbot-home`. Make sure the `bxbot.sh` script is executable: `chmod 755 bxbot.sh`.
-1. Open the `bxbot.sh` script and follow the instructions in the file.
-
-To start, stop, and query the bot's status, use `./bxbot.sh [start|stop|status]`
+1. To start, stop, and query the bot's status, use: `./bxbot.sh [start|stop|status]`
  
 ## Coming Soon...
 The following features are in the pipeline:
