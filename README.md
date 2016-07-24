@@ -35,8 +35,8 @@ and released under the [MIT license](http://opensource.org/licenses/MIT).
 - Strategy API - Trading Strategies implement this for the Trading Engine to execute them.
  
 Trading Strategies and Exchange Adapters are injected by the Trading Engine on startup. The bot uses a crude XML based
-dependency injection framework to achieve this; the long term goal is to convert it to a [Spring Boot](http://projects.spring.io/spring-boot/)
-app to run in a microservice system.
+dependency injection framework to achieve this; the long term goal is for it to run as a [Spring Boot](http://projects.spring.io/spring-boot/)
+in a microservice system.
 
 The bot was designed to fail hard and fast if any unexpected errors occur in the Exchange Adapters or Trading Strategies:
 it will log the error, send an email alert (if configured), and then shutdown.
