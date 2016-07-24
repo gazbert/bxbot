@@ -468,13 +468,12 @@ A Maven `pom.xml` is included for building the bot.
 1. Copy either the `bxbot-core-<version>-dist.tar.gz` or `bxbot-core-<version>-dist.zip` onto the machine you 
    want to run the bot.
 1. Unzip it into a folder, e.g. `bxbot-home`.
-1. To start, stop, and query the bot's status: `./bxbot.sh [start|stop|status]`
+1. Start the bot: `./bxbot.sh start`
  
 ## Coming Soon...
 The following features are in the pipeline:
 
 - Exchange Adapter for [Kraken](https://www.kraken.com).
-- Convert bot into [Spring Boot](http://projects.spring.io/spring-boot/) app. 
 - REST API for configuring the bot.
 - Admin app - a microservice for configuring and managing bots in the cloud.
 - Web UI (written in [AngularJS](https://angularjs.org/)) for administering bots.

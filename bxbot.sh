@@ -13,6 +13,8 @@
 #
 # You can change the bxbot_core var to the version you want to run; it has been defaulted to the current release.
 #
+# You can start, stop, and query the bot's status: ./bxbot.sh [start|stop|status]
+#
 LIB_DIR=./libs
 
 # log4j2 config file location
