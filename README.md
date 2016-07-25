@@ -36,7 +36,7 @@ and released under the [MIT license](http://opensource.org/licenses/MIT).
  
 Trading Strategies and Exchange Adapters are injected by the Trading Engine on startup. The bot uses a crude XML based
 dependency injection framework to achieve this; the long term goal is for it to run as a [Spring Boot](http://projects.spring.io/spring-boot/)
-in a microservice system.
+app in a microservice system.
 
 The bot was designed to fail hard and fast if any unexpected errors occur in the Exchange Adapters or Trading Strategies:
 it will log the error, send an email alert (if configured), and then shutdown.
@@ -66,7 +66,7 @@ but you might not have a working bot!
 Issues and new features will be managed using the project [Issue Tracker](https://github.com/gazbert/BX-bot/issues) -
 submit bugs here.
  
-You are welcome to take on any new features or fix bugs!
+You are welcome to take on any new features or fix bugs.
 
 ## User Guide
 
@@ -456,7 +456,7 @@ see the _Installation Guide_ for how to do this.
 
 A Maven `pom.xml` is included for building the bot.
 
-1. Clone the BX-bot repo locally.
+1. Clone the BX-bot repo locally - the [Releases](https://github.com/gazbert/BX-bot/releases) page has the stable builds.
 1. Open the `./config` XML files and configure them as required.
 1. If you plan on using Trading Strategies or Exchange Adapters that are packaged in separate jar files, you'll need to add
    the dependency in the `pom.xml` file - see the commented out dependency examples inside it.
@@ -467,7 +467,7 @@ A Maven `pom.xml` is included for building the bot.
 
 1. Copy either the `bxbot-core-<version>-dist.tar.gz` or `bxbot-core-<version>-dist.zip` onto the machine you 
    want to run the bot.
-1. Unzip it into a folder, e.g. `bxbot-home`.
+1. Unzip it into a folder, e.g. `bxbot-home`
 1. To start the bot: `./bxbot.sh start` 
 1. To stop the bot: `./bxbot.sh stop`
  
