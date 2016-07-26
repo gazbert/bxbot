@@ -331,11 +331,12 @@ The email is sent using TLS.
 
 #### Logging
 Logging for the bot is provided by [log4j](http://logging.apache.org/log4j). The log file is written to `logs/bxbot.log` 
-and uses a rolling policy: once a file reaches 100MB, it is archived, and a new log file started. Only the last 
-20 archives are kept. The logging level is set at INFO. You can change this default logging configuration in the 
-[`resources/log4j2.xml`](https://github.com/gazbert/BX-bot/blob/master/resources/log4j2.xml) file.
+uses a rolling policy. It will create up to 7 archives on the same day (1-7) that are stored in a directory based on 
+the current year and month, and will compress each archive using gzip. Once a file reaches 100 MB or a new day is started,
+it is archived and a new log file is created. Only the last 90 archives are kept. The logging level is set at `info`. 
+You can change this default logging configuration in the [`resources/log4j2.xml`](https://github.com/gazbert/BX-bot/blob/master/resources/log4j2.xml) file.
 
-I recommend running at INFO level. DEBUG level logging will produce a *lot* of
+I recommend running at `info` level, as `debug` level logging will produce a *lot* of
 output from the Exchange Adapters; it's very handy for debugging, but not so good for your disk space!
 
 ### How do I write my own Trading Strategy?
