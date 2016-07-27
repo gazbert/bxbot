@@ -1,0 +1,55 @@
+{
+  "error": [],
+  "result": {
+    "open": {
+      "OZUVVF-XEJUB-BOWOFO": {
+        "refid": null,
+        "userref": null,
+        "status": "open",
+        "opentm": 1469653618.4223,
+        "starttm": 0,
+        "expiretm": 0,
+        "descr": {
+          "pair": "XBTUSD",
+          "type": "sell",
+          "ordertype": "limit",
+          "price": "699.100",
+          "price2": "0",
+          "leverage": "none",
+          "order": "sell 0.01000000 XBTUSD @ limit 699.100"
+        },
+        "vol": "0.01000000",
+        "vol_exec": "0.00000000",
+        "cost": "0.00000",
+        "fee": "0.00000",
+        "price": "0.00000",
+        "misc": "",
+        "oflags": "fciq"
+      },
+      "OSOKNX-FAMVQ-HRUTHA": {
+        "refid": null,
+        "userref": null,
+        "status": "open",
+        "opentm": 1469653598.6778,
+        "starttm": 0,
+        "expiretm": 0,
+        "descr": {
+          "pair": "XBTUSD",
+          "type": "sell",
+          "ordertype": "limit",
+          "price": "700.099",
+          "price2": "0",
+          "leverage": "none",
+          "order": "sell 0.01500000 XBTUSD @ limit 700.099"
+        },
+        "vol": "0.01500000",
+        "vol_exec": "0.00000000",
+        "cost": "0.00000",
+        "fee": "0.00000",
+        "price": "0.00000",
+        "misc": "",
+        "oflags": "fciq"
+      }
+    }
+  }
+}

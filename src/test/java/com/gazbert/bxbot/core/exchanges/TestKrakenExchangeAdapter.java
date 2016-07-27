@@ -79,11 +79,14 @@ public class TestKrakenExchangeAdapter {
     private static final String BALANCE_ERROR_JSON_RESPONSE = "./src/test/exchange-data/kraken/Balance-error.json";
     private static final String TICKER_JSON_RESPONSE = "./src/test/exchange-data/kraken/Ticker.json";
     private static final String TICKER_ERROR_JSON_RESPONSE = "./src/test/exchange-data/kraken/Ticker-error.json";
+    private static final String OPEN_ORDERS_JSON_RESPONSE = "./src/test/exchange-data/kraken/OpenOrders.json";
+    private static final String OPEN_ORDERS_ERROR_JSON_RESPONSE = "./src/test/exchange-data/kraken/OpenOrders-error.json";
 
     // Exchange API calls
     private static final String DEPTH = "Depth";
     private static final String BALANCE = "Balance";
     private static final String TICKER = "Ticker";
+    private static final String OPEN_ORDERS = "OpenOrders";
 
     // Canned test data
     private static final String MARKET_ID = "XXBTZUSD";
@@ -94,7 +97,7 @@ public class TestKrakenExchangeAdapter {
     private static final String MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD = "sendPublicRequestToExchange";
 
     // Exchange Adapter config for the tests
-    private static final String KEY =  "key123";
+    private static final String KEY = "key123";
     private static final String SECRET = "notGonnaTellYa";
     private static final List<Integer> nonFatalNetworkErrorCodes = Arrays.asList(502, 503, 504);
     private static final List<String> nonFatalNetworkErrorMessages = Arrays.asList(
@@ -245,6 +248,109 @@ public class TestKrakenExchangeAdapter {
         exchangeAdapter.init(exchangeConfig);
 
         exchangeAdapter.getMarketOrders(MARKET_ID);
+        PowerMock.verifyAll();
+    }
+
+    // ------------------------------------------------------------------------------------------------
+    //  Get Your Open Orders tests
+    // ------------------------------------------------------------------------------------------------
+
+    // TODO testGettingYourOpenOrdersSuccessfully
+//    @Test
+//    public void testGettingYourOpenOrdersSuccessfully() throws Exception {
+//
+//        // Load the canned response from the exchange
+//        final byte[] encoded = Files.readAllBytes(Paths.get(ORDER_INFO_JSON_RESPONSE));
+//        final AbstractExchangeAdapter.ExchangeHttpResponse exchangeResponse =
+//                new AbstractExchangeAdapter.ExchangeHttpResponse(200, "OK", new String(encoded, StandardCharsets.UTF_8));
+//
+//        // Mock out param map so we can assert the contents passed to the transport layer are what we expect.
+//        final Map<String, String> requestParamMap = PowerMock.createMock(Map.class);
+//        expect(requestParamMap.put("order_id", "-1")).andStubReturn(null);
+//        expect(requestParamMap.put("symbol", MARKET_ID)).andStubReturn(null);
+//
+//        // Partial mock so we do not send stuff down the wire
+//        final OkCoinExchangeAdapter exchangeAdapter =  PowerMock.createPartialMockAndInvokeDefaultConstructor(
+//                OkCoinExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD,
+//                MOCKED_GET_REQUEST_PARAM_MAP_METHOD);
+//
+//        PowerMock.expectPrivate(exchangeAdapter, MOCKED_GET_REQUEST_PARAM_MAP_METHOD).andReturn(requestParamMap);
+//        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(ORDER_INFO),
+//                eq(requestParamMap)).andReturn(exchangeResponse);
+//
+//        PowerMock.replayAll();
+//        exchangeAdapter.init(exchangeConfig);
+//
+//        final List<OpenOrder> openOrders = exchangeAdapter.getYourOpenOrders(MARKET_ID);
+//
+//        // assert some key stuff; we're not testing GSON here.
+//        assertTrue(openOrders.size() == 2);
+//        assertTrue(openOrders.get(0).getMarketId().equals(MARKET_ID));
+//        assertTrue(openOrders.get(0).getId().equals("99031951"));
+//        assertTrue(openOrders.get(0).getType() == OrderType.SELL);
+//        assertTrue(openOrders.get(0).getCreationDate().getTime() == 1442949893000L);
+//        assertTrue(openOrders.get(0).getPrice().compareTo(new BigDecimal("255")) == 0);
+//        assertTrue(openOrders.get(0).getQuantity().compareTo(new BigDecimal("0.015")) == 0);
+//        assertTrue(openOrders.get(0).getTotal().compareTo(openOrders.get(0).getPrice().multiply(openOrders.get(0).getQuantity())) == 0);
+//
+//        // the values below are not provided by OKCoin
+//        assertNull(openOrders.get(0).getOriginalQuantity());
+//
+//        PowerMock.verifyAll();
+//    }
+
+    @Test (expected = TradingApiException.class)
+    public void testGettingYourOpenOrdersExchangeErrorResponse() throws Exception {
+
+        // Load the canned response from the exchange
+        final byte[] encoded = Files.readAllBytes(Paths.get(OPEN_ORDERS_ERROR_JSON_RESPONSE));
+        final KrakenExchangeAdapter.ExchangeHttpResponse exchangeResponse =
+                new KrakenExchangeAdapter.ExchangeHttpResponse(200, "OK", new String(encoded, StandardCharsets.UTF_8));
+
+        // Partial mock so we do not send stuff down the wire
+        final KrakenExchangeAdapter exchangeAdapter =  PowerMock.createPartialMockAndInvokeDefaultConstructor(
+                KrakenExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(OPEN_ORDERS),
+                anyObject(Map.class)).andReturn(exchangeResponse);
+
+        PowerMock.replayAll();
+        exchangeAdapter.init(exchangeConfig);
+
+        exchangeAdapter.getYourOpenOrders("junk_market_id");
+        PowerMock.verifyAll();
+    }
+
+    @Test (expected = ExchangeNetworkException.class )
+    public void testGettingYourOpenOrdersHandlesExchangeNetworkException() throws Exception {
+
+        // Partial mock so we do not send stuff down the wire
+        final KrakenExchangeAdapter exchangeAdapter =  PowerMock.createPartialMockAndInvokeDefaultConstructor(
+                KrakenExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(OPEN_ORDERS),
+                anyObject(Map.class)).andThrow(new ExchangeNetworkException("Yes... yes. This is a fertile land, & we " +
+                "will thrive. We will rule over all this land, & we will call it... This Land"));
+
+        PowerMock.replayAll();
+        exchangeAdapter.init(exchangeConfig);
+
+        exchangeAdapter.getYourOpenOrders(MARKET_ID);
+        PowerMock.verifyAll();
+    }
+
+    @Test (expected = TradingApiException.class)
+    public void testGettingYourOpenOrdersHandlesUnexpectedException() throws Exception {
+
+        // Partial mock so we do not send stuff down the wire
+        final KrakenExchangeAdapter exchangeAdapter =  PowerMock.createPartialMockAndInvokeDefaultConstructor(
+                KrakenExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(OPEN_ORDERS),
+                anyObject(Map.class)).
+                andThrow(new IllegalStateException("Ah! Curse your sudden but inevitable betrayal!"));
+
+        PowerMock.replayAll();
+        exchangeAdapter.init(exchangeConfig);
+
+        exchangeAdapter.getYourOpenOrders(MARKET_ID);
         PowerMock.verifyAll();
     }
 

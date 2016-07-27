@@ -155,6 +155,11 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
     private static final String FAILED_TO_GET_TICKER = "Failed to get Ticker from exchange. Details: ";
 
     /**
+     * Error message for when API call to get Open Orders fails.
+     */
+    private static final String FAILED_TO_GET_OPEN_ORDERS = "Failed to get Open Orders from exchange. Details: ";
+
+    /**
      * Name of PUBLIC key prop in config file.
      */
     private static final String KEY_PROPERTY_NAME = "key";
@@ -289,7 +294,41 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
 
     @Override
     public List<OpenOrder> getYourOpenOrders(String marketId) throws TradingApiException, ExchangeNetworkException {
-        throw new UnsupportedOperationException("Not developed yet!");
+
+        try {
+
+            final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("OpenOrders", null);
+            LOG.debug(() -> "Open Orders response: " + response);
+
+            if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
+
+                final Type resultType = new TypeToken<KrakenResponse<KrakenOpenOrderResult>>() {}.getType();
+                final KrakenResponse krakenResponse = gson.fromJson(response.getPayload(), resultType);
+
+                final List<String> errors = krakenResponse.error;
+                if (errors == null || errors.isEmpty()) {
+
+                    // TODO build it :-)
+                    return null;
+
+                } else {
+                    final String errorMsg = FAILED_TO_GET_OPEN_ORDERS + response;
+                    LOG.error(errorMsg);
+                    throw new TradingApiException(errorMsg);
+                }
+
+            } else {
+                final String errorMsg = FAILED_TO_GET_OPEN_ORDERS + response;
+                LOG.error(errorMsg);
+                throw new TradingApiException(errorMsg);
+            }
+
+        } catch (ExchangeNetworkException | TradingApiException e) {
+            throw e;
+        } catch (Exception e) {
+            LOG.error(UNEXPECTED_ERROR_MSG, e);
+            throw new TradingApiException(UNEXPECTED_ERROR_MSG, e);
+        }
     }
 
     @Override
@@ -316,7 +355,8 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
 
             if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
 
-                final Type resultType = new TypeToken<KrakenResponse<KrakenTickerResult>>() {}.getType();
+                final Type resultType = new TypeToken<KrakenResponse<KrakenTickerResult>>() {
+                }.getType();
                 final KrakenResponse krakenResponse = gson.fromJson(response.getPayload(), resultType);
 
                 final List<String> errors = krakenResponse.error;
@@ -361,7 +401,8 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
 
             if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
 
-                final Type resultType = new TypeToken<KrakenResponse<KrakenBalanceResult>>() {}.getType();
+                final Type resultType = new TypeToken<KrakenResponse<KrakenBalanceResult>>() {
+                }.getType();
                 final KrakenResponse krakenResponse = gson.fromJson(response.getPayload(), resultType);
 
                 final List<String> errors = krakenResponse.error;
@@ -470,6 +511,12 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
      * GSON class that wraps a Ticker API call result.
      */
     private static class KrakenTickerResult extends HashMap<String, Map<String, List<String>>> {
+    }
+
+    /**
+     * GSON class that wraps an Open Order API call result - your open orders.
+     */
+    private static class KrakenOpenOrderResult extends HashMap<String, Object> {
     }
 
     /**
