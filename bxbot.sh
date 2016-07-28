@@ -34,7 +34,7 @@ case "$1" in
           echo "BX-bot is already running with PID: $pid"
        else
           echo "Starting BX-bot..."
-          java -Xmx64m -Xss256k -Dlog4j.configurationFile=file:${log4j2_config} -jar ${LIB_DIR}/${bxbot_core} 2>&1 >/dev/null &
+          java -Xmx32m -Xss256k -Dlog4j.configurationFile=file:${log4j2_config} -jar ${LIB_DIR}/${bxbot_core} 2>&1 >/dev/null &
 
           echo "BX-bot started with PID: $!"
           echo $! > ${PID_FILE}

@@ -308,8 +308,47 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
                 final List<String> errors = krakenResponse.error;
                 if (errors == null || errors.isEmpty()) {
 
-                    // TODO build it :-)
-                    return null;
+                    final List<OpenOrder> openOrders = new ArrayList<>();
+
+                    // Assume we'll always get something here if errors array is empty; else blow fast wih NPE
+                    final KrakenOpenOrderResult krakenOpenOrderResult = (KrakenOpenOrderResult) krakenResponse.result;
+
+                    final Map<String, KrakenOpenOrder> krakenOpenOrders = krakenOpenOrderResult.open;
+                    for (final Map.Entry<String, KrakenOpenOrder> openOrder : krakenOpenOrders.entrySet()) {
+
+                        OrderType orderType;
+                        final KrakenOpenOrder krakenOpenOrder = openOrder.getValue();
+                        final KrakenOpenOrderDescription krakenOpenOrderDescription = krakenOpenOrder.descr;
+
+                        switch (krakenOpenOrderDescription.type) {
+                            case "buy":
+                                orderType = OrderType.BUY;
+                                break;
+                            case "sell":
+                                orderType = OrderType.SELL;
+                                break;
+                            default:
+                                throw new TradingApiException(
+                                        "Unrecognised order type received in getYourOpenOrders(). Value: " +
+                                                openOrder.getValue().descr.ordertype);
+                        }
+
+                        final OpenOrder order = new OpenOrder(
+                                openOrder.getKey(),
+                                new Date((long) krakenOpenOrder.opentm), // opentm == creationDate
+                                marketId,
+                                orderType,
+                                krakenOpenOrderDescription.price,
+                                (krakenOpenOrder.vol.subtract(krakenOpenOrder.vol_exec)), // vol_exec == amount of order that has been executed
+                                krakenOpenOrder.vol, // vol == orig order amount
+                                //krakenOpenOrder.cost, // cost == total value of order in API docs, but it's always 0 :-(
+                                krakenOpenOrderDescription.price.multiply(krakenOpenOrder.vol)
+                        );
+
+                        openOrders.add(order);
+                    }
+
+                    return openOrders;
 
                 } else {
                     final String errorMsg = FAILED_TO_GET_OPEN_ORDERS + response;
@@ -516,7 +555,85 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
     /**
      * GSON class that wraps an Open Order API call result - your open orders.
      */
-    private static class KrakenOpenOrderResult extends HashMap<String, Object> {
+    private static class KrakenOpenOrderResult {
+
+        public Map<String, KrakenOpenOrder> open;
+
+        @Override
+        public String toString() {
+            return MoreObjects.toStringHelper(this)
+                    .add("open", open)
+                    .toString();
+        }
+    }
+
+    /**
+     * GSON class the represents a Kraken Open Order.
+     */
+    private static class KrakenOpenOrder {
+
+        // field names map to the JSON arg names
+        public String refid;
+        public String userref;
+        public String status;
+        public double opentm;
+        public double starttm;
+        public double expiretm;
+        public KrakenOpenOrderDescription descr;
+        public BigDecimal vol;
+        public BigDecimal vol_exec;
+        public BigDecimal cost;
+        public BigDecimal fee;
+        public BigDecimal price;
+        public String misc;
+        public String oflags;
+
+        @Override
+        public String toString() {
+            return MoreObjects.toStringHelper(this)
+                    .add("refid", refid)
+                    .add("userref", userref)
+                    .add("status", status)
+                    .add("opentm", opentm)
+                    .add("starttm", starttm)
+                    .add("expiretm", expiretm)
+                    .add("descr", descr)
+                    .add("vol", vol)
+                    .add("vol_exec", vol_exec)
+                    .add("cost", cost)
+                    .add("fee", fee)
+                    .add("price", price)
+                    .add("misc", misc)
+                    .add("oflags", oflags)
+                    .toString();
+        }
+    }
+
+    /**
+     * GSON class the represents a Kraken Open Order description.
+     */
+    private static class KrakenOpenOrderDescription {
+
+        public String pair;
+        public String type;
+        public String ordertype;
+        public BigDecimal price;
+        public BigDecimal price2;
+        public String leverage;
+        public String order;
+
+        @Override
+        public String toString() {
+            return MoreObjects.toStringHelper(this)
+                    .add("pair", pair)
+                    .add("type", type)
+                    .add("ordertype", ordertype)
+                    .add("price", price)
+                    .add("price2", price2)
+                    .add("leverage", leverage)
+                    .add("order", order)
+                    .toString();
+        }
     }
 
     /**
