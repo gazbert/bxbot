@@ -26,6 +26,7 @@ package com.gazbert.bxbot.core.exchanges;
 import com.gazbert.bxbot.core.api.exchange.AuthenticationConfig;
 import com.gazbert.bxbot.core.api.exchange.ExchangeAdapter;
 import com.gazbert.bxbot.core.api.exchange.ExchangeConfig;
+import com.gazbert.bxbot.core.api.exchange.OtherConfig;
 import com.gazbert.bxbot.core.api.trading.*;
 import com.google.common.base.MoreObjects;
 import com.google.gson.*;
@@ -66,7 +67,10 @@ import java.util.*;
  * </p>
  * <p>
  * <p>
- * TODO Fees
+ * Exchange fees are loaded from the exchange.xml file on startup; they are not fetched from the exchange
+ * at runtime as the Kraken REST API does not support this. The fees are used across all markets. Make sure you keep
+ * an eye on the <a href="https://www.kraken.com/help/fees">exchange fees</a> and update the config accordingly.
+ * This adapter will use the <em>Taker</em> fees to keep things simple for now.
  * </p>
  * <p>
  * <p>
@@ -170,9 +174,29 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
     private static final String SECRET_PROPERTY_NAME = "secret";
 
     /**
+     * Name of buy fee property in config file.
+     */
+    private static final String BUY_FEE_PROPERTY_NAME = "buy-fee";
+
+    /**
+     * Name of sell fee property in config file.
+     */
+    private static final String SELL_FEE_PROPERTY_NAME = "sell-fee";
+
+    /**
      * Nonce used for sending authenticated messages to the exchange.
      */
     private static long nonce = 0;
+
+    /**
+     * Exchange buy fees in % in {@link BigDecimal} format.
+     */
+    private BigDecimal buyFeePercentage;
+
+    /**
+     * Exchange sell fees in % in {@link BigDecimal} format.
+     */
+    private BigDecimal sellFeePercentage;
 
     /**
      * Used to indicate if we have initialised the MAC authentication protocol.
@@ -207,6 +231,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
         LOG.info(() -> "About to initialise Kraken ExchangeConfig: " + config);
         setAuthenticationConfig(config);
         setNetworkConfig(config);
+//        setOtherConfig(config);
 
         nonce = System.currentTimeMillis() / 1000; // set the initial nonce used in the secure messaging.
         initSecureMessageLayer();
@@ -482,13 +507,17 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
     @Override
     public BigDecimal getPercentageOfBuyOrderTakenForExchangeFee(String marketId) throws TradingApiException,
             ExchangeNetworkException {
-        throw new UnsupportedOperationException("Not developed yet!");
+        // Kraken does not provide API call for fetching % buy fee; it only provides the fee monetary value for a
+        // given order via the OpenOrders API call. We load the % fee statically from exchange.xml file.
+        return buyFeePercentage;
     }
 
     @Override
     public BigDecimal getPercentageOfSellOrderTakenForExchangeFee(String marketId) throws TradingApiException,
             ExchangeNetworkException {
-        throw new UnsupportedOperationException("Not developed yet!");
+        // Kraken does not provide API call for fetching % sell fee; it only provides the fee monetary value for a
+        // given order via the OpenOrders API call. We load the % fee statically from exchange.xml file.
+        return sellFeePercentage;
     }
 
     @Override
@@ -642,8 +671,8 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
     private static class KrakenOrderBook {
 
         // field names map to the JSON arg names
-        public KrakenMarketOrder[] bids;
-        public KrakenMarketOrder[] asks;
+        public List<KrakenMarketOrder> bids;
+        public List<KrakenMarketOrder> asks;
 
         @Override
         public String toString() {
@@ -878,6 +907,19 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
         final AuthenticationConfig authenticationConfig = getAuthenticationConfig(exchangeConfig);
         key = getAuthenticationConfigItem(authenticationConfig, KEY_PROPERTY_NAME);
         secret = getAuthenticationConfigItem(authenticationConfig, SECRET_PROPERTY_NAME);
+    }
+
+    private void setOtherConfig(ExchangeConfig exchangeConfig) {
+
+        final OtherConfig otherConfig = getOtherConfig(exchangeConfig);
+
+        final String buyFeeInConfig = getOtherConfigItem(otherConfig, BUY_FEE_PROPERTY_NAME);
+        buyFeePercentage = new BigDecimal(buyFeeInConfig).divide(new BigDecimal("100"), 8, BigDecimal.ROUND_HALF_UP);
+        LOG.info(() -> "Buy fee % in BigDecimal format: " + buyFeePercentage);
+
+        final String sellFeeInConfig = getOtherConfigItem(otherConfig, SELL_FEE_PROPERTY_NAME);
+        sellFeePercentage = new BigDecimal(sellFeeInConfig).divide(new BigDecimal("100"), 8, BigDecimal.ROUND_HALF_UP);
+        LOG.info(() -> "Sell fee % in BigDecimal format: " + sellFeePercentage);
     }
 
     // ------------------------------------------------------------------------------------------------
