@@ -23,10 +23,7 @@
 
 package com.gazbert.bxbot.core.exchanges;
 
-import com.gazbert.bxbot.core.api.exchange.AuthenticationConfig;
-import com.gazbert.bxbot.core.api.exchange.ExchangeAdapter;
-import com.gazbert.bxbot.core.api.exchange.ExchangeConfig;
-import com.gazbert.bxbot.core.api.exchange.NetworkConfig;
+import com.gazbert.bxbot.core.api.exchange.*;
 import com.gazbert.bxbot.core.api.trading.*;
 import org.junit.Before;
 import org.junit.Test;
@@ -106,6 +103,7 @@ public class TestKrakenExchangeAdapter {
     private ExchangeConfig exchangeConfig;
     private AuthenticationConfig authenticationConfig;
     private NetworkConfig networkConfig;
+    private OtherConfig otherConfig;
 
 
     /*
@@ -123,10 +121,14 @@ public class TestKrakenExchangeAdapter {
         expect(networkConfig.getNonFatalErrorCodes()).andReturn(nonFatalNetworkErrorCodes);
         expect(networkConfig.getNonFatalErrorMessages()).andReturn(nonFatalNetworkErrorMessages);
 
+        otherConfig = PowerMock.createMock(OtherConfig.class);
+        expect(otherConfig.getItem("buy-fee")).andReturn("0.1");
+        expect(otherConfig.getItem("sell-fee")).andReturn("0.2");
+
         exchangeConfig = PowerMock.createMock(ExchangeConfig.class);
         expect(exchangeConfig.getAuthenticationConfig()).andReturn(authenticationConfig);
         expect(exchangeConfig.getNetworkConfig()).andReturn(networkConfig);
-        // other config not needed for this adapter
+        expect(exchangeConfig.getOtherConfig()).andReturn(otherConfig);
     }
 
 
@@ -536,6 +538,34 @@ public class TestKrakenExchangeAdapter {
         final ExchangeAdapter exchangeAdapter = new KrakenExchangeAdapter();
         exchangeAdapter.init(exchangeConfig);
         assertTrue(exchangeAdapter.getImplName().equals("Kraken API v1"));
+        PowerMock.verifyAll();
+    }
+
+    @Test
+    public void testGettingExchangeSellingFeeIsAsExpected() throws Exception {
+
+        PowerMock.replayAll();
+
+        final ExchangeAdapter exchangeAdapter = new KrakenExchangeAdapter();
+        exchangeAdapter.init(exchangeConfig);
+
+        final BigDecimal sellPercentageFee = exchangeAdapter.getPercentageOfSellOrderTakenForExchangeFee(MARKET_ID);
+        assertTrue(sellPercentageFee.compareTo(new BigDecimal("0.002")) == 0);
+
+        PowerMock.verifyAll();
+    }
+
+    @Test
+    public void testGettingExchangeBuyingFeeIsAsExpected() throws Exception {
+
+        PowerMock.replayAll();
+
+        final ExchangeAdapter exchangeAdapter = new KrakenExchangeAdapter();
+        exchangeAdapter.init(exchangeConfig);
+
+        final BigDecimal buyPercentageFee = exchangeAdapter.getPercentageOfBuyOrderTakenForExchangeFee(MARKET_ID);
+        assertTrue(buyPercentageFee.compareTo(new BigDecimal("0.001")) == 0);
+
         PowerMock.verifyAll();
     }
 

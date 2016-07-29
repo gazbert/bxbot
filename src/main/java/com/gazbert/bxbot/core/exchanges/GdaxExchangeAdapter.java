@@ -75,7 +75,6 @@ import java.util.*;
  * Exchange fees are loaded from the exchange.xml file on startup; they are not fetched from the exchange
  * at runtime as the GDAX REST API does not support this. The fees are used across all markets. Make sure you keep
  * an eye on the <a href="https://docs.gdax.com/#fees">exchange fees</a> and update the config accordingly.
- * This adapter will use the <em>Taker</em> fees to keep things simple for now.
  * </p>
  * <p>
  * <p>

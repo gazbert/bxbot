@@ -70,7 +70,6 @@ import java.util.*;
  * Exchange fees are loaded from the exchange.xml file on startup; they are not fetched from the exchange
  * at runtime as the Kraken REST API does not support this. The fees are used across all markets. Make sure you keep
  * an eye on the <a href="https://www.kraken.com/help/fees">exchange fees</a> and update the config accordingly.
- * This adapter will use the <em>Taker</em> fees to keep things simple for now.
  * </p>
  * <p>
  * <p>
@@ -231,7 +230,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
         LOG.info(() -> "About to initialise Kraken ExchangeConfig: " + config);
         setAuthenticationConfig(config);
         setNetworkConfig(config);
-//        setOtherConfig(config);
+        setOtherConfig(config);
 
         nonce = System.currentTimeMillis() / 1000; // set the initial nonce used in the secure messaging.
         initSecureMessageLayer();
@@ -256,7 +255,8 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
 
             if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
 
-                final Type resultType = new TypeToken<KrakenResponse<KrakenMarketOrderBookResult>>() {}.getType();
+                final Type resultType = new TypeToken<KrakenResponse<KrakenMarketOrderBookResult>>() {
+                }.getType();
                 final KrakenResponse krakenResponse = gson.fromJson(response.getPayload(), resultType);
 
                 final List<String> errors = krakenResponse.error;
@@ -327,7 +327,8 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
 
             if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
 
-                final Type resultType = new TypeToken<KrakenResponse<KrakenOpenOrderResult>>() {}.getType();
+                final Type resultType = new TypeToken<KrakenResponse<KrakenOpenOrderResult>>() {
+                }.getType();
                 final KrakenResponse krakenResponse = gson.fromJson(response.getPayload(), resultType);
 
                 final List<String> errors = krakenResponse.error;
