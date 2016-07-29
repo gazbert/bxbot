@@ -62,6 +62,11 @@ import java.util.*;
  * </strong>
  * </p>
  * <p>
+ * It only supports <a href="https://support.kraken.com/hc/en-us/articles/203325783-Market-and-Limit-Orders">limit orders</a>
+ * at the spot price; it does not support <a href="https://support.kraken.com/hc/en-us/sections/200560633-Leverage-and-Margin">
+ * leverage and margin</a> trading.
+ * </p>
+ * <p>
  * Exchange fees are loaded from the exchange.xml file on startup; they are not fetched from the exchange
  * at runtime as the Kraken REST API does not support this. The fees are used across all markets. Make sure you keep
  * an eye on the <a href="https://www.kraken.com/help/fees">exchange fees</a> and update the config accordingly.
@@ -246,7 +251,8 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
 
             if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
 
-                final Type resultType = new TypeToken<KrakenResponse<KrakenMarketOrderBookResult>>() {}.getType();
+                final Type resultType = new TypeToken<KrakenResponse<KrakenMarketOrderBookResult>>() {
+                }.getType();
                 final KrakenResponse krakenResponse = gson.fromJson(response.getPayload(), resultType);
 
                 final List<String> errors = krakenResponse.error;
@@ -316,7 +322,8 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
 
             if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
 
-                final Type resultType = new TypeToken<KrakenResponse<KrakenOpenOrderResult>>() {}.getType();
+                final Type resultType = new TypeToken<KrakenResponse<KrakenOpenOrderResult>>() {
+                }.getType();
                 final KrakenResponse krakenResponse = gson.fromJson(response.getPayload(), resultType);
 
                 final List<String> errors = krakenResponse.error;
@@ -387,7 +394,46 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
     @Override
     public String createOrder(String marketId, OrderType orderType, BigDecimal quantity, BigDecimal price) throws
             TradingApiException, ExchangeNetworkException {
-        throw new UnsupportedOperationException("Not developed yet!");
+
+        try {
+
+            final Map<String, String> params = getRequestParamMap();
+
+            if (orderType == OrderType.BUY) {
+                params.put("type", "buy");
+            } else if (orderType == OrderType.SELL) {
+                params.put("type", "sell");
+            } else {
+                final String errorMsg = "Invalid order type: " + orderType
+                        + " - Can only be "
+                        + OrderType.BUY.getStringValue() + " or "
+                        + OrderType.SELL.getStringValue();
+                LOG.error(errorMsg);
+                throw new IllegalArgumentException(errorMsg);
+            }
+
+            // TODO Work in progress... add more request params...
+
+            final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("AddOrder", params);
+            LOG.debug(() -> "Create Order response: " + response);
+
+            if (response.getStatusCode() == HttpURLConnection.HTTP_CREATED) {
+
+                // TODO extract response
+                return "some-order-id";
+
+            } else {
+                final String errorMsg = "Failed to create order on exchange. Details: " + response;
+                LOG.error(errorMsg);
+                throw new TradingApiException(errorMsg);
+            }
+
+        } catch (ExchangeNetworkException | TradingApiException e) {
+            throw e;
+        } catch (Exception e) {
+            LOG.error(UNEXPECTED_ERROR_MSG, e);
+            throw new TradingApiException(UNEXPECTED_ERROR_MSG, e);
+        }
     }
 
     @Override
@@ -408,7 +454,8 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
 
             if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
 
-                final Type resultType = new TypeToken<KrakenResponse<KrakenTickerResult>>() {}.getType();
+                final Type resultType = new TypeToken<KrakenResponse<KrakenTickerResult>>() {
+                }.getType();
                 final KrakenResponse krakenResponse = gson.fromJson(response.getPayload(), resultType);
 
                 final List<String> errors = krakenResponse.error;
@@ -453,7 +500,8 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
 
             if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
 
-                final Type resultType = new TypeToken<KrakenResponse<KrakenBalanceResult>>() {}.getType();
+                final Type resultType = new TypeToken<KrakenResponse<KrakenBalanceResult>>() {
+                }.getType();
                 final KrakenResponse krakenResponse = gson.fromJson(response.getPayload(), resultType);
 
                 final List<String> errors = krakenResponse.error;
