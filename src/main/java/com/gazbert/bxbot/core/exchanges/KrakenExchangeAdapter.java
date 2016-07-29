@@ -62,34 +62,25 @@ import java.util.*;
  * </strong>
  * </p>
  * <p>
- * <p>
- * TODO API version
- * </p>
- * <p>
- * <p>
  * Exchange fees are loaded from the exchange.xml file on startup; they are not fetched from the exchange
  * at runtime as the Kraken REST API does not support this. The fees are used across all markets. Make sure you keep
  * an eye on the <a href="https://www.kraken.com/help/fees">exchange fees</a> and update the config accordingly.
  * </p>
  * <p>
- * <p>
- * TODO Call rate limit
+ * The Kraken API has call rate limits - see <a href="https://www.kraken.com/en-gb/help/api#api-call-rate-limit">
+ * API Call Rate Limit</a> for details.
  * </p>
  * <p>
- * <p>
- * TODO update this...
- * Kraken markets assets (currencies) can be referenced using their ISO4217-A3 names in the case of ISO registered names,
+ * Kraken markets assets (e.g. currencies) can be referenced using their ISO4217-A3 names in the case of ISO registered names,
  * their 3 letter commonly used names in the case of unregistered names, or their X-ISO4217-A3 code (see http://www.ifex-project.org/).
  * E.g. you can access the XBT/USD market using either of the following ids: 'XBTUSD' or 'XXBTZUSD'. The exchange always
- * returns market id back in the latter format, i.e. 'XXBTZUSD'.
+ * returns the market id back in the latter format, i.e. 'XXBTZUSD'.
  * </p>
- * <p>
  * <p>
  * The Exchange Adapter is <em>not</em> thread safe. It expects to be called using a single thread in order to
  * preserve trade execution order. The {@link URLConnection} achieves this by blocking/waiting on the input stream
  * (response) for each API call.
  * </p>
- * <p>
  * <p>
  * The {@link TradingApi} calls will throw a {@link ExchangeNetworkException} if a network error occurs trying to
  * connect to the exchange. A {@link TradingApiException} is thrown for <em>all</em> other failures.
@@ -255,8 +246,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
 
             if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
 
-                final Type resultType = new TypeToken<KrakenResponse<KrakenMarketOrderBookResult>>() {
-                }.getType();
+                final Type resultType = new TypeToken<KrakenResponse<KrakenMarketOrderBookResult>>() {}.getType();
                 final KrakenResponse krakenResponse = gson.fromJson(response.getPayload(), resultType);
 
                 final List<String> errors = krakenResponse.error;
@@ -265,7 +255,6 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
                     // Assume we'll always get something here if errors array is empty; else blow fast wih NPE
                     final KrakenMarketOrderBookResult krakenOrderBookResult = (KrakenMarketOrderBookResult) krakenResponse.result;
 
-                    // TODO Exchange returns the marketId as the key into the result map - be defensive here or just get grab first entry and assume we'll always get the (correct) 1 returned?
                     final KrakenOrderBook krakenOrderBook = krakenOrderBookResult.get(marketId);
                     if (krakenOrderBook != null) {
 
@@ -327,8 +316,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
 
             if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
 
-                final Type resultType = new TypeToken<KrakenResponse<KrakenOpenOrderResult>>() {
-                }.getType();
+                final Type resultType = new TypeToken<KrakenResponse<KrakenOpenOrderResult>>() {}.getType();
                 final KrakenResponse krakenResponse = gson.fromJson(response.getPayload(), resultType);
 
                 final List<String> errors = krakenResponse.error;
@@ -420,8 +408,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
 
             if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
 
-                final Type resultType = new TypeToken<KrakenResponse<KrakenTickerResult>>() {
-                }.getType();
+                final Type resultType = new TypeToken<KrakenResponse<KrakenTickerResult>>() {}.getType();
                 final KrakenResponse krakenResponse = gson.fromJson(response.getPayload(), resultType);
 
                 final List<String> errors = krakenResponse.error;
@@ -466,8 +453,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
 
             if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
 
-                final Type resultType = new TypeToken<KrakenResponse<KrakenBalanceResult>>() {
-                }.getType();
+                final Type resultType = new TypeToken<KrakenResponse<KrakenBalanceResult>>() {}.getType();
                 final KrakenResponse krakenResponse = gson.fromJson(response.getPayload(), resultType);
 
                 final List<String> errors = krakenResponse.error;
