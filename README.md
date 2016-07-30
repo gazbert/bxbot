@@ -13,7 +13,7 @@ for more ideas.
 
 Exchange Adapters for using [BTC-e](https://btc-e.com), [Bitstamp](https://www.bitstamp.net), 
 [Bitfinex](https://www.bitfinex.com), [OKCoin](https://www.okcoin.com/), [Huobi](https://www.huobi.com/), 
-[GDAX](https://www.gdax.com/), and [itBit](https://www.itbit.com/) are included.
+[GDAX](https://www.gdax.com/), [itBit](https://www.itbit.com/), and [Kraken](https://www.kraken.com) are included.
 Feel free to improve these or contribute new adapters to the project, that would be shiny.
 
 The Trading API provides support for [limit orders](http://www.investopedia.com/terms/l/limitorder.asp)
@@ -474,7 +474,6 @@ A Maven `pom.xml` is included for building the bot.
 ## Coming Soon...
 The following features are in the pipeline:
 
-- Exchange Adapter for [Kraken](https://www.kraken.com).
 - Exchange Adapter for [Gemini](https://gemini.com/).
 - REST API for configuring the bot.
 - Admin app - a microservice for configuring and managing bots in the cloud.
