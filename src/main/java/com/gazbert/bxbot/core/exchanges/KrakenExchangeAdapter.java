@@ -48,7 +48,6 @@ import java.text.DecimalFormat;
 import java.util.*;
 
 /**
- * TODO Work in progress...
  * <p>
  * Exchange Adapter for integrating with the Kraken exchange.
  * The Kraken API is documented <a href="https://www.kraken.com/en-gb/help/api">here</a>.
@@ -165,6 +164,11 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
     private static final String FAILED_TO_ADD_ORDER = "Failed to Add Order on exchange. Details: ";
 
     /**
+     * Error message for when API call to Cancel Order fails.
+     */
+    private static final String FAILED_TO_CANCEL_ORDER = "Failed to Cancel Order on exchange. Details: ";
+
+    /**
      * Name of PUBLIC key prop in config file.
      */
     private static final String KEY_PROPERTY_NAME = "key";
@@ -257,8 +261,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
 
             if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
 
-                final Type resultType = new TypeToken<KrakenResponse<KrakenMarketOrderBookResult>>() {
-                }.getType();
+                final Type resultType = new TypeToken<KrakenResponse<KrakenMarketOrderBookResult>>() {}.getType();
                 final KrakenResponse krakenResponse = gson.fromJson(response.getPayload(), resultType);
 
                 final List<String> errors = krakenResponse.error;
@@ -328,8 +331,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
 
             if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
 
-                final Type resultType = new TypeToken<KrakenResponse<KrakenOpenOrderResult>>() {
-                }.getType();
+                final Type resultType = new TypeToken<KrakenResponse<KrakenOpenOrderResult>>() {}.getType();
                 final KrakenResponse krakenResponse = gson.fromJson(response.getPayload(), resultType);
 
                 final List<String> errors = krakenResponse.error;
@@ -428,18 +430,17 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
 
             if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
 
-                final Type resultType = new TypeToken<KrakenResponse<KrakenAddOrderResult>>() {
-                }.getType();
+                final Type resultType = new TypeToken<KrakenResponse<KrakenAddOrderResult>>() {}.getType();
                 final KrakenResponse krakenResponse = gson.fromJson(response.getPayload(), resultType);
 
                 final List<String> errors = krakenResponse.error;
                 if (errors == null || errors.isEmpty()) {
 
                     // Assume we'll always get something here if errors array is empty; else blow fast wih NPE
-                    final KrakenAddOrderResult krakenOpenOrderResult = (KrakenAddOrderResult) krakenResponse.result;
+                    final KrakenAddOrderResult krakenAddOrderResult = (KrakenAddOrderResult) krakenResponse.result;
 
-                    // TODO just return the first one? Why an array? Surely not an id for each 'part-fill' of the order?
-                    return krakenOpenOrderResult.txid.get(0);
+                    // Just return the first one. Why an array?
+                    return krakenAddOrderResult.txid.get(0);
 
                 } else {
                     final String errorMsg = FAILED_TO_ADD_ORDER + response;
@@ -463,7 +464,50 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
 
     @Override
     public boolean cancelOrder(String orderId, String marketIdNotNeeded) throws TradingApiException, ExchangeNetworkException {
-        throw new UnsupportedOperationException("Not developed yet!");
+
+        try {
+            final Map<String, String> params = getRequestParamMap();
+            params.put("txid", orderId);
+
+            final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("CancelOrder", params);
+            LOG.debug(() -> "Cancel Order response: " + response);
+
+            if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
+
+                final Type resultType = new TypeToken<KrakenResponse<KrakenCancelOrderResult>>() {}.getType();
+                final KrakenResponse krakenResponse = gson.fromJson(response.getPayload(), resultType);
+
+                final List<String> errors = krakenResponse.error;
+                if (errors == null || errors.isEmpty()) {
+
+                    // Assume we'll always get something here if errors array is empty; else blow fast wih NPE
+                    final KrakenCancelOrderResult krakenCancelOrderResult = (KrakenCancelOrderResult) krakenResponse.result;
+                    if (krakenCancelOrderResult.count > 0) {
+                        return true;
+                    } else {
+                        final String errorMsg = FAILED_TO_CANCEL_ORDER + response;
+                        LOG.error(errorMsg);
+                        return false;
+                    }
+
+                } else {
+                    final String errorMsg = FAILED_TO_CANCEL_ORDER + response;
+                    LOG.error(errorMsg);
+                    throw new TradingApiException(errorMsg);
+                }
+
+            } else {
+                final String errorMsg = FAILED_TO_CANCEL_ORDER + response;
+                LOG.error(errorMsg);
+                throw new TradingApiException(errorMsg);
+            }
+
+        } catch (ExchangeNetworkException | TradingApiException e) {
+            throw e;
+        } catch (Exception e) {
+            LOG.error(UNEXPECTED_ERROR_MSG, e);
+            throw new TradingApiException(UNEXPECTED_ERROR_MSG, e);
+        }
     }
 
     @Override
@@ -479,8 +523,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
 
             if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
 
-                final Type resultType = new TypeToken<KrakenResponse<KrakenTickerResult>>() {
-                }.getType();
+                final Type resultType = new TypeToken<KrakenResponse<KrakenTickerResult>>() {}.getType();
                 final KrakenResponse krakenResponse = gson.fromJson(response.getPayload(), resultType);
 
                 final List<String> errors = krakenResponse.error;
@@ -525,8 +568,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
 
             if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
 
-                final Type resultType = new TypeToken<KrakenResponse<KrakenBalanceResult>>() {
-                }.getType();
+                final Type resultType = new TypeToken<KrakenResponse<KrakenBalanceResult>>() {}.getType();
                 final KrakenResponse krakenResponse = gson.fromJson(response.getPayload(), resultType);
 
                 final List<String> errors = krakenResponse.error;
@@ -753,6 +795,21 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
         public String toString() {
             return MoreObjects.toStringHelper(this)
                     .add("order", order)
+                    .toString();
+        }
+    }
+
+    /**
+     * GSON class representing a CancelOrder result.
+     */
+    private static class KrakenCancelOrderResult {
+
+        public int count;
+
+        @Override
+        public String toString() {
+            return MoreObjects.toStringHelper(this)
+                    .add("count", count)
                     .toString();
         }
     }
