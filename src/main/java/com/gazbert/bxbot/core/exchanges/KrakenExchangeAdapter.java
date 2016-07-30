@@ -44,6 +44,7 @@ import java.net.*;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.text.DecimalFormat;
 import java.util.*;
 
 /**
@@ -157,6 +158,11 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
      * Error message for when API call to get Open Orders fails.
      */
     private static final String FAILED_TO_GET_OPEN_ORDERS = "Failed to get Open Orders from exchange. Details: ";
+
+    /**
+     * Error message for when API call to Add Order fails.
+     */
+    private static final String FAILED_TO_ADD_ORDER = "Failed to Add Order on exchange. Details: ";
 
     /**
      * Name of PUBLIC key prop in config file.
@@ -398,6 +404,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
         try {
 
             final Map<String, String> params = getRequestParamMap();
+            params.put("pair", marketId);
 
             if (orderType == OrderType.BUY) {
                 params.put("type", "buy");
@@ -412,18 +419,36 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
                 throw new IllegalArgumentException(errorMsg);
             }
 
-            // TODO Work in progress... add more request params...
+            params.put("ordertype", "limit"); // this exchange adapter only supports limit orders
+            params.put("price", new DecimalFormat("#.########").format(price));
+            params.put("volume", new DecimalFormat("#.########").format(quantity));
 
             final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("AddOrder", params);
             LOG.debug(() -> "Create Order response: " + response);
 
-            if (response.getStatusCode() == HttpURLConnection.HTTP_CREATED) {
+            if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
 
-                // TODO extract response
-                return "some-order-id";
+                final Type resultType = new TypeToken<KrakenResponse<KrakenAddOrderResult>>() {
+                }.getType();
+                final KrakenResponse krakenResponse = gson.fromJson(response.getPayload(), resultType);
+
+                final List<String> errors = krakenResponse.error;
+                if (errors == null || errors.isEmpty()) {
+
+                    // Assume we'll always get something here if errors array is empty; else blow fast wih NPE
+                    final KrakenAddOrderResult krakenOpenOrderResult = (KrakenAddOrderResult) krakenResponse.result;
+
+                    // TODO just return the first one? Why an array? Surely not an id for each 'part-fill' of the order?
+                    return krakenOpenOrderResult.txid.get(0);
+
+                } else {
+                    final String errorMsg = FAILED_TO_ADD_ORDER + response;
+                    LOG.error(errorMsg);
+                    throw new TradingApiException(errorMsg);
+                }
 
             } else {
-                final String errorMsg = "Failed to create order on exchange. Details: " + response;
+                final String errorMsg = FAILED_TO_ADD_ORDER + response;
                 LOG.error(errorMsg);
                 throw new TradingApiException(errorMsg);
             }
@@ -701,11 +726,42 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
     }
 
     /**
+     * GSON class representing an AddOrder result.
+     */
+    private static class KrakenAddOrderResult {
+
+        public KrakenAddOrderResultDescription descr;
+        public List<String> txid; // why is this a list/array?
+
+        @Override
+        public String toString() {
+            return MoreObjects.toStringHelper(this)
+                    .add("descr", descr)
+                    .add("txid", txid)
+                    .toString();
+        }
+    }
+
+    /**
+     * GSON class representing an AddOrder result description.
+     */
+    private static class KrakenAddOrderResultDescription {
+
+        public String order;
+
+        @Override
+        public String toString() {
+            return MoreObjects.toStringHelper(this)
+                    .add("order", order)
+                    .toString();
+        }
+    }
+
+    /**
      * GSON class for a Market Order Book.
      */
     private static class KrakenOrderBook {
 
-        // field names map to the JSON arg names
         public List<KrakenMarketOrder> bids;
         public List<KrakenMarketOrder> asks;
 

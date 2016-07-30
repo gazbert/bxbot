@@ -37,6 +37,7 @@ import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -90,10 +91,10 @@ public class TestKrakenExchangeAdapter {
 
     // Canned test data
     private static final String MARKET_ID = "XXBTZUSD";
-    private static final BigDecimal BUY_ORDER_PRICE = new BigDecimal("656.41");
-    private static final BigDecimal BUY_ORDER_QUANTITY = new BigDecimal("0.01");
-    private static final BigDecimal SELL_ORDER_PRICE = new BigDecimal("658.17");
-    private static final BigDecimal SELL_ORDER_QUANTITY = new BigDecimal("0.02");
+    private static final BigDecimal BUY_ORDER_PRICE = new BigDecimal("456.41");
+    private static final BigDecimal BUY_ORDER_QUANTITY = new BigDecimal("0.001");
+    private static final BigDecimal SELL_ORDER_PRICE = new BigDecimal("758.17");
+    private static final BigDecimal SELL_ORDER_QUANTITY = new BigDecimal("0.001");
 
     // Mocked out methods
     private static final String MOCKED_GET_REQUEST_PARAM_MAP_METHOD = "getRequestParamMap";
@@ -358,71 +359,73 @@ public class TestKrakenExchangeAdapter {
     //  Create Orders tests
     // ------------------------------------------------------------------------------------------------
 
-//    @Test
-//    public void testCreateOrderToBuyIsSuccessful() throws Exception {
-//
-//        // Load the canned response from the exchange
-//        final byte[] encoded = Files.readAllBytes(Paths.get(TRADE_BUY_JSON_RESPONSE));
-//        final AbstractExchangeAdapter.ExchangeHttpResponse exchangeResponse =
-//                new AbstractExchangeAdapter.ExchangeHttpResponse(200, "OK", new String(encoded, StandardCharsets.UTF_8));
-//
-//        // Mock out param map so we can assert the contents passed to the transport layer are what we expect.
-//        final Map<String, String> requestParamMap = PowerMock.createMock(Map.class);
-//        expect(requestParamMap.put("symbol", MARKET_ID)).andStubReturn(null);
-//        expect(requestParamMap.put("amount", new DecimalFormat("#.########").format(BUY_ORDER_QUANTITY))).andStubReturn(null);
-//        expect(requestParamMap.put("price", new DecimalFormat("#.########").format(BUY_ORDER_PRICE))).andStubReturn(null);
-//        expect(requestParamMap.put("type", "buy")).andStubReturn(null);
-//
-//        // Partial mock so we do not send stuff down the wire
-//        final KrakenExchangeAdapter exchangeAdapter =  PowerMock.createPartialMockAndInvokeDefaultConstructor(
-//                KrakenExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD,
-//                MOCKED_GET_REQUEST_PARAM_MAP_METHOD);
-//
-//        PowerMock.expectPrivate(exchangeAdapter, MOCKED_GET_REQUEST_PARAM_MAP_METHOD).andReturn(requestParamMap);
-//        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(TRADE),
-//                eq(requestParamMap)).andReturn(exchangeResponse);
-//
-//        PowerMock.replayAll();
-//        exchangeAdapter.init(exchangeConfig);
-//
-//        final String orderId = exchangeAdapter.createOrder(MARKET_ID, OrderType.BUY, BUY_ORDER_QUANTITY, BUY_ORDER_PRICE);
-//        assertTrue(orderId.equals("99646259"));
-//
-//        PowerMock.verifyAll();
-//    }
+    @Test
+    public void testCreateOrderToBuyIsSuccessful() throws Exception {
 
-//    @Test
-//    public void testCreateOrderToSellIsSuccessful() throws Exception {
-//
-//        // Load the canned response from the exchange
-//        final byte[] encoded = Files.readAllBytes(Paths.get(TRADE_SELL_JSON_RESPONSE));
-//        final AbstractExchangeAdapter.ExchangeHttpResponse exchangeResponse =
-//                new AbstractExchangeAdapter.ExchangeHttpResponse(200, "OK", new String(encoded, StandardCharsets.UTF_8));
-//
-//        // Mock out param map so we can assert the contents passed to the transport layer are what we expect.
-//        final Map<String, String> requestParamMap = PowerMock.createMock(Map.class);
-//        expect(requestParamMap.put("symbol", MARKET_ID)).andStubReturn(null);
-//        expect(requestParamMap.put("amount", new DecimalFormat("#.########").format(SELL_ORDER_QUANTITY))).andStubReturn(null);
-//        expect(requestParamMap.put("price", new DecimalFormat("#.########").format(SELL_ORDER_PRICE))).andStubReturn(null);
-//        expect(requestParamMap.put("type", "sell")).andStubReturn(null);
-//
-//        // Partial mock so we do not send stuff down the wire
-//        final KrakenExchangeAdapter exchangeAdapter =  PowerMock.createPartialMockAndInvokeDefaultConstructor(
-//                KrakenExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD,
-//                MOCKED_GET_REQUEST_PARAM_MAP_METHOD);
-//
-//        PowerMock.expectPrivate(exchangeAdapter, MOCKED_GET_REQUEST_PARAM_MAP_METHOD).andReturn(requestParamMap);
-//        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(TRADE),
-//                eq(requestParamMap)).andReturn(exchangeResponse);
-//
-//        PowerMock.replayAll();
-//        exchangeAdapter.init(exchangeConfig);
-//
-//        final String orderId = exchangeAdapter.createOrder(MARKET_ID, OrderType.SELL, SELL_ORDER_QUANTITY, SELL_ORDER_PRICE);
-//        assertTrue(orderId.equals("99646257"));
-//
-//        PowerMock.verifyAll();
-//    }
+        // Load the canned response from the exchange
+        final byte[] encoded = Files.readAllBytes(Paths.get(ADD_ORDER_BUY_JSON_RESPONSE));
+        final AbstractExchangeAdapter.ExchangeHttpResponse exchangeResponse =
+                new AbstractExchangeAdapter.ExchangeHttpResponse(200, "OK", new String(encoded, StandardCharsets.UTF_8));
+
+        // Mock out param map so we can assert the contents passed to the transport layer are what we expect.
+        final Map<String, String> requestParamMap = PowerMock.createMock(Map.class);
+        expect(requestParamMap.put("pair", MARKET_ID)).andStubReturn(null);
+        expect(requestParamMap.put("type", "buy")).andStubReturn(null);
+        expect(requestParamMap.put("ordertype", "limit")).andStubReturn(null);
+        expect(requestParamMap.put("price", new DecimalFormat("#.########").format(BUY_ORDER_PRICE))).andStubReturn(null);
+        expect(requestParamMap.put("volume", new DecimalFormat("#.########").format(BUY_ORDER_QUANTITY))).andStubReturn(null);
+
+        // Partial mock so we do not send stuff down the wire
+        final KrakenExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
+                KrakenExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD,
+                MOCKED_GET_REQUEST_PARAM_MAP_METHOD);
+
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_GET_REQUEST_PARAM_MAP_METHOD).andReturn(requestParamMap);
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(ADD_ORDER),
+                eq(requestParamMap)).andReturn(exchangeResponse);
+
+        PowerMock.replayAll();
+        exchangeAdapter.init(exchangeConfig);
+
+        final String orderId = exchangeAdapter.createOrder(MARKET_ID, OrderType.BUY, BUY_ORDER_QUANTITY, BUY_ORDER_PRICE);
+        assertTrue(orderId.equals("OLD2Z4-L4C9H-MKH5BX"));
+
+        PowerMock.verifyAll();
+    }
+
+    @Test
+    public void testCreateOrderToSellIsSuccessful() throws Exception {
+
+        // Load the canned response from the exchange
+        final byte[] encoded = Files.readAllBytes(Paths.get(ADD_ORDER_SELL_JSON_RESPONSE));
+        final AbstractExchangeAdapter.ExchangeHttpResponse exchangeResponse =
+                new AbstractExchangeAdapter.ExchangeHttpResponse(200, "OK", new String(encoded, StandardCharsets.UTF_8));
+
+        // Mock out param map so we can assert the contents passed to the transport layer are what we expect.
+        final Map<String, String> requestParamMap = PowerMock.createMock(Map.class);
+        expect(requestParamMap.put("pair", MARKET_ID)).andStubReturn(null);
+        expect(requestParamMap.put("type", "sell")).andStubReturn(null);
+        expect(requestParamMap.put("ordertype", "limit")).andStubReturn(null);
+        expect(requestParamMap.put("price", new DecimalFormat("#.########").format(SELL_ORDER_PRICE))).andStubReturn(null);
+        expect(requestParamMap.put("volume", new DecimalFormat("#.########").format(SELL_ORDER_QUANTITY))).andStubReturn(null);
+
+        // Partial mock so we do not send stuff down the wire
+        final KrakenExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
+                KrakenExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD,
+                MOCKED_GET_REQUEST_PARAM_MAP_METHOD);
+
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_GET_REQUEST_PARAM_MAP_METHOD).andReturn(requestParamMap);
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(ADD_ORDER),
+                eq(requestParamMap)).andReturn(exchangeResponse);
+
+        PowerMock.replayAll();
+        exchangeAdapter.init(exchangeConfig);
+
+        final String orderId = exchangeAdapter.createOrder(MARKET_ID, OrderType.SELL, SELL_ORDER_QUANTITY, SELL_ORDER_PRICE);
+        assertTrue(orderId.equals("OLD2Z4-L4C7H-MKH5BW"));
+
+        PowerMock.verifyAll();
+    }
 
     @Test(expected = TradingApiException.class)
     public void testCreateOrderExchangeErrorResponse() throws Exception {

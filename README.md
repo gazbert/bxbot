@@ -475,6 +475,7 @@ A Maven `pom.xml` is included for building the bot.
 The following features are in the pipeline:
 
 - Exchange Adapter for [Kraken](https://www.kraken.com).
+- Exchange Adapter for [Gemini](https://gemini.com/).
 - REST API for configuring the bot.
 - Admin app - a microservice for configuring and managing bots in the cloud.
 - Web UI (written in [AngularJS](https://angularjs.org/)) for administering bots.
