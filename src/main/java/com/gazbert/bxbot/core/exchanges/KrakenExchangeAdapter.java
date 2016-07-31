@@ -48,6 +48,7 @@ import java.text.DecimalFormat;
 import java.util.*;
 
 /**
+ * TODO 31 July 2016 - Contains PATCH for occasional 'EAPI:Invalid key' responses. Remove when I get to bottom of it!
  * <p>
  * Exchange Adapter for integrating with the Kraken exchange.
  * The Kraken API is documented <a href="https://www.kraken.com/en-gb/help/api">here</a>.
@@ -380,9 +381,20 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
                     return openOrders;
 
                 } else {
-                    final String errorMsg = FAILED_TO_GET_OPEN_ORDERS + response;
-                    LOG.error(errorMsg);
-                    throw new TradingApiException(errorMsg);
+
+                    /*
+                     * TODO 31 July 2016 - PATCH for occasional 'EAPI:Invalid key' responses. Remove when I get to bottom of it!
+                     */
+                    if (krakenResponse.error.contains("EAPI:Invalid key")) {
+                        final String errorMsg = "Received another random Invalid API Key response - ignoring... " +
+                                FAILED_TO_GET_OPEN_ORDERS + response;
+                        LOG.error(errorMsg);
+                        throw new ExchangeNetworkException(errorMsg);
+                    } else {
+                        final String errorMsg = FAILED_TO_GET_OPEN_ORDERS + response;
+                        LOG.error(errorMsg);
+                        throw new TradingApiException(errorMsg);
+                    }
                 }
 
             } else {
@@ -443,9 +455,20 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
                     return krakenAddOrderResult.txid.get(0);
 
                 } else {
-                    final String errorMsg = FAILED_TO_ADD_ORDER + response;
-                    LOG.error(errorMsg);
-                    throw new TradingApiException(errorMsg);
+
+                    /*
+                     * TODO 31 July 2016 - PATCH for occasional 'EAPI:Invalid key' responses. Remove when I get to bottom of it!
+                     */
+                    if (krakenResponse.error.contains("EAPI:Invalid key")) {
+                        final String errorMsg = "Received another random Invalid API Key response - ignoring... " +
+                                FAILED_TO_ADD_ORDER + response;
+                        LOG.error(errorMsg);
+                        throw new ExchangeNetworkException(errorMsg);
+                    } else {
+                        final String errorMsg = FAILED_TO_ADD_ORDER + response;
+                        LOG.error(errorMsg);
+                        throw new TradingApiException(errorMsg);
+                    }
                 }
 
             } else {
@@ -491,9 +514,20 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
                     }
 
                 } else {
-                    final String errorMsg = FAILED_TO_CANCEL_ORDER + response;
-                    LOG.error(errorMsg);
-                    throw new TradingApiException(errorMsg);
+
+                    /*
+                     * TODO 31 July 2016 - PATCH for occasional 'EAPI:Invalid key' responses. Remove when I get to bottom of it!
+                     */
+                    if (krakenResponse.error.contains("EAPI:Invalid key")) {
+                        final String errorMsg = "Received another random Invalid API Key response - ignoring... " +
+                                FAILED_TO_CANCEL_ORDER + response;
+                        LOG.error(errorMsg);
+                        throw new ExchangeNetworkException(errorMsg);
+                    } else {
+                        final String errorMsg = FAILED_TO_CANCEL_ORDER + response;
+                        LOG.error(errorMsg);
+                        throw new TradingApiException(errorMsg);
+                    }
                 }
 
             } else {
@@ -587,9 +621,20 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
                     return new BalanceInfo(balancesAvailable, new HashMap<>());
 
                 } else {
-                    final String errorMsg = FAILED_TO_GET_BALANCE + response;
-                    LOG.error(errorMsg);
-                    throw new TradingApiException(errorMsg);
+
+                    /*
+                     * TODO 31 July 2016 - PATCH for occasional 'EAPI:Invalid key' responses. Remove when I get to bottom of it!
+                     */
+                    if (krakenResponse.error.contains("EAPI:Invalid key")) {
+                        final String errorMsg = "Received another random Invalid API Key response - ignoring... " +
+                                FAILED_TO_GET_BALANCE + response;
+                        LOG.error(errorMsg);
+                        throw new ExchangeNetworkException(errorMsg);
+                    } else {
+                        final String errorMsg = FAILED_TO_GET_BALANCE + response;
+                        LOG.error(errorMsg);
+                        throw new TradingApiException(errorMsg);
+                    }
                 }
 
             } else {

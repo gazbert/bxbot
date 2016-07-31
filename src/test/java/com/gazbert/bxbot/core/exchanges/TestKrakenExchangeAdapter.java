@@ -79,6 +79,7 @@ public class TestKrakenExchangeAdapter {
     private static final String ADD_ORDER_BUY_JSON_RESPONSE = "./src/test/exchange-data/kraken/AddOrder-buy.json";
     private static final String ADD_ORDER_SELL_JSON_RESPONSE = "./src/test/exchange-data/kraken/AddOrder-sell.json";
     private static final String ADD_ORDER_ERROR_JSON_RESPONSE = "./src/test/exchange-data/kraken/AddOrder-error.json";
+    private static final String ADD_ORDER_API_KEY_ERROR_JSON_RESPONSE = "./src/test/exchange-data/kraken/AddOrder-apiKeyError.json";
     private static final String CANCEL_ORDER_JSON_RESPONSE = "./src/test/exchange-data/kraken/CancelOrder.json";
     private static final String CANCEL_ORDER_ERROR_JSON_RESPONSE = "./src/test/exchange-data/kraken/CancelOrder-error.json";
 
@@ -434,6 +435,30 @@ public class TestKrakenExchangeAdapter {
 
         // Load the canned response from the exchange
         final byte[] encoded = Files.readAllBytes(Paths.get(ADD_ORDER_ERROR_JSON_RESPONSE));
+        final AbstractExchangeAdapter.ExchangeHttpResponse exchangeResponse =
+                new AbstractExchangeAdapter.ExchangeHttpResponse(200, "OK", new String(encoded, StandardCharsets.UTF_8));
+
+        // Partial mock so we do not send stuff down the wire
+        final KrakenExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
+                KrakenExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(ADD_ORDER),
+                anyObject(Map.class)).andReturn(exchangeResponse);
+
+        PowerMock.replayAll();
+        exchangeAdapter.init(exchangeConfig);
+
+        exchangeAdapter.createOrder(MARKET_ID, OrderType.SELL, SELL_ORDER_QUANTITY, SELL_ORDER_PRICE);
+        PowerMock.verifyAll();
+    }
+
+    /*
+     * TODO 31 July 2016 - Test for PATCH for occasional 'EAPI:Invalid key' responses. Remove when I get to bottom of it!
+     */
+    @Test(expected = ExchangeNetworkException.class)
+    public void testCreateOrderExchangeApiKeyErrorResponse() throws Exception {
+
+        // Load the canned response from the exchange
+        final byte[] encoded = Files.readAllBytes(Paths.get(ADD_ORDER_API_KEY_ERROR_JSON_RESPONSE));
         final AbstractExchangeAdapter.ExchangeHttpResponse exchangeResponse =
                 new AbstractExchangeAdapter.ExchangeHttpResponse(200, "OK", new String(encoded, StandardCharsets.UTF_8));
 

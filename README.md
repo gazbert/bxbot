@@ -35,8 +35,8 @@ and released under the [MIT license](http://opensource.org/licenses/MIT).
 - Strategy API - Trading Strategies implement this for the Trading Engine to execute them.
  
 Trading Strategies and Exchange Adapters are injected by the Trading Engine on startup. The bot uses a crude XML based
-dependency injection framework to achieve this; the long term goal is for it to run as a [Spring Boot](http://projects.spring.io/spring-boot/)
-app in a microservice system.
+dependency injection framework to achieve this; the long term goal is to run it as a [Spring Boot](http://projects.spring.io/spring-boot/)
+app in a [microservice](http://martinfowler.com/articles/microservices.html) system.
 
 The bot was designed to fail hard and fast if any unexpected errors occur in the Exchange Adapters or Trading Strategies:
 it will log the error, send an email alert (if configured), and then shutdown.
@@ -476,8 +476,8 @@ The following features are in the pipeline:
 
 - Exchange Adapter for [Gemini](https://gemini.com/).
 - REST API for configuring the bot.
-- Admin app - a microservice for configuring and managing bots in the cloud.
-- Web UI (written in [AngularJS](https://angularjs.org/)) for administering bots.
+- Web UI (written in [AngularJS](https://angularjs.org/)) for configuring the bot.
+- Admin app - a microservice for administering multiple bots in the cloud.
 - Trade Analysis app - a microservice that will feed off trading events sent by the bots.
 - Android app for administering bots.
 
