@@ -39,7 +39,6 @@ import javax.crypto.spec.SecretKeySpec;
 import javax.xml.bind.DatatypeConverter;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -895,15 +894,15 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
             // Construct the SHA-256 hash of the noncePrependedToJson. Call this the message hash.
             final MessageDigest md = MessageDigest.getInstance("SHA-256");
             md.update(noncePrependedToJson.getBytes());
-            final BigInteger messageHash = new BigInteger(md.digest());
+            final byte[] messageHash = md.digest();
 
             // Prepend the UTF-8 encoded request URL to the message hash.
             // Generate the SHA-512 HMAC of the prependRequestUrlToMsgHash using your API secret as the key.
             mac.reset(); // force reset
             mac.update(invocationUrl.getBytes());
-            mac.update(messageHash.toByteArray());
+            mac.update(messageHash);
 
-            final String signature = DatatypeConverter.printBase64Binary((new BigInteger(mac.doFinal())).toByteArray());
+            final String signature = DatatypeConverter.printBase64Binary(mac.doFinal());
 
             // Request headers required by Exchange
             final Map<String, String> requestHeaders = new HashMap<>();
