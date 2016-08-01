@@ -39,7 +39,6 @@ import javax.crypto.spec.SecretKeySpec;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.net.*;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
@@ -48,7 +47,6 @@ import java.text.DecimalFormat;
 import java.util.*;
 
 /**
- * TODO 31 July 2016 - Contains PATCH for occasional 'EAPI:Invalid key' responses. Remove when I get to bottom of it!
  * <p>
  * Exchange Adapter for integrating with the Kraken exchange.
  * The Kraken API is documented <a href="https://www.kraken.com/en-gb/help/api">here</a>.
@@ -381,20 +379,9 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
                     return openOrders;
 
                 } else {
-
-                    /*
-                     * TODO 31 July 2016 - PATCH for occasional 'EAPI:Invalid key' responses. Remove when I get to bottom of it!
-                     */
-                    if (krakenResponse.error.contains("EAPI:Invalid key")) {
-                        final String errorMsg = "Received another random Invalid API Key response - ignoring... " +
-                                FAILED_TO_GET_OPEN_ORDERS + response;
-                        LOG.error(errorMsg);
-                        throw new ExchangeNetworkException(errorMsg);
-                    } else {
-                        final String errorMsg = FAILED_TO_GET_OPEN_ORDERS + response;
-                        LOG.error(errorMsg);
-                        throw new TradingApiException(errorMsg);
-                    }
+                    final String errorMsg = FAILED_TO_GET_OPEN_ORDERS + response;
+                    LOG.error(errorMsg);
+                    throw new TradingApiException(errorMsg);
                 }
 
             } else {
@@ -455,20 +442,9 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
                     return krakenAddOrderResult.txid.get(0);
 
                 } else {
-
-                    /*
-                     * TODO 31 July 2016 - PATCH for occasional 'EAPI:Invalid key' responses. Remove when I get to bottom of it!
-                     */
-                    if (krakenResponse.error.contains("EAPI:Invalid key")) {
-                        final String errorMsg = "Received another random Invalid API Key response - ignoring... " +
-                                FAILED_TO_ADD_ORDER + response;
-                        LOG.error(errorMsg);
-                        throw new ExchangeNetworkException(errorMsg);
-                    } else {
-                        final String errorMsg = FAILED_TO_ADD_ORDER + response;
-                        LOG.error(errorMsg);
-                        throw new TradingApiException(errorMsg);
-                    }
+                    final String errorMsg = FAILED_TO_ADD_ORDER + response;
+                    LOG.error(errorMsg);
+                    throw new TradingApiException(errorMsg);
                 }
 
             } else {
@@ -514,20 +490,9 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
                     }
 
                 } else {
-
-                    /*
-                     * TODO 31 July 2016 - PATCH for occasional 'EAPI:Invalid key' responses. Remove when I get to bottom of it!
-                     */
-                    if (krakenResponse.error.contains("EAPI:Invalid key")) {
-                        final String errorMsg = "Received another random Invalid API Key response - ignoring... " +
-                                FAILED_TO_CANCEL_ORDER + response;
-                        LOG.error(errorMsg);
-                        throw new ExchangeNetworkException(errorMsg);
-                    } else {
-                        final String errorMsg = FAILED_TO_CANCEL_ORDER + response;
-                        LOG.error(errorMsg);
-                        throw new TradingApiException(errorMsg);
-                    }
+                    final String errorMsg = FAILED_TO_CANCEL_ORDER + response;
+                    LOG.error(errorMsg);
+                    throw new TradingApiException(errorMsg);
                 }
 
             } else {
@@ -621,20 +586,9 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
                     return new BalanceInfo(balancesAvailable, new HashMap<>());
 
                 } else {
-
-                    /*
-                     * TODO 31 July 2016 - PATCH for occasional 'EAPI:Invalid key' responses. Remove when I get to bottom of it!
-                     */
-                    if (krakenResponse.error.contains("EAPI:Invalid key")) {
-                        final String errorMsg = "Received another random Invalid API Key response - ignoring... " +
-                                FAILED_TO_GET_BALANCE + response;
-                        LOG.error(errorMsg);
-                        throw new ExchangeNetworkException(errorMsg);
-                    } else {
-                        final String errorMsg = FAILED_TO_GET_BALANCE + response;
-                        LOG.error(errorMsg);
-                        throw new TradingApiException(errorMsg);
-                    }
+                    final String errorMsg = FAILED_TO_GET_BALANCE + response;
+                    LOG.error(errorMsg);
+                    throw new TradingApiException(errorMsg);
                 }
 
             } else {
@@ -1039,17 +993,14 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
             // Create sha256 hash of nonce and post data:
             final MessageDigest md = MessageDigest.getInstance("SHA-256");
             md.update(noncePrependedToPostData.getBytes("UTF-8"));
-//            final BigInteger messageHash = new BigInteger(md.digest());
             final byte[] messageHash = md.digest();
 
             // Create hmac_sha512 digest of path and previous sha256 hash
             mac.reset(); // force reset
             mac.update(pathInBytes);
-//            mac.update(messageHash.toByteArray());
             mac.update(messageHash);
 
             // Signature in Base64
-//            final String signature = Base64.getEncoder().encodeToString((new BigInteger(mac.doFinal())).toByteArray());
             final String signature = Base64.getEncoder().encodeToString(mac.doFinal());
 
             // Request headers required by Exchange
