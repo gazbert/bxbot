@@ -1039,15 +1039,18 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
             // Create sha256 hash of nonce and post data:
             final MessageDigest md = MessageDigest.getInstance("SHA-256");
             md.update(noncePrependedToPostData.getBytes("UTF-8"));
-            final BigInteger messageHash = new BigInteger(md.digest());
+//            final BigInteger messageHash = new BigInteger(md.digest());
+            final byte[] messageHash = md.digest();
 
             // Create hmac_sha512 digest of path and previous sha256 hash
             mac.reset(); // force reset
             mac.update(pathInBytes);
-            mac.update(messageHash.toByteArray());
+//            mac.update(messageHash.toByteArray());
+            mac.update(messageHash);
 
             // Signature in Base64
-            final String signature = Base64.getEncoder().encodeToString((new BigInteger(mac.doFinal())).toByteArray());
+//            final String signature = Base64.getEncoder().encodeToString((new BigInteger(mac.doFinal())).toByteArray());
+            final String signature = Base64.getEncoder().encodeToString(mac.doFinal());
 
             // Request headers required by Exchange
             final Map<String, String> requestHeaders = new HashMap<>();
