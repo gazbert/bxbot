@@ -26,10 +26,7 @@ package com.gazbert.bxbot.core.exchanges;
 import com.gazbert.bxbot.core.api.exchange.AuthenticationConfig;
 import com.gazbert.bxbot.core.api.exchange.ExchangeConfig;
 import com.gazbert.bxbot.core.api.exchange.NetworkConfig;
-import com.gazbert.bxbot.core.api.trading.ExchangeNetworkException;
-import com.gazbert.bxbot.core.api.trading.MarketOrderBook;
-import com.gazbert.bxbot.core.api.trading.OrderType;
-import com.gazbert.bxbot.core.api.trading.TradingApiException;
+import com.gazbert.bxbot.core.api.trading.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -46,21 +43,19 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import static org.easymock.EasyMock.eq;
 import static org.easymock.EasyMock.expect;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * <p>
  * Tests the behaviour of the Gemini Exchange Adapter.
  * </p>
  * <p>
- * <p>
  * Coverage could be better: it does not include calling the {@link GeminiExchangeAdapter#sendPublicRequestToExchange(String)}
  * and {@link GeminiExchangeAdapter#sendAuthenticatedRequestToExchange(String, Map)} methods; the code in these methods
  * is a bloody nightmare to test!
  * </p>
- * <p>
  * TODO Unit test {@link GeminiExchangeAdapter#sendPublicRequestToExchange(String)} method.
  * TODO Unit test {@link GeminiExchangeAdapter#sendAuthenticatedRequestToExchange(String, Map)} method.
  *
@@ -74,9 +69,11 @@ public class TestGeminiExchangeAdapter {
 
     // Canned JSON responses from exchange - expected to reside on filesystem relative to project root
     private static final String BOOK_JSON_RESPONSE = "./src/test/exchange-data/gemini/book.json";
+    private static final String BALANCES_JSON_RESPONSE = "./src/test/exchange-data/gemini/balances.json";
 
     // Exchange API calls
     private static final String BOOK = "book";
+    private static final String BALANCES = "balances";
 
     // Canned test data
     private static final String MARKET_ID = "btcusd";
@@ -175,7 +172,9 @@ public class TestGeminiExchangeAdapter {
         final GeminiExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
                 GeminiExchangeAdapter.class, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD);
         PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD, BOOK + "/" + MARKET_ID).
-                andThrow(new ExchangeNetworkException(""));
+                andThrow(new ExchangeNetworkException("This famous linguist once said that of all the phrases in the" +
+                        " English language, of all the endless combinations of words in all of history, that " +
+                        "\"cellar door\" is the most beautiful."));
 
         PowerMock.replayAll();
         exchangeAdapter.init(exchangeConfig);
@@ -191,12 +190,80 @@ public class TestGeminiExchangeAdapter {
         final GeminiExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
                 GeminiExchangeAdapter.class, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD);
         PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD, BOOK + "/" + MARKET_ID).
-                andThrow(new IllegalArgumentException(""));
+                andThrow(new IllegalArgumentException("Why are you wearing that stupid bunny suit?"));
 
         PowerMock.replayAll();
         exchangeAdapter.init(exchangeConfig);
 
         exchangeAdapter.getMarketOrders(MARKET_ID);
+        PowerMock.verifyAll();
+    }
+
+    // ------------------------------------------------------------------------------------------------
+    //  Get Balance Info tests
+    // ------------------------------------------------------------------------------------------------
+
+    @Test
+    public void testGettingBalanceInfoSuccessfully() throws Exception {
+
+        // Load the canned response from the exchange
+        final byte[] encoded = Files.readAllBytes(Paths.get(BALANCES_JSON_RESPONSE));
+        final AbstractExchangeAdapter.ExchangeHttpResponse exchangeResponse =
+                new AbstractExchangeAdapter.ExchangeHttpResponse(200, "OK", new String(encoded, StandardCharsets.UTF_8));
+
+        // Partial mock so we do not send stuff down the wire
+        final GeminiExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
+                GeminiExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(BALANCES),
+                eq(null)).andReturn(exchangeResponse);
+
+        PowerMock.replayAll();
+        exchangeAdapter.init(exchangeConfig);
+
+        final BalanceInfo balanceInfo = exchangeAdapter.getBalanceInfo();
+
+        // assert some key stuff; we're not testing GSON here.
+        assertTrue(balanceInfo.getBalancesAvailable().get("BTC").compareTo(new BigDecimal("7.2682949")) == 0);
+        assertTrue(balanceInfo.getBalancesAvailable().get("USD").compareTo(new BigDecimal("512.28")) == 0);
+        assertTrue(balanceInfo.getBalancesAvailable().get("ETH").compareTo(new BigDecimal("0")) == 0);
+
+        // Gemini does not provide "balances on hold" info.
+        assertNull(balanceInfo.getBalancesOnHold().get("BTC"));
+        assertNull(balanceInfo.getBalancesOnHold().get("LTC"));
+        assertNull(balanceInfo.getBalancesOnHold().get("ETH"));
+
+        PowerMock.verifyAll();
+    }
+
+    @Test(expected = ExchangeNetworkException.class)
+    public void testGettingBalanceInfoHandlesExchangeNetworkException() throws Exception {
+
+        // Partial mock so we do not send stuff down the wire
+        final GeminiExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
+                GeminiExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(BALANCES), eq(null)).
+                andThrow(new ExchangeNetworkException("It's simple. We, uh, kill the Batman."));
+
+        PowerMock.replayAll();
+        exchangeAdapter.init(exchangeConfig);
+
+        exchangeAdapter.getBalanceInfo();
+        PowerMock.verifyAll();
+    }
+
+    @Test(expected = TradingApiException.class)
+    public void testGettingBalanceInfoHandlesUnexpectedException() throws Exception {
+
+        // Partial mock so we do not send stuff down the wire
+        final GeminiExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
+                GeminiExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(BALANCES), eq(null)).
+                andThrow(new IllegalStateException("28 days, 6 hours, 42 minutes, 12 seconds. That is when the world will end."));
+
+        PowerMock.replayAll();
+        exchangeAdapter.init(exchangeConfig);
+
+        exchangeAdapter.getBalanceInfo();
         PowerMock.verifyAll();
     }
 
@@ -268,14 +335,14 @@ public class TestGeminiExchangeAdapter {
      * Have left this in; it might come in useful.
      * You'll need to change the KEY, SECRET, constants to real-world values.
      */
-    @Test
+//    @Test
     public void runIntegrationTest() throws Exception {
 
-        PowerMock.replayAll();
-        final GeminiExchangeAdapter exchangeAdapter = new GeminiExchangeAdapter();
-        exchangeAdapter.init(exchangeConfig);
+//        PowerMock.replayAll();
+//        final GeminiExchangeAdapter exchangeAdapter = new GeminiExchangeAdapter();
+//        exchangeAdapter.init(exchangeConfig);
 //        exchangeAdapter.getImplName();
-        exchangeAdapter.getMarketOrders(MARKET_ID);
+//        exchangeAdapter.getMarketOrders(MARKET_ID);
 //        exchangeAdapter.getPercentageOfBuyOrderTakenForExchangeFee(MARKET_ID);
 //        exchangeAdapter.getPercentageOfSellOrderTakenForExchangeFee(MARKET_ID);
 //        exchangeAdapter.getLatestMarketPrice(MARKET_ID);
@@ -286,6 +353,6 @@ public class TestGeminiExchangeAdapter {
 //        final String orderId = exchangeAdapter.createOrder(MARKET_ID, OrderType.SELL, SELL_ORDER_QUANTITY, SELL_ORDER_PRICE);
 //        exchangeAdapter.cancelOrder(orderId, MARKET_ID);
 
-        PowerMock.verifyAll();
+//        PowerMock.verifyAll();
     }
 }

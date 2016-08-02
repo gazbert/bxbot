@@ -158,7 +158,7 @@ abstract class AbstractExchangeAdapter {
 
             // Er, perhaps, I need to be a bit more stealth here...
             exchangeConnection.setRequestProperty("User-Agent",
-                    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.114 Safari/537.36");
+                    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.106 Safari/537.36");
 
             if (requestHeaders != null) {
                 for (final Map.Entry<String, String> requestHeader : requestHeaders.entrySet()) {
@@ -167,7 +167,7 @@ abstract class AbstractExchangeAdapter {
                 }
             }
 
-            // Add a timeout so we don't get blocked indefinitley; timeout on URLConnection is in millis.
+            // Add a timeout so we don't get blocked indefinitely; timeout on URLConnection is in millis.
             final int timeoutInMillis = connectionTimeout * 1000;
             exchangeConnection.setConnectTimeout(timeoutInMillis);
             exchangeConnection.setReadTimeout(timeoutInMillis);

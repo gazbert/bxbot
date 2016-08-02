@@ -1,0 +1,23 @@
+[
+  {
+    "type": "exchange",
+    "currency": "BTC",
+    "amount": "4",
+    "available": "7.2682949",
+    "availableForWithdrawal": "0"
+  },
+  {
+    "type": "exchange",
+    "currency": "USD",
+    "amount": "1010.99",
+    "available": "512.28",
+    "availableForWithdrawal": "0.00"
+  },
+  {
+    "type": "exchange",
+    "currency": "ETH",
+    "amount": "0",
+    "available": "0",
+    "availableForWithdrawal": "0"
+  }
+]
