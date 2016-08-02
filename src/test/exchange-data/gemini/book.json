@@ -1,0 +1,506 @@
+{
+  "bids": [
+    {
+      "price": "603.01",
+      "amount": "104.56720978",
+      "timestamp": "1470135988"
+    },
+    {
+      "price": "603.00",
+      "amount": "2.3261",
+      "timestamp": "1470135988"
+    },
+    {
+      "price": "602.99",
+      "amount": "5",
+      "timestamp": "1470135988"
+    },
+    {
+      "price": "602.97",
+      "amount": "3.34",
+      "timestamp": "1470135988"
+    },
+    {
+      "price": "602.96",
+      "amount": "15",
+      "timestamp": "1470135988"
+    },
+    {
+      "price": "602.93",
+      "amount": "5",
+      "timestamp": "1470135988"
+    },
+    {
+      "price": "602.92",
+      "amount": "2.5042",
+      "timestamp": "1470135988"
+    },
+    {
+      "price": "602.81",
+      "amount": "15",
+      "timestamp": "1470135988"
+    },
+    {
+      "price": "602.80",
+      "amount": "5",
+      "timestamp": "1470135988"
+    },
+    {
+      "price": "602.71",
+      "amount": "0.28491435",
+      "timestamp": "1470135988"
+    },
+    {
+      "price": "602.66",
+      "amount": "15",
+      "timestamp": "1470135988"
+    },
+    {
+      "price": "602.62",
+      "amount": "2.4359",
+      "timestamp": "1470135988"
+    },
+    {
+      "price": "602.57",
+      "amount": "3.34",
+      "timestamp": "1470135988"
+    },
+    {
+      "price": "602.51",
+      "amount": "15",
+      "timestamp": "1470135988"
+    },
+    {
+      "price": "602.38",
+      "amount": "27.8865",
+      "timestamp": "1470135988"
+    },
+    {
+      "price": "602.34",
+      "amount": "2.4633",
+      "timestamp": "1470135988"
+    },
+    {
+      "price": "602.25",
+      "amount": "25",
+      "timestamp": "1470135988"
+    },
+    {
+      "price": "602.24",
+      "amount": "15",
+      "timestamp": "1470135988"
+    },
+    {
+      "price": "602.10",
+      "amount": "15",
+      "timestamp": "1470135988"
+    },
+    {
+      "price": "602.01",
+      "amount": "2.3362",
+      "timestamp": "1470135988"
+    },
+    {
+      "price": "601.96",
+      "amount": "15",
+      "timestamp": "1470135988"
+    },
+    {
+      "price": "601.82",
+      "amount": "15",
+      "timestamp": "1470135988"
+    },
+    {
+      "price": "601.74",
+      "amount": "2.4862",
+      "timestamp": "1470135988"
+    },
+    {
+      "price": "601.67",
+      "amount": "15",
+      "timestamp": "1470135988"
+    },
+    {
+      "price": "601.53",
+      "amount": "25",
+      "timestamp": "1470135988"
+    },
+    {
+      "price": "601.50",
+      "amount": "15",
+      "timestamp": "1470135988"
+    },
+    {
+      "price": "601.40",
+      "amount": "2.3373",
+      "timestamp": "1470135988"
+    },
+    {
+      "price": "601.33",
+      "amount": "15",
+      "timestamp": "1470135988"
+    },
+    {
+      "price": "601.10",
+      "amount": "15",
+      "timestamp": "1470135988"
+    },
+    {
+      "price": "601.09",
+      "amount": "2.6144",
+      "timestamp": "1470135988"
+    },
+    {
+      "price": "600.96",
+      "amount": "0.17",
+      "timestamp": "1470135988"
+    },
+    {
+      "price": "600.93",
+      "amount": "25",
+      "timestamp": "1470135988"
+    },
+    {
+      "price": "600.84",
+      "amount": "2.3955",
+      "timestamp": "1470135988"
+    },
+    {
+      "price": "600.57",
+      "amount": "15",
+      "timestamp": "1470135988"
+    },
+    {
+      "price": "600.51",
+      "amount": "2.4943",
+      "timestamp": "1470135988"
+    },
+    {
+      "price": "600.41",
+      "amount": "25",
+      "timestamp": "1470135988"
+    },
+    {
+      "price": "600.22",
+      "amount": "2.399",
+      "timestamp": "1470135988"
+    },
+    {
+      "price": "600.11",
+      "amount": "0.03332722",
+      "timestamp": "1470135988"
+    },
+    {
+      "price": "599.93",
+      "amount": "25",
+      "timestamp": "1470135988"
+    },
+    {
+      "price": "599.92",
+      "amount": "2.4331",
+      "timestamp": "1470135988"
+    },
+    {
+      "price": "599.65",
+      "amount": "2.5297",
+      "timestamp": "1470135988"
+    },
+    {
+      "price": "599.47",
+      "amount": "25",
+      "timestamp": "1470135988"
+    },
+    {
+      "price": "599.35",
+      "amount": "2.6545",
+      "timestamp": "1470135988"
+    },
+    {
+      "price": "599.06",
+      "amount": "2.4998",
+      "timestamp": "1470135988"
+    },
+    {
+      "price": "599.01",
+      "amount": "25.1",
+      "timestamp": "1470135988"
+    },
+    {
+      "price": "598.75",
+      "amount": "2.5762",
+      "timestamp": "1470135988"
+    },
+    {
+      "price": "598.54",
+      "amount": "25",
+      "timestamp": "1470135988"
+    },
+    {
+      "price": "598.47",
+      "amount": "2.3142",
+      "timestamp": "1470135988"
+    },
+    {
+      "price": "598.17",
+      "amount": "1.59501318",
+      "timestamp": "1470135988"
+    },
+    {
+      "price": "598.16",
+      "amount": "2.3693",
+      "timestamp": "1470135988"
+    }
+  ],
+  "asks": [
+    {
+      "price": "603.02",
+      "amount": "24.5498",
+      "timestamp": "1470135988"
+    },
+    {
+      "price": "604.15",
+      "amount": "5",
+      "timestamp": "1470135988"
+    },
+    {
+      "price": "604.21",
+      "amount": "5",
+      "timestamp": "1470135988"
+    },
+    {
+      "price": "604.30",
+      "amount": "5.16",
+      "timestamp": "1470135988"
+    },
+    {
+      "price": "604.44",
+      "amount": "5",
+      "timestamp": "1470135988"
+    },
+    {
+      "price": "604.57",
+      "amount": "5",
+      "timestamp": "1470135988"
+    },
+    {
+      "price": "604.66",
+      "amount": "5",
+      "timestamp": "1470135988"
+    },
+    {
+      "price": "604.68",
+      "amount": "15",
+      "timestamp": "1470135988"
+    },
+    {
+      "price": "605.06",
+      "amount": "12.7758",
+      "timestamp": "1470135988"
+    },
+    {
+      "price": "605.07",
+      "amount": "15",
+      "timestamp": "1470135988"
+    },
+    {
+      "price": "605.34",
+      "amount": "1.6234",
+      "timestamp": "1470135988"
+    },
+    {
+      "price": "605.42",
+      "amount": "25",
+      "timestamp": "1470135988"
+    },
+    {
+      "price": "605.47",
+      "amount": "15",
+      "timestamp": "1470135988"
+    },
+    {
+      "price": "605.63",
+      "amount": "2.6174",
+      "timestamp": "1470135988"
+    },
+    {
+      "price": "605.81",
+      "amount": "15",
+      "timestamp": "1470135988"
+    },
+    {
+      "price": "605.94",
+      "amount": "2.2537",
+      "timestamp": "1470135988"
+    },
+    {
+      "price": "606.09",
+      "amount": "15",
+      "timestamp": "1470135988"
+    },
+    {
+      "price": "606.23",
+      "amount": "2.4503",
+      "timestamp": "1470135988"
+    },
+    {
+      "price": "606.33",
+      "amount": "15",
+      "timestamp": "1470135988"
+    },
+    {
+      "price": "606.49",
+      "amount": "2.2395",
+      "timestamp": "1470135988"
+    },
+    {
+      "price": "606.54",
+      "amount": "15",
+      "timestamp": "1470135988"
+    },
+    {
+      "price": "606.69",
+      "amount": "25",
+      "timestamp": "1470135988"
+    },
+    {
+      "price": "606.72",
+      "amount": "15",
+      "timestamp": "1470135988"
+    },
+    {
+      "price": "606.81",
+      "amount": "2.5743",
+      "timestamp": "1470135988"
+    },
+    {
+      "price": "606.89",
+      "amount": "15",
+      "timestamp": "1470135988"
+    },
+    {
+      "price": "607.05",
+      "amount": "15",
+      "timestamp": "1470135988"
+    },
+    {
+      "price": "607.12",
+      "amount": "2.3226",
+      "timestamp": "1470135988"
+    },
+    {
+      "price": "607.20",
+      "amount": "15",
+      "timestamp": "1470135988"
+    },
+    {
+      "price": "607.34",
+      "amount": "15",
+      "timestamp": "1470135988"
+    },
+    {
+      "price": "607.40",
+      "amount": "2.6192",
+      "timestamp": "1470135988"
+    },
+    {
+      "price": "607.48",
+      "amount": "15",
+      "timestamp": "1470135988"
+    },
+    {
+      "price": "607.62",
+      "amount": "15",
+      "timestamp": "1470135988"
+    },
+    {
+      "price": "607.64",
+      "amount": "25",
+      "timestamp": "1470135988"
+    },
+    {
+      "price": "607.69",
+      "amount": "0.8869",
+      "timestamp": "1470135988"
+    },
+    {
+      "price": "607.76",
+      "amount": "15",
+      "timestamp": "1470135988"
+    },
+    {
+      "price": "607.92",
+      "amount": "15",
+      "timestamp": "1470135988"
+    },
+    {
+      "price": "608.02",
+      "amount": "2.3069",
+      "timestamp": "1470135988"
+    },
+    {
+      "price": "608.05",
+      "amount": "1.74718916",
+      "timestamp": "1470135988"
+    },
+    {
+      "price": "608.06",
+      "amount": "15",
+      "timestamp": "1470135988"
+    },
+    {
+      "price": "608.21",
+      "amount": "15",
+      "timestamp": "1470135988"
+    },
+    {
+      "price": "608.36",
+      "amount": "25.8335",
+      "timestamp": "1470135988"
+    },
+    {
+      "price": "608.38",
+      "amount": "15",
+      "timestamp": "1470135988"
+    },
+    {
+      "price": "608.56",
+      "amount": "15",
+      "timestamp": "1470135988"
+    },
+    {
+      "price": "608.62",
+      "amount": "2.4663",
+      "timestamp": "1470135988"
+    },
+    {
+      "price": "608.96",
+      "amount": "2.5113",
+      "timestamp": "1470135988"
+    },
+    {
+      "price": "608.97",
+      "amount": "25",
+      "timestamp": "1470135988"
+    },
+    {
+      "price": "609.24",
+      "amount": "2.5168",
+      "timestamp": "1470135988"
+    },
+    {
+      "price": "609.50",
+      "amount": "25",
+      "timestamp": "1470135988"
+    },
+    {
+      "price": "609.55",
+      "amount": "2.2981",
+      "timestamp": "1470135988"
+    },
+    {
+      "price": "609.87",
+      "amount": "2.541",
+      "timestamp": "1470135988"
+    }
+  ]
+}

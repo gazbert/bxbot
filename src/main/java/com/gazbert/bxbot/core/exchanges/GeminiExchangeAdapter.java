@@ -27,6 +27,7 @@ import com.gazbert.bxbot.core.api.exchange.AuthenticationConfig;
 import com.gazbert.bxbot.core.api.exchange.ExchangeAdapter;
 import com.gazbert.bxbot.core.api.exchange.ExchangeConfig;
 import com.gazbert.bxbot.core.api.trading.*;
+import com.google.common.base.MoreObjects;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.apache.logging.log4j.LogManager;
@@ -36,9 +37,12 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.net.URLConnection;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -94,12 +98,22 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter impleme
     /**
      * The public API URI.
      */
-    private static final String PUBLIC_API_BASE_URL = "https://api.gemini.com" + GEMINI_API_VERSION + "/";
+    private static final String PUBLIC_API_BASE_URL = "https://api.gemini.com/" + GEMINI_API_VERSION + "/";
 
     /**
      * The Authenticated API URI - it is the same as the Authenticated URL as of 31 July 2016.
      */
     private static final String AUTHENTICATED_API_URL = PUBLIC_API_BASE_URL;
+
+    /**
+     * Used for reporting unexpected errors.
+     */
+    private static final String UNEXPECTED_ERROR_MSG = "Unexpected error has occurred in Bitfinex Exchange Adapter. ";
+
+    /**
+     * Unexpected IO error message for logging.
+     */
+    private static final String UNEXPECTED_IO_ERROR_MSG = "Failed to connect to Exchange due to unexpected IO error.";
 
     /**
      * Name of api key property in config file.
@@ -183,7 +197,44 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter impleme
 
     @Override
     public MarketOrderBook getMarketOrders(String marketId) throws TradingApiException, ExchangeNetworkException {
-        throw new UnsupportedOperationException("Not developed yet!");
+
+        try {
+
+            final ExchangeHttpResponse response = sendPublicRequestToExchange("book/" + marketId);
+            LOG.debug(() -> "Market Orders response: " + response);
+
+            final GeminiOrderBook orderBook = gson.fromJson(response.getPayload(), GeminiOrderBook.class);
+
+            // adapt BUYs
+            final List<MarketOrder> buyOrders = new ArrayList<>();
+            for (GeminiMarketOrder bitfinexBuyOrder : orderBook.bids) {
+                final MarketOrder buyOrder = new MarketOrder(
+                        OrderType.BUY,
+                        bitfinexBuyOrder.price,
+                        bitfinexBuyOrder.amount,
+                        bitfinexBuyOrder.price.multiply(bitfinexBuyOrder.amount));
+                buyOrders.add(buyOrder);
+            }
+
+            // adapt SELLs
+            final List<MarketOrder> sellOrders = new ArrayList<>();
+            for (GeminiMarketOrder bitfinexSellOrder : orderBook.asks) {
+                final MarketOrder sellOrder = new MarketOrder(
+                        OrderType.SELL,
+                        bitfinexSellOrder.price,
+                        bitfinexSellOrder.amount,
+                        bitfinexSellOrder.price.multiply(bitfinexSellOrder.amount));
+                sellOrders.add(sellOrder);
+            }
+
+            return new MarketOrderBook(marketId, sellOrders, buyOrders);
+
+        } catch (ExchangeNetworkException | TradingApiException e) {
+            throw e;
+        } catch (Exception e) {
+            LOG.error(UNEXPECTED_ERROR_MSG, e);
+            throw new TradingApiException(UNEXPECTED_ERROR_MSG, e);
+        }
     }
 
     @Override
@@ -218,6 +269,41 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter impleme
     //  See https://docs.gemini.com/rest-api/
     // ------------------------------------------------------------------------------------------------
 
+    /**
+     * GSON class for a market Order Book.
+     */
+    private static class GeminiOrderBook {
+
+        // field names map to the JSON arg names
+        public List<GeminiMarketOrder> bids;
+        public List<GeminiMarketOrder> asks;
+
+        @Override
+        public String toString() {
+            return MoreObjects.toStringHelper(this)
+                    .add("bids", bids)
+                    .add("asks", asks)
+                    .toString();
+        }
+    }
+
+    /**
+     * GSON class for a Market Order.
+     */
+    private static class GeminiMarketOrder {
+
+        public BigDecimal price;
+        public BigDecimal amount;
+        // ignore the timestamp attribute as per the API spec.
+
+        @Override
+        public String toString() {
+            return MoreObjects.toStringHelper(this)
+                    .add("price", price)
+                    .add("amount", amount)
+                    .toString();
+        }
+    }
 
     // ------------------------------------------------------------------------------------------------
     //  Transport layer
@@ -232,7 +318,21 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter impleme
      * @throws TradingApiException      if anything unexpected happens.
      */
     private ExchangeHttpResponse sendPublicRequestToExchange(String apiMethod) throws ExchangeNetworkException, TradingApiException {
-        throw new UnsupportedOperationException("No developed yet!");
+
+        // Request headers required by Exchange
+        final Map<String, String> requestHeaders = new HashMap<>();
+        requestHeaders.put("Content-Type", "application/x-www-form-urlencoded");
+
+        try {
+
+            final URL url = new URL(PUBLIC_API_BASE_URL + apiMethod);
+            return sendNetworkRequest(url, "GET", null, requestHeaders);
+
+        } catch (MalformedURLException e) {
+            final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
+            LOG.error(errorMsg, e);
+            throw new TradingApiException(errorMsg, e);
+        }
     }
 
     /**
