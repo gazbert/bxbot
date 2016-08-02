@@ -107,7 +107,7 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter impleme
     /**
      * Used for reporting unexpected errors.
      */
-    private static final String UNEXPECTED_ERROR_MSG = "Unexpected error has occurred in Bitfinex Exchange Adapter. ";
+    private static final String UNEXPECTED_ERROR_MSG = "Unexpected error has occurred in Gemini Exchange Adapter. ";
 
     /**
      * Unexpected IO error message for logging.
@@ -200,22 +200,22 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter impleme
             final GeminiOrderBook orderBook = gson.fromJson(response.getPayload(), GeminiOrderBook.class);
 
             final List<MarketOrder> buyOrders = new ArrayList<>();
-            for (GeminiMarketOrder bitfinexBuyOrder : orderBook.bids) {
+            for (GeminiMarketOrder geminiBuyOrder : orderBook.bids) {
                 final MarketOrder buyOrder = new MarketOrder(
                         OrderType.BUY,
-                        bitfinexBuyOrder.price,
-                        bitfinexBuyOrder.amount,
-                        bitfinexBuyOrder.price.multiply(bitfinexBuyOrder.amount));
+                        geminiBuyOrder.price,
+                        geminiBuyOrder.amount,
+                        geminiBuyOrder.price.multiply(geminiBuyOrder.amount));
                 buyOrders.add(buyOrder);
             }
 
             final List<MarketOrder> sellOrders = new ArrayList<>();
-            for (GeminiMarketOrder bitfinexSellOrder : orderBook.asks) {
+            for (GeminiMarketOrder geminiSellOrder : orderBook.asks) {
                 final MarketOrder sellOrder = new MarketOrder(
                         OrderType.SELL,
-                        bitfinexSellOrder.price,
-                        bitfinexSellOrder.amount,
-                        bitfinexSellOrder.price.multiply(bitfinexSellOrder.amount));
+                        geminiSellOrder.price,
+                        geminiSellOrder.amount,
+                        geminiSellOrder.price.multiply(geminiSellOrder.amount));
                 sellOrders.add(sellOrder);
             }
 
