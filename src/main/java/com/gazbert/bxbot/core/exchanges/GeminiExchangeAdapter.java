@@ -26,6 +26,7 @@ package com.gazbert.bxbot.core.exchanges;
 import com.gazbert.bxbot.core.api.exchange.AuthenticationConfig;
 import com.gazbert.bxbot.core.api.exchange.ExchangeAdapter;
 import com.gazbert.bxbot.core.api.exchange.ExchangeConfig;
+import com.gazbert.bxbot.core.api.exchange.OtherConfig;
 import com.gazbert.bxbot.core.api.trading.*;
 import com.google.common.base.MoreObjects;
 import com.google.gson.Gson;
@@ -66,10 +67,17 @@ import java.util.Map;
  * The adapter only supports the REST implementation of the <a href="https://docs.gemini.com/rest-api/">Trading API</a>.
  * </p>
  * <p>
- * TODO Exchange fees
+ * Gemini operates <a href=https://docs.gemini.com/rest-api/#rate-limits">rate limits</a>:
+ * <ul>
+ * <li>For public API entry points, the limit requests to 120 requests per minute, and recommend that you do not exceed 1 request per second.</li>
+ * <li>For private API entry points, we limit requests to 600 requests per minute, and recommend that you not exceed 5 requests per second.</li>
+ * </ul>
+ * </p>
  * <p>
- * TODO API limits/throttling
- * <p>
+ * Exchange fees are loaded from the exchange.xml file on startup; they are not fetched from the exchange
+ * at runtime as the Gemini REST API does not support this. The fees are used across all markets. Make sure you keep
+ * an eye on the <a href="https://gemini.com/fee-schedule/">exchange fees</a> and update the config accordingly.
+ * </p>
  * TODO any rounding?
  * <p>
  * <p>
@@ -125,9 +133,29 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter impleme
     private static final String SECRET_PROPERTY_NAME = "secret";
 
     /**
+     * Name of buy fee property in config file.
+     */
+    private static final String BUY_FEE_PROPERTY_NAME = "buy-fee";
+
+    /**
+     * Name of sell fee property in config file.
+     */
+    private static final String SELL_FEE_PROPERTY_NAME = "sell-fee";
+
+    /**
      * Nonce used for sending authenticated messages to the exchange.
      */
     private static long nonce = 0;
+
+    /**
+     * Exchange buy fees in % in {@link BigDecimal} format.
+     */
+    private BigDecimal buyFeePercentage;
+
+    /**
+     * Exchange sell fees in % in {@link BigDecimal} format.
+     */
+    private BigDecimal sellFeePercentage;
 
     /**
      * Used to indicate if we have initialised the MAC authentication protocol.
@@ -162,6 +190,7 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter impleme
         LOG.info(() -> "About to initialise Gemini ExchangeConfig: " + config);
         setAuthenticationConfig(config);
         setNetworkConfig(config);
+        setOtherConfig(config);
 
         nonce = System.currentTimeMillis() / 1000; // set the initial nonce used in the secure messaging.
         initSecureMessageLayer();
@@ -279,13 +308,19 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter impleme
     @Override
     public BigDecimal getPercentageOfBuyOrderTakenForExchangeFee(String marketId) throws TradingApiException,
             ExchangeNetworkException {
-        throw new UnsupportedOperationException("Not developed yet!");
+
+        // Gemini does not provide API call for fetching % buy fee.
+        // We load the % fee statically from exchange.xml file - see https://gemini.com/fee-schedule/
+        return buyFeePercentage;
     }
 
     @Override
     public BigDecimal getPercentageOfSellOrderTakenForExchangeFee(String marketId) throws TradingApiException,
             ExchangeNetworkException {
-        throw new UnsupportedOperationException("Not developed yet!");
+
+        // Gemini does not provide API call for fetching % sell fee.
+        // We load the % fee statically from exchange.xml file - see https://gemini.com/fee-schedule/
+        return sellFeePercentage;
     }
 
     @Override
@@ -597,6 +632,19 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter impleme
         final AuthenticationConfig authenticationConfig = getAuthenticationConfig(exchangeConfig);
         key = getAuthenticationConfigItem(authenticationConfig, KEY_PROPERTY_NAME);
         secret = getAuthenticationConfigItem(authenticationConfig, SECRET_PROPERTY_NAME);
+    }
+
+    private void setOtherConfig(ExchangeConfig exchangeConfig) {
+
+        final OtherConfig otherConfig = getOtherConfig(exchangeConfig);
+
+        final String buyFeeInConfig = getOtherConfigItem(otherConfig, BUY_FEE_PROPERTY_NAME);
+        buyFeePercentage = new BigDecimal(buyFeeInConfig).divide(new BigDecimal("100"), 8, BigDecimal.ROUND_HALF_UP);
+        LOG.info(() -> "Buy fee % in BigDecimal format: " + buyFeePercentage);
+
+        final String sellFeeInConfig = getOtherConfigItem(otherConfig, SELL_FEE_PROPERTY_NAME);
+        sellFeePercentage = new BigDecimal(sellFeeInConfig).divide(new BigDecimal("100"), 8, BigDecimal.ROUND_HALF_UP);
+        LOG.info(() -> "Sell fee % in BigDecimal format: " + sellFeePercentage);
     }
 
     // ------------------------------------------------------------------------------------------------

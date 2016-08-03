@@ -26,6 +26,7 @@ package com.gazbert.bxbot.core.exchanges;
 import com.gazbert.bxbot.core.api.exchange.AuthenticationConfig;
 import com.gazbert.bxbot.core.api.exchange.ExchangeConfig;
 import com.gazbert.bxbot.core.api.exchange.NetworkConfig;
+import com.gazbert.bxbot.core.api.exchange.OtherConfig;
 import com.gazbert.bxbot.core.api.trading.*;
 import org.junit.Before;
 import org.junit.Test;
@@ -95,6 +96,7 @@ public class TestGeminiExchangeAdapter {
     private ExchangeConfig exchangeConfig;
     private AuthenticationConfig authenticationConfig;
     private NetworkConfig networkConfig;
+    private OtherConfig otherConfig;
 
 
     /*
@@ -112,10 +114,14 @@ public class TestGeminiExchangeAdapter {
         expect(networkConfig.getNonFatalErrorCodes()).andReturn(nonFatalNetworkErrorCodes);
         expect(networkConfig.getNonFatalErrorMessages()).andReturn(nonFatalNetworkErrorMessages);
 
+        otherConfig = PowerMock.createMock(OtherConfig.class);
+        expect(otherConfig.getItem("buy-fee")).andReturn("0.25");
+        expect(otherConfig.getItem("sell-fee")).andReturn("0.25");
+
         exchangeConfig = PowerMock.createMock(ExchangeConfig.class);
         expect(exchangeConfig.getAuthenticationConfig()).andReturn(authenticationConfig);
         expect(exchangeConfig.getNetworkConfig()).andReturn(networkConfig);
-        // other config not needed for this adapter
+        expect(exchangeConfig.getOtherConfig()).andReturn(otherConfig);
     }
 
     // ------------------------------------------------------------------------------------------------
@@ -296,7 +302,7 @@ public class TestGeminiExchangeAdapter {
         PowerMock.verifyAll();
     }
 
-    @Test (expected = ExchangeNetworkException.class )
+    @Test(expected = ExchangeNetworkException.class)
     public void testGettingLatestMarketPriceHandlesExchangeNetworkException() throws Exception {
 
         // Partial mock so we do not send stuff down the wire
@@ -314,7 +320,7 @@ public class TestGeminiExchangeAdapter {
         PowerMock.verifyAll();
     }
 
-    @Test (expected = TradingApiException.class)
+    @Test(expected = TradingApiException.class)
     public void testGettingLatestMarketPriceHandlesUnexpectedException() throws Exception {
 
         // Partial mock so we do not send stuff down the wire
@@ -342,6 +348,30 @@ public class TestGeminiExchangeAdapter {
         final GeminiExchangeAdapter exchangeAdapter = new GeminiExchangeAdapter();
         exchangeAdapter.init(exchangeConfig);
         assertTrue(exchangeAdapter.getImplName().equals("Gemini REST API v1"));
+        PowerMock.verifyAll();
+    }
+
+    @Test
+    public void testGettingExchangeSellingFeeIsAsExpected() throws Exception {
+
+        PowerMock.replayAll();
+        final GeminiExchangeAdapter exchangeAdapter = new GeminiExchangeAdapter();
+        exchangeAdapter.init(exchangeConfig);
+
+        final BigDecimal sellPercentageFee = exchangeAdapter.getPercentageOfSellOrderTakenForExchangeFee(MARKET_ID);
+        assertTrue(sellPercentageFee.compareTo(new BigDecimal("0.0025")) == 0);
+        PowerMock.verifyAll();
+    }
+
+    @Test
+    public void testGettingExchangeBuyingFeeIsAsExpected() throws Exception {
+
+        PowerMock.replayAll();
+        final GeminiExchangeAdapter exchangeAdapter = new GeminiExchangeAdapter();
+        exchangeAdapter.init(exchangeConfig);
+
+        final BigDecimal buyPercentageFee = exchangeAdapter.getPercentageOfBuyOrderTakenForExchangeFee(MARKET_ID);
+        assertTrue(buyPercentageFee.compareTo(new BigDecimal("0.0025")) == 0);
         PowerMock.verifyAll();
     }
 
