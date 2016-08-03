@@ -70,10 +70,12 @@ public class TestGeminiExchangeAdapter {
     // Canned JSON responses from exchange - expected to reside on filesystem relative to project root
     private static final String BOOK_JSON_RESPONSE = "./src/test/exchange-data/gemini/book.json";
     private static final String BALANCES_JSON_RESPONSE = "./src/test/exchange-data/gemini/balances.json";
+    private static final String PUBTICKER_JSON_RESPONSE = "./src/test/exchange-data/gemini/pubticker.json";
 
     // Exchange API calls
     private static final String BOOK = "book";
     private static final String BALANCES = "balances";
+    private static final String PUBTICKER = "pubticker";
 
     // Canned test data
     private static final String MARKET_ID = "btcusd";
@@ -264,6 +266,68 @@ public class TestGeminiExchangeAdapter {
         exchangeAdapter.init(exchangeConfig);
 
         exchangeAdapter.getBalanceInfo();
+        PowerMock.verifyAll();
+    }
+
+    // ------------------------------------------------------------------------------------------------
+    //  Get Latest Market Price tests
+    // ------------------------------------------------------------------------------------------------
+
+    @Test
+    public void testGettingLatestMarketPriceSuccessfully() throws Exception {
+
+        // Load the canned response from the exchange
+        final byte[] encoded = Files.readAllBytes(Paths.get(PUBTICKER_JSON_RESPONSE));
+        final AbstractExchangeAdapter.ExchangeHttpResponse exchangeResponse =
+                new AbstractExchangeAdapter.ExchangeHttpResponse(200, "OK", new String(encoded, StandardCharsets.UTF_8));
+
+        // Partial mock so we do not send stuff down the wire
+        final GeminiExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
+                GeminiExchangeAdapter.class, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD);
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD, PUBTICKER + "/" + MARKET_ID).
+                andReturn(exchangeResponse);
+
+        PowerMock.replayAll();
+        exchangeAdapter.init(exchangeConfig);
+
+        final BigDecimal latestMarketPrice = exchangeAdapter.getLatestMarketPrice(MARKET_ID).setScale(8, BigDecimal.ROUND_HALF_UP);
+        assertTrue(latestMarketPrice.compareTo(new BigDecimal("567.22")) == 0);
+
+        PowerMock.verifyAll();
+    }
+
+    @Test (expected = ExchangeNetworkException.class )
+    public void testGettingLatestMarketPriceHandlesExchangeNetworkException() throws Exception {
+
+        // Partial mock so we do not send stuff down the wire
+        final GeminiExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
+                GeminiExchangeAdapter.class, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD);
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD, PUBTICKER + "/" + MARKET_ID).
+                andThrow(new ExchangeNetworkException("He's the hero Gotham deserves, but not the one it needs right now. " +
+                        "So we'll hunt him. Because he can take it. Because he's not our hero. " +
+                        "He's a silent guardian, a watchful protector. A dark knight."));
+
+        PowerMock.replayAll();
+        exchangeAdapter.init(exchangeConfig);
+
+        exchangeAdapter.getLatestMarketPrice(MARKET_ID);
+        PowerMock.verifyAll();
+    }
+
+    @Test (expected = TradingApiException.class)
+    public void testGettingLatestMarketPriceHandlesUnexpectedException() throws Exception {
+
+        // Partial mock so we do not send stuff down the wire
+        final GeminiExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
+                GeminiExchangeAdapter.class, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD);
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD, PUBTICKER + "/" + MARKET_ID).
+                andThrow(new IllegalArgumentException(" In brightest day, in blackest night, no evil shall escape my sight," +
+                        " Let those who worship evil's might, beware of my power, Green Lantern's light!"));
+
+        PowerMock.replayAll();
+        exchangeAdapter.init(exchangeConfig);
+
+        exchangeAdapter.getLatestMarketPrice(MARKET_ID);
         PowerMock.verifyAll();
     }
 

@@ -231,7 +231,21 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter impleme
 
     @Override
     public BigDecimal getLatestMarketPrice(String marketId) throws TradingApiException, ExchangeNetworkException {
-        throw new UnsupportedOperationException("Not developed yet!");
+
+        try {
+
+            final ExchangeHttpResponse response = sendPublicRequestToExchange("pubticker/" + marketId);
+            LOG.debug(() -> "Latest Market Price response: " + response);
+
+            final GeminiTicker ticker = gson.fromJson(response.getPayload(), GeminiTicker.class);
+            return ticker.last;
+
+        } catch (ExchangeNetworkException | TradingApiException e) {
+            throw e;
+        } catch (Exception e) {
+            LOG.error(UNEXPECTED_ERROR_MSG, e);
+            throw new TradingApiException(UNEXPECTED_ERROR_MSG, e);
+        }
     }
 
     @Override
@@ -321,7 +335,7 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter impleme
     }
 
     /**
-     * GSON class for a 'balances' API call response.
+     * GSON class for Balances API call response.
      */
     private static class GeminiBalances extends ArrayList<GeminiAccountBalance> {
         private static final long serialVersionUID = 5516523141993401253L;
@@ -348,6 +362,48 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter impleme
                     .add("amount", amount)
                     .add("available", available)
                     .add("availableForWithdrawal", availableForWithdrawal)
+                    .toString();
+        }
+    }
+
+    /**
+     * GSON class for Ticker API call response.
+     */
+    private static class GeminiTicker {
+
+        public BigDecimal bid;
+        public BigDecimal ask;
+        public BigDecimal last;
+        public BigDecimal low;
+        public GeminiVolume volume;
+
+        @Override
+        public String toString() {
+            return MoreObjects.toStringHelper(this)
+                    .add("bid", bid)
+                    .add("ask", ask)
+                    .add("last", last)
+                    .add("low", low)
+                    .add("volume", volume)
+                    .toString();
+        }
+    }
+
+    /**
+     * GSON class for holding volume information in the Ticker response.
+     */
+    private static class GeminiVolume {
+
+        public BigDecimal BTC;
+        public BigDecimal USD;
+        public long timestamp;
+
+        @Override
+        public String toString() {
+            return MoreObjects.toStringHelper(this)
+                    .add("BTC", BTC)
+                    .add("USD", USD)
+                    .add("timestamp", timestamp)
                     .toString();
         }
     }
