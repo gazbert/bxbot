@@ -255,7 +255,31 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter impleme
 
     @Override
     public boolean cancelOrder(String orderId, String marketIdNotNeeded) throws TradingApiException, ExchangeNetworkException {
-        throw new UnsupportedOperationException("Not developed yet!");
+
+        try {
+
+            final Map<String, String> params = getRequestParamMap();
+            params.put("order_id", orderId);
+
+            final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("order/cancel", params);
+            LOG.debug(() -> "Cancel Order response: " + response);
+
+            // Exchange returns order id and other details if successful, a 400 HTTP Status if the order id was not recognised.
+            gson.fromJson(response.getPayload(), GeminiOpenOrder.class);
+            return true;
+
+        } catch (ExchangeNetworkException | TradingApiException e) {
+            if (e.getCause() != null && e.getCause().getMessage().contains("400")) {
+                final String errorMsg = "Failed to cancel order on exchange. Did not recognise Order Id: " + orderId;
+                LOG.error(errorMsg, e);
+                return false;
+            } else {
+                throw e;
+            }
+        } catch (Exception e) {
+            LOG.error(UNEXPECTED_ERROR_MSG, e);
+            throw new TradingApiException(UNEXPECTED_ERROR_MSG, e);
+        }
     }
 
     @Override
