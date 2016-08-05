@@ -77,8 +77,6 @@ import java.util.*;
  * at runtime as the Gemini REST API does not support this. The fees are used across all markets. Make sure you keep
  * an eye on the <a href="https://gemini.com/fee-schedule/">exchange fees</a> and update the config accordingly.
  * </p>
- * TODO any rounding?
- * <p>
  * <p>
  * The Exchange Adapter is <em>not</em> thread safe. It expects to be called using a single thread in order to
  * preserve trade execution order. The {@link URLConnection} achieves this by blocking/waiting on the input stream
