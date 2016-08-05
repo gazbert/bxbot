@@ -44,10 +44,8 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.time.Instant;
+import java.util.*;
 
 /**
  * <p>
@@ -69,8 +67,8 @@ import java.util.Map;
  * <p>
  * Gemini operates <a href=https://docs.gemini.com/rest-api/#rate-limits">rate limits</a>:
  * <ul>
- * <li>For public API entry points, the limit requests to 120 requests per minute, and recommend that you do not exceed 1 request per second.</li>
- * <li>For private API entry points, we limit requests to 600 requests per minute, and recommend that you not exceed 5 requests per second.</li>
+ * <li>For public API entry points, they limit requests to 120 requests per minute, and recommend that you do not exceed 1 request per second.</li>
+ * <li>For private API entry points, they limit requests to 600 requests per minute, and recommend that you not exceed 5 requests per second.</li>
  * </ul>
  * </p>
  * <p>
@@ -215,7 +213,50 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter impleme
 
     @Override
     public List<OpenOrder> getYourOpenOrders(String marketId) throws TradingApiException, ExchangeNetworkException {
-        throw new UnsupportedOperationException("Not developed yet!");
+
+        try {
+
+            final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("orders", null);
+            LOG.debug(() -> "Open Orders response: " + response);
+
+            final GeminiOpenOrders geminiOpenOrders = gson.fromJson(response.getPayload(), GeminiOpenOrders.class);
+
+            final List<OpenOrder> ordersToReturn = new ArrayList<>();
+            for (final GeminiOpenOrder geminiOpenOrder : geminiOpenOrders) {
+                OrderType orderType;
+                switch (geminiOpenOrder.side) {
+                    case "buy":
+                        orderType = OrderType.BUY;
+                        break;
+                    case "sell":
+                        orderType = OrderType.SELL;
+                        break;
+                    default:
+                        throw new TradingApiException(
+                                "Unrecognised order type received in getYourOpenOrders(). Value: " + geminiOpenOrder.type);
+                }
+
+                final OpenOrder order = new OpenOrder(
+                        Long.toString(geminiOpenOrder.order_id),
+                        Date.from(Instant.ofEpochMilli(geminiOpenOrder.timestampms)),
+                        marketId,
+                        orderType,
+                        geminiOpenOrder.price,
+                        geminiOpenOrder.remaining_amount,
+                        geminiOpenOrder.original_amount,
+                        geminiOpenOrder.price.multiply(geminiOpenOrder.original_amount) // total - not provided by Gemini :-(
+                );
+
+                ordersToReturn.add(order);
+            }
+            return ordersToReturn;
+
+        } catch (ExchangeNetworkException | TradingApiException e) {
+            throw e;
+        } catch (Exception e) {
+            LOG.error(UNEXPECTED_ERROR_MSG, e);
+            throw new TradingApiException(UNEXPECTED_ERROR_MSG, e);
+        }
     }
 
     @Override
@@ -443,6 +484,59 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter impleme
         }
     }
 
+    /**
+     * GSON class for holding an active orders API call response.
+     */
+    private static class GeminiOpenOrders extends ArrayList<GeminiOpenOrder> {
+        private static final long serialVersionUID = 5516523611153405953L;
+    }
+
+    /**
+     * GSON class representing an open order on the exchange.
+     */
+    private static class GeminiOpenOrder {
+
+        public long order_id; // use this value for order id as per the API spec
+        public long id;
+        public String symbol;
+        public String exchange;
+        public BigDecimal price;
+        public BigDecimal avg_execution_price;
+        public String side; // buy|sell
+        public String type; // exchange limit
+        public String timestamp; // timestamp as a String
+        public long timestampms; //timestamp in millis as a long
+        public boolean is_live;
+        public boolean is_cancelled;
+        public boolean is_hidden;
+        public static boolean was_forced;
+        public BigDecimal remaining_amount;
+        public BigDecimal executed_amount;
+        public BigDecimal original_amount;
+
+        @Override
+        public String toString() {
+            return MoreObjects.toStringHelper(this)
+                    .add("order_id", order_id)
+                    .add("id", id)
+                    .add("symbol", symbol)
+                    .add("exchange", exchange)
+                    .add("price", price)
+                    .add("avg_execution_price", avg_execution_price)
+                    .add("side", side)
+                    .add("type", type)
+                    .add("timestamp", timestamp)
+                    .add("timestampms", timestampms)
+                    .add("is_live", is_live)
+                    .add("is_cancelled", is_cancelled)
+                    .add("is_hidden", is_hidden)
+                    .add("remaining_amount", remaining_amount)
+                    .add("executed_amount", executed_amount)
+                    .add("original_amount", original_amount)
+                    .toString();
+        }
+    }
+
     // ------------------------------------------------------------------------------------------------
     //  Transport layer
     // ------------------------------------------------------------------------------------------------
@@ -556,15 +650,13 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter impleme
             // Need to base64 encode payload as per API
             final String base64payload = DatatypeConverter.printBase64Binary(paramsInJson.getBytes());
 
-            // Request headers required by Exchange
-            final Map<String, String> requestHeaders = new HashMap<>();
-
             // Create the signature
             mac.reset(); // force reset
             mac.update(base64payload.getBytes());
             final String signature = toHex(mac.doFinal()).toLowerCase();
 
-            // Add the headers
+            // Request headers required by Exchange
+            final Map<String, String> requestHeaders = new HashMap<>();
             requestHeaders.put("X-GEMINI-APIKEY", key);
             requestHeaders.put("X-GEMINI-PAYLOAD", base64payload);
             requestHeaders.put("X-GEMINI-SIGNATURE", signature);

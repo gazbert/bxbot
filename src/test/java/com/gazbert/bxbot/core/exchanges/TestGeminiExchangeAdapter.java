@@ -72,14 +72,16 @@ public class TestGeminiExchangeAdapter {
     private static final String BOOK_JSON_RESPONSE = "./src/test/exchange-data/gemini/book.json";
     private static final String BALANCES_JSON_RESPONSE = "./src/test/exchange-data/gemini/balances.json";
     private static final String PUBTICKER_JSON_RESPONSE = "./src/test/exchange-data/gemini/pubticker.json";
+    private static final String ORDERS_JSON_RESPONSE = "./src/test/exchange-data/gemini/orders.json";
 
     // Exchange API calls
     private static final String BOOK = "book";
     private static final String BALANCES = "balances";
     private static final String PUBTICKER = "pubticker";
+    private static final String ORDERS = "orders";
 
     // Canned test data
-    private static final String MARKET_ID = "btcusd";
+    private static final String MARKET_ID = "ethbtc";
 
     // Mocked out methods
     private static final String MOCKED_GET_REQUEST_PARAM_MAP_METHOD = "getRequestParamMap";
@@ -334,6 +336,78 @@ public class TestGeminiExchangeAdapter {
         exchangeAdapter.init(exchangeConfig);
 
         exchangeAdapter.getLatestMarketPrice(MARKET_ID);
+        PowerMock.verifyAll();
+    }
+
+    // ------------------------------------------------------------------------------------------------
+    //  Get Your Open Orders tests
+    // ------------------------------------------------------------------------------------------------
+
+    @Test
+    public void testGettingYourOpenOrdersSuccessfully() throws Exception {
+
+        // Load the canned response from the exchange
+        final byte[] encoded = Files.readAllBytes(Paths.get(ORDERS_JSON_RESPONSE));
+        final AbstractExchangeAdapter.ExchangeHttpResponse exchangeResponse =
+                new AbstractExchangeAdapter.ExchangeHttpResponse(200, "OK", new String(encoded, StandardCharsets.UTF_8));
+
+        // Partial mock so we do not send stuff down the wire
+        final GeminiExchangeAdapter exchangeAdapter =  PowerMock.createPartialMockAndInvokeDefaultConstructor(
+                GeminiExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(ORDERS),
+                eq(null)).andReturn(exchangeResponse);
+
+        PowerMock.replayAll();
+        exchangeAdapter.init(exchangeConfig);
+
+        final List<OpenOrder> openOrders = exchangeAdapter.getYourOpenOrders(MARKET_ID);
+
+        // assert some key stuff; we're not testing GSON here.
+        assertTrue(openOrders.size() == 2);
+        assertTrue(openOrders.get(0).getMarketId().equals(MARKET_ID));
+        assertTrue(openOrders.get(0).getId().equals("196267999"));
+        assertTrue(openOrders.get(0).getType() == OrderType.BUY);
+        assertTrue(openOrders.get(0).getCreationDate().getTime() == 1470419470223L);
+        assertTrue(openOrders.get(0).getPrice().compareTo(new BigDecimal("0.00002")) == 0);
+        assertTrue(openOrders.get(0).getQuantity().compareTo(new BigDecimal("0.0009")) == 0);
+        assertTrue(openOrders.get(0).getOriginalQuantity().compareTo(new BigDecimal("0.001")) == 0);
+        assertTrue(openOrders.get(0).getTotal().compareTo(openOrders.get(0).getPrice().multiply(openOrders.get(0).
+                getOriginalQuantity())) == 0);
+
+        PowerMock.verifyAll();
+    }
+
+    @Test (expected = ExchangeNetworkException.class )
+    public void testGettingYourOpenOrdersHandlesExchangeNetworkException() throws Exception {
+
+        // Partial mock so we do not send stuff down the wire
+        final GeminiExchangeAdapter exchangeAdapter =  PowerMock.createPartialMockAndInvokeDefaultConstructor(
+                GeminiExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(ORDERS), eq(null)).
+                andThrow(new ExchangeNetworkException("If it bleeds, we can kill it."));
+
+        PowerMock.replayAll();
+        exchangeAdapter.init(exchangeConfig);
+
+        exchangeAdapter.getYourOpenOrders(MARKET_ID);
+        PowerMock.verifyAll();
+    }
+
+    @Test (expected = TradingApiException.class)
+    public void testGettingYourOpenOrdersHandlesUnexpectedException() throws Exception {
+
+        // Partial mock so we do not send stuff down the wire
+        final GeminiExchangeAdapter exchangeAdapter =  PowerMock.createPartialMockAndInvokeDefaultConstructor(
+                GeminiExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(ORDERS), eq(null)).
+                andThrow(new IllegalStateException("I know one thing, Major, I drew down and fired straight at it. " +
+                        "Capped off two hundred rounds in the minigun, full pack. Nothing... " +
+                        "Nothing on Earth could've lived. Not at that range."));
+
+        PowerMock.replayAll();
+        exchangeAdapter.init(exchangeConfig);
+
+        exchangeAdapter.getYourOpenOrders(MARKET_ID);
         PowerMock.verifyAll();
     }
 
