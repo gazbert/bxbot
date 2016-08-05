@@ -1,0 +1,19 @@
+{
+  "order_id": "196193745",
+  "id": "196193745",
+  "symbol": "ethbtc",
+  "exchange": "gemini",
+  "price": "0.00002",
+  "avg_execution_price": "0",
+  "side": "sell",
+  "type": "exchange limit",
+  "timestamp": "1470423859",
+  "timestampms": 1470423859732,
+  "is_live": true,
+  "is_cancelled": false,
+  "is_hidden": false,
+  "was_forced": false,
+  "executed_amount": "0",
+  "remaining_amount": "0.002",
+  "original_amount": "0.002"
+}

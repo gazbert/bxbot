@@ -44,6 +44,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.text.DecimalFormat;
 import java.time.Instant;
 import java.util.*;
 
@@ -203,7 +204,53 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter impleme
     @Override
     public String createOrder(String marketId, OrderType orderType, BigDecimal quantity, BigDecimal price) throws
             TradingApiException, ExchangeNetworkException {
-        throw new UnsupportedOperationException("Not developed yet!");
+
+        try {
+
+            final Map<String, String> params = getRequestParamMap();
+
+            params.put("symbol", marketId);
+            params.put("amount", new DecimalFormat("#.########").format(quantity));
+            params.put("price", new DecimalFormat("#.########").format(price));
+
+            if (orderType == OrderType.BUY) {
+                params.put("side", "buy");
+            } else if (orderType == OrderType.SELL) {
+                params.put("side", "sell");
+            } else {
+                final String errorMsg = "Invalid order type: " + orderType
+                        + " - Can only be "
+                        + OrderType.BUY.getStringValue() + " or "
+                        + OrderType.SELL.getStringValue();
+                LOG.error(errorMsg);
+                throw new IllegalArgumentException(errorMsg);
+            }
+
+            // this adapter only supports 'exchange limit' orders
+            params.put("type", "exchange limit");
+
+            // This adapter does not currently support options
+            //params.put("options", "not supported");
+
+            final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("order/new", params);
+            LOG.debug(() -> "Create Order response: " + response);
+
+            final GeminiOpenOrder createOrderResponse = gson.fromJson(response.getPayload(), GeminiOpenOrder.class);
+            final long id = createOrderResponse.order_id;
+            if (id == 0) {
+                final String errorMsg = "Failed to place order on exchange. Error response: " + response;
+                LOG.error(errorMsg);
+                throw new TradingApiException(errorMsg);
+            } else {
+                return Long.toString(createOrderResponse.order_id);
+            }
+
+        } catch (ExchangeNetworkException | TradingApiException e) {
+            throw e;
+        } catch (Exception e) {
+            LOG.error(UNEXPECTED_ERROR_MSG, e);
+            throw new TradingApiException(UNEXPECTED_ERROR_MSG, e);
+        }
     }
 
     @Override
@@ -621,7 +668,7 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter impleme
      * @throws ExchangeNetworkException if there is a network issue connecting to exchange.
      * @throws TradingApiException      if anything unexpected happens.
      */
-    private ExchangeHttpResponse sendAuthenticatedRequestToExchange(String apiMethod, Map<String, Object> params)
+    private ExchangeHttpResponse sendAuthenticatedRequestToExchange(String apiMethod, Map<String, String> params)
             throws ExchangeNetworkException, TradingApiException {
 
         if (!initializedMACAuthentication) {

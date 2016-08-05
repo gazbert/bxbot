@@ -40,10 +40,12 @@ import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import static org.easymock.EasyMock.anyObject;
 import static org.easymock.EasyMock.eq;
 import static org.easymock.EasyMock.expect;
 import static org.junit.Assert.*;
@@ -73,15 +75,22 @@ public class TestGeminiExchangeAdapter {
     private static final String BALANCES_JSON_RESPONSE = "./src/test/exchange-data/gemini/balances.json";
     private static final String PUBTICKER_JSON_RESPONSE = "./src/test/exchange-data/gemini/pubticker.json";
     private static final String ORDERS_JSON_RESPONSE = "./src/test/exchange-data/gemini/orders.json";
+    private static final String ORDER_NEW_BUY_JSON_RESPONSE = "./src/test/exchange-data/gemini/order_new_buy.json";
+    private static final String ORDER_NEW_SELL_JSON_RESPONSE = "./src/test/exchange-data/gemini/order_new_sell.json";
 
     // Exchange API calls
     private static final String BOOK = "book";
     private static final String BALANCES = "balances";
     private static final String PUBTICKER = "pubticker";
     private static final String ORDERS = "orders";
+    private static final String ORDER_NEW = "order/new";
 
     // Canned test data
     private static final String MARKET_ID = "ethbtc";
+    private static final BigDecimal BUY_ORDER_PRICE = new BigDecimal("0.00001");
+    private static final BigDecimal BUY_ORDER_QUANTITY = new BigDecimal("0.001");
+    private static final BigDecimal SELL_ORDER_PRICE = new BigDecimal("0.00002");
+    private static final BigDecimal SELL_ORDER_QUANTITY = new BigDecimal("0.002");
 
     // Mocked out methods
     private static final String MOCKED_GET_REQUEST_PARAM_MAP_METHOD = "getRequestParamMap";
@@ -206,6 +215,116 @@ public class TestGeminiExchangeAdapter {
         exchangeAdapter.init(exchangeConfig);
 
         exchangeAdapter.getMarketOrders(MARKET_ID);
+        PowerMock.verifyAll();
+    }
+
+    // ------------------------------------------------------------------------------------------------
+    //  Create Orders tests
+    // ------------------------------------------------------------------------------------------------
+
+    @Test
+    public void testCreateOrderToBuyIsSuccessful() throws Exception {
+
+        // Load the canned response from the exchange
+        final byte[] encoded = Files.readAllBytes(Paths.get(ORDER_NEW_BUY_JSON_RESPONSE));
+        final AbstractExchangeAdapter.ExchangeHttpResponse exchangeResponse =
+                new AbstractExchangeAdapter.ExchangeHttpResponse(200, "OK", new String(encoded, StandardCharsets.UTF_8));
+
+        // Mock out param map so we can assert the contents passed to the transport layer are what we expect.
+        final Map<String, String> requestParamMap = PowerMock.createMock(Map.class);
+        expect(requestParamMap.put("symbol", MARKET_ID)).andStubReturn(null);
+        expect(requestParamMap.put("amount", new DecimalFormat("#.########").format(BUY_ORDER_QUANTITY))).andStubReturn(null);
+        expect(requestParamMap.put("price", new DecimalFormat("#.########").format(BUY_ORDER_PRICE))).andStubReturn(null);
+        expect(requestParamMap.put("side", "buy")).andStubReturn(null);
+        expect(requestParamMap.put("type", "exchange limit")).andStubReturn(null);
+
+        // Partial mock so we do not send stuff down the wire
+        final GeminiExchangeAdapter exchangeAdapter =  PowerMock.createPartialMockAndInvokeDefaultConstructor(
+                GeminiExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD,
+                MOCKED_GET_REQUEST_PARAM_MAP_METHOD);
+
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_GET_REQUEST_PARAM_MAP_METHOD).andReturn(requestParamMap);
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(ORDER_NEW),
+                eq(requestParamMap)).andReturn(exchangeResponse);
+
+        PowerMock.replayAll();
+        exchangeAdapter.init(exchangeConfig);
+
+        final String orderId = exchangeAdapter.createOrder(MARKET_ID, OrderType.BUY, BUY_ORDER_QUANTITY, BUY_ORDER_PRICE);
+        assertTrue(orderId.equals("196693745"));
+
+        PowerMock.verifyAll();
+    }
+
+    @Test
+    public void testCreateOrderToSellIsSuccessful() throws Exception {
+
+        // Load the canned response from the exchange
+        final byte[] encoded = Files.readAllBytes(Paths.get(ORDER_NEW_SELL_JSON_RESPONSE));
+        final AbstractExchangeAdapter.ExchangeHttpResponse exchangeResponse =
+                new AbstractExchangeAdapter.ExchangeHttpResponse(200, "OK", new String(encoded, StandardCharsets.UTF_8));
+
+        // Mock out param map so we can assert the contents passed to the transport layer are what we expect.
+        final Map<String, Object> requestParamMap = PowerMock.createMock(Map.class);
+        expect(requestParamMap.put("symbol", MARKET_ID)).andStubReturn(null);
+        expect(requestParamMap.put("amount", new DecimalFormat("#.########").format(SELL_ORDER_QUANTITY))).andStubReturn(null);
+        expect(requestParamMap.put("price", new DecimalFormat("#.########").format(SELL_ORDER_PRICE))).andStubReturn(null);
+        expect(requestParamMap.put("exchange", "bitfinex")).andStubReturn(null);
+        expect(requestParamMap.put("side", "sell")).andStubReturn(null);
+        expect(requestParamMap.put("type", "exchange limit")).andStubReturn(null);
+
+        // Partial mock so we do not send stuff down the wire
+        final GeminiExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
+                GeminiExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD,
+                MOCKED_GET_REQUEST_PARAM_MAP_METHOD);
+
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_GET_REQUEST_PARAM_MAP_METHOD).andReturn(requestParamMap);
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(ORDER_NEW),
+                eq(requestParamMap)).andReturn(exchangeResponse);
+
+        PowerMock.replayAll();
+        exchangeAdapter.init(exchangeConfig);
+
+        final String orderId = exchangeAdapter.createOrder(MARKET_ID, OrderType.SELL, SELL_ORDER_QUANTITY,
+                SELL_ORDER_PRICE);
+        assertTrue(orderId.equals("196193745"));
+
+        PowerMock.verifyAll();
+    }
+
+    @Test (expected = ExchangeNetworkException.class )
+    public void testCreateOrderHandlesExchangeNetworkException() throws Exception {
+
+        // Partial mock so we do not send stuff down the wire
+        final GeminiExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
+                GeminiExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(ORDER_NEW),
+                anyObject(Map.class)).
+                andThrow(new ExchangeNetworkException("Excuse me, sir. Seeing as how the V.P. is such a V.I.P., " +
+                        "shouldn't we keep the P.C. on the Q.T.? 'Cause if it leaks to the V.C. he could end up M.I.A.," +
+                        " and then we'd all be put out in K.P."));
+
+        PowerMock.replayAll();
+        exchangeAdapter.init(exchangeConfig);
+
+        exchangeAdapter.createOrder(MARKET_ID, OrderType.SELL, BUY_ORDER_QUANTITY, BUY_ORDER_PRICE);
+        PowerMock.verifyAll();
+    }
+
+    @Test (expected = TradingApiException.class)
+    public void testCreateOrderHandlesUnexpectedException() throws Exception {
+
+        // Partial mock so we do not send stuff down the wire
+        final GeminiExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
+                GeminiExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(ORDER_NEW),
+                anyObject(Map.class)).
+                andThrow(new IllegalArgumentException("You know, you should wear your seatbelt."));
+
+        PowerMock.replayAll();
+        exchangeAdapter.init(exchangeConfig);
+
+        exchangeAdapter.createOrder(MARKET_ID, OrderType.BUY, BUY_ORDER_QUANTITY, BUY_ORDER_PRICE);
         PowerMock.verifyAll();
     }
 
@@ -518,7 +637,7 @@ public class TestGeminiExchangeAdapter {
 //        exchangeAdapter.getBalanceInfo();
 
 //        // Careful here - make sure the SELL_ORDER_PRICE is sensible!
-//        final String orderId = exchangeAdapter.createOrder(MARKET_ID, OrderType.SELL, SELL_ORDER_QUANTITY, SELL_ORDER_PRICE);
+//        final String orderId = exchangeAdapter.createOrder(MARKET_ID, OrderType.BUY, BUY_ORDER_QUANTITY, BUY_ORDER_PRICE);
 //        exchangeAdapter.cancelOrder(orderId, MARKET_ID);
 
 //        PowerMock.verifyAll();
