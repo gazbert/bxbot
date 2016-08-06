@@ -208,8 +208,10 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter impleme
             final Map<String, String> params = getRequestParamMap();
 
             params.put("symbol", marketId);
-            params.put("amount", new DecimalFormat("#.########").format(quantity));
-            params.put("price", new DecimalFormat("#.########").format(price));
+
+            // note we need to limit amount and price to 6 decimal places else exchange will barf with 400 response
+            params.put("amount", new DecimalFormat("#.######").format(quantity));
+            params.put("price", new DecimalFormat("#.######").format(price));
 
             if (orderType == OrderType.BUY) {
                 params.put("side", "buy");
