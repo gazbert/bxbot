@@ -466,16 +466,17 @@ A Maven `pom.xml` is included for building the bot.
 
 ## Installation Guide
 
+1. Prerequisite: [Oracle JDK 1.8](http://www.oracle.com/technetwork/java/javase/downloads/index-jsp-138363.html) needs to be installed
+   on the machine you want to run the bot.  
 1. Copy either the `bxbot-core-<version>-dist.tar.gz` or the `bxbot-core-<version>-dist.zip` onto the machine you 
-   want to run the bot.
-1. Unzip it into a folder of your choice.
+   want to run the bot. Unzip it into a folder of your choice.
 1. To start the bot: `./bxbot.sh start` ; to stop the bot: `./bxbot.sh stop`
  
 ## Coming Soon...
 The following features are in the pipeline:
 
 - REST API for configuring the bot.
-- Web UI (written in [AngularJS](https://angularjs.org/)) for configuring the bot.
+- Web UI for configuring the bot.
 - Admin app - a microservice for administering multiple bots in the cloud.
 - Trade Analysis app - a microservice that will feed off trading events sent by the bots.
 - Android app for administering bots.
