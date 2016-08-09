@@ -6,7 +6,7 @@
     <groupId>com.gazbert.bxbot</groupId>
     <artifactId>bxbot-core</artifactId>
     <packaging>jar</packaging>
-    <version>0.4-beta</version>
+    <version>0.5-beta-SNAPSHOT</version>
     <name>BX-bot</name>
     <description>BX-bot is a simple Java algorithmic trading bot for trading Bitcoin on cryptocurrency exchanges.
     </description>
@@ -34,6 +34,7 @@
     </developers>
 
     <properties>
+        <springframework.version>4.3.1.RELEASE</springframework.version>
         <powermock.version>1.6.2</powermock.version>
     </properties>
 
@@ -44,9 +45,20 @@
     </parent>
 
     <dependencies>
+
         <!--
         Product dependencies
         -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
+            <version>${springframework.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-tx</artifactId>
+            <version>${springframework.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
@@ -167,6 +179,16 @@
             <groupId>cglib</groupId>
             <artifactId>cglib-nodep</artifactId>
             <version>2.2.2</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.jayway.jsonpath</groupId>
+            <artifactId>json-path</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>
