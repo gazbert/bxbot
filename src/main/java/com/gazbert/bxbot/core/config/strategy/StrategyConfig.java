@@ -42,6 +42,11 @@ public class StrategyConfig {
     private String className;
     private StrategyConfigItems configItems;
 
+
+    // required for Jackson
+    public StrategyConfig() {
+    }
+
     public StrategyConfig(String id, String label, String description, String className, StrategyConfigItems configItems) {
         this.id = id;
         this.label = label;

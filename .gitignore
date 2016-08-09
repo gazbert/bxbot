@@ -40,5 +40,5 @@ hs_err_pid*
 /resources/gemini/gemini-config.properties
 
 # not for github
-TestingStrategy.java
-
+TestStrategy.java
+TestExchangeAdapter.java

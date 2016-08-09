@@ -29,6 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -44,8 +45,13 @@ import java.util.List;
 @RequestMapping("/api")
 public class MarketConfigController {
 
+    private final MarketConfigService marketConfigService;
+
     @Autowired
-    private MarketConfigService marketConfigService;
+    public MarketConfigController(MarketConfigService marketConfigService) {
+        Assert.notNull(marketConfigService, "marketConfigService dependency cannot be null!");
+        this.marketConfigService = marketConfigService;
+    }
 
     @RequestMapping(value = "/config/market/{marketId}", method = RequestMethod.GET)
     public MarketConfig getMarket(@PathVariable String marketId) {
