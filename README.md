@@ -66,16 +66,16 @@ but you might not have a working bot!
 Issues and new features will be managed using the project [Issue Tracker](https://github.com/gazbert/BX-bot/issues) -
 submit bugs here.
  
-You are welcome to take on any new features or fix bugs.
+You are welcome to take on new features or fix bugs!
 
 ## User Guide
 
 ### Configuration
-The bot provides a plugin framework for the:
+The bot provides a simple plugin framework for:
 
-1. Exchanges to use.
-1. Markets to trade on.
-1. Trading Strategies to execute.
+* Exchanges to integrate with.
+* Markets to trade on.
+* Trading Strategies to execute.
 
 It uses XML configuration files. These live in the [`config`](https://github.com/gazbert/BX-bot/tree/master/config) folder.
 
@@ -350,9 +350,9 @@ More information can be found
 Your strategy must implement the [`TradingStrategy`](https://github.com/gazbert/BX-bot/blob/master/src/main/java/com/gazbert/bxbot/core/api/strategy/TradingStrategy.java)
 interface. This allows the Trading Engine to:
 
-1. inject your strategy on startup of the bot.
-1. pass configuration you set up in the `strategies.xml` to your strategy.
-1. invoke your strategy during each trade cycle.
+* inject your strategy on startup of the bot.
+* pass configuration you set up in the `strategies.xml` to your strategy.
+* invoke your strategy during each trade cycle.
 
 The Trading Engine will only send 1 thread through your Trading Strategy; you do not have to code for concurrency.
 
@@ -405,8 +405,8 @@ Your adapter must implement the [`TradingApi`](https://github.com/gazbert/BX-bot
 and the [`ExchangeAdapter`](https://github.com/gazbert/BX-bot/blob/master/src/main/java/com/gazbert/bxbot/core/api/exchange/ExchangeAdapter.java)
 interfaces. This allows for:
 
-1. the main Trading Engine to inject your adapter on startup and initialise it with config from the `exchange.xml` file.
-1. the Trading Strategies to invoke your adapter's implementation of the `TradingApi` during each trade cycle.
+* the main Trading Engine to inject your adapter on startup and initialise it with config from the `exchange.xml` file.
+* the Trading Strategies to invoke your adapter's implementation of the `TradingApi` during each trade cycle.
 
 [`AbstractExchangeAdapter`](https://github.com/gazbert/BX-bot/blob/master/src/main/java/com/gazbert/bxbot/core/exchanges/AbstractExchangeAdapter.java)
 is a handy base class that all the inbuilt Exchange Adapters extend - it could be useful.
