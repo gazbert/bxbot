@@ -38,7 +38,3 @@ hs_err_pid*
 /resources/gdax/gdax-config.properties
 /resources/kraken/kraken-config.properties
 /resources/gemini/gemini-config.properties
-
-# not for github
-TestStrategy.java
-TestExchangeAdapter.java
