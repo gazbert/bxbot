@@ -49,7 +49,8 @@ development and runtime environment.
 
 You'll also need [Maven 3](https://maven.apache.org) installed in order to build the bot and pull in the dependencies;
 BX-bot depends on [log4j](http://logging.apache.org/log4j), [JavaMail](https://java.net/projects/javamail/pages/Home),
-[Google Gson](https://code.google.com/p/google-gson/), and [Google Guava](https://github.com/google/guava).
+[Google Gson](https://code.google.com/p/google-gson/), [Google Guava](https://github.com/google/guava), and 
+[Spring Boot](http://projects.spring.io/spring-boot/).
 See the [`pom.xml`](https://github.com/gazbert/BX-bot/blob/master/pom.xml) for details.
 
 ## Testing
@@ -351,7 +352,7 @@ Your strategy must implement the [`TradingStrategy`](https://github.com/gazbert/
 interface. This allows the Trading Engine to:
 
 * inject your strategy on startup of the bot.
-* pass configuration you set up in the `strategies.xml` to your strategy.
+* pass any configuration (you set up in the `strategies.xml`) to your strategy.
 * invoke your strategy during each trade cycle.
 
 The Trading Engine will only send 1 thread through your Trading Strategy; you do not have to code for concurrency.
