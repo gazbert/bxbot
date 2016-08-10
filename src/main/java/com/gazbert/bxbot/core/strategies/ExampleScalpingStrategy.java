@@ -39,11 +39,10 @@ import java.util.List;
 /**
  * <p>
  * This is a very simple <a href="http://www.investopedia.com/articles/trading/02/081902.asp">scalping strategy</a>
- * to show how to use the Trading API; you will want to code a much better algorithm.
+ * to show how to use the Trading API; you will want to code a much better algorithm!
  * It trades using <a href="http://www.investopedia.com/terms/l/limitorder.asp">limit orders</a> at the
  * <a href="http://www.investopedia.com/terms/s/spotprice.asp">spot price</a>.
  * </p>
- * <p>
  * <p>
  * <strong>
  * DISCLAIMER:
@@ -51,66 +50,48 @@ import java.util.List;
  * </strong>
  * </p>
  * <p>
- * <p>
- * It has been written specifically to trade altcoins on <a href="https://btc-e.com">BTC-e</a>, but can be
- * adapted to trade on any exchange. It assumes a long position in BTC and short positions in various altcoins. In other
- * words, it initiates trades to buy altcoins using BTC and then sells those altcoins at a profit to receive additional BTC.
- * The algorithm expects you to have deposited sufficient BTC into your exchange wallet.
+ * It was been written to trade altcoins on <a href="https://btc-e.com">BTC-e</a>, but can be
+ * adapted to trade on any exchange. It adopts a long position in BTC. In other words, it initiates trades to buy
+ * altcoins using BTC and then sells those altcoins at a profit to receive additional BTC. The algorithm expects you to
+ * have deposited sufficient BTC into your exchange wallet.
  * </p>
  * <p>
- * <p>
- * Exchanges like <a href="https://btc-e.com">BTC-e</a> are a good place to start trading Bitcoin,
- * because you can typically trade much smaller amounts (and risk losing it!) when testing your new algorithms. I usually
- * test my algorithms out on altcoin markets before running them on USD/BTC markets on other exchanges like
- * <a href="https://www.bitstamp.net/">Bitstamp</a>.
- * </p>
- * <p>
- * <p>
- * In a nutshell, the algorithm places an order at the current BID price, holds until the current ASK price (+ exchange fees) is
- * higher than the price the order filled at, and then places a sell order at the current ASK price. Assuming the sell
+ * This algorithm places an order at the current BID price, holds until the current ASK price (+ exchange fees) is
+ * higher than the order fill price, and then places a sell order at the current ASK price. Assuming the sell
  * order fills, we take the profit from the spread. The process then repeats.
  * </p>
  * <p>
- * <p>
- * The algorithm does not factor in being outbid when placing buy orders, i.e. it does not cancel its current order
+ * This algorithm does consider being outbid when placing buy orders, i.e. it does not cancel its current order
  * and place a new order at a higher price; it simply holds until the current BID price falls again. Likewise, the
- * algorithm does not factor in being undercut when placing sell orders; it does not cancel the current order
- * and place a new order at a lower price.
+ * algorithm does consider being undercut when placing sell orders; it does not cancel the current order and place a
+ * new order at a lower price.
  * </p>
  * <p>
- * <p>
- * Chances are you will either get a stuck buy order if the market is going up, or a stuck sell order if the market is
- * going down. You could manually execute the trades on the exchanges and restart the bot to get going again... but a
- * much better solution would be to modify this algorithm to deal with it, i.e. cancelling your current buy order and
- * place a new order matching the best BID price, or cancelling your current sell order and placing a new order matching
- * the best ASK price. The {@link TradingApi} allows you to add this behaviour, but I've tried to keep things as simple
- * as possible in this example.
+ * Chances are you will either get a stuck 'buy' order if the market is going up, or a stuck 'sell' order if the market
+ * goes down. You could manually execute the trades on the exchanges and restart the bot to get going again... but a
+ * much better solution would be to modify this algorithm to deal with it: cancel your current 'buy' order and place a
+ * new order matching the current BID price, or cancel your current 'sell' order and place a new order matching the
+ * current ASK price. The {@link TradingApi} allows you to add this behaviour, but I've kept things simple in this
+ * sample strategy.
  * </p>
  * <p>
- * <p>
- * Remember to include the correct exchanges fees (both buy and sell) in your calculations else you'll end up bleeding
- * money/coins to the exchange.
+ * Remember to include the correct exchange fees (both buy and sell) in your buy/sell calculations, otherwise you'll
+ * end up bleeding fiat/crypto to the exchange...
  * </p>
  * <p>
- * <p>
- * The algorithm only manages 1 order at a time to keep the example simple.
+ * This algorithm only manages 1 order at a time to keep things simple.
  * </p>
  * <p>
- * <p>
- * You can pass configuration to your Strategy from the ./config/strategies.xml file - you access it from the
+ * You can pass configuration to your Strategy from the strategies.xml file - you access it from the
  * {@link #init(TradingApi, Market, StrategyConfig)} method via the StrategyConfig argument.
  * </p>
  * <p>
- * <p>
- * The Trading Engine will only send 1 thread through your strategy code at a time, so you do not have to code for
- * concurrency.
+ * The Trading Engine will only send 1 thread through your strategy code at a time - you do not have to code for concurrency.
  * </p>
- * <p>
  * <p>
  * This <a href="http://www.investopedia.com/articles/active-trading/101014/basics-algorithmic-trading-concepts-and-examples.asp">
- * site</a> might give you a few ideas.
+ * site</a> might give you a few ideas...
  * </p>
- * <p>
  * <p>
  * Good luck!
  * <p/>
