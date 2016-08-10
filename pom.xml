@@ -6,7 +6,7 @@
     <groupId>com.gazbert.bxbot</groupId>
     <artifactId>bxbot-core</artifactId>
     <packaging>jar</packaging>
-    <version>0.4-beta</version>
+    <version>0.4-beta.1</version>
     <name>BX-bot</name>
     <description>BX-bot is a simple Java algorithmic trading bot for trading Bitcoin on cryptocurrency exchanges.
     </description>

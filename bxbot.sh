@@ -21,7 +21,7 @@ LIB_DIR=./libs
 log4j2_config=./resources/log4j2.xml
 
 # The BX-bot core jar (Spring Boot app containing all the dependencies)
-bxbot_core=bxbot-core-0.4-beta.jar
+bxbot_core=bxbot-core-0.4-beta.1.jar
 
 # PID file for checking if bot is running
 PID_FILE=./.bxbot.pid
