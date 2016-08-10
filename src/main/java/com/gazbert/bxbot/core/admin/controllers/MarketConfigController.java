@@ -21,10 +21,10 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.core.admin;
+package com.gazbert.bxbot.core.admin.controllers;
 
 import com.gazbert.bxbot.core.config.market.MarketConfig;
-import com.gazbert.bxbot.core.services.MarketConfigService;
+import com.gazbert.bxbot.core.admin.services.MarketConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;

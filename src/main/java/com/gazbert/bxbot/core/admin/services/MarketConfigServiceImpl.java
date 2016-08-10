@@ -21,7 +21,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.core.services;
+package com.gazbert.bxbot.core.admin.services;
 
 import com.gazbert.bxbot.core.config.market.MarketConfig;
 import org.springframework.stereotype.Service;

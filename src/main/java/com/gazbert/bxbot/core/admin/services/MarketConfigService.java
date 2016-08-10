@@ -20,9 +20,12 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.gazbert.bxbot.core.services;
 
-import com.gazbert.bxbot.core.config.exchange.ExchangeConfig;
+package com.gazbert.bxbot.core.admin.services;
+
+import com.gazbert.bxbot.core.config.market.MarketConfig;
+
+import java.util.List;
 
 /**
  * TODO Work in progress...
@@ -30,9 +33,19 @@ import com.gazbert.bxbot.core.config.exchange.ExchangeConfig;
  * @author gazbert
  * @since 20/07/2016
  */
-public interface ExchangeConfigService {
+public interface MarketConfigService {
 
-        ExchangeConfig getConfig();
+        MarketConfig findById(String id);
 
-        ExchangeConfig updateConfig(ExchangeConfig config);
+        MarketConfig findByName(String name);
+
+        MarketConfig saveMarket(MarketConfig user);
+
+        MarketConfig updateMarket(MarketConfig user);
+
+        MarketConfig deleteMarketById(String id);
+
+        List<MarketConfig> findAllMarkets();
+
+        List<MarketConfig> deleteAllMarkets();
 }

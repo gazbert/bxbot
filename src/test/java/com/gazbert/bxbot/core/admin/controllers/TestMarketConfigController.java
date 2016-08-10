@@ -21,13 +21,10 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.core.admin;
+package com.gazbert.bxbot.core.admin.controllers;
 
 import com.gazbert.bxbot.core.BXBot;
-import com.gazbert.bxbot.core.config.exchange.AuthenticationConfig;
-import com.gazbert.bxbot.core.config.exchange.ExchangeConfig;
-import com.gazbert.bxbot.core.config.exchange.NetworkConfig;
-import com.gazbert.bxbot.core.config.exchange.OtherConfig;
+import com.gazbert.bxbot.core.config.market.MarketConfig;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -48,16 +45,15 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
 /**
  * TODO Work in progress...
  *
- * Tests the Exchange config controller behaviour.
+ * Tests the Market config controller behaviour.
  *
  * @author gazbert
  * @since 20/07/2016
@@ -65,10 +61,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = BXBot.class)
 @WebAppConfiguration
-public class TestExchangeConfigController {
+public class TestMarketConfigController {
 
     private static final MediaType CONTENT_TYPE = new MediaType(MediaType.APPLICATION_JSON.getType(),
-            MediaType.APPLICATION_JSON.getSubtype(), Charset.forName("utf8"));
+            MediaType.APPLICATION_JSON.getSubtype(),
+            Charset.forName("utf8"));
 
     private HttpMessageConverter mappingJackson2HttpMessageConverter;
     private MockMvc mockMvc;
@@ -92,36 +89,32 @@ public class TestExchangeConfigController {
     }
 
     @Test
-    public void testGetExchangeConfig() throws Exception {
+    public void testGetMarketConfig() throws Exception {
 
-        this.mockMvc.perform(get("/api/config/exchange"))
+        final MarketConfig marketConfig = buildMarketConfig();
+
+        this.mockMvc.perform(get("/api/config/market/" + marketConfig.getId()))
                 .andDo(print())
                 .andExpect(status().isOk())
 
-                .andExpect(jsonPath("$.authenticationConfig.items.api-key").value("apiKey--123"))
-                .andExpect(jsonPath("$.authenticationConfig.items.secret").value("my-secret-KEY"))
-
-                .andExpect(jsonPath("$.networkConfig.connectionTimeout").value(30))
-                .andExpect(jsonPath("$.networkConfig.nonFatalErrorCodes[0]").value(502))
-                .andExpect(jsonPath("$.networkConfig.nonFatalErrorCodes[1]").value(503))
-                .andExpect(jsonPath("$.networkConfig.nonFatalErrorCodes[2]").value(504))
-                .andExpect(jsonPath("$.networkConfig.nonFatalErrorMessages[0]").value("Connection refused"))
-                .andExpect(jsonPath("$.networkConfig.nonFatalErrorMessages[1]").value("Connection reset"))
-                .andExpect(jsonPath("$.networkConfig.nonFatalErrorMessages[2]").value("Remote host closed connection during handshake"))
-
-                .andExpect(jsonPath("$.otherConfig.items.buy-fee").value("0.20"))
-                .andExpect(jsonPath("$.otherConfig.items.sell-fee").value("0.25")
+                .andExpect(jsonPath("$.label").value(marketConfig.getLabel()))
+                .andExpect(jsonPath("$.id").value(marketConfig.getId()))
+                .andExpect(jsonPath("$.baseCurrency").value(marketConfig.getBaseCurrency()))
+                .andExpect(jsonPath("$.counterCurrency").value(marketConfig.getCounterCurrency()))
+                .andExpect(jsonPath("$.enabled").value(marketConfig.isEnabled()))
+                .andExpect(jsonPath("$.tradingStrategy").value(marketConfig.getTradingStrategy())
 
                 );
     }
 
     @Test
-    public void testUpdateExchangeConfig() throws Exception {
+    public void testUpdateMarketConfig() throws Exception {
 
-        final String exchangeConfigJson = jsonify(buildExchangeConfig());
-        this.mockMvc.perform(put("/api/config/exchange")
+        final MarketConfig marketConfig = buildMarketConfig();
+        final String marketConfigJson = jsonify(marketConfig);
+        this.mockMvc.perform(put("/api/config/market/" + marketConfig.getId())
                 .contentType(CONTENT_TYPE)
-                .content(exchangeConfigJson))
+                .content(marketConfigJson))
                 .andExpect(status().isOk());
     }
 
@@ -135,27 +128,8 @@ public class TestExchangeConfigController {
         return mockHttpOutputMessage.getBodyAsString();
     }
 
-    private static ExchangeConfig buildExchangeConfig() {
-
-        final AuthenticationConfig authenticationConfig = new AuthenticationConfig();
-        authenticationConfig.getItems().put("api-key", "apiKey--123");
-        authenticationConfig.getItems().put("secret", "my-secret-key");
-
-        final NetworkConfig networkConfig = new NetworkConfig();
-        networkConfig.setConnectionTimeout(30);
-        networkConfig.setNonFatalErrorCodes(Arrays.asList(502, 503, 504));
-        networkConfig.setNonFatalErrorMessages(Arrays.asList(
-                "Connection refused", "Connection reset", "Remote host closed connection during handshake"));
-
-        final OtherConfig otherConfig = new OtherConfig();
-        otherConfig.getItems().put("buy-fee", "0.20");
-        otherConfig.getItems().put("sell-fee", "0.25");
-
-        final ExchangeConfig exchangeConfig = new ExchangeConfig();
-        exchangeConfig.setAuthenticationConfig(authenticationConfig);
-        exchangeConfig.setNetworkConfig(networkConfig);
-        exchangeConfig.setOtherConfig(otherConfig);
-
-        return exchangeConfig;
+    private static MarketConfig buildMarketConfig() {
+        final MarketConfig marketConfig = new MarketConfig("BTC/USD", "btc_usd", "BTC", "USD", true, "scalper-strategy");
+        return marketConfig;
     }
 }

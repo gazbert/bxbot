@@ -21,10 +21,13 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.core.admin;
+package com.gazbert.bxbot.core.admin.controllers;
 
 import com.gazbert.bxbot.core.BXBot;
-import com.gazbert.bxbot.core.config.market.MarketConfig;
+import com.gazbert.bxbot.core.config.exchange.AuthenticationConfig;
+import com.gazbert.bxbot.core.config.exchange.ExchangeConfig;
+import com.gazbert.bxbot.core.config.exchange.NetworkConfig;
+import com.gazbert.bxbot.core.config.exchange.OtherConfig;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -45,15 +48,16 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
 /**
  * TODO Work in progress...
  *
- * Tests the Market config controller behaviour.
+ * Tests the Exchange config controller behaviour.
  *
  * @author gazbert
  * @since 20/07/2016
@@ -61,11 +65,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = BXBot.class)
 @WebAppConfiguration
-public class TestMarketConfigController {
+public class TestExchangeConfigController {
 
     private static final MediaType CONTENT_TYPE = new MediaType(MediaType.APPLICATION_JSON.getType(),
-            MediaType.APPLICATION_JSON.getSubtype(),
-            Charset.forName("utf8"));
+            MediaType.APPLICATION_JSON.getSubtype(), Charset.forName("utf8"));
 
     private HttpMessageConverter mappingJackson2HttpMessageConverter;
     private MockMvc mockMvc;
@@ -89,32 +92,36 @@ public class TestMarketConfigController {
     }
 
     @Test
-    public void testGetMarketConfig() throws Exception {
+    public void testGetExchangeConfig() throws Exception {
 
-        final MarketConfig marketConfig = buildMarketConfig();
-
-        this.mockMvc.perform(get("/api/config/market/" + marketConfig.getId()))
+        this.mockMvc.perform(get("/api/config/exchange"))
                 .andDo(print())
                 .andExpect(status().isOk())
 
-                .andExpect(jsonPath("$.label").value(marketConfig.getLabel()))
-                .andExpect(jsonPath("$.id").value(marketConfig.getId()))
-                .andExpect(jsonPath("$.baseCurrency").value(marketConfig.getBaseCurrency()))
-                .andExpect(jsonPath("$.counterCurrency").value(marketConfig.getCounterCurrency()))
-                .andExpect(jsonPath("$.enabled").value(marketConfig.isEnabled()))
-                .andExpect(jsonPath("$.tradingStrategy").value(marketConfig.getTradingStrategy())
+                .andExpect(jsonPath("$.authenticationConfig.items.api-key").value("apiKey--123"))
+                .andExpect(jsonPath("$.authenticationConfig.items.secret").value("my-secret-KEY"))
+
+                .andExpect(jsonPath("$.networkConfig.connectionTimeout").value(30))
+                .andExpect(jsonPath("$.networkConfig.nonFatalErrorCodes[0]").value(502))
+                .andExpect(jsonPath("$.networkConfig.nonFatalErrorCodes[1]").value(503))
+                .andExpect(jsonPath("$.networkConfig.nonFatalErrorCodes[2]").value(504))
+                .andExpect(jsonPath("$.networkConfig.nonFatalErrorMessages[0]").value("Connection refused"))
+                .andExpect(jsonPath("$.networkConfig.nonFatalErrorMessages[1]").value("Connection reset"))
+                .andExpect(jsonPath("$.networkConfig.nonFatalErrorMessages[2]").value("Remote host closed connection during handshake"))
+
+                .andExpect(jsonPath("$.otherConfig.items.buy-fee").value("0.20"))
+                .andExpect(jsonPath("$.otherConfig.items.sell-fee").value("0.25")
 
                 );
     }
 
     @Test
-    public void testUpdateMarketConfig() throws Exception {
+    public void testUpdateExchangeConfig() throws Exception {
 
-        final MarketConfig marketConfig = buildMarketConfig();
-        final String marketConfigJson = jsonify(marketConfig);
-        this.mockMvc.perform(put("/api/config/market/" + marketConfig.getId())
+        final String exchangeConfigJson = jsonify(buildExchangeConfig());
+        this.mockMvc.perform(put("/api/config/exchange")
                 .contentType(CONTENT_TYPE)
-                .content(marketConfigJson))
+                .content(exchangeConfigJson))
                 .andExpect(status().isOk());
     }
 
@@ -128,8 +135,27 @@ public class TestMarketConfigController {
         return mockHttpOutputMessage.getBodyAsString();
     }
 
-    private static MarketConfig buildMarketConfig() {
-        final MarketConfig marketConfig = new MarketConfig("BTC/USD", "btc_usd", "BTC", "USD", true, "scalper-strategy");
-        return marketConfig;
+    private static ExchangeConfig buildExchangeConfig() {
+
+        final AuthenticationConfig authenticationConfig = new AuthenticationConfig();
+        authenticationConfig.getItems().put("api-key", "apiKey--123");
+        authenticationConfig.getItems().put("secret", "my-secret-key");
+
+        final NetworkConfig networkConfig = new NetworkConfig();
+        networkConfig.setConnectionTimeout(30);
+        networkConfig.setNonFatalErrorCodes(Arrays.asList(502, 503, 504));
+        networkConfig.setNonFatalErrorMessages(Arrays.asList(
+                "Connection refused", "Connection reset", "Remote host closed connection during handshake"));
+
+        final OtherConfig otherConfig = new OtherConfig();
+        otherConfig.getItems().put("buy-fee", "0.20");
+        otherConfig.getItems().put("sell-fee", "0.25");
+
+        final ExchangeConfig exchangeConfig = new ExchangeConfig();
+        exchangeConfig.setAuthenticationConfig(authenticationConfig);
+        exchangeConfig.setNetworkConfig(networkConfig);
+        exchangeConfig.setOtherConfig(otherConfig);
+
+        return exchangeConfig;
     }
 }
