@@ -78,7 +78,7 @@ The bot provides a simple plugin framework for:
 * Markets to trade on.
 * Trading Strategies to execute.
 
-It uses XML configuration files. These live in the [`config`](https://github.com/gazbert/BX-bot/tree/master/config) folder.
+It uses XML configuration files. These live in the [`config`](./config) folder.
 
 Config changes are only applied at startup; they are _not_ hot.
 
