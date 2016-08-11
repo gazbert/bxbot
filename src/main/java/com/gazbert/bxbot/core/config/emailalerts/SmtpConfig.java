@@ -33,7 +33,7 @@ import com.google.common.base.MoreObjects;
  * @author gazbert
  * @since 20/07/2016
  */
-class SmtpConfig {
+public class SmtpConfig {
 
     private String host;
     private int tlsPort;

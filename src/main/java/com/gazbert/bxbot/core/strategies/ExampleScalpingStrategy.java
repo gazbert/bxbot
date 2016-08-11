@@ -150,7 +150,6 @@ public class ExampleScalpingStrategy implements TradingStrategy {
      * This is the main execution method of the Trading Strategy. It is where your algorithm lives.
      * </p>
      * <p>
-     * <p>
      * It is called by the Trading Engine during each trade cycle, e.g. every 60s. The trade cycle is configured in
      * the .config/engine.xml file.
      * </p>
@@ -232,7 +231,7 @@ public class ExampleScalpingStrategy implements TradingStrategy {
     }
 
     /**
-     * Algo for executing when last order we none. This is called when the Trading Strategy is invoked for the first time.
+     * Algo for executing when the Trading Strategy is invoked for the first time.
      * We start off with a buy order at current BID price.
      *
      * @param currentBidPrice the current market BID price.
@@ -283,7 +282,6 @@ public class ExampleScalpingStrategy implements TradingStrategy {
      * <p>
      * Algo for executing when last order we placed on the exchanges was a BUY.
      * </p>
-     * <p>
      * <p>
      * If last buy order filled, we try and sell at a profit.
      * </p>
@@ -391,7 +389,6 @@ public class ExampleScalpingStrategy implements TradingStrategy {
      * <p>
      * Algo for executing when last order we placed on the exchange was a SELL.
      * </p>
-     * <p>
      * <p>
      * If last sell order filled, we send a new buy order to the exchange.
      * </p>
@@ -538,7 +535,6 @@ public class ExampleScalpingStrategy implements TradingStrategy {
      * <p>
      * Models the state of an Order we have placed on the exchange.
      * </p>
-     * <p>
      * <p>
      * Typically, you would maintain order state in a database or use some other persistent datasource to recover from
      * restarts and for audit purposes. In this example, we are storing the state in memory to keep it simple.

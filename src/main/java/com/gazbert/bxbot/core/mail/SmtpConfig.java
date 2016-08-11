@@ -35,8 +35,8 @@ public final class SmtpConfig {
     private String fromAddress;
     private String toAddress;
 
-    SmtpConfig(String smtpHost, int smtpTlsPort, String accountUsername, String accountPassword,
-               String fromAddress, String toAddress) {
+    public SmtpConfig(String smtpHost, int smtpTlsPort, String accountUsername, String accountPassword,
+                      String fromAddress, String toAddress) {
 
         this.smtpHost = smtpHost;
         this.smtpTlsPort = smtpTlsPort;
@@ -46,27 +46,27 @@ public final class SmtpConfig {
         this.toAddress = toAddress;
     }
 
-    String getSmtpHost() {
+    public String getSmtpHost() {
         return smtpHost;
     }
 
-    int getSmtpTlsPort() {
+    public int getSmtpTlsPort() {
         return smtpTlsPort;
     }
 
-    String getAccountUsername() {
+    public String getAccountUsername() {
         return accountUsername;
     }
 
-    String getAccountPassword() {
+    public String getAccountPassword() {
         return accountPassword;
     }
 
-    String getFromAddress() {
+    public String getFromAddress() {
         return fromAddress;
     }
 
-    String getToAddress() {
+    public String getToAddress() {
         return toAddress;
     }
 }
