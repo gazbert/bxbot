@@ -67,7 +67,7 @@ but you might not have a working bot!
 Issues and new features will be managed using the project [Issue Tracker](https://github.com/gazbert/BX-bot/issues) -
 submit bugs here.
  
-You are welcome to take on new features or fix bugs!
+You are welcome to take on new features or fix bugs! See the [CONTRIBUTING.md](CONTRIBUTING.md) for more details.
 
 ## User Guide
 

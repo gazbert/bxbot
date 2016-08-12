@@ -20,6 +20,10 @@
         </license>
     </licenses>
 
+    <scm>
+        <url>https://github.com/gazbert/BX-bot</url>
+    </scm>
+
     <developers>
         <developer>
             <id>gazbert</id>
