@@ -23,7 +23,7 @@
 
 package com.gazbert.bxbot.core.admin.services;
 
-import com.gazbert.bxbot.core.config.market.MarketConfig;
+import com.gazbert.bxbot.core.config.strategy.StrategyConfig;
 
 import java.util.List;
 
@@ -31,21 +31,21 @@ import java.util.List;
  * TODO Work in progress...
  *
  * @author gazbert
- * @since 20/07/2016
+ * @since 12/08/2016
  */
-public interface MarketConfigService {
+public interface StrategyConfigService {
 
-        MarketConfig findById(String id);
+    StrategyConfig findById(String id);
 
-        MarketConfig findByName(String name);
+    StrategyConfig findByName(String name);
 
-        MarketConfig saveMarket(MarketConfig config);
+    StrategyConfig saveStrategy(StrategyConfig config);
 
-        MarketConfig updateMarket(MarketConfig config);
+    StrategyConfig updateStrategy(StrategyConfig config);
 
-        MarketConfig deleteMarketById(String id);
+    StrategyConfig deleteStrategyById(String id);
 
-        List<MarketConfig> findAllMarkets();
+    List<StrategyConfig> findAllStrategies();
 
-        List<MarketConfig> deleteAllMarkets();
+    List<StrategyConfig> deleteAllStrategies();
 }

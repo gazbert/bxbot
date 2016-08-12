@@ -23,7 +23,8 @@
 
 package com.gazbert.bxbot.core.admin.services;
 
-import com.gazbert.bxbot.core.config.market.MarketConfig;
+import com.gazbert.bxbot.core.config.strategy.StrategyConfig;
+import com.gazbert.bxbot.core.config.strategy.StrategyConfigItems;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,52 +35,58 @@ import java.util.List;
  * TODO Work in progress...
  *
  * @author gazbert
- * @since 20/07/2016
+ * @since 12/08/2016
  */
-@Service("marketConfigService")
+@Service("strategyConfigService")
 @Transactional
-public class MarketConfigServiceImpl implements MarketConfigService {
+public class StrategyConfigServiceImpl implements StrategyConfigService {
 
     @Override
-    public MarketConfig findById(String id) {
-        return getCannedMarketConfig();
+    public StrategyConfig findById(String id) {
+        return getCannedStrategyConfig();
     }
 
     @Override
-    public MarketConfig findByName(String name) {
-        return getCannedMarketConfig();
+    public StrategyConfig findByName(String name) {
+        return getCannedStrategyConfig();
     }
 
     @Override
-    public MarketConfig saveMarket(MarketConfig config) {
-        return getCannedMarketConfig();
+    public StrategyConfig saveStrategy(StrategyConfig config) {
+        return getCannedStrategyConfig();
     }
 
     @Override
-    public MarketConfig updateMarket(MarketConfig config) {
-        return getCannedMarketConfig();
+    public StrategyConfig updateStrategy(StrategyConfig config) {
+        return getCannedStrategyConfig();
     }
 
     @Override
-    public MarketConfig deleteMarketById(String id) {
-        return getCannedMarketConfig();
+    public StrategyConfig deleteStrategyById(String id) {
+        return getCannedStrategyConfig();
     }
 
     @Override
-    public List<MarketConfig> findAllMarkets() {
-        return Arrays.asList(getCannedMarketConfig());
+    public List<StrategyConfig> findAllStrategies() {
+        return Arrays.asList(getCannedStrategyConfig());
     }
 
     @Override
-    public List<MarketConfig> deleteAllMarkets() {
+    public List<StrategyConfig> deleteAllStrategies() {
         return null;
     }
 
     /*
      * TODO Hard code these for now - will come from Repository later...
      */
-    private static MarketConfig getCannedMarketConfig() {
-        final MarketConfig marketConfig = new MarketConfig("BTC/USD", "btc_usd", "BTC", "USD", true, "scalper-strategy");
-        return marketConfig;
+    private static StrategyConfig getCannedStrategyConfig() {
+
+        final StrategyConfigItems configItems = new StrategyConfigItems();
+        configItems.addConfigItem("buy-amount", "123.09");
+        configItems.addConfigItem("long-ema-interval", "20");
+
+        final StrategyConfig config = new StrategyConfig("3-way-ema", "3 Way EMA Crossover Algo",
+                "A lovely description...", "com.gazbert.bxbot.algos.nova.ThreeWayEma", configItems);
+        return config;
     }
 }

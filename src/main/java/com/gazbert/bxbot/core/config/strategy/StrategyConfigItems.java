@@ -26,8 +26,8 @@ package com.gazbert.bxbot.core.config.strategy;
 import com.gazbert.bxbot.core.api.strategy.StrategyConfig;
 import com.google.common.base.MoreObjects;
 
-import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -41,31 +41,42 @@ import java.util.Set;
  */
 public final class StrategyConfigItems implements StrategyConfig {
 
-    private Map<String, String> configItems = new HashMap<>();
+    private Map<String, String> items = new HashMap<>();
 
     @Override
     public String getConfigItem(String key) {
-        return configItems.get(key);
+        return items.get(key);
     }
 
     @Override
     public int getNumberOfConfigItems() {
-        return configItems.size();
+        return items.size();
     }
 
     @Override
     public Set<String> getConfigItemKeys() {
-        return Collections.unmodifiableSet(configItems.keySet());
+
+        // return HashSet else Jackson barfs with: handleHttpMessageNotReadable() - Failed to read HTTP message:
+        // (was java.lang.UnsupportedOperationException) java.util.LinkedKeySet[2])
+        return new HashSet<>(items.keySet());
     }
 
     public void addConfigItem(String key, String value) {
-        configItems.put(key, value);
+        items.put(key, value);
+    }
+
+    public Map<String, String> getItems() {
+        return items;
+    }
+
+    public void setItems(Map<String, String> items) {
+        this.items = items;
     }
 
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("configItems", configItems)
+                .add("items", items)
                 .toString();
     }
 }

@@ -25,17 +25,20 @@ If you are unfamiliar, please review that link before proceeding.
 To work on something, whether a new feature or a bug fix:
 
   1. [Fork](https://help.github.com/articles/fork-a-repo/) the repo.
-  2. Clone it locally
+  2. Clone it locally:
+  
   ```
   git clone https://github.com/<your-id>/BX-bot.git
   ```
-  3. Add the upstream repository as a remote
+  3. Add the upstream repository as a remote:
+  
   ```
   git remote add upstream https://github.com/gazbert/BX-bot.git
   ```
   4. Create a descriptively-named branch off of your cloned fork - full details [here](https://git-scm.com/docs/git-checkout).
+  
   ```
-  cd BX-bot
+  cd BX-bot;
   git checkout -b <issue-xxx> <feature-name>
   ```
   5. Commit your code
