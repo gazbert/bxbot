@@ -2,7 +2,7 @@
 BX-Bot is released under the [MIT](http://opensource.org/licenses/MIT) license. 
 If you would like to contribute something, or simply want to hack the code, this document should help you get started.
  
-## Reporting Bugs and Suggesting Enhancements
+## Reporting bugs and suggesting enhancements
 If you find a bug, please submit an [issue](https://github.com/gazbert/BX-bot/issues). Try to provide enough information
 for someone else to reproduce the issue. Equally, submit an issue if you want to create a new feature or enhance an
 existing one - refactoring, improving Javadoc, and boosting test coverage is always welcome!
@@ -10,7 +10,7 @@ existing one - refactoring, improving Javadoc, and boosting test coverage is alw
 One of the project's maintainers should respond to your issue within 48 hours.
 If not, please bump the issue and request that it be reviewed.
 
-## Contributor Workflow
+## Contributor workflow
 
 Review the [issues list](https://github.com/gazbert/BX-bot/issues) and find something that interests you. 
 It is wise to start with something relatively straight forward and achievable. Usually there will be a comment in the 
@@ -71,7 +71,7 @@ To work on something, whether a new feature or a bug fix:
 
 After your Pull Request (PR) has been reviewed and signed off, a maintainer will merge it into the master branch.
 
-### Code Conventions and Housekeeping
+### Code conventions and housekeeping
 
 These convention should (ideally!) be followed:
 
@@ -84,7 +84,7 @@ These convention should (ideally!) be followed:
 * In general commits should be atomic and diffs should be easy to read. For this reason do not mix any formatting fixes 
   or code moves with actual code changes.
 
-### Squashing Commits
+### Squashing commits
 
 If your pull request is accepted for merging, you may be asked by a maintainer to squash and or 
 [rebase](https://git-scm.com/docs/git-rebase) your commits before it will be merged. 

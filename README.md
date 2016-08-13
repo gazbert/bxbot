@@ -67,7 +67,7 @@ be deployable.
 Issues and new features will be managed using the project [Issue Tracker](https://github.com/gazbert/BX-bot/issues) -
 submit bugs here.
  
-You are welcome to take on new features or fix bugs! See the [CONTRIBUTING.md](CONTRIBUTING.md) for more details.
+You are welcome to take on new features or fix bugs! See [here](CONTRIBUTING.md) for how to get involved.
 
 ## User Guide
 
