@@ -43,11 +43,9 @@ To work on something, whether a new feature or a bug fix:
   cd BX-bot
   git checkout -b my-new-feature-or-bugfix-branch
   ```
-  5. Commit your code
+  5. Write some code!
 
-  Write some code! Commit to that branch locally, and regularly push your work to the same branch on the server.
-
-  6. Commit messages
+  Commit to that branch locally, and regularly push your work to the same branch on the server.
 
   Commit messages must have a short description no longer than 50 characters followed by a blank line and a longer,
   more descriptive message that includes reference to issue(s) being addressed so that they will be automatically closed
@@ -56,15 +54,15 @@ To work on something, whether a new feature or a bug fix:
   
   When writing a commit message please follow [these conventions](http://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html).
 
-  7. Pull Request (PR)
+  6. Pull Request (PR)
 
    Make sure your [Travis](https://travis-ci.org/) Continuous Integration (CI) build is green and create a 
-   [Pull Request](https://help.github.com/articles/using-pull-requests/) when you ready to submit your changes.
+   [Pull Request](https://help.github.com/articles/using-pull-requests/) when you are ready to submit your changes.
 
    _NOTE: If your PR does not merge cleanly, use ```git rebase master``` in your feature branch to update your pull 
    request rather than using ```git merge master```._
 
-  10. Any code changes that affect documentation (e.g. README.MD) should be accompanied by corresponding changes
+  7. Any code changes that affect documentation (e.g. README.MD) should be accompanied by corresponding changes
    (or additions) to the documentation and tests. This will ensure that if the merged PR is reversed, all traces of the
     change will be reversed as well.
 
