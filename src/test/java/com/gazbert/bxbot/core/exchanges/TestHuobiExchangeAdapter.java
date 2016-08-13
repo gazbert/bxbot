@@ -23,17 +23,8 @@
 
 package com.gazbert.bxbot.core.exchanges;
 
-import com.gazbert.bxbot.core.api.exchange.AuthenticationConfig;
-import com.gazbert.bxbot.core.api.exchange.ExchangeAdapter;
-import com.gazbert.bxbot.core.api.exchange.ExchangeConfig;
-import com.gazbert.bxbot.core.api.exchange.NetworkConfig;
-import com.gazbert.bxbot.core.api.exchange.OtherConfig;
-import com.gazbert.bxbot.core.api.trading.BalanceInfo;
-import com.gazbert.bxbot.core.api.trading.ExchangeNetworkException;
-import com.gazbert.bxbot.core.api.trading.MarketOrderBook;
-import com.gazbert.bxbot.core.api.trading.OpenOrder;
-import com.gazbert.bxbot.core.api.trading.OrderType;
-import com.gazbert.bxbot.core.api.trading.TradingApiException;
+import com.gazbert.bxbot.core.api.exchange.*;
+import com.gazbert.bxbot.core.api.trading.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -59,14 +50,14 @@ import static org.junit.Assert.*;
  * <p>
  * Tests the behaviour of the Huobi Exchange Adapter.
  * </p>
- *
+ * <p>
  * <p>
  * Coverage could be better: it does not include calling the
  * {@link HuobiExchangeAdapter#sendPublicRequestToExchange(String)} and
  * {@link HuobiExchangeAdapter#sendAuthenticatedRequestToExchange(String, String, Map)} methods; the code in these
  * methods is a bloody nightmare to test!
  * </p>
- *
+ * <p>
  * TODO Unit test {@link HuobiExchangeAdapter#sendPublicRequestToExchange(String)} method.
  * TODO Unit test {@link HuobiExchangeAdapter#sendAuthenticatedRequestToExchange(String, String, Map)} method.
  *
@@ -206,7 +197,7 @@ public class TestHuobiExchangeAdapter {
         expect(requestParamMap.put("amount", new DecimalFormat("#.########").format(SELL_ORDER_QUANTITY))).andStubReturn(null);
 
         // Partial mock so we do not send stuff down the wire
-        final HuobiExchangeAdapter exchangeAdapter =  PowerMock.createPartialMockAndInvokeDefaultConstructor(
+        final HuobiExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
                 HuobiExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD,
                 MOCKED_GET_REQUEST_PARAM_MAP_METHOD);
 
@@ -223,7 +214,7 @@ public class TestHuobiExchangeAdapter {
         PowerMock.verifyAll();
     }
 
-    @Test (expected = TradingApiException.class)
+    @Test(expected = TradingApiException.class)
     public void testCreateOrderExchangeErrorResponse() throws Exception {
 
         // Load the canned response from the exchange
@@ -244,7 +235,7 @@ public class TestHuobiExchangeAdapter {
         PowerMock.verifyAll();
     }
 
-    @Test (expected = ExchangeNetworkException.class )
+    @Test(expected = ExchangeNetworkException.class)
     public void testCreateOrderHandlesExchangeNetworkException() throws Exception {
 
         // Partial mock so we do not send stuff down the wire
@@ -263,7 +254,7 @@ public class TestHuobiExchangeAdapter {
         PowerMock.verifyAll();
     }
 
-    @Test (expected = TradingApiException.class)
+    @Test(expected = TradingApiException.class)
     public void testCreateOrderHandlesUnexpectedException() throws Exception {
 
         // Partial mock so we do not send stuff down the wire
@@ -300,7 +291,7 @@ public class TestHuobiExchangeAdapter {
         expect(requestParamMap.put("id", ORDER_ID_TO_CANCEL)).andStubReturn(null);
 
         // Partial mock so we do not send stuff down the wire
-        final HuobiExchangeAdapter exchangeAdapter =  PowerMock.createPartialMockAndInvokeDefaultConstructor(
+        final HuobiExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
                 HuobiExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD,
                 MOCKED_GET_REQUEST_PARAM_MAP_METHOD);
 
@@ -338,7 +329,7 @@ public class TestHuobiExchangeAdapter {
         PowerMock.verifyAll();
     }
 
-    @Test (expected = ExchangeNetworkException.class )
+    @Test(expected = ExchangeNetworkException.class)
     public void testCancelOrderHandlesExchangeNetworkException() throws Exception {
 
         // Partial mock so we do not send stuff down the wire
@@ -356,7 +347,7 @@ public class TestHuobiExchangeAdapter {
         PowerMock.verifyAll();
     }
 
-    @Test (expected = TradingApiException.class)
+    @Test(expected = TradingApiException.class)
     public void testCancelOrderHandlesUnexpectedException() throws Exception {
 
         // Partial mock so we do not send stuff down the wire
@@ -417,7 +408,7 @@ public class TestHuobiExchangeAdapter {
         PowerMock.verifyAll();
     }
 
-    @Test (expected = TradingApiException.class)
+    @Test(expected = TradingApiException.class)
     public void testGettingYourOpenOrdersExchangeErrorResponse() throws Exception {
 
         // Load the canned response from the exchange
@@ -438,7 +429,7 @@ public class TestHuobiExchangeAdapter {
         PowerMock.verifyAll();
     }
 
-    @Test (expected = ExchangeNetworkException.class )
+    @Test(expected = ExchangeNetworkException.class)
     public void testGettingYourOpenOrdersHandlesExchangeNetworkException() throws Exception {
 
         // Partial mock so we do not send stuff down the wire
@@ -455,7 +446,7 @@ public class TestHuobiExchangeAdapter {
         PowerMock.verifyAll();
     }
 
-    @Test (expected = TradingApiException.class)
+    @Test(expected = TradingApiException.class)
     public void testGettingYourOpenOrdersHandlesUnexpectedException() throws Exception {
 
         // Partial mock so we do not send stuff down the wire
@@ -522,7 +513,7 @@ public class TestHuobiExchangeAdapter {
         PowerMock.verifyAll();
     }
 
-    @Test (expected = TradingApiException.class)
+    @Test(expected = TradingApiException.class)
     public void testGettingMarketOrdersForInvalidMarket() throws Exception {
 
         PowerMock.replayAll();
@@ -534,7 +525,7 @@ public class TestHuobiExchangeAdapter {
         PowerMock.verifyAll();
     }
 
-    @Test (expected = ExchangeNetworkException.class )
+    @Test(expected = ExchangeNetworkException.class)
     public void testGettingMarketOrdersHandlesExchangeNetworkException() throws Exception {
 
         // Partial mock so we do not send stuff down the wire
@@ -551,7 +542,7 @@ public class TestHuobiExchangeAdapter {
         PowerMock.verifyAll();
     }
 
-    @Test (expected = TradingApiException.class)
+    @Test(expected = TradingApiException.class)
     public void testGettingMarketOrdersHandlesUnexpectedException() throws Exception {
 
         // Partial mock so we do not send stuff down the wire
@@ -594,7 +585,7 @@ public class TestHuobiExchangeAdapter {
         PowerMock.verifyAll();
     }
 
-    @Test (expected = TradingApiException.class)
+    @Test(expected = TradingApiException.class)
     public void testGettingLatestMarketPriceForInvalidMarket() throws Exception {
 
         PowerMock.replayAll();
@@ -606,7 +597,7 @@ public class TestHuobiExchangeAdapter {
         PowerMock.verifyAll();
     }
 
-    @Test (expected = ExchangeNetworkException.class )
+    @Test(expected = ExchangeNetworkException.class)
     public void testGettingLatestMarketPriceHandlesExchangeNetworkException() throws Exception {
 
         // Partial mock so we do not send stuff down the wire
@@ -623,7 +614,7 @@ public class TestHuobiExchangeAdapter {
         PowerMock.verifyAll();
     }
 
-    @Test (expected = TradingApiException.class)
+    @Test(expected = TradingApiException.class)
     public void testGettingLatestMarketPriceHandlesUnexpectedException() throws Exception {
 
         // Partial mock so we do not send stuff down the wire
@@ -673,7 +664,7 @@ public class TestHuobiExchangeAdapter {
         PowerMock.verifyAll();
     }
 
-    @Test (expected = TradingApiException.class)
+    @Test(expected = TradingApiException.class)
     public void testGettingBalanceInfoExchangeErrorResponse() throws Exception {
 
         // Load the canned response from the exchange
@@ -695,7 +686,7 @@ public class TestHuobiExchangeAdapter {
         PowerMock.verifyAll();
     }
 
-    @Test (expected = ExchangeNetworkException.class )
+    @Test(expected = ExchangeNetworkException.class)
     public void testGettingBalanceInfoHandlesExchangeNetworkException() throws Exception {
 
         // Partial mock so we do not send stuff down the wire
@@ -716,7 +707,7 @@ public class TestHuobiExchangeAdapter {
         PowerMock.verifyAll();
     }
 
-    @Test (expected = TradingApiException.class)
+    @Test(expected = TradingApiException.class)
     public void testGettingBalanceInfoHandlesUnexpectedException() throws Exception {
 
         // Partial mock so we do not send stuff down the wire
@@ -794,7 +785,7 @@ public class TestHuobiExchangeAdapter {
         PowerMock.verifyAll();
     }
 
-    @Test (expected = IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testExchangeAdapterThrowsExceptionIfPublicKeyConfigIsMissing() throws Exception {
 
         PowerMock.reset(authenticationConfig);
@@ -807,7 +798,7 @@ public class TestHuobiExchangeAdapter {
         PowerMock.verifyAll();
     }
 
-    @Test (expected = IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testExchangeAdapterThrowsExceptionIfSecretConfigIsMissing() throws Exception {
 
         PowerMock.reset(authenticationConfig);
@@ -820,7 +811,7 @@ public class TestHuobiExchangeAdapter {
         PowerMock.verifyAll();
     }
 
-    @Test (expected = IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testExchangeAdapterThrowsExceptionIfTimeoutConfigIsMissing() throws Exception {
 
         PowerMock.reset(networkConfig);
@@ -832,7 +823,7 @@ public class TestHuobiExchangeAdapter {
         PowerMock.verifyAll();
     }
 
-    @Test (expected = IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testExchangeAdapterThrowsExceptionIfAccountInfoMarketConfigIsMissing() throws Exception {
 
         PowerMock.reset(otherConfig);
@@ -846,7 +837,7 @@ public class TestHuobiExchangeAdapter {
         PowerMock.verifyAll();
     }
 
-    @Test (expected = IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testExchangeAdapterThrowsExceptionIfBuyFeeIsMissing() throws Exception {
 
         PowerMock.reset(otherConfig);
@@ -860,7 +851,7 @@ public class TestHuobiExchangeAdapter {
         PowerMock.verifyAll();
     }
 
-    @Test (expected = IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testExchangeAdapterThrowsExceptionIfSellFeeIsMissing() throws Exception {
 
         PowerMock.reset(otherConfig);
@@ -872,31 +863,5 @@ public class TestHuobiExchangeAdapter {
         final ExchangeAdapter exchangeAdapter = new HuobiExchangeAdapter();
         exchangeAdapter.init(exchangeConfig);
         PowerMock.verifyAll();
-    }
-
-    /*
-     * Used for making real API calls to the exchange in order to grab JSON responses.
-     * Have left this in; it might come in useful.
-     * You'll need to change the KEY, SECRET, constants to real-world values.
-     */
-//    @Test
-    public void runIntegrationTest() throws Exception {
-
-//        PowerMock.replayAll();
-//        final ExchangeAdapter exchangeAdapter = new HuobiExchangeAdapter();
-//        exchangeAdapter.init(exchangeConfig);
-//        exchangeAdapter.getImplName();
-//        exchangeAdapter.getPercentageOfBuyOrderTakenForExchangeFee(MARKET_ID);
-//        exchangeAdapter.getPercentageOfSellOrderTakenForExchangeFee(MARKET_ID);
-//        exchangeAdapter.getLatestMarketPrice(MARKET_ID);
-//        exchangeAdapter.getMarketOrders(MARKET_ID);
-//        exchangeAdapter.getYourOpenOrders(MARKET_ID);
-//        exchangeAdapter.getBalanceInfo();
-
-//        // Careful here - make sure the SELL_ORDER_PRICE is sensible!
-//        final String orderId = exchangeAdapter.createOrder(MARKET_ID, OrderType.SELL, SELL_ORDER_QUANTITY, SELL_ORDER_PRICE);
-//        exchangeAdapter.cancelOrder(orderId, MARKET_ID);
-
-//        PowerMock.verifyAll();
     }
 }

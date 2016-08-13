@@ -27,12 +27,7 @@ import com.gazbert.bxbot.core.api.exchange.AuthenticationConfig;
 import com.gazbert.bxbot.core.api.exchange.ExchangeConfig;
 import com.gazbert.bxbot.core.api.exchange.NetworkConfig;
 import com.gazbert.bxbot.core.api.exchange.OtherConfig;
-import com.gazbert.bxbot.core.api.trading.BalanceInfo;
-import com.gazbert.bxbot.core.api.trading.ExchangeNetworkException;
-import com.gazbert.bxbot.core.api.trading.MarketOrderBook;
-import com.gazbert.bxbot.core.api.trading.OpenOrder;
-import com.gazbert.bxbot.core.api.trading.OrderType;
-import com.gazbert.bxbot.core.api.trading.TradingApiException;
+import com.gazbert.bxbot.core.api.trading.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -60,14 +55,14 @@ import static org.junit.Assert.*;
  * <p>
  * Tests the behaviour of the itBit Exchange Adapter.
  * </p>
- *
+ * <p>
  * <p>
  * Coverage could be better: it does not include calling the
  * {@link ItBitExchangeAdapter#sendPublicRequestToExchange(String)}  and
  * {@link ItBitExchangeAdapter#sendAuthenticatedRequestToExchange(String, String, Map)}  methods; the code in these
  * methods is a bloody nightmare to test!
  * </p>
- *
+ * <p>
  * TODO Unit test {@link ItBitExchangeAdapter#sendPublicRequestToExchange(String)} method.
  * TODO Unit test {@link ItBitExchangeAdapter#sendAuthenticatedRequestToExchange(String, String, Map)} method.
  *
@@ -170,11 +165,11 @@ public class TestItBitExchangeAdapter {
         expect(requestParamMap.put("amount", new DecimalFormat("#.####").format(BUY_ORDER_QUANTITY))).andStubReturn(null);
         expect(requestParamMap.put("price", new DecimalFormat("#.##").format(BUY_ORDER_PRICE))).andStubReturn(null);
         expect(requestParamMap.put("instrument", MARKET_ID)).andStubReturn(null);
-        expect(requestParamMap.put("currency", MARKET_ID.substring(0,3))).andStubReturn(null);
+        expect(requestParamMap.put("currency", MARKET_ID.substring(0, 3))).andStubReturn(null);
         expect(requestParamMap.put("side", "buy")).andStubReturn(null);
 
         // Partial mock so we do not send stuff down the wire
-        final ItBitExchangeAdapter exchangeAdapter =  PowerMock.createPartialMockAndInvokeDefaultConstructor(
+        final ItBitExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
                 ItBitExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD,
                 MOCKED_GET_REQUEST_PARAM_MAP_METHOD);
         PowerMock.expectPrivate(exchangeAdapter, MOCKED_GET_REQUEST_PARAM_MAP_METHOD).andReturn(requestParamMap);
@@ -206,11 +201,11 @@ public class TestItBitExchangeAdapter {
         expect(requestParamMap.put("amount", new DecimalFormat("#.####").format(SELL_ORDER_QUANTITY))).andStubReturn(null);
         expect(requestParamMap.put("price", new DecimalFormat("#.##").format(SELL_ORDER_PRICE))).andStubReturn(null);
         expect(requestParamMap.put("instrument", MARKET_ID)).andStubReturn(null);
-        expect(requestParamMap.put("currency", MARKET_ID.substring(0,3))).andStubReturn(null);
+        expect(requestParamMap.put("currency", MARKET_ID.substring(0, 3))).andStubReturn(null);
         expect(requestParamMap.put("side", "sell")).andStubReturn(null);
 
         // Partial mock so we do not send stuff down the wire
-        final ItBitExchangeAdapter exchangeAdapter =  PowerMock.createPartialMockAndInvokeDefaultConstructor(
+        final ItBitExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
                 ItBitExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD,
                 MOCKED_GET_REQUEST_PARAM_MAP_METHOD);
 
@@ -229,14 +224,14 @@ public class TestItBitExchangeAdapter {
         PowerMock.verifyAll();
     }
 
-    @Test (expected = ExchangeNetworkException.class )
+    @Test(expected = ExchangeNetworkException.class)
     public void testCreateOrderHandlesExchangeNetworkException() throws Exception {
 
         // Partial mock so we do not send stuff down the wire
-        final ItBitExchangeAdapter exchangeAdapter =  PowerMock.createPartialMockAndInvokeDefaultConstructor(
+        final ItBitExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
                 ItBitExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
         PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq("POST"),
-                eq(NEW_ORDER),anyObject(Map.class)).andThrow(new ExchangeNetworkException(" If you want the ultimate," +
+                eq(NEW_ORDER), anyObject(Map.class)).andThrow(new ExchangeNetworkException(" If you want the ultimate," +
                 " you've got to be willing to pay the ultimate price. It's not tragic to die doing what you love."));
 
         PowerMock.replayAll();
@@ -247,11 +242,11 @@ public class TestItBitExchangeAdapter {
         PowerMock.verifyAll();
     }
 
-    @Test (expected = TradingApiException.class)
+    @Test(expected = TradingApiException.class)
     public void testCreateOrderHandlesUnexpectedException() throws Exception {
 
         // Partial mock so we do not send stuff down the wire
-        final ItBitExchangeAdapter exchangeAdapter =  PowerMock.createPartialMockAndInvokeDefaultConstructor(
+        final ItBitExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
                 ItBitExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
         PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq("POST"),
                 eq(NEW_ORDER), anyObject(Map.class)).andThrow(new IllegalArgumentException("Fear causes hesitation," +
@@ -278,7 +273,7 @@ public class TestItBitExchangeAdapter {
                 202, "Accepted", new String(encoded, StandardCharsets.UTF_8));
 
         // Partial mock so we do not send stuff down the wire
-        final ItBitExchangeAdapter exchangeAdapter =  PowerMock.createPartialMockAndInvokeDefaultConstructor(
+        final ItBitExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
                 ItBitExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
 
         PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq("DELETE"),
@@ -294,11 +289,11 @@ public class TestItBitExchangeAdapter {
         PowerMock.verifyAll();
     }
 
-    @Test (expected = ExchangeNetworkException.class )
+    @Test(expected = ExchangeNetworkException.class)
     public void testCancelOrderHandlesExchangeNetworkException() throws Exception {
 
         // Partial mock so we do not send stuff down the wire
-        final ItBitExchangeAdapter exchangeAdapter =  PowerMock.createPartialMockAndInvokeDefaultConstructor(
+        final ItBitExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
                 ItBitExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
 
         PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq("DELETE"),
@@ -314,11 +309,11 @@ public class TestItBitExchangeAdapter {
         PowerMock.verifyAll();
     }
 
-    @Test (expected = TradingApiException.class)
+    @Test(expected = TradingApiException.class)
     public void testCancelOrderHandlesUnexpectedException() throws Exception {
 
         // Partial mock so we do not send stuff down the wire
-        final ItBitExchangeAdapter exchangeAdapter =  PowerMock.createPartialMockAndInvokeDefaultConstructor(
+        final ItBitExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
                 ItBitExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
 
         PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD,
@@ -354,7 +349,7 @@ public class TestItBitExchangeAdapter {
         expect(requestParamMap.put("status", "open")).andStubReturn(null);
 
         // Partial mock so we do not send stuff down the wire
-        final ItBitExchangeAdapter exchangeAdapter =  PowerMock.createPartialMockAndInvokeDefaultConstructor(
+        final ItBitExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
                 ItBitExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD,
                 MOCKED_GET_REQUEST_PARAM_MAP_METHOD);
 
@@ -383,11 +378,11 @@ public class TestItBitExchangeAdapter {
         PowerMock.verifyAll();
     }
 
-    @Test (expected = ExchangeNetworkException.class )
+    @Test(expected = ExchangeNetworkException.class)
     public void testGettingYourOpenOrdersHandlesExchangeNetworkException() throws Exception {
 
         // Partial mock so we do not send stuff down the wire
-        final ItBitExchangeAdapter exchangeAdapter =  PowerMock.createPartialMock(ItBitExchangeAdapter.class,
+        final ItBitExchangeAdapter exchangeAdapter = PowerMock.createPartialMock(ItBitExchangeAdapter.class,
                 MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
 
         PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD,
@@ -400,23 +395,23 @@ public class TestItBitExchangeAdapter {
                         " song. If you'd like to hear it I can sing it for you."));
 
         PowerMock.replayAll();
-        Whitebox.setInternalState(exchangeAdapter, MOCKED_WALLET_ID_FIELD_NAME, WALLET_ID); 
+        Whitebox.setInternalState(exchangeAdapter, MOCKED_WALLET_ID_FIELD_NAME, WALLET_ID);
         exchangeAdapter.getYourOpenOrders(MARKET_ID);
         PowerMock.verifyAll();
     }
 
-    @Test (expected = TradingApiException.class)
+    @Test(expected = TradingApiException.class)
     public void testGettingYourOpenOrdersHandlesUnexpectedException() throws Exception {
 
         // Partial mock so we do not send stuff down the wire
-        final ItBitExchangeAdapter exchangeAdapter =  PowerMock.createPartialMock(ItBitExchangeAdapter.class,
+        final ItBitExchangeAdapter exchangeAdapter = PowerMock.createPartialMock(ItBitExchangeAdapter.class,
                 MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
 
         PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq("GET"),
                 eq(OPEN_ORDERS), anyObject(Map.class)).andThrow(new IllegalStateException("Hello, HAL. Do you read me, HAL?"));
 
         PowerMock.replayAll();
-        Whitebox.setInternalState(exchangeAdapter, MOCKED_WALLET_ID_FIELD_NAME, WALLET_ID); 
+        Whitebox.setInternalState(exchangeAdapter, MOCKED_WALLET_ID_FIELD_NAME, WALLET_ID);
         exchangeAdapter.getYourOpenOrders(MARKET_ID);
         PowerMock.verifyAll();
     }
@@ -470,7 +465,7 @@ public class TestItBitExchangeAdapter {
         PowerMock.verifyAll();
     }
 
-    @Test (expected = ExchangeNetworkException.class )
+    @Test(expected = ExchangeNetworkException.class)
     public void testGettingMarketOrdersHandlesExchangeNetworkException() throws Exception {
 
         // Partial mock so we do not send stuff down the wire
@@ -487,7 +482,7 @@ public class TestItBitExchangeAdapter {
         PowerMock.verifyAll();
     }
 
-    @Test (expected = TradingApiException.class)
+    @Test(expected = TradingApiException.class)
     public void testGettingMarketOrdersHandlesUnexpectedException() throws Exception {
 
         // Partial mock so we do not send stuff down the wire
@@ -530,7 +525,7 @@ public class TestItBitExchangeAdapter {
         PowerMock.verifyAll();
     }
 
-    @Test (expected = ExchangeNetworkException.class )
+    @Test(expected = ExchangeNetworkException.class)
     public void testGettingLatestMarketPriceHandlesExchangeNetworkException() throws Exception {
 
         // Partial mock so we do not send stuff down the wire
@@ -549,7 +544,7 @@ public class TestItBitExchangeAdapter {
         PowerMock.verifyAll();
     }
 
-    @Test (expected = TradingApiException.class)
+    @Test(expected = TradingApiException.class)
     public void testGettingLatestMarketPriceHandlesUnexpectedException() throws Exception {
 
         // Partial mock so we do not send stuff down the wire
@@ -604,7 +599,7 @@ public class TestItBitExchangeAdapter {
         PowerMock.verifyAll();
     }
 
-    @Test (expected = ExchangeNetworkException.class )
+    @Test(expected = ExchangeNetworkException.class)
     public void testGettingBalanceInfoHandlesExchangeNetworkException() throws Exception {
 
         // Partial mock so we do not send stuff down the wire
@@ -619,7 +614,7 @@ public class TestItBitExchangeAdapter {
         PowerMock.verifyAll();
     }
 
-    @Test (expected = TradingApiException.class)
+    @Test(expected = TradingApiException.class)
     public void testGettingBalanceInfoHandlesUnexpectedException() throws Exception {
 
         // Partial mock so we do not send stuff down the wire
@@ -693,7 +688,7 @@ public class TestItBitExchangeAdapter {
         PowerMock.verify();
     }
 
-    @Test (expected = IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testExchangeAdapterThrowsExceptionIfUserIdConfigIsMissing() throws Exception {
 
         PowerMock.reset(authenticationConfig);
@@ -708,7 +703,7 @@ public class TestItBitExchangeAdapter {
         PowerMock.verify();
     }
 
-    @Test (expected = IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testExchangeAdapterThrowsExceptionIfClientKeyConfigIsMissing() throws Exception {
 
         PowerMock.reset(authenticationConfig);
@@ -722,7 +717,7 @@ public class TestItBitExchangeAdapter {
         PowerMock.verifyAll();
     }
 
-    @Test (expected = IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testExchangeAdapterThrowsExceptionIfClientSecretConfigIsMissing() throws Exception {
 
         PowerMock.reset(authenticationConfig);
@@ -736,7 +731,7 @@ public class TestItBitExchangeAdapter {
         PowerMock.verifyAll();
     }
 
-    @Test (expected = IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testExchangeAdapterThrowsExceptionIfBuyFeeIsMissing() throws Exception {
 
         PowerMock.reset(otherConfig);
@@ -749,7 +744,7 @@ public class TestItBitExchangeAdapter {
         PowerMock.verifyAll();
     }
 
-    @Test (expected = IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testExchangeAdapterThrowsExceptionIfSellFeeIsMissing() throws Exception {
 
         PowerMock.reset(otherConfig);
@@ -762,7 +757,7 @@ public class TestItBitExchangeAdapter {
         PowerMock.verifyAll();
     }
 
-    @Test (expected = IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testExchangeAdapterThrowsExceptionIfTimeoutConfigIsMissing() throws Exception {
 
         PowerMock.reset(networkConfig);
@@ -773,31 +768,4 @@ public class TestItBitExchangeAdapter {
         exchangeAdapter.init(exchangeConfig);
         PowerMock.verifyAll();
     }
-
-    /*
-     * Used for making real API calls to the exchange in order to grab JSON responses.
-     * Have left this in; it might come in useful.
-     * You'll need to change the USERID, KEY, SECRET, constants to real-world values.
-     */
-//    @Test
-    public void runIntegrationTest() throws Exception {
-
-//        PowerMock.replayAll();
-//        final ExchangeAdapter exchangeAdapter = new ItBitExchangeAdapter();
-//        exchangeAdapter.init(exchangeConfig);
-//
-//        exchangeAdapter.getImplName();
-//        exchangeAdapter.getPercentageOfBuyOrderTakenForExchangeFee(MARKET_ID);
-//        exchangeAdapter.getPercentageOfSellOrderTakenForExchangeFee(MARKET_ID);
-//        exchangeAdapter.getLatestMarketPrice(MARKET_ID);
-//        exchangeAdapter.getMarketOrders(MARKET_ID);
-//        exchangeAdapter.getYourOpenOrders(MARKET_ID);
-//        exchangeAdapter.getBalanceInfo();
-
-//        // Careful here - make sure the SELL_ORDER_PRICE is sensible!
-//        final String orderId = exchangeAdapter.createOrder(MARKET_ID, OrderType.SELL, SELL_ORDER_QUANTITY, SELL_ORDER_PRICE);
-//        exchangeAdapter.cancelOrder(orderId, MARKET_ID);
-
-//        PowerMock.verifyAll();
-    }    
 }

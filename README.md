@@ -6,7 +6,7 @@ BX-bot (_Bex_) is a simple Java algorithmic trading bot for trading [Bitcoin](ht
 cryptocurrency [exchanges](https://bitcoinwisdom.com/).
 
 The project contains the basic infrastructure to trade on a [cryptocurrency](http://coinmarketcap.com/) exchange...
-except for the trading strategies - you'll need to write these yourself. A simple example
+except for the trading strategies - you'll need to write those yourself. A simple example
 [scalping strategy](http://www.investopedia.com/articles/trading/02/081902.asp) is included to get you started with the
 Trading API - take a look [here](http://www.investopedia.com/articles/active-trading/101014/basics-algorithmic-trading-concepts-and-examples.asp)
 for more ideas.
@@ -59,9 +59,9 @@ See the [`pom.xml`](./pom.xml) for details.
 The bot has undergone basic unit testing on a _best-effort_ basis - there is a continuous integration build 
 running on [Travis CI](https://travis-ci.org/).
 
-The latest stable build can always be found on the [Releases](https://github.com/gazbert/BX-bot/releases) page. The SNAPSHOT builds are
-active development builds and very much ["sid"](https://www.debian.org/releases/sid/) - the tests should always pass,
-but you might not have a working bot!
+The latest stable build can always be found on the [Releases](https://github.com/gazbert/BX-bot/releases) page. 
+The SNAPSHOT builds on master are active development builds, but the tests should always pass and the bot should always 
+be deployable.
 
 ## Issue & Change Management
 Issues and new features will be managed using the project [Issue Tracker](https://github.com/gazbert/BX-bot/issues) -

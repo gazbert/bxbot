@@ -1,6 +1,6 @@
 # Contributing to BX-Bot
 BX-Bot is released under the [MIT](http://opensource.org/licenses/MIT) license. 
-If you would like to contribute something, or simply want to hack the code, this document should help get you started.
+If you would like to contribute something, or simply want to hack the code, this document should help you get started.
  
 ## Reporting Bugs and Suggesting Enhancements
 If you find a bug, please submit an [issue](https://github.com/gazbert/BX-bot/issues). Try to provide enough information
@@ -15,7 +15,7 @@ If not, please bump the issue and request that it be reviewed.
 Review the [issues list](https://github.com/gazbert/BX-bot/issues) and find something that interests you. 
 It is wise to start with something relatively straight forward and achievable. Usually there will be a comment in the 
 issue that indicates whether someone has already self-assigned the issue. If no one has already taken it, then add a 
-comment assigning the issue to yourself, e.g. ```I'll work on this issue.```. 
+comment assigning the issue to yourself, e.g. ```I'll work on this issue.``` 
 
 Please be considerate and rescind the offer in a comment if you cannot finish in a reasonable time. 
 Or add a new comment saying that you are still actively working the issue if you need a little more time.
@@ -25,31 +25,35 @@ If you are unfamiliar, please review that link before proceeding.
 To work on something, whether a new feature or a bug fix:
 
   1. [Fork](https://help.github.com/articles/fork-a-repo/) the repo.
-  2. Clone it locally:
+  2. Clone it locally
   
   ```
   git clone https://github.com/<your-id>/BX-bot.git
   ```
-  3. Add the upstream repository as a remote:
+  3. Add the upstream repository as a remote
   
   ```
   git remote add upstream https://github.com/gazbert/BX-bot.git
   ```
-  4. Create a descriptively-named branch off of your cloned fork - full details [here](https://git-scm.com/docs/git-checkout).
+  
+  Make sure you keep your forked repo [up-to-date](https://help.github.com/articles/syncing-a-fork/) with the upstream (master) repository.
+  
+  4. Create a meaningful-named branch off of your cloned fork - full details [here](https://git-scm.com/docs/git-checkout).
   
   ```
-  cd BX-bot;
-  git checkout -b <issue-xxx> <feature-name>
+  cd BX-bot
+  git checkout -b my-new-feature-or-bugfix-branch
   ```
   5. Commit your code
 
-  Do some coding! Commit to that branch locally, and regularly push your work to the same branch on the server.
+  Write some code! Commit to that branch locally, and regularly push your work to the same branch on the server.
 
   6. Commit messages
 
   Commit messages must have a short description no longer than 50 characters followed by a blank line and a longer,
   more descriptive message that includes reference to issue(s) being addressed so that they will be automatically closed
-  on a merge e.g. ```Closes #1234``` or ```Fixes #1234```.
+  on a merge e.g. ```Closes #1234``` or ```Fixes #1234``` - see [here](https://help.github.com/articles/closing-issues-via-commit-messages/)
+  for more details.
   
   When writing a commit message please follow [these conventions](http://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html).
 
