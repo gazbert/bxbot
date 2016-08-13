@@ -4,21 +4,20 @@ If you would like to contribute something, or simply want to hack the code, this
  
 ## Reporting bugs and suggesting enhancements
 If you find a bug, please submit an [issue](https://github.com/gazbert/BX-bot/issues). Try to provide enough information
-for someone else to reproduce the issue. Equally, submit an issue if you want to create a new feature or enhance an
+for someone else to reproduce it. Equally, submit an issue if you want to create a new feature or enhance an
 existing one - refactoring, improving Javadoc, and boosting test coverage is always welcome!
 
-One of the project's maintainers should respond to your issue within 48 hours.
-If not, please bump the issue and request that it be reviewed.
+One of the project's maintainers should respond to your issue within 48 hours... if not, bump the issue and request that it be reviewed.
 
 ## Contributor workflow
 
 Review the [issues list](https://github.com/gazbert/BX-bot/issues) and find something that interests you. 
-It is wise to start with something relatively straight forward and achievable. Usually there will be a comment in the 
-issue that indicates whether someone has already self-assigned the issue. If no one has already taken it, then add a 
-comment assigning the issue to yourself, e.g. ```I'll work on this issue.``` 
+It is wise to start with something relatively straightforward and achievable. Usually there will be a comment in the 
+issue that indicates whether someone has already self-assigned it. If no one has already taken the issue, then add a 
+comment assigning the issue to yourself, e.g. ```I'm working on this issue because I love writing Javadoc...``` 
 
-Please be considerate and rescind the offer in a comment if you cannot finish in a reasonable time. 
-Or add a new comment saying that you are still actively working the issue if you need a little more time.
+Please be considerate and rescind the offer in a comment if you cannot finish in a reasonable time,
+or add a new comment stating that you're still actively working on the issue and need a little more time.
 
 We are using the [GitHub Flow](https://guides.github.com/introduction/flow/) process to manage code contributions. 
 If you are unfamiliar, please review that link before proceeding. 
