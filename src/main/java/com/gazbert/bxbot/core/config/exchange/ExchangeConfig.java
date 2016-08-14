@@ -35,6 +35,16 @@ import com.google.common.base.MoreObjects;
  */
 public class ExchangeConfig implements com.gazbert.bxbot.core.api.exchange.ExchangeConfig {
 
+    /*
+     * Location of the XML config files relative to project/installation root.
+     */
+    public static final String EXCHANGE_CONFIG_XML_FILENAME = "config/exchange.xml";
+
+    /*
+     * XSD schema files for validating the XML config - their location in the main/resources folder.
+     */
+    public static final String EXCHANGE_CONFIG_XSD_FILENAME = "com/gazbert/bxbot/core/config/exchange/exchange.xsd";
+
     private AuthenticationConfig authenticationConfig;
     private NetworkConfig networkConfig;
     private OtherConfig otherConfig;

@@ -32,14 +32,17 @@ import com.gazbert.bxbot.core.api.trading.Market;
 import com.gazbert.bxbot.core.api.trading.TradingApiException;
 import com.gazbert.bxbot.core.config.ConfigurableComponentFactory;
 import com.gazbert.bxbot.core.config.ConfigurationManager;
+import com.gazbert.bxbot.core.config.engine.EngineConfig;
 import com.gazbert.bxbot.core.config.engine.generated.EngineType;
 import com.gazbert.bxbot.core.config.exchange.AuthenticationConfig;
 import com.gazbert.bxbot.core.config.exchange.ExchangeConfig;
 import com.gazbert.bxbot.core.config.exchange.NetworkConfig;
 import com.gazbert.bxbot.core.config.exchange.OtherConfig;
 import com.gazbert.bxbot.core.config.exchange.generated.*;
+import com.gazbert.bxbot.core.config.market.MarketConfig;
 import com.gazbert.bxbot.core.config.market.generated.MarketType;
 import com.gazbert.bxbot.core.config.market.generated.MarketsType;
+import com.gazbert.bxbot.core.config.strategy.StrategyConfig;
 import com.gazbert.bxbot.core.config.strategy.StrategyConfigItems;
 import com.gazbert.bxbot.core.config.strategy.generated.ConfigItemType;
 import com.gazbert.bxbot.core.config.strategy.generated.ConfigurationType;
@@ -74,22 +77,6 @@ import java.util.*;
 final public class TradingEngine {
 
     private static final Logger LOG = LogManager.getLogger();
-
-    /*
-     * Location of the XML config files relative to project/installation root.
-     */
-    private static final String ENGINE_CONFIG_XML_FILENAME = "config/engine.xml";
-    private static final String EXCHANGE_CONFIG_XML_FILENAME = "config/exchange.xml";
-    private static final String MARKETS_CONFIG_XML_FILENAME = "config/markets.xml";
-    private static final String STRATEGIES_CONFIG_XML_FILENAME = "config/strategies.xml";
-
-    /*
-     * XSD schema files for validating the XML config - their location in the main/resources folder.
-     */
-    private static final String ENGINE_CONFIG_XSD_FILENAME = "com/gazbert/bxbot/core/config/engine/engine.xsd";
-    private static final String EXCHANGE_CONFIG_XSD_FILENAME = "com/gazbert/bxbot/core/config/exchange/exchange.xsd";
-    private static final String MARKETS_CONFIG_XSD_FILENAME = "com/gazbert/bxbot/core/config/market/markets.xsd";
-    private static final String STRATEGIES_CONFIG_XSD_FILENAME = "com/gazbert/bxbot/core/config/strategy/strategies.xsd";
 
     /*
      * Subject for Email Alerts sent by the engine.
@@ -474,7 +461,7 @@ final public class TradingEngine {
     private void loadExchangeAdapterConfig() {
 
         final ExchangeType exchangeType = ConfigurationManager.loadConfig(ExchangeType.class,
-                EXCHANGE_CONFIG_XML_FILENAME, EXCHANGE_CONFIG_XSD_FILENAME);
+                ExchangeConfig.EXCHANGE_CONFIG_XML_FILENAME, ExchangeConfig.EXCHANGE_CONFIG_XSD_FILENAME);
 
         exchangeAdapter = ConfigurableComponentFactory.createComponent(exchangeType.getAdapter());
         LOG.info(() -> "Trading Engine will use Exchange Adapter for: " + exchangeAdapter.getImplName());
@@ -574,7 +561,7 @@ final public class TradingEngine {
     private void loadEngineConfig() {
 
         final EngineType engineConfig = ConfigurationManager.loadConfig(EngineType.class,
-                ENGINE_CONFIG_XML_FILENAME, ENGINE_CONFIG_XSD_FILENAME);
+                EngineConfig.ENGINE_CONFIG_XML_FILENAME, EngineConfig.ENGINE_CONFIG_XSD_FILENAME);
 
         tradeExecutionInterval = engineConfig.getTradeCycleInterval();
         LOG.info(() -> "Trade Execution Cycle Interval in secs: " + tradeExecutionInterval);
@@ -591,7 +578,7 @@ final public class TradingEngine {
      */
     private void loadTradingStrategyConfig() {
         final TradingStrategiesType strategiesConfig = ConfigurationManager.loadConfig(TradingStrategiesType.class,
-                STRATEGIES_CONFIG_XML_FILENAME, STRATEGIES_CONFIG_XSD_FILENAME);
+                StrategyConfig.STRATEGIES_CONFIG_XML_FILENAME, StrategyConfig.STRATEGIES_CONFIG_XSD_FILENAME);
         final List<StrategyType> strategies = strategiesConfig.getStrategies();
 
         // Load em all up
@@ -608,7 +595,7 @@ final public class TradingEngine {
     private void loadMarketConfigAndInitialiseTradingStrategies() {
 
         final MarketsType marketConfiguration = ConfigurationManager.loadConfig(MarketsType.class,
-                MARKETS_CONFIG_XML_FILENAME, MARKETS_CONFIG_XSD_FILENAME);
+                MarketConfig.MARKETS_CONFIG_XML_FILENAME, MarketConfig.MARKETS_CONFIG_XSD_FILENAME);
         final List<MarketType> markets = marketConfiguration.getMarkets();
 
         LOG.info(() -> "Processing Markets from config...");
@@ -641,8 +628,8 @@ final public class TradingEngine {
             final Market market = new Market(marketName, marketId, baseCurrency, counterCurrency);
             final boolean wasAdded = loadedMarkets.add(market);
             if (!wasAdded) {
-                final String errorMsg = "Found duplicate Market in " + MARKETS_CONFIG_XML_FILENAME + " config file. " +
-                        "Market details: " + market;
+                final String errorMsg = "Found duplicate Market in " + MarketConfig.MARKETS_CONFIG_XML_FILENAME +
+                        " config file. " + "Market details: " + market;
                 LOG.fatal(errorMsg);
                 throw new IllegalArgumentException(errorMsg);
             }

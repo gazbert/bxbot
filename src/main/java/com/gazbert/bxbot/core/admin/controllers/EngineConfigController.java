@@ -51,7 +51,7 @@ public class EngineConfigController {
 
     private final EngineConfigService engineConfigService;
 
-    @Autowired
+//    @Autowired no need for annotation as of Spring Framework 4.3 - it works it out from single constructor below, but IntelliJ no beany it ;-(
     public EngineConfigController(EngineConfigService engineConfigService) {
         Assert.notNull(engineConfigService, "engineConfigService dependency cannot be null!");
         this.engineConfigService = engineConfigService;

@@ -23,7 +23,9 @@
 
 package com.gazbert.bxbot.core.admin.services;
 
+import com.gazbert.bxbot.core.config.ConfigurationManager;
 import com.gazbert.bxbot.core.config.engine.EngineConfig;
+import com.gazbert.bxbot.core.config.engine.generated.EngineType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,7 +43,13 @@ public class EngineConfigServiceImpl implements EngineConfigService {
 
     @Override
     public EngineConfig getConfig() {
-        return getCannedEngineConfig();
+
+        // TODO tweak stuff to use repository etc...
+        final EngineType internalEngineConfig = ConfigurationManager.loadConfig(EngineType.class,
+                EngineConfig.ENGINE_CONFIG_XML_FILENAME, EngineConfig.ENGINE_CONFIG_XSD_FILENAME);
+
+        return adaptInternalToExternalConfig(internalEngineConfig);
+        //return getCannedEngineConfig();
     }
 
     @Override
@@ -53,10 +61,23 @@ public class EngineConfigServiceImpl implements EngineConfigService {
      * TODO Hard code these for now - will come from Repository later...
      */
     private static EngineConfig getCannedEngineConfig() {
+
         final EngineConfig engineConfig = new EngineConfig();
         engineConfig.setEmergencyStopCurrency("BTC");
         engineConfig.setEmergencyStopBalance(new BigDecimal("0.923232"));
         engineConfig.setTradeCycleInterval(60);
+        return engineConfig;
+    }
+
+    /*
+     * TODO Mock this out for unit testing
+     */
+    private EngineConfig adaptInternalToExternalConfig(EngineType internalEngineConfig) {
+
+        final EngineConfig engineConfig = new EngineConfig();
+        engineConfig.setEmergencyStopCurrency(internalEngineConfig.getEmergencyStopCurrency());
+        engineConfig.setEmergencyStopBalance(internalEngineConfig.getEmergencyStopBalance());
+        engineConfig.setTradeCycleInterval(internalEngineConfig.getTradeCycleInterval());
         return engineConfig;
     }
 }

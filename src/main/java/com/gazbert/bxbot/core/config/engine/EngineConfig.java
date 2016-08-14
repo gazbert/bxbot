@@ -37,6 +37,16 @@ import java.math.BigDecimal;
  */
 public class EngineConfig {
 
+    /*
+     * Location of the XML config files relative to project/installation root.
+     */
+    public static final String ENGINE_CONFIG_XML_FILENAME = "config/engine.xml";
+
+    /*
+     * XSD schema files for validating the XML config - their location in the main/resources folder.
+     */
+    public static final String ENGINE_CONFIG_XSD_FILENAME = "com/gazbert/bxbot/core/config/engine/engine.xsd";
+
     private String emergencyStopCurrency;
     private BigDecimal emergencyStopBalance;
     private int tradeCycleInterval;

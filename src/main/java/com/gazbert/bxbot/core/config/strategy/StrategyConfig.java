@@ -36,6 +36,16 @@ import com.google.common.base.Objects;
  */
 public class StrategyConfig {
 
+    /*
+     * Location of the XML config files relative to project/installation root.
+     */
+    public static final String STRATEGIES_CONFIG_XML_FILENAME = "config/strategies.xml";
+
+    /*
+     * XSD schema files for validating the XML config - their location in the main/resources folder.
+     */
+    public static final String STRATEGIES_CONFIG_XSD_FILENAME = "com/gazbert/bxbot/core/config/strategy/strategies.xsd";
+
     private String id;
     private String label;
     private String description;

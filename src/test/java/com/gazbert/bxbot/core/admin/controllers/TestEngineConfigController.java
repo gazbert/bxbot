@@ -23,19 +23,20 @@
 
 package com.gazbert.bxbot.core.admin.controllers;
 
-import com.gazbert.bxbot.core.BXBot;
+import com.gazbert.bxbot.core.admin.services.EngineConfigService;
 import com.gazbert.bxbot.core.config.engine.EngineConfig;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.mock.http.MockHttpOutputMessage;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -46,6 +47,7 @@ import java.math.BigDecimal;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 
+import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -60,8 +62,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author gazbert
  * @since 11/08/2016
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = BXBot.class)
+@RunWith(SpringRunner.class)
+@SpringBootTest
 @WebAppConfiguration
 public class TestEngineConfigController {
 
@@ -70,6 +72,9 @@ public class TestEngineConfigController {
 
     private HttpMessageConverter mappingJackson2HttpMessageConverter;
     private MockMvc mockMvc;
+
+    @MockBean
+    EngineConfigService engineConfigService;
 
     @Autowired
     private WebApplicationContext ctx;
@@ -92,6 +97,8 @@ public class TestEngineConfigController {
     @Test
     public void testGetEngineConfig() throws Exception {
 
+        given(this.engineConfigService.getConfig()).willReturn(mockedEngineConfig());
+
         this.mockMvc.perform(get("/api/config/engine"))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -104,7 +111,7 @@ public class TestEngineConfigController {
     @Test
     public void testUpdateEngineConfig() throws Exception {
 
-        final String configJson = jsonify(buildEngineConfig());
+        final String configJson = jsonify(buildUpdatedEngineConfig());
         this.mockMvc.perform(put("/api/config/engine")
                 .contentType(CONTENT_TYPE)
                 .content(configJson))
@@ -121,11 +128,20 @@ public class TestEngineConfigController {
         return mockHttpOutputMessage.getBodyAsString();
     }
 
-    private static EngineConfig buildEngineConfig() {
+    private static EngineConfig buildUpdatedEngineConfig() {
         final EngineConfig engineConfig = new EngineConfig();
         engineConfig.setEmergencyStopCurrency("BTC");
         engineConfig.setEmergencyStopBalance(new BigDecimal("0.923232"));
         engineConfig.setTradeCycleInterval(60);
         return engineConfig;
     }
+
+    private static EngineConfig mockedEngineConfig() {
+        final EngineConfig engineConfig = new EngineConfig();
+        engineConfig.setEmergencyStopCurrency("BTC");
+        engineConfig.setEmergencyStopBalance(new BigDecimal("0.923232"));
+        engineConfig.setTradeCycleInterval(60);
+        return engineConfig;
+    }
+
 }

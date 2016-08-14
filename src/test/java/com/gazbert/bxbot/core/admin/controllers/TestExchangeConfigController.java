@@ -23,7 +23,6 @@
 
 package com.gazbert.bxbot.core.admin.controllers;
 
-import com.gazbert.bxbot.core.BXBot;
 import com.gazbert.bxbot.core.config.exchange.AuthenticationConfig;
 import com.gazbert.bxbot.core.config.exchange.ExchangeConfig;
 import com.gazbert.bxbot.core.config.exchange.NetworkConfig;
@@ -33,12 +32,12 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.mock.http.MockHttpOutputMessage;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -56,14 +55,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 /**
  * TODO Work in progress...
- *
+ * <p>
  * Tests the Exchange config controller behaviour.
  *
  * @author gazbert
  * @since 20/07/2016
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = BXBot.class)
+@RunWith(SpringRunner.class)
+@SpringBootTest
 @WebAppConfiguration
 public class TestExchangeConfigController {
 

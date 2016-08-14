@@ -36,6 +36,16 @@ import com.google.common.base.Objects;
  */
 public class MarketConfig {
 
+    /*
+     * Location of the XML config files relative to project/installation root.
+     */
+    public static final String MARKETS_CONFIG_XML_FILENAME = "config/markets.xml";
+
+    /*
+     * XSD schema files for validating the XML config - their location in the main/resources folder.
+     */
+    public static final String MARKETS_CONFIG_XSD_FILENAME = "com/gazbert/bxbot/core/config/market/markets.xsd";
+
     private String label;
     private String id;
     private String baseCurrency;
