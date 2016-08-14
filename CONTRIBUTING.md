@@ -35,7 +35,7 @@ To work on something, whether a new feature or a bug fix:
   git remote add upstream https://github.com/gazbert/BX-bot.git
   ```
   
-  Make sure you keep your forked repo [up-to-date](https://help.github.com/articles/syncing-a-fork/) with the upstream (master) repository.
+  Make sure you keep your forked repo [up-to-date](https://help.github.com/articles/syncing-a-fork/) with the upstream repository.
   
   4. Create a meaningful-named branch off of your cloned fork - full details [here](https://git-scm.com/docs/git-checkout).
   
