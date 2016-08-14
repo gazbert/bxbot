@@ -1,7 +1,7 @@
 
 # BX-bot
 
-_14 August 2016 - this is development branch. See master branch for latest stable code._
+_14 August 2016 - this is a development branch. See master branch for latest stable code._
 
 ## What is BX-bot?
 BX-bot (_Bex_) is a simple Java algorithmic trading bot for trading [Bitcoin](https://bitcoin.org) on 
