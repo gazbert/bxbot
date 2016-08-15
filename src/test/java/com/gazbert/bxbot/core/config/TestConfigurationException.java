@@ -23,7 +23,6 @@
 
 package com.gazbert.bxbot.core.config;
 
-import com.gazbert.bxbot.core.api.trading.TradingApiException;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
