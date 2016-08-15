@@ -20,19 +20,36 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.gazbert.bxbot.core.admin.services;
 
-import com.gazbert.bxbot.core.config.engine.EngineConfig;
+package com.gazbert.bxbot.core.config;
 
 /**
- * TODO Work in progress...
+ * Exception is thrown if something unexpected happens when loading or saving configuration.
  *
  * @author gazbert
- * @since 11/08/2016
+ * @since 15/08/2016
+ *
  */
-public interface EngineConfigService {
+public class ConfigurationException extends Exception {
 
-    EngineConfig getConfig();
+    private static final long serialVersionUID = -8279304172615288060L;
 
-    void updateConfig(EngineConfig config);
+    /**
+     * Constructor builds exception with error message.
+     *
+     * @param msg the error message.
+     */
+    public ConfigurationException(String msg) {
+        super(msg);
+    }
+
+    /**
+     * Constructor builds exception with error message and original throwable.
+     *
+     * @param msg the error message.
+     * @param e   the original exception.
+     */
+    public ConfigurationException(String msg, Throwable e) {
+        super(msg, e);
+    }
 }

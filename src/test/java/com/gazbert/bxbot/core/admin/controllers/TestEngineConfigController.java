@@ -115,7 +115,7 @@ public class TestEngineConfigController {
         this.mockMvc.perform(put("/api/config/engine")
                 .contentType(CONTENT_TYPE)
                 .content(configJson))
-                .andExpect(status().isOk());
+                .andExpect(status().isNoContent());
     }
 
     // ------------------------------------------------------------------------------------------------

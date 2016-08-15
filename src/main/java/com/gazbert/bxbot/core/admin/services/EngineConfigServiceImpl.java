@@ -23,9 +23,12 @@
 
 package com.gazbert.bxbot.core.admin.services;
 
+import com.gazbert.bxbot.core.config.ConfigurationException;
 import com.gazbert.bxbot.core.config.ConfigurationManager;
 import com.gazbert.bxbot.core.config.engine.EngineConfig;
 import com.gazbert.bxbot.core.config.engine.generated.EngineType;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,6 +44,8 @@ import java.math.BigDecimal;
 @Transactional
 public class EngineConfigServiceImpl implements EngineConfigService {
 
+    private static final Logger LOG = LogManager.getLogger();
+
     @Override
     public EngineConfig getConfig() {
 
@@ -53,8 +58,18 @@ public class EngineConfigServiceImpl implements EngineConfigService {
     }
 
     @Override
-    public EngineConfig updateConfig(EngineConfig config) {
-        return getCannedEngineConfig();
+    public void updateConfig(EngineConfig config) {
+
+        LOG.info( () -> "About to update: " + config);
+
+        final EngineType internalEngineConfig = adaptExternalToInternalConfig(config);
+
+        try {
+            ConfigurationManager.saveConfig(EngineType.class, internalEngineConfig, EngineConfig.ENGINE_CONFIG_XML_FILENAME);
+        } catch (ConfigurationException e) {
+            e.printStackTrace();
+        }
+
     }
 
     /*
@@ -74,10 +89,22 @@ public class EngineConfigServiceImpl implements EngineConfigService {
      */
     private EngineConfig adaptInternalToExternalConfig(EngineType internalEngineConfig) {
 
-        final EngineConfig engineConfig = new EngineConfig();
-        engineConfig.setEmergencyStopCurrency(internalEngineConfig.getEmergencyStopCurrency());
-        engineConfig.setEmergencyStopBalance(internalEngineConfig.getEmergencyStopBalance());
-        engineConfig.setTradeCycleInterval(internalEngineConfig.getTradeCycleInterval());
-        return engineConfig;
+        final EngineConfig externalEngineConfig = new EngineConfig();
+        externalEngineConfig.setEmergencyStopCurrency(internalEngineConfig.getEmergencyStopCurrency());
+        externalEngineConfig.setEmergencyStopBalance(internalEngineConfig.getEmergencyStopBalance());
+        externalEngineConfig.setTradeCycleInterval(internalEngineConfig.getTradeCycleInterval());
+        return externalEngineConfig;
+    }
+
+    /*
+ * TODO Mock this out for unit testing
+ */
+    private EngineType adaptExternalToInternalConfig(EngineConfig externalEngineConfig) {
+
+        final EngineType internalEngineConfig = new EngineType();
+        internalEngineConfig.setEmergencyStopCurrency(externalEngineConfig.getEmergencyStopCurrency());
+        internalEngineConfig.setEmergencyStopBalance(externalEngineConfig.getEmergencyStopBalance());
+        internalEngineConfig.setTradeCycleInterval(externalEngineConfig.getTradeCycleInterval());
+        return internalEngineConfig;
     }
 }

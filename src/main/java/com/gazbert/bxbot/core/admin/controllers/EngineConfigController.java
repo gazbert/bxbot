@@ -34,6 +34,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 /**
  * TODO Work in progress...
@@ -51,7 +52,7 @@ public class EngineConfigController {
 
     private final EngineConfigService engineConfigService;
 
-//    @Autowired no need for annotation as of Spring Framework 4.3 - it works it out from single constructor below, but IntelliJ no beany it ;-(
+    @Autowired
     public EngineConfigController(EngineConfigService engineConfigService) {
         Assert.notNull(engineConfigService, "engineConfigService dependency cannot be null!");
         this.engineConfigService = engineConfigService;
@@ -70,15 +71,17 @@ public class EngineConfigController {
     /**
      * Updates Engine configuration for the bot.
      *
-     * @return HttpStatus.OK if engine config was updated, any other HTTP status code otherwise.
+     * @return HttpStatus.NO_CONTENT if engine config was updated successfully, other HTTP status code otherwise.
      */
     @RequestMapping(value = "/config/engine", method = RequestMethod.PUT)
-    ResponseEntity<?> updateEngine(@RequestBody EngineConfig config) {
+    public ResponseEntity<?> updateEngine(@RequestBody EngineConfig config) {
 
-        final EngineConfig updatedEngineConfig = engineConfigService.updateConfig(config);
+        engineConfigService.updateConfig(config);
         final HttpHeaders httpHeaders = new HttpHeaders();
-        // TODO any other headers required?
-        return new ResponseEntity<>(updatedEngineConfig, httpHeaders, HttpStatus.OK);
+
+        httpHeaders.setLocation(ServletUriComponentsBuilder
+                .fromCurrentRequest().path("/").buildAndExpand().toUri());
+        return new ResponseEntity<>(null, httpHeaders, HttpStatus.NO_CONTENT);
     }
 }
 

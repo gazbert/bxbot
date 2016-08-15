@@ -23,20 +23,20 @@
 
 package com.gazbert.bxbot.core.config;
 
+import com.gazbert.bxbot.core.config.engine.generated.EngineType;
+import com.gazbert.bxbot.core.config.engine.generated.ObjectFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.xml.sax.SAXException;
 
 import javax.xml.XMLConstants;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.*;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 
 
@@ -88,6 +88,34 @@ public final class ConfigurationManager {
             final String errorMsg = "Failed to find or read [" + xmlConfigFile + "] config";
             LOG.error(errorMsg, e);
             throw new IllegalStateException(errorMsg, e);
+        }
+    }
+
+    /*
+     * Saves given config to filesystem.
+     * The previous config file is renamed with current a suffix for current date.
+     */
+    public static <T> void saveConfig(Class<T> configClass, T config, String xmlConfigFile) throws ConfigurationException {
+
+        LOG.info(() -> "Saving configuration for [" + configClass + "] to: " + xmlConfigFile + " ...");
+
+        try {
+
+            // TODO Make copy of current file
+
+
+            // Save the latest config to disc TODO - clean this mess up!
+            final JAXBContext jaxbContext = JAXBContext.newInstance(configClass.getPackage().getName());
+            final Marshaller marshaller = jaxbContext.createMarshaller();
+            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+            final ObjectFactory objectFactory = new ObjectFactory();
+            final JAXBElement<EngineType> engineTypeJAXBElement = objectFactory.createEngine((EngineType)config);
+            marshaller.marshal(engineTypeJAXBElement, new FileOutputStream(xmlConfigFile));
+
+        } catch (JAXBException | FileNotFoundException e) {
+            final String errorMsg = "Failed to save config to [" + xmlConfigFile + "] file.";
+            LOG.error(errorMsg, e);
+            throw new ConfigurationException(errorMsg, e);
         }
     }
 }
