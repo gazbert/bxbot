@@ -24,7 +24,7 @@
 package com.gazbert.bxbot.core.config.strategy;
 
 import com.gazbert.bxbot.core.config.ConfigurationManager;
-import com.gazbert.bxbot.core.config.engine.generated.EngineType;
+import com.gazbert.bxbot.core.config.engine.generated.Engine;
 import com.gazbert.bxbot.core.config.strategy.generated.TradingStrategiesType;
 import org.junit.Test;
 
@@ -104,7 +104,7 @@ public class TestStrategyConfigurationManagement {
     @Test(expected = IllegalStateException.class)
     public void testLoadingMissingXmlConfigFileThrowsException() {
 
-        ConfigurationManager.loadConfig(EngineType.class,
+        ConfigurationManager.loadConfig(Engine.class,
                 MISSING_XML_CONFIG_FILENAME, XML_SCHEMA_FILENAME);
     }
 }

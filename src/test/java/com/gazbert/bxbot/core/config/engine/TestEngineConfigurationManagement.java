@@ -24,7 +24,7 @@
 package com.gazbert.bxbot.core.config.engine;
 
 import com.gazbert.bxbot.core.config.ConfigurationManager;
-import com.gazbert.bxbot.core.config.engine.generated.EngineType;
+import com.gazbert.bxbot.core.config.engine.generated.Engine;
 import org.junit.Test;
 
 import java.math.BigDecimal;
@@ -49,18 +49,18 @@ public class TestEngineConfigurationManagement {
     @Test
     public void testLoadingValidXmlConfigFileIsSuccessful() {
 
-        final EngineType engineType = ConfigurationManager.loadConfig(EngineType.class,
+        final Engine engine = ConfigurationManager.loadConfig(Engine.class,
                 VALID_XML_CONFIG_FILENAME, XML_SCHEMA_FILENAME);
 
-        assertEquals("BTC", engineType.getEmergencyStopCurrency());
-        assertTrue(new BigDecimal("0.5").compareTo(engineType.getEmergencyStopBalance()) == 0);
-        assertTrue(60 == engineType.getTradeCycleInterval());
+        assertEquals("BTC", engine.getEmergencyStopCurrency());
+        assertTrue(new BigDecimal("0.5").compareTo(engine.getEmergencyStopBalance()) == 0);
+        assertTrue(60 == engine.getTradeCycleInterval());
     }
 
     @Test(expected = IllegalStateException.class)
     public void testLoadingMissingXmlConfigThrowsException() {
 
-        ConfigurationManager.loadConfig(EngineType.class,
+        ConfigurationManager.loadConfig(Engine.class,
                 MISSING_XML_CONFIG_FILENAME, XML_SCHEMA_FILENAME);
     }
 }

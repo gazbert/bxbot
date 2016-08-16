@@ -33,7 +33,7 @@ import com.gazbert.bxbot.core.api.trading.TradingApiException;
 import com.gazbert.bxbot.core.config.ConfigurableComponentFactory;
 import com.gazbert.bxbot.core.config.ConfigurationManager;
 import com.gazbert.bxbot.core.config.engine.EngineConfig;
-import com.gazbert.bxbot.core.config.engine.generated.EngineType;
+import com.gazbert.bxbot.core.config.engine.generated.Engine;
 import com.gazbert.bxbot.core.config.exchange.AuthenticationConfig;
 import com.gazbert.bxbot.core.config.exchange.ExchangeConfig;
 import com.gazbert.bxbot.core.config.exchange.NetworkConfig;
@@ -560,7 +560,7 @@ final public class TradingEngine {
      */
     private void loadEngineConfig() {
 
-        final EngineType engineConfig = ConfigurationManager.loadConfig(EngineType.class,
+        final Engine engineConfig = ConfigurationManager.loadConfig(Engine.class,
                 EngineConfig.ENGINE_CONFIG_XML_FILENAME, EngineConfig.ENGINE_CONFIG_XSD_FILENAME);
 
         tradeExecutionInterval = engineConfig.getTradeCycleInterval();

@@ -26,7 +26,7 @@ package com.gazbert.bxbot.core.config.emailalerts;
 import com.gazbert.bxbot.core.config.ConfigurationManager;
 import com.gazbert.bxbot.core.config.emailalerts.generated.EmailAlertsType;
 import com.gazbert.bxbot.core.config.emailalerts.generated.SmtpConfigType;
-import com.gazbert.bxbot.core.config.engine.generated.EngineType;
+import com.gazbert.bxbot.core.config.engine.generated.Engine;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -75,6 +75,6 @@ public class TestEmailAlertsConfigurationManagement {
 
     @Test(expected = IllegalStateException.class)
     public void testLoadingMissingXmlConfigThrowsException() {
-        ConfigurationManager.loadConfig(EngineType.class, MISSING_XML_CONFIG_FILENAME, XML_SCHEMA_LOCATION);
+        ConfigurationManager.loadConfig(Engine.class, MISSING_XML_CONFIG_FILENAME, XML_SCHEMA_LOCATION);
     }
 }

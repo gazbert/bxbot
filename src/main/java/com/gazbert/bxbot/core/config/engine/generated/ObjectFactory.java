@@ -41,20 +41,20 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link EngineType }
+     * Create an instance of {@link Engine }
      * 
      */
-    public EngineType createEngineType() {
-        return new EngineType();
+    public Engine createEngineType() {
+        return new Engine();
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link EngineType }{@code >}}
+     * Create an instance of {@link JAXBElement }{@code <}{@link Engine }{@code >}}
      * 
      */
     @XmlElementDecl(namespace = "", name = "engine")
-    public JAXBElement<EngineType> createEngine(EngineType value) {
-        return new JAXBElement<EngineType>(_Engine_QNAME, EngineType.class, null, value);
+    public JAXBElement<Engine> createEngine(Engine value) {
+        return new JAXBElement<Engine>(_Engine_QNAME, Engine.class, null, value);
     }
 
 }

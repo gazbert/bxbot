@@ -24,7 +24,7 @@
 package com.gazbert.bxbot.core.config.market;
 
 import com.gazbert.bxbot.core.config.ConfigurationManager;
-import com.gazbert.bxbot.core.config.engine.generated.EngineType;
+import com.gazbert.bxbot.core.config.engine.generated.Engine;
 import com.gazbert.bxbot.core.config.market.generated.MarketsType;
 import org.junit.Test;
 
@@ -70,7 +70,7 @@ public class TestMarketConfigurationManagement {
     @Test(expected = IllegalStateException.class)
     public void testLoadingMissingXmlConfigFileThrowsException() {
 
-        ConfigurationManager.loadConfig(EngineType.class,
+        ConfigurationManager.loadConfig(Engine.class,
                 MISSING_XML_CONFIG_FILENAME, XML_SCHEMA_FILENAME);
     }
 }

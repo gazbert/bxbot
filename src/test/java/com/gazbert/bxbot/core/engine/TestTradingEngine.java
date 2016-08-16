@@ -30,7 +30,7 @@ import com.gazbert.bxbot.core.api.strategy.StrategyException;
 import com.gazbert.bxbot.core.api.strategy.TradingStrategy;
 import com.gazbert.bxbot.core.config.ConfigurableComponentFactory;
 import com.gazbert.bxbot.core.config.ConfigurationManager;
-import com.gazbert.bxbot.core.config.engine.generated.EngineType;
+import com.gazbert.bxbot.core.config.engine.generated.Engine;
 import com.gazbert.bxbot.core.config.exchange.generated.*;
 import com.gazbert.bxbot.core.config.market.generated.MarketType;
 import com.gazbert.bxbot.core.config.market.generated.MarketsType;
@@ -582,11 +582,11 @@ public class TestTradingEngine {
 
     private void setupEngineConfigExpectations() throws Exception {
 
-        final EngineType engineType = PowerMock.createMock(EngineType.class);
-        expect(ConfigurationManager.loadConfig(eq(EngineType.class), anyString(), anyString())).andReturn(engineType);
-        expect(engineType.getEmergencyStopCurrency()).andReturn(ENGINE_EMERGENCY_STOP_CURRENCY);
-        expect(engineType.getEmergencyStopBalance()).andReturn(ENGINE_EMERGENCY_STOP_BALANCE);
-        expect(engineType.getTradeCycleInterval()).andReturn(ENGINE_TRADE_CYCLE_INTERVAL);
+        final Engine engine = PowerMock.createMock(Engine.class);
+        expect(ConfigurationManager.loadConfig(eq(Engine.class), anyString(), anyString())).andReturn(engine);
+        expect(engine.getEmergencyStopCurrency()).andReturn(ENGINE_EMERGENCY_STOP_CURRENCY);
+        expect(engine.getEmergencyStopBalance()).andReturn(ENGINE_EMERGENCY_STOP_BALANCE);
+        expect(engine.getTradeCycleInterval()).andReturn(ENGINE_TRADE_CYCLE_INTERVAL);
     }
 
     /*

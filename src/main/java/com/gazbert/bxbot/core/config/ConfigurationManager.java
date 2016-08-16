@@ -23,8 +23,6 @@
 
 package com.gazbert.bxbot.core.config;
 
-import com.gazbert.bxbot.core.config.engine.generated.EngineType;
-import com.gazbert.bxbot.core.config.engine.generated.ObjectFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.xml.sax.SAXException;
@@ -39,13 +37,13 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 
-
 /*
  * The generic configuration manager loads config from a given XML config file.
  */
 public final class ConfigurationManager {
 
     private static final Logger LOG = LogManager.getLogger();
+    private final static Object MUTEX = new Object();
 
     private ConfigurationManager() {
     }
@@ -71,14 +69,14 @@ public final class ConfigurationManager {
                 unmarshaller.setSchema(schema);
             }
 
-            // unmarshal XML config into Java world
-            final JAXBElement<?> requestedConfigRootXmlElement = (JAXBElement<?>) unmarshaller.unmarshal(
-                    new FileInputStream(xmlConfigFile));
+            synchronized (MUTEX) {
+                final JAXBElement<?> requestedConfigRootXmlElement = (JAXBElement<?>) unmarshaller.unmarshal(
+                        new FileInputStream(xmlConfigFile));
 
-            final T requestedConfig = (T) requestedConfigRootXmlElement.getValue();
-            LOG.info(() -> "Loaded and set configuration for [" + configClass + "] successfully!");
-
-            return requestedConfig;
+                final T requestedConfig = (T) requestedConfigRootXmlElement.getValue();
+                LOG.info(() -> "Loaded and set configuration for [" + configClass + "] successfully!");
+                return requestedConfig;
+            }
 
         } catch (JAXBException | SAXException e) {
             final String errorMsg = "Failed to load [" + xmlConfigFile + "] file and validate it using XML Schema [" + xmlSchemaFile + "]";
@@ -93,7 +91,6 @@ public final class ConfigurationManager {
 
     /*
      * Saves given config to filesystem.
-     * The previous config file is renamed with current a suffix for current date.
      */
     public static <T> void saveConfig(Class<T> configClass, T config, String xmlConfigFile) throws ConfigurationException {
 
@@ -101,16 +98,13 @@ public final class ConfigurationManager {
 
         try {
 
-            // TODO Make copy of current file
-
-
-            // Save the latest config to disc TODO - clean this mess up!
-            final JAXBContext jaxbContext = JAXBContext.newInstance(configClass.getPackage().getName());
-            final Marshaller marshaller = jaxbContext.createMarshaller();
+            final JAXBContext context = JAXBContext.newInstance(config.getClass());
+            final Marshaller marshaller = context.createMarshaller();
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-            final ObjectFactory objectFactory = new ObjectFactory();
-            final JAXBElement<EngineType> engineTypeJAXBElement = objectFactory.createEngine((EngineType)config);
-            marshaller.marshal(engineTypeJAXBElement, new FileOutputStream(xmlConfigFile));
+
+            synchronized (MUTEX) {
+                marshaller.marshal(config, new FileOutputStream(xmlConfigFile));
+            }
 
         } catch (JAXBException | FileNotFoundException e) {
             final String errorMsg = "Failed to save config to [" + xmlConfigFile + "] file.";

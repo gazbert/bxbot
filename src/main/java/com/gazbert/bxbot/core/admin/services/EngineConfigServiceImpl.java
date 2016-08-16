@@ -26,7 +26,7 @@ package com.gazbert.bxbot.core.admin.services;
 import com.gazbert.bxbot.core.config.ConfigurationException;
 import com.gazbert.bxbot.core.config.ConfigurationManager;
 import com.gazbert.bxbot.core.config.engine.EngineConfig;
-import com.gazbert.bxbot.core.config.engine.generated.EngineType;
+import com.gazbert.bxbot.core.config.engine.generated.Engine;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
@@ -50,7 +50,7 @@ public class EngineConfigServiceImpl implements EngineConfigService {
     public EngineConfig getConfig() {
 
         // TODO tweak stuff to use repository etc...
-        final EngineType internalEngineConfig = ConfigurationManager.loadConfig(EngineType.class,
+        final Engine internalEngineConfig = ConfigurationManager.loadConfig(Engine.class,
                 EngineConfig.ENGINE_CONFIG_XML_FILENAME, EngineConfig.ENGINE_CONFIG_XSD_FILENAME);
 
         return adaptInternalToExternalConfig(internalEngineConfig);
@@ -62,10 +62,10 @@ public class EngineConfigServiceImpl implements EngineConfigService {
 
         LOG.info( () -> "About to update: " + config);
 
-        final EngineType internalEngineConfig = adaptExternalToInternalConfig(config);
+        final Engine internalEngineConfig = adaptExternalToInternalConfig(config);
 
         try {
-            ConfigurationManager.saveConfig(EngineType.class, internalEngineConfig, EngineConfig.ENGINE_CONFIG_XML_FILENAME);
+            ConfigurationManager.saveConfig(Engine.class, internalEngineConfig, EngineConfig.ENGINE_CONFIG_XML_FILENAME);
         } catch (ConfigurationException e) {
             e.printStackTrace();
         }
@@ -87,7 +87,7 @@ public class EngineConfigServiceImpl implements EngineConfigService {
     /*
      * TODO Mock this out for unit testing
      */
-    private EngineConfig adaptInternalToExternalConfig(EngineType internalEngineConfig) {
+    private EngineConfig adaptInternalToExternalConfig(Engine internalEngineConfig) {
 
         final EngineConfig externalEngineConfig = new EngineConfig();
         externalEngineConfig.setEmergencyStopCurrency(internalEngineConfig.getEmergencyStopCurrency());
@@ -99,9 +99,9 @@ public class EngineConfigServiceImpl implements EngineConfigService {
     /*
  * TODO Mock this out for unit testing
  */
-    private EngineType adaptExternalToInternalConfig(EngineConfig externalEngineConfig) {
+    private Engine adaptExternalToInternalConfig(EngineConfig externalEngineConfig) {
 
-        final EngineType internalEngineConfig = new EngineType();
+        final Engine internalEngineConfig = new Engine();
         internalEngineConfig.setEmergencyStopCurrency(externalEngineConfig.getEmergencyStopCurrency());
         internalEngineConfig.setEmergencyStopBalance(externalEngineConfig.getEmergencyStopBalance());
         internalEngineConfig.setTradeCycleInterval(externalEngineConfig.getTradeCycleInterval());
