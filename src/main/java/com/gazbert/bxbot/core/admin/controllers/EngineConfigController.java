@@ -37,8 +37,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 /**
- * TODO Work in progress...
- * <p>
  * Controller for directing Engine config requests.
  * <p>
  * Engine config can only be fetched and updated - there is only 1 Trading Engine per bot.
@@ -71,16 +69,14 @@ public class EngineConfigController {
     /**
      * Updates Engine configuration for the bot.
      *
-     * @return HttpStatus.NO_CONTENT if engine config was updated successfully, other HTTP status code otherwise.
+     * @return HttpStatus.NO_CONTENT if engine config was updated successfully, some other HTTP status code otherwise.
      */
     @RequestMapping(value = "/config/engine", method = RequestMethod.PUT)
     public ResponseEntity<?> updateEngine(@RequestBody EngineConfig config) {
 
         engineConfigService.updateConfig(config);
         final HttpHeaders httpHeaders = new HttpHeaders();
-
-        httpHeaders.setLocation(ServletUriComponentsBuilder
-                .fromCurrentRequest().path("/").buildAndExpand().toUri());
+        httpHeaders.setLocation(ServletUriComponentsBuilder.fromCurrentRequest().path("/").buildAndExpand().toUri());
         return new ResponseEntity<>(null, httpHeaders, HttpStatus.NO_CONTENT);
     }
 }

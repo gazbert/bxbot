@@ -23,7 +23,6 @@
 
 package com.gazbert.bxbot.core.admin.services;
 
-import com.gazbert.bxbot.core.config.ConfigurationException;
 import com.gazbert.bxbot.core.config.ConfigurationManager;
 import com.gazbert.bxbot.core.config.engine.EngineConfig;
 import com.gazbert.bxbot.core.config.engine.generated.Engine;
@@ -32,62 +31,40 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
-
 /**
- * TODO Work in progress...
+ * Implementation of the Engine config service.
  *
  * @author gazbert
  * @since 11/08/2016
  */
 @Service("engineConfigService")
 @Transactional
-public class EngineConfigServiceImpl implements EngineConfigService {
+class EngineConfigServiceImpl implements EngineConfigService {
 
     private static final Logger LOG = LogManager.getLogger();
 
     @Override
     public EngineConfig getConfig() {
 
-        // TODO tweak stuff to use repository etc...
         final Engine internalEngineConfig = ConfigurationManager.loadConfig(Engine.class,
                 EngineConfig.ENGINE_CONFIG_XML_FILENAME, EngineConfig.ENGINE_CONFIG_XSD_FILENAME);
-
         return adaptInternalToExternalConfig(internalEngineConfig);
-        //return getCannedEngineConfig();
     }
 
     @Override
     public void updateConfig(EngineConfig config) {
 
-        LOG.info( () -> "About to update: " + config);
+        LOG.info(() -> "About to update: " + config);
 
         final Engine internalEngineConfig = adaptExternalToInternalConfig(config);
-
-        try {
-            ConfigurationManager.saveConfig(Engine.class, internalEngineConfig, EngineConfig.ENGINE_CONFIG_XML_FILENAME);
-        } catch (ConfigurationException e) {
-            e.printStackTrace();
-        }
-
+        ConfigurationManager.saveConfig(Engine.class, internalEngineConfig, EngineConfig.ENGINE_CONFIG_XML_FILENAME);
     }
 
-    /*
-     * TODO Hard code these for now - will come from Repository later...
-     */
-    private static EngineConfig getCannedEngineConfig() {
+    // ------------------------------------------------------------------------------------------------
+    // Adapter methods
+    // ------------------------------------------------------------------------------------------------
 
-        final EngineConfig engineConfig = new EngineConfig();
-        engineConfig.setEmergencyStopCurrency("BTC");
-        engineConfig.setEmergencyStopBalance(new BigDecimal("0.923232"));
-        engineConfig.setTradeCycleInterval(60);
-        return engineConfig;
-    }
-
-    /*
-     * TODO Mock this out for unit testing
-     */
-    private EngineConfig adaptInternalToExternalConfig(Engine internalEngineConfig) {
+    private static EngineConfig adaptInternalToExternalConfig(Engine internalEngineConfig) {
 
         final EngineConfig externalEngineConfig = new EngineConfig();
         externalEngineConfig.setEmergencyStopCurrency(internalEngineConfig.getEmergencyStopCurrency());
@@ -96,10 +73,7 @@ public class EngineConfigServiceImpl implements EngineConfigService {
         return externalEngineConfig;
     }
 
-    /*
- * TODO Mock this out for unit testing
- */
-    private Engine adaptExternalToInternalConfig(EngineConfig externalEngineConfig) {
+    private static Engine adaptExternalToInternalConfig(EngineConfig externalEngineConfig) {
 
         final Engine internalEngineConfig = new Engine();
         internalEngineConfig.setEmergencyStopCurrency(externalEngineConfig.getEmergencyStopCurrency());

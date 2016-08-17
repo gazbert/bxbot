@@ -21,27 +21,28 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.core.config;
+package com.gazbert.bxbot.core.admin.services;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+/**
+ * TODO Work in progress...
+ *
+ * Tests Engine configuration service behaves as expected.
+ *
+ * @author gazbert
+ * @since 14/08/2016
+ */
+public class TestEngineConfigService {
 
-public class TestConfigurationException {
-
-    private static final String ERROR_MSG = "File not found...";
-    private static final RuntimeException CAUSE = new RuntimeException("The cause of the exception");
+    private EngineConfigService engineConfigService;
 
     @Test
-    public void testCreationOfExceptionIsAsExpected() {
-        final Exception exception = new ConfigurationException(ERROR_MSG);
-        assertEquals(ERROR_MSG, exception.getMessage());
-    }
+    public void whenUpdateConfigCalledThenExpectSomething() {
 
-    @Test
-    public void testCreationOfExceptionWithCauseIsAsExpected() {
-        final Exception exception = new ConfigurationException(ERROR_MSG, CAUSE);
-        assertEquals(ERROR_MSG, exception.getMessage());
-        assertEquals(CAUSE, exception.getCause());
+
+        final EngineConfigService engineConfigService = new EngineConfigServiceImpl();
+
+
     }
 }

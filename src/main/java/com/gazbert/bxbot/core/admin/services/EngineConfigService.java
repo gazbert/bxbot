@@ -25,7 +25,7 @@ package com.gazbert.bxbot.core.admin.services;
 import com.gazbert.bxbot.core.config.engine.EngineConfig;
 
 /**
- * TODO Work in progress...
+ * The Engine configuration service.
  *
  * @author gazbert
  * @since 11/08/2016
@@ -33,6 +33,5 @@ import com.gazbert.bxbot.core.config.engine.EngineConfig;
 public interface EngineConfigService {
 
     EngineConfig getConfig();
-
     void updateConfig(EngineConfig config);
 }

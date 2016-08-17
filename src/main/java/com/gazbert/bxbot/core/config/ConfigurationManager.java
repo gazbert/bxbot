@@ -92,7 +92,7 @@ public final class ConfigurationManager {
     /*
      * Saves given config to filesystem.
      */
-    public static <T> void saveConfig(Class<T> configClass, T config, String xmlConfigFile) throws ConfigurationException {
+    public static <T> void saveConfig(Class<T> configClass, T config, String xmlConfigFile) {
 
         LOG.info(() -> "Saving configuration for [" + configClass + "] to: " + xmlConfigFile + " ...");
 
@@ -106,10 +106,14 @@ public final class ConfigurationManager {
                 marshaller.marshal(config, new FileOutputStream(xmlConfigFile));
             }
 
-        } catch (JAXBException | FileNotFoundException e) {
+        } catch (JAXBException e) {
             final String errorMsg = "Failed to save config to [" + xmlConfigFile + "] file.";
             LOG.error(errorMsg, e);
-            throw new ConfigurationException(errorMsg, e);
+            throw new IllegalArgumentException(errorMsg, e);
+        } catch (FileNotFoundException e) {
+            final String errorMsg = "Failed to find or read [" + xmlConfigFile + "] config";
+            LOG.error(errorMsg, e);
+            throw new IllegalStateException(errorMsg, e);
         }
     }
 }

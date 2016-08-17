@@ -55,8 +55,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
- * TODO Work in progress...
- * <p>
  * Tests the Engine config controller behaviour.
  *
  * @author gazbert
@@ -97,7 +95,7 @@ public class TestEngineConfigController {
     @Test
     public void testGetEngineConfig() throws Exception {
 
-        given(this.engineConfigService.getConfig()).willReturn(mockedEngineConfig());
+        given(this.engineConfigService.getConfig()).willReturn(someEngineConfig());
 
         this.mockMvc.perform(get("/api/config/engine"))
                 .andDo(print())
@@ -111,7 +109,7 @@ public class TestEngineConfigController {
     @Test
     public void testUpdateEngineConfig() throws Exception {
 
-        final String configJson = jsonify(buildUpdatedEngineConfig());
+        final String configJson = jsonify(someEngineConfig());
         this.mockMvc.perform(put("/api/config/engine")
                 .contentType(CONTENT_TYPE)
                 .content(configJson))
@@ -128,20 +126,11 @@ public class TestEngineConfigController {
         return mockHttpOutputMessage.getBodyAsString();
     }
 
-    private static EngineConfig buildUpdatedEngineConfig() {
+    private static EngineConfig someEngineConfig() {
         final EngineConfig engineConfig = new EngineConfig();
         engineConfig.setEmergencyStopCurrency("BTC");
         engineConfig.setEmergencyStopBalance(new BigDecimal("0.923232"));
         engineConfig.setTradeCycleInterval(60);
         return engineConfig;
     }
-
-    private static EngineConfig mockedEngineConfig() {
-        final EngineConfig engineConfig = new EngineConfig();
-        engineConfig.setEmergencyStopCurrency("BTC");
-        engineConfig.setEmergencyStopBalance(new BigDecimal("0.923232"));
-        engineConfig.setTradeCycleInterval(60);
-        return engineConfig;
-    }
-
 }
