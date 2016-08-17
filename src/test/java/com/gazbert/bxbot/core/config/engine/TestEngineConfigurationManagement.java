@@ -28,6 +28,8 @@ import com.gazbert.bxbot.core.config.engine.generated.Engine;
 import org.junit.Test;
 
 import java.math.BigDecimal;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -44,6 +46,11 @@ public class TestEngineConfigurationManagement {
     /* Test XML config */
     private static final String VALID_XML_CONFIG_FILENAME = "src/test/config/engine/valid-engine.xml";
     private static final String MISSING_XML_CONFIG_FILENAME = "src/test/config/engine/missing-engine.xml";
+    private static final String XML_CONFIG_TO_SAVE_FILENAME = "src/test/config/engine/saved-engine.xml";
+
+    private static final String EMERGENCY_STOP_CURRENCY = "BTC";
+    private static final BigDecimal EMERGENCY_STOP_BALANCE = new BigDecimal("0.5");
+    private static final int TRADE_CYCLE_INTERVAL = 60;
 
 
     @Test
@@ -52,9 +59,9 @@ public class TestEngineConfigurationManagement {
         final Engine engine = ConfigurationManager.loadConfig(Engine.class,
                 VALID_XML_CONFIG_FILENAME, XML_SCHEMA_FILENAME);
 
-        assertEquals("BTC", engine.getEmergencyStopCurrency());
-        assertTrue(new BigDecimal("0.5").compareTo(engine.getEmergencyStopBalance()) == 0);
-        assertTrue(60 == engine.getTradeCycleInterval());
+        assertEquals(EMERGENCY_STOP_CURRENCY, engine.getEmergencyStopCurrency());
+        assertTrue(EMERGENCY_STOP_BALANCE.compareTo(engine.getEmergencyStopBalance()) == 0);
+        assertTrue(TRADE_CYCLE_INTERVAL == engine.getTradeCycleInterval());
     }
 
     @Test(expected = IllegalStateException.class)
@@ -62,5 +69,27 @@ public class TestEngineConfigurationManagement {
 
         ConfigurationManager.loadConfig(Engine.class,
                 MISSING_XML_CONFIG_FILENAME, XML_SCHEMA_FILENAME);
+    }
+
+    @Test
+    public void testSavingConfigToXmlIsSuccessful() throws Exception {
+
+        final Engine engineConfig = new Engine();
+        engineConfig.setEmergencyStopCurrency(EMERGENCY_STOP_CURRENCY);
+        engineConfig.setEmergencyStopBalance(EMERGENCY_STOP_BALANCE);
+        engineConfig.setTradeCycleInterval(TRADE_CYCLE_INTERVAL);
+
+        ConfigurationManager.saveConfig(Engine.class, engineConfig, XML_CONFIG_TO_SAVE_FILENAME);
+
+        // Read it back in
+        final Engine engine = ConfigurationManager.loadConfig(Engine.class,
+                XML_CONFIG_TO_SAVE_FILENAME, XML_SCHEMA_FILENAME);
+
+        assertEquals(EMERGENCY_STOP_CURRENCY, engine.getEmergencyStopCurrency());
+        assertTrue(EMERGENCY_STOP_BALANCE.compareTo(engine.getEmergencyStopBalance()) == 0);
+        assertTrue(TRADE_CYCLE_INTERVAL == engine.getTradeCycleInterval());
+
+        // cleanup
+        Files.delete(FileSystems.getDefault().getPath(XML_CONFIG_TO_SAVE_FILENAME));
     }
 }
