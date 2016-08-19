@@ -32,7 +32,7 @@ import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
 
 /*
- * Tests a NetworkConfig domain object behaves as expected.
+ * Tests NetworkConfig domain object behaves as expected.
  */
 public class TestNetworkConfig {
 

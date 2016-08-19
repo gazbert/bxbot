@@ -24,13 +24,18 @@
 package com.gazbert.bxbot.core.admin.services;
 
 import com.gazbert.bxbot.core.config.ConfigurationManager;
+import com.gazbert.bxbot.core.config.exchange.AuthenticationConfig;
 import com.gazbert.bxbot.core.config.exchange.ExchangeConfig;
-import com.gazbert.bxbot.core.config.exchange.generated.ExchangeType;
+import com.gazbert.bxbot.core.config.exchange.NetworkConfig;
+import com.gazbert.bxbot.core.config.exchange.OtherConfig;
+import com.gazbert.bxbot.core.config.exchange.generated.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * TODO Work in progress...
+ * Implementation of the Exchange config service.
  *
  * @author gazbert
  * @since 20/07/2016
@@ -38,6 +43,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Service("exchangeConfigService")
 @Transactional
 public class ExchangeConfigServiceImpl implements ExchangeConfigService {
+
+    private static final Logger LOG = LogManager.getLogger();
 
     @Override
     public ExchangeConfig getConfig() {
@@ -47,36 +54,12 @@ public class ExchangeConfigServiceImpl implements ExchangeConfigService {
     }
 
     @Override
-    public ExchangeConfig updateConfig(ExchangeConfig config) {
-        return getCannedExchangeConfig();
-    }
+    public void updateConfig(ExchangeConfig config) {
 
-    private static ExchangeConfig getCannedExchangeConfig() {
+        LOG.info(() -> "About to update: " + config);
 
-        final ExchangeType internalEngineConfig = ConfigurationManager.loadConfig(ExchangeType.class,
-                ExchangeConfig.EXCHANGE_CONFIG_XML_FILENAME, ExchangeConfig.EXCHANGE_CONFIG_XSD_FILENAME);
-        return adaptInternalToExternalConfig(internalEngineConfig);
-
-//        final AuthenticationConfig authenticationConfig = new AuthenticationConfig();
-//        authenticationConfig.getItems().put("api-key", "apiKey--123");
-//        authenticationConfig.getItems().put("secret", "my-secret-KEY");
-//
-//        final NetworkConfig networkConfig = new NetworkConfig();
-//        networkConfig.setConnectionTimeout(30);
-//        networkConfig.setNonFatalErrorCodes(Arrays.asList(502, 503, 504));
-//        networkConfig.setNonFatalErrorMessages(Arrays.asList(
-//                "Connection refused", "Connection reset", "Remote host closed connection during handshake"));
-//
-//        final OtherConfig otherConfig = new OtherConfig();
-//        otherConfig.getItems().put("buy-fee", "0.20");
-//        otherConfig.getItems().put("sell-fee", "0.25");
-//
-//        final ExchangeConfig exchangeConfig = new ExchangeConfig();
-//        exchangeConfig.setAuthenticationConfig(authenticationConfig);
-//        exchangeConfig.setNetworkConfig(networkConfig);
-//        exchangeConfig.setOtherConfig(otherConfig);
-//
-//        return exchangeConfig;
+        final ExchangeType internalExchangeConfig = adaptExternalToInternalConfig(config);
+        ConfigurationManager.saveConfig(ExchangeType.class, internalExchangeConfig, ExchangeConfig.EXCHANGE_CONFIG_XML_FILENAME);
     }
 
     // ------------------------------------------------------------------------------------------------
@@ -84,7 +67,66 @@ public class ExchangeConfigServiceImpl implements ExchangeConfigService {
     // ------------------------------------------------------------------------------------------------
 
     private static ExchangeConfig adaptInternalToExternalConfig(ExchangeType internalExchangeConfig) {
-        final ExchangeConfig externalExchangeConfig = new ExchangeConfig();
-        return externalExchangeConfig;
+
+        final AuthenticationConfig authenticationConfig = new AuthenticationConfig();
+        // We don't expose the authentication config in the Config Service GET operations - security risk!
+
+        final NetworkConfig networkConfig = new NetworkConfig();
+        networkConfig.setConnectionTimeout(internalExchangeConfig.getNetworkConfig().getConnectionTimeout());
+        networkConfig.setNonFatalErrorCodes(internalExchangeConfig.getNetworkConfig().getNonFatalErrorCodes().getCodes());
+        networkConfig.setNonFatalErrorMessages(internalExchangeConfig.getNetworkConfig().getNonFatalErrorMessages().getMessages());
+
+        final OtherConfig otherConfig = new OtherConfig();
+        internalExchangeConfig.getOtherConfig().getConfigItems()
+                .forEach(item -> otherConfig.addItem(item.getName(), item.getValue()));
+
+        final ExchangeConfig exchangeConfig = new ExchangeConfig();
+        exchangeConfig.setExchangeName(internalExchangeConfig.getName());
+        exchangeConfig.setExchangeAdapter(internalExchangeConfig.getAdapter());
+        exchangeConfig.setAuthenticationConfig(authenticationConfig);
+        exchangeConfig.setNetworkConfig(networkConfig);
+        exchangeConfig.setOtherConfig(otherConfig);
+        return exchangeConfig;
+    }
+
+    private static ExchangeType adaptExternalToInternalConfig(ExchangeConfig externalExchangeConfig) {
+
+        final AuthenticationConfigType authenticationConfig = new AuthenticationConfigType();
+        externalExchangeConfig.getAuthenticationConfig().getItems().entrySet()
+                .forEach(authItem -> {
+                    final ConfigItemType configItem = new ConfigItemType();
+                    configItem.setName(authItem.getKey());
+                    configItem.setValue(authItem.getValue());
+                    authenticationConfig.getConfigItems().add(configItem);
+                });
+
+        final NonFatalErrorCodesType nonFatalErrorCodes = new NonFatalErrorCodesType();
+        nonFatalErrorCodes.getCodes().addAll(externalExchangeConfig.getNetworkConfig().getNonFatalErrorCodes());
+        final NonFatalErrorMessagesType nonFatalErrorMessages = new NonFatalErrorMessagesType();
+        nonFatalErrorMessages.getMessages().addAll(externalExchangeConfig.getNetworkConfig().getNonFatalErrorMessages());
+        final NetworkConfigType networkConfig = new NetworkConfigType();
+        networkConfig.setConnectionTimeout(externalExchangeConfig.getNetworkConfig().getConnectionTimeout());
+        networkConfig.setNonFatalErrorCodes(nonFatalErrorCodes);
+        networkConfig.setNonFatalErrorMessages(nonFatalErrorMessages);
+
+        // TODO Finish this lot off
+//        final ConfigItemType buyFee = new ConfigItemType();
+//        buyFee.setName(BUY_FEE_CONFIG_ITEM_KEY);
+//        buyFee.setValue(BUY_FEE_CONFIG_ITEM_VALUE);
+//        final ConfigItemType sellFee = new ConfigItemType();
+//        sellFee.setName(SELL_FEE_CONFIG_ITEM_KEY);
+//        sellFee.setValue(SELL_FEE_CONFIG_ITEM_VALUE);
+//        final OtherConfigType otherConfig = new OtherConfigType();
+//        otherConfig.getConfigItems().add(buyFee);
+//        otherConfig.getConfigItems().add(sellFee);
+
+        final ExchangeType exchangeConfig = new ExchangeType();
+        exchangeConfig.setName(externalExchangeConfig.getExchangeName());
+        exchangeConfig.setAdapter(externalExchangeConfig.getExchangeAdapter());
+        exchangeConfig.setAuthenticationConfig(authenticationConfig);
+        exchangeConfig.setNetworkConfig(networkConfig);
+//        exchangeConfig.setOtherConfig(otherConfig);
+
+        return exchangeConfig;
     }
 }

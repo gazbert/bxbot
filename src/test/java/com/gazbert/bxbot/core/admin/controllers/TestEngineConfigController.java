@@ -65,6 +65,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebAppConfiguration
 public class TestEngineConfigController {
 
+    private static final String ENGINE_EMERGENCY_STOP_CURRENCY = "BTC";
+    private static final BigDecimal ENGINE_EMERGENCY_STOP_BALANCE = new BigDecimal("0.9232320");
+    private static final int ENGINE_TRADE_CYCLE_INTERVAL = 60;
+
     private static final MediaType CONTENT_TYPE = new MediaType(MediaType.APPLICATION_JSON.getType(),
             MediaType.APPLICATION_JSON.getSubtype(), Charset.forName("utf8"));
 
@@ -100,9 +104,9 @@ public class TestEngineConfigController {
         this.mockMvc.perform(get("/api/config/engine"))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.emergencyStopCurrency").value("BTC"))
-                .andExpect(jsonPath("$.emergencyStopBalance").value(0.923232))
-                .andExpect(jsonPath("$.tradeCycleInterval").value(60)
+                .andExpect(jsonPath("$.emergencyStopCurrency").value(ENGINE_EMERGENCY_STOP_CURRENCY))
+                .andExpect(jsonPath("$.emergencyStopBalance").value(ENGINE_EMERGENCY_STOP_BALANCE.doubleValue()     ))
+                .andExpect(jsonPath("$.tradeCycleInterval").value(ENGINE_TRADE_CYCLE_INTERVAL)
                 );
     }
 
@@ -128,9 +132,9 @@ public class TestEngineConfigController {
 
     private static EngineConfig someEngineConfig() {
         final EngineConfig engineConfig = new EngineConfig();
-        engineConfig.setEmergencyStopCurrency("BTC");
-        engineConfig.setEmergencyStopBalance(new BigDecimal("0.923232"));
-        engineConfig.setTradeCycleInterval(60);
+        engineConfig.setEmergencyStopCurrency(ENGINE_EMERGENCY_STOP_CURRENCY);
+        engineConfig.setEmergencyStopBalance(ENGINE_EMERGENCY_STOP_BALANCE);
+        engineConfig.setTradeCycleInterval(ENGINE_TRADE_CYCLE_INTERVAL);
         return engineConfig;
     }
 }

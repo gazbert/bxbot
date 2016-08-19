@@ -45,9 +45,30 @@ public class ExchangeConfig implements com.gazbert.bxbot.core.api.exchange.Excha
      */
     public static final String EXCHANGE_CONFIG_XSD_FILENAME = "com/gazbert/bxbot/core/config/exchange/exchange.xsd";
 
+    private String exchangeName;
+    private String exchangeAdapter;
     private AuthenticationConfig authenticationConfig;
     private NetworkConfig networkConfig;
     private OtherConfig otherConfig;
+
+
+    @Override
+    public String getExchangeName() {
+        return exchangeName;
+    }
+
+    public void setExchangeName(String exchangeName) {
+        this.exchangeName = exchangeName;
+    }
+
+    @Override
+    public String getExchangeAdapter() {
+        return exchangeAdapter;
+    }
+
+    public void setExchangeAdapter(String exchangeAdapter) {
+        this.exchangeAdapter = exchangeAdapter;
+    }
 
     @Override
     public AuthenticationConfig getAuthenticationConfig() {
@@ -78,9 +99,10 @@ public class ExchangeConfig implements com.gazbert.bxbot.core.api.exchange.Excha
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
+                .add("exchangeName", exchangeName)
+                .add("exchangeAdapter", exchangeAdapter)
                 // WARNING - careful showing this!
                 //.add("authenticationConfig", authenticationConfig)
-
                 .add("networkConfig", networkConfig)
                 .add("otherConfig", otherConfig)
                 .toString();

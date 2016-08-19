@@ -28,7 +28,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
 /*
- * Tests a AuthenticationConfig domain object behaves as expected.
+ * Tests AuthenticationConfig domain object behaves as expected.
  */
 public class TestAuthenticationConfig {
 

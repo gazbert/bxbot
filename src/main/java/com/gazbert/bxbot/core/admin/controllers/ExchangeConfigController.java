@@ -23,8 +23,8 @@
 
 package com.gazbert.bxbot.core.admin.controllers;
 
-import com.gazbert.bxbot.core.config.exchange.ExchangeConfig;
 import com.gazbert.bxbot.core.admin.services.ExchangeConfigService;
+import com.gazbert.bxbot.core.config.exchange.ExchangeConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -73,9 +73,9 @@ public class ExchangeConfigController {
     @RequestMapping(value = "/config/exchange", method = RequestMethod.PUT)
     ResponseEntity<?> updateExchange(@RequestBody ExchangeConfig config) {
 
-        final ExchangeConfig updatedExchangeConfig = exchangeConfigService.updateConfig(config);
+        exchangeConfigService.updateConfig(config);
         final HttpHeaders httpHeaders = new HttpHeaders();
-        return new ResponseEntity<>(updatedExchangeConfig, httpHeaders, HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>(null, httpHeaders, HttpStatus.NO_CONTENT);
     }
 }
 

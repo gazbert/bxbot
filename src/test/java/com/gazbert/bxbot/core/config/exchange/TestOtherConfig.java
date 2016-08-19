@@ -28,7 +28,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
 /*
- * Tests a OtherConfig domain object behaves as expected.
+ * Tests OtherConfig domain object behaves as expected.
  */
 public class TestOtherConfig {
 

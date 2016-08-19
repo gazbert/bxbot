@@ -48,6 +48,7 @@ import org.springframework.web.context.WebApplicationContext;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Arrays;
+import java.util.List;
 
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -66,6 +67,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @WebAppConfiguration
 public class TestExchangeConfigController {
+
+    private static final String EXCHANGE_NAME = "BTC-e";
+    private static final String EXCHANGE_ADAPTER = "com.gazbert.bxbot.core.exchanges.TestExchangeAdapter";
+
+    private static final Integer CONNECTION_TIMEOUT = 30;
+    private static final List<Integer> NON_FATAL_ERROR_CODES = Arrays.asList(502, 503, 504);
+    private static final List<String> NON_FATAL_ERROR_MESSAGES = Arrays.asList(
+            "Connection refused", "Connection reset", "Remote host closed connection during handshake");
+
+    private static final String BUY_FEE_CONFIG_ITEM_KEY = "buy-fee";
+    private static final String BUY_FEE_CONFIG_ITEM_VALUE = "0.20";
+    private static final String SELL_FEE_CONFIG_ITEM_KEY = "sell-fee";
+    private static final String SELL_FEE_CONFIG_ITEM_VALUE = "0.25";
 
     private static final MediaType CONTENT_TYPE = new MediaType(MediaType.APPLICATION_JSON.getType(),
             MediaType.APPLICATION_JSON.getSubtype(), Charset.forName("utf8"));
@@ -101,21 +115,23 @@ public class TestExchangeConfigController {
 
         this.mockMvc.perform(get("/api/config/exchange"))
                 .andDo(print())
-                .andExpect(status().isOk()
+                .andExpect(status().isOk())
 
-//                .andExpect(jsonPath("$.authenticationConfig.items.api-key").value("apiKey--123"))
-//                .andExpect(jsonPath("$.authenticationConfig.items.secret").value("my-secret-KEY"))
-//
-//                .andExpect(jsonPath("$.networkConfig.connectionTimeout").value(30))
-//                .andExpect(jsonPath("$.networkConfig.nonFatalErrorCodes[0]").value(502))
-//                .andExpect(jsonPath("$.networkConfig.nonFatalErrorCodes[1]").value(503))
-//                .andExpect(jsonPath("$.networkConfig.nonFatalErrorCodes[2]").value(504))
-//                .andExpect(jsonPath("$.networkConfig.nonFatalErrorMessages[0]").value("Connection refused"))
-//                .andExpect(jsonPath("$.networkConfig.nonFatalErrorMessages[1]").value("Connection reset"))
-//                .andExpect(jsonPath("$.networkConfig.nonFatalErrorMessages[2]").value("Remote host closed connection during handshake"))
-//
-//                .andExpect(jsonPath("$.otherConfig.items.buy-fee").value("0.20"))
-//                .andExpect(jsonPath("$.otherConfig.items.sell-fee").value("0.25")
+                .andExpect(jsonPath("$.exchangeName").value(EXCHANGE_NAME))
+                .andExpect(jsonPath("$.exchangeAdapter").value(EXCHANGE_ADAPTER))
+
+                .andExpect(jsonPath("$.authenticationConfig.items").isEmpty())
+
+                .andExpect(jsonPath("$.networkConfig.connectionTimeout").value(CONNECTION_TIMEOUT))
+                .andExpect(jsonPath("$.networkConfig.nonFatalErrorCodes[0]").value(502))
+                .andExpect(jsonPath("$.networkConfig.nonFatalErrorCodes[1]").value(503))
+                .andExpect(jsonPath("$.networkConfig.nonFatalErrorCodes[2]").value(504))
+                .andExpect(jsonPath("$.networkConfig.nonFatalErrorMessages[0]").value("Connection refused"))
+                .andExpect(jsonPath("$.networkConfig.nonFatalErrorMessages[1]").value("Connection reset"))
+                .andExpect(jsonPath("$.networkConfig.nonFatalErrorMessages[2]").value("Remote host closed connection during handshake"))
+
+                .andExpect(jsonPath("$.otherConfig.items.buy-fee").value(BUY_FEE_CONFIG_ITEM_VALUE))
+                .andExpect(jsonPath("$.otherConfig.items.sell-fee").value(SELL_FEE_CONFIG_ITEM_VALUE)
 
                 );
     }
@@ -143,20 +159,20 @@ public class TestExchangeConfigController {
     private static ExchangeConfig someExchangeConfig() {
 
         final AuthenticationConfig authenticationConfig = new AuthenticationConfig();
-        authenticationConfig.getItems().put("api-key", "apiKey--123");
-        authenticationConfig.getItems().put("secret", "my-secret-key");
+        // we don't send auth config in GET request - security risk
 
         final NetworkConfig networkConfig = new NetworkConfig();
-        networkConfig.setConnectionTimeout(30);
-        networkConfig.setNonFatalErrorCodes(Arrays.asList(502, 503, 504));
-        networkConfig.setNonFatalErrorMessages(Arrays.asList(
-                "Connection refused", "Connection reset", "Remote host closed connection during handshake"));
+        networkConfig.setConnectionTimeout(CONNECTION_TIMEOUT);
+        networkConfig.setNonFatalErrorCodes(NON_FATAL_ERROR_CODES);
+        networkConfig.setNonFatalErrorMessages(NON_FATAL_ERROR_MESSAGES);
 
         final OtherConfig otherConfig = new OtherConfig();
-        otherConfig.getItems().put("buy-fee", "0.20");
-        otherConfig.getItems().put("sell-fee", "0.25");
+        otherConfig.getItems().put(BUY_FEE_CONFIG_ITEM_KEY, BUY_FEE_CONFIG_ITEM_VALUE);
+        otherConfig.getItems().put(SELL_FEE_CONFIG_ITEM_KEY, SELL_FEE_CONFIG_ITEM_VALUE);
 
         final ExchangeConfig exchangeConfig = new ExchangeConfig();
+        exchangeConfig.setExchangeName(EXCHANGE_NAME);
+        exchangeConfig.setExchangeAdapter(EXCHANGE_ADAPTER);
         exchangeConfig.setAuthenticationConfig(authenticationConfig);
         exchangeConfig.setNetworkConfig(networkConfig);
         exchangeConfig.setOtherConfig(otherConfig);

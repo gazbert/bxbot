@@ -70,10 +70,10 @@ public class TestEngineConfigService {
         PowerMock.replayAll();
 
         final EngineConfigService engineConfigService = new EngineConfigServiceImpl();
-        final EngineConfig externalEngineConfig = engineConfigService.getConfig();
-        assertThat(externalEngineConfig.getEmergencyStopCurrency()).isEqualTo(ENGINE_EMERGENCY_STOP_CURRENCY);
-        assertThat(externalEngineConfig.getEmergencyStopBalance()).isEqualTo(ENGINE_EMERGENCY_STOP_BALANCE);
-        assertThat(externalEngineConfig.getTradeCycleInterval()).isEqualTo(ENGINE_TRADE_CYCLE_INTERVAL);
+        final EngineConfig engineConfig = engineConfigService.getConfig();
+        assertThat(engineConfig.getEmergencyStopCurrency()).isEqualTo(ENGINE_EMERGENCY_STOP_CURRENCY);
+        assertThat(engineConfig.getEmergencyStopBalance()).isEqualTo(ENGINE_EMERGENCY_STOP_BALANCE);
+        assertThat(engineConfig.getTradeCycleInterval()).isEqualTo(ENGINE_TRADE_CYCLE_INTERVAL);
 
         PowerMock.verifyAll();
     }

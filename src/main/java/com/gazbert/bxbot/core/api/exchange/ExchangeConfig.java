@@ -38,6 +38,18 @@ package com.gazbert.bxbot.core.api.exchange;
 public interface ExchangeConfig {
 
     /**
+     * Returns the name of the exchange.
+     * @return the exchange name.
+     */
+    String getExchangeName();
+
+    /**
+     * Returns the fully qualified class name of the Exchange Adapter.
+     * @return the full class name (includes packages) of the Exchange Adapter.
+     */
+    String getExchangeAdapter();
+
+    /**
      * Returns any (optional) authentication config.
      * @return authentication config if present, null otherwise.
      */
