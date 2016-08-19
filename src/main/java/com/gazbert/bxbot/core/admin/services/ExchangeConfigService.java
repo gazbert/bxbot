@@ -25,14 +25,13 @@ package com.gazbert.bxbot.core.admin.services;
 import com.gazbert.bxbot.core.config.exchange.ExchangeConfig;
 
 /**
- * TODO Work in progress...
+ * The Exchange configuration service.
  *
  * @author gazbert
  * @since 20/07/2016
  */
 public interface ExchangeConfigService {
 
-        ExchangeConfig getConfig();
-
-        ExchangeConfig updateConfig(ExchangeConfig config);
+    ExchangeConfig getConfig();
+    ExchangeConfig updateConfig(ExchangeConfig config);
 }

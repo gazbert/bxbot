@@ -36,8 +36,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * TODO Work in progress...
- *
  * Controller for directing Exchange config requests.
  * <p>
  * Exchange config can only be fetched and updated - there is only 1 Exchange Adapter per bot.
@@ -77,8 +75,7 @@ public class ExchangeConfigController {
 
         final ExchangeConfig updatedExchangeConfig = exchangeConfigService.updateConfig(config);
         final HttpHeaders httpHeaders = new HttpHeaders();
-        // TODO any other headers required?
-        return new ResponseEntity<>(updatedExchangeConfig, httpHeaders, HttpStatus.OK);
+        return new ResponseEntity<>(updatedExchangeConfig, httpHeaders, HttpStatus.NO_CONTENT);
     }
 }
 

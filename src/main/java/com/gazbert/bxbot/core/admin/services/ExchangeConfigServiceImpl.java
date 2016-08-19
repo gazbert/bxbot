@@ -23,14 +23,11 @@
 
 package com.gazbert.bxbot.core.admin.services;
 
-import com.gazbert.bxbot.core.config.exchange.AuthenticationConfig;
+import com.gazbert.bxbot.core.config.ConfigurationManager;
 import com.gazbert.bxbot.core.config.exchange.ExchangeConfig;
-import com.gazbert.bxbot.core.config.exchange.NetworkConfig;
-import com.gazbert.bxbot.core.config.exchange.OtherConfig;
+import com.gazbert.bxbot.core.config.exchange.generated.ExchangeType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Arrays;
 
 /**
  * TODO Work in progress...
@@ -44,7 +41,9 @@ public class ExchangeConfigServiceImpl implements ExchangeConfigService {
 
     @Override
     public ExchangeConfig getConfig() {
-        return getCannedExchangeConfig();
+        final ExchangeType internalEngineConfig = ConfigurationManager.loadConfig(ExchangeType.class,
+                ExchangeConfig.EXCHANGE_CONFIG_XML_FILENAME, ExchangeConfig.EXCHANGE_CONFIG_XSD_FILENAME);
+        return adaptInternalToExternalConfig(internalEngineConfig);
     }
 
     @Override
@@ -52,30 +51,40 @@ public class ExchangeConfigServiceImpl implements ExchangeConfigService {
         return getCannedExchangeConfig();
     }
 
-    /*
-     * TODO Hard code these for now - will come from Repository later...
-     */
     private static ExchangeConfig getCannedExchangeConfig() {
 
-        final AuthenticationConfig authenticationConfig = new AuthenticationConfig();
-        authenticationConfig.getItems().put("api-key", "apiKey--123");
-        authenticationConfig.getItems().put("secret", "my-secret-KEY");
+        final ExchangeType internalEngineConfig = ConfigurationManager.loadConfig(ExchangeType.class,
+                ExchangeConfig.EXCHANGE_CONFIG_XML_FILENAME, ExchangeConfig.EXCHANGE_CONFIG_XSD_FILENAME);
+        return adaptInternalToExternalConfig(internalEngineConfig);
 
-        final NetworkConfig networkConfig = new NetworkConfig();
-        networkConfig.setConnectionTimeout(30);
-        networkConfig.setNonFatalErrorCodes(Arrays.asList(502, 503, 504));
-        networkConfig.setNonFatalErrorMessages(Arrays.asList(
-                "Connection refused", "Connection reset", "Remote host closed connection during handshake"));
+//        final AuthenticationConfig authenticationConfig = new AuthenticationConfig();
+//        authenticationConfig.getItems().put("api-key", "apiKey--123");
+//        authenticationConfig.getItems().put("secret", "my-secret-KEY");
+//
+//        final NetworkConfig networkConfig = new NetworkConfig();
+//        networkConfig.setConnectionTimeout(30);
+//        networkConfig.setNonFatalErrorCodes(Arrays.asList(502, 503, 504));
+//        networkConfig.setNonFatalErrorMessages(Arrays.asList(
+//                "Connection refused", "Connection reset", "Remote host closed connection during handshake"));
+//
+//        final OtherConfig otherConfig = new OtherConfig();
+//        otherConfig.getItems().put("buy-fee", "0.20");
+//        otherConfig.getItems().put("sell-fee", "0.25");
+//
+//        final ExchangeConfig exchangeConfig = new ExchangeConfig();
+//        exchangeConfig.setAuthenticationConfig(authenticationConfig);
+//        exchangeConfig.setNetworkConfig(networkConfig);
+//        exchangeConfig.setOtherConfig(otherConfig);
+//
+//        return exchangeConfig;
+    }
 
-        final OtherConfig otherConfig = new OtherConfig();
-        otherConfig.getItems().put("buy-fee", "0.20");
-        otherConfig.getItems().put("sell-fee", "0.25");
+    // ------------------------------------------------------------------------------------------------
+    // Adapter methods
+    // ------------------------------------------------------------------------------------------------
 
-        final ExchangeConfig exchangeConfig = new ExchangeConfig();
-        exchangeConfig.setAuthenticationConfig(authenticationConfig);
-        exchangeConfig.setNetworkConfig(networkConfig);
-        exchangeConfig.setOtherConfig(otherConfig);
-
-        return exchangeConfig;
+    private static ExchangeConfig adaptInternalToExternalConfig(ExchangeType internalExchangeConfig) {
+        final ExchangeConfig externalExchangeConfig = new ExchangeConfig();
+        return externalExchangeConfig;
     }
 }
