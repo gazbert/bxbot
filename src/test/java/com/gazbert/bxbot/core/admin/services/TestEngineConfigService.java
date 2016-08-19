@@ -23,26 +23,90 @@
 
 package com.gazbert.bxbot.core.admin.services;
 
+import com.gazbert.bxbot.core.config.ConfigurationManager;
+import com.gazbert.bxbot.core.config.engine.EngineConfig;
+import com.gazbert.bxbot.core.config.engine.generated.Engine;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.powermock.api.easymock.PowerMock;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
+
+import java.math.BigDecimal;
+
+import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.easymock.EasyMock.*;
 
 /**
- * TODO Work in progress...
- *
  * Tests Engine configuration service behaves as expected.
  *
  * @author gazbert
  * @since 14/08/2016
  */
+@RunWith(PowerMockRunner.class)
+@PrepareForTest({ConfigurationManager.class})
 public class TestEngineConfigService {
 
-    private EngineConfigService engineConfigService;
+    private static final String ENGINE_EMERGENCY_STOP_CURRENCY = "BTC";
+    private static final BigDecimal ENGINE_EMERGENCY_STOP_BALANCE = new BigDecimal("0.5");
+    private static final int ENGINE_TRADE_CYCLE_INTERVAL = 60;
+
+
+    @Before
+    public void setup() throws Exception {
+        PowerMock.mockStatic(ConfigurationManager.class);
+    }
 
     @Test
-    public void whenUpdateConfigCalledThenExpectSomething() {
+    public void whenGetConfigCalledThenExpectServiceToLoadIt() throws Exception {
 
+        expect(ConfigurationManager.loadConfig(
+                eq(Engine.class),
+                eq(EngineConfig.ENGINE_CONFIG_XML_FILENAME),
+                eq(EngineConfig.ENGINE_CONFIG_XSD_FILENAME))).
+                andReturn(someInternalEngineConfig());
+
+        PowerMock.replayAll();
 
         final EngineConfigService engineConfigService = new EngineConfigServiceImpl();
+        final EngineConfig externalEngineConfig = engineConfigService.getConfig();
+        assertThat(externalEngineConfig.getEmergencyStopCurrency()).isEqualTo(ENGINE_EMERGENCY_STOP_CURRENCY);
+        assertThat(externalEngineConfig.getEmergencyStopBalance()).isEqualTo(ENGINE_EMERGENCY_STOP_BALANCE);
+        assertThat(externalEngineConfig.getTradeCycleInterval()).isEqualTo(ENGINE_TRADE_CYCLE_INTERVAL);
 
+        PowerMock.verifyAll();
+    }
 
+    @Test
+    public void whenUpdateConfigCalledThenExpectServiceToSaveIt() throws Exception {
+
+        ConfigurationManager.saveConfig(eq(Engine.class), anyObject(Engine.class), eq(EngineConfig.ENGINE_CONFIG_XML_FILENAME));
+        PowerMock.replayAll();
+
+        final EngineConfigService engineConfigService = new EngineConfigServiceImpl();
+        engineConfigService.updateConfig(withSomeExternalEngineConfig());
+
+        PowerMock.verifyAll();
+    }
+
+    // ------------------------------------------------------------------------------------------------
+    // Private utils
+    // ------------------------------------------------------------------------------------------------
+
+    private static Engine someInternalEngineConfig() {
+        final Engine internalConfig = new Engine();
+        internalConfig.setEmergencyStopBalance(ENGINE_EMERGENCY_STOP_BALANCE);
+        internalConfig.setEmergencyStopCurrency(ENGINE_EMERGENCY_STOP_CURRENCY);
+        internalConfig.setTradeCycleInterval(ENGINE_TRADE_CYCLE_INTERVAL);
+        return internalConfig;
+    }
+
+    private static EngineConfig withSomeExternalEngineConfig() {
+        final EngineConfig externalConfig = new EngineConfig();
+        externalConfig.setEmergencyStopBalance(ENGINE_EMERGENCY_STOP_BALANCE);
+        externalConfig.setEmergencyStopCurrency(ENGINE_EMERGENCY_STOP_CURRENCY);
+        externalConfig.setTradeCycleInterval(ENGINE_TRADE_CYCLE_INTERVAL);
+        return externalConfig;
     }
 }
