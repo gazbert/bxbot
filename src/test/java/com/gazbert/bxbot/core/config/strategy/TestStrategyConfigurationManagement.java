@@ -24,7 +24,6 @@
 package com.gazbert.bxbot.core.config.strategy;
 
 import com.gazbert.bxbot.core.config.ConfigurationManager;
-import com.gazbert.bxbot.core.config.engine.generated.Engine;
 import com.gazbert.bxbot.core.config.strategy.generated.TradingStrategiesType;
 import org.junit.Test;
 
@@ -32,7 +31,6 @@ import static org.junit.Assert.*;
 
 /*
  * Tests the Trading Strategy configuration is loaded as expected.
- * We're not testing the JAXB impl here - cherry pick the important stuff.
  */
 public class TestStrategyConfigurationManagement {
 
@@ -104,7 +102,7 @@ public class TestStrategyConfigurationManagement {
     @Test(expected = IllegalStateException.class)
     public void testLoadingMissingXmlConfigFileThrowsException() {
 
-        ConfigurationManager.loadConfig(Engine.class,
+        ConfigurationManager.loadConfig(TradingStrategiesType.class,
                 MISSING_XML_CONFIG_FILENAME, XML_SCHEMA_FILENAME);
     }
 }

@@ -24,7 +24,6 @@
 package com.gazbert.bxbot.core.config.market;
 
 import com.gazbert.bxbot.core.config.ConfigurationManager;
-import com.gazbert.bxbot.core.config.engine.generated.Engine;
 import com.gazbert.bxbot.core.config.market.generated.MarketsType;
 import org.junit.Test;
 
@@ -32,7 +31,6 @@ import static org.junit.Assert.*;
 
 /*
  * Tests the Market configuration is loaded as expected.
- * We're not testing the JAXB impl here - cherry pick the important stuff.
  */
 public class TestMarketConfigurationManagement {
 
@@ -70,7 +68,7 @@ public class TestMarketConfigurationManagement {
     @Test(expected = IllegalStateException.class)
     public void testLoadingMissingXmlConfigFileThrowsException() {
 
-        ConfigurationManager.loadConfig(Engine.class,
+        ConfigurationManager.loadConfig(MarketsType.class,
                 MISSING_XML_CONFIG_FILENAME, XML_SCHEMA_FILENAME);
     }
 }

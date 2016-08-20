@@ -59,7 +59,7 @@ public class TestExchangeConfigService {
     private static final String API_KEY_CONFIG_ITEM_VALUE = "apiKey--123";
 
     private static final String SECRET_CONFIG_ITEM_KEY = "secret";
-    private static final String SECRET_FEE_CONFIG_ITEM_VALUE = "secret-key";
+    private static final String SECRET_CONFIG_ITEM_VALUE = "secret-key";
 
     private static final Integer CONNECTION_TIMEOUT = 30;
     private static final List<Integer> NON_FATAL_ERROR_CODES = Arrays.asList(502, 503, 504);
@@ -92,7 +92,10 @@ public class TestExchangeConfigService {
         final ExchangeConfig exchangeConfig = exchangeConfigService.getConfig();
         assertThat(exchangeConfig.getExchangeName()).isEqualTo(EXCHANGE_NAME);
         assertThat(exchangeConfig.getExchangeAdapter()).isEqualTo(EXCHANGE_ADAPTER);
-        assertThat(exchangeConfig.getAuthenticationConfig().getItems().size()).isZero();
+
+        // We don't expose AuthenticationConfig in the service - security risk
+        assertThat(exchangeConfig.getAuthenticationConfig()).isNull();
+
         assertThat(exchangeConfig.getNetworkConfig().getConnectionTimeout()).isEqualTo(CONNECTION_TIMEOUT);
         assertThat(exchangeConfig.getNetworkConfig().getNonFatalErrorCodes()).isEqualTo(NON_FATAL_ERROR_CODES);
         assertThat(exchangeConfig.getNetworkConfig().getNonFatalErrorMessages()).isEqualTo(NON_FATAL_ERROR_MESSAGES);
@@ -104,6 +107,13 @@ public class TestExchangeConfigService {
 
     @Test
     public void whenUpdateConfigCalledThenExpectServiceToSaveIt() throws Exception {
+
+        // for loading the existing auth config to merge with updated stuff
+        expect(ConfigurationManager.loadConfig(
+                eq(ExchangeType.class),
+                eq(ExchangeConfig.EXCHANGE_CONFIG_XML_FILENAME),
+                eq(ExchangeConfig.EXCHANGE_CONFIG_XSD_FILENAME))).
+                andReturn(someInternalExchangeConfig());
 
         ConfigurationManager.saveConfig(eq(ExchangeType.class), anyObject(ExchangeType.class), eq(ExchangeConfig.EXCHANGE_CONFIG_XML_FILENAME));
         PowerMock.replayAll();
@@ -121,7 +131,14 @@ public class TestExchangeConfigService {
     private static ExchangeType someInternalExchangeConfig() {
 
         final AuthenticationConfigType authenticationConfig = new AuthenticationConfigType();
-        // We don't expose the authentication config in the Config Service - security risk
+        final ConfigItemType apiKey = new ConfigItemType();
+        apiKey.setName(API_KEY_CONFIG_ITEM_KEY);
+        apiKey.setValue(API_KEY_CONFIG_ITEM_VALUE);
+        final ConfigItemType secretKey = new ConfigItemType();
+        secretKey.setName(SECRET_CONFIG_ITEM_KEY);
+        secretKey.setValue(SECRET_CONFIG_ITEM_VALUE);
+        authenticationConfig.getConfigItems().add(apiKey);
+        authenticationConfig.getConfigItems().add(secretKey);
 
         final NonFatalErrorCodesType nonFatalErrorCodes = new NonFatalErrorCodesType();
         nonFatalErrorCodes.getCodes().addAll(NON_FATAL_ERROR_CODES);
@@ -153,9 +170,8 @@ public class TestExchangeConfigService {
 
     private static ExchangeConfig withSomeExternalExchangeConfig() {
 
+        // We don't expose AuthenticationConfig in the service - security risk
         final AuthenticationConfig authenticationConfig = new AuthenticationConfig();
-        authenticationConfig.getItems().put(API_KEY_CONFIG_ITEM_KEY, API_KEY_CONFIG_ITEM_VALUE);
-        authenticationConfig.getItems().put(SECRET_CONFIG_ITEM_KEY, SECRET_FEE_CONFIG_ITEM_VALUE);
 
         final NetworkConfig networkConfig = new NetworkConfig();
         networkConfig.setConnectionTimeout(CONNECTION_TIMEOUT);

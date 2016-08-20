@@ -25,7 +25,7 @@ package com.gazbert.bxbot.core.admin.services;
 
 import com.gazbert.bxbot.core.config.ConfigurationManager;
 import com.gazbert.bxbot.core.config.engine.EngineConfig;
-import com.gazbert.bxbot.core.config.engine.generated.Engine;
+import com.gazbert.bxbot.core.config.engine.generated.EngineType;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -62,7 +62,7 @@ public class TestEngineConfigService {
     public void whenGetConfigCalledThenExpectServiceToLoadIt() throws Exception {
 
         expect(ConfigurationManager.loadConfig(
-                eq(Engine.class),
+                eq(EngineType.class),
                 eq(EngineConfig.ENGINE_CONFIG_XML_FILENAME),
                 eq(EngineConfig.ENGINE_CONFIG_XSD_FILENAME))).
                 andReturn(someInternalEngineConfig());
@@ -81,7 +81,7 @@ public class TestEngineConfigService {
     @Test
     public void whenUpdateConfigCalledThenExpectServiceToSaveIt() throws Exception {
 
-        ConfigurationManager.saveConfig(eq(Engine.class), anyObject(Engine.class), eq(EngineConfig.ENGINE_CONFIG_XML_FILENAME));
+        ConfigurationManager.saveConfig(eq(EngineType.class), anyObject(EngineType.class), eq(EngineConfig.ENGINE_CONFIG_XML_FILENAME));
         PowerMock.replayAll();
 
         final EngineConfigService engineConfigService = new EngineConfigServiceImpl();
@@ -94,8 +94,8 @@ public class TestEngineConfigService {
     // Private utils
     // ------------------------------------------------------------------------------------------------
 
-    private static Engine someInternalEngineConfig() {
-        final Engine internalConfig = new Engine();
+    private static EngineType someInternalEngineConfig() {
+        final EngineType internalConfig = new EngineType();
         internalConfig.setEmergencyStopBalance(ENGINE_EMERGENCY_STOP_BALANCE);
         internalConfig.setEmergencyStopCurrency(ENGINE_EMERGENCY_STOP_CURRENCY);
         internalConfig.setTradeCycleInterval(ENGINE_TRADE_CYCLE_INTERVAL);

@@ -24,7 +24,6 @@
 package com.gazbert.bxbot.core.admin.controllers;
 
 import com.gazbert.bxbot.core.admin.services.ExchangeConfigService;
-import com.gazbert.bxbot.core.config.exchange.AuthenticationConfig;
 import com.gazbert.bxbot.core.config.exchange.ExchangeConfig;
 import com.gazbert.bxbot.core.config.exchange.NetworkConfig;
 import com.gazbert.bxbot.core.config.exchange.OtherConfig;
@@ -120,7 +119,8 @@ public class TestExchangeConfigController {
                 .andExpect(jsonPath("$.exchangeName").value(EXCHANGE_NAME))
                 .andExpect(jsonPath("$.exchangeAdapter").value(EXCHANGE_ADAPTER))
 
-                .andExpect(jsonPath("$.authenticationConfig.items").isEmpty())
+                // We don't expose AuthenticationConfig in the REST API - security risk
+                .andExpect(jsonPath("$.authenticationConfig").doesNotExist())
 
                 .andExpect(jsonPath("$.networkConfig.connectionTimeout").value(CONNECTION_TIMEOUT))
                 .andExpect(jsonPath("$.networkConfig.nonFatalErrorCodes[0]").value(502))
@@ -158,8 +158,7 @@ public class TestExchangeConfigController {
 
     private static ExchangeConfig someExchangeConfig() {
 
-        final AuthenticationConfig authenticationConfig = new AuthenticationConfig();
-        // we don't send auth config in GET request - security risk
+        // We don't expose AuthenticationConfig in the REST API - security risk
 
         final NetworkConfig networkConfig = new NetworkConfig();
         networkConfig.setConnectionTimeout(CONNECTION_TIMEOUT);
@@ -173,7 +172,6 @@ public class TestExchangeConfigController {
         final ExchangeConfig exchangeConfig = new ExchangeConfig();
         exchangeConfig.setExchangeName(EXCHANGE_NAME);
         exchangeConfig.setExchangeAdapter(EXCHANGE_ADAPTER);
-        exchangeConfig.setAuthenticationConfig(authenticationConfig);
         exchangeConfig.setNetworkConfig(networkConfig);
         exchangeConfig.setOtherConfig(otherConfig);
 

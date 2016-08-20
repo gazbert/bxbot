@@ -24,7 +24,7 @@
 package com.gazbert.bxbot.core.config.engine;
 
 import com.gazbert.bxbot.core.config.ConfigurationManager;
-import com.gazbert.bxbot.core.config.engine.generated.Engine;
+import com.gazbert.bxbot.core.config.engine.generated.EngineType;
 import org.junit.Test;
 
 import java.math.BigDecimal;
@@ -36,7 +36,6 @@ import static org.junit.Assert.assertTrue;
 
 /*
  * Tests the Trading Engine configuration is loaded as expected.
- * We're not testing the JAXB impl here - cherry pick the important stuff.
  */
 public class TestEngineConfigurationManagement {
 
@@ -56,7 +55,7 @@ public class TestEngineConfigurationManagement {
     @Test
     public void testLoadingValidXmlConfigFileIsSuccessful() {
 
-        final Engine engine = ConfigurationManager.loadConfig(Engine.class,
+        final EngineType engine = ConfigurationManager.loadConfig(EngineType.class,
                 VALID_XML_CONFIG_FILENAME, XML_SCHEMA_FILENAME);
 
         assertEquals(EMERGENCY_STOP_CURRENCY, engine.getEmergencyStopCurrency());
@@ -66,28 +65,26 @@ public class TestEngineConfigurationManagement {
 
     @Test(expected = IllegalStateException.class)
     public void testLoadingMissingXmlConfigThrowsException() {
-
-        ConfigurationManager.loadConfig(Engine.class,
-                MISSING_XML_CONFIG_FILENAME, XML_SCHEMA_FILENAME);
+        ConfigurationManager.loadConfig(EngineType.class, MISSING_XML_CONFIG_FILENAME, XML_SCHEMA_FILENAME);
     }
 
     @Test
     public void testSavingConfigToXmlIsSuccessful() throws Exception {
 
-        final Engine engineConfig = new Engine();
+        final EngineType engineConfig = new EngineType();
         engineConfig.setEmergencyStopCurrency(EMERGENCY_STOP_CURRENCY);
         engineConfig.setEmergencyStopBalance(EMERGENCY_STOP_BALANCE);
         engineConfig.setTradeCycleInterval(TRADE_CYCLE_INTERVAL);
 
-        ConfigurationManager.saveConfig(Engine.class, engineConfig, XML_CONFIG_TO_SAVE_FILENAME);
+        ConfigurationManager.saveConfig(EngineType.class, engineConfig, XML_CONFIG_TO_SAVE_FILENAME);
 
         // Read it back in
-        final Engine engine = ConfigurationManager.loadConfig(Engine.class,
+        final EngineType engineReloaded = ConfigurationManager.loadConfig(EngineType.class,
                 XML_CONFIG_TO_SAVE_FILENAME, XML_SCHEMA_FILENAME);
 
-        assertEquals(EMERGENCY_STOP_CURRENCY, engine.getEmergencyStopCurrency());
-        assertTrue(EMERGENCY_STOP_BALANCE.compareTo(engine.getEmergencyStopBalance()) == 0);
-        assertTrue(TRADE_CYCLE_INTERVAL == engine.getTradeCycleInterval());
+        assertEquals(EMERGENCY_STOP_CURRENCY, engineReloaded.getEmergencyStopCurrency());
+        assertTrue(EMERGENCY_STOP_BALANCE.compareTo(engineReloaded.getEmergencyStopBalance()) == 0);
+        assertTrue(TRADE_CYCLE_INTERVAL == engineReloaded.getTradeCycleInterval());
 
         // cleanup
         Files.delete(FileSystems.getDefault().getPath(XML_CONFIG_TO_SAVE_FILENAME));

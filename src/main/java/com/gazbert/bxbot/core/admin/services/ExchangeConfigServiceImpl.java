@@ -24,7 +24,6 @@
 package com.gazbert.bxbot.core.admin.services;
 
 import com.gazbert.bxbot.core.config.ConfigurationManager;
-import com.gazbert.bxbot.core.config.exchange.AuthenticationConfig;
 import com.gazbert.bxbot.core.config.exchange.ExchangeConfig;
 import com.gazbert.bxbot.core.config.exchange.NetworkConfig;
 import com.gazbert.bxbot.core.config.exchange.OtherConfig;
@@ -68,8 +67,7 @@ public class ExchangeConfigServiceImpl implements ExchangeConfigService {
 
     private static ExchangeConfig adaptInternalToExternalConfig(ExchangeType internalExchangeConfig) {
 
-        final AuthenticationConfig authenticationConfig = new AuthenticationConfig();
-        // We don't expose the authentication config in the Config Service GET operations - security risk!
+        // We don't expose AuthenticationConfig in the service - security risk
 
         final NetworkConfig networkConfig = new NetworkConfig();
         networkConfig.setConnectionTimeout(internalExchangeConfig.getNetworkConfig().getConnectionTimeout());
@@ -83,22 +81,12 @@ public class ExchangeConfigServiceImpl implements ExchangeConfigService {
         final ExchangeConfig exchangeConfig = new ExchangeConfig();
         exchangeConfig.setExchangeName(internalExchangeConfig.getName());
         exchangeConfig.setExchangeAdapter(internalExchangeConfig.getAdapter());
-        exchangeConfig.setAuthenticationConfig(authenticationConfig);
         exchangeConfig.setNetworkConfig(networkConfig);
         exchangeConfig.setOtherConfig(otherConfig);
         return exchangeConfig;
     }
 
     private static ExchangeType adaptExternalToInternalConfig(ExchangeConfig externalExchangeConfig) {
-
-        final AuthenticationConfigType authenticationConfig = new AuthenticationConfigType();
-        externalExchangeConfig.getAuthenticationConfig().getItems().entrySet()
-                .forEach(authItem -> {
-                    final ConfigItemType configItem = new ConfigItemType();
-                    configItem.setName(authItem.getKey());
-                    configItem.setValue(authItem.getValue());
-                    authenticationConfig.getConfigItems().add(configItem);
-                });
 
         final NonFatalErrorCodesType nonFatalErrorCodes = new NonFatalErrorCodesType();
         nonFatalErrorCodes.getCodes().addAll(externalExchangeConfig.getNetworkConfig().getNonFatalErrorCodes());
@@ -109,23 +97,26 @@ public class ExchangeConfigServiceImpl implements ExchangeConfigService {
         networkConfig.setNonFatalErrorCodes(nonFatalErrorCodes);
         networkConfig.setNonFatalErrorMessages(nonFatalErrorMessages);
 
-        // TODO Finish this lot off
-//        final ConfigItemType buyFee = new ConfigItemType();
-//        buyFee.setName(BUY_FEE_CONFIG_ITEM_KEY);
-//        buyFee.setValue(BUY_FEE_CONFIG_ITEM_VALUE);
-//        final ConfigItemType sellFee = new ConfigItemType();
-//        sellFee.setName(SELL_FEE_CONFIG_ITEM_KEY);
-//        sellFee.setValue(SELL_FEE_CONFIG_ITEM_VALUE);
-//        final OtherConfigType otherConfig = new OtherConfigType();
-//        otherConfig.getConfigItems().add(buyFee);
-//        otherConfig.getConfigItems().add(sellFee);
+        final OtherConfigType otherConfig = new OtherConfigType();
+        externalExchangeConfig.getOtherConfig().getItems().entrySet()
+                .forEach(item -> {
+                    final ConfigItemType configItem = new ConfigItemType();
+                    configItem.setName(item.getKey());
+                    configItem.setValue(item.getValue());
+                    otherConfig.getConfigItems().add(configItem);
+                });
 
         final ExchangeType exchangeConfig = new ExchangeType();
         exchangeConfig.setName(externalExchangeConfig.getExchangeName());
         exchangeConfig.setAdapter(externalExchangeConfig.getExchangeAdapter());
-        exchangeConfig.setAuthenticationConfig(authenticationConfig);
         exchangeConfig.setNetworkConfig(networkConfig);
-//        exchangeConfig.setOtherConfig(otherConfig);
+        exchangeConfig.setOtherConfig(otherConfig);
+
+        // We don't accept AuthenticationConfig in the service - security risk
+        // We load the existing auth config and merge it in with the updated stuff...
+        final ExchangeType existingExchangeConfig = ConfigurationManager.loadConfig(ExchangeType.class,
+                ExchangeConfig.EXCHANGE_CONFIG_XML_FILENAME, ExchangeConfig.EXCHANGE_CONFIG_XSD_FILENAME);
+        exchangeConfig.setAuthenticationConfig(existingExchangeConfig.getAuthenticationConfig());
 
         return exchangeConfig;
     }

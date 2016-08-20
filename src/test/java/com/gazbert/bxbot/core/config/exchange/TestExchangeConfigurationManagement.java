@@ -24,15 +24,19 @@
 package com.gazbert.bxbot.core.config.exchange;
 
 import com.gazbert.bxbot.core.config.ConfigurationManager;
-import com.gazbert.bxbot.core.config.exchange.generated.ExchangeType;
+import com.gazbert.bxbot.core.config.exchange.generated.*;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.util.Arrays;
+import java.util.List;
+
+import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.junit.Assert.assertTrue;
 
 /*
  * Tests the Exchange Adapter configuration is loaded as expected.
- * We're not testing the JAXB impl here - cherry pick the important stuff.
  */
 public class TestExchangeConfigurationManagement {
 
@@ -42,6 +46,29 @@ public class TestExchangeConfigurationManagement {
     /* Test XML config */
     private static final String VALID_XML_CONFIG_FILENAME = "src/test/config/exchange/valid-exchange.xml";
     private static final String MISSING_XML_CONFIG_FILENAME = "src/test/config/exchange-/missing-exchange.xml";
+    private static final String XML_CONFIG_TO_SAVE_FILENAME = "src/test/config/exchange/saved-exchange.xml";
+
+    private static final String EXCHANGE_NAME = "BTC-e";
+    private static final String EXCHANGE_ADAPTER = "com.gazbert.bxbot.core.exchanges.BtceExchangeAdapter";
+
+    private static final String API_KEY_CONFIG_ITEM_KEY = "key";
+    private static final String API_KEY_CONFIG_ITEM_VALUE = "your-api-key";
+    private static final String SECRET_CONFIG_ITEM_KEY = "secret";
+    private static final String SECRET_CONFIG_ITEM_VALUE = "your-secret-key";
+
+    private static final Integer CONNECTION_TIMEOUT = 30;
+    private static final List<Integer> NON_FATAL_ERROR_CODES = Arrays.asList(502, 503, 504, 520, 522, 525);
+    private static final List<String> NON_FATAL_ERROR_MESSAGES = Arrays.asList(
+            "Connection refused",
+            "Connection reset",
+            "Remote host closed connection during handshake",
+            "Unexpected end of file from server");
+
+    private static final String BUY_FEE_CONFIG_ITEM_KEY = "buy-fee";
+    private static final String BUY_FEE_CONFIG_ITEM_VALUE = "0.5";
+    private static final String SELL_FEE_CONFIG_ITEM_KEY = "sell-fee";
+    private static final String SELL_FEE_CONFIG_ITEM_VALUE = "0.5";
+
 
     @Test
     public void testLoadingValidXmlConfigFileIsSuccessful() {
@@ -49,14 +76,96 @@ public class TestExchangeConfigurationManagement {
         final ExchangeType exchangeType = ConfigurationManager.loadConfig(ExchangeType.class,
                 VALID_XML_CONFIG_FILENAME, XML_SCHEMA_FILENAME);
 
-        // basic check - we're not testing JAXB here.
-        assertNotNull(exchangeType);
-        assertEquals("com.gazbert.bxbot.core.exchanges.BtceExchangeAdapter", exchangeType.getAdapter());
+        assertThat(exchangeType.getName()).isEqualTo(EXCHANGE_NAME);
+        assertThat(exchangeType.getAdapter()).isEqualTo(EXCHANGE_ADAPTER);
+
+        assertThat(exchangeType.getAuthenticationConfig().getConfigItems().get(0).getName()).isEqualTo(API_KEY_CONFIG_ITEM_KEY);
+        assertThat(exchangeType.getAuthenticationConfig().getConfigItems().get(0).getValue()).isEqualTo(API_KEY_CONFIG_ITEM_VALUE);
+        assertThat(exchangeType.getAuthenticationConfig().getConfigItems().get(1).getName()).isEqualTo(SECRET_CONFIG_ITEM_KEY);
+        assertThat(exchangeType.getAuthenticationConfig().getConfigItems().get(1).getValue()).isEqualTo(SECRET_CONFIG_ITEM_VALUE);
+
+        assertThat(exchangeType.getNetworkConfig().getConnectionTimeout()).isEqualTo(CONNECTION_TIMEOUT);
+        assertTrue(exchangeType.getNetworkConfig().getNonFatalErrorCodes().getCodes().containsAll(NON_FATAL_ERROR_CODES));
+        assertTrue(exchangeType.getNetworkConfig().getNonFatalErrorMessages().getMessages().containsAll(NON_FATAL_ERROR_MESSAGES));
+
+        assertThat(exchangeType.getOtherConfig().getConfigItems().get(0).getName()).isEqualTo(BUY_FEE_CONFIG_ITEM_KEY);
+        assertThat(exchangeType.getOtherConfig().getConfigItems().get(0).getValue()).isEqualTo(BUY_FEE_CONFIG_ITEM_VALUE);
+        assertThat(exchangeType.getOtherConfig().getConfigItems().get(1).getName()).isEqualTo(SELL_FEE_CONFIG_ITEM_KEY);
+        assertThat(exchangeType.getOtherConfig().getConfigItems().get(1).getValue()).isEqualTo(SELL_FEE_CONFIG_ITEM_VALUE);
     }
 
     @Test(expected = IllegalStateException.class)
     public void testLoadingMissingXmlConfigFileThrowsException() {
-
         ConfigurationManager.loadConfig(ExchangeType.class, MISSING_XML_CONFIG_FILENAME, XML_SCHEMA_FILENAME);
+    }
+
+    /*
+     * Painful, but necessary... ;-/
+     */
+    @Test
+    public void testSavingConfigToXmlIsSuccessful() throws Exception {
+
+        final AuthenticationConfigType authenticationConfig = new AuthenticationConfigType();
+        final ConfigItemType apiKey = new ConfigItemType();
+        apiKey.setName(API_KEY_CONFIG_ITEM_KEY);
+        apiKey.setValue(API_KEY_CONFIG_ITEM_VALUE);
+        final ConfigItemType secretKey = new ConfigItemType();
+        secretKey.setName(SECRET_CONFIG_ITEM_KEY);
+        secretKey.setValue(SECRET_CONFIG_ITEM_VALUE);
+        authenticationConfig.getConfigItems().add(apiKey);
+        authenticationConfig.getConfigItems().add(secretKey);
+
+        final NonFatalErrorCodesType nonFatalErrorCodes = new NonFatalErrorCodesType();
+        nonFatalErrorCodes.getCodes().addAll(NON_FATAL_ERROR_CODES);
+        final NonFatalErrorMessagesType nonFatalErrorMessages = new NonFatalErrorMessagesType();
+        nonFatalErrorMessages.getMessages().addAll(NON_FATAL_ERROR_MESSAGES);
+        final NetworkConfigType networkConfig = new NetworkConfigType();
+        networkConfig.setConnectionTimeout(CONNECTION_TIMEOUT);
+        networkConfig.setNonFatalErrorCodes(nonFatalErrorCodes);
+        networkConfig.setNonFatalErrorMessages(nonFatalErrorMessages);
+
+        final ConfigItemType buyFee = new ConfigItemType();
+        buyFee.setName(BUY_FEE_CONFIG_ITEM_KEY);
+        buyFee.setValue(BUY_FEE_CONFIG_ITEM_VALUE);
+        final ConfigItemType sellFee = new ConfigItemType();
+        sellFee.setName(SELL_FEE_CONFIG_ITEM_KEY);
+        sellFee.setValue(SELL_FEE_CONFIG_ITEM_VALUE);
+        final OtherConfigType otherConfig = new OtherConfigType();
+        otherConfig.getConfigItems().add(buyFee);
+        otherConfig.getConfigItems().add(sellFee);
+
+        final ExchangeType exchangeConfig = new ExchangeType();
+        exchangeConfig.setName(EXCHANGE_NAME);
+        exchangeConfig.setAdapter(EXCHANGE_ADAPTER);
+        exchangeConfig.setAuthenticationConfig(authenticationConfig);
+        exchangeConfig.setNetworkConfig(networkConfig);
+        exchangeConfig.setOtherConfig(otherConfig);
+
+        // Save it!
+        ConfigurationManager.saveConfig(ExchangeType.class, exchangeConfig, XML_CONFIG_TO_SAVE_FILENAME);
+
+        // Read it back in
+        final ExchangeType exchangeReloaded = ConfigurationManager.loadConfig(ExchangeType.class,
+                XML_CONFIG_TO_SAVE_FILENAME, XML_SCHEMA_FILENAME);
+
+        assertThat(exchangeReloaded.getName()).isEqualTo(EXCHANGE_NAME);
+        assertThat(exchangeReloaded.getAdapter()).isEqualTo(EXCHANGE_ADAPTER);
+
+        assertThat(exchangeReloaded.getAuthenticationConfig().getConfigItems().get(0).getName()).isEqualTo(API_KEY_CONFIG_ITEM_KEY);
+        assertThat(exchangeReloaded.getAuthenticationConfig().getConfigItems().get(0).getValue()).isEqualTo(API_KEY_CONFIG_ITEM_VALUE);
+        assertThat(exchangeReloaded.getAuthenticationConfig().getConfigItems().get(1).getName()).isEqualTo(SECRET_CONFIG_ITEM_KEY);
+        assertThat(exchangeReloaded.getAuthenticationConfig().getConfigItems().get(1).getValue()).isEqualTo(SECRET_CONFIG_ITEM_VALUE);
+
+        assertThat(exchangeReloaded.getNetworkConfig().getConnectionTimeout()).isEqualTo(CONNECTION_TIMEOUT);
+        assertTrue(exchangeReloaded.getNetworkConfig().getNonFatalErrorCodes().getCodes().containsAll(NON_FATAL_ERROR_CODES));
+        assertTrue(exchangeReloaded.getNetworkConfig().getNonFatalErrorMessages().getMessages().containsAll(NON_FATAL_ERROR_MESSAGES));
+
+        assertThat(exchangeReloaded.getOtherConfig().getConfigItems().get(0).getName()).isEqualTo(BUY_FEE_CONFIG_ITEM_KEY);
+        assertThat(exchangeReloaded.getOtherConfig().getConfigItems().get(0).getValue()).isEqualTo(BUY_FEE_CONFIG_ITEM_VALUE);
+        assertThat(exchangeReloaded.getOtherConfig().getConfigItems().get(1).getName()).isEqualTo(SELL_FEE_CONFIG_ITEM_KEY);
+        assertThat(exchangeReloaded.getOtherConfig().getConfigItems().get(1).getValue()).isEqualTo(SELL_FEE_CONFIG_ITEM_VALUE);
+
+        // cleanup
+        Files.delete(FileSystems.getDefault().getPath(XML_CONFIG_TO_SAVE_FILENAME));
     }
 }

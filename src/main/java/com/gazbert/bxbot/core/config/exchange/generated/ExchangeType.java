@@ -8,10 +8,7 @@
 
 package com.gazbert.bxbot.core.config.exchange.generated;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.*;
 
 
 /**
@@ -57,6 +54,7 @@ import javax.xml.bind.annotation.XmlType;
     "networkConfig",
     "otherConfig"
 })
+@XmlRootElement(name="exchange")
 public class ExchangeType {
 
     @XmlElement(required = true)

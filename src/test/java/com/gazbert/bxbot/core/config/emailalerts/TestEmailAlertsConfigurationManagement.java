@@ -26,7 +26,6 @@ package com.gazbert.bxbot.core.config.emailalerts;
 import com.gazbert.bxbot.core.config.ConfigurationManager;
 import com.gazbert.bxbot.core.config.emailalerts.generated.EmailAlertsType;
 import com.gazbert.bxbot.core.config.emailalerts.generated.SmtpConfigType;
-import com.gazbert.bxbot.core.config.engine.generated.Engine;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -35,7 +34,6 @@ import static org.junit.Assert.assertTrue;
 
 /*
  * Tests the Email Alerter configuration is loaded as expected.
- * We're not testing the JAXB impl here - cherry pick the important stuff.
  */
 public class TestEmailAlertsConfigurationManagement {
 
@@ -75,6 +73,6 @@ public class TestEmailAlertsConfigurationManagement {
 
     @Test(expected = IllegalStateException.class)
     public void testLoadingMissingXmlConfigThrowsException() {
-        ConfigurationManager.loadConfig(Engine.class, MISSING_XML_CONFIG_FILENAME, XML_SCHEMA_LOCATION);
+        ConfigurationManager.loadConfig(EmailAlertsType.class, MISSING_XML_CONFIG_FILENAME, XML_SCHEMA_LOCATION);
     }
 }
