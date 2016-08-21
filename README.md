@@ -2,6 +2,8 @@
 
 [![Build Status](https://travis-ci.org/gazbert/bxbot.svg?branch=bxbot-restapi)](https://travis-ci.org/gazbert/bxbot)
 
+_This is a dev branch for building the REST API for configuring the bot - see the `master` branch if you want to fork :-)_
+
 ## What is BX-bot?
 BX-bot (_Bex_) is a simple Java automated trading bot for trading [Bitcoin](https://bitcoin.org) on 
 cryptocurrency [exchanges](https://bitcoinwisdom.com/).
