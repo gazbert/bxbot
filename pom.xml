@@ -10,7 +10,7 @@
     <name>BX-bot</name>
     <description>BX-bot is a simple Java algorithmic trading bot for trading Bitcoin on cryptocurrency exchanges.
     </description>
-    <url>http://github.com/gazbert/BX-bot</url>
+    <url>http://github.com/gazbert/bxbot</url>
     <inceptionYear>2015</inceptionYear>
 
     <licenses>
@@ -21,7 +21,7 @@
     </licenses>
 
     <scm>
-        <url>https://github.com/gazbert/BX-bot</url>
+        <url>https://github.com/gazbert/bxbot</url>
     </scm>
 
     <developers>
@@ -59,6 +59,10 @@
             <version>${springframework.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.springframework.security.oauth</groupId>
+            <artifactId>spring-security-oauth2</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-tx</artifactId>
             <version>${springframework.version}</version>
@@ -70,6 +74,14 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
 
         <!-- This seems to be the only way I can get my existing log4j2 dependencies to work... :-/ -->
@@ -122,6 +134,10 @@
             <artifactId>javax.mail</artifactId>
             <version>1.5.5</version>
             <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.hsqldb</groupId>
+            <artifactId>hsqldb</artifactId>
         </dependency>
 
         <!-- Add your (optional) Trading Strategies here -->
