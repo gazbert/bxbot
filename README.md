@@ -56,14 +56,14 @@ See the [`pom.xml`](./pom.xml) for details.
 
 ## Testing
 The bot has undergone basic unit testing on a _best-effort_ basis - there is a continuous integration build 
-running on [Travis CI](https://travis-ci.org/gazbert/BX-bot).
+running on [Travis CI](https://travis-ci.org/gazbert/bxbot).
 
-The latest stable build can always be found on the [Releases](https://github.com/gazbert/BX-bot/releases) page. 
+The latest stable build can always be found on the [Releases](https://github.com/gazbert/bxbot/releases) page. 
 The SNAPSHOT builds on master are active development builds, but the tests should always pass and the bot should always 
 be deployable.
 
 ## Issue & Change Management
-Issues and new features will be managed using the project [Issue Tracker](https://github.com/gazbert/BX-bot/issues) -
+Issues and new features will be managed using the project [Issue Tracker](https://github.com/gazbert/bxbot/issues) -
 submit bugs here.
  
 You are welcome to take on new features or fix bugs! See [here](CONTRIBUTING.md) for how to get involved.
@@ -457,7 +457,7 @@ see the _Installation Guide_ for how to do this.
 
 A Maven `pom.xml` is included for building the bot.
 
-1. Clone the BX-bot repo locally - the [Releases](https://github.com/gazbert/BX-bot/releases) page has the stable builds.
+1. Clone the BX-bot repo locally - the [Releases](https://github.com/gazbert/bxbot/releases) page has the stable builds.
 1. Open the `./config` XML files and configure them as required.
 1. If you plan on using Trading Strategies or Exchange Adapters that are packaged in separate jar files, you'll need to add
    the dependency in the `pom.xml` file - see the commented out dependency examples inside it.
@@ -481,6 +481,6 @@ The following features are in the pipeline:
 - Trade Analysis app - a microservice that will feed off trading events sent by the bots.
 - Android app for administering bots.
 
-See the main project [Issue Tracker](https://github.com/gazbert/BX-bot/issues) for timescales and progress.
+See the main project [Issue Tracker](https://github.com/gazbert/bxbot/issues) for timescales and progress.
 
 

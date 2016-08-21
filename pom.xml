@@ -10,7 +10,7 @@
     <name>BX-bot</name>
     <description>BX-bot is a simple Java algorithmic trading bot for trading Bitcoin on cryptocurrency exchanges.
     </description>
-    <url>http://github.com/gazbert/BX-bot</url>
+    <url>http://github.com/gazbert/bxbot</url>
     <inceptionYear>2015</inceptionYear>
 
     <licenses>
@@ -21,7 +21,7 @@
     </licenses>
 
     <scm>
-        <url>https://github.com/gazbert/BX-bot</url>
+        <url>https://github.com/gazbert/bxbot</url>
     </scm>
 
     <developers>
