@@ -23,12 +23,14 @@
 
 package com.gazbert.bxbot.core.admin.controllers;
 
+import com.gazbert.bxbot.core.admin.repository.User;
 import com.gazbert.bxbot.core.admin.services.ExchangeConfigService;
 import com.gazbert.bxbot.core.config.exchange.ExchangeConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -58,20 +60,24 @@ public class ExchangeConfigController {
     /**
      * Returns Exchange configuration for the bot.
      *
+     * TODO check user permissions?
+     *
      * @return the Exchange configuration.
      */
     @RequestMapping(value = "/config/exchange", method = RequestMethod.GET)
-    public ExchangeConfig getExchange() {
+    public ExchangeConfig getExchange(@AuthenticationPrincipal User user) {
         return exchangeConfigService.getConfig();
     }
 
     /**
      * Updates Exchange configuration for the bot.
      *
+     * TODO check user permissions?
+     *
      * @return HttpStatus.OK if exchange config was updated, any other HTTP status code otherwise.
      */
     @RequestMapping(value = "/config/exchange", method = RequestMethod.PUT)
-    ResponseEntity<?> updateExchange(@RequestBody ExchangeConfig config) {
+    ResponseEntity<?> updateExchange(@AuthenticationPrincipal User user, @RequestBody ExchangeConfig config) {
 
         exchangeConfigService.updateConfig(config);
         final HttpHeaders httpHeaders = new HttpHeaders();

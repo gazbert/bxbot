@@ -38,10 +38,12 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.mock.http.MockHttpOutputMessage;
+import org.springframework.security.web.FilterChainProxy;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.util.Base64Utils;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.io.IOException;
@@ -49,14 +51,15 @@ import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.hamcrest.Matchers.*;
 import static org.mockito.BDDMockito.given;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
+ * TODO OAuth stuff is work in progress...
+ * <p>
  * Tests the Exchange config controller behaviour.
  *
  * @author gazbert
@@ -67,6 +70,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebAppConfiguration
 public class TestExchangeConfigController {
 
+    // Canned test data
     private static final String EXCHANGE_NAME = "BTC-e";
     private static final String EXCHANGE_ADAPTER = "com.gazbert.bxbot.core.exchanges.TestExchangeAdapter";
 
@@ -86,11 +90,15 @@ public class TestExchangeConfigController {
     private HttpMessageConverter mappingJackson2HttpMessageConverter;
     private MockMvc mockMvc;
 
+    @Autowired
+    private FilterChainProxy springSecurityFilterChain;
+
     @MockBean
     ExchangeConfigService exchangeConfigService;
 
     @Autowired
     private WebApplicationContext ctx;
+
 
     @Autowired
     void setConverters(HttpMessageConverter<?>[] converters) {
@@ -104,15 +112,26 @@ public class TestExchangeConfigController {
 
     @Before
     public void setupBeforeEachTest() {
-        this.mockMvc = MockMvcBuilders.webAppContextSetup(ctx).build();
+        mockMvc = MockMvcBuilders.webAppContextSetup(ctx).addFilter(springSecurityFilterChain).build();
+    }
+
+    @Test
+    public void testGetExchangeConfigWhenUnauthorized() throws Exception {
+
+        mockMvc.perform(get("/api/config/exchange")
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.error", is("unauthorized")));
     }
 
     @Test
     public void testGetExchangeConfig() throws Exception {
 
+        final String accessToken = getAccessToken("bxbot-ui", "bxbot-ui");
+
         given(this.exchangeConfigService.getConfig()).willReturn(someExchangeConfig());
 
-        this.mockMvc.perform(get("/api/config/exchange"))
+        this.mockMvc.perform(get("/api/config/exchange").header("Authorization", "Bearer " + accessToken))
                 .andDo(print())
                 .andExpect(status().isOk())
 
@@ -137,10 +156,21 @@ public class TestExchangeConfigController {
     }
 
     @Test
+    public void testUpdateExchangeConfigWhenUnauthorized() throws Exception {
+
+        mockMvc.perform(put("/api/config/exchange")
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.error", is("unauthorized")));
+    }
+
+    @Test
     public void testUpdateExchangeConfig() throws Exception {
 
+        final String accessToken = getAccessToken("bxbot-ui", "bxbot-ui");
         final String exchangeConfigJson = jsonify(someExchangeConfig());
-        this.mockMvc.perform(put("/api/config/exchange")
+
+        this.mockMvc.perform(put("/api/config/exchange").header("Authorization", "Bearer " + accessToken)
                 .contentType(CONTENT_TYPE)
                 .content(exchangeConfigJson))
                 .andExpect(status().isNoContent());
@@ -176,5 +206,34 @@ public class TestExchangeConfigController {
         exchangeConfig.setOtherConfig(otherConfig);
 
         return exchangeConfig;
+    }
+
+    /*
+     * Builds an OAuth2 access token.
+     * Kudos to royclarkson - https://github.com/royclarkson/spring-rest-service-oauth
+     */
+    private String getAccessToken(String username, String password) throws Exception {
+
+        final String authorization = "Basic " + new String(Base64Utils.encode("bxbot-ui:t0pS3cr3t!".getBytes()));
+        final String contentType = MediaType.APPLICATION_JSON + ";charset=UTF-8";
+
+        final String content = mockMvc.perform(post("/oauth/token").header("Authorization", authorization)
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .param("username", username)
+                .param("password", password)
+                .param("grant_type", "password")
+                .param("scope", "read write")
+                .param("client_id", "bxbot-ui")
+                .param("client_secret", "t0pS3cr3t!"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(contentType))
+                .andExpect(jsonPath("$.access_token", is(notNullValue())))
+                .andExpect(jsonPath("$.token_type", is(equalTo("bearer"))))
+                .andExpect(jsonPath("$.refresh_token", is(notNullValue())))
+                .andExpect(jsonPath("$.expires_in", is(greaterThan(4000))))
+                .andExpect(jsonPath("$.scope", is(equalTo("read write"))))
+                .andReturn().getResponse().getContentAsString();
+
+        return content.substring(17, 53);
     }
 }
