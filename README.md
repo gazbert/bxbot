@@ -477,11 +477,10 @@ A Maven `pom.xml` is included for building the bot.
 ## Coming Soon...
 The following features are in the pipeline:
 
-- REST API for configuring the bot.
-- Web UI for configuring the bot.
-- Admin app - a microservice for administering multiple bots in the cloud.
+- REST API for administering the bot.
+- Web UI for administering the bot.
 - Trade Analysis app - a microservice that will feed off trading events sent by the bots.
-- Android app for administering bots.
+- Android app for administering the bot.
 
 See the main project [Issue Tracker](https://github.com/gazbert/bxbot/issues) for timescales and progress.
 
