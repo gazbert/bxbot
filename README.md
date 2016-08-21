@@ -1,8 +1,9 @@
-
 # BX-bot
 
+[![Build Status](https://travis-ci.org/gazbert/BX-bot.svg?branch=master)](https://travis-ci.org/gazbert/BX-bot)
+
 ## What is BX-bot?
-BX-bot (_Bex_) is a simple Java algorithmic trading bot for trading [Bitcoin](https://bitcoin.org) on 
+BX-bot (_Bex_) is a simple Java automated trading bot for trading [Bitcoin](https://bitcoin.org) on 
 cryptocurrency [exchanges](https://bitcoinwisdom.com/).
 
 The project contains the basic infrastructure to trade on a [cryptocurrency](http://coinmarketcap.com/) exchange...
@@ -54,8 +55,6 @@ BX-bot depends on [log4j](http://logging.apache.org/log4j), [JavaMail](https://j
 See the [`pom.xml`](./pom.xml) for details.
 
 ## Testing
-[![Build Status](https://travis-ci.org/gazbert/BX-bot.svg?branch=master)](https://travis-ci.org/gazbert/BX-bot)
-
 The bot has undergone basic unit testing on a _best-effort_ basis - there is a continuous integration build 
 running on [Travis CI](https://travis-ci.org/).
 
