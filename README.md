@@ -1,6 +1,6 @@
 # BX-bot
 
-[![Build Status](https://travis-ci.org/gazbert/BX-bot.svg?branch=master)](https://travis-ci.org/gazbert/BX-bot)
+[![Build Status](https://travis-ci.org/gazbert/bxbot.svg?branch=master)](https://travis-ci.org/gazbert/bxbot)
 
 ## What is BX-bot?
 BX-bot (_Bex_) is a simple Java automated trading bot for trading [Bitcoin](https://bitcoin.org) on 
@@ -28,12 +28,12 @@ and released under the [MIT license](http://opensource.org/licenses/MIT).
 ## Architecture
 ![bxbot-core-architecture.png](./docs/bxbot-core-architecture.png)
 
-- Trading Engine - the execution unit. It provides a framework for integrating and executing Exchange Adapters and Trading Strategies.
-- Exchange Adapters - the data stream unit. They provide access to a given exchange.
-- Trading Strategies - the decision or strategy unit. This is where the trading decisions happen.
-- Trading API - Trading Strategies use this API to make trades. Exchange Adapters implement this to provide access
+- **Trading Engine** - the execution unit. It provides a framework for integrating and executing Exchange Adapters and Trading Strategies.
+- **Exchange Adapters** - the data stream unit. They provide access to a given exchange.
+- **Trading Strategies** - the decision or strategy unit. This is where the trading decisions happen.
+- **Trading API** - Trading Strategies use this API to make trades. Exchange Adapters implement this to provide access
   to a given exchange.
-- Strategy API - Trading Strategies implement this for the Trading Engine to execute them.
+- **Strategy API** - Trading Strategies implement this for the Trading Engine to execute them.
  
 Trading Strategies and Exchange Adapters are injected by the Trading Engine on startup. The bot uses a crude XML based
 dependency injection framework to achieve this; the long term goal is to run it as a [Spring Boot](http://projects.spring.io/spring-boot/)
@@ -56,7 +56,7 @@ See the [`pom.xml`](./pom.xml) for details.
 
 ## Testing
 The bot has undergone basic unit testing on a _best-effort_ basis - there is a continuous integration build 
-running on [Travis CI](https://travis-ci.org/).
+running on [Travis CI](https://travis-ci.org/gazbert/BX-bot).
 
 The latest stable build can always be found on the [Releases](https://github.com/gazbert/BX-bot/releases) page. 
 The SNAPSHOT builds on master are active development builds, but the tests should always pass and the bot should always 
