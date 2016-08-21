@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2015 Gareth Jon Lynch
+ * Copyright (c) 2016 Gareth Jon Lynch
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -22,17 +22,16 @@
  */
 
 /**
- * <h2>Configuration</h2>
+ * <h2>Admin</h2>
  *
  * <p>
- * This is the bot's Configuration subsystem.
+ * This is the bot's Admin subsystem.
  * </p>
  *
  * <p>
- * It loads the XML configuration and injects user defined Trading Strategy and Exchange Adapter classes for the Trading
- * Engine to execute.
+ * It provides a secure (OAuth2 protected) REST API for administering the bot.
  * </p>
  * 
  * @author gazbert
  */
-package com.gazbert.bxbot.core.config;
+package com.gazbert.bxbot.core.admin;

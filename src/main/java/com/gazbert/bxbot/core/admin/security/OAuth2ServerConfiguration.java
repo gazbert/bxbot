@@ -108,7 +108,7 @@ public class OAuth2ServerConfiguration {
                     .authorities("USER")
                     .scopes("read", "write")
                     .resourceIds(RESOURCE_ID)
-                    .secret("t0pS3cr3t!");
+                    .secret("S3cr3t");
         }
 
         @Bean
