@@ -214,7 +214,10 @@ public class TestExchangeConfigController {
      */
     private String getAccessToken(String username, String password) throws Exception {
 
-        final String authorization = "Basic " + new String(Base64Utils.encode("bxbot-ui:t0pS3cr3t!".getBytes()));
+        final String clientId = "bxbot-ui";
+        final String clientSecret = "S3cr3t";
+
+        final String authorization = "Basic " + new String(Base64Utils.encode((clientId + ":" + clientSecret).getBytes()));
         final String contentType = MediaType.APPLICATION_JSON + ";charset=UTF-8";
 
         final String content = mockMvc.perform(post("/oauth/token").header("Authorization", authorization)
@@ -223,8 +226,8 @@ public class TestExchangeConfigController {
                 .param("password", password)
                 .param("grant_type", "password")
                 .param("scope", "read write")
-                .param("client_id", "bxbot-ui")
-                .param("client_secret", "t0pS3cr3t!"))
+                .param("client_id", clientId)
+                .param("client_secret", clientSecret))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(contentType))
                 .andExpect(jsonPath("$.access_token", is(notNullValue())))
