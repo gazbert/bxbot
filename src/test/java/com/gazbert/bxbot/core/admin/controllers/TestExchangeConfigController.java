@@ -23,44 +23,32 @@
 
 package com.gazbert.bxbot.core.admin.controllers;
 
-import com.gazbert.bxbot.core.admin.security.OAuth2ServerConfiguration;
 import com.gazbert.bxbot.core.admin.services.ExchangeConfigService;
 import com.gazbert.bxbot.core.config.exchange.ExchangeConfig;
 import com.gazbert.bxbot.core.config.exchange.NetworkConfig;
 import com.gazbert.bxbot.core.config.exchange.OtherConfig;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.mock.http.MockHttpOutputMessage;
-import org.springframework.security.web.FilterChainProxy;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.util.Base64Utils;
-import org.springframework.web.context.WebApplicationContext;
 
-import java.io.IOException;
-import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.BDDMockito.given;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
- * TODO OAuth stuff is work in progress...
- * <p>
  * Tests the Exchange config controller behaviour.
  *
  * @author gazbert
@@ -69,19 +57,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @WebAppConfiguration
-public class TestExchangeConfigController {
-
-    /**
-     * This must match the {@link OAuth2ServerConfiguration#OAUTH_CLIENT_ID} value.
-     * TODO Mock this somehow...
-     */
-    private static final String OAUTH_CLIENT_ID = "bxbot-ui";
-
-    /**
-     * This must match the {@link OAuth2ServerConfiguration#OAUTH_CLIENT_SECRET} value.
-     * TODO Mock this somehow...
-     */
-    private static final String OAUTH_CLIENT_SECRET = "S3cr3t";
+public class TestExchangeConfigController extends AbstractConfigControllerTest {
 
     // This must match a user's login_id in the user table in src/test/resources/import.sql
     private static final String VALID_USER_LOGINID = "user1";
@@ -103,31 +79,9 @@ public class TestExchangeConfigController {
     private static final String SELL_FEE_CONFIG_ITEM_KEY = "sell-fee";
     private static final String SELL_FEE_CONFIG_ITEM_VALUE = "0.25";
 
-    private static final MediaType CONTENT_TYPE = new MediaType(MediaType.APPLICATION_JSON.getType(),
-            MediaType.APPLICATION_JSON.getSubtype(), Charset.forName("utf8"));
-
-    private HttpMessageConverter mappingJackson2HttpMessageConverter;
-    private MockMvc mockMvc;
-
-    @Autowired
-    private FilterChainProxy springSecurityFilterChain;
-
     @MockBean
     ExchangeConfigService exchangeConfigService;
 
-    @Autowired
-    private WebApplicationContext ctx;
-
-
-    @Autowired
-    void setConverters(HttpMessageConverter<?>[] converters) {
-        this.mappingJackson2HttpMessageConverter =
-                Arrays.stream(converters)
-                        .filter(converter -> converter instanceof MappingJackson2HttpMessageConverter).findAny().get();
-
-        Assert.assertNotNull("The JSON message converter must not be null",
-                this.mappingJackson2HttpMessageConverter);
-    }
 
     @Before
     public void setupBeforeEachTest() {
@@ -146,11 +100,10 @@ public class TestExchangeConfigController {
     @Test
     public void testGetExchangeConfig() throws Exception {
 
-        final String accessToken = getAccessToken(VALID_USER_LOGINID, VALID_USER_PASSWORD);
-
         given(this.exchangeConfigService.getConfig()).willReturn(someExchangeConfig());
 
-        this.mockMvc.perform(get("/api/config/exchange").header("Authorization", "Bearer " + accessToken))
+        this.mockMvc.perform(get("/api/config/exchange")
+                .header("Authorization", "Bearer " + getAccessToken(VALID_USER_LOGINID, VALID_USER_PASSWORD)))
                 .andDo(print())
                 .andExpect(status().isOk())
 
@@ -186,24 +139,16 @@ public class TestExchangeConfigController {
     @Test
     public void testUpdateExchangeConfig() throws Exception {
 
-        final String accessToken = getAccessToken(VALID_USER_LOGINID, VALID_USER_PASSWORD);
-        final String exchangeConfigJson = jsonify(someExchangeConfig());
-
-        this.mockMvc.perform(put("/api/config/exchange").header("Authorization", "Bearer " + accessToken)
+        this.mockMvc.perform(put("/api/config/exchange")
+                .header("Authorization", "Bearer " + getAccessToken(VALID_USER_LOGINID, VALID_USER_PASSWORD))
                 .contentType(CONTENT_TYPE)
-                .content(exchangeConfigJson))
+                .content(jsonify(someExchangeConfig())))
                 .andExpect(status().isNoContent());
     }
 
     // ------------------------------------------------------------------------------------------------
     // Private utils
     // ------------------------------------------------------------------------------------------------
-
-    private String jsonify(Object objectToJsonify) throws IOException {
-        MockHttpOutputMessage mockHttpOutputMessage = new MockHttpOutputMessage();
-        this.mappingJackson2HttpMessageConverter.write(objectToJsonify, MediaType.APPLICATION_JSON, mockHttpOutputMessage);
-        return mockHttpOutputMessage.getBodyAsString();
-    }
 
     private static ExchangeConfig someExchangeConfig() {
 
@@ -225,34 +170,5 @@ public class TestExchangeConfigController {
         exchangeConfig.setOtherConfig(otherConfig);
 
         return exchangeConfig;
-    }
-
-    /*
-     * Builds an OAuth2 access token.
-     * Kudos to royclarkson - https://github.com/royclarkson/spring-rest-service-oauth
-     */
-    private String getAccessToken(String username, String password) throws Exception {
-
-        final String authorization = "Basic " + new String(Base64Utils.encode((OAUTH_CLIENT_ID + ":" + OAUTH_CLIENT_SECRET).getBytes()));
-        final String contentType = MediaType.APPLICATION_JSON + ";charset=UTF-8";
-
-        final String content = mockMvc.perform(post("/oauth/token").header("Authorization", authorization)
-                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .param("username", username)
-                .param("password", password)
-                .param("grant_type", "password")
-                .param("scope", "read write")
-                .param("client_id", OAUTH_CLIENT_ID)
-                .param("client_secret", OAUTH_CLIENT_SECRET))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(contentType))
-                .andExpect(jsonPath("$.access_token", is(notNullValue())))
-                .andExpect(jsonPath("$.token_type", is(equalTo("bearer"))))
-                .andExpect(jsonPath("$.refresh_token", is(notNullValue())))
-                .andExpect(jsonPath("$.expires_in", is(greaterThan(4000))))
-                .andExpect(jsonPath("$.scope", is(equalTo("read write"))))
-                .andReturn().getResponse().getContentAsString();
-
-        return content.substring(17, 53);
     }
 }

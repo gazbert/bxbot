@@ -25,28 +25,19 @@ package com.gazbert.bxbot.core.admin.controllers;
 
 import com.gazbert.bxbot.core.admin.services.EngineConfigService;
 import com.gazbert.bxbot.core.config.engine.EngineConfig;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.mock.http.MockHttpOutputMessage;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
 
-import java.io.IOException;
 import java.math.BigDecimal;
-import java.nio.charset.Charset;
-import java.util.Arrays;
 
+import static org.hamcrest.Matchers.is;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -63,37 +54,35 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @WebAppConfiguration
-public class TestEngineConfigController {
+public class TestEngineConfigController extends AbstractConfigControllerTest {
 
+    // This must match a user's login_id in the user table in src/test/resources/import.sql
+    private static final String VALID_USER_LOGINID = "user1";
+
+    // This must match a user's password in the user table in src/test/resources/import.sql
+    private static final String VALID_USER_PASSWORD = "user1-password";
+
+    // Canned test data
     private static final String ENGINE_EMERGENCY_STOP_CURRENCY = "BTC";
     private static final BigDecimal ENGINE_EMERGENCY_STOP_BALANCE = new BigDecimal("0.9232320");
     private static final int ENGINE_TRADE_CYCLE_INTERVAL = 60;
 
-    private static final MediaType CONTENT_TYPE = new MediaType(MediaType.APPLICATION_JSON.getType(),
-            MediaType.APPLICATION_JSON.getSubtype(), Charset.forName("utf8"));
-
-    private HttpMessageConverter mappingJackson2HttpMessageConverter;
-    private MockMvc mockMvc;
-
     @MockBean
-    EngineConfigService engineConfigService;
+    private EngineConfigService engineConfigService;
 
-    @Autowired
-    private WebApplicationContext ctx;
-
-    @Autowired
-    void setConverters(HttpMessageConverter<?>[] converters) {
-        this.mappingJackson2HttpMessageConverter =
-                Arrays.stream(converters)
-                        .filter(converter -> converter instanceof MappingJackson2HttpMessageConverter).findAny().get();
-
-        Assert.assertNotNull("The JSON message converter must not be null",
-                this.mappingJackson2HttpMessageConverter);
-    }
 
     @Before
     public void setupBeforeEachTest() {
-        this.mockMvc = MockMvcBuilders.webAppContextSetup(ctx).build();
+        mockMvc = MockMvcBuilders.webAppContextSetup(ctx).addFilter(springSecurityFilterChain).build();
+    }
+
+    @Test
+    public void testGetEngineConfigWhenUnauthorized() throws Exception {
+
+        mockMvc.perform(get("/api/config/engine")
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.error", is("unauthorized")));
     }
 
     @Test
@@ -101,34 +90,38 @@ public class TestEngineConfigController {
 
         given(this.engineConfigService.getConfig()).willReturn(someEngineConfig());
 
-        this.mockMvc.perform(get("/api/config/engine"))
+        this.mockMvc.perform(get("/api/config/engine")
+                .header("Authorization", "Bearer " + getAccessToken(VALID_USER_LOGINID, VALID_USER_PASSWORD)))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.emergencyStopCurrency").value(ENGINE_EMERGENCY_STOP_CURRENCY))
-                .andExpect(jsonPath("$.emergencyStopBalance").value(ENGINE_EMERGENCY_STOP_BALANCE.doubleValue()     ))
+                .andExpect(jsonPath("$.emergencyStopBalance").value(ENGINE_EMERGENCY_STOP_BALANCE.doubleValue()))
                 .andExpect(jsonPath("$.tradeCycleInterval").value(ENGINE_TRADE_CYCLE_INTERVAL)
                 );
     }
 
     @Test
+    public void testUpdateEngineConfigWhenUnauthorized() throws Exception {
+
+        mockMvc.perform(put("/api/config/engine")
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.error", is("unauthorized")));
+    }
+
+    @Test
     public void testUpdateEngineConfig() throws Exception {
 
-        final String configJson = jsonify(someEngineConfig());
         this.mockMvc.perform(put("/api/config/engine")
+                .header("Authorization", "Bearer " + getAccessToken(VALID_USER_LOGINID, VALID_USER_PASSWORD))
                 .contentType(CONTENT_TYPE)
-                .content(configJson))
+                .content(jsonify(someEngineConfig())))
                 .andExpect(status().isNoContent());
     }
 
     // ------------------------------------------------------------------------------------------------
     // Private utils
     // ------------------------------------------------------------------------------------------------
-
-    private String jsonify(Object objectToJsonify) throws IOException {
-        MockHttpOutputMessage mockHttpOutputMessage = new MockHttpOutputMessage();
-        this.mappingJackson2HttpMessageConverter.write(objectToJsonify, MediaType.APPLICATION_JSON, mockHttpOutputMessage);
-        return mockHttpOutputMessage.getBodyAsString();
-    }
 
     private static EngineConfig someEngineConfig() {
         final EngineConfig engineConfig = new EngineConfig();

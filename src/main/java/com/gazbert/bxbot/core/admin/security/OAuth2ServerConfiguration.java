@@ -71,10 +71,10 @@ public class OAuth2ServerConfiguration {
         @Override
         public void configure(HttpSecurity http) throws Exception {
 
-            // TODO Add the the REST resources here...
             http.authorizeRequests()
                     .antMatchers("/users").hasRole("ADMIN") // TODO nuke this after dev complete!
-                    .antMatchers("/api/config/exchange").authenticated();
+                    .antMatchers("/api/config/exchange").authenticated()
+                    .antMatchers("/api/config/engine").authenticated();
         }
     }
 
