@@ -55,6 +55,10 @@ public class OAuth2ServerConfiguration {
 
     private static final String RESOURCE_ID = "bxbot-rest-service";
 
+    // TODO These values need to come from config...
+    private static final String OAUTH_CLIENT_ID = "bxbot-ui";
+    private static final String OAUTH_CLIENT_SECRET = "S3cr3t";
+
     @Configuration
     @EnableResourceServer
     protected static class ResourceServerConfiguration extends ResourceServerConfigurerAdapter {
@@ -103,12 +107,12 @@ public class OAuth2ServerConfiguration {
         @Override
         public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
             clients.inMemory()
-                    .withClient("bxbot-ui")
+                    .withClient(OAUTH_CLIENT_ID)
                     .authorizedGrantTypes("password", "refresh_token")
                     .authorities("USER")
                     .scopes("read", "write")
                     .resourceIds(RESOURCE_ID)
-                    .secret("S3cr3t");
+                    .secret(OAUTH_CLIENT_SECRET);
         }
 
         @Bean

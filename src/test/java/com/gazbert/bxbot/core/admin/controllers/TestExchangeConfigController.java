@@ -23,6 +23,7 @@
 
 package com.gazbert.bxbot.core.admin.controllers;
 
+import com.gazbert.bxbot.core.admin.security.OAuth2ServerConfiguration;
 import com.gazbert.bxbot.core.admin.services.ExchangeConfigService;
 import com.gazbert.bxbot.core.config.exchange.ExchangeConfig;
 import com.gazbert.bxbot.core.config.exchange.NetworkConfig;
@@ -69,6 +70,24 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @WebAppConfiguration
 public class TestExchangeConfigController {
+
+    /**
+     * This must match the {@link OAuth2ServerConfiguration#OAUTH_CLIENT_ID} value.
+     * TODO Mock this somehow...
+     */
+    private static final String OAUTH_CLIENT_ID = "bxbot-ui";
+
+    /**
+     * This must match the {@link OAuth2ServerConfiguration#OAUTH_CLIENT_SECRET} value.
+     * TODO Mock this somehow...
+     */
+    private static final String OAUTH_CLIENT_SECRET = "S3cr3t";
+
+    // This must match a user's login_id in the user table in src/test/resources/import.sql
+    private static final String VALID_USER_LOGINID = "user1";
+
+    // This must match a user's password in the user table in src/test/resources/import.sql
+    private static final String VALID_USER_PASSWORD = "user1-password";
 
     // Canned test data
     private static final String EXCHANGE_NAME = "BTC-e";
@@ -127,7 +146,7 @@ public class TestExchangeConfigController {
     @Test
     public void testGetExchangeConfig() throws Exception {
 
-        final String accessToken = getAccessToken("bxbot-ui", "bxbot-ui");
+        final String accessToken = getAccessToken(VALID_USER_LOGINID, VALID_USER_PASSWORD);
 
         given(this.exchangeConfigService.getConfig()).willReturn(someExchangeConfig());
 
@@ -167,7 +186,7 @@ public class TestExchangeConfigController {
     @Test
     public void testUpdateExchangeConfig() throws Exception {
 
-        final String accessToken = getAccessToken("bxbot-ui", "bxbot-ui");
+        final String accessToken = getAccessToken(VALID_USER_LOGINID, VALID_USER_PASSWORD);
         final String exchangeConfigJson = jsonify(someExchangeConfig());
 
         this.mockMvc.perform(put("/api/config/exchange").header("Authorization", "Bearer " + accessToken)
@@ -214,10 +233,7 @@ public class TestExchangeConfigController {
      */
     private String getAccessToken(String username, String password) throws Exception {
 
-        final String clientId = "bxbot-ui";
-        final String clientSecret = "S3cr3t";
-
-        final String authorization = "Basic " + new String(Base64Utils.encode((clientId + ":" + clientSecret).getBytes()));
+        final String authorization = "Basic " + new String(Base64Utils.encode((OAUTH_CLIENT_ID + ":" + OAUTH_CLIENT_SECRET).getBytes()));
         final String contentType = MediaType.APPLICATION_JSON + ";charset=UTF-8";
 
         final String content = mockMvc.perform(post("/oauth/token").header("Authorization", authorization)
@@ -226,8 +242,8 @@ public class TestExchangeConfigController {
                 .param("password", password)
                 .param("grant_type", "password")
                 .param("scope", "read write")
-                .param("client_id", clientId)
-                .param("client_secret", clientSecret))
+                .param("client_id", OAUTH_CLIENT_ID)
+                .param("client_secret", OAUTH_CLIENT_SECRET))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(contentType))
                 .andExpect(jsonPath("$.access_token", is(notNullValue())))
