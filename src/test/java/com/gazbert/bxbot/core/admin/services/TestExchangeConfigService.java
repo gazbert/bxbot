@@ -39,6 +39,8 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.gazbert.bxbot.core.config.exchange.ExchangeConfig.EXCHANGE_CONFIG_XML_FILENAME;
+import static com.gazbert.bxbot.core.config.exchange.ExchangeConfig.EXCHANGE_CONFIG_XSD_FILENAME;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.easymock.EasyMock.*;
 
@@ -82,8 +84,8 @@ public class TestExchangeConfigService {
 
         expect(ConfigurationManager.loadConfig(
                 eq(ExchangeType.class),
-                eq(ExchangeConfig.EXCHANGE_CONFIG_XML_FILENAME),
-                eq(ExchangeConfig.EXCHANGE_CONFIG_XSD_FILENAME))).
+                eq(EXCHANGE_CONFIG_XML_FILENAME),
+                eq(EXCHANGE_CONFIG_XSD_FILENAME))).
                 andReturn(someInternalExchangeConfig());
 
         PowerMock.replayAll();
@@ -111,11 +113,11 @@ public class TestExchangeConfigService {
         // for loading the existing auth config to merge with updated stuff
         expect(ConfigurationManager.loadConfig(
                 eq(ExchangeType.class),
-                eq(ExchangeConfig.EXCHANGE_CONFIG_XML_FILENAME),
-                eq(ExchangeConfig.EXCHANGE_CONFIG_XSD_FILENAME))).
+                eq(EXCHANGE_CONFIG_XML_FILENAME),
+                eq(EXCHANGE_CONFIG_XSD_FILENAME))).
                 andReturn(someInternalExchangeConfig());
 
-        ConfigurationManager.saveConfig(eq(ExchangeType.class), anyObject(ExchangeType.class), eq(ExchangeConfig.EXCHANGE_CONFIG_XML_FILENAME));
+        ConfigurationManager.saveConfig(eq(ExchangeType.class), anyObject(ExchangeType.class), eq(EXCHANGE_CONFIG_XML_FILENAME));
         PowerMock.replayAll();
 
         final ExchangeConfigService exchangeConfigService = new ExchangeConfigServiceImpl();
@@ -170,8 +172,11 @@ public class TestExchangeConfigService {
 
     private static ExchangeConfig withSomeExternalExchangeConfig() {
 
-        // We don't expose AuthenticationConfig in the service - security risk
+        // We don't permit updating of AuthenticationConfig in the service - security risk
+        // If caller sets it, we just ignore it.
         final AuthenticationConfig authenticationConfig = new AuthenticationConfig();
+        authenticationConfig.addItem("key", "updatedKeyIgnored");
+        authenticationConfig.addItem("secret", "updatedSecretIgnored");
 
         final NetworkConfig networkConfig = new NetworkConfig();
         networkConfig.setConnectionTimeout(CONNECTION_TIMEOUT);

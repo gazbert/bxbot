@@ -32,6 +32,15 @@ import com.gazbert.bxbot.core.config.exchange.ExchangeConfig;
  */
 public interface ExchangeConfigService {
 
+    /**
+     * TODO doc what is exposed and what is not
+     * @return
+     */
     ExchangeConfig getConfig();
+
+    /**
+     * TODO doc what can and cannot be updated
+     * @param config
+     */
     void updateConfig(ExchangeConfig config);
 }

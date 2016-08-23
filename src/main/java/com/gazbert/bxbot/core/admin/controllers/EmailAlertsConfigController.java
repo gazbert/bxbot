@@ -23,12 +23,14 @@
 
 package com.gazbert.bxbot.core.admin.controllers;
 
+import com.gazbert.bxbot.core.admin.repository.User;
 import com.gazbert.bxbot.core.admin.services.EmailAlertsConfigService;
 import com.gazbert.bxbot.core.config.emailalerts.EmailAlertsConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,8 +38,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * TODO Work in progress...
- * <p>
  * Controller for directing Email Alerts config requests.
  * <p>
  * Email Alerts config can only be fetched and updated - there is only 1 Email Alerts configuration per bot.
@@ -60,25 +60,28 @@ public class EmailAlertsConfigController {
     /**
      * Returns Email Alerts configuration for the bot.
      *
+     * TODO check user permissions and make authz more specific?
+     *
      * @return the Email Alerts configuration.
      */
     @RequestMapping(value = "/config/emailalerts", method = RequestMethod.GET)
-    public EmailAlertsConfig getEngine() {
+    public EmailAlertsConfig getEngine(@AuthenticationPrincipal User user) {
         return emailAlertsConfigService.getConfig();
     }
 
     /**
      * Updates Email Alerts configuration for the bot.
      *
-     * @return HttpStatus.OK if Email Alerts config was updated, any other HTTP status code otherwise.
+     * TODO check user permissions and make authz more specific?
+     *
+     * @return HttpStatus.NO_CONTENT if Email Alerts config was updated, any other HTTP status code otherwise.
      */
     @RequestMapping(value = "/config/emailalerts", method = RequestMethod.PUT)
-    ResponseEntity<?> updateEngine(@RequestBody EmailAlertsConfig config) {
+    ResponseEntity<?> updateEngine(@AuthenticationPrincipal User user, @RequestBody EmailAlertsConfig config) {
 
-        final EmailAlertsConfig updatedEmailAlertsConfig = emailAlertsConfigService.updateConfig(config);
+        emailAlertsConfigService.updateConfig(config);
         final HttpHeaders httpHeaders = new HttpHeaders();
-        // TODO any other headers required?
-        return new ResponseEntity<>(updatedEmailAlertsConfig, httpHeaders, HttpStatus.OK);
+        return new ResponseEntity<>(null, httpHeaders, HttpStatus.NO_CONTENT);
     }
 }
 

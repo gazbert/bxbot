@@ -74,6 +74,7 @@ public class OAuth2ServerConfiguration {
             http.authorizeRequests()
                     .antMatchers("/users").hasRole("ADMIN") // TODO nuke this after dev complete!
                     .antMatchers("/api/config/exchange").authenticated()
+                    .antMatchers("/api/config/emailalerts").authenticated()
                     .antMatchers("/api/config/engine").authenticated();
         }
     }

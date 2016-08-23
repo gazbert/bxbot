@@ -32,6 +32,15 @@ import com.gazbert.bxbot.core.config.engine.EngineConfig;
  */
 public interface EngineConfigService {
 
+    /**
+     * TODO doc what is exposed and what is not
+     * @return
+     */
     EngineConfig getConfig();
+
+    /**
+     * TODO doc what can and cannot be updated
+     * @param config
+     */
     void updateConfig(EngineConfig config);
 }

@@ -54,7 +54,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 abstract class AbstractConfigControllerTest {
 
     /**
-     * We'll always be sending/receiving JSON content in REST API
+     * We'll always be sending/receiving JSON content in REST API.
      */
     static final MediaType CONTENT_TYPE = new MediaType(MediaType.APPLICATION_JSON.getType(),
             MediaType.APPLICATION_JSON.getSubtype(), Charset.forName("utf8"));

@@ -25,14 +25,22 @@ package com.gazbert.bxbot.core.admin.services;
 import com.gazbert.bxbot.core.config.emailalerts.EmailAlertsConfig;
 
 /**
- * TODO Work in progress...
+ * The Email Alerts configuration service.
  *
  * @author gazbert
  * @since 11/08/2016
  */
 public interface EmailAlertsConfigService {
 
+    /**
+     * TODO doc what is exposed and what is not
+     * @return
+     */
     EmailAlertsConfig getConfig();
 
-    EmailAlertsConfig updateConfig(EmailAlertsConfig config);
+    /**
+     * TODO doc what can and cannot be updated
+     * @param config
+     */
+    void updateConfig(EmailAlertsConfig config);
 }

@@ -35,8 +35,19 @@ import com.google.common.base.MoreObjects;
  */
 public class EmailAlertsConfig {
 
+    /*
+     * Location of the XML config files relative to project/installation root.
+     */
+    public static final String EMAIL_ALERTS_CONFIG_XML_FILENAME = "config/email-alerts.xml";
+
+    /*
+     * XSD schema files for validating the XML config - their location in the main/resources folder.
+     */
+    public static final String EMAIL_ALERTS_CONFIG_XSD_FILENAME = "com/gazbert/bxbot/core/config/emailalerts/email-alerts.xsd";
+
     private boolean enabled;
     private SmtpConfig smtpConfig;
+
 
     // required for jackson
     public EmailAlertsConfig() {

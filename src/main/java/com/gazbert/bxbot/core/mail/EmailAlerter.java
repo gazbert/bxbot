@@ -34,6 +34,9 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.util.Properties;
 
+import static com.gazbert.bxbot.core.config.emailalerts.EmailAlertsConfig.EMAIL_ALERTS_CONFIG_XML_FILENAME;
+import static com.gazbert.bxbot.core.config.emailalerts.EmailAlertsConfig.EMAIL_ALERTS_CONFIG_XSD_FILENAME;
+
 /*
  * A simple mail sender using SMTP and TLS.
  * The configuration for sending the email is loaded from the email-alerts.xml config file.
@@ -44,12 +47,6 @@ public final class EmailAlerter {
     private static final Logger LOG = LogManager.getLogger();
 
     private static volatile EmailAlerter EMAIL_ALERTER_SINGLETON;
-
-    /* Location of the XML config file relative to project/installation root. */
-    private static final String EMAIL_ALERTS_CONFIG_XML_FILENAME = "config/email-alerts.xml";
-
-    /* Location of the XSD config file in the main/resources folder. */
-    private static final String EMAIL_ALERTS_CONFIG_XSD_FILENAME = "com/gazbert/bxbot/core/config/emailalerts/email-alerts.xsd";
 
     /* SMTP config loaded from the bot .config/email-alerts.xml config file. This will be null if no config provided. */
     private SmtpConfig smtpConfig;

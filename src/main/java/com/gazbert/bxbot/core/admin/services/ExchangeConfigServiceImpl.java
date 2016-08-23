@@ -33,6 +33,9 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import static com.gazbert.bxbot.core.config.exchange.ExchangeConfig.EXCHANGE_CONFIG_XML_FILENAME;
+import static com.gazbert.bxbot.core.config.exchange.ExchangeConfig.EXCHANGE_CONFIG_XSD_FILENAME;
+
 /**
  * Implementation of the Exchange config service.
  *
@@ -48,7 +51,7 @@ public class ExchangeConfigServiceImpl implements ExchangeConfigService {
     @Override
     public ExchangeConfig getConfig() {
         final ExchangeType internalEngineConfig = ConfigurationManager.loadConfig(ExchangeType.class,
-                ExchangeConfig.EXCHANGE_CONFIG_XML_FILENAME, ExchangeConfig.EXCHANGE_CONFIG_XSD_FILENAME);
+                EXCHANGE_CONFIG_XML_FILENAME, EXCHANGE_CONFIG_XSD_FILENAME);
         return adaptInternalToExternalConfig(internalEngineConfig);
     }
 
@@ -58,7 +61,7 @@ public class ExchangeConfigServiceImpl implements ExchangeConfigService {
         LOG.info(() -> "About to update: " + config);
 
         final ExchangeType internalExchangeConfig = adaptExternalToInternalConfig(config);
-        ConfigurationManager.saveConfig(ExchangeType.class, internalExchangeConfig, ExchangeConfig.EXCHANGE_CONFIG_XML_FILENAME);
+        ConfigurationManager.saveConfig(ExchangeType.class, internalExchangeConfig, EXCHANGE_CONFIG_XML_FILENAME);
     }
 
     // ------------------------------------------------------------------------------------------------
@@ -115,7 +118,7 @@ public class ExchangeConfigServiceImpl implements ExchangeConfigService {
         // We don't accept AuthenticationConfig in the service - security risk
         // We load the existing auth config and merge it in with the updated stuff...
         final ExchangeType existingExchangeConfig = ConfigurationManager.loadConfig(ExchangeType.class,
-                ExchangeConfig.EXCHANGE_CONFIG_XML_FILENAME, ExchangeConfig.EXCHANGE_CONFIG_XSD_FILENAME);
+                EXCHANGE_CONFIG_XML_FILENAME, EXCHANGE_CONFIG_XSD_FILENAME);
         exchangeConfig.setAuthenticationConfig(existingExchangeConfig.getAuthenticationConfig());
 
         return exchangeConfig;

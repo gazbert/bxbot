@@ -31,6 +31,9 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import static com.gazbert.bxbot.core.config.engine.EngineConfig.ENGINE_CONFIG_XML_FILENAME;
+import static com.gazbert.bxbot.core.config.engine.EngineConfig.ENGINE_CONFIG_XSD_FILENAME;
+
 /**
  * Implementation of the Engine config service.
  *
@@ -47,7 +50,7 @@ class EngineConfigServiceImpl implements EngineConfigService {
     public EngineConfig getConfig() {
 
         final EngineType internalEngineConfig = ConfigurationManager.loadConfig(EngineType.class,
-                EngineConfig.ENGINE_CONFIG_XML_FILENAME, EngineConfig.ENGINE_CONFIG_XSD_FILENAME);
+                ENGINE_CONFIG_XML_FILENAME, ENGINE_CONFIG_XSD_FILENAME);
         return adaptInternalToExternalConfig(internalEngineConfig);
     }
 
@@ -57,7 +60,7 @@ class EngineConfigServiceImpl implements EngineConfigService {
         LOG.info(() -> "About to update: " + config);
 
         final EngineType internalEngineConfig = adaptExternalToInternalConfig(config);
-        ConfigurationManager.saveConfig(EngineType.class, internalEngineConfig, EngineConfig.ENGINE_CONFIG_XML_FILENAME);
+        ConfigurationManager.saveConfig(EngineType.class, internalEngineConfig, ENGINE_CONFIG_XML_FILENAME);
     }
 
     // ------------------------------------------------------------------------------------------------

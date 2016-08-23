@@ -35,6 +35,8 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.math.BigDecimal;
 
+import static com.gazbert.bxbot.core.config.engine.EngineConfig.ENGINE_CONFIG_XML_FILENAME;
+import static com.gazbert.bxbot.core.config.engine.EngineConfig.ENGINE_CONFIG_XSD_FILENAME;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.easymock.EasyMock.*;
 
@@ -63,8 +65,8 @@ public class TestEngineConfigService {
 
         expect(ConfigurationManager.loadConfig(
                 eq(EngineType.class),
-                eq(EngineConfig.ENGINE_CONFIG_XML_FILENAME),
-                eq(EngineConfig.ENGINE_CONFIG_XSD_FILENAME))).
+                eq(ENGINE_CONFIG_XML_FILENAME),
+                eq(ENGINE_CONFIG_XSD_FILENAME))).
                 andReturn(someInternalEngineConfig());
 
         PowerMock.replayAll();
@@ -81,7 +83,7 @@ public class TestEngineConfigService {
     @Test
     public void whenUpdateConfigCalledThenExpectServiceToSaveIt() throws Exception {
 
-        ConfigurationManager.saveConfig(eq(EngineType.class), anyObject(EngineType.class), eq(EngineConfig.ENGINE_CONFIG_XML_FILENAME));
+        ConfigurationManager.saveConfig(eq(EngineType.class), anyObject(EngineType.class), eq(ENGINE_CONFIG_XML_FILENAME));
         PowerMock.replayAll();
 
         final EngineConfigService engineConfigService = new EngineConfigServiceImpl();

@@ -60,7 +60,7 @@ public class ExchangeConfigController {
     /**
      * Returns Exchange configuration for the bot.
      *
-     * TODO check user permissions?
+     * TODO check user permissions and make authz more specific?
      *
      * @return the Exchange configuration.
      */
@@ -72,9 +72,9 @@ public class ExchangeConfigController {
     /**
      * Updates Exchange configuration for the bot.
      *
-     * TODO check user permissions?
+     * TODO check user permissions and make authz more specific?
      *
-     * @return HttpStatus.OK if exchange config was updated, any other HTTP status code otherwise.
+     * @return HttpStatus.NO_CONTENT if exchange config was updated, any other HTTP status code otherwise.
      */
     @RequestMapping(value = "/config/exchange", method = RequestMethod.PUT)
     ResponseEntity<?> updateExchange(@AuthenticationPrincipal User user, @RequestBody ExchangeConfig config) {

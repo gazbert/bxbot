@@ -23,28 +23,21 @@
 
 package com.gazbert.bxbot.core.admin.controllers;
 
+import com.gazbert.bxbot.core.admin.services.EmailAlertsConfigService;
 import com.gazbert.bxbot.core.config.emailalerts.EmailAlertsConfig;
 import com.gazbert.bxbot.core.config.emailalerts.SmtpConfig;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.mock.http.MockHttpOutputMessage;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
 
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.util.Arrays;
-
+import static org.hamcrest.Matchers.is;
+import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -52,8 +45,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
- * TODO Work in progress...
- * <p>
  * Tests the Email Alerts config controller behaviour.
  *
  * @author gazbert
@@ -62,71 +53,91 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @WebAppConfiguration
-public class TestEmailAlertsConfigController {
+public class TestEmailAlertsConfigController extends AbstractConfigControllerTest {
 
-    private static final MediaType CONTENT_TYPE = new MediaType(MediaType.APPLICATION_JSON.getType(),
-            MediaType.APPLICATION_JSON.getSubtype(), Charset.forName("utf8"));
+    // This must match a user's login_id in the user table in src/test/resources/import.sql
+    private static final String VALID_USER_LOGINID = "user1";
 
-    private HttpMessageConverter mappingJackson2HttpMessageConverter;
-    private MockMvc mockMvc;
+    // This must match a user's password in the user table in src/test/resources/import.sql
+    private static final String VALID_USER_PASSWORD = "user1-password";
 
-    @Autowired
-    private WebApplicationContext ctx;
+    // Canned data
+    private static final boolean ENABLED = true;
+    private static final String HOST = "smtp.host.deathstar.com";
+    private static final int TLS_PORT = 573;
+    private static final String ACCOUNT_USERNAME = "boba@google.com";
+    private static final String FROM_ADDRESS = "boba.fett@Mandalore.com";
+    private static final String TO_ADDRESS = "darth.vader@deathstar.com";
 
-    @Autowired
-    void setConverters(HttpMessageConverter<?>[] converters) {
-        this.mappingJackson2HttpMessageConverter =
-                Arrays.stream(converters)
-                        .filter(converter -> converter instanceof MappingJackson2HttpMessageConverter).findAny().get();
+    @MockBean
+    EmailAlertsConfigService emailAlertsConfigService;
 
-        Assert.assertNotNull("The JSON message converter must not be null",
-                this.mappingJackson2HttpMessageConverter);
-    }
 
     @Before
     public void setupBeforeEachTest() {
-        this.mockMvc = MockMvcBuilders.webAppContextSetup(ctx).build();
+        mockMvc = MockMvcBuilders.webAppContextSetup(ctx).addFilter(springSecurityFilterChain).build();
+    }
+
+    @Test
+    public void testGetEmailAlertsConfigWhenUnauthorized() throws Exception {
+
+        mockMvc.perform(get("/api/config/emailalerts")
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.error", is("unauthorized")));
     }
 
     @Test
     public void testGetEmailAlertsConfig() throws Exception {
 
-        this.mockMvc.perform(get("/api/config/emailalerts"))
+        given(this.emailAlertsConfigService.getConfig()).willReturn(someEmailAlertsConfig());
+
+        this.mockMvc.perform(get("/api/config/emailalerts")
+                .header("Authorization", "Bearer " + getAccessToken(VALID_USER_LOGINID, VALID_USER_PASSWORD)))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.enabled").value(true))
-                .andExpect(jsonPath("$.smtpConfig.host").value("smtp.host.deathstar.com"))
-                .andExpect(jsonPath("$.smtpConfig.tlsPort").value(573))
-                .andExpect(jsonPath("$.smtpConfig.accountUsername").value("boba"))
-                .andExpect(jsonPath("$.smtpConfig.accountPassword").value("b0unty"))
-                .andExpect(jsonPath("$.smtpConfig.fromAddress").value("boba.fett@Mandalore.com"))
-                .andExpect(jsonPath("$.smtpConfig.toAddress").value("darth.vader@deathstar.com")
+                .andExpect(jsonPath("$.smtpConfig.host").value(HOST))
+                .andExpect(jsonPath("$.smtpConfig.tlsPort").value(TLS_PORT))
+                .andExpect(jsonPath("$.enabled").value(ENABLED))
+                .andExpect(jsonPath("$.smtpConfig.fromAddress").value(FROM_ADDRESS))
+                .andExpect(jsonPath("$.smtpConfig.toAddress").value(TO_ADDRESS))
+                .andExpect(jsonPath("$.smtpConfig.accountUsername").value(ACCOUNT_USERNAME))
+
+                // REST API does not expose email account password - potential security risk
+                .andExpect(jsonPath("$.smtpConfig.accountPassword").doesNotExist()
                 );
+    }
+
+    @Test
+    public void testUpdateEmailAlertsConfigWhenUnauthorized() throws Exception {
+
+        mockMvc.perform(put("/api/config/emailalerts")
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.error", is("unauthorized")));
     }
 
     @Test
     public void testUpdateEmailAlertsConfig() throws Exception {
 
-        final String configJson = jsonify(buildEmailAlertsConfig());
+        final String configJson = jsonify(someEmailAlertsConfig());
         this.mockMvc.perform(put("/api/config/emailalerts")
+                .header("Authorization", "Bearer " + getAccessToken(VALID_USER_LOGINID, VALID_USER_PASSWORD))
                 .contentType(CONTENT_TYPE)
                 .content(configJson))
-                .andExpect(status().isOk());
+                .andExpect(status().isNoContent());
     }
 
     // ------------------------------------------------------------------------------------------------
     // Private utils
     // ------------------------------------------------------------------------------------------------
 
-    private String jsonify(Object objectToJsonify) throws IOException {
-        MockHttpOutputMessage mockHttpOutputMessage = new MockHttpOutputMessage();
-        this.mappingJackson2HttpMessageConverter.write(objectToJsonify, MediaType.APPLICATION_JSON, mockHttpOutputMessage);
-        return mockHttpOutputMessage.getBodyAsString();
-    }
+    private static EmailAlertsConfig someEmailAlertsConfig() {
 
-    private static EmailAlertsConfig buildEmailAlertsConfig() {
+        // REST API does not expose email account password - potential security risk
         final SmtpConfig smtpConfig = new SmtpConfig(
-                "smtp.host.deathstar.com", 573, "boba", "b0unty", "boba.fett@Mandalore.com", "darth.vader@deathstar.com");
+                HOST, TLS_PORT, ACCOUNT_USERNAME, null, FROM_ADDRESS, TO_ADDRESS);
+
         final EmailAlertsConfig emailAlertsConfig = new EmailAlertsConfig();
         emailAlertsConfig.setEnabled(true);
         emailAlertsConfig.setSmtpConfig(smtpConfig);

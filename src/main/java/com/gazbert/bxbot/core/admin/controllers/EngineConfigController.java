@@ -23,12 +23,14 @@
 
 package com.gazbert.bxbot.core.admin.controllers;
 
+import com.gazbert.bxbot.core.admin.repository.User;
 import com.gazbert.bxbot.core.admin.services.EngineConfigService;
 import com.gazbert.bxbot.core.config.engine.EngineConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -59,20 +61,24 @@ public class EngineConfigController {
     /**
      * Returns Engine configuration for the bot.
      *
+     * TODO check user permissions and make authz more specific?
+     *
      * @return the Engine configuration.
      */
     @RequestMapping(value = "/config/engine", method = RequestMethod.GET)
-    public EngineConfig getEngine() {
+    public EngineConfig getEngine(@AuthenticationPrincipal User user) {
         return engineConfigService.getConfig();
     }
 
     /**
      * Updates Engine configuration for the bot.
      *
+     * TODO check user permissions and make authz more specific?
+     *
      * @return HttpStatus.NO_CONTENT if engine config was updated successfully, some other HTTP status code otherwise.
      */
     @RequestMapping(value = "/config/engine", method = RequestMethod.PUT)
-    public ResponseEntity<?> updateEngine(@RequestBody EngineConfig config) {
+    public ResponseEntity<?> updateEngine(@AuthenticationPrincipal User user, @RequestBody EngineConfig config) {
 
         engineConfigService.updateConfig(config);
         final HttpHeaders httpHeaders = new HttpHeaders();

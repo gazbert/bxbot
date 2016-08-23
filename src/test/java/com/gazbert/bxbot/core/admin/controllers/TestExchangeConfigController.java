@@ -110,7 +110,7 @@ public class TestExchangeConfigController extends AbstractConfigControllerTest {
                 .andExpect(jsonPath("$.exchangeName").value(EXCHANGE_NAME))
                 .andExpect(jsonPath("$.exchangeAdapter").value(EXCHANGE_ADAPTER))
 
-                // We don't expose AuthenticationConfig in the REST API - security risk
+                // REST API does not expose AuthenticationConfig - potential security risk
                 .andExpect(jsonPath("$.authenticationConfig").doesNotExist())
 
                 .andExpect(jsonPath("$.networkConfig.connectionTimeout").value(CONNECTION_TIMEOUT))
