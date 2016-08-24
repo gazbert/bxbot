@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /*
  * Tests a StrategyConfig domain object behaves as expected.
@@ -61,7 +62,7 @@ public class TestStrategyConfig {
         assertEquals(null, strategyConfig.getLabel());
         assertEquals(null, strategyConfig.getDescription());
         assertEquals(null, strategyConfig.getClassName());
-        assertEquals(null, strategyConfig.getConfigItems());
+        assertTrue(strategyConfig.getConfigItems().isEmpty());
 
         strategyConfig.setId(ID);
         assertEquals(ID, strategyConfig.getId());
