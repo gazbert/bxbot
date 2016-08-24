@@ -23,30 +23,26 @@
 
 package com.gazbert.bxbot.core.admin.controllers;
 
+import com.gazbert.bxbot.core.admin.services.StrategyConfigService;
 import com.gazbert.bxbot.core.config.strategy.StrategyConfig;
-import com.gazbert.bxbot.core.config.strategy.StrategyConfigItems;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.mock.http.MockHttpOutputMessage;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
 
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
+import static org.hamcrest.Matchers.is;
+import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -62,81 +58,89 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @WebAppConfiguration
-public class TestStrategyConfigController {
+public class TestStrategyConfigController extends AbstractConfigControllerTest {
 
-    private static final MediaType CONTENT_TYPE = new MediaType(MediaType.APPLICATION_JSON.getType(),
-            MediaType.APPLICATION_JSON.getSubtype(),
-            Charset.forName("utf8"));
+    // This must match a user's login_id in the user table in src/test/resources/import.sql
+    private static final String VALID_USER_LOGINID = "user1";
 
-    /* Used for writing JSON from the java config objects */
-    private HttpMessageConverter mappingJackson2HttpMessageConverter;
-    private MockMvc mockMvc;
+    // This must match a user's password in the user table in src/test/resources/import.sql
+    private static final String VALID_USER_PASSWORD = "user1-password";
 
-    @Autowired
-    private WebApplicationContext ctx;
+    // Canned data
+    private static final String STRAT_ID_1 = "macd-long-position";
+    private static final String STRAT_LABEL_1 = "MACD Long Position Algo";
+    private static final String STRAT_DESCRIPTION_1 = "Uses MACD as indicator and takes long position in base currency.";
+    private static final String STRAT_CLASSNAME_1 = "com.gazbert.nova.algos.MacdLongBase";
 
-    @Autowired
-    void setConverters(HttpMessageConverter<?>[] converters) {
-        this.mappingJackson2HttpMessageConverter =
-                Arrays.stream(converters)
-                        .filter(converter -> converter instanceof MappingJackson2HttpMessageConverter).findAny().get();
+    private static final String STRAT_ID_2 = "long-scalper";
+    private static final String STRAT_LABEL_2 = "Long Position Scalper Algo";
+    private static final String STRAT_DESCRIPTION_2 = "Scalps and goes long...";
+    private static final String STRAT_CLASSNAME_2 = "com.gazbert.nova.algos.LongScalper";
 
-        Assert.assertNotNull("The JSON message converter must not be null",
-                this.mappingJackson2HttpMessageConverter);
-    }
+    private static final String BUY_PRICE_CONFIG_ITEM_KEY = "buy-price";
+    private static final String BUY_PRICE_CONFIG_ITEM_VALUE = "671.15";
+    private static final String AMOUNT_TO_BUY_CONFIG_ITEM_KEY = "buy-amount";
+    private static final String AMOUNT_TO_BUY_CONFIG_ITEM_VALUE = "0.5";
+
+    @MockBean
+    StrategyConfigService strategyConfigService;
+
 
     @Before
     public void setupBeforeEachTest() {
-        this.mockMvc = MockMvcBuilders.webAppContextSetup(ctx).build();
+        mockMvc = MockMvcBuilders.webAppContextSetup(ctx).addFilter(springSecurityFilterChain).build();
     }
 
     @Test
-    public void testGetStrategyConfig() throws Exception {
+    public void testGetAllStrategyConfigWhenUnauthorized() throws Exception {
 
-        final StrategyConfig strategyConfig = buildStrategyConfig();
+        mockMvc.perform(get("/api/config/strategy")
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.error", is("unauthorized")));
+    }
 
-        this.mockMvc.perform(get("/api/config/strategy/" + strategyConfig.getId()))
+    @Test
+    public void testGetAllStrategyConfig() throws Exception {
+
+        given(this.strategyConfigService.findAllStrategies()).willReturn(allTheStrategyConfig());
+
+        this.mockMvc.perform(get("/api/config/strategy/")
+                .header("Authorization", "Bearer " + getAccessToken(VALID_USER_LOGINID, VALID_USER_PASSWORD)))
                 .andDo(print())
                 .andExpect(status().isOk())
 
-                .andExpect(jsonPath("$.id").value(strategyConfig.getId()))
-                .andExpect(jsonPath("$.label").value(strategyConfig.getLabel()))
-                .andExpect(jsonPath("$.description").value(strategyConfig.getDescription()))
-                .andExpect(jsonPath("$.className").value(strategyConfig.getClassName()))
-                .andExpect(jsonPath("$.configItems.numberOfConfigItems").value(strategyConfig.getConfigItems().getNumberOfConfigItems()))
-                .andExpect(jsonPath("$.configItems.items.buy-amount").value(strategyConfig.getConfigItems().getItems().get("buy-amount")))
-                .andExpect(jsonPath("$.configItems.items.long-ema-interval").value(strategyConfig.getConfigItems().getItems().get("long-ema-interval"))
+                .andExpect(jsonPath("$.[0].label").value(STRAT_LABEL_1))
+                .andExpect(jsonPath("$.[0].description").value(STRAT_DESCRIPTION_1))
+                .andExpect(jsonPath("$.[0].className").value(STRAT_CLASSNAME_1))
+                .andExpect(jsonPath("$.[0].configItems.buy-price").value(BUY_PRICE_CONFIG_ITEM_VALUE))
+                .andExpect(jsonPath("$.[0].configItems.buy-amount").value(AMOUNT_TO_BUY_CONFIG_ITEM_VALUE))
+
+                .andExpect(jsonPath("$.[1].label").value(STRAT_LABEL_2))
+                .andExpect(jsonPath("$.[1].description").value(STRAT_DESCRIPTION_2))
+                .andExpect(jsonPath("$.[1].className").value(STRAT_CLASSNAME_2))
+                .andExpect(jsonPath("$.[1].configItems.buy-price").value(BUY_PRICE_CONFIG_ITEM_VALUE))
+                .andExpect(jsonPath("$.[1].configItems.buy-amount").value(AMOUNT_TO_BUY_CONFIG_ITEM_VALUE)
                 );
-    }
-
-    @Test
-    public void testUpdateStrategyConfig() throws Exception {
-
-        final StrategyConfig strategyConfig = buildStrategyConfig();
-        final String configJson = jsonify(strategyConfig);
-        this.mockMvc.perform(put("/api/config/strategy/" + strategyConfig.getId())
-                .contentType(CONTENT_TYPE)
-                .content(configJson))
-                .andExpect(status().isOk());
     }
 
     // ------------------------------------------------------------------------------------------------
     // Private utils
     // ------------------------------------------------------------------------------------------------
 
-    private String jsonify(Object objectToJsonify) throws IOException {
-        MockHttpOutputMessage mockHttpOutputMessage = new MockHttpOutputMessage();
-        this.mappingJackson2HttpMessageConverter.write(objectToJsonify, MediaType.APPLICATION_JSON, mockHttpOutputMessage);
-        return mockHttpOutputMessage.getBodyAsString();
-    }
+    private static List<StrategyConfig> allTheStrategyConfig() {
 
-    private static StrategyConfig buildStrategyConfig() {
-        final StrategyConfigItems configItems = new StrategyConfigItems();
-        configItems.addConfigItem("buy-amount", "123.09");
-        configItems.addConfigItem("long-ema-interval", "20");
+        final Map<String, String> configItems = new HashMap<>();
 
-        final StrategyConfig config = new StrategyConfig("3-way-ema", "3 Way EMA Crossover Algo",
-                "A lovely description...", "com.gazbert.bxbot.algos.nova.ThreeWayEma", configItems);
-        return config;
+        configItems.put(BUY_PRICE_CONFIG_ITEM_KEY, BUY_PRICE_CONFIG_ITEM_VALUE);
+        configItems.put(AMOUNT_TO_BUY_CONFIG_ITEM_KEY, AMOUNT_TO_BUY_CONFIG_ITEM_VALUE);
+
+        final StrategyConfig strategyConfig1 = new StrategyConfig(STRAT_ID_1, STRAT_LABEL_1, STRAT_DESCRIPTION_1, STRAT_CLASSNAME_1, configItems);
+        final StrategyConfig strategyConfig2 = new StrategyConfig(STRAT_ID_2, STRAT_LABEL_2, STRAT_DESCRIPTION_2, STRAT_CLASSNAME_2, configItems);
+
+        final List<StrategyConfig> allStrategies = new ArrayList<>();
+        allStrategies.add(strategyConfig1);
+        allStrategies.add(strategyConfig2);
+        return allStrategies;
     }
 }

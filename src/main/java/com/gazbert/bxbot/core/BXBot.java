@@ -28,7 +28,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /*
- * BX-bot is a simple algo trading bot for running on Bitcoin exchanges.
+ * BX-bot - here be the main boot app.
  */
 @SpringBootApplication
 public class BXBot {

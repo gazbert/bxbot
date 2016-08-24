@@ -39,7 +39,7 @@ import java.util.List;
  * Controller for directing Strategy config requests.
  *
  * @author gazbert
- * @since 12/09/2016
+ * @since 12/08/2016
  */
 @RestController
 @RequestMapping("/api")
@@ -53,8 +53,14 @@ public class StrategyConfigController {
         this.strategyConfigService = strategyConfigService;
     }
 
+
+    @RequestMapping(value = "/config/strategy", method = RequestMethod.GET)
+    public List<StrategyConfig> getAllStrategies() {
+        return strategyConfigService.findAllStrategies();
+    }
+
     @RequestMapping(value = "/config/strategy/{strategyId}", method = RequestMethod.GET)
-    public StrategyConfig getStrategy(@PathVariable String strategyId) {
+    public StrategyConfig getStrategies(@PathVariable String strategyId) {
         return strategyConfigService.findById(strategyId);
     }
 
@@ -63,7 +69,7 @@ public class StrategyConfigController {
 
         final StrategyConfig updatedConfig = strategyConfigService.updateStrategy(config);
         final HttpHeaders httpHeaders = new HttpHeaders();
-        return new ResponseEntity<>(updatedConfig, httpHeaders, HttpStatus.OK);
+        return new ResponseEntity<>(updatedConfig, httpHeaders, HttpStatus.NO_CONTENT);
     }
 
     @RequestMapping(value = "/config/strategy/{strategyId}", method = RequestMethod.POST)
@@ -81,11 +87,6 @@ public class StrategyConfigController {
     @RequestMapping(value = "/config/strategy/{strategyId}", method = RequestMethod.DELETE)
     public StrategyConfig deleteStrategy(@PathVariable String strategyId) {
         return strategyConfigService.deleteStrategyById(strategyId);
-    }
-
-    @RequestMapping(value = "/config/strategy", method = RequestMethod.GET)
-    public List<StrategyConfig> getAllStrategies() {
-        return strategyConfigService.findAllStrategies();
     }
 }
 

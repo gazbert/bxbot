@@ -25,6 +25,9 @@ package com.gazbert.bxbot.core.config.strategy;
 
 import org.junit.Test;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static org.junit.Assert.assertEquals;
 
 /*
@@ -36,7 +39,7 @@ public class TestStrategyConfig {
     private static final String LABEL = "MACD Long Position Algo";
     private static final String DESCRIPTION = "Uses MACD as indicator and takes long position in base currency.";
     private static final String CLASSNAME = "com.gazbert.nova.algos.MacdLongBase";
-    private static final StrategyConfigItems CONFIG_ITEMS = new StrategyConfigItems();
+    private static final Map<String, String> CONFIG_ITEMS = new HashMap<>();
 
 
     @Test

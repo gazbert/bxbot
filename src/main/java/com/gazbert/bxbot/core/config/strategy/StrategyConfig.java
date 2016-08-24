@@ -26,6 +26,9 @@ package com.gazbert.bxbot.core.config.strategy;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Domain object representing a Strategy config.
  * <p>
@@ -50,14 +53,14 @@ public class StrategyConfig {
     private String label;
     private String description;
     private String className;
-    private StrategyConfigItems configItems;
+    private Map<String, String> configItems = new HashMap<>();
 
 
     // required for Jackson
     public StrategyConfig() {
     }
 
-    public StrategyConfig(String id, String label, String description, String className, StrategyConfigItems configItems) {
+    public StrategyConfig(String id, String label, String description, String className, Map<String, String> configItems) {
         this.id = id;
         this.label = label;
         this.description = description;
@@ -97,11 +100,11 @@ public class StrategyConfig {
         this.className = className;
     }
 
-    public StrategyConfigItems getConfigItems() {
+    public Map<String, String> getConfigItems() {
         return configItems;
     }
 
-    public void setConfigItems(StrategyConfigItems configItems) {
+    public void setConfigItems(Map<String, String> configItems) {
         this.configItems = configItems;
     }
 

@@ -35,17 +35,30 @@ import java.util.List;
  */
 public interface StrategyConfigService {
 
+    /**
+     * Returns all the Strategy Config items.
+     *
+     * TODO doc what is exposed and what is not
+     *
+     * @return all the strategy config items
+     */
+    List<StrategyConfig> findAllStrategies();
+
     StrategyConfig findById(String id);
 
     StrategyConfig findByName(String name);
 
     StrategyConfig saveStrategy(StrategyConfig config);
 
+    /**
+     * TODO doc what can and cannot be updated
+     *
+     * @param config
+     * @return
+     */
     StrategyConfig updateStrategy(StrategyConfig config);
 
     StrategyConfig deleteStrategyById(String id);
-
-    List<StrategyConfig> findAllStrategies();
 
     List<StrategyConfig> deleteAllStrategies();
 }
