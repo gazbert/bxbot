@@ -53,16 +53,17 @@ public class StrategyConfigController {
         this.strategyConfigService = strategyConfigService;
     }
 
-
     @RequestMapping(value = "/config/strategy", method = RequestMethod.GET)
     public List<StrategyConfig> getAllStrategies() {
         return strategyConfigService.findAllStrategies();
     }
 
     @RequestMapping(value = "/config/strategy/{strategyId}", method = RequestMethod.GET)
-    public StrategyConfig getStrategies(@PathVariable String strategyId) {
+    public StrategyConfig getStrategy(@PathVariable String strategyId) {
         return strategyConfigService.findById(strategyId);
     }
+
+    // TODO got to here
 
     @RequestMapping(value = "/config/strategy/{strategyId}", method = RequestMethod.PUT)
     ResponseEntity<?> updateStrategy(@PathVariable String strategyId, @RequestBody StrategyConfig config) {

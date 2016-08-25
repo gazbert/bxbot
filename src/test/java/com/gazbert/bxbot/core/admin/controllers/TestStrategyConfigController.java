@@ -124,6 +124,33 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
                 );
     }
 
+    @Test
+    public void testGetStrategyConfigWhenUnauthorized() throws Exception {
+
+        mockMvc.perform(get("/api/config/strategy/" + STRAT_ID_1)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.error", is("unauthorized")));
+    }
+
+    @Test
+    public void testGetStrategyConfigById() throws Exception {
+
+        given(this.strategyConfigService.findById(STRAT_ID_1)).willReturn(theStrategyConfig());
+
+        this.mockMvc.perform(get("/api/config/strategy/" + STRAT_ID_1)
+                .header("Authorization", "Bearer " + getAccessToken(VALID_USER_LOGINID, VALID_USER_PASSWORD)))
+                .andDo(print())
+                .andExpect(status().isOk())
+
+                .andExpect(jsonPath("$.label").value(STRAT_LABEL_1))
+                .andExpect(jsonPath("$.description").value(STRAT_DESCRIPTION_1))
+                .andExpect(jsonPath("$.className").value(STRAT_CLASSNAME_1))
+                .andExpect(jsonPath("$.configItems.buy-price").value(BUY_PRICE_CONFIG_ITEM_VALUE))
+                .andExpect(jsonPath("$.configItems.buy-amount").value(AMOUNT_TO_BUY_CONFIG_ITEM_VALUE)
+                );
+    }
+
     // ------------------------------------------------------------------------------------------------
     // Private utils
     // ------------------------------------------------------------------------------------------------
@@ -142,5 +169,15 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
         allStrategies.add(strategyConfig1);
         allStrategies.add(strategyConfig2);
         return allStrategies;
+    }
+
+    private static StrategyConfig theStrategyConfig() {
+
+        final Map<String, String> configItems = new HashMap<>();
+        configItems.put(BUY_PRICE_CONFIG_ITEM_KEY, BUY_PRICE_CONFIG_ITEM_VALUE);
+        configItems.put(AMOUNT_TO_BUY_CONFIG_ITEM_KEY, AMOUNT_TO_BUY_CONFIG_ITEM_VALUE);
+
+        final StrategyConfig strategyConfig = new StrategyConfig(STRAT_ID_1, STRAT_LABEL_1, STRAT_DESCRIPTION_1, STRAT_CLASSNAME_1, configItems);
+        return strategyConfig;
     }
 }
