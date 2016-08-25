@@ -39,6 +39,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 /**
+ * TODO Javadoc this - it's a public API!
+ *
  * Controller for directing Engine config requests.
  * <p>
  * Engine config can only be fetched and updated - there is only 1 Trading Engine per bot.

@@ -34,12 +34,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.gazbert.bxbot.core.config.strategy.StrategyConfig.STRATEGIES_CONFIG_XML_FILENAME;
 import static com.gazbert.bxbot.core.config.strategy.StrategyConfig.STRATEGIES_CONFIG_XSD_FILENAME;
 
 /**
- * TODO Work in progress...
+ * Implementation of the Strategy config service.
  *
  * @author gazbert
  * @since 12/08/2016
@@ -55,12 +56,23 @@ public class StrategyConfigServiceImpl implements StrategyConfigService {
 
         final TradingStrategiesType internalStrategiesConfig = ConfigurationManager.loadConfig(TradingStrategiesType.class,
                 STRATEGIES_CONFIG_XML_FILENAME, STRATEGIES_CONFIG_XSD_FILENAME);
-        return adaptInternalToExternalConfig(internalStrategiesConfig);
+        return adaptAllInternalToAllExternalConfig(internalStrategiesConfig);
     }
 
     @Override
     public StrategyConfig findById(String id) {
-        throw new UnsupportedOperationException("findById not coded yet");
+
+        LOG.info(() -> "Fetching config for Strategy id: " + id);
+
+        final TradingStrategiesType internalStrategiesConfig = ConfigurationManager.loadConfig(TradingStrategiesType.class,
+                STRATEGIES_CONFIG_XML_FILENAME, STRATEGIES_CONFIG_XSD_FILENAME);
+
+        return adaptInternalToExternalConfig(
+                internalStrategiesConfig.getStrategies()
+                        .stream()
+                        .filter((item) -> item.getId().equals(id))
+                        .distinct()
+                        .collect(Collectors.toList()));
     }
 
     @Override
@@ -92,7 +104,7 @@ public class StrategyConfigServiceImpl implements StrategyConfigService {
     // Adapter methods
     // ------------------------------------------------------------------------------------------------
 
-    private static List<StrategyConfig> adaptInternalToExternalConfig(TradingStrategiesType internalStrategiesConfig) {
+    private static List<StrategyConfig> adaptAllInternalToAllExternalConfig(TradingStrategiesType internalStrategiesConfig) {
 
         final List<StrategyConfig> strategyConfigItems = new ArrayList<>();
 
@@ -112,5 +124,24 @@ public class StrategyConfigServiceImpl implements StrategyConfigService {
         });
 
         return strategyConfigItems;
+    }
+
+    private static StrategyConfig adaptInternalToExternalConfig(List<StrategyType> internalStrategyConfigItems) {
+
+        final StrategyConfig strategyConfig = new StrategyConfig();
+
+        if (!internalStrategyConfigItems.isEmpty()) {
+
+            // Should only ever be 1 unique Strategy id
+            final StrategyType internalStrategyConfig = internalStrategyConfigItems.get(0);
+            strategyConfig.setId(internalStrategyConfig.getId());
+            strategyConfig.setLabel(internalStrategyConfig.getLabel());
+            strategyConfig.setDescription(internalStrategyConfig.getDescription());
+            strategyConfig.setClassName(internalStrategyConfig.getClassName());
+
+            internalStrategyConfig.getConfiguration().getConfigItem().forEach(internalConfigItem ->
+                    strategyConfig.getConfigItems().put(internalConfigItem.getName(), internalConfigItem.getValue()));
+        }
+        return strategyConfig;
     }
 }

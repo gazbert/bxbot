@@ -89,15 +89,6 @@ public class TestExchangeConfigController extends AbstractConfigControllerTest {
     }
 
     @Test
-    public void testGetExchangeConfigWhenUnauthorized() throws Exception {
-
-        mockMvc.perform(get("/api/config/exchange")
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("$.error", is("unauthorized")));
-    }
-
-    @Test
     public void testGetExchangeConfig() throws Exception {
 
         given(this.exchangeConfigService.getConfig()).willReturn(someExchangeConfig());
@@ -128,9 +119,9 @@ public class TestExchangeConfigController extends AbstractConfigControllerTest {
     }
 
     @Test
-    public void testUpdateExchangeConfigWhenUnauthorized() throws Exception {
+    public void testGetExchangeConfigWhenUnauthorized() throws Exception {
 
-        mockMvc.perform(put("/api/config/exchange")
+        mockMvc.perform(get("/api/config/exchange")
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.error", is("unauthorized")));
@@ -144,6 +135,15 @@ public class TestExchangeConfigController extends AbstractConfigControllerTest {
                 .contentType(CONTENT_TYPE)
                 .content(jsonify(someExchangeConfig())))
                 .andExpect(status().isNoContent());
+    }
+
+    @Test
+    public void testUpdateExchangeConfigWhenUnauthorized() throws Exception {
+
+        mockMvc.perform(put("/api/config/exchange")
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.error", is("unauthorized")));
     }
 
     // ------------------------------------------------------------------------------------------------

@@ -77,15 +77,6 @@ public class TestEngineConfigController extends AbstractConfigControllerTest {
     }
 
     @Test
-    public void testGetEngineConfigWhenUnauthorized() throws Exception {
-
-        mockMvc.perform(get("/api/config/engine")
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("$.error", is("unauthorized")));
-    }
-
-    @Test
     public void testGetEngineConfig() throws Exception {
 
         given(this.engineConfigService.getConfig()).willReturn(someEngineConfig());
@@ -101,9 +92,9 @@ public class TestEngineConfigController extends AbstractConfigControllerTest {
     }
 
     @Test
-    public void testUpdateEngineConfigWhenUnauthorized() throws Exception {
+    public void testGetEngineConfigWhenUnauthorized() throws Exception {
 
-        mockMvc.perform(put("/api/config/engine")
+        mockMvc.perform(get("/api/config/engine")
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.error", is("unauthorized")));
@@ -117,6 +108,15 @@ public class TestEngineConfigController extends AbstractConfigControllerTest {
                 .contentType(CONTENT_TYPE)
                 .content(jsonify(someEngineConfig())))
                 .andExpect(status().isNoContent());
+    }
+
+    @Test
+    public void testUpdateEngineConfigWhenUnauthorized() throws Exception {
+
+        mockMvc.perform(put("/api/config/engine")
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.error", is("unauthorized")));
     }
 
     // ------------------------------------------------------------------------------------------------

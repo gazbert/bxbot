@@ -92,18 +92,9 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
     }
 
     @Test
-    public void testGetAllStrategyConfigWhenUnauthorized() throws Exception {
-
-        mockMvc.perform(get("/api/config/strategy")
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("$.error", is("unauthorized")));
-    }
-
-    @Test
     public void testGetAllStrategyConfig() throws Exception {
 
-        given(this.strategyConfigService.findAllStrategies()).willReturn(allTheStrategyConfig());
+        given(this.strategyConfigService.findAllStrategies()).willReturn(allTheStrategiesConfig());
 
         this.mockMvc.perform(get("/api/config/strategy/")
                 .header("Authorization", "Bearer " + getAccessToken(VALID_USER_LOGINID, VALID_USER_PASSWORD)))
@@ -125,9 +116,9 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
     }
 
     @Test
-    public void testGetStrategyConfigWhenUnauthorized() throws Exception {
+    public void testGetAllStrategyConfigWhenUnauthorized() throws Exception {
 
-        mockMvc.perform(get("/api/config/strategy/" + STRAT_ID_1)
+        mockMvc.perform(get("/api/config/strategy")
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.error", is("unauthorized")));
@@ -151,11 +142,30 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
                 );
     }
 
+    @Test
+    public void testGetStrategyConfigByIdWhenUnauthorized() throws Exception {
+
+        mockMvc.perform(get("/api/config/strategy/" + STRAT_ID_1)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.error", is("unauthorized")));
+    }
+
+    @Test
+    public void testGetStrategyConfigByIdWhenNotRecognized() throws Exception {
+
+        given(this.strategyConfigService.findById("unknown-id")).willReturn(emptyStrategyConfig());
+        mockMvc.perform(get("/api/config/strategy/unknown-id")
+                .header("Authorization", "Bearer " + getAccessToken(VALID_USER_LOGINID, VALID_USER_PASSWORD))
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
+
     // ------------------------------------------------------------------------------------------------
     // Private utils
     // ------------------------------------------------------------------------------------------------
 
-    private static List<StrategyConfig> allTheStrategyConfig() {
+    private static List<StrategyConfig> allTheStrategiesConfig() {
 
         final Map<String, String> configItems = new HashMap<>();
 
@@ -179,5 +189,9 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
 
         final StrategyConfig strategyConfig = new StrategyConfig(STRAT_ID_1, STRAT_LABEL_1, STRAT_DESCRIPTION_1, STRAT_CLASSNAME_1, configItems);
         return strategyConfig;
+    }
+
+    private static StrategyConfig emptyStrategyConfig() {
+        return new StrategyConfig();
     }
 }

@@ -79,15 +79,6 @@ public class TestEmailAlertsConfigController extends AbstractConfigControllerTes
     }
 
     @Test
-    public void testGetEmailAlertsConfigWhenUnauthorized() throws Exception {
-
-        mockMvc.perform(get("/api/config/emailalerts")
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("$.error", is("unauthorized")));
-    }
-
-    @Test
     public void testGetEmailAlertsConfig() throws Exception {
 
         given(this.emailAlertsConfigService.getConfig()).willReturn(someEmailAlertsConfig());
@@ -109,9 +100,9 @@ public class TestEmailAlertsConfigController extends AbstractConfigControllerTes
     }
 
     @Test
-    public void testUpdateEmailAlertsConfigWhenUnauthorized() throws Exception {
+    public void testGetEmailAlertsConfigWhenUnauthorized() throws Exception {
 
-        mockMvc.perform(put("/api/config/emailalerts")
+        mockMvc.perform(get("/api/config/emailalerts")
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.error", is("unauthorized")));
@@ -126,6 +117,15 @@ public class TestEmailAlertsConfigController extends AbstractConfigControllerTes
                 .contentType(CONTENT_TYPE)
                 .content(configJson))
                 .andExpect(status().isNoContent());
+    }
+
+    @Test
+    public void testUpdateEmailAlertsConfigWhenUnauthorized() throws Exception {
+
+        mockMvc.perform(put("/api/config/emailalerts")
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.error", is("unauthorized")));
     }
 
     // ------------------------------------------------------------------------------------------------

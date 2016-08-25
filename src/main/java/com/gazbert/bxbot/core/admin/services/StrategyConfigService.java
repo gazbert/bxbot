@@ -44,7 +44,14 @@ public interface StrategyConfigService {
      */
     List<StrategyConfig> findAllStrategies();
 
+    /**
+     * Returns the Strategy config for a given Strategy id.
+     *
+     * @param id the strategy id.
+     * @return the Strategy config.
+     */
     StrategyConfig findById(String id);
+
 
     StrategyConfig findByName(String name);
 

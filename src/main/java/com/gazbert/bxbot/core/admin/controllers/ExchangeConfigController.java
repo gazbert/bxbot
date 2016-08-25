@@ -38,6 +38,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
+ * TODO Javadoc this - it's a public API!
+ *
  * Controller for directing Exchange config requests.
  * <p>
  * Exchange config can only be fetched and updated - there is only 1 Exchange Adapter per bot.

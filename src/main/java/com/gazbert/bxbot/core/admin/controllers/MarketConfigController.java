@@ -36,6 +36,8 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.util.List;
 
 /**
+ * TODO Javadoc this - it's a public API!
+ *
  * Controller for directing Market config requests.
  *
  * @author gazbert

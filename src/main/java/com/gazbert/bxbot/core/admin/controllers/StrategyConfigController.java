@@ -36,6 +36,8 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.util.List;
 
 /**
+ * TODO Javadoc this - it's a public API!
+ * <p>
  * Controller for directing Strategy config requests.
  *
  * @author gazbert
@@ -59,11 +61,14 @@ public class StrategyConfigController {
     }
 
     @RequestMapping(value = "/config/strategy/{strategyId}", method = RequestMethod.GET)
-    public StrategyConfig getStrategy(@PathVariable String strategyId) {
-        return strategyConfigService.findById(strategyId);
-    }
+    public ResponseEntity<?> getStrategy(@PathVariable String strategyId) {
 
-    // TODO got to here
+        final StrategyConfig strategyConfig = strategyConfigService.findById(strategyId);
+
+        return strategyConfig.getId() != null
+                ? new ResponseEntity<>(strategyConfig, null, HttpStatus.OK)
+                : new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
 
     @RequestMapping(value = "/config/strategy/{strategyId}", method = RequestMethod.PUT)
     ResponseEntity<?> updateStrategy(@PathVariable String strategyId, @RequestBody StrategyConfig config) {
