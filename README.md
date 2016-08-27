@@ -1,7 +1,6 @@
 # BX-bot
 
 [![Build Status](https://travis-ci.org/gazbert/bxbot.svg?branch=bxbot-restapi)](https://travis-ci.org/gazbert/bxbot)
-[![Coverage Status](https://coveralls.io/repos/github/gazbert/bxbot/badge.svg?branch=bxbot-restapi)](https://coveralls.io/github/gazbert/bxbot?branch=bxbot-restapi)
 
 _This is a dev branch for building the REST API for configuring the bot - see the `master` branch if you want to fork :-)_
 
