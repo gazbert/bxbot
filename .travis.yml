@@ -2,5 +2,3 @@ language: java
 jdk:
     - oraclejdk8
 script: mvn clean install -Dmaven.javadoc.skip=true
-
-after_success: mvn clean test coveralls
