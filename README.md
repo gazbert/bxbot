@@ -1,7 +1,6 @@
 # BX-bot
 
 [![Build Status](https://travis-ci.org/gazbert/bxbot.svg?branch=master)](https://travis-ci.org/gazbert/bxbot)
-[![Coverage Status](https://coveralls.io/repos/github/gazbert/bxbot/badge.svg?branch=master)](https://coveralls.io/github/gazbert/bxbot?branch=master)
 
 ## What is BX-bot?
 BX-bot (_Bex_) is a simple Java automated trading bot for trading [Bitcoin](https://bitcoin.org) on 
