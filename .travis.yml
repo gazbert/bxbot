@@ -2,3 +2,6 @@ language: java
 jdk:
     - oraclejdk8
 script: mvn clean install -Dmaven.javadoc.skip=true
+
+after_success:
+  - mvn clean org.eluder.coveralls:coveralls-maven-plugin:report
