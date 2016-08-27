@@ -23,18 +23,14 @@
 
 package com.gazbert.bxbot.core.admin.services;
 
-import com.gazbert.bxbot.core.config.ConfigurationManager;
+import com.gazbert.bxbot.core.admin.repository.EmailAlertsConfigRepository;
 import com.gazbert.bxbot.core.config.emailalerts.EmailAlertsConfig;
-import com.gazbert.bxbot.core.config.emailalerts.SmtpConfig;
-import com.gazbert.bxbot.core.config.emailalerts.generated.EmailAlertsType;
-import com.gazbert.bxbot.core.config.emailalerts.generated.SmtpConfigType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import static com.gazbert.bxbot.core.config.emailalerts.EmailAlertsConfig.EMAIL_ALERTS_CONFIG_XML_FILENAME;
-import static com.gazbert.bxbot.core.config.emailalerts.EmailAlertsConfig.EMAIL_ALERTS_CONFIG_XSD_FILENAME;
+import org.springframework.util.Assert;
 
 /**
  * Implementation of the Email Alerts configuration service.
@@ -48,60 +44,22 @@ public class EmailAlertsConfigServiceImpl implements EmailAlertsConfigService {
 
     private static final Logger LOG = LogManager.getLogger();
 
+    private final EmailAlertsConfigRepository emailAlertsConfigRepository;
+
+    @Autowired
+    public EmailAlertsConfigServiceImpl(EmailAlertsConfigRepository emailAlertsConfigRepository) {
+        Assert.notNull(emailAlertsConfigRepository, "emailAlertsConfigRepository dependency cannot be null!");
+        this.emailAlertsConfigRepository = emailAlertsConfigRepository;
+    }
+
     @Override
     public EmailAlertsConfig getConfig() {
-        final EmailAlertsType internalEmailAlertsConfig = ConfigurationManager.loadConfig(EmailAlertsType.class,
-                EMAIL_ALERTS_CONFIG_XML_FILENAME, EMAIL_ALERTS_CONFIG_XSD_FILENAME);
-        return adaptInternalToExternalConfig(internalEmailAlertsConfig);
+        return emailAlertsConfigRepository.getConfig();
     }
 
     @Override
     public void updateConfig(EmailAlertsConfig config) {
-
         LOG.info(() -> "About to update: " + config);
-
-        final EmailAlertsType internalEmailAlertsConfig = adaptExternalToInternalConfig(config);
-        ConfigurationManager.saveConfig(EmailAlertsType.class, internalEmailAlertsConfig, EMAIL_ALERTS_CONFIG_XML_FILENAME);
-    }
-
-    // ------------------------------------------------------------------------------------------------
-    // Adapter methods
-    // ------------------------------------------------------------------------------------------------
-
-    private static EmailAlertsConfig adaptInternalToExternalConfig(EmailAlertsType internalEmailAlertsConfig) {
-
-        final SmtpConfig smtpConfig = new SmtpConfig();
-        smtpConfig.setHost(internalEmailAlertsConfig.getSmtpConfig().getSmtpHost());
-        smtpConfig.setTlsPort(internalEmailAlertsConfig.getSmtpConfig().getSmtpTlsPort());
-        smtpConfig.setToAddress(internalEmailAlertsConfig.getSmtpConfig().getToAddr());
-        smtpConfig.setFromAddress(internalEmailAlertsConfig.getSmtpConfig().getFromAddr());
-        smtpConfig.setAccountUsername(internalEmailAlertsConfig.getSmtpConfig().getAccountUsername());
-        // We don't expose email account password - potential security risk
-
-        final EmailAlertsConfig emailAlertsConfig = new EmailAlertsConfig();
-        emailAlertsConfig.setEnabled(internalEmailAlertsConfig.isEnabled());
-        emailAlertsConfig.setSmtpConfig(smtpConfig);
-        return emailAlertsConfig;
-    }
-
-    private static EmailAlertsType adaptExternalToInternalConfig(EmailAlertsConfig externalEmailAlertsConfig) {
-
-        final SmtpConfigType smtpConfig = new SmtpConfigType();
-        smtpConfig.setFromAddr(externalEmailAlertsConfig.getSmtpConfig().getFromAddress());
-        smtpConfig.setToAddr(externalEmailAlertsConfig.getSmtpConfig().getToAddress());
-
-        // We don't permit updating of: account username, password, host, port - potential security risk
-        // We load the existing config and merge it in with the updated stuff...
-        final EmailAlertsType existingEmailAlertsConfig = ConfigurationManager.loadConfig(EmailAlertsType.class,
-                EMAIL_ALERTS_CONFIG_XML_FILENAME, EMAIL_ALERTS_CONFIG_XSD_FILENAME);
-        smtpConfig.setSmtpHost(existingEmailAlertsConfig.getSmtpConfig().getSmtpHost());
-        smtpConfig.setSmtpTlsPort(existingEmailAlertsConfig.getSmtpConfig().getSmtpTlsPort());
-        smtpConfig.setAccountUsername(existingEmailAlertsConfig.getSmtpConfig().getAccountUsername());
-        smtpConfig.setAccountPassword(existingEmailAlertsConfig.getSmtpConfig().getAccountPassword());
-
-        final EmailAlertsType emailAlertsConfig = new EmailAlertsType();
-        emailAlertsConfig.setEnabled(externalEmailAlertsConfig.isEnabled());
-        emailAlertsConfig.setSmtpConfig(smtpConfig);
-        return emailAlertsConfig;
+        emailAlertsConfigRepository.updateConfig(config);
     }
 }

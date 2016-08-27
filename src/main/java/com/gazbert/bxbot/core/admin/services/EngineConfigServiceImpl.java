@@ -23,16 +23,14 @@
 
 package com.gazbert.bxbot.core.admin.services;
 
-import com.gazbert.bxbot.core.config.ConfigurationManager;
+import com.gazbert.bxbot.core.admin.repository.EngineConfigRepository;
 import com.gazbert.bxbot.core.config.engine.EngineConfig;
-import com.gazbert.bxbot.core.config.engine.generated.EngineType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import static com.gazbert.bxbot.core.config.engine.EngineConfig.ENGINE_CONFIG_XML_FILENAME;
-import static com.gazbert.bxbot.core.config.engine.EngineConfig.ENGINE_CONFIG_XSD_FILENAME;
+import org.springframework.util.Assert;
 
 /**
  * Implementation of the Engine config service.
@@ -46,42 +44,22 @@ class EngineConfigServiceImpl implements EngineConfigService {
 
     private static final Logger LOG = LogManager.getLogger();
 
+    private final EngineConfigRepository engineConfigRepository;
+
+    @Autowired
+    public EngineConfigServiceImpl(EngineConfigRepository engineConfigRepository) {
+        Assert.notNull(engineConfigRepository, "engineConfigRepository dependency cannot be null!");
+        this.engineConfigRepository = engineConfigRepository;
+    }
+
     @Override
     public EngineConfig getConfig() {
-
-        final EngineType internalEngineConfig = ConfigurationManager.loadConfig(EngineType.class,
-                ENGINE_CONFIG_XML_FILENAME, ENGINE_CONFIG_XSD_FILENAME);
-        return adaptInternalToExternalConfig(internalEngineConfig);
+        return engineConfigRepository.getConfig();
     }
 
     @Override
     public void updateConfig(EngineConfig config) {
-
         LOG.info(() -> "About to update: " + config);
-
-        final EngineType internalEngineConfig = adaptExternalToInternalConfig(config);
-        ConfigurationManager.saveConfig(EngineType.class, internalEngineConfig, ENGINE_CONFIG_XML_FILENAME);
-    }
-
-    // ------------------------------------------------------------------------------------------------
-    // Adapter methods
-    // ------------------------------------------------------------------------------------------------
-
-    private static EngineConfig adaptInternalToExternalConfig(EngineType internalEngineConfig) {
-
-        final EngineConfig externalEngineConfig = new EngineConfig();
-        externalEngineConfig.setEmergencyStopCurrency(internalEngineConfig.getEmergencyStopCurrency());
-        externalEngineConfig.setEmergencyStopBalance(internalEngineConfig.getEmergencyStopBalance());
-        externalEngineConfig.setTradeCycleInterval(internalEngineConfig.getTradeCycleInterval());
-        return externalEngineConfig;
-    }
-
-    private static EngineType adaptExternalToInternalConfig(EngineConfig externalEngineConfig) {
-
-        final EngineType internalEngineConfig = new EngineType();
-        internalEngineConfig.setEmergencyStopCurrency(externalEngineConfig.getEmergencyStopCurrency());
-        internalEngineConfig.setEmergencyStopBalance(externalEngineConfig.getEmergencyStopBalance());
-        internalEngineConfig.setTradeCycleInterval(externalEngineConfig.getTradeCycleInterval());
-        return internalEngineConfig;
+        engineConfigRepository.updateConfig(config);
     }
 }

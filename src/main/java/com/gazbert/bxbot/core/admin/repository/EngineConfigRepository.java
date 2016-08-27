@@ -20,65 +20,25 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-
 package com.gazbert.bxbot.core.admin.repository;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.hibernate.validator.constraints.NotEmpty;
-import org.springframework.security.core.GrantedAuthority;
-
-import javax.persistence.*;
-import java.util.HashSet;
-import java.util.Set;
+import com.gazbert.bxbot.core.config.engine.EngineConfig;
 
 /**
- * Encapsulates a role containing selected users of the REST API.
+ * The Engine configuration repository.
  *
  * @author gazbert
- * @since 21/08/2016
+ * @since 11/08/2016
  */
-@Entity
-public class Role implements GrantedAuthority {
+public interface EngineConfigRepository {
 
-    private static final long serialVersionUID = 8224732733933233303L;
+    /**
+     * @return
+     */
+    EngineConfig getConfig();
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Integer id;
-
-    @NotEmpty
-    private String name;
-
-    @JsonIgnore
-    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "roles")
-    private Set<User> users = new HashSet<>();
-
-    @Override
-    public String getAuthority() {
-        return name;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Set<User> getUsers() {
-        return users;
-    }
-
-    public void setUsers(Set<User> users) {
-        this.users = users;
-    }
+    /**
+     * @param config
+     */
+    void updateConfig(EngineConfig config);
 }

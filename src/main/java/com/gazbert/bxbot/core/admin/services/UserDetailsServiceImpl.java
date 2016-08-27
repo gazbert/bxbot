@@ -23,7 +23,7 @@
 
 package com.gazbert.bxbot.core.admin.services;
 
-import com.gazbert.bxbot.core.admin.repository.User;
+import com.gazbert.bxbot.core.admin.security.User;
 import com.gazbert.bxbot.core.admin.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;

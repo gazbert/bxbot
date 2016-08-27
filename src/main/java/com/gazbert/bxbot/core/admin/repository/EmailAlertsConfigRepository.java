@@ -20,19 +20,25 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-
 package com.gazbert.bxbot.core.admin.repository;
 
-import com.gazbert.bxbot.core.admin.security.User;
-import org.springframework.data.repository.CrudRepository;
+import com.gazbert.bxbot.core.config.emailalerts.EmailAlertsConfig;
 
 /**
- * Repository for Users.
+ * The Email Alerts configuration repository.
  *
  * @author gazbert
- * @since 21/08/2016
+ * @since 11/08/2016
  */
-public interface UserRepository extends CrudRepository<User, Long> {
+public interface EmailAlertsConfigRepository {
 
-    User findByLoginId(String loginId);
+    /**
+     * @return
+     */
+    EmailAlertsConfig getConfig();
+
+    /**
+     * @param config
+     */
+    void updateConfig(EmailAlertsConfig config);
 }

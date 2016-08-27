@@ -21,7 +21,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.core.admin.services;
+package com.gazbert.bxbot.core.admin.repository;
 
 import com.gazbert.bxbot.core.config.ConfigurationManager;
 import com.gazbert.bxbot.core.config.engine.EngineConfig;
@@ -41,14 +41,14 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.easymock.EasyMock.*;
 
 /**
- * Tests Engine configuration service behaves as expected.
+ * Tests Engine configuration repository behaves as expected.
  *
  * @author gazbert
  * @since 14/08/2016
  */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ConfigurationManager.class})
-public class TestEngineConfigService {
+public class TestEngineConfigRepository {
 
     private static final String ENGINE_EMERGENCY_STOP_CURRENCY = "BTC";
     private static final BigDecimal ENGINE_EMERGENCY_STOP_BALANCE = new BigDecimal("0.5");
@@ -61,7 +61,7 @@ public class TestEngineConfigService {
     }
 
     @Test
-    public void whenGetConfigCalledThenExpectServiceToLoadIt() throws Exception {
+    public void whenGetConfigCalledThenExpectRepositoryToLoadIt() throws Exception {
 
         expect(ConfigurationManager.loadConfig(
                 eq(EngineType.class),
@@ -71,8 +71,8 @@ public class TestEngineConfigService {
 
         PowerMock.replayAll();
 
-        final EngineConfigService engineConfigService = new EngineConfigServiceImpl();
-        final EngineConfig engineConfig = engineConfigService.getConfig();
+        final EngineConfigRepository engineConfigRepository = new EngineConfigRepositoryImpl();
+        final EngineConfig engineConfig = engineConfigRepository.getConfig();
         assertThat(engineConfig.getEmergencyStopCurrency()).isEqualTo(ENGINE_EMERGENCY_STOP_CURRENCY);
         assertThat(engineConfig.getEmergencyStopBalance()).isEqualTo(ENGINE_EMERGENCY_STOP_BALANCE);
         assertThat(engineConfig.getTradeCycleInterval()).isEqualTo(ENGINE_TRADE_CYCLE_INTERVAL);
@@ -81,13 +81,13 @@ public class TestEngineConfigService {
     }
 
     @Test
-    public void whenUpdateConfigCalledThenExpectServiceToSaveIt() throws Exception {
+    public void whenUpdateConfigCalledThenExpectRepositoryToSaveIt() throws Exception {
 
         ConfigurationManager.saveConfig(eq(EngineType.class), anyObject(EngineType.class), eq(ENGINE_CONFIG_XML_FILENAME));
         PowerMock.replayAll();
 
-        final EngineConfigService engineConfigService = new EngineConfigServiceImpl();
-        engineConfigService.updateConfig(withSomeExternalEngineConfig());
+        final EngineConfigRepository engineConfigRepository = new EngineConfigRepositoryImpl();
+        engineConfigRepository.updateConfig(withSomeExternalEngineConfig());
 
         PowerMock.verifyAll();
     }

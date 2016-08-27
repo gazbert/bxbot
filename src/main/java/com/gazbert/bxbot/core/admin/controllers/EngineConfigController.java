@@ -23,7 +23,7 @@
 
 package com.gazbert.bxbot.core.admin.controllers;
 
-import com.gazbert.bxbot.core.admin.repository.User;
+import com.gazbert.bxbot.core.admin.security.User;
 import com.gazbert.bxbot.core.admin.services.EngineConfigService;
 import com.gazbert.bxbot.core.config.engine.EngineConfig;
 import org.springframework.beans.factory.annotation.Autowired;

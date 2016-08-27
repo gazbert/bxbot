@@ -20,19 +20,25 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-
 package com.gazbert.bxbot.core.admin.repository;
 
-import com.gazbert.bxbot.core.admin.security.User;
-import org.springframework.data.repository.CrudRepository;
+import com.gazbert.bxbot.core.config.exchange.ExchangeConfig;
 
 /**
- * Repository for Users.
+ * The Exchange configuration repository.
  *
  * @author gazbert
- * @since 21/08/2016
+ * @since 20/07/2016
  */
-public interface UserRepository extends CrudRepository<User, Long> {
+public interface ExchangeConfigRepository {
 
-    User findByLoginId(String loginId);
+    /**
+     * @return
+     */
+    ExchangeConfig getConfig();
+
+    /**
+     * @param config
+     */
+    void updateConfig(ExchangeConfig config);
 }

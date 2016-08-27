@@ -21,7 +21,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.core.admin.services;
+package com.gazbert.bxbot.core.admin.repository;
 
 import com.gazbert.bxbot.core.config.ConfigurationManager;
 import com.gazbert.bxbot.core.config.emailalerts.EmailAlertsConfig;
@@ -41,14 +41,14 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.easymock.EasyMock.*;
 
 /**
- * Tests Email Alerts configuration service behaves as expected.
+ * Tests Email Alerts configuration repository behaves as expected.
  *
  * @author gazbert
  * @since 23/08/2016
  */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ConfigurationManager.class})
-public class TestEmailAlertsConfigService {
+public class TestEmailAlertsConfigRepository {
 
     private static final boolean ENABLED = true;
     private static final String HOST = "smtp.host.deathstar.com";
@@ -65,7 +65,7 @@ public class TestEmailAlertsConfigService {
     }
 
     @Test
-    public void whenGetConfigCalledThenExpectServiceToLoadIt() throws Exception {
+    public void whenGetConfigCalledThenExpectRepositoryToLoadIt() throws Exception {
 
         expect(ConfigurationManager.loadConfig(
                 eq(EmailAlertsType.class),
@@ -75,8 +75,8 @@ public class TestEmailAlertsConfigService {
 
         PowerMock.replayAll();
 
-        final EmailAlertsConfigService emailAlertsConfigService = new EmailAlertsConfigServiceImpl();
-        final EmailAlertsConfig emailAlertsConfig = emailAlertsConfigService.getConfig();
+        final EmailAlertsConfigRepository emailAlertsConfigRepository = new EmailAlertsConfigRepositoryImpl();
+        final EmailAlertsConfig emailAlertsConfig = emailAlertsConfigRepository.getConfig();
         assertThat(emailAlertsConfig.isEnabled()).isEqualTo(ENABLED);
         assertThat(emailAlertsConfig.getSmtpConfig().getHost()).isEqualTo(HOST);
         assertThat(emailAlertsConfig.getSmtpConfig().getTlsPort()).isEqualTo(TLS_PORT);
@@ -91,7 +91,7 @@ public class TestEmailAlertsConfigService {
     }
 
     @Test
-    public void whenUpdateConfigCalledThenExpectServiceToSaveIt() throws Exception {
+    public void whenUpdateConfigCalledThenExpectRepositoryToSaveIt() throws Exception {
 
         // for loading the existing smtp config to merge with updated stuff
         expect(ConfigurationManager.loadConfig(
@@ -103,8 +103,8 @@ public class TestEmailAlertsConfigService {
         ConfigurationManager.saveConfig(eq(EmailAlertsType.class), anyObject(EmailAlertsType.class), eq(EMAIL_ALERTS_CONFIG_XML_FILENAME));
         PowerMock.replayAll();
 
-        final EmailAlertsConfigService emailAlertsConfigService = new EmailAlertsConfigServiceImpl();
-        emailAlertsConfigService.updateConfig(withSomeExternalEmailAlertsConfig());
+        final EmailAlertsConfigRepository emailAlertsConfigRepository = new EmailAlertsConfigRepositoryImpl();
+        emailAlertsConfigRepository.updateConfig(withSomeExternalEmailAlertsConfig());
 
         PowerMock.verifyAll();
     }

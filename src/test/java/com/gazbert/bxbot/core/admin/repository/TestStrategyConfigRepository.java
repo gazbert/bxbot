@@ -21,7 +21,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.core.admin.services;
+package com.gazbert.bxbot.core.admin.repository;
 
 import com.gazbert.bxbot.core.config.ConfigurationManager;
 import com.gazbert.bxbot.core.config.strategy.StrategyConfig;
@@ -44,14 +44,14 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.easymock.EasyMock.*;
 
 /**
- * Tests Strategy configuration service behaves as expected.
+ * Tests Strategy configuration repository behaves as expected.
  *
  * @author gazbert
  * @since 25/08/2016
  */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ConfigurationManager.class})
-public class TestStrategyConfigService {
+public class TestStrategyConfigRepository {
 
     private static final String STRAT_ID_1 = "macd-long-position";
     private static final String STRAT_LABEL_1 = "MACD Long Position Algo";
@@ -85,8 +85,8 @@ public class TestStrategyConfigService {
 
         PowerMock.replayAll();
 
-        final StrategyConfigService strategyConfigService = new StrategyConfigServiceImpl();
-        final List<StrategyConfig> strategyConfigItems = strategyConfigService.findAllStrategies();
+        final StrategyConfigRepository strategyConfigRepository = new StrategyConfigRepositoryImpl();
+        final List<StrategyConfig> strategyConfigItems = strategyConfigRepository.findAllStrategies();
 
         assertThat(strategyConfigItems.size()).isEqualTo(2);
 
@@ -122,8 +122,8 @@ public class TestStrategyConfigService {
 
         PowerMock.replayAll();
 
-        final StrategyConfigService strategyConfigService = new StrategyConfigServiceImpl();
-        final StrategyConfig strategyConfig = strategyConfigService.findById(STRAT_ID_1);
+        final StrategyConfigRepository strategyConfigRepository = new StrategyConfigRepositoryImpl();
+        final StrategyConfig strategyConfig = strategyConfigRepository.findById(STRAT_ID_1);
 
         assertThat(strategyConfig.getId()).isEqualTo(STRAT_ID_1);
         assertThat(strategyConfig.getLabel()).isEqualTo(STRAT_LABEL_1);
@@ -148,8 +148,8 @@ public class TestStrategyConfigService {
 
         PowerMock.replayAll();
 
-        final StrategyConfigService strategyConfigService = new StrategyConfigServiceImpl();
-        final StrategyConfig strategyConfig = strategyConfigService.findById("unknown-id");
+        final StrategyConfigRepository strategyConfigRepository = new StrategyConfigRepositoryImpl();
+        final StrategyConfig strategyConfig = strategyConfigRepository.findById("unknown-id");
 
         assertThat(strategyConfig.getId()).isEqualTo(null);
         assertThat(strategyConfig.getLabel()).isEqualTo(null);
@@ -182,8 +182,8 @@ public class TestStrategyConfigService {
 
         PowerMock.replayAll();
 
-        final StrategyConfigService strategyConfigService = new StrategyConfigServiceImpl();
-        final StrategyConfig strategyConfig = strategyConfigService.updateStrategy(STRAT_ID_1, someExternalStrategyConfig());
+        final StrategyConfigRepository strategyConfigRepository = new StrategyConfigRepositoryImpl();
+        final StrategyConfig strategyConfig = strategyConfigRepository.updateStrategy(STRAT_ID_1, someExternalStrategyConfig());
 
         assertThat(strategyConfig.getId()).isEqualTo(STRAT_ID_1);
         assertThat(strategyConfig.getLabel()).isEqualTo(STRAT_LABEL_1);
@@ -208,8 +208,8 @@ public class TestStrategyConfigService {
 
         PowerMock.replayAll();
 
-        final StrategyConfigService strategyConfigService = new StrategyConfigServiceImpl();
-        final StrategyConfig strategyConfig = strategyConfigService.updateStrategy("unknown-id", someExternalStrategyConfig());
+        final StrategyConfigRepository strategyConfigRepository = new StrategyConfigRepositoryImpl();
+        final StrategyConfig strategyConfig = strategyConfigRepository.updateStrategy("unknown-id", someExternalStrategyConfig());
 
         assertThat(strategyConfig.getId()).isEqualTo(null);
         assertThat(strategyConfig.getLabel()).isEqualTo(null);

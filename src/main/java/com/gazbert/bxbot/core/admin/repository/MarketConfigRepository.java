@@ -23,16 +23,29 @@
 
 package com.gazbert.bxbot.core.admin.repository;
 
-import com.gazbert.bxbot.core.admin.security.User;
-import org.springframework.data.repository.CrudRepository;
+import com.gazbert.bxbot.core.config.market.MarketConfig;
+
+import java.util.List;
 
 /**
- * Repository for Users.
+ * TODO Work in progress...
  *
  * @author gazbert
- * @since 21/08/2016
+ * @since 20/07/2016
  */
-public interface UserRepository extends CrudRepository<User, Long> {
+public interface MarketConfigRepository {
 
-    User findByLoginId(String loginId);
+        MarketConfig findById(String id);
+
+        MarketConfig findByName(String name);
+
+        MarketConfig saveMarket(MarketConfig config);
+
+        MarketConfig updateMarket(MarketConfig config);
+
+        MarketConfig deleteMarketById(String id);
+
+        List<MarketConfig> findAllMarkets();
+
+        List<MarketConfig> deleteAllMarkets();
 }

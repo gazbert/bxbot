@@ -21,7 +21,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.core.admin.services;
+package com.gazbert.bxbot.core.admin.repository;
 
 import com.gazbert.bxbot.core.config.ConfigurationManager;
 import com.gazbert.bxbot.core.config.exchange.AuthenticationConfig;
@@ -45,14 +45,14 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.easymock.EasyMock.*;
 
 /**
- * Tests Exchange configuration service behaves as expected.
+ * Tests Exchange configuration repository behaves as expected.
  *
  * @author gazbert
  * @since 19/08/2016
  */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ConfigurationManager.class})
-public class TestExchangeConfigService {
+public class TestExchangeConfigRepository {
 
     private static final String EXCHANGE_NAME = "BTC-e";
     private static final String EXCHANGE_ADAPTER = "com.gazbert.bxbot.core.exchanges.TestExchangeAdapter";
@@ -90,8 +90,8 @@ public class TestExchangeConfigService {
 
         PowerMock.replayAll();
 
-        final ExchangeConfigService exchangeConfigService = new ExchangeConfigServiceImpl();
-        final ExchangeConfig exchangeConfig = exchangeConfigService.getConfig();
+        final ExchangeConfigRepository exchangeConfigRepository = new ExchangeConfigRepositoryImpl();
+        final ExchangeConfig exchangeConfig = exchangeConfigRepository.getConfig();
         assertThat(exchangeConfig.getExchangeName()).isEqualTo(EXCHANGE_NAME);
         assertThat(exchangeConfig.getExchangeAdapter()).isEqualTo(EXCHANGE_ADAPTER);
 
@@ -120,8 +120,8 @@ public class TestExchangeConfigService {
         ConfigurationManager.saveConfig(eq(ExchangeType.class), anyObject(ExchangeType.class), eq(EXCHANGE_CONFIG_XML_FILENAME));
         PowerMock.replayAll();
 
-        final ExchangeConfigService exchangeConfigService = new ExchangeConfigServiceImpl();
-        exchangeConfigService.updateConfig(withSomeExternalExchangeConfig());
+        final ExchangeConfigRepository exchangeConfigRepository = new ExchangeConfigRepositoryImpl();
+        exchangeConfigRepository.updateConfig(withSomeExternalExchangeConfig());
 
         PowerMock.verifyAll();
     }

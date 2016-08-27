@@ -21,14 +21,11 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.core.admin.services;
+package com.gazbert.bxbot.core.admin.repository;
 
-import com.gazbert.bxbot.core.admin.repository.MarketConfigRepository;
 import com.gazbert.bxbot.core.config.market.MarketConfig;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.Assert;
 
 import java.util.Arrays;
 import java.util.List;
@@ -39,17 +36,9 @@ import java.util.List;
  * @author gazbert
  * @since 20/07/2016
  */
-@Service("marketConfigService")
+@Repository("marketConfigRepository")
 @Transactional
-public class MarketConfigServiceImpl implements MarketConfigService {
-
-    private final MarketConfigRepository marketConfigRepository;
-
-    @Autowired
-    public MarketConfigServiceImpl(MarketConfigRepository marketConfigRepository) {
-        Assert.notNull(marketConfigRepository, "marketConfigRepository dependency cannot be null!");
-        this.marketConfigRepository = marketConfigRepository;
-    }
+public class MarketConfigRepositoryImpl implements MarketConfigRepository {
 
     @Override
     public MarketConfig findById(String id) {

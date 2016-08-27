@@ -23,18 +23,14 @@
 
 package com.gazbert.bxbot.core.admin.services;
 
-import com.gazbert.bxbot.core.config.ConfigurationManager;
+import com.gazbert.bxbot.core.admin.repository.ExchangeConfigRepository;
 import com.gazbert.bxbot.core.config.exchange.ExchangeConfig;
-import com.gazbert.bxbot.core.config.exchange.NetworkConfig;
-import com.gazbert.bxbot.core.config.exchange.OtherConfig;
-import com.gazbert.bxbot.core.config.exchange.generated.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import static com.gazbert.bxbot.core.config.exchange.ExchangeConfig.EXCHANGE_CONFIG_XML_FILENAME;
-import static com.gazbert.bxbot.core.config.exchange.ExchangeConfig.EXCHANGE_CONFIG_XSD_FILENAME;
+import org.springframework.util.Assert;
 
 /**
  * Implementation of the Exchange config service.
@@ -48,79 +44,22 @@ public class ExchangeConfigServiceImpl implements ExchangeConfigService {
 
     private static final Logger LOG = LogManager.getLogger();
 
+    private final ExchangeConfigRepository exchangeConfigRepository;
+
+    @Autowired
+    public ExchangeConfigServiceImpl(ExchangeConfigRepository exchangeConfigRepository) {
+        Assert.notNull(exchangeConfigRepository, "exchangeConfigRepository dependency cannot be null!");
+        this.exchangeConfigRepository = exchangeConfigRepository;
+    }
+
     @Override
     public ExchangeConfig getConfig() {
-        final ExchangeType internalEngineConfig = ConfigurationManager.loadConfig(ExchangeType.class,
-                EXCHANGE_CONFIG_XML_FILENAME, EXCHANGE_CONFIG_XSD_FILENAME);
-        return adaptInternalToExternalConfig(internalEngineConfig);
+        return exchangeConfigRepository.getConfig();
     }
 
     @Override
     public void updateConfig(ExchangeConfig config) {
-
         LOG.info(() -> "About to update: " + config);
-
-        final ExchangeType internalExchangeConfig = adaptExternalToInternalConfig(config);
-        ConfigurationManager.saveConfig(ExchangeType.class, internalExchangeConfig, EXCHANGE_CONFIG_XML_FILENAME);
-    }
-
-    // ------------------------------------------------------------------------------------------------
-    // Adapter methods
-    // ------------------------------------------------------------------------------------------------
-
-    private static ExchangeConfig adaptInternalToExternalConfig(ExchangeType internalExchangeConfig) {
-
-        // We don't expose AuthenticationConfig in the service - security risk
-
-        final NetworkConfig networkConfig = new NetworkConfig();
-        networkConfig.setConnectionTimeout(internalExchangeConfig.getNetworkConfig().getConnectionTimeout());
-        networkConfig.setNonFatalErrorCodes(internalExchangeConfig.getNetworkConfig().getNonFatalErrorCodes().getCodes());
-        networkConfig.setNonFatalErrorMessages(internalExchangeConfig.getNetworkConfig().getNonFatalErrorMessages().getMessages());
-
-        final OtherConfig otherConfig = new OtherConfig();
-        internalExchangeConfig.getOtherConfig().getConfigItems()
-                .forEach(item -> otherConfig.addItem(item.getName(), item.getValue()));
-
-        final ExchangeConfig exchangeConfig = new ExchangeConfig();
-        exchangeConfig.setExchangeName(internalExchangeConfig.getName());
-        exchangeConfig.setExchangeAdapter(internalExchangeConfig.getAdapter());
-        exchangeConfig.setNetworkConfig(networkConfig);
-        exchangeConfig.setOtherConfig(otherConfig);
-        return exchangeConfig;
-    }
-
-    private static ExchangeType adaptExternalToInternalConfig(ExchangeConfig externalExchangeConfig) {
-
-        final NonFatalErrorCodesType nonFatalErrorCodes = new NonFatalErrorCodesType();
-        nonFatalErrorCodes.getCodes().addAll(externalExchangeConfig.getNetworkConfig().getNonFatalErrorCodes());
-        final NonFatalErrorMessagesType nonFatalErrorMessages = new NonFatalErrorMessagesType();
-        nonFatalErrorMessages.getMessages().addAll(externalExchangeConfig.getNetworkConfig().getNonFatalErrorMessages());
-        final NetworkConfigType networkConfig = new NetworkConfigType();
-        networkConfig.setConnectionTimeout(externalExchangeConfig.getNetworkConfig().getConnectionTimeout());
-        networkConfig.setNonFatalErrorCodes(nonFatalErrorCodes);
-        networkConfig.setNonFatalErrorMessages(nonFatalErrorMessages);
-
-        final OtherConfigType otherConfig = new OtherConfigType();
-        externalExchangeConfig.getOtherConfig().getItems().entrySet()
-                .forEach(item -> {
-                    final ConfigItemType configItem = new ConfigItemType();
-                    configItem.setName(item.getKey());
-                    configItem.setValue(item.getValue());
-                    otherConfig.getConfigItems().add(configItem);
-                });
-
-        final ExchangeType exchangeConfig = new ExchangeType();
-        exchangeConfig.setName(externalExchangeConfig.getExchangeName());
-        exchangeConfig.setAdapter(externalExchangeConfig.getExchangeAdapter());
-        exchangeConfig.setNetworkConfig(networkConfig);
-        exchangeConfig.setOtherConfig(otherConfig);
-
-        // We don't accept AuthenticationConfig in the service - security risk
-        // We load the existing auth config and merge it in with the updated stuff...
-        final ExchangeType existingExchangeConfig = ConfigurationManager.loadConfig(ExchangeType.class,
-                EXCHANGE_CONFIG_XML_FILENAME, EXCHANGE_CONFIG_XSD_FILENAME);
-        exchangeConfig.setAuthenticationConfig(existingExchangeConfig.getAuthenticationConfig());
-
-        return exchangeConfig;
+        exchangeConfigRepository.updateConfig(config);
     }
 }

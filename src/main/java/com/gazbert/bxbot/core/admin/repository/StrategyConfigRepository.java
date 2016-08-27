@@ -23,16 +23,43 @@
 
 package com.gazbert.bxbot.core.admin.repository;
 
-import com.gazbert.bxbot.core.admin.security.User;
-import org.springframework.data.repository.CrudRepository;
+import com.gazbert.bxbot.core.config.strategy.StrategyConfig;
+
+import java.util.List;
 
 /**
- * Repository for Users.
+ * TODO Work in progress...
+ *
+ * The Strategy configuration repository.
  *
  * @author gazbert
- * @since 21/08/2016
+ * @since 12/08/2016
  */
-public interface UserRepository extends CrudRepository<User, Long> {
+public interface StrategyConfigRepository {
 
-    User findByLoginId(String loginId);
+    /**
+     * Returns all the Strategy Config items.
+     *
+     * @return all the strategy config items
+     */
+    List<StrategyConfig> findAllStrategies();
+
+    /**
+     * Returns the Strategy config for a given Strategy id.
+     *
+     * @param id the strategy id.
+     * @return the Strategy config.
+     */
+    StrategyConfig findById(String id);
+
+    /**
+     *
+     * @param config
+     * @return
+     */
+    StrategyConfig updateStrategy(String id, StrategyConfig config);
+
+    StrategyConfig saveStrategy(StrategyConfig config);
+
+    StrategyConfig deleteStrategyById(String id);
 }
