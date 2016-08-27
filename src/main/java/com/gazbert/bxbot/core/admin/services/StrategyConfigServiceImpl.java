@@ -25,6 +25,8 @@ package com.gazbert.bxbot.core.admin.services;
 
 import com.gazbert.bxbot.core.config.ConfigurationManager;
 import com.gazbert.bxbot.core.config.strategy.StrategyConfig;
+import com.gazbert.bxbot.core.config.strategy.generated.ConfigItemType;
+import com.gazbert.bxbot.core.config.strategy.generated.ConfigurationType;
 import com.gazbert.bxbot.core.config.strategy.generated.StrategyType;
 import com.gazbert.bxbot.core.config.strategy.generated.TradingStrategiesType;
 import org.apache.logging.log4j.LogManager;
@@ -76,8 +78,38 @@ public class StrategyConfigServiceImpl implements StrategyConfigService {
     }
 
     @Override
-    public StrategyConfig findByName(String name) {
-        throw new UnsupportedOperationException("findByName not coded yet");
+    public StrategyConfig updateStrategy(String id, StrategyConfig config) {
+
+        LOG.info(() -> "About to update: " + config);
+
+        final TradingStrategiesType internalStrategiesConfig = ConfigurationManager.loadConfig(TradingStrategiesType.class,
+                STRATEGIES_CONFIG_XML_FILENAME, STRATEGIES_CONFIG_XSD_FILENAME);
+
+        final List<StrategyType> strategyTypes = internalStrategiesConfig.getStrategies()
+                .stream()
+                .filter((item) -> item.getId().equals(id))
+                .distinct()
+                .collect(Collectors.toList());
+
+        if (!strategyTypes.isEmpty()) {
+
+            internalStrategiesConfig.getStrategies().remove(strategyTypes.get(0)); // will only be 1 unique strat
+            internalStrategiesConfig.getStrategies().add(adaptExternalToInternalConfig(config));
+            ConfigurationManager.saveConfig(TradingStrategiesType.class, internalStrategiesConfig,
+                    STRATEGIES_CONFIG_XML_FILENAME);
+
+            final TradingStrategiesType updatedInternalStrategiesConfig = ConfigurationManager.loadConfig(
+                    TradingStrategiesType.class, STRATEGIES_CONFIG_XML_FILENAME, STRATEGIES_CONFIG_XSD_FILENAME);
+
+            return adaptInternalToExternalConfig(
+                    updatedInternalStrategiesConfig.getStrategies()
+                            .stream()
+                            .filter((item) -> item.getId().equals(id))
+                            .distinct()
+                            .collect(Collectors.toList()));
+        } else {
+            return new StrategyConfig();
+        }
     }
 
     @Override
@@ -86,18 +118,8 @@ public class StrategyConfigServiceImpl implements StrategyConfigService {
     }
 
     @Override
-    public StrategyConfig updateStrategy(StrategyConfig config) {
-        throw new UnsupportedOperationException("updateStrategy not coded yet");
-    }
-
-    @Override
     public StrategyConfig deleteStrategyById(String id) {
         throw new UnsupportedOperationException("deleteStrategyById not coded yet");
-    }
-
-    @Override
-    public List<StrategyConfig> deleteAllStrategies() {
-        throw new UnsupportedOperationException("deleteAllStrategies not coded yet");
     }
 
     // ------------------------------------------------------------------------------------------------
@@ -143,5 +165,25 @@ public class StrategyConfigServiceImpl implements StrategyConfigService {
                     strategyConfig.getConfigItems().put(internalConfigItem.getName(), internalConfigItem.getValue()));
         }
         return strategyConfig;
+    }
+
+    private static StrategyType adaptExternalToInternalConfig(StrategyConfig externalStrategyConfig) {
+
+        final ConfigurationType configurationType = new ConfigurationType();
+        externalStrategyConfig.getConfigItems().entrySet()
+                .forEach(item -> {
+                    final ConfigItemType configItem = new ConfigItemType();
+                    configItem.setName(item.getKey());
+                    configItem.setValue(item.getValue());
+                    configurationType.getConfigItem().add(configItem);
+                });
+
+        final StrategyType strategyType = new StrategyType();
+        strategyType.setId(externalStrategyConfig.getId());
+        strategyType.setLabel(externalStrategyConfig.getLabel());
+        strategyType.setDescription(externalStrategyConfig.getDescription());
+        strategyType.setClassName(externalStrategyConfig.getClassName());
+        strategyType.setConfiguration(configurationType);
+        return strategyType;
     }
 }

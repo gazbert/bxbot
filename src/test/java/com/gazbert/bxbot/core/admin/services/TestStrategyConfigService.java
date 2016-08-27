@@ -36,11 +36,12 @@ import org.powermock.api.easymock.PowerMock;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
-import static org.easymock.EasyMock.eq;
-import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.*;
 
 /**
  * Tests Strategy configuration service behaves as expected.
@@ -111,7 +112,7 @@ public class TestStrategyConfigService {
     }
 
     @Test
-    public void whenFindByIdCalledThenExpectServiceToReturnMatchingStrategy() throws Exception {
+    public void whenFindByIdCalledWithRecognizedIdThenReturnMatchingStrategy() throws Exception {
 
         expect(ConfigurationManager.loadConfig(
                 eq(TradingStrategiesType.class),
@@ -132,6 +133,89 @@ public class TestStrategyConfigService {
         assertThat(strategyConfig.getConfigItems().containsValue(BUY_PRICE_CONFIG_ITEM_VALUE));
         assertThat(strategyConfig.getConfigItems().containsKey(AMOUNT_TO_BUY_CONFIG_ITEM_KEY));
         assertThat(strategyConfig.getConfigItems().containsValue(AMOUNT_TO_BUY_CONFIG_ITEM_VALUE));
+
+        PowerMock.verifyAll();
+    }
+
+    @Test
+    public void whenFindByIdCalledWithUnrecognizedIdThenReturnEmptyStrategy() throws Exception {
+
+        expect(ConfigurationManager.loadConfig(
+                eq(TradingStrategiesType.class),
+                eq(StrategyConfig.STRATEGIES_CONFIG_XML_FILENAME),
+                eq(StrategyConfig.STRATEGIES_CONFIG_XSD_FILENAME))).
+                andReturn(allTheInternalStrategiesConfig());
+
+        PowerMock.replayAll();
+
+        final StrategyConfigService strategyConfigService = new StrategyConfigServiceImpl();
+        final StrategyConfig strategyConfig = strategyConfigService.findById("unknown-id");
+
+        assertThat(strategyConfig.getId()).isEqualTo(null);
+        assertThat(strategyConfig.getLabel()).isEqualTo(null);
+        assertThat(strategyConfig.getDescription()).isEqualTo(null);
+        assertThat(strategyConfig.getClassName()).isEqualTo(null);
+        assertThat(strategyConfig.getConfigItems().isEmpty());
+
+        PowerMock.verifyAll();
+    }
+
+    @Test
+    public void whenUpdateStrategyCalledWithKnownIdThenExpectServiceToReturnUpdatedStrategy() throws Exception {
+
+        expect(ConfigurationManager.loadConfig(
+                eq(TradingStrategiesType.class),
+                eq(StrategyConfig.STRATEGIES_CONFIG_XML_FILENAME),
+                eq(StrategyConfig.STRATEGIES_CONFIG_XSD_FILENAME))).
+                andReturn(allTheInternalStrategiesConfig());
+
+        ConfigurationManager.saveConfig(
+                eq(TradingStrategiesType.class),
+                anyObject(TradingStrategiesType.class),
+                eq(StrategyConfig.STRATEGIES_CONFIG_XML_FILENAME));
+
+        expect(ConfigurationManager.loadConfig(
+                eq(TradingStrategiesType.class),
+                eq(StrategyConfig.STRATEGIES_CONFIG_XML_FILENAME),
+                eq(StrategyConfig.STRATEGIES_CONFIG_XSD_FILENAME))).
+                andReturn(allTheInternalStrategiesConfig());
+
+        PowerMock.replayAll();
+
+        final StrategyConfigService strategyConfigService = new StrategyConfigServiceImpl();
+        final StrategyConfig strategyConfig = strategyConfigService.updateStrategy(STRAT_ID_1, someExternalStrategyConfig());
+
+        assertThat(strategyConfig.getId()).isEqualTo(STRAT_ID_1);
+        assertThat(strategyConfig.getLabel()).isEqualTo(STRAT_LABEL_1);
+        assertThat(strategyConfig.getDescription()).isEqualTo(STRAT_DESCRIPTION_1);
+        assertThat(strategyConfig.getClassName()).isEqualTo(STRAT_CLASSNAME_1);
+        assertThat(strategyConfig.getConfigItems().containsKey(BUY_PRICE_CONFIG_ITEM_KEY));
+        assertThat(strategyConfig.getConfigItems().containsValue(BUY_PRICE_CONFIG_ITEM_VALUE));
+        assertThat(strategyConfig.getConfigItems().containsKey(AMOUNT_TO_BUY_CONFIG_ITEM_KEY));
+        assertThat(strategyConfig.getConfigItems().containsValue(AMOUNT_TO_BUY_CONFIG_ITEM_VALUE));
+
+        PowerMock.verifyAll();
+    }
+
+    @Test
+    public void whenUpdateStrategyConfigCalledWithUnrecognizedIdThenReturnEmptyStrategy() throws Exception {
+
+        expect(ConfigurationManager.loadConfig(
+                eq(TradingStrategiesType.class),
+                eq(StrategyConfig.STRATEGIES_CONFIG_XML_FILENAME),
+                eq(StrategyConfig.STRATEGIES_CONFIG_XSD_FILENAME))).
+                andReturn(allTheInternalStrategiesConfig());
+
+        PowerMock.replayAll();
+
+        final StrategyConfigService strategyConfigService = new StrategyConfigServiceImpl();
+        final StrategyConfig strategyConfig = strategyConfigService.updateStrategy("unknown-id", someExternalStrategyConfig());
+
+        assertThat(strategyConfig.getId()).isEqualTo(null);
+        assertThat(strategyConfig.getLabel()).isEqualTo(null);
+        assertThat(strategyConfig.getDescription()).isEqualTo(null);
+        assertThat(strategyConfig.getClassName()).isEqualTo(null);
+        assertThat(strategyConfig.getConfigItems().isEmpty());
 
         PowerMock.verifyAll();
     }
@@ -174,6 +258,43 @@ public class TestStrategyConfigService {
         final TradingStrategiesType tradingStrategiesType = new TradingStrategiesType();
         tradingStrategiesType.getStrategies().add(strategyType1);
         tradingStrategiesType.getStrategies().add(strategyType2);
+
+        return tradingStrategiesType;
+    }
+
+    private static StrategyConfig someExternalStrategyConfig() {
+
+        final Map<String, String> configItems = new HashMap<>();
+        configItems.put(BUY_PRICE_CONFIG_ITEM_KEY, BUY_PRICE_CONFIG_ITEM_VALUE);
+        configItems.put(AMOUNT_TO_BUY_CONFIG_ITEM_KEY, AMOUNT_TO_BUY_CONFIG_ITEM_VALUE);
+
+        final StrategyConfig strategyConfig = new StrategyConfig(STRAT_ID_1, STRAT_LABEL_1, STRAT_DESCRIPTION_1, STRAT_CLASSNAME_1, configItems);
+        return strategyConfig;
+    }
+
+    private static TradingStrategiesType someInternalStrategyConfig() {
+
+        final ConfigItemType buyPriceConfigItem = new ConfigItemType();
+        buyPriceConfigItem.setName(BUY_PRICE_CONFIG_ITEM_KEY);
+        buyPriceConfigItem.setValue(BUY_PRICE_CONFIG_ITEM_VALUE);
+
+        final ConfigItemType amountToBuyConfigItem = new ConfigItemType();
+        amountToBuyConfigItem.setName(AMOUNT_TO_BUY_CONFIG_ITEM_KEY);
+        amountToBuyConfigItem.setValue(AMOUNT_TO_BUY_CONFIG_ITEM_VALUE);
+
+        final ConfigurationType configurationType = new ConfigurationType();
+        configurationType.getConfigItem().add(buyPriceConfigItem);
+        configurationType.getConfigItem().add(amountToBuyConfigItem);
+
+        final StrategyType strategyType1 = new StrategyType();
+        strategyType1.setId(STRAT_ID_1);
+        strategyType1.setLabel(STRAT_LABEL_1);
+        strategyType1.setDescription(STRAT_DESCRIPTION_1);
+        strategyType1.setClassName(STRAT_CLASSNAME_1);
+        strategyType1.setConfiguration(configurationType);
+
+        final TradingStrategiesType tradingStrategiesType = new TradingStrategiesType();
+        tradingStrategiesType.getStrategies().add(strategyType1);
 
         return tradingStrategiesType;
     }

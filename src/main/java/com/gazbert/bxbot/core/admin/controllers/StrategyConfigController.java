@@ -64,7 +64,6 @@ public class StrategyConfigController {
     public ResponseEntity<?> getStrategy(@PathVariable String strategyId) {
 
         final StrategyConfig strategyConfig = strategyConfigService.findById(strategyId);
-
         return strategyConfig.getId() != null
                 ? new ResponseEntity<>(strategyConfig, null, HttpStatus.OK)
                 : new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -73,9 +72,10 @@ public class StrategyConfigController {
     @RequestMapping(value = "/config/strategy/{strategyId}", method = RequestMethod.PUT)
     ResponseEntity<?> updateStrategy(@PathVariable String strategyId, @RequestBody StrategyConfig config) {
 
-        final StrategyConfig updatedConfig = strategyConfigService.updateStrategy(config);
-        final HttpHeaders httpHeaders = new HttpHeaders();
-        return new ResponseEntity<>(updatedConfig, httpHeaders, HttpStatus.NO_CONTENT);
+        final StrategyConfig updatedConfig = strategyConfigService.updateStrategy(strategyId, config);
+        return updatedConfig.getId() != null
+                ? new ResponseEntity<>(HttpStatus.NO_CONTENT)
+                : new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
     @RequestMapping(value = "/config/strategy/{strategyId}", method = RequestMethod.POST)

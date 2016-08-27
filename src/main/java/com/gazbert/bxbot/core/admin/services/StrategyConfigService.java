@@ -37,7 +37,7 @@ public interface StrategyConfigService {
 
     /**
      * Returns all the Strategy Config items.
-     *
+     * <p>
      * TODO doc what is exposed and what is not
      *
      * @return all the strategy config items
@@ -52,20 +52,15 @@ public interface StrategyConfigService {
      */
     StrategyConfig findById(String id);
 
-
-    StrategyConfig findByName(String name);
-
-    StrategyConfig saveStrategy(StrategyConfig config);
-
     /**
      * TODO doc what can and cannot be updated
      *
      * @param config
      * @return
      */
-    StrategyConfig updateStrategy(StrategyConfig config);
+    StrategyConfig updateStrategy(String id, StrategyConfig config);
+
+    StrategyConfig saveStrategy(StrategyConfig config);
 
     StrategyConfig deleteStrategyById(String id);
-
-    List<StrategyConfig> deleteAllStrategies();
 }
