@@ -73,6 +73,11 @@
         </dependency>
         <dependency>
             <groupId>com.gazbert.bxbot</groupId>
+            <artifactId>bxbot-repository</artifactId>
+            <version>${bxbot.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.gazbert.bxbot</groupId>
             <artifactId>bxbot-core</artifactId>
             <version>${bxbot.version}</version>
         </dependency>

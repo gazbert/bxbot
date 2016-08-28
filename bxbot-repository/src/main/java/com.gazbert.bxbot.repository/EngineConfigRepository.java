@@ -20,25 +20,25 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.gazbert.bxbot.core.admin.repository;
+package com.gazbert.bxbot.repository;
 
-import com.gazbert.bxbot.core.config.exchange.ExchangeConfig;
+import com.gazbert.bxbot.core.config.engine.EngineConfig;
 
 /**
- * The Exchange configuration repository.
+ * The Engine configuration repository.
  *
  * @author gazbert
- * @since 20/07/2016
+ * @since 11/08/2016
  */
-public interface ExchangeConfigRepository {
+public interface EngineConfigRepository {
 
     /**
      * @return
      */
-    ExchangeConfig getConfig();
+    EngineConfig getConfig();
 
     /**
      * @param config
      */
-    void updateConfig(ExchangeConfig config);
+    void updateConfig(EngineConfig config);
 }

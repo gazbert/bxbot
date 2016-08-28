@@ -22,11 +22,8 @@
  */
 
 /**
- * <h2>Admin Security</h2>
+ * <h2>REST API</h2>
  *
- * <p>
- * Provides OAuth2 configuration for securing the REST endpoints for administering the bot.
- * </p>
  * 
  * @author gazbert
  */

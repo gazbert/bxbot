@@ -22,16 +22,12 @@
  */
 
 /**
- * <h2>Admin</h2>
+ * <h2>REST Security</h2>
  *
  * <p>
- * This is the bot's Admin subsystem.
+ * Provides OAuth2 configuration for securing the REST endpoints for administering the bot.
  * </p>
  *
- * <p>
- * It provides a secure (OAuth2 protected) REST API for administering the bot.
- * </p>
- * 
  * @author gazbert
  */
 package com.gazbert.bxbot.core.admin.security;

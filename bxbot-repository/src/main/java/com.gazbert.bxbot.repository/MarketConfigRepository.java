@@ -21,45 +21,31 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.core.admin.repository;
+package com.gazbert.bxbot.repository;
 
-import com.gazbert.bxbot.core.config.strategy.StrategyConfig;
+import com.gazbert.bxbot.core.config.market.MarketConfig;
 
 import java.util.List;
 
 /**
  * TODO Work in progress...
  *
- * The Strategy configuration repository.
- *
  * @author gazbert
- * @since 12/08/2016
+ * @since 20/07/2016
  */
-public interface StrategyConfigRepository {
+public interface MarketConfigRepository {
 
-    /**
-     * Returns all the Strategy Config items.
-     *
-     * @return all the strategy config items
-     */
-    List<StrategyConfig> findAllStrategies();
+        MarketConfig findById(String id);
 
-    /**
-     * Returns the Strategy config for a given Strategy id.
-     *
-     * @param id the strategy id.
-     * @return the Strategy config.
-     */
-    StrategyConfig findById(String id);
+        MarketConfig findByName(String name);
 
-    /**
-     *
-     * @param config
-     * @return
-     */
-    StrategyConfig updateStrategy(String id, StrategyConfig config);
+        MarketConfig saveMarket(MarketConfig config);
 
-    StrategyConfig saveStrategy(StrategyConfig config);
+        MarketConfig updateMarket(MarketConfig config);
 
-    StrategyConfig deleteStrategyById(String id);
+        MarketConfig deleteMarketById(String id);
+
+        List<MarketConfig> findAllMarkets();
+
+        List<MarketConfig> deleteAllMarkets();
 }

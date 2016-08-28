@@ -23,9 +23,10 @@
 
 package com.gazbert.bxbot.core.admin.services;
 
-import com.gazbert.bxbot.core.admin.repository.MarketConfigRepository;
+import com.gazbert.bxbot.repository.MarketConfigRepository;
 import com.gazbert.bxbot.core.config.market.MarketConfig;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -41,6 +42,7 @@ import java.util.List;
  */
 @Service("marketConfigService")
 @Transactional
+@ComponentScan(basePackages={"com.gazbert.bxbot.repository"})
 public class MarketConfigServiceImpl implements MarketConfigService {
 
     private final MarketConfigRepository marketConfigRepository;

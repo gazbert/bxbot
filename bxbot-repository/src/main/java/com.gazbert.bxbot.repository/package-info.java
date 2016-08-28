@@ -20,25 +20,18 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.gazbert.bxbot.core.admin.repository;
-
-import com.gazbert.bxbot.core.config.emailalerts.EmailAlertsConfig;
 
 /**
- * The Email Alerts configuration repository.
+ * <h2>Admin</h2>
  *
+ * <p>
+ * This is the bot's Admin subsystem.
+ * </p>
+ *
+ * <p>
+ * It provides a secure (OAuth2 protected) REST API for administering the bot.
+ * </p>
+ * 
  * @author gazbert
- * @since 11/08/2016
  */
-public interface EmailAlertsConfigRepository {
-
-    /**
-     * @return
-     */
-    EmailAlertsConfig getConfig();
-
-    /**
-     * @param config
-     */
-    void updateConfig(EmailAlertsConfig config);
-}
+package com.gazbert.bxbot.repository;

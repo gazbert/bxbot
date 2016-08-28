@@ -21,17 +21,45 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+package com.gazbert.bxbot.repository;
+
+import com.gazbert.bxbot.core.config.strategy.StrategyConfig;
+
+import java.util.List;
+
 /**
- * <h2>Admin</h2>
+ * TODO Work in progress...
  *
- * <p>
- * This is the bot's Admin subsystem.
- * </p>
+ * The Strategy configuration repository.
  *
- * <p>
- * It provides a secure (OAuth2 protected) REST API for administering the bot.
- * </p>
- * 
  * @author gazbert
+ * @since 12/08/2016
  */
-package com.gazbert.bxbot.core.admin.repository;
+public interface StrategyConfigRepository {
+
+    /**
+     * Returns all the Strategy Config items.
+     *
+     * @return all the strategy config items
+     */
+    List<StrategyConfig> findAllStrategies();
+
+    /**
+     * Returns the Strategy config for a given Strategy id.
+     *
+     * @param id the strategy id.
+     * @return the Strategy config.
+     */
+    StrategyConfig findById(String id);
+
+    /**
+     *
+     * @param config
+     * @return
+     */
+    StrategyConfig updateStrategy(String id, StrategyConfig config);
+
+    StrategyConfig saveStrategy(StrategyConfig config);
+
+    StrategyConfig deleteStrategyById(String id);
+}

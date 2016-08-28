@@ -21,31 +21,17 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.core.admin.repository;
+package com.gazbert.bxbot.core.admin.security;
 
-import com.gazbert.bxbot.core.config.market.MarketConfig;
-
-import java.util.List;
+import org.springframework.data.repository.CrudRepository;
 
 /**
- * TODO Work in progress...
+ * Repository for Users.
  *
  * @author gazbert
- * @since 20/07/2016
+ * @since 21/08/2016
  */
-public interface MarketConfigRepository {
+public interface UserRepository extends CrudRepository<User, Long> {
 
-        MarketConfig findById(String id);
-
-        MarketConfig findByName(String name);
-
-        MarketConfig saveMarket(MarketConfig config);
-
-        MarketConfig updateMarket(MarketConfig config);
-
-        MarketConfig deleteMarketById(String id);
-
-        List<MarketConfig> findAllMarkets();
-
-        List<MarketConfig> deleteAllMarkets();
+    User findByLoginId(String loginId);
 }

@@ -24,8 +24,9 @@
 package com.gazbert.bxbot.core.admin.services;
 
 import com.gazbert.bxbot.core.admin.security.User;
-import com.gazbert.bxbot.core.admin.repository.UserRepository;
+import com.gazbert.bxbot.core.admin.security.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -42,7 +43,8 @@ import java.util.Collection;
  * @author gazbert
  * @since 21/08/2016
  */
-@Service
+@Service("userService")
+@ComponentScan(basePackages={"com.gazbert.bxbot.repository"})
 public class UserDetailsServiceImpl implements UserDetailsService {
 
     private final UserRepository userRepository;

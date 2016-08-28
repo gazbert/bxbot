@@ -23,11 +23,12 @@
 
 package com.gazbert.bxbot.core.admin.services;
 
-import com.gazbert.bxbot.core.admin.repository.ExchangeConfigRepository;
+import com.gazbert.bxbot.repository.ExchangeConfigRepository;
 import com.gazbert.bxbot.core.config.exchange.ExchangeConfig;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -40,6 +41,7 @@ import org.springframework.util.Assert;
  */
 @Service("exchangeConfigService")
 @Transactional
+@ComponentScan(basePackages={"com.gazbert.bxbot.repository"})
 public class ExchangeConfigServiceImpl implements ExchangeConfigService {
 
     private static final Logger LOG = LogManager.getLogger();

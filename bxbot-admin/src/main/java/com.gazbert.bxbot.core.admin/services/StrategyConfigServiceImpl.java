@@ -23,11 +23,12 @@
 
 package com.gazbert.bxbot.core.admin.services;
 
-import com.gazbert.bxbot.core.admin.repository.StrategyConfigRepository;
+import com.gazbert.bxbot.repository.StrategyConfigRepository;
 import com.gazbert.bxbot.core.config.strategy.StrategyConfig;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -42,6 +43,7 @@ import java.util.List;
  */
 @Service("strategyConfigService")
 @Transactional
+@ComponentScan(basePackages={"com.gazbert.bxbot.repository"})
 public class StrategyConfigServiceImpl implements StrategyConfigService {
 
     private static final Logger LOG = LogManager.getLogger();

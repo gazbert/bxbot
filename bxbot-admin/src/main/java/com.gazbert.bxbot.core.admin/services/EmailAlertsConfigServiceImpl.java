@@ -23,11 +23,12 @@
 
 package com.gazbert.bxbot.core.admin.services;
 
-import com.gazbert.bxbot.core.admin.repository.EmailAlertsConfigRepository;
+import com.gazbert.bxbot.repository.EmailAlertsConfigRepository;
 import com.gazbert.bxbot.core.config.emailalerts.EmailAlertsConfig;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -40,6 +41,7 @@ import org.springframework.util.Assert;
  */
 @Service("emailAlertsConfigService")
 @Transactional
+@ComponentScan(basePackages={"com.gazbert.bxbot.repository"})
 public class EmailAlertsConfigServiceImpl implements EmailAlertsConfigService {
 
     private static final Logger LOG = LogManager.getLogger();
