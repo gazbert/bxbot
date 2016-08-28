@@ -15,13 +15,13 @@
 #
 # You can start, stop, and query the bot's status: ./bxbot.sh [start|stop|status]
 #
-LIB_DIR=./libs
+LIB_DIR=./bxbot-app/target/
 
 # log4j2 config file location
 log4j2_config=./resources/log4j2.xml
 
 # The BX-bot core jar (Spring Boot app containing all the dependencies)
-bxbot_core=bxbot-core-0.5-beta-SNAPSHOT.jar
+bxbot_core=bxbot-app-0.5-beta-SNAPSHOT.jar
 
 # PID file for checking if bot is running
 PID_FILE=./.bxbot.pid
@@ -34,7 +34,7 @@ case "$1" in
           echo "BX-bot is already running with PID: $pid"
        else
           echo "Starting BX-bot..."
-          java -Xmx32m -Xss256k -Dlog4j.configurationFile=file:${log4j2_config} -jar ${LIB_DIR}/${bxbot_core} 2>&1 >/dev/null &
+          java -Xmx64m -Xss256k -Dlog4j.configurationFile=file:${log4j2_config} -jar ${LIB_DIR}/${bxbot_core} 2>&1 >/dev/null &
 
           echo "BX-bot started with PID: $!"
           echo $! > ${PID_FILE}
