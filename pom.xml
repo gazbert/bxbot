@@ -322,10 +322,7 @@
                 <plugin>
                     <groupId>org.springframework.boot</groupId>
                     <artifactId>spring-boot-maven-plugin</artifactId>
-
-                    <!-- 1.4 Broken - does not include my classes in the uber jar :-( -->
                     <version>1.4.0.RELEASE</version>
-                    <!--<version>1.3.6.RELEASE</version>-->
                     <executions>
                         <execution>
                             <goals>
