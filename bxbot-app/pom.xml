@@ -6,8 +6,7 @@
     <artifactId>bxbot-app</artifactId>
     <packaging>jar</packaging>
     <name>BX-bot App</name>
-    <description>Builds the deployable artifact.
-    </description>
+    <description>Builds the deployable artifact.</description>
     <url>http://github.com/gazbert/bxbot</url>
     <inceptionYear>2015</inceptionYear>
 
@@ -83,7 +82,7 @@
         </dependency>
         <dependency>
             <groupId>com.gazbert.bxbot</groupId>
-            <artifactId>bxbot-admin</artifactId>
+            <artifactId>bxbot-rest-api</artifactId>
             <version>${bxbot.version}</version>
         </dependency>
 

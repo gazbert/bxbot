@@ -41,7 +41,7 @@
         <module>bxbot-strategies</module>
         <module>bxbot-core</module>
         <module>bxbot-repository</module>
-        <module>bxbot-admin</module>
+        <module>bxbot-rest-api</module>
         <module>bxbot-app</module>
     </modules>
     <properties>

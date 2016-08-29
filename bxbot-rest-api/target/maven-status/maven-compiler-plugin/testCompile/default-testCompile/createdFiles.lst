@@ -1,0 +1,6 @@
+com/gazbert/bxbot/core/rest/endpoints/TestStrategyConfigController.class
+com/gazbert/bxbot/core/rest/endpoints/TestEngineConfigController.class
+com/gazbert/bxbot/core/rest/endpoints/TestMarketConfigController.class
+com/gazbert/bxbot/core/rest/endpoints/TestExchangeConfigController.class
+com/gazbert/bxbot/core/rest/endpoints/TestEmailAlertsConfigController.class
+com/gazbert/bxbot/core/rest/endpoints/AbstractConfigControllerTest.class

@@ -6,8 +6,7 @@
     <artifactId>bxbot-trading-api</artifactId>
     <packaging>jar</packaging>
     <name>BX-bot Trading API</name>
-    <description>The Trading API for Strategies to use and Exchange Adapters to implement.
-    </description>
+    <description>The Trading API for Strategies to use and Exchange Adapters to implement.</description>
     <url>http://github.com/gazbert/bxbot</url>
     <inceptionYear>2015</inceptionYear>
     <licenses>

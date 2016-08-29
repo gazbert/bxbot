@@ -6,8 +6,7 @@
     <artifactId>bxbot-strategy-api</artifactId>
     <packaging>jar</packaging>
     <name>BX-bot Strategy API</name>
-    <description>The Strategy API that all Strategies must implement.
-    </description>
+    <description>The Strategy API that all Strategies must implement.</description>
     <url>http://github.com/gazbert/bxbot</url>
     <inceptionYear>2015</inceptionYear>
     <licenses>

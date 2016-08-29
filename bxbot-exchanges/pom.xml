@@ -6,8 +6,7 @@
     <artifactId>bxbot-exchanges</artifactId>
     <packaging>jar</packaging>
     <name>BX-bot Exchange Adapters</name>
-    <description>Sample Exchange Adapters for integrating with Bitcoin exchanges.
-    </description>
+    <description>Sample Exchange Adapters for integrating with Bitcoin exchanges.</description>
     <url>http://github.com/gazbert/bxbot</url>
     <inceptionYear>2015</inceptionYear>
 

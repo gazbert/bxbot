@@ -6,8 +6,7 @@
     <artifactId>bxbot-exchange-api</artifactId>
     <packaging>jar</packaging>
     <name>BX-bot Exchange API</name>
-    <description>The Exchange API for Exchange Adapters to access their configuration.
-    </description>
+    <description>The Exchange API for Exchange Adapters to access their configuration.</description>
     <url>http://github.com/gazbert/bxbot</url>
     <inceptionYear>2015</inceptionYear>
     <licenses>
