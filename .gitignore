@@ -25,6 +25,9 @@ hs_err_pid*
 /logs
 *.log
 
+# Allow maven wrapper jar - we need this for TravisCI
+!.mvn/wrapper/maven-wrapper.jar
+
 # bot pid when running locally
 .bxbot.pid
 
