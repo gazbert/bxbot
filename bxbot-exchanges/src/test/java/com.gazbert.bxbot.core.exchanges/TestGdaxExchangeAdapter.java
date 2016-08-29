@@ -66,7 +66,7 @@ import static org.junit.Assert.assertTrue;
  * @author gazbert
  */
 @RunWith(PowerMockRunner.class)
-@PowerMockIgnore({"javax.crypto.*", "org.apache.logging.log4j.*"})
+@PowerMockIgnore({"javax.crypto.*"})
 @PrepareForTest(GdaxExchangeAdapter.class)
 public class TestGdaxExchangeAdapter {
 

@@ -6,30 +6,8 @@
     <artifactId>bxbot-core</artifactId>
     <packaging>jar</packaging>
     <name>BX-bot Core</name>
-    <description>The core of the bot - it includes the main Trading Engine.</description>
+    <description>The core of the bot - it includes the main Trading Engine</description>
     <url>http://github.com/gazbert/bxbot</url>
-    <inceptionYear>2015</inceptionYear>
-    <licenses>
-        <license>
-            <name>MIT</name>
-            <url>http://opensource.org/licenses/MIT</url>
-        </license>
-    </licenses>
-    <scm>
-        <url>https://github.com/gazbert/bxbot</url>
-    </scm>
-    <developers>
-        <developer>
-            <id>gazbert</id>
-            <name>Gareth Jon Lynch</name>
-            <url>http://github.com/gazbert/</url>
-            <roles>
-                <role>architect</role>
-                <role>developer</role>
-            </roles>
-            <timezone>Europe/London</timezone>
-        </developer>
-    </developers>
     <parent>
         <groupId>com.gazbert.bxbot</groupId>
         <artifactId>bxbot-parent</artifactId>
@@ -37,7 +15,7 @@
     </parent>
     <dependencies>
         <!--
-        Product dependencies
+        BX-bot dependencies
         -->
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -65,6 +43,9 @@
             <version>${project.version}</version>
         </dependency>
 
+        <!--
+        3rd party dependencies
+        -->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-core</artifactId>
@@ -136,22 +117,6 @@
             <artifactId>hsqldb</artifactId>
         </dependency>
 
-        <!-- Add your (optional) Trading Strategies here -->
-        <!--<dependency>-->
-        <!--<groupId>com.gazbert.bxbot</groupId>-->
-        <!--<artifactId>bxbot-strategies</artifactId>-->
-        <!--<version>3.0-SNAPSHOT</version>-->
-        <!--<scope>runtime</scope>-->
-        <!--</dependency>-->
-
-        <!-- Add your (optional) Exchange Adapters here -->
-        <!--<dependency>-->
-        <!--<groupId>com.gazbert.bxbot</groupId>-->
-        <!--<artifactId>bxbot-exchanges</artifactId>-->
-        <!--<version>1.0-SNAPSHOT</version>-->
-        <!--<scope>runtime</scope>-->
-        <!--</dependency>-->
-
         <!--
         Testing dependencies
         -->
@@ -197,41 +162,4 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-    <build>
-        <defaultGoal>clean install</defaultGoal>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <configuration>
-                    <includes>
-                        <include>**/Test*.java</include>
-                    </includes>
-                </configuration>
-            </plugin>
-            <plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <configuration>
-                    <!-- using -Xdoclint:none means the strict checking of Javadoc will not break build on Java 1.8 -->
-                    <additionalparam>-Xdoclint:none</additionalparam>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>attach-javadocs</id>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
 </project>

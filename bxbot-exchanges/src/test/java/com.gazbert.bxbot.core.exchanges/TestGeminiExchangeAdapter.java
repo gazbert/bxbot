@@ -64,7 +64,7 @@ import static org.junit.Assert.*;
  * @since 31/07/2016
  */
 @RunWith(PowerMockRunner.class)
-@PowerMockIgnore({"javax.crypto.*", "org.apache.logging.log4j.*"})
+@PowerMockIgnore({"javax.crypto.*"})
 @PrepareForTest(GeminiExchangeAdapter.class)
 public class TestGeminiExchangeAdapter {
 

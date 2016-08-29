@@ -54,7 +54,7 @@ import static org.junit.Assert.*;
  * @since 12/08/2016
  */
 @RunWith(PowerMockRunner.class)
-@PowerMockIgnore({"javax.crypto.*", "org.apache.logging.log4j.*"})
+@PowerMockIgnore({"javax.crypto.*"})
 @PrepareForTest(BtceExchangeAdapter.class)
 public class BtceIT {
 

@@ -56,7 +56,7 @@ import static org.junit.Assert.assertTrue;
  * @since 12/08/2016
  */
 @RunWith(PowerMockRunner.class)
-@PowerMockIgnore({"javax.crypto.*", "org.apache.logging.log4j.*"})
+@PowerMockIgnore({"javax.crypto.*"})
 @PrepareForTest(BitstampExchangeAdapter.class)
 public class BitstampIT {
 

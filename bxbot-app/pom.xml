@@ -6,87 +6,65 @@
     <artifactId>bxbot-app</artifactId>
     <packaging>jar</packaging>
     <name>BX-bot App</name>
-    <description>Builds the deployable artifact.</description>
+    <description>Builds the distributable BX-bot app</description>
     <url>http://github.com/gazbert/bxbot</url>
-    <inceptionYear>2015</inceptionYear>
-
-    <licenses>
-        <license>
-            <name>MIT</name>
-            <url>http://opensource.org/licenses/MIT</url>
-        </license>
-    </licenses>
-    <scm>
-        <url>https://github.com/gazbert/bxbot</url>
-    </scm>
-    <developers>
-        <developer>
-            <id>gazbert</id>
-            <name>Gareth Jon Lynch</name>
-            <url>http://github.com/gazbert/</url>
-            <roles>
-                <role>architect</role>
-                <role>developer</role>
-            </roles>
-            <timezone>Europe/London</timezone>
-        </developer>
-    </developers>
-
-    <properties>
-        <springframework.version>4.3.1.RELEASE</springframework.version>
-        <bxbot.version>0.5-beta-SNAPSHOT</bxbot.version>
-        <start-class>com.gazbert.bxbot.core.BXBot</start-class>
-    </properties>
-
     <parent>
         <groupId>com.gazbert.bxbot</groupId>
         <artifactId>bxbot-parent</artifactId>
         <version>0.5-beta-SNAPSHOT</version>
     </parent>
-
+    <properties>
+        <springframework.version>4.3.1.RELEASE</springframework.version>
+        <start-class>com.gazbert.bxbot.core.BXBot</start-class>
+    </properties>
     <dependencies>
+        <!--
+        BX-bot dependencies
+        -->
         <dependency>
-            <groupId>com.gazbert.bxbot</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>bxbot-trading-api</artifactId>
-            <version>${bxbot.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.gazbert.bxbot</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>bxbot-strategy-api</artifactId>
-            <version>${bxbot.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.gazbert.bxbot</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>bxbot-exchange-api</artifactId>
-            <version>${bxbot.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.gazbert.bxbot</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>bxbot-strategies</artifactId>
-            <version>${bxbot.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.gazbert.bxbot</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>bxbot-exchanges</artifactId>
-            <version>${bxbot.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.gazbert.bxbot</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>bxbot-repository</artifactId>
-            <version>${bxbot.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.gazbert.bxbot</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>bxbot-core</artifactId>
-            <version>${bxbot.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.gazbert.bxbot</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>bxbot-rest-api</artifactId>
-            <version>${bxbot.version}</version>
+            <version>${project.version}</version>
         </dependency>
 
-        <!-- 3rd party -->
+        <!--
+        3rd party dependencies
+        -->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-core</artifactId>
@@ -186,39 +164,6 @@
     <build>
         <defaultGoal>clean install</defaultGoal>
         <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <configuration>
-                    <includes>
-                        <include>**/Test*.java</include>
-                    </includes>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-failsafe-plugin</artifactId>
-                <executions>
-                    <!--
-                    Exchange Adapter integration tests require internet connection to reach exchanges.
-                    They are run as part of the mvn 'verify' build phase.
-                    Comment out the execution section if you need to 'maven install' offline.
-                     -->
-                    <execution>
-                        <goals>
-                            <goal>integration-test</goal>
-                            <goal>verify</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
-                </configuration>
-            </plugin>
 
             <!-- Surely must be better way than this?!! -->
             <plugin>
@@ -243,7 +188,7 @@
                 <artifactId>maven-assembly-plugin</artifactId>
                 <configuration>
                     <descriptors>
-                        <descriptor>src/assemble/distribution.xml</descriptor>
+                        <descriptor>src/assembly/distribution.xml</descriptor>
                     </descriptors>
                 </configuration>
             </plugin>

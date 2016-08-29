@@ -63,7 +63,7 @@ import static org.junit.Assert.*;
  * @since 16/07/2016
  */
 @RunWith(PowerMockRunner.class)
-@PowerMockIgnore({"javax.crypto.*", "org.apache.logging.log4j.*"})
+@PowerMockIgnore({"javax.crypto.*"})
 @PrepareForTest(KrakenExchangeAdapter.class)
 public class TestKrakenExchangeAdapter {
 

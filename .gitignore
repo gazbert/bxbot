@@ -24,6 +24,7 @@ hs_err_pid*
 /libs
 /logs
 *.log
+*.log.gz
 
 # Allow maven wrapper jar - we need this for TravisCI
 !.mvn/wrapper/maven-wrapper.jar
