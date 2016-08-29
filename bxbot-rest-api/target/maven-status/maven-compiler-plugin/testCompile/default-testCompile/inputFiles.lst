@@ -1,6 +1,0 @@
-/home/gazbert/IdeaProjects/bxbot/bxbot-rest-api/src/test/java/com/gazbert/bxbot/core/rest/endpoints/TestMarketConfigController.java
-/home/gazbert/IdeaProjects/bxbot/bxbot-rest-api/src/test/java/com/gazbert/bxbot/core/rest/endpoints/AbstractConfigControllerTest.java
-/home/gazbert/IdeaProjects/bxbot/bxbot-rest-api/src/test/java/com/gazbert/bxbot/core/rest/endpoints/TestStrategyConfigController.java
-/home/gazbert/IdeaProjects/bxbot/bxbot-rest-api/src/test/java/com/gazbert/bxbot/core/rest/endpoints/TestEngineConfigController.java
-/home/gazbert/IdeaProjects/bxbot/bxbot-rest-api/src/test/java/com/gazbert/bxbot/core/rest/endpoints/TestExchangeConfigController.java
-/home/gazbert/IdeaProjects/bxbot/bxbot-rest-api/src/test/java/com/gazbert/bxbot/core/rest/endpoints/TestEmailAlertsConfigController.java
