@@ -23,41 +23,22 @@
 
 package com.gazbert.bxbot.services;
 
-import com.gazbert.bxbot.core.config.strategy.StrategyConfig;
+
+import com.gazbert.bxbot.domain.strategy.StrategyConfig;
 
 import java.util.List;
 
 /**
- * TODO Work in progress...
+ * The Strategy configuration service.
  *
  * @author gazbert
- * @since 12/08/2016
  */
 public interface StrategyConfigService {
 
-    /**
-     * Returns all the Strategy Config items.
-     * <p>
-     * TODO doc what is exposed and what is not
-     *
-     * @return all the strategy config items
-     */
     List<StrategyConfig> findAllStrategies();
 
-    /**
-     * Returns the Strategy config for a given Strategy id.
-     *
-     * @param id the strategy id.
-     * @return the Strategy config.
-     */
     StrategyConfig findById(String id);
 
-    /**
-     * TODO doc what can and cannot be updated
-     *
-     * @param config
-     * @return
-     */
     StrategyConfig updateStrategy(String id, StrategyConfig config);
 
     StrategyConfig saveStrategy(StrategyConfig config);

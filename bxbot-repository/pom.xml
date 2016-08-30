@@ -19,7 +19,12 @@
         -->
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>bxbot-core</artifactId>
+            <artifactId>bxbot-xml-datastore</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>bxbot-domain</artifactId>
             <version>${project.version}</version>
         </dependency>
 

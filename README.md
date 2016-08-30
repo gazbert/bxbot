@@ -44,8 +44,6 @@ app in a [microservice](http://martinfowler.com/articles/microservices.html) sys
 The bot was designed to fail hard and fast if any unexpected errors occur in the Exchange Adapters or Trading Strategies:
 it will log the error, send an email alert (if configured), and then shutdown.
 
-The first release of BX-bot is single-threaded for simplicity; I am working on a concurrent version.
-
 ## Dependencies
 BX-bot requires [Oracle JDK 1.8](http://www.oracle.com/technetwork/java/javase/downloads/index-jsp-138363.html) for the
 development and runtime environment.
@@ -57,7 +55,7 @@ BX-bot depends on [log4j](http://logging.apache.org/log4j), [JavaMail](https://j
 See the [`pom.xml`](./pom.xml) for details.
 
 ## Testing
-The bot has undergone basic unit testing on a _best-effort_ basis - there is a continuous integration build 
+The bot has undergone basic unit testing on a _best-effort_ basis; there is a continuous integration build 
 running on [Travis CI](https://travis-ci.org/gazbert/bxbot).
 
 The latest stable build can always be found on the [Releases](https://github.com/gazbert/bxbot/releases) page. 

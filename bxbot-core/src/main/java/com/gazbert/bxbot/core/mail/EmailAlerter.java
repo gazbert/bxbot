@@ -23,64 +23,56 @@
 
 package com.gazbert.bxbot.core.mail;
 
-import com.gazbert.bxbot.core.config.ConfigurationManager;
-import com.gazbert.bxbot.core.config.emailalerts.generated.EmailAlertsType;
-import com.gazbert.bxbot.core.config.emailalerts.generated.SmtpConfigType;
+import com.gazbert.bxbot.domain.emailalerts.EmailAlertsConfig;
+import com.gazbert.bxbot.domain.emailalerts.SmtpConfig;
+import com.gazbert.bxbot.repository.EmailAlertsConfigRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.stereotype.Component;
+import org.springframework.util.Assert;
 
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.util.Properties;
 
-import static com.gazbert.bxbot.core.config.emailalerts.EmailAlertsConfig.EMAIL_ALERTS_CONFIG_XML_FILENAME;
-import static com.gazbert.bxbot.core.config.emailalerts.EmailAlertsConfig.EMAIL_ALERTS_CONFIG_XSD_FILENAME;
-
-/*
+/**
  * A simple mail sender using SMTP and TLS.
  * The configuration for sending the email is loaded from the email-alerts.xml config file.
  * It sends plain/text email only.
+ *
+ * @author gazbert
  */
+@Component
+@ComponentScan(basePackages = {"com.gazbert.bxbot.repository"})
 public final class EmailAlerter {
 
     private static final Logger LOG = LogManager.getLogger();
 
-    private static volatile EmailAlerter EMAIL_ALERTER_SINGLETON;
-
-    /* SMTP config loaded from the bot .config/email-alerts.xml config file. This will be null if no config provided. */
     private SmtpConfig smtpConfig;
-
-    /* Properties for configuring the SMTP session. */
-    private Properties props;
-
-    /* Flag to indicate if Email Alerts are enabled. Defaults to false unless set in config. */
+    private Properties smtpProps;
     private boolean sendEmailAlertsEnabled;
 
+    private final EmailAlertsConfigRepository emailAlertsConfigRepository;
 
-    private EmailAlerter() {
+
+    @Autowired
+    public EmailAlerter(EmailAlertsConfigRepository emailAlertsConfigRepository) {
+
+        Assert.notNull(emailAlertsConfigRepository, "emailAlertsConfigRepository dependency cannot be null!");
+        this.emailAlertsConfigRepository = emailAlertsConfigRepository;
 
         initialiseEmailAlerterConfig();
 
         if (smtpConfig != null) {
-            props = new Properties();
-            props.put("mail.smtp.auth", "true");
-            props.put("mail.smtp.starttls.enable", "true");
-            props.put("mail.smtp.host", smtpConfig.getSmtpHost());
-            props.put("mail.smtp.port", smtpConfig.getSmtpTlsPort());
+            smtpProps = new Properties();
+            smtpProps.put("mail.smtp.auth", "true");
+            smtpProps.put("mail.smtp.starttls.enable", "true");
+            smtpProps.put("mail.smtp.host", smtpConfig.getHost());
+            smtpProps.put("mail.smtp.port", smtpConfig.getTlsPort());
         }
-    }
-
-    public static EmailAlerter getInstance() {
-
-        if (EMAIL_ALERTER_SINGLETON == null) {
-            synchronized (EmailAlerter.class) {
-                if (EMAIL_ALERTER_SINGLETON == null) {
-                    EMAIL_ALERTER_SINGLETON = new EmailAlerter();
-                }
-            }
-        }
-        return EMAIL_ALERTER_SINGLETON;
     }
 
     /*
@@ -90,7 +82,7 @@ public final class EmailAlerter {
 
         if (sendEmailAlertsEnabled) {
 
-            final Session session = Session.getInstance(props, new Authenticator() {
+            final Session session = Session.getInstance(smtpProps, new Authenticator() {
                 protected PasswordAuthentication getPasswordAuthentication() {
                     return new PasswordAuthentication(smtpConfig.getAccountUsername(), smtpConfig.getAccountPassword());
                 }
@@ -116,57 +108,39 @@ public final class EmailAlerter {
         }
     }
 
-    /*
-     * Initialises the Email Alerter config.
-     * Fetches XML config and checks if we need to load the optional email alert SMTP config.
-     * Sets if Email Alerts are enabled.
-     */
     private void initialiseEmailAlerterConfig() {
 
-        final EmailAlertsType emailAlertsType = loadEmailAlerterConfig();
-        if (emailAlertsType != null) {
+        final EmailAlertsConfig emailAlertsConfig = this.loadEmailAlerterConfig();
+        if (emailAlertsConfig != null) {
 
-            final boolean emailAlertsEnabled = emailAlertsType.isEnabled();
-            if (emailAlertsEnabled) {
+            sendEmailAlertsEnabled = emailAlertsConfig.isEnabled();
+            if (sendEmailAlertsEnabled) {
 
                 LOG.info(() -> "Email Alert for emergency bot shutdown is enabled. Loading SMTP config...");
 
-                final SmtpConfigType smtpConfigType = emailAlertsType.getSmtpConfig();
-                if (smtpConfigType == null) {
+                smtpConfig = emailAlertsConfig.getSmtpConfig();
+                if (smtpConfig == null) {
                     final String errorMsg = "Failed to initialise Email Alerter. " +
-                            "Alerts are enabled but no smtp-config has been supplied in email-alerts.xml config file.";
+                            "Alerts are enabled but no SMTP Config has been supplied in config.";
                     throw new IllegalStateException(errorMsg);
                 }
 
-                final String smtpHost = smtpConfigType.getSmtpHost();
-                LOG.info(() -> "SMTP host: " + smtpHost);
+                LOG.info(() -> "SMTP host: " + smtpConfig.getHost());
+                LOG.info(() -> "SMTP TLS Port: " + smtpConfig.getTlsPort());
+                LOG.info(() -> "Account username: " + smtpConfig.getAccountUsername());
+                // uncomment below for testing only
+//                    LOG.info( () -> "Account password: " + smtpConfig.getAccountPassword());
 
-                final int smtpTlsPort = smtpConfigType.getSmtpTlsPort();
-                LOG.info(() -> "SMTP TLS Port: " + smtpTlsPort);
+                LOG.info(() -> "From address: " + smtpConfig.getFromAddress());
+                LOG.info(() -> "To address: " + smtpConfig.getToAddress());
 
-                final String accountUsername = smtpConfigType.getAccountUsername();
-                LOG.info(() -> "Account username: " + accountUsername);
-
-                final String accountPassword = smtpConfigType.getAccountPassword();
-                /* uncomment below for green zone testing only */
-//                    LOG.info( () -> "Account password: " + accountPassword);
-
-                final String fromAddress = smtpConfigType.getFromAddr();
-                LOG.info(() -> "From address: " + fromAddress);
-
-                final String toAddress = smtpConfigType.getToAddr();
-                LOG.info(() -> "To address: " + toAddress);
-
-                smtpConfig = new SmtpConfig(smtpHost, smtpTlsPort, accountUsername, accountPassword, fromAddress, toAddress);
-                sendEmailAlertsEnabled = true;
             } else {
                 LOG.warn("Email Alerts are disabled. Are you sure you want to configure this?");
             }
         }
     }
 
-    private static EmailAlertsType loadEmailAlerterConfig() {
-        return ConfigurationManager.loadConfig(EmailAlertsType.class,
-                EMAIL_ALERTS_CONFIG_XML_FILENAME, EMAIL_ALERTS_CONFIG_XSD_FILENAME);
+    private EmailAlertsConfig loadEmailAlerterConfig() {
+        return emailAlertsConfigRepository.getConfig();
     }
 }

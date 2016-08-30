@@ -44,12 +44,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
- * TODO OAuth stuff is work in progress...
- * <p>
  * Base class for controller test classes.
  *
  * @author gazbert
- * @since 22/08/2016
  */
 abstract class AbstractConfigControllerTest {
 

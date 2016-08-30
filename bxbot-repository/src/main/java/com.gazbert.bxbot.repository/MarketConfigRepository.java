@@ -23,29 +23,24 @@
 
 package com.gazbert.bxbot.repository;
 
-import com.gazbert.bxbot.core.config.market.MarketConfig;
+import com.gazbert.bxbot.domain.market.MarketConfig;
 
 import java.util.List;
 
 /**
- * TODO Work in progress...
+ * The Market configuration repository.
  *
  * @author gazbert
- * @since 20/07/2016
  */
 public interface MarketConfigRepository {
 
-        MarketConfig findById(String id);
+    List<MarketConfig> findAllMarkets();
 
-        MarketConfig findByName(String name);
+    MarketConfig findById(String id);
 
-        MarketConfig saveMarket(MarketConfig config);
+    MarketConfig saveMarket(MarketConfig config);
 
-        MarketConfig updateMarket(MarketConfig config);
+    MarketConfig updateMarket(MarketConfig config);
 
-        MarketConfig deleteMarketById(String id);
-
-        List<MarketConfig> findAllMarkets();
-
-        List<MarketConfig> deleteAllMarkets();
+    MarketConfig deleteMarketById(String id);
 }

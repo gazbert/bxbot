@@ -22,25 +22,16 @@
  */
 package com.gazbert.bxbot.services;
 
-import com.gazbert.bxbot.core.config.exchange.ExchangeConfig;
+import com.gazbert.bxbot.domain.exchange.ExchangeConfig;
 
 /**
  * The Exchange configuration service.
  *
  * @author gazbert
- * @since 20/07/2016
  */
 public interface ExchangeConfigService {
 
-    /**
-     * TODO doc what is exposed and what is not
-     * @return
-     */
     ExchangeConfig getConfig();
 
-    /**
-     * TODO doc what can and cannot be updated
-     * @param config
-     */
     void updateConfig(ExchangeConfig config);
 }

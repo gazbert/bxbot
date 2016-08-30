@@ -23,12 +23,13 @@
 
 package com.gazbert.bxbot.repository;
 
-import com.gazbert.bxbot.core.config.ConfigurationManager;
-import com.gazbert.bxbot.core.config.exchange.AuthenticationConfig;
-import com.gazbert.bxbot.core.config.exchange.ExchangeConfig;
-import com.gazbert.bxbot.core.config.exchange.NetworkConfig;
-import com.gazbert.bxbot.core.config.exchange.OtherConfig;
-import com.gazbert.bxbot.core.config.exchange.generated.*;
+import com.gazbert.bxbot.datastore.ConfigurationManager;
+import com.gazbert.bxbot.datastore.exchange.generated.*;
+import com.gazbert.bxbot.domain.exchange.AuthenticationConfig;
+import com.gazbert.bxbot.domain.exchange.ExchangeConfig;
+import com.gazbert.bxbot.domain.exchange.NetworkConfig;
+import com.gazbert.bxbot.domain.exchange.OtherConfig;
+import com.gazbert.bxbot.repository.impl.ExchangeConfigRepositoryXmlImpl;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,8 +40,8 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.gazbert.bxbot.core.config.exchange.ExchangeConfig.EXCHANGE_CONFIG_XML_FILENAME;
-import static com.gazbert.bxbot.core.config.exchange.ExchangeConfig.EXCHANGE_CONFIG_XSD_FILENAME;
+import static com.gazbert.bxbot.datastore.FileLocations.EXCHANGE_CONFIG_XML_FILENAME;
+import static com.gazbert.bxbot.datastore.FileLocations.EXCHANGE_CONFIG_XSD_FILENAME;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.easymock.EasyMock.*;
 
@@ -48,7 +49,6 @@ import static org.easymock.EasyMock.*;
  * Tests Exchange configuration repository behaves as expected.
  *
  * @author gazbert
- * @since 19/08/2016
  */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ConfigurationManager.class})
@@ -90,19 +90,19 @@ public class TestExchangeConfigRepository {
 
         PowerMock.replayAll();
 
-        final ExchangeConfigRepository exchangeConfigRepository = new ExchangeConfigRepositoryImpl();
+        final ExchangeConfigRepository exchangeConfigRepository = new ExchangeConfigRepositoryXmlImpl();
         final ExchangeConfig exchangeConfig = exchangeConfigRepository.getConfig();
         assertThat(exchangeConfig.getExchangeName()).isEqualTo(EXCHANGE_NAME);
         assertThat(exchangeConfig.getExchangeAdapter()).isEqualTo(EXCHANGE_ADAPTER);
 
-        // We don't expose AuthenticationConfig in the service - security risk
-        assertThat(exchangeConfig.getAuthenticationConfig()).isNull();
+        assertThat(exchangeConfig.getAuthenticationConfig().getItems().get(API_KEY_CONFIG_ITEM_KEY)).isEqualTo(API_KEY_CONFIG_ITEM_VALUE);
+        assertThat(exchangeConfig.getAuthenticationConfig().getItems().get(SECRET_CONFIG_ITEM_KEY)).isEqualTo(SECRET_CONFIG_ITEM_VALUE);
 
         assertThat(exchangeConfig.getNetworkConfig().getConnectionTimeout()).isEqualTo(CONNECTION_TIMEOUT);
         assertThat(exchangeConfig.getNetworkConfig().getNonFatalErrorCodes()).isEqualTo(NON_FATAL_ERROR_CODES);
         assertThat(exchangeConfig.getNetworkConfig().getNonFatalErrorMessages()).isEqualTo(NON_FATAL_ERROR_MESSAGES);
-        assertThat(exchangeConfig.getOtherConfig().getItem(BUY_FEE_CONFIG_ITEM_KEY)).isEqualTo(BUY_FEE_CONFIG_ITEM_VALUE);
-        assertThat(exchangeConfig.getOtherConfig().getItem(SELL_FEE_CONFIG_ITEM_KEY)).isEqualTo(SELL_FEE_CONFIG_ITEM_VALUE);
+        assertThat(exchangeConfig.getOtherConfig().getItems().get(BUY_FEE_CONFIG_ITEM_KEY)).isEqualTo(BUY_FEE_CONFIG_ITEM_VALUE);
+        assertThat(exchangeConfig.getOtherConfig().getItems().get(SELL_FEE_CONFIG_ITEM_KEY)).isEqualTo(SELL_FEE_CONFIG_ITEM_VALUE);
 
         PowerMock.verifyAll();
     }
@@ -120,7 +120,7 @@ public class TestExchangeConfigRepository {
         ConfigurationManager.saveConfig(eq(ExchangeType.class), anyObject(ExchangeType.class), eq(EXCHANGE_CONFIG_XML_FILENAME));
         PowerMock.replayAll();
 
-        final ExchangeConfigRepository exchangeConfigRepository = new ExchangeConfigRepositoryImpl();
+        final ExchangeConfigRepository exchangeConfigRepository = new ExchangeConfigRepositoryXmlImpl();
         exchangeConfigRepository.updateConfig(withSomeExternalExchangeConfig());
 
         PowerMock.verifyAll();
@@ -175,8 +175,8 @@ public class TestExchangeConfigRepository {
         // We don't permit updating of AuthenticationConfig in the service - security risk
         // If caller sets it, we just ignore it.
         final AuthenticationConfig authenticationConfig = new AuthenticationConfig();
-        authenticationConfig.addItem("key", "updatedKeyIgnored");
-        authenticationConfig.addItem("secret", "updatedSecretIgnored");
+        authenticationConfig.getItems().put("key", "updatedKeyIgnored");
+        authenticationConfig.getItems().put("secret", "updatedSecretIgnored");
 
         final NetworkConfig networkConfig = new NetworkConfig();
         networkConfig.setConnectionTimeout(CONNECTION_TIMEOUT);

@@ -9,7 +9,7 @@
     <version>0.5-beta-SNAPSHOT</version>
     <name>BX-bot Parent</name>
     <description>Parent POM for building the bot.</description>
-    <url>http://github.com/gazbert/bxbot</url>
+    <url>https://github.com/gazbert/bxbot</url>
     <inceptionYear>2015</inceptionYear>
     <licenses>
         <license>
@@ -32,7 +32,7 @@
         <developer>
             <id>gazbert</id>
             <name>Gareth Jon Lynch</name>
-            <url>http://github.com/gazbert/</url>
+            <url>https://github.com/gazbert/</url>
             <roles>
                 <role>architect</role>
                 <role>developer</role>
@@ -68,7 +68,7 @@
     <dependencyManagement>
         <dependencies>
             <!--
-            Product dependencies
+            BX-bot dependencies
             -->
             <dependency>
                 <groupId>org.springframework</groupId>
@@ -106,6 +106,9 @@
                 <version>${spring-boot-starter.version}</version>
             </dependency>
 
+            <!--
+            3rd party dependencies
+            -->
             <!-- This seems to be the only way I can get my existing log4j2 dependencies to work... :-/ -->
             <dependency>
                 <groupId>org.springframework.boot</groupId>

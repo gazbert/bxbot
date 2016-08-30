@@ -23,8 +23,8 @@
 
 package com.gazbert.bxbot.core.rest.endpoints;
 
+import com.gazbert.bxbot.domain.strategy.StrategyConfig;
 import com.gazbert.bxbot.services.StrategyConfigService;
-import com.gazbert.bxbot.core.config.strategy.StrategyConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.HttpHeaders;
@@ -42,11 +42,11 @@ import java.util.List;
  * Controller for directing Strategy config requests.
  *
  * @author gazbert
- * @since 12/08/2016
+ * @since 1.0
  */
 @RestController
 @RequestMapping("/api")
-@ComponentScan(basePackages={"com.gazbert.bxbot.services"})
+@ComponentScan(basePackages = {"com.gazbert.bxbot.services"})
 public class StrategyConfigController {
 
     private final StrategyConfigService strategyConfigService;

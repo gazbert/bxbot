@@ -24,17 +24,31 @@
 package com.gazbert.bxbot.core;
 
 import com.gazbert.bxbot.core.engine.TradingEngine;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.stereotype.Component;
+import org.springframework.util.Assert;
 
-/*
+/**
  * BX-bot - here be the main boot app.
+ *
+ * @author gazbert
  */
 @SpringBootApplication
 public class BXBot {
 
+    private final TradingEngine tradingEngine;
+
+    @Autowired
+    public BXBot(TradingEngine tradingEngine) {
+        Assert.notNull(tradingEngine, "tradingEngine dependency cannot be null!");
+        this.tradingEngine = tradingEngine;
+        tradingEngine.start();
+    }
+
     public static void main(String[] args) {
         SpringApplication.run(BXBot.class, args);
-        TradingEngine.newInstance().start();
     }
 }

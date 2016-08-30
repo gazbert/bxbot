@@ -22,10 +22,10 @@
  */
 
 /**
- * <h2>Admin</h2>
+ * <h2>REST Endpoints</h2>
  *
  * <p>
- * This is the bot's Admin subsystem.
+ * This is the bot's REST API - TODO bla bla
  * </p>
  *
  * <p>

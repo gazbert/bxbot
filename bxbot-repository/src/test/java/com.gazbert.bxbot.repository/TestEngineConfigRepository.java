@@ -23,9 +23,10 @@
 
 package com.gazbert.bxbot.repository;
 
-import com.gazbert.bxbot.core.config.ConfigurationManager;
-import com.gazbert.bxbot.core.config.engine.EngineConfig;
-import com.gazbert.bxbot.core.config.engine.generated.EngineType;
+import com.gazbert.bxbot.datastore.ConfigurationManager;
+import com.gazbert.bxbot.datastore.engine.generated.EngineType;
+import com.gazbert.bxbot.domain.engine.EngineConfig;
+import com.gazbert.bxbot.repository.impl.EngineConfigRepositoryXmlImpl;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,8 +36,8 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.math.BigDecimal;
 
-import static com.gazbert.bxbot.core.config.engine.EngineConfig.ENGINE_CONFIG_XML_FILENAME;
-import static com.gazbert.bxbot.core.config.engine.EngineConfig.ENGINE_CONFIG_XSD_FILENAME;
+import static com.gazbert.bxbot.datastore.FileLocations.ENGINE_CONFIG_XML_FILENAME;
+import static com.gazbert.bxbot.datastore.FileLocations.ENGINE_CONFIG_XSD_FILENAME;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.easymock.EasyMock.*;
 
@@ -44,7 +45,6 @@ import static org.easymock.EasyMock.*;
  * Tests Engine configuration repository behaves as expected.
  *
  * @author gazbert
- * @since 14/08/2016
  */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ConfigurationManager.class})
@@ -71,7 +71,7 @@ public class TestEngineConfigRepository {
 
         PowerMock.replayAll();
 
-        final EngineConfigRepository engineConfigRepository = new EngineConfigRepositoryImpl();
+        final EngineConfigRepository engineConfigRepository = new EngineConfigRepositoryXmlImpl();
         final EngineConfig engineConfig = engineConfigRepository.getConfig();
         assertThat(engineConfig.getEmergencyStopCurrency()).isEqualTo(ENGINE_EMERGENCY_STOP_CURRENCY);
         assertThat(engineConfig.getEmergencyStopBalance()).isEqualTo(ENGINE_EMERGENCY_STOP_BALANCE);
@@ -86,7 +86,7 @@ public class TestEngineConfigRepository {
         ConfigurationManager.saveConfig(eq(EngineType.class), anyObject(EngineType.class), eq(ENGINE_CONFIG_XML_FILENAME));
         PowerMock.replayAll();
 
-        final EngineConfigRepository engineConfigRepository = new EngineConfigRepositoryImpl();
+        final EngineConfigRepository engineConfigRepository = new EngineConfigRepositoryXmlImpl();
         engineConfigRepository.updateConfig(withSomeExternalEngineConfig());
 
         PowerMock.verifyAll();

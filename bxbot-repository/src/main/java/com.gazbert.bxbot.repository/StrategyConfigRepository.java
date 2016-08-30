@@ -23,40 +23,22 @@
 
 package com.gazbert.bxbot.repository;
 
-import com.gazbert.bxbot.core.config.strategy.StrategyConfig;
+
+import com.gazbert.bxbot.domain.strategy.StrategyConfig;
 
 import java.util.List;
 
 /**
- * TODO Work in progress...
- *
  * The Strategy configuration repository.
  *
  * @author gazbert
- * @since 12/08/2016
  */
 public interface StrategyConfigRepository {
 
-    /**
-     * Returns all the Strategy Config items.
-     *
-     * @return all the strategy config items
-     */
     List<StrategyConfig> findAllStrategies();
 
-    /**
-     * Returns the Strategy config for a given Strategy id.
-     *
-     * @param id the strategy id.
-     * @return the Strategy config.
-     */
     StrategyConfig findById(String id);
 
-    /**
-     *
-     * @param config
-     * @return
-     */
     StrategyConfig updateStrategy(String id, StrategyConfig config);
 
     StrategyConfig saveStrategy(StrategyConfig config);

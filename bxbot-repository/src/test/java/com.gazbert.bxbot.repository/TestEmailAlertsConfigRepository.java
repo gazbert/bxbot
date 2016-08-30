@@ -23,11 +23,12 @@
 
 package com.gazbert.bxbot.repository;
 
-import com.gazbert.bxbot.core.config.ConfigurationManager;
-import com.gazbert.bxbot.core.config.emailalerts.EmailAlertsConfig;
-import com.gazbert.bxbot.core.config.emailalerts.SmtpConfig;
-import com.gazbert.bxbot.core.config.emailalerts.generated.EmailAlertsType;
-import com.gazbert.bxbot.core.config.emailalerts.generated.SmtpConfigType;
+import com.gazbert.bxbot.datastore.ConfigurationManager;
+import com.gazbert.bxbot.datastore.emailalerts.generated.EmailAlertsType;
+import com.gazbert.bxbot.datastore.emailalerts.generated.SmtpConfigType;
+import com.gazbert.bxbot.domain.emailalerts.EmailAlertsConfig;
+import com.gazbert.bxbot.domain.emailalerts.SmtpConfig;
+import com.gazbert.bxbot.repository.impl.EmailAlertsConfigRepositoryXmlImpl;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,8 +36,8 @@ import org.powermock.api.easymock.PowerMock;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-import static com.gazbert.bxbot.core.config.emailalerts.EmailAlertsConfig.EMAIL_ALERTS_CONFIG_XML_FILENAME;
-import static com.gazbert.bxbot.core.config.emailalerts.EmailAlertsConfig.EMAIL_ALERTS_CONFIG_XSD_FILENAME;
+import static com.gazbert.bxbot.datastore.FileLocations.EMAIL_ALERTS_CONFIG_XML_FILENAME;
+import static com.gazbert.bxbot.datastore.FileLocations.EMAIL_ALERTS_CONFIG_XSD_FILENAME;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.easymock.EasyMock.*;
 
@@ -44,7 +45,6 @@ import static org.easymock.EasyMock.*;
  * Tests Email Alerts configuration repository behaves as expected.
  *
  * @author gazbert
- * @since 23/08/2016
  */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ConfigurationManager.class})
@@ -75,7 +75,7 @@ public class TestEmailAlertsConfigRepository {
 
         PowerMock.replayAll();
 
-        final EmailAlertsConfigRepository emailAlertsConfigRepository = new EmailAlertsConfigRepositoryImpl();
+        final EmailAlertsConfigRepository emailAlertsConfigRepository = new EmailAlertsConfigRepositoryXmlImpl();
         final EmailAlertsConfig emailAlertsConfig = emailAlertsConfigRepository.getConfig();
         assertThat(emailAlertsConfig.isEnabled()).isEqualTo(ENABLED);
         assertThat(emailAlertsConfig.getSmtpConfig().getHost()).isEqualTo(HOST);
@@ -103,7 +103,7 @@ public class TestEmailAlertsConfigRepository {
         ConfigurationManager.saveConfig(eq(EmailAlertsType.class), anyObject(EmailAlertsType.class), eq(EMAIL_ALERTS_CONFIG_XML_FILENAME));
         PowerMock.replayAll();
 
-        final EmailAlertsConfigRepository emailAlertsConfigRepository = new EmailAlertsConfigRepositoryImpl();
+        final EmailAlertsConfigRepository emailAlertsConfigRepository = new EmailAlertsConfigRepositoryXmlImpl();
         emailAlertsConfigRepository.updateConfig(withSomeExternalEmailAlertsConfig());
 
         PowerMock.verifyAll();

@@ -2,7 +2,7 @@
  * <h2>Exchange API</h2>
  *
  * <p>
- * Every Exchange Adapter must implement the {@link com.gazbert.bxbot.core.api.exchange.ExchangeConfig} interface.
+ * Every Exchange Adapter must implement the {@link com.gazbert.bxbot.exchange.api.ExchangeAdapter} interface.
  * </p>
  *
  * <p>

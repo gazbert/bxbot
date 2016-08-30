@@ -22,23 +22,16 @@
  */
 package com.gazbert.bxbot.repository;
 
-import com.gazbert.bxbot.core.config.exchange.ExchangeConfig;
+import com.gazbert.bxbot.domain.exchange.ExchangeConfig;
 
 /**
  * The Exchange configuration repository.
  *
  * @author gazbert
- * @since 20/07/2016
  */
 public interface ExchangeConfigRepository {
 
-    /**
-     * @return
-     */
     ExchangeConfig getConfig();
 
-    /**
-     * @param config
-     */
     void updateConfig(ExchangeConfig config);
 }

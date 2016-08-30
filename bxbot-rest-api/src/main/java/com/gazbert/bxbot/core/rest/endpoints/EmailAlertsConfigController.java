@@ -24,8 +24,8 @@
 package com.gazbert.bxbot.core.rest.endpoints;
 
 import com.gazbert.bxbot.core.rest.security.User;
+import com.gazbert.bxbot.domain.emailalerts.EmailAlertsConfig;
 import com.gazbert.bxbot.services.EmailAlertsConfigService;
-import com.gazbert.bxbot.core.config.emailalerts.EmailAlertsConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.HttpHeaders;
@@ -46,11 +46,11 @@ import org.springframework.web.bind.annotation.RestController;
  * Email Alerts config can only be fetched and updated - there is only 1 Email Alerts configuration per bot.
  *
  * @author gazbert
- * @since 11/08/2016
+ * @since 1.0
  */
 @RestController
 @RequestMapping("/api")
-@ComponentScan(basePackages={"com.gazbert.bxbot.services"})
+@ComponentScan(basePackages = {"com.gazbert.bxbot.services"})
 public class EmailAlertsConfigController {
 
     private final EmailAlertsConfigService emailAlertsConfigService;

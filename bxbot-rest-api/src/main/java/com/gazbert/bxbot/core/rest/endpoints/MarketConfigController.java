@@ -23,7 +23,7 @@
 
 package com.gazbert.bxbot.core.rest.endpoints;
 
-import com.gazbert.bxbot.core.config.market.MarketConfig;
+import com.gazbert.bxbot.domain.market.MarketConfig;
 import com.gazbert.bxbot.services.MarketConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
@@ -42,11 +42,11 @@ import java.util.List;
  * Controller for directing Market config requests.
  *
  * @author gazbert
- * @since 20/07/2016
+ * @since 1.0
  */
 @RestController
 @RequestMapping("/api")
-@ComponentScan(basePackages={"com.gazbert.bxbot.services"})
+@ComponentScan(basePackages = {"com.gazbert.bxbot.services"})
 public class MarketConfigController {
 
     private final MarketConfigService marketConfigService;

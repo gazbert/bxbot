@@ -23,12 +23,13 @@
 
 package com.gazbert.bxbot.repository;
 
-import com.gazbert.bxbot.core.config.ConfigurationManager;
-import com.gazbert.bxbot.core.config.strategy.StrategyConfig;
-import com.gazbert.bxbot.core.config.strategy.generated.ConfigItemType;
-import com.gazbert.bxbot.core.config.strategy.generated.ConfigurationType;
-import com.gazbert.bxbot.core.config.strategy.generated.StrategyType;
-import com.gazbert.bxbot.core.config.strategy.generated.TradingStrategiesType;
+import com.gazbert.bxbot.datastore.ConfigurationManager;
+import com.gazbert.bxbot.datastore.strategy.generated.ConfigItemType;
+import com.gazbert.bxbot.datastore.strategy.generated.ConfigurationType;
+import com.gazbert.bxbot.datastore.strategy.generated.StrategyType;
+import com.gazbert.bxbot.datastore.strategy.generated.TradingStrategiesType;
+import com.gazbert.bxbot.domain.strategy.StrategyConfig;
+import com.gazbert.bxbot.repository.impl.StrategyConfigRepositoryXmlImpl;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,6 +41,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.gazbert.bxbot.datastore.FileLocations.STRATEGIES_CONFIG_XML_FILENAME;
+import static com.gazbert.bxbot.datastore.FileLocations.STRATEGIES_CONFIG_XSD_FILENAME;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.easymock.EasyMock.*;
 
@@ -47,7 +50,6 @@ import static org.easymock.EasyMock.*;
  * Tests Strategy configuration repository behaves as expected.
  *
  * @author gazbert
- * @since 25/08/2016
  */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ConfigurationManager.class})
@@ -79,13 +81,13 @@ public class TestStrategyConfigRepository {
 
         expect(ConfigurationManager.loadConfig(
                 eq(TradingStrategiesType.class),
-                eq(StrategyConfig.STRATEGIES_CONFIG_XML_FILENAME),
-                eq(StrategyConfig.STRATEGIES_CONFIG_XSD_FILENAME))).
+                eq(STRATEGIES_CONFIG_XML_FILENAME),
+                eq(STRATEGIES_CONFIG_XSD_FILENAME))).
                 andReturn(allTheInternalStrategiesConfig());
 
         PowerMock.replayAll();
 
-        final StrategyConfigRepository strategyConfigRepository = new StrategyConfigRepositoryImpl();
+        final StrategyConfigRepository strategyConfigRepository = new StrategyConfigRepositoryXmlImpl();
         final List<StrategyConfig> strategyConfigItems = strategyConfigRepository.findAllStrategies();
 
         assertThat(strategyConfigItems.size()).isEqualTo(2);
@@ -116,13 +118,13 @@ public class TestStrategyConfigRepository {
 
         expect(ConfigurationManager.loadConfig(
                 eq(TradingStrategiesType.class),
-                eq(StrategyConfig.STRATEGIES_CONFIG_XML_FILENAME),
-                eq(StrategyConfig.STRATEGIES_CONFIG_XSD_FILENAME))).
+                eq(STRATEGIES_CONFIG_XML_FILENAME),
+                eq(STRATEGIES_CONFIG_XSD_FILENAME))).
                 andReturn(allTheInternalStrategiesConfig());
 
         PowerMock.replayAll();
 
-        final StrategyConfigRepository strategyConfigRepository = new StrategyConfigRepositoryImpl();
+        final StrategyConfigRepository strategyConfigRepository = new StrategyConfigRepositoryXmlImpl();
         final StrategyConfig strategyConfig = strategyConfigRepository.findById(STRAT_ID_1);
 
         assertThat(strategyConfig.getId()).isEqualTo(STRAT_ID_1);
@@ -142,13 +144,13 @@ public class TestStrategyConfigRepository {
 
         expect(ConfigurationManager.loadConfig(
                 eq(TradingStrategiesType.class),
-                eq(StrategyConfig.STRATEGIES_CONFIG_XML_FILENAME),
-                eq(StrategyConfig.STRATEGIES_CONFIG_XSD_FILENAME))).
+                eq(STRATEGIES_CONFIG_XML_FILENAME),
+                eq(STRATEGIES_CONFIG_XSD_FILENAME))).
                 andReturn(allTheInternalStrategiesConfig());
 
         PowerMock.replayAll();
 
-        final StrategyConfigRepository strategyConfigRepository = new StrategyConfigRepositoryImpl();
+        final StrategyConfigRepository strategyConfigRepository = new StrategyConfigRepositoryXmlImpl();
         final StrategyConfig strategyConfig = strategyConfigRepository.findById("unknown-id");
 
         assertThat(strategyConfig.getId()).isEqualTo(null);
@@ -165,24 +167,24 @@ public class TestStrategyConfigRepository {
 
         expect(ConfigurationManager.loadConfig(
                 eq(TradingStrategiesType.class),
-                eq(StrategyConfig.STRATEGIES_CONFIG_XML_FILENAME),
-                eq(StrategyConfig.STRATEGIES_CONFIG_XSD_FILENAME))).
+                eq(STRATEGIES_CONFIG_XML_FILENAME),
+                eq(STRATEGIES_CONFIG_XSD_FILENAME))).
                 andReturn(allTheInternalStrategiesConfig());
 
         ConfigurationManager.saveConfig(
                 eq(TradingStrategiesType.class),
                 anyObject(TradingStrategiesType.class),
-                eq(StrategyConfig.STRATEGIES_CONFIG_XML_FILENAME));
+                eq(STRATEGIES_CONFIG_XML_FILENAME));
 
         expect(ConfigurationManager.loadConfig(
                 eq(TradingStrategiesType.class),
-                eq(StrategyConfig.STRATEGIES_CONFIG_XML_FILENAME),
-                eq(StrategyConfig.STRATEGIES_CONFIG_XSD_FILENAME))).
+                eq(STRATEGIES_CONFIG_XML_FILENAME),
+                eq(STRATEGIES_CONFIG_XSD_FILENAME))).
                 andReturn(allTheInternalStrategiesConfig());
 
         PowerMock.replayAll();
 
-        final StrategyConfigRepository strategyConfigRepository = new StrategyConfigRepositoryImpl();
+        final StrategyConfigRepository strategyConfigRepository = new StrategyConfigRepositoryXmlImpl();
         final StrategyConfig strategyConfig = strategyConfigRepository.updateStrategy(STRAT_ID_1, someExternalStrategyConfig());
 
         assertThat(strategyConfig.getId()).isEqualTo(STRAT_ID_1);
@@ -202,13 +204,13 @@ public class TestStrategyConfigRepository {
 
         expect(ConfigurationManager.loadConfig(
                 eq(TradingStrategiesType.class),
-                eq(StrategyConfig.STRATEGIES_CONFIG_XML_FILENAME),
-                eq(StrategyConfig.STRATEGIES_CONFIG_XSD_FILENAME))).
+                eq(STRATEGIES_CONFIG_XML_FILENAME),
+                eq(STRATEGIES_CONFIG_XSD_FILENAME))).
                 andReturn(allTheInternalStrategiesConfig());
 
         PowerMock.replayAll();
 
-        final StrategyConfigRepository strategyConfigRepository = new StrategyConfigRepositoryImpl();
+        final StrategyConfigRepository strategyConfigRepository = new StrategyConfigRepositoryXmlImpl();
         final StrategyConfig strategyConfig = strategyConfigRepository.updateStrategy("unknown-id", someExternalStrategyConfig());
 
         assertThat(strategyConfig.getId()).isEqualTo(null);

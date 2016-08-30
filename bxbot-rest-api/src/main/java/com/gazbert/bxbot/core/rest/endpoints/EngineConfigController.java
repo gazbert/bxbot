@@ -24,8 +24,8 @@
 package com.gazbert.bxbot.core.rest.endpoints;
 
 import com.gazbert.bxbot.core.rest.security.User;
+import com.gazbert.bxbot.domain.engine.EngineConfig;
 import com.gazbert.bxbot.services.EngineConfigService;
-import com.gazbert.bxbot.core.config.engine.EngineConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.HttpHeaders;
@@ -47,11 +47,11 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
  * Engine config can only be fetched and updated - there is only 1 Trading Engine per bot.
  *
  * @author gazbert
- * @since 11/08/2016
+ * @since 1.0
  */
 @RestController
 @RequestMapping("/api")
-@ComponentScan(basePackages={"com.gazbert.bxbot.services"})
+@ComponentScan(basePackages = {"com.gazbert.bxbot.services"})
 public class EngineConfigController {
 
     private final EngineConfigService engineConfigService;

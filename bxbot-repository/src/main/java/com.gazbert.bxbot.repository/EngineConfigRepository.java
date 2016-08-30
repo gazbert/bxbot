@@ -22,23 +22,16 @@
  */
 package com.gazbert.bxbot.repository;
 
-import com.gazbert.bxbot.core.config.engine.EngineConfig;
+import com.gazbert.bxbot.domain.engine.EngineConfig;
 
 /**
  * The Engine configuration repository.
  *
  * @author gazbert
- * @since 11/08/2016
  */
 public interface EngineConfigRepository {
 
-    /**
-     * @return
-     */
     EngineConfig getConfig();
 
-    /**
-     * @param config
-     */
     void updateConfig(EngineConfig config);
 }

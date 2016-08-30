@@ -22,23 +22,16 @@
  */
 package com.gazbert.bxbot.repository;
 
-import com.gazbert.bxbot.core.config.emailalerts.EmailAlertsConfig;
+import com.gazbert.bxbot.domain.emailalerts.EmailAlertsConfig;
 
 /**
  * The Email Alerts configuration repository.
  *
  * @author gazbert
- * @since 11/08/2016
  */
 public interface EmailAlertsConfigRepository {
 
-    /**
-     * @return
-     */
     EmailAlertsConfig getConfig();
 
-    /**
-     * @param config
-     */
     void updateConfig(EmailAlertsConfig config);
 }
