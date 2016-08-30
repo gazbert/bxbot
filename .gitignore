@@ -18,11 +18,11 @@ hs_err_pid*
 /out
 
 # Build and log dirs
-/bin
-/target
-/dist
-/libs
-/logs
+**/bin
+**/target
+**/dist
+**/libs
+**/logs
 *.log
 *.log.gz
 
