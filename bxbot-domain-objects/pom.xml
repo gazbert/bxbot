@@ -3,9 +3,9 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>bxbot-domain</artifactId>
+    <artifactId>bxbot-domain-objects</artifactId>
     <packaging>jar</packaging>
-    <name>BX-bot Domain</name>
+    <name>BX-bot Domain Objects</name>
     <description>The domain objects for the bot</description>
     <url>http://github.com/gazbert/bxbot</url>
     <parent>
