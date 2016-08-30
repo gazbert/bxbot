@@ -24,7 +24,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>bxbot-domain</artifactId>
+            <artifactId>bxbot-domain-objects</artifactId>
             <version>${project.version}</version>
         </dependency>
 
