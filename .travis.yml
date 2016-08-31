@@ -9,6 +9,9 @@ jdk:
 #before_install:
 #  - rm ~/.m2/settings.xml
 
+# hack for Travis dependency pre-load
+before_install: cp ./bxbot-parent/pom.xml .
+
 script: cd bxbot-parent && mvn clean install -Dmaven.javadoc.skip=true
 
 
