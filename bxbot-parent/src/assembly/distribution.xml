@@ -7,26 +7,16 @@
         <format>tar.gz</format>
         <format>zip</format>
     </formats>
-    <dependencySets>
-        <dependencySet>
-            <outputDirectory>libs</outputDirectory>
-            <includes>
-                <include>com.gazbert.bxbot:*</include>
-            </includes>
-            <useProjectArtifact>true</useProjectArtifact>
-            <unpack>false</unpack>
-            <scope>runtime</scope>
-        </dependencySet>
-    </dependencySets>
     <fileSets>
         <fileSet>
-            <directory>${project.basedir}</directory>
+            <directory>../</directory>
             <outputDirectory>/</outputDirectory>
             <includes>
                 <include>README.md</include>
                 <include>LICENSE</include>
                 <include>third_party_licenses.txt</include>
-                <include>contributors.txt</include>
+                <include>MAINTAINERS.txt</include>
+                <include>CONTRIBUTING.md</include>
                 <include>bxbot.sh</include>
                 <include>config/*.xml</include>
                 <include>config/application.properties</include>
@@ -34,7 +24,23 @@
             </includes>
         </fileSet>
 
-        <!--  bit of a hack to get the empty logs dir in dist - must be better way? -->
+        <!--  bit of a hack to create the empty libs dir in dist - must be better way? -->
+        <fileSet>
+            <directory>${project.build.directory}</directory>
+            <outputDirectory>/</outputDirectory>
+            <includes>
+                <include>libs</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>../bxbot-app/target</directory>
+            <outputDirectory>libs</outputDirectory>
+            <includes>
+                <include>bxbot-app-*.jar</include>
+            </includes>
+        </fileSet>
+
+        <!--  bit of a hack to create the empty logs dir in dist - must be better way? -->
         <fileSet>
             <directory>${project.build.directory}</directory>
             <outputDirectory>/</outputDirectory>
