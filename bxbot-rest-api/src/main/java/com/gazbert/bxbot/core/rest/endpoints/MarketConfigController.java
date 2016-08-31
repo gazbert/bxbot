@@ -26,7 +26,6 @@ package com.gazbert.bxbot.core.rest.endpoints;
 import com.gazbert.bxbot.domain.market.MarketConfig;
 import com.gazbert.bxbot.services.MarketConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -46,7 +45,6 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/api")
-@ComponentScan(basePackages = {"com.gazbert.bxbot.services"})
 public class MarketConfigController {
 
     private final MarketConfigService marketConfigService;

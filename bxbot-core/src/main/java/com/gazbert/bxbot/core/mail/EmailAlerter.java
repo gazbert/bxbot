@@ -47,7 +47,7 @@ import java.util.Properties;
  */
 @Component
 @ComponentScan(basePackages = {"com.gazbert.bxbot.repository"})
-public final class EmailAlerter {
+public class EmailAlerter {
 
     private static final Logger LOG = LogManager.getLogger();
 

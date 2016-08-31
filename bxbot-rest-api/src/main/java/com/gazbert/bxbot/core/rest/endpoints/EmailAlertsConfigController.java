@@ -27,7 +27,6 @@ import com.gazbert.bxbot.core.rest.security.User;
 import com.gazbert.bxbot.domain.emailalerts.EmailAlertsConfig;
 import com.gazbert.bxbot.services.EmailAlertsConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -50,7 +49,6 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/api")
-@ComponentScan(basePackages = {"com.gazbert.bxbot.services"})
 public class EmailAlertsConfigController {
 
     private final EmailAlertsConfigService emailAlertsConfigService;

@@ -28,7 +28,6 @@ import com.gazbert.bxbot.core.rest.security.User;
 import com.gazbert.bxbot.domain.exchange.ExchangeConfig;
 import com.gazbert.bxbot.services.ExchangeConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -51,7 +50,6 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/api")
-@ComponentScan(basePackages = {"com.gazbert.bxbot.services"})
 public class ExchangeConfigController {
 
     private final ExchangeConfigService exchangeConfigService;

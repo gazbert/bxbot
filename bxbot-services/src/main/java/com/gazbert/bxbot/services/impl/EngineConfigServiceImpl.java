@@ -42,7 +42,7 @@ import org.springframework.util.Assert;
 @Service("engineConfigService")
 @Transactional
 @ComponentScan(basePackages = {"com.gazbert.bxbot.repository"})
-class EngineConfigServiceImpl implements EngineConfigService {
+public class EngineConfigServiceImpl implements EngineConfigService {
 
     private static final Logger LOG = LogManager.getLogger();
 
