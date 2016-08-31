@@ -13,6 +13,35 @@
         <artifactId>bxbot-parent</artifactId>
         <version>0.5-beta-SNAPSHOT</version>
     </parent>
+    <profiles>
+        <profile>
+            <id>unit</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <build.profile.id>unit</build.profile.id>
+                <skip.integration.tests>true</skip.integration.tests>
+                <skip.unit.tests>false</skip.unit.tests>
+            </properties>
+        </profile>
+        <profile>
+            <id>int</id>
+            <properties>
+                <build.profile.id>int</build.profile.id>
+                <skip.integration.tests>false</skip.integration.tests>
+                <skip.unit.tests>true</skip.unit.tests>
+            </properties>
+        </profile>
+        <profile>
+            <id>all</id>
+            <properties>
+                <build.profile.id>all</build.profile.id>
+                <skip.integration.tests>false</skip.integration.tests>
+                <skip.unit.tests>false</skip.unit.tests>
+            </properties>
+        </profile>
+    </profiles>
     <dependencies>
         <!--
         BX-bot dependencies
@@ -114,6 +143,10 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
+                    <skipTests>${skip.unit.tests}</skipTests>
+                    <excludes>
+                        <exclude>**/*IT.java</exclude>
+                    </excludes>
                     <includes>
                         <include>**/Test*.java</include>
                     </includes>
@@ -122,12 +155,10 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
+                <configuration>
+                    <skipTests>${skip.integration.tests}</skipTests>
+                </configuration>
                 <executions>
-                    <!--
-                    Exchange Adapter integration tests require internet connection to reach exchanges.
-                    They are run as part of the mvn 'verify' build phase.
-                    Comment out the execution section if you need to 'maven install' offline.
-                     -->
                     <execution>
                         <goals>
                             <goal>integration-test</goal>
