@@ -470,7 +470,7 @@ A Maven `pom.xml` is included for building the bot.
    on the machine you want to run the bot.  
 1. Copy either the `bxbot-core-<version>-dist.tar.gz` or the `bxbot-core-<version>-dist.zip` onto the machine you 
    want to run the bot. Unzip it into a folder of your choice.
-1. To start the bot: `./bxbot.sh start` ; to stop the bot: `./bxbot.sh stop`
+1. Usage: `./bxbot.sh [start|stop|status]`
  
 ## Coming Soon...
 The following features are in the pipeline:
