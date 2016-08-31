@@ -9,9 +9,6 @@ jdk:
 #before_install:
 #  - rm ~/.m2/settings.xml
 
-# hack for Travis dependency pre-load step expecting a pom.xml in project root folder
-install: true
-
 script: cd bxbot-parent && mvn clean install -Dmaven.javadoc.skip=true
 
 
