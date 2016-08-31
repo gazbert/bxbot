@@ -477,6 +477,7 @@ The following features are in the pipeline:
 
 - REST API for administering the bot.
 - Web UI for administering the bot.
+- An experimental project to register [BX-bot](https://github.com/gazbert/bxbot) trades using an [Ethereum](https://www.ethereum.org/) blockchain.
 - Trade Analysis app - a microservice that will feed off trading events sent by the bots.
 - Android app for administering the bot.
 
