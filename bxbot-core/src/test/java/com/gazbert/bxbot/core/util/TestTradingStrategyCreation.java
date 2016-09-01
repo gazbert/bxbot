@@ -24,8 +24,6 @@
 package com.gazbert.bxbot.core.util;
 
 import com.gazbert.bxbot.strategy.api.TradingStrategy;
-import com.gazbert.bxbot.core.util.ConfigurableComponentFactory;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -50,11 +48,8 @@ public class TestTradingStrategyCreation {
         assertEquals(VALID_TRADING_STRATEGY_IMPL, tradingStrategy.getClass().getCanonicalName());
     }
 
-    // TODO FIXME - this should fail!")
-    @Ignore("TODO FIXME - this should fail!")
-    @Test (expected = ClassCastException.class)
+    @Test(expected = ClassCastException.class)
     public void testCreatingTradingStrategyImplThatDoesNotImplementTradingStrategyThrowsException() {
-
-        ConfigurableComponentFactory.createComponent(INVALID_TRADING_STRATEGY_IMPL);
+        final TradingStrategy tradingStrategy = ConfigurableComponentFactory.createComponent(INVALID_TRADING_STRATEGY_IMPL);
     }
 }

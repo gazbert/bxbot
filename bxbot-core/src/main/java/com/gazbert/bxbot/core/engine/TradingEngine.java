@@ -71,7 +71,7 @@ import java.util.*;
  * and retries at next trade cycle.
  * <p>
  * To keep things simple:
- * - The engine is single threaded; I'm working on a concurrent version.
+ * - The engine is single threaded.
  * - The engine only supports trading on 1 exchange per instance of the bot, i.e. 1 Exchange Adapter per process.
  * - The engine only supports 1 Trading Strategy per Market.
  *
@@ -224,7 +224,6 @@ public class TradingEngine {
                     tradingStrategy.execute();
                 }
 
-                // Sleep until next trade cycle...
                 LOG.info(() -> "*** Sleeping " + tradeExecutionInterval + "s til next trade cycle... ***");
 
                 try {
@@ -238,8 +237,7 @@ public class TradingEngine {
 
                 /*
                  * We have a network connection issue reported by Exchange Adapter when called directly from
-                 * Trading Engine.
-                 * Current policy is to log it and sleep until next trade cycle.
+                 * Trading Engine. Current policy is to log it and sleep until next trade cycle.
                  */
                 final String WARNING_MSG = "A network error has occurred in Exchange Adapter! " +
                         "BX-bot will attempt next trade in " + tradeExecutionInterval + "s...";
@@ -316,9 +314,6 @@ public class TradingEngine {
         engineThread.interrupt(); // poke it in case bot is sleeping
     }
 
-    /*
-     * Returns true if the Trading Engine is running, false otherwise.
-     */
     synchronized boolean isRunning() {
         LOG.info(() -> "isRunning: " + isRunning);
         return isRunning;
@@ -436,16 +431,16 @@ public class TradingEngine {
 
     private void loadExchangeAdapterConfig() {
 
-        final ExchangeConfig exchangeConfig = exchangeConfigRepository.getConfig();
-        LOG.info(() -> "*** Loaded Exchange config: " + exchangeConfig);
+        final ExchangeConfig domainExchangeConfig = exchangeConfigRepository.getConfig();
+        LOG.info(() -> "*** Loaded Exchange config: " + domainExchangeConfig);
 
-        exchangeAdapter = ConfigurableComponentFactory.createComponent(exchangeConfig.getExchangeAdapter());
+        exchangeAdapter = ConfigurableComponentFactory.createComponent(domainExchangeConfig.getExchangeAdapter());
         LOG.info(() -> "Trading Engine will use Exchange Adapter for: " + exchangeAdapter.getImplName());
 
         final ExchangeConfigImpl adapterExchangeConfig = new ExchangeConfigImpl();
 
         // Fetch optional network config
-        final NetworkConfig networkConfig = exchangeConfig.getNetworkConfig();
+        final NetworkConfig networkConfig = domainExchangeConfig.getNetworkConfig();
         if (networkConfig != null) {
 
             final NetworkConfigImpl adapterNetworkConfig = new NetworkConfigImpl();
@@ -472,16 +467,14 @@ public class TradingEngine {
             }
 
             adapterExchangeConfig.setNetworkConfig(adapterNetworkConfig);
-            LOG.info(() ->
-                    "NetworkConfiguration has been set: " + exchangeConfig.getNetworkConfig());
+            LOG.info(() -> "NetworkConfiguration has been set: " + adapterNetworkConfig);
 
         } else {
-            LOG.info(() ->
-                    "No (optional) NetworkConfiguration has been set for Exchange Adapter: " + exchangeAdapter.getImplName());
+            LOG.info(() -> "No (optional) NetworkConfiguration has been set for Exchange Adapter: " + exchangeAdapter.getImplName());
         }
 
         // Fetch optional authentication config
-        final AuthenticationConfig authenticationConfig = exchangeConfig.getAuthenticationConfig();
+        final AuthenticationConfig authenticationConfig = domainExchangeConfig.getAuthenticationConfig();
         if (authenticationConfig != null) {
 
             final AuthenticationConfigImpl adapterAuthenticationConfig = new AuthenticationConfigImpl();
@@ -490,26 +483,23 @@ public class TradingEngine {
 
             // WARNING - careful when you log this
 //            LOG.info(() ->
-//                    "AuthenticationConfiguration has been set: " + adapterExchangeConfig.getAuthenticationConfig());
+//                    "AuthenticationConfiguration has been set: " + adapterAuthenticationConfig);
 
         } else {
-            LOG.info(() ->
-                    "No (optional) AuthenticationConfiguration has been set for Exchange Adapter: " + exchangeAdapter.getImplName());
+            LOG.info(() -> "No (optional) AuthenticationConfiguration has been set for Exchange Adapter: " + exchangeAdapter.getImplName());
         }
 
         // Fetch optional 'other' config
-        final OtherConfig otherConfig = exchangeConfig.getOtherConfig();
+        final OtherConfig otherConfig = domainExchangeConfig.getOtherConfig();
         if (otherConfig != null) {
 
             final OtherConfigImpl adapterOtherConfig = new OtherConfigImpl();
             adapterOtherConfig.setItems(otherConfig.getItems());
-            exchangeConfig.setOtherConfig(otherConfig);
-            LOG.info(() ->
-                    "OtherConfiguration has been set: " + exchangeConfig.getOtherConfig());
+            domainExchangeConfig.setOtherConfig(otherConfig);
+            LOG.info(() -> "OtherConfiguration has been set: " + adapterOtherConfig);
 
         } else {
-            LOG.info(() ->
-                    "No (optional) OtherConfiguration has been set for Exchange Adapter: " + exchangeAdapter.getImplName());
+            LOG.info(() -> "No (optional) OtherConfiguration has been set for Exchange Adapter: " + exchangeAdapter.getImplName());
         }
 
         exchangeAdapter.init(adapterExchangeConfig);
@@ -521,13 +511,8 @@ public class TradingEngine {
         LOG.info(() -> "*** Loaded Engine config: " + engineConfig);
 
         tradeExecutionInterval = engineConfig.getTradeCycleInterval();
-        LOG.info(() -> "Trade Execution Cycle Interval in secs: " + tradeExecutionInterval);
-
         emergencyStopCurrency = engineConfig.getEmergencyStopCurrency();
-        LOG.info(() -> "Emergency Stop Currency is: " + emergencyStopCurrency);
-
         emergencyStopBalance = engineConfig.getEmergencyStopBalance();
-        LOG.info(() -> "Emergency Stop Balance is: " + emergencyStopBalance);
     }
 
     private void loadTradingStrategyConfig() {

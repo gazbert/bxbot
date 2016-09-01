@@ -27,8 +27,6 @@ import com.gazbert.bxbot.core.engine.TradingEngine;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
 /**
@@ -39,12 +37,9 @@ import org.springframework.util.Assert;
 @SpringBootApplication
 public class BXBot {
 
-    private final TradingEngine tradingEngine;
-
     @Autowired
     public BXBot(TradingEngine tradingEngine) {
         Assert.notNull(tradingEngine, "tradingEngine dependency cannot be null!");
-        this.tradingEngine = tradingEngine;
         tradingEngine.start();
     }
 

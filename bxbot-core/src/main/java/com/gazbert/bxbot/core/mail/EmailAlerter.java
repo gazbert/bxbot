@@ -61,8 +61,7 @@ public class EmailAlerter {
 
         Assert.notNull(emailAlertsConfigRepository, "emailAlertsConfigRepository dependency cannot be null!");
         this.emailAlertsConfigRepository = emailAlertsConfigRepository;
-
-        initialiseEmailAlerterConfig();
+        initialise();
     }
 
     public void sendMessage(String subject, String msgContent) {
@@ -99,9 +98,9 @@ public class EmailAlerter {
     // Private utils
     // ------------------------------------------------------------------------
 
-    private void initialiseEmailAlerterConfig() {
+    private void initialise() {
 
-        final EmailAlertsConfig emailAlertsConfig = this.loadEmailAlerterConfig();
+        final EmailAlertsConfig emailAlertsConfig = emailAlertsConfigRepository.getConfig();
         if (emailAlertsConfig != null) {
 
             sendEmailAlertsEnabled = emailAlertsConfig.isEnabled();
@@ -110,6 +109,7 @@ public class EmailAlerter {
                 LOG.info(() -> "Email Alert for emergency bot shutdown is enabled. Loading SMTP config...");
 
                 smtpConfig = emailAlertsConfig.getSmtpConfig();
+
                 if (smtpConfig == null) {
                     final String errorMsg = "Failed to initialise Email Alerter. " +
                             "Alerts are enabled but no SMTP Config has been supplied in config.";
@@ -135,9 +135,5 @@ public class EmailAlerter {
                 LOG.warn("Email Alerts are disabled. Are you sure you want to configure this?");
             }
         }
-    }
-
-    private EmailAlertsConfig loadEmailAlerterConfig() {
-        return emailAlertsConfigRepository.getConfig();
     }
 }

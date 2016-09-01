@@ -24,7 +24,6 @@
 package com.gazbert.bxbot.core.util;
 
 import com.gazbert.bxbot.trading.api.TradingApi;
-import com.gazbert.bxbot.core.util.ConfigurableComponentFactory;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -49,7 +48,7 @@ public class TestExchangeAdapterCreation {
         assertEquals(VALID_EXCHANGE_ADAPTER_IMPL, exchangeAdapter.getClass().getCanonicalName());
     }
 
-    @Test (expected = ClassCastException.class)
+    @Test(expected = ClassCastException.class)
     public void testCreatingExchangeAdapterThatDoesNotImplementTradingApiThrowsException() {
 
         final TradingApi exchangeAdapter = ConfigurableComponentFactory.createComponent(INVALID_EXCHANGE_ADAPTER_IMPL);

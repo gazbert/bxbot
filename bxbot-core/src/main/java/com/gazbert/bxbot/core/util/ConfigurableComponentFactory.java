@@ -40,7 +40,7 @@ public abstract class ConfigurableComponentFactory {
     }
 
     /*
-     * Creates the given class using reflection and returns it.
+     * Loads and instantiates a given class and returns it.
      */
     public static <T> T createComponent(String componentClassName) {
         try {
