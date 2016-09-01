@@ -39,9 +39,7 @@ import javax.mail.internet.MimeMessage;
 import java.util.Properties;
 
 /**
- * A simple mail sender using SMTP and TLS.
- * The configuration for sending the email is loaded from the email-alerts.xml config file.
- * It sends plain/text email only.
+ * A simple mail sender using SMTP and TLS. It sends plain/text email only.
  *
  * @author gazbert
  */
@@ -65,19 +63,8 @@ public class EmailAlerter {
         this.emailAlertsConfigRepository = emailAlertsConfigRepository;
 
         initialiseEmailAlerterConfig();
-
-        if (smtpConfig != null) {
-            smtpProps = new Properties();
-            smtpProps.put("mail.smtp.auth", "true");
-            smtpProps.put("mail.smtp.starttls.enable", "true");
-            smtpProps.put("mail.smtp.host", smtpConfig.getHost());
-            smtpProps.put("mail.smtp.port", smtpConfig.getTlsPort());
-        }
     }
 
-    /*
-     * Sends a plain text email message to configured destination.
-     */
     public void sendMessage(String subject, String msgContent) {
 
         if (sendEmailAlertsEnabled) {
@@ -108,6 +95,10 @@ public class EmailAlerter {
         }
     }
 
+    // ------------------------------------------------------------------------
+    // Private utils
+    // ------------------------------------------------------------------------
+
     private void initialiseEmailAlerterConfig() {
 
         final EmailAlertsConfig emailAlertsConfig = this.loadEmailAlerterConfig();
@@ -133,6 +124,12 @@ public class EmailAlerter {
 
                 LOG.info(() -> "From address: " + smtpConfig.getFromAddress());
                 LOG.info(() -> "To address: " + smtpConfig.getToAddress());
+
+                smtpProps = new Properties();
+                smtpProps.put("mail.smtp.auth", "true");
+                smtpProps.put("mail.smtp.starttls.enable", "true");
+                smtpProps.put("mail.smtp.host", smtpConfig.getHost());
+                smtpProps.put("mail.smtp.port", smtpConfig.getTlsPort());
 
             } else {
                 LOG.warn("Email Alerts are disabled. Are you sure you want to configure this?");
