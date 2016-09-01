@@ -2,13 +2,8 @@ language: java
 jdk:
     - oraclejdk8
 
-#before_install:
-#  - sed -i.bak -e 's|https://nexus.codehaus.org/snapshots/|https://oss.sonatype.org/content/repositories/codehaus-snapshots/|g' ~/.m2/settings.xml
+install: true
 
-# drastic but I need a build!
-#before_install:
-#  - rm ~/.m2/settings.xml
-
-script: cd bxbot-parent && mvn clean install -Dmaven.javadoc.skip=true -Pall
+script: mvn clean install -Dmaven.javadoc.skip=true -Pall
 
 
