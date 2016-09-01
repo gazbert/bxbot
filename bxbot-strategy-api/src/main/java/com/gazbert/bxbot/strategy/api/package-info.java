@@ -10,5 +10,6 @@
  * </p>
  *
  * @author gazbert
+ * @since 1.0
  */
 package com.gazbert.bxbot.strategy.api;
