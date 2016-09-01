@@ -26,33 +26,30 @@ package com.gazbert.bxbot.exchange.api;
 import java.util.List;
 
 /**
- * <p>
  * Encapsulates any (optional) Network configuration for an Exchange Adapter.
- * </p>
- *
- * <p>
- * Configuration comes from the exchange.xml file.
- * </p>
  *
  * @author gazbert
- * @since 08/07/2016
+ * @since 1.0
  */
 public interface NetworkConfig {
 
     /**
      * Fetches (optional) list of non-fatal error codes.
+     *
      * @return a list of non-fatal error codes if present, an empty list otherwise.
      */
     List<Integer> getNonFatalErrorCodes();
 
     /**
      * Fetches (optional) list of non-fatal error messages.
+     *
      * @return list of non-fatal error messages if present, an empty list otherwise.
      */
     List<String> getNonFatalErrorMessages();
 
     /**
      * Fetches (optional) connection timeout value.
+     *
      * @return the connection timeout value if present, null otherwise.
      */
     Integer getConnectionTimeout();

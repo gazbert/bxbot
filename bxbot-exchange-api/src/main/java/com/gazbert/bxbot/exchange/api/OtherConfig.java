@@ -24,21 +24,16 @@
 package com.gazbert.bxbot.exchange.api;
 
 /**
- * <p>
  * Encapsulates any (optional) 'other' configuration for an Exchange Adapter.
- * </p>
- *
- * <p>
- * Configuration comes from the exchange.xml file.
- * </p>
  *
  * @author gazbert
- * @since 08/07/2016
+ * @since 1.0
  */
 public interface OtherConfig {
 
     /**
      * Fetches a given config item by name.
+     *
      * @param name the name of the item to fetch.
      * @return the item value if found, null otherwise.
      */

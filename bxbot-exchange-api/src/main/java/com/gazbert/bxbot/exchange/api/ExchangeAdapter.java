@@ -35,7 +35,7 @@ import com.gazbert.bxbot.trading.api.TradingApi;
  * </p>
  *
  * @author gazbert
- * @since 07/07/2016
+ * @since 1.0
  */
 public interface ExchangeAdapter extends TradingApi {
 

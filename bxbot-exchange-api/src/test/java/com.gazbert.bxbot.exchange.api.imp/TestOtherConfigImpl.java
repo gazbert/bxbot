@@ -21,48 +21,36 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.exchange.api;
+package com.gazbert.bxbot.exchange.api.imp;
+
+import com.gazbert.bxbot.exchange.api.impl.OtherConfigImpl;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 
 /**
- * Encapsulates configuration for an Exchange Adapter.
+ * Tests Other Config exchange API config object behaves as expected.
  *
  * @author gazbert
- * @since 1.0
  */
-public interface ExchangeConfig {
+public class TestOtherConfigImpl {
 
-    /**
-     * Returns the name of the exchange.
-     *
-     * @return the exchange name.
-     */
-    String getExchangeName();
+    private static final String BUY_FEE_CONFIG_ITEM_KEY = "buy-fee";
+    private static final String BUY_FEE_CONFIG_ITEM_VALUE = "0.20";
 
-    /**
-     * Returns the fully qualified class name of the Exchange Adapter.
-     *
-     * @return the full class name (includes packages) of the Exchange Adapter.
-     */
-    String getExchangeAdapter();
+    private static final String SELL_FEE_CONFIG_ITEM_KEY = "sell-fee";
+    private static final String SELL_FEE_CONFIG_ITEM_VALUE = "0.25";
 
-    /**
-     * Returns any (optional) authentication config.
-     *
-     * @return authentication config if present, null otherwise.
-     */
-    AuthenticationConfig getAuthenticationConfig();
 
-    /**
-     * Returns any (optional) network config.
-     *
-     * @return network config if present, null otherwise.
-     */
-    NetworkConfig getNetworkConfig();
+    @Test
+    public void testAddingAndFetchingOtherConfigItems() throws Exception {
 
-    /**
-     * Returns any (optional) 'other' config.
-     *
-     * @return other config if present, null otherwise.
-     */
-    OtherConfig getOtherConfig();
+        final OtherConfigImpl strategyConfig = new OtherConfigImpl();
+        strategyConfig.getItems().put(BUY_FEE_CONFIG_ITEM_KEY, BUY_FEE_CONFIG_ITEM_VALUE);
+        strategyConfig.getItems().put(SELL_FEE_CONFIG_ITEM_KEY, SELL_FEE_CONFIG_ITEM_VALUE);
+
+        assertEquals(2, strategyConfig.getItems().size());
+        assertEquals(BUY_FEE_CONFIG_ITEM_VALUE, strategyConfig.getItems().get(BUY_FEE_CONFIG_ITEM_KEY));
+        assertEquals(SELL_FEE_CONFIG_ITEM_VALUE, strategyConfig.getItems().get(SELL_FEE_CONFIG_ITEM_KEY));
+    }
 }
