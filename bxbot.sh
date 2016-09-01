@@ -15,10 +15,10 @@
 #
 # You can start, stop, and query the bot's status: ./bxbot.sh [start|stop|status]
 #
-LIB_DIR=./bxbot-app/target/
+LIB_DIR=./libs
 
 # log4j2 config file location
-log4j2_config=./resources/log4j2.xml
+log4j2_config=./config/log4j2.xml
 
 # The BX-bot core jar (Spring Boot app containing all the dependencies)
 bxbot_core=bxbot-app-0.5-beta-SNAPSHOT.jar
