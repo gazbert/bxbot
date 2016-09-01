@@ -52,7 +52,6 @@ import java.util.*;
  * <a href="https://github.com/huobiapi/API_Docs_en/wiki/REST-Trade-API-Method">REST Trade API v3</a>.
  * </p>
  * <p>
- * <p>
  * <strong>
  * DISCLAIMER:
  * This Exchange Adapter is provided as-is; it might have bugs in it and you could lose money. Despite running live
@@ -62,17 +61,14 @@ import java.util.*;
  * </strong>
  * </p>
  * <p>
- * <p>
  * This adapter only supports trading BTC, i.e. BTC-CNY and BTC-USD markets. It does not support trading of LTC-CNY.
  * </p>
- * <p>
  * <p>
  * The public exchange calls {@link #getMarketOrders(String)} and {@link #getLatestMarketPrice(String)} expect market id
  * values of 'BTC-CNY' or 'BTC-USD' only. See Huobi
  * <a href="https://github.com/huobiapi/API_Docs_en/wiki/REST-Candlestick-Chart">ticker</a> and
  * <a href="https://github.com/huobiapi/API_Docs_en/wiki/REST-Order-Book-and-TAS">detail</a> API docs.
  * </p>
- * <p>
  * <p>
  * The private authenticated calls {@link #getYourOpenOrders(String)},
  * {@link #getBalanceInfo()}, {@link #createOrder(String, OrderType, BigDecimal, BigDecimal)}, and
@@ -81,7 +77,6 @@ import java.util.*;
  * {@link #getAuthenticatedMarketIdForGivenPublicMarketId(String)} util methods maps the TradingAPI methods' marketId
  * args to the corresponding authenticated request marketId.
  * </p>
- * <p>
  * <p>
  * The private authenticated call {@link #getBalanceInfo()} uses the 'account-info-market' property value defined in the
  * exchange.xml file when it fetches wallet balance info from the exchange.
@@ -92,7 +87,6 @@ import java.util.*;
  * 'account-info-market' property must be set to 'usd'.
  * </p>
  * <p>
- * <p>
  * The exchange % buy and sell fees are currently loaded statically from the exchange.xml file on startup;
  * they are not fetched from the exchange at runtime as the Huobi API does not support this - it only provides the fee
  * monetary value for a given order id via the order_info API call. The fees are used across all markets.
@@ -100,25 +94,23 @@ import java.util.*;
  * config accordingly.
  * </p>
  * <p>
- * <p>
  * NOTE: Huobi requires all price values to be limited to 2 decimal places and amount values to be limited to 4 decimal
  * places when creating orders. This adapter truncates any prices with more than 2 decimal places and rounds using
  * {@link java.math.RoundingMode#HALF_EVEN}, E.g. 250.176 would be sent to the exchange as 250.18. The same is done for
  * the order amount, but to 4 decimal places.
  * </p
  * <p>
- * <p>
  * The Exchange Adapter is <em>not</em> thread safe. It expects to be called using a single thread in order to
  * preserve trade execution order. The {@link URLConnection} achieves this by blocking/waiting on the input stream
  * (response) for each API call.
  * </p>
- * <p>
  * <p>
  * The {@link TradingApi} calls will throw a {@link ExchangeNetworkException} if a network error occurs trying to
  * connect to the exchange. A {@link TradingApiException} is thrown for <em>all</em> other failures.
  * </p>
  *
  * @author gazbert
+ * @since 1.0
  */
 public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implements ExchangeAdapter {
 
@@ -241,7 +233,6 @@ public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implemen
 
         USD("usd"), CNY("cny");
         private String market;
-
 
         AuthenticatedExchangeCallMarket(String market) {
             this.market = market;

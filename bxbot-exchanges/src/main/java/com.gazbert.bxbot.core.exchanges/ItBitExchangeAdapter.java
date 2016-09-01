@@ -56,7 +56,6 @@ import java.util.*;
  * The itBit API is documented <a href="https://www.itbit.com/h/api">here</a>.
  * </p>
  * <p>
- * <p>
  * <strong>
  * DISCLAIMER:
  * This Exchange Adapter is provided as-is; it might have bugs in it and you could lose money. Despite running live
@@ -66,7 +65,6 @@ import java.util.*;
  * </strong>
  * </p>
  * <p>
- * <p>
  * The adapter only supports the REST implementation of the <a href="https://api.itbit.com/docs">Trading API</a>.
  * </p>
  * <p>
@@ -74,11 +72,9 @@ import java.util.*;
  * {@link #getBalanceInfo()}, you would need to use XBT (instead of BTC) as the key when fetching your Bitcoin balance
  * info from the returned maps.</p>
  * <p>
- * <p>
  * The adapter also assumes that only 1 exchange account wallet has been created on the exchange. If there is more
  * than 1, it will use the first one it finds when performing the {@link #getBalanceInfo()} call.
  * </p>
- * <p>
  * <p>
  * Exchange fees are loaded from the exchange.xml file on startup; they are not fetched from the exchange at
  * runtime as the itBit REST API v1 does not support this. The fees are used across all markets. Make sure you keep an
@@ -86,7 +82,6 @@ import java.util.*;
  * There are different exchange fees for <a href="https://www.itbit.com/h/fees-maker-taker-model">Takers and Makers</a>
  * - this adapter will use the <em>Taker</em> fees to keep things simple for now.
  * </p>
- * <p>
  * <p>
  * NOTE: ItBit requires all price values to be limited to 2 decimal places and amount values to be limited to 4 decimal
  * places when creating orders. This adapter truncates any prices with more than 2 decimal places and rounds using
@@ -100,12 +95,12 @@ import java.util.*;
  * (response) for each API call.
  * </p>
  * <p>
- * <p>
  * The {@link TradingApi} calls will throw a {@link ExchangeNetworkException} if a network error occurs trying to
  * connect to the exchange. A {@link TradingApiException} is thrown for <em>all</em> other failures.
  * </p>
  *
  * @author gazbert
+ * @since 1.0
  */
 public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implements ExchangeAdapter {
 
@@ -410,7 +405,6 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
 
                 final ItBitOrderBookWrapper orderBook = gson.fromJson(response.getPayload(), ItBitOrderBookWrapper.class);
 
-                // adapt BUYs
                 final List<MarketOrder> buyOrders = new ArrayList<>();
                 for (ItBitMarketOrder itBitBuyOrder : orderBook.bids) {
                     final MarketOrder buyOrder = new MarketOrder(
@@ -421,7 +415,6 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
                     buyOrders.add(buyOrder);
                 }
 
-                // adapt SELLs
                 final List<MarketOrder> sellOrders = new ArrayList<>();
                 for (ItBitMarketOrder itBitSellOrder : orderBook.asks) {
                     final MarketOrder sellOrder = new MarketOrder(

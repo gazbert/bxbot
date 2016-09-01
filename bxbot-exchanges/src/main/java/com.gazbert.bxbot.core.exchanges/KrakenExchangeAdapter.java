@@ -91,7 +91,7 @@ import java.util.*;
  * </p>
  *
  * @author gazbert
- * @since 16/07/2016
+ * @since 1.0
  */
 public final class KrakenExchangeAdapter extends AbstractExchangeAdapter implements ExchangeAdapter {
 

@@ -50,7 +50,6 @@ import java.util.*;
  * The OKCoin API is documented <a href="https://www.okcoin.com/about/rest_getStarted.do">here</a>.
  * </p>
  * <p>
- * <p>
  * <strong>
  * DISCLAIMER:
  * This Exchange Adapter is provided as-is; it might have bugs in it and you could lose money. Despite running live
@@ -60,10 +59,8 @@ import java.util.*;
  * </strong>
  * </p>
  * <p>
- * <p>
  * It only supports the REST implementation of the <a href="https://www.okcoin.com/about/rest_api.do#stapi">Spot Trading API</a>.
  * </p>
- * <p>
  * <p>
  * The exchange % buy and sell fees are currently loaded statically from the exchange.xml file on startup;
  * they are not fetched from the exchange at runtime as the OKCoin API does not support this - it only provides the fee
@@ -72,18 +69,17 @@ import java.util.*;
  * config accordingly.
  * </p>
  * <p>
- * <p>
  * The Exchange Adapter is <em>not</em> thread safe. It expects to be called using a single thread in order to
  * preserve trade execution order. The {@link URLConnection} achieves this by blocking/waiting on the input stream
  * (response) for each API call.
  * </p>
- * <p>
  * <p>
  * The {@link TradingApi} calls will throw a {@link ExchangeNetworkException} if a network error occurs trying to
  * connect to the exchange. A {@link TradingApiException} is thrown for <em>all</em> other failures.
  * </p>
  *
  * @author gazbert
+ * @since 1.0
  */
 public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter implements ExchangeAdapter {
 
@@ -278,7 +274,6 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
             final OKCoinOrderInfoWrapper orderInfoWrapper = gson.fromJson(response.getPayload(), OKCoinOrderInfoWrapper.class);
             if (orderInfoWrapper.result) {
 
-                // adapt
                 final List<OpenOrder> ordersToReturn = new ArrayList<>();
                 for (final OKCoinOpenOrder openOrder : orderInfoWrapper.orders) {
                     OrderType orderType;
@@ -336,7 +331,6 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
 
             final OKCoinDepthWrapper orderBook = gson.fromJson(response.getPayload(), OKCoinDepthWrapper.class);
 
-            // adapt BUYs
             final List<MarketOrder> buyOrders = new ArrayList<>();
             for (OKCoinMarketOrder okCoinBuyOrder : orderBook.bids) {
                 final MarketOrder buyOrder = new MarketOrder(
@@ -347,7 +341,6 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
                 buyOrders.add(buyOrder);
             }
 
-            // adapt SELLs
             final List<MarketOrder> sellOrders = new ArrayList<>();
             for (OKCoinMarketOrder okCoinSellOrder : orderBook.asks) {
                 final MarketOrder sellOrder = new MarketOrder(
@@ -411,7 +404,6 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
             final OKCoinUserInfoWrapper userInfoWrapper = gson.fromJson(response.getPayload(), OKCoinUserInfoWrapper.class);
             if (userInfoWrapper.result) {
 
-                // adapt
                 final Map<String, BigDecimal> balancesAvailable = new HashMap<>();
                 for (final Map.Entry<String, BigDecimal> balance : userInfoWrapper.info.funds.free.entrySet()) {
                     balancesAvailable.put(balance.getKey().toUpperCase(), balance.getValue());
@@ -498,8 +490,6 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
 
     /**
      * GSON class for wrapping order_info.do response.
-     *
-     * @author gazbert
      */
     private static class OKCoinOrderInfoWrapper extends OKCoinMessageBase {
 
@@ -567,8 +557,6 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
 
     /**
      * GSON class for holding Market Orders. First element in array is price, second element is amount.
-     *
-     * @author gazbert
      */
     private static class OKCoinMarketOrder extends ArrayList<BigDecimal> {
         private static final long serialVersionUID = -4919711260747077759L;

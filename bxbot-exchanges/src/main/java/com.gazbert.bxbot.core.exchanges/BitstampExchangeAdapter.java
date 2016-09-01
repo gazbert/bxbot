@@ -54,7 +54,6 @@ import java.util.*;
  * The Bitstamp API is documented <a href="https://www.bitstamp.net/api/">here</a>.
  * </p>
  * <p>
- * <p>
  * <strong>
  * DISCLAIMER:
  * This Exchange Adapter is provided as-is; it might have bugs in it and you could lose money. Despite running live
@@ -64,17 +63,14 @@ import java.util.*;
  * </strong>
  * </p>
  * <p>
- * <p>
  * This Exchange Adapter is <em>not</em> thread safe. It expects to be called using a single thread in order to
  * preserve trade execution order. The {@link URLConnection} achieves this by blocking/waiting on the input stream
  * (response) for each API call.
  * </p>
  * <p>
- * <p>
  * The {@link TradingApi} calls will throw a {@link ExchangeNetworkException} if a network error occurs trying to
  * connect to the exchange. A {@link TradingApiException} is thrown for <em>all</em> other failures.
  * </p>
- * <p>
  * <p>
  * NOTE: Bitstamp requires all price values to be limited to 2 decimal places when creating orders. This adapter
  * truncates any prices with more than 2 decimal places and rounds using {@link java.math.RoundingMode#HALF_EVEN},
@@ -82,6 +78,7 @@ import java.util.*;
  * </p>
  *
  * @author gazbert
+ * @since 1.0
  */
 public final class BitstampExchangeAdapter extends AbstractExchangeAdapter implements ExchangeAdapter {
 
@@ -180,7 +177,6 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
 
             final BitstampOrderBook bitstampOrderBook = gson.fromJson(response.getPayload(), BitstampOrderBook.class);
 
-            // adapt BUYs
             final List<MarketOrder> buyOrders = new ArrayList<>();
             final List<List<BigDecimal>> bitstampBuyOrders = bitstampOrderBook.bids;
             for (final List<BigDecimal> order : bitstampBuyOrders) {
@@ -192,7 +188,6 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
                 buyOrders.add(buyOrder);
             }
 
-            // adapt SELLs
             final List<MarketOrder> sellOrders = new ArrayList<>();
             final List<List<BigDecimal>> bitstampSellOrders = bitstampOrderBook.asks;
             for (final List<BigDecimal> order : bitstampSellOrders) {
@@ -223,7 +218,6 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
 
             final BitstampOrderResponse[] myOpenOrders = gson.fromJson(response.getPayload(), BitstampOrderResponse[].class);
 
-            // adapt
             final List<OpenOrder> ordersToReturn = new ArrayList<>();
             for (final BitstampOrderResponse openOrder : myOpenOrders) {
                 OrderType orderType;
@@ -365,7 +359,6 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
 
             final BitstampBalance balances = gson.fromJson(response.getPayload(), BitstampBalance.class);
 
-            // adapt
             final Map<String, BigDecimal> balancesAvailable = new HashMap<>();
             balancesAvailable.put("BTC", balances.btc_available);
             balancesAvailable.put("USD", balances.usd_available);

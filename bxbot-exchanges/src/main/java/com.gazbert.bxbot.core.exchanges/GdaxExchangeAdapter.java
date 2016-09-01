@@ -51,7 +51,6 @@ import java.util.*;
  * The GDAX API is documented <a href="https://www.gdax.com/">here</a>.
  * </p>
  * <p>
- * <p>
  * <strong>
  * DISCLAIMER:
  * This Exchange Adapter is provided as-is; it might have bugs in it and you could lose money. Despite running live
@@ -61,40 +60,35 @@ import java.util.*;
  * </strong>
  * </p>
  * <p>
- * <p>
  * This adapter only supports the GDAX <a href="https://docs.gdax.com/#api">REST API</a>. The design
  * of the API and documentation is excellent.
  * </p>
  * <p>
- * <p>
  * The adapter currently only supports <a href="https://docs.gdax.com/#place-a-new-order">Limit Orders</a>.
  * It was originally developed and tested for BTC-GBP market, but it should work for BTC-USD.
  * </p>
- * <p>
  * <p>
  * Exchange fees are loaded from the exchange.xml file on startup; they are not fetched from the exchange
  * at runtime as the GDAX REST API does not support this. The fees are used across all markets. Make sure you keep
  * an eye on the <a href="https://docs.gdax.com/#fees">exchange fees</a> and update the config accordingly.
  * </p>
  * <p>
- * <p>
  * NOTE: GDAX requires all price values to be limited to 2 decimal places when creating orders.
  * This adapter truncates any prices with more than 2 decimal places and rounds using
  * {@link java.math.RoundingMode#HALF_EVEN}, E.g. 250.176 would be sent to the exchange as 250.18.
  * </p>
- * <p>
  * <p>
  * The Exchange Adapter is <em>not</em> thread safe. It expects to be called using a single thread in order to
  * preserve trade execution order. The {@link URLConnection} achieves this by blocking/waiting on the input stream
  * (response) for each API call.
  * </p>
  * <p>
- * <p>
  * The {@link TradingApi} calls will throw a {@link ExchangeNetworkException} if a network error occurs trying to
  * connect to the exchange. A {@link TradingApiException} is thrown for <em>all</em> other failures.
  * </p>
  *
  * @author gazbert
+ * @since 1.0
  */
 public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implements ExchangeAdapter {
 
@@ -318,7 +312,6 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
 
                 final GdaxOrder[] gdaxOpenOrders = gson.fromJson(response.getPayload(), GdaxOrder[].class);
 
-                // adapt
                 final List<OpenOrder> ordersToReturn = new ArrayList<>();
                 for (final GdaxOrder openOrder : gdaxOpenOrders) {
                     OrderType orderType;
@@ -377,7 +370,6 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
 
                 final GdaxBookWrapper orderBook = gson.fromJson(response.getPayload(), GdaxBookWrapper.class);
 
-                // adapt BUYs
                 final List<MarketOrder> buyOrders = new ArrayList<>();
                 for (GdaxMarketOrder gdaxBuyOrder : orderBook.bids) {
                     final MarketOrder buyOrder = new MarketOrder(
@@ -388,7 +380,6 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
                     buyOrders.add(buyOrder);
                 }
 
-                // adapt SELLs
                 final List<MarketOrder> sellOrders = new ArrayList<>();
                 for (GdaxMarketOrder gdaxSellOrder : orderBook.asks) {
                     final MarketOrder sellOrder = new MarketOrder(
@@ -426,7 +417,6 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
 
                 final GdaxAccount[] gdaxAccounts = gson.fromJson(response.getPayload(), GdaxAccount[].class);
 
-                // adapt
                 final HashMap<String, BigDecimal> balancesAvailable = new HashMap<>();
                 final HashMap<String, BigDecimal> balancesOnHold = new HashMap<>();
 

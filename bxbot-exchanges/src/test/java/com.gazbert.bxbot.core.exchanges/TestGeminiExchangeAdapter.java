@@ -61,7 +61,6 @@ import static org.junit.Assert.*;
  * TODO Unit test {@link GeminiExchangeAdapter#sendAuthenticatedRequestToExchange(String, Map)} method.
  *
  * @author gazbert
- * @since 31/07/2016
  */
 @RunWith(PowerMockRunner.class)
 @PowerMockIgnore({"javax.crypto.*"})

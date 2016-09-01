@@ -88,7 +88,7 @@ import java.util.*;
  * </p>
  *
  * @author gazbert
- * @since 31/07/2016
+ * @since 1.0
  */
 public final class GeminiExchangeAdapter extends AbstractExchangeAdapter implements ExchangeAdapter {
 

@@ -51,7 +51,6 @@ import static org.junit.Assert.*;
  * Basic integration testing with Bitfinex exchange.
  *
  * @author gazbert
- * @since 12/08/2016
  */
 @RunWith(PowerMockRunner.class)
 @PowerMockIgnore({"javax.crypto.*"})

@@ -50,7 +50,6 @@ import static org.junit.Assert.assertTrue;
  * Basic integration testing with Gemini exchange.
  *
  * @author gazbert
- * @since 12/08/2016
  */
 @RunWith(PowerMockRunner.class)
 @PowerMockIgnore({"javax.crypto.*"})

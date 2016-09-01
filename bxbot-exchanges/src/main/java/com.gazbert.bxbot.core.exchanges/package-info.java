@@ -25,10 +25,6 @@
  * <h2>Exchange Adapters</h2>
  *
  * <p>
- * This is the Exchange Adapter subsystem.
- * </p>
- *
- * <p>
  * Trading Strategies will use Exchange Adapters to execute trades on the exchange via the
  * {@link com.gazbert.bxbot.trading.api.TradingApi}.
  * </p>
@@ -48,7 +44,7 @@
  * <li>implement the {@link com.gazbert.bxbot.exchange.api.ExchangeAdapter} and
  *     {@link com.gazbert.bxbot.trading.api.TradingApi} interfaces.
  * <li>be placed on the Trading Engine's runtime classpath: keep it here, or in a separate jar file.</li>
- * <li>include a configuration entry in the ./config/exchanges.xml.template file.</li>
+ * <li>include a configuration entry in the ./config/exchanges.xml file.</li>
  * </ol>
  *
  * </p>
@@ -56,5 +52,6 @@
  * </p>
  * 
  * @author gazbert
+ * @since 1.0
  */
 package com.gazbert.bxbot.core.exchanges;

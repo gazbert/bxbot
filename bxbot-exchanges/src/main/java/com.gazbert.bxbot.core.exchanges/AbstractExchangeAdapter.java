@@ -40,9 +40,9 @@ import java.util.*;
  * Base class for shared Exchange Adapter functionality.
  *
  * @author gazbert
- * @since 01/07/16
+ * @since 1.0
  */
-abstract class AbstractExchangeAdapter {
+public abstract class AbstractExchangeAdapter {
 
     private static final Logger LOG = LogManager.getLogger();
 
@@ -203,14 +203,9 @@ abstract class AbstractExchangeAdapter {
             LOG.error(errorMsg, e);
             throw new ExchangeNetworkException(errorMsg, e);
 
-        } catch (FileNotFoundException e) {
-            // Huobi started throwing this as of 8 Nov 2015 :-/
-            final String errorMsg = "Failed to connect to Exchange. It's dead Jim!";
-            LOG.error(errorMsg, e);
-            throw new ExchangeNetworkException(errorMsg, e);
-
-        } catch (UnknownHostException e) {
-            // EC2 started throwing these for BTC-e, GDAX, as of 14 July 2016 :-/
+        } catch (FileNotFoundException | UnknownHostException e) {
+            // Huobi started throwing FileNotFoundException as of 8 Nov 2015 :-/
+            // EC2 started throwing UnknownHostException for BTC-e, GDAX, as of 14 July 2016 :-/
             final String errorMsg = "Failed to connect to Exchange. It's dead Jim!";
             LOG.error(errorMsg, e);
             throw new ExchangeNetworkException(errorMsg, e);

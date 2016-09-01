@@ -53,7 +53,6 @@ import java.util.*;
  * The Bitfinex API is documented <a href="https://www.bitfinex.com/pages/api">here</a>.
  * </p>
  * <p>
- * <p>
  * <strong>
  * DISCLAIMER:
  * This Exchange Adapter is provided as-is; it might have bugs in it and you could lose money. Despite running live
@@ -63,29 +62,26 @@ import java.util.*;
  * </strong>
  * </p>
  * <p>
- * <p>
  * The adapter uses v1 of the Bitfinex API - it is limited to 60 API calls per minute. It only supports 'exchange'
  * accounts; it does <em>not</em> support 'trading' (margin trading) accounts or 'deposit' (liquidity SWAPs) accounts.
  * Furthermore, the adapter does not support sending 'hidden' orders.
  * </p>
  * <p>
- * <p>
  * There are different exchange fees for Takers and Makers - see <a href="https://www.bitfinex.com/pages/fees">here.</a>
  * This adapter will use the <em>Taker</em> fees to keep things simple for now.
  * </p>
- * <p>
  * <p>
  * The Exchange Adapter is <em>not</em> thread safe. It expects to be called using a single thread in order to
  * preserve trade execution order. The {@link URLConnection} achieves this by blocking/waiting on the input stream
  * (response) for each API call.
  * </p>
  * <p>
- * <p>
  * The {@link TradingApi} calls will throw a {@link ExchangeNetworkException} if a network error occurs trying to
  * connect to the exchange. A {@link TradingApiException} is thrown for <em>all</em> other failures.
  * </p>
  *
  * @author gazbert
+ * @since 1.0
  */
 public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter implements ExchangeAdapter {
 
@@ -184,7 +180,6 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter imple
 
             final BitfinexOrderBook orderBook = gson.fromJson(response.getPayload(), BitfinexOrderBook.class);
 
-            // adapt BUYs
             final List<MarketOrder> buyOrders = new ArrayList<>();
             for (BitfinexMarketOrder bitfinexBuyOrder : orderBook.bids) {
                 final MarketOrder buyOrder = new MarketOrder(
@@ -195,7 +190,6 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter imple
                 buyOrders.add(buyOrder);
             }
 
-            // adapt SELLs
             final List<MarketOrder> sellOrders = new ArrayList<>();
             for (BitfinexMarketOrder bitfinexSellOrder : orderBook.asks) {
                 final MarketOrder sellOrder = new MarketOrder(
@@ -225,7 +219,6 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter imple
 
             final BitfinexOpenOrders bitfinexOpenOrders = gson.fromJson(response.getPayload(), BitfinexOpenOrders.class);
 
-            // adapt
             final List<OpenOrder> ordersToReturn = new ArrayList<>();
             for (final BitfinexOpenOrder bitfinexOpenOrder : bitfinexOpenOrders) {
                 OrderType orderType;
@@ -383,8 +376,6 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter imple
             LOG.debug(() -> "Balance Info response: " + response);
 
             final BitfinexBalances allAccountBalances = gson.fromJson(response.getPayload(), BitfinexBalances.class);
-
-            // adapt
             final HashMap<String, BigDecimal> balancesAvailable = new HashMap<>();
 
             /*

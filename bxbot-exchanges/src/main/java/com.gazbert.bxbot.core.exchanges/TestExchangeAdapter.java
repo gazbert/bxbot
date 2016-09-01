@@ -53,7 +53,7 @@ import java.util.Map.Entry;
  * Might be handy for 'dry' testing your algos.
  *
  * @author gazbert
- * @since 09/08/2016
+ * @since 1.0
  */
 public final class TestExchangeAdapter extends AbstractExchangeAdapter implements ExchangeAdapter {
 

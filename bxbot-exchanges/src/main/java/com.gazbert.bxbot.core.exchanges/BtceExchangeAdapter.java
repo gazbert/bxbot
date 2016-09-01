@@ -55,7 +55,6 @@ import java.util.Map.Entry;
  * <a href="https://btc-e.com/page/2">here</a>.
  * </p>
  * <p>
- * <p>
  * <strong>
  * DISCLAIMER:
  * This Exchange Adapter is provided as-is; it might have bugs in it and you could lose money. Despite running live
@@ -65,22 +64,20 @@ import java.util.Map.Entry;
  * </strong>
  * </p>
  * <p>
- * <p>
  * The BTC-e trading API is 'unique' and difficult to adapt! Apologies for the shocking code coming up... ;-o
  * </p>
- * <p>
  * <p>
  * This Exchange Adapter is <em>not</em> thread safe. It expects to be called using a single thread in order to
  * preserve trade execution order. The {@link URLConnection} achieves this by blocking/waiting on the input stream
  * (response) for each API call.
  * </p>
  * <p>
- * <p>
  * The {@link TradingApi} calls will throw a {@link ExchangeNetworkException} if a network error occurs trying to
  * connect to the exchange. A {@link TradingApiException} is thrown for <em>all</em> other failures.
  * </p>
  *
  * @author gazbert
+ * @since 1.0
  */
 public final class BtceExchangeAdapter extends AbstractExchangeAdapter implements ExchangeAdapter {
 
@@ -351,9 +348,8 @@ public final class BtceExchangeAdapter extends AbstractExchangeAdapter implement
         try {
             final Map<String, String> params = getRequestParamMap();
             params.put("order_id", orderId);
-            final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("CancelOrder", params);
 
-            // useful to log diff types of error response in JSON response
+            final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("CancelOrder", params);
             LOG.debug(() -> "Cancel Order response: " + response);
 
             final BtceCancelledOrderWrapper cancelOrderResponse = gson.fromJson(response.getPayload(), BtceCancelledOrderWrapper.class);
