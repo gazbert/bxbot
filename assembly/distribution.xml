@@ -9,7 +9,7 @@
     </formats>
     <fileSets>
         <fileSet>
-            <directory>../</directory>
+            <directory>${project.basedir}/</directory>
             <outputDirectory>/</outputDirectory>
             <includes>
                 <include>README.md</include>
@@ -20,7 +20,7 @@
                 <include>bxbot.sh</include>
                 <include>config/*.xml</include>
                 <include>config/application.properties</include>
-                <include>resources/log4j2.xml</include>
+                <include>config/log4j2.xml</include>
             </includes>
         </fileSet>
 
@@ -33,7 +33,7 @@
             </includes>
         </fileSet>
         <fileSet>
-            <directory>../bxbot-app/target</directory>
+            <directory>bxbot-app/target</directory>
             <outputDirectory>libs</outputDirectory>
             <includes>
                 <include>bxbot-app-*.jar</include>

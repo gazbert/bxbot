@@ -8,7 +8,7 @@
     <packaging>pom</packaging>
     <version>0.5-beta-SNAPSHOT</version>
     <name>BX-bot Parent</name>
-    <description>Parent POM for building the bot.</description>
+    <description>Parent POM for building the bot</description>
     <url>https://github.com/gazbert/bxbot</url>
     <inceptionYear>2015</inceptionYear>
     <licenses>
@@ -238,6 +238,10 @@
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>2.19.1</version>
                     <configuration>
+                        <skipTests>${skip.unit.tests}</skipTests>
+                        <excludes>
+                            <exclude>**/*IT.java</exclude>
+                        </excludes>
                         <includes>
                             <include>**/Test*.java</include>
                         </includes>
@@ -247,12 +251,10 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-failsafe-plugin</artifactId>
                     <version>2.19.1</version>
+                    <configuration>
+                        <skipTests>${skip.integration.tests}</skipTests>
+                    </configuration>
                     <executions>
-                        <!--
-                        Exchange Adapter integration tests require internet connection to reach exchanges.
-                        They are run as part of the mvn 'verify' build phase.
-                        Comment out the execution section if you need to 'maven install' offline.
-                         -->
                         <execution>
                             <goals>
                                 <goal>integration-test</goal>
@@ -274,6 +276,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-antrun-plugin</artifactId>
+                    <version>1.8</version>
                     <executions>
                         <execution>
                             <id>createDistLogDir</id>
@@ -292,9 +295,10 @@
                 </plugin>
                 <plugin>
                     <artifactId>maven-assembly-plugin</artifactId>
+                    <version>2.6</version>
                     <configuration>
                         <descriptors>
-                            <descriptor>src/assembly/distribution.xml</descriptor>
+                            <descriptor>assembly/distribution.xml</descriptor>
                         </descriptors>
                     </configuration>
                 </plugin>
