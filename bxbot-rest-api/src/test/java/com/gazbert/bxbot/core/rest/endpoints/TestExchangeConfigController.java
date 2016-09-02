@@ -68,7 +68,7 @@ public class TestExchangeConfigController extends AbstractConfigControllerTest {
 
     // Canned test data
     private static final String EXCHANGE_NAME = "BTC-e";
-    private static final String EXCHANGE_ADAPTER = "com.gazbert.bxbot.core.exchanges.TestExchangeAdapter";
+    private static final String EXCHANGE_ADAPTER = "com.gazbert.bxbot.exchanges.TestExchangeAdapter";
 
     private static final Integer CONNECTION_TIMEOUT = 30;
     private static final List<Integer> NON_FATAL_ERROR_CODES = Arrays.asList(502, 503, 504);

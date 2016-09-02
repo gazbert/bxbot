@@ -35,7 +35,7 @@ import static org.junit.Assert.assertEquals;
 public class TestExchangeConfig {
 
     private static final String EXCHANGE_NAME = "BTC-e";
-    private static final String EXCHANGE_ADAPTER = "com.gazbert.bxbot.core.exchanges.TestExchangeAdapter";
+    private static final String EXCHANGE_ADAPTER = "com.gazbert.bxbot.exchanges.TestExchangeAdapter";
     private static final AuthenticationConfig AUTHENTICATION_CONFIG = new AuthenticationConfig();
     private static final NetworkConfig NETWORK_CONFIG = new NetworkConfig();
     private static final OtherConfig OTHER_CONFIG = new OtherConfig();

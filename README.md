@@ -93,7 +93,7 @@ You specify the Exchange Adapter you want BX-bot to use in the
 ```xml
 <exchange>
     <name>BTC-e</name>
-    <adapter>com.gazbert.bxbot.core.exchanges.BtceExchangeAdapter</adapter>
+    <adapter>com.gazbert.bxbot.exchanges.BtceExchangeAdapter</adapter>
     <authentication-config>
         <config-item>
             <name>key</name>
@@ -398,7 +398,7 @@ You can also create your own jar for your strats, e.g. `my-strats.jar`, and incl
 see the _Installation Guide_ for how to do this.
 
 ### How do I write my own Exchange Adapter?
-The best place to start is with one of the sample Exchange Adapters provided - see the latest [`BitstampExchangeAdapter`](./src/main/java/com/gazbert/bxbot/core/exchanges/BitstampExchangeAdapter.java)
+The best place to start is with one of the sample Exchange Adapters provided - see the latest [`BitstampExchangeAdapter`](./src/main/java/com/gazbert/bxbot/exchanges/BitstampExchangeAdapter.java)
 for example.
 
 Your adapter must implement the [`TradingApi`](./src/main/java/com/gazbert/bxbot/core/api/trading/TradingApi.java)
@@ -408,7 +408,7 @@ interfaces. This allows for:
 * the main Trading Engine to inject your adapter on startup and initialise it with config from the `exchange.xml` file.
 * the Trading Strategies to invoke your adapter's implementation of the `TradingApi` during each trade cycle.
 
-[`AbstractExchangeAdapter`](./src/main/java/com/gazbert/bxbot/core/exchanges/AbstractExchangeAdapter.java)
+[`AbstractExchangeAdapter`](./src/main/java/com/gazbert/bxbot/exchanges/AbstractExchangeAdapter.java)
 is a handy base class that all the inbuilt Exchange Adapters extend - it could be useful.
 
 The Trading Engine will only send 1 thread through your Exchange Adapter; you do not have to code for concurrency.
@@ -429,7 +429,7 @@ adapter when to throw the exception.
 The first release of the bot is _single-threaded_ for simplicity. The downside to this is that if an API call to the 
 exchange gets blocked on IO, BX-bot will get stuck until your Exchange Adapter frees the block. The Trading API provides
 an `ExchangeNetworkException` for your adapter to throw if it times-out connecting to the exchange. It is your responsibility to free up any blocked
-connections - see the [`AbstractExchangeAdapter`](./src/main/java/com/gazbert/bxbot/core/exchanges/AbstractExchangeAdapter.java)
+connections - see the [`AbstractExchangeAdapter`](./src/main/java/com/gazbert/bxbot/exchanges/AbstractExchangeAdapter.java)
 for an example how to do this.
 
 The Trading Engine will also call your adapter directly when performing the _Emergency Stop_ check to see if your 
@@ -448,8 +448,8 @@ Your Exchange Adapter implementation has a compile-time dependency on the [Tradi
 The inbuilt Exchange Adapters also have compile-time dependencies on log4j, Google Gson, and Google Guava.
 
 ##### Packaging & Deployment
-To get going fast, you can code your Exchange Adapter and place it in the [com.gazbert.bxbot.core.exchanges](./src/main/java/com/gazbert/bxbot/core/exchanges)
-package alongside the other inbuilt adapters. When you build the project, your Exchange Adapter will be included in the BX-bot jar. 
+To get going fast, you can code your Exchange Adapter and place it in the [bxbot-exchanges](./bxbot-exchanges)
+module alongside the other inbuilt adapters. When you build the project, your Exchange Adapter will be included in the BX-bot jar. 
 You can also create your own jar for your adapters, e.g. `my-adapters.jar`, and include it on BX-bot's runtime classpath -
 see the _Installation Guide_ for how to do this.
 

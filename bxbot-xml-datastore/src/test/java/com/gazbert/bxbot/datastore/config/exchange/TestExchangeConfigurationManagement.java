@@ -51,7 +51,7 @@ public class TestExchangeConfigurationManagement {
     private static final String XML_CONFIG_TO_SAVE_FILENAME = "src/test/config/exchange/saved-exchange.xml";
 
     private static final String EXCHANGE_NAME = "BTC-e";
-    private static final String EXCHANGE_ADAPTER = "com.gazbert.bxbot.core.exchanges.BtceExchangeAdapter";
+    private static final String EXCHANGE_ADAPTER = "com.gazbert.bxbot.exchanges.BtceExchangeAdapter";
 
     private static final String API_KEY_CONFIG_ITEM_KEY = "key";
     private static final String API_KEY_CONFIG_ITEM_VALUE = "your-api-key";
