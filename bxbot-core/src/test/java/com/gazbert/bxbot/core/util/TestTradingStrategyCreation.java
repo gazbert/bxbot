@@ -38,6 +38,7 @@ public class TestTradingStrategyCreation {
 
     private static final String VALID_TRADING_STRATEGY_IMPL = "com.gazbert.bxbot.core.util.strategies.ValidTradingStrategy";
     private static final String INVALID_TRADING_STRATEGY_IMPL = "com.gazbert.bxbot.core.util.strategies.InvalidTradingStrategy";
+    private static final String MISSING_TRADING_STRATEGY_IMPL = "com.gazbert.bxbot.core.util.strategies.MissingInvalidTradingStrategy";
 
     @Test
     public void testCreationOfValidTradingStrategyImpl() {
@@ -51,5 +52,10 @@ public class TestTradingStrategyCreation {
     @Test(expected = ClassCastException.class)
     public void testCreatingTradingStrategyImplThatDoesNotImplementTradingStrategyThrowsException() {
         final TradingStrategy tradingStrategy = ConfigurableComponentFactory.createComponent(INVALID_TRADING_STRATEGY_IMPL);
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void testCreatingTradingStrategyImplThatDoesNotExistThrowsException() {
+        final TradingStrategy tradingStrategy = ConfigurableComponentFactory.createComponent(MISSING_TRADING_STRATEGY_IMPL);
     }
 }

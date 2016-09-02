@@ -23,28 +23,60 @@
 
 package com.gazbert.bxbot.core.util.adapters;
 
-import com.gazbert.bxbot.trading.api.ExchangeNetworkException;
-import com.gazbert.bxbot.trading.api.MarketOrderBook;
-import com.gazbert.bxbot.trading.api.OpenOrder;
-import com.gazbert.bxbot.trading.api.TradingApiException;
+import com.gazbert.bxbot.trading.api.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /*
  * An invalid (and useless!) Exchange Adapter for unit testing.
- * Invalid because it does not implement the TradingApi interface.
+ * Invalid because it does not implement the ExchangeAdapter interface.
  */
-public class InvalidExchangeAdapter {
+public class InvalidExchangeAdapterNotImplExchangeAdapter implements TradingApi {
 
+
+    @Override
     public String getImplName() {
         return null;
     }
 
+    @Override
     public MarketOrderBook getMarketOrders(String marketId) throws ExchangeNetworkException, TradingApiException {
         return null;
     }
 
+    @Override
     public List<OpenOrder> getYourOpenOrders(String marketId) throws ExchangeNetworkException, TradingApiException {
+        return null;
+    }
+
+    @Override
+    public String createOrder(String marketId, OrderType orderType, BigDecimal quantity, BigDecimal price) throws ExchangeNetworkException, TradingApiException {
+        return null;
+    }
+
+    @Override
+    public boolean cancelOrder(String orderId, String marketId) throws ExchangeNetworkException, TradingApiException {
+        return false;
+    }
+
+    @Override
+    public BigDecimal getLatestMarketPrice(String marketId) throws ExchangeNetworkException, TradingApiException {
+        return null;
+    }
+
+    @Override
+    public BalanceInfo getBalanceInfo() throws ExchangeNetworkException, TradingApiException {
+        return null;
+    }
+
+    @Override
+    public BigDecimal getPercentageOfBuyOrderTakenForExchangeFee(String marketId) throws TradingApiException, ExchangeNetworkException {
+        return null;
+    }
+
+    @Override
+    public BigDecimal getPercentageOfSellOrderTakenForExchangeFee(String marketId) throws TradingApiException, ExchangeNetworkException {
         return null;
     }
 }
