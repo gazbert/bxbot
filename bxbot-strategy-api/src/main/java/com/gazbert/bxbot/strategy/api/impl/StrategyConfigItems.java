@@ -23,19 +23,20 @@
 
 package com.gazbert.bxbot.strategy.api.impl;
 
+import com.gazbert.bxbot.strategy.api.StrategyConfig;
 import com.google.common.base.MoreObjects;
 
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 /**
- * Domain object representing (optional) Strategy Config Items.
+ * Encapsulates (optional) Strategy Config Items.
  *
  * @author gazbert
  */
-public final class StrategyConfigItems implements com.gazbert.bxbot.strategy.api.StrategyConfig {
+public final class StrategyConfigItems implements StrategyConfig {
 
     private Map<String, String> items = new HashMap<>();
 
@@ -51,22 +52,15 @@ public final class StrategyConfigItems implements com.gazbert.bxbot.strategy.api
 
     @Override
     public Set<String> getConfigItemKeys() {
-
-        // return HashSet else Jackson barfs with: handleHttpMessageNotReadable() - Failed to read HTTP message:
-        // (was java.lang.UnsupportedOperationException) java.util.LinkedKeySet[2])
-        return new HashSet<>(items.keySet());
-    }
-
-    public void addConfigItem(String key, String value) {
-        items.put(key, value);
-    }
-
-    public Map<String, String> getItems() {
-        return items;
+        return Collections.unmodifiableSet(items.keySet());
     }
 
     public void setItems(Map<String, String> items) {
         this.items = items;
+    }
+
+    public Map<String, String> getItems() {
+        return items;
     }
 
     @Override

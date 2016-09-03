@@ -23,32 +23,34 @@
 
 package com.gazbert.bxbot.strategy.api;
 
+import com.gazbert.bxbot.strategy.api.impl.StrategyConfigItems;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
 /**
- * Tests Strategy Exception is created as expected.
+ * Test the StrategyConfigItems behaves as expected.
  *
  * @author gazbert
  */
-public class TestStrategyException {
+public class TestStrategyConfigItems {
 
-    private static final String ERROR_MSG = "Received unknown order id in current active orders API call";
-    private static final RuntimeException CAUSE = new RuntimeException("The cause of the exception");
+    private static final String BUY_PRICE_CONFIG_ITEM_KEY = "buyPrice";
+    private static final String BUY_PRICE_CONFIG_ITEM_VALUE = "671.15";
 
-    @Test
-    public void testCreationOfExceptionIsAsExpected() {
+    private static final String AMOUNT_TO_BUY_CONFIG_ITEM_KEY = "amountToBuy";
+    private static final String AMOUNT_TO_BUY_CONFIG_ITEM_VALUE = "0.5";
 
-        final StrategyException exception = new StrategyException(ERROR_MSG);
-        assertEquals(ERROR_MSG, exception.getMessage());
-    }
 
     @Test
-    public void testCreationOfExceptionWithCauseIsAsExpected() {
+    public void testAddingAndFetchingConfigItems() throws Exception {
 
-        final StrategyException exception = new StrategyException(ERROR_MSG, CAUSE);
-        assertEquals(ERROR_MSG, exception.getMessage());
-        assertEquals(CAUSE, exception.getCause());
+        final StrategyConfigItems strategyConfig = new StrategyConfigItems();
+        strategyConfig.getItems().put(BUY_PRICE_CONFIG_ITEM_KEY, BUY_PRICE_CONFIG_ITEM_VALUE);
+        strategyConfig.getItems().put(AMOUNT_TO_BUY_CONFIG_ITEM_KEY, AMOUNT_TO_BUY_CONFIG_ITEM_VALUE);
+
+        assertEquals(2, strategyConfig.getItems().size());
+        assertEquals(BUY_PRICE_CONFIG_ITEM_VALUE, strategyConfig.getItems().get(BUY_PRICE_CONFIG_ITEM_KEY));
+        assertEquals(AMOUNT_TO_BUY_CONFIG_ITEM_VALUE, strategyConfig.getItems().get(AMOUNT_TO_BUY_CONFIG_ITEM_KEY));
     }
 }

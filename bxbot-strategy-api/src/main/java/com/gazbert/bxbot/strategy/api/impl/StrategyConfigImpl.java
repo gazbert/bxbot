@@ -30,21 +30,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Domain object representing a Strategy config.
+ * Encapsulates Strategy configuration.
  *
  * @author gazbert
  */
-public class StrategyConfig {
-
-    /*
-     * Location of the XML config files relative to project/installation root.
-     */
-    public static final String STRATEGIES_CONFIG_XML_FILENAME = "config/strategies.xml";
-
-    /*
-     * XSD schema files for validating the XML config - their location in the main/resources folder.
-     */
-    public static final String STRATEGIES_CONFIG_XSD_FILENAME = "com/gazbert/bxbot/core/config/strategy/strategies.xsd";
+public class StrategyConfigImpl {
 
     private String id;
     private String label;
@@ -53,11 +43,7 @@ public class StrategyConfig {
     private Map<String, String> configItems = new HashMap<>();
 
 
-    // required for Jackson
-    public StrategyConfig() {
-    }
-
-    public StrategyConfig(String id, String label, String description, String className, Map<String, String> configItems) {
+    public StrategyConfigImpl(String id, String label, String description, String className, Map<String, String> configItems) {
         this.id = id;
         this.label = label;
         this.description = description;
@@ -109,7 +95,7 @@ public class StrategyConfig {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        StrategyConfig that = (StrategyConfig) o;
+        StrategyConfigImpl that = (StrategyConfigImpl) o;
         return Objects.equal(id, that.id);
     }
 

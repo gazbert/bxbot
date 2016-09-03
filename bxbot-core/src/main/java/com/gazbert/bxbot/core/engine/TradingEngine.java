@@ -581,7 +581,7 @@ public class TradingEngine {
                     LOG.info(() -> "No (optional) configuration has been set for Trading Strategy: " + strategyToUse);
                 }
 
-                LOG.info(() -> "StrategyConfig (optional): " + tradingStrategyConfig);
+                LOG.info(() -> "StrategyConfigImpl (optional): " + tradingStrategyConfig);
 
                 /*
                  * Load the Trading Strategy impl, instantiate it, set its config, and store in the cached

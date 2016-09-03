@@ -42,10 +42,6 @@ public class AuthenticationConfigImpl implements AuthenticationConfig {
         items = new HashMap<>();
     }
 
-    public void addItem(String name, String value) {
-        items.put(name, value);
-    }
-
     @Override
     public String getItem(String name) {
         return items.get(name);

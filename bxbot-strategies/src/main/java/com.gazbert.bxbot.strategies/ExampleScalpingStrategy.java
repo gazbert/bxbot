@@ -83,7 +83,7 @@ import java.util.List;
  * </p>
  * <p>
  * You can pass configuration to your Strategy from the strategies.xml file - you access it from the
- * {@link #init(TradingApi, Market, StrategyConfig)} method via the StrategyConfig argument.
+ * {@link #init(TradingApi, Market, StrategyConfig)} method via the StrategyConfigImpl argument.
  * </p>
  * <p>
  * The Trading Engine will only send 1 thread through your strategy code at a time - you do not have to code for concurrency.

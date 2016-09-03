@@ -30,12 +30,12 @@ import com.gazbert.bxbot.trading.api.TradingApi;
  * <p>
  * All user defined Trading Strategies must implement this interface.
  * </p>
- * <p/>
  * <p>
  * The Trading Engine will send only 1 thread through your strategy code at a time - you do not have to code for concurrency.
  * </p>
  *
  * @author gazbert
+ * @since 1.0
  */
 public interface TradingStrategy {
 
@@ -52,7 +52,6 @@ public interface TradingStrategy {
      * <p>
      * Called by the Trading Engine during each trade cycle.
      * </p>
-     * <p/>
      * <p>
      * Here, you can make some trades, cancel some, go for a beer... do whatever you want.
      * </p>

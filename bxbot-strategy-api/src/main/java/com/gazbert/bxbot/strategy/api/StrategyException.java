@@ -28,6 +28,7 @@ package com.gazbert.bxbot.strategy.api;
  * immediately.
  *
  * @author gazbert
+ * @since 1.0
  */
 public final class StrategyException extends Exception {
 

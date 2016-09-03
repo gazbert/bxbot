@@ -36,6 +36,7 @@ import java.util.Set;
  * </p>
  *
  * @author gazbert
+ * @since 1.0
  */
 public interface StrategyConfig {
 

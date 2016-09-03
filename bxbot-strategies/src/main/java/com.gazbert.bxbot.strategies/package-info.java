@@ -17,7 +17,7 @@
  * You can pass configuration to your Strategy from the strategies.xml file - you access it from the
  * {@link com.gazbert.bxbot.strategy.api.TradingStrategy#init(com.gazbert.bxbot.trading.api.TradingApi,
  * com.gazbert.bxbot.trading.api.Market, com.gazbert.bxbot.strategy.api.StrategyConfig)}
- * method via the StrategyConfig argument.
+ * method via the StrategyConfigImpl argument.
  * </p>
  *
  * <p>
