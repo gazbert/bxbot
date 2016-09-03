@@ -33,8 +33,10 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-/*
- * Tests a Market Order Book domain object behaves as expected.
+/**
+ * Tests a Market Order Book behaves as expected.
+ *
+ * @author gazbert
  */
 public class TestMarketOrderBook {
 

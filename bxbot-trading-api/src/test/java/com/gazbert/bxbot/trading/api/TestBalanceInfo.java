@@ -31,8 +31,10 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
-/*
- * Test BalanceInfo domain object behaves as expected.
+/**
+ * Test Balance Info behaves as expected.
+ *
+ * @author gazbert
  */
 public class TestBalanceInfo {
 
@@ -43,7 +45,6 @@ public class TestBalanceInfo {
     private static final String USD_CURRENCY_ID = "USD";
     private static final BigDecimal USD_BALANCE_AVAILABLE = new BigDecimal("2000.57573495");
     private static final BigDecimal USD_BALANCE_ON_HOLD = new BigDecimal("200.45834593");
-
 
     /*
      * Map of wallet balances <em>available</em> to trade.

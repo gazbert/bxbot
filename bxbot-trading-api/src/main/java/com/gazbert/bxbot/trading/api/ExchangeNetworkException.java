@@ -37,11 +37,13 @@ package com.gazbert.bxbot.trading.api;
  * and let the Trading Engine execute your Trading Strategy at the next trade cycle. This allows the you to recover from
  * temporary network issues.
  * </p>
+ * <p>
  * If the Trading Engine receives these exceptions from directly calling an Exchange Adapter method, it will log the
  * event and sleep until the next trade cycle.
+ * </p>
  *
  * @author gazbert
- * @since 11/07/2016
+ * @since 1.0
  */
 public final class ExchangeNetworkException extends Exception {
 

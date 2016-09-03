@@ -27,9 +27,10 @@ import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 
 /**
- * Domain class representing a Market.
+ * Holds information for an Exchange market.
  *
  * @author gazbert
+ * @since 1.0
  */
 public final class Market {
 

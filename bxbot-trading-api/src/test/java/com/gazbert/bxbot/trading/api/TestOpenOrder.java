@@ -30,8 +30,10 @@ import java.util.Date;
 
 import static org.junit.Assert.assertEquals;
 
-/*
- * Tests an Open Order domain object behaves as expected.
+/**
+ * Tests Open Order behaves as expected.
+ *
+ * @author gazbert
  */
 public class TestOpenOrder {
 

@@ -24,9 +24,10 @@
 package com.gazbert.bxbot.trading.api;
 
 /**
- * Represents the different order types for placing on the trading.
+ * Defines the different order types for sending to the exchange.
  *
  * @author gazbert
+ * @since 1.0
  */
 public enum OrderType {
 

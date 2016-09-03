@@ -29,18 +29,17 @@ import java.util.List;
 
 /**
  * <p>
- * Domain class representing a Market Order Book.
+ * Represents a Market Order Book.
  * </p>
- *
  * <p>
  * The Market Order Book SELL orders are ordered price ascending - <em>lowest</em> ASK price is first in list.
  * </p>
- *
  * <p>
  * The Market Order Book BUY orders are ordered price descending - <em>highest</em> BID price is first in list.
  * </p>
  *
  * @author gazbert
+ * @since 1.0
  */
 public final class MarketOrderBook {
 
@@ -77,6 +76,7 @@ public final class MarketOrderBook {
 
     /**
      * Returns the market id for this Market Order Book.
+     *
      * @return The market id.
      */
     public String getMarketId() {

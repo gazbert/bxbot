@@ -23,15 +23,16 @@
 
 package com.gazbert.bxbot.trading.api;
 
-
 import org.junit.Test;
 
 import java.math.BigDecimal;
 
 import static org.junit.Assert.assertEquals;
 
-/*
- * Tests a Market Order domain object behaves as expected.
+/**
+ * Tests a Market Order behaves as expected.
+ *
+ * @author gazbert
  */
 public class TestMarketOrder {
 

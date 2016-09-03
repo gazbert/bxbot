@@ -26,8 +26,10 @@ package com.gazbert.bxbot.trading.api;
 import static org.junit.Assert.*;
 import org.junit.Test;
 
-/*
- * Tests a Market domain object behaves as expected.
+/**
+ * Tests Market behaves as expected.
+ *
+ * @author gazbert
  */
 public class TestMarket {
 

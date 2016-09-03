@@ -29,14 +29,14 @@ import java.math.BigDecimal;
 
 /**
  * <p>
- * Domain class representing a Market Order on the exchange.
+ * Represents a Market Order on the exchange.
  * </p>
- *
  * <p>
  * The type of order (buy/sell) is determined by the {@link OrderType}.
  * </p>
  *
  * @author gazbert
+ * @since 1.0
  */
 public final class MarketOrder {
 
@@ -64,10 +64,10 @@ public final class MarketOrder {
     /**
      * Constructor builds a Market Order.
      *
-     * @param type      Type of order. Value must be {@link OrderType#BUY} or {@link OrderType#SELL}.
-     * @param price     Price of the order. This is usually in BTC or USD.
-     * @param quantity  Quantity of the order. This is usually the amount of the other currency you want to trade for BTC/USD.
-     * @param total     Total value of order (price * quantity). This is usually in BTC or USD.
+     * @param type     Type of order. Value must be {@link OrderType#BUY} or {@link OrderType#SELL}.
+     * @param price    Price of the order. This is usually in BTC or USD.
+     * @param quantity Quantity of the order. This is usually the amount of the other currency you want to trade for BTC/USD.
+     * @param total    Total value of order (price * quantity). This is usually in BTC or USD.
      */
     public MarketOrder(OrderType type, BigDecimal price, BigDecimal quantity, BigDecimal total) {
         this.type = type;
@@ -78,6 +78,7 @@ public final class MarketOrder {
 
     /**
      * Returns the type of order. Value will be {@link OrderType#BUY} or {@link OrderType#SELL}.
+     *
      * @return the type of order.
      */
     public OrderType getType() {
@@ -86,6 +87,7 @@ public final class MarketOrder {
 
     /**
      * Sets the type of order. Value must be {@link OrderType#BUY} or {@link OrderType#SELL}.
+     *
      * @param type the order type.
      */
     public void setType(OrderType type) {

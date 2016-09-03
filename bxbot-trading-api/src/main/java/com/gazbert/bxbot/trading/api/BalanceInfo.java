@@ -29,9 +29,10 @@ import java.math.BigDecimal;
 import java.util.Map;
 
 /**
- * Domain class representing your wallet balance info on the exchange.
+ * Encapsulates wallet balance info held on the exchange.
  *
  * @author gazbert
+ * @since 1.0
  */
 public final class BalanceInfo {
 
@@ -39,7 +40,6 @@ public final class BalanceInfo {
      * <p>
      * Map of wallet balances <em>available</em> to trade.
      * </p>
-     *
      * <p>
      * Key is currency id in UPPERCASE, e.g. LTC, BTC, USD
      * </p>
@@ -50,7 +50,6 @@ public final class BalanceInfo {
      * <p>
      * Map of wallet balances currently <em>on hold</em> for open orders.
      * </p>
-     *
      * <p>
      * Key is currency id in UPPERCASE, e.g. LTC, BTC, USD
      * </p>
@@ -71,6 +70,7 @@ public final class BalanceInfo {
 
     /**
      * Returns map of available balances.
+     *
      * @return map of available balances.
      */
     public Map<String, BigDecimal> getBalancesAvailable() {
@@ -89,6 +89,7 @@ public final class BalanceInfo {
     /**
      * Returns map of balances on hold. Some exchanges do not provide this information and the returned map will be
      * empty.
+     *
      * @return map of balances on hold.
      */
     public Map<String, BigDecimal> getBalancesOnHold() {

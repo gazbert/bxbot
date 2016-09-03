@@ -27,6 +27,11 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
+/**
+ * Tests Trading API Exception is created as expected.
+ *
+ * @author gazbert
+ */
 public class TestTradingApiException {
 
     private static final String ERROR_MSG = "Exchange has fallen over";

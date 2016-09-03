@@ -27,6 +27,11 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
+/**
+ * Tests Exchange Network created is created as expected.
+ *
+ * @author gazbert
+ */
 public class TestExchangeNetworkException {
 
     private static final String ERROR_MSG = "Network timeout connecting to exchange";

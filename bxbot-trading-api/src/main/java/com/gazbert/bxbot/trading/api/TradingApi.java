@@ -39,10 +39,11 @@ import java.util.List;
  * <p>
  * This version of the Trading API only supports <a href="http://www.investopedia.com/terms/l/limitorder.asp">limit orders</a>
  * traded at the <a href="http://www.investopedia.com/terms/s/spotprice.asp">spot price</a>.
- * It does not support futures trading or margin trading... yet.
+ * It does not support futures trading or margin trading yet.
  * </p>
  *
  * @author gazbert
+ * @since 1.0
  */
 public interface TradingApi {
 

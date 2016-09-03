@@ -2,7 +2,7 @@
  * <h2>Trading API</h2>
  *
  * <p>
- * It contains trading operations for Trading Strategies to use and for Exchange Adapters to implement.
+ * The Trading API contains trading operations for Trading Strategies to use and for Exchange Adapters to implement.
  * </p>
  *
  * <p>
@@ -16,7 +16,7 @@
  * <p>
  * This current version of the Trading API only supports <a href="http://www.investopedia.com/terms/l/limitorder.asp">limit orders</a>
  * traded at the <a href="http://www.investopedia.com/terms/s/spotprice.asp">spot price</a>.
- * It does not support futures trading or margin trading... yet.
+ * It does not support futures trading or margin trading yet.
  * </p>
  *
  * <p>

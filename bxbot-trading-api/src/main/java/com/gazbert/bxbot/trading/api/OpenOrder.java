@@ -30,9 +30,10 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 /**
- * Domain class representing an Open (active) Order on the exchange.
+ * Represents an Open Order (active order) on the exchange.
  *
  * @author gazbert
+ * @since 1.0
  */
 public final class OpenOrder {
 
@@ -106,6 +107,7 @@ public final class OpenOrder {
 
     /**
      * Returns the ID for this order.
+     *
      * @return the ID of the order.
      */
     public String getId() {
@@ -123,6 +125,7 @@ public final class OpenOrder {
 
     /**
      * Returns the exchange date/time the order was created.
+     *
      * @return The exchange date/time.
      */
     public Date getCreationDate() {
@@ -140,6 +143,7 @@ public final class OpenOrder {
 
     /**
      * Returns the id of the market this order was placed on.
+     *
      * @return the id of the market.
      */
     public String getMarketId() {
@@ -157,6 +161,7 @@ public final class OpenOrder {
 
     /**
      * Returns the type of order. Value will be {@link OrderType#BUY} or {@link OrderType#SELL}.
+     *
      * @return the type of order.
      */
     public OrderType getType() {
