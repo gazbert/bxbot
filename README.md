@@ -390,7 +390,7 @@ The inbuilt [`BasicScalpingExampleStrategy`](./bxbot-strategies/src/main/java/co
 also has a compile-time dependency on log4j and Google Guava.
 
 ##### Packaging & Deployment #####
-To get going fast, you can code your Trading Strategy and place it in the [trading-strategies](./trading-strategies)
+To get going fast, you can code your Trading Strategy and place it in the [bxbot-trading-strategies](./bxbot-trading-strategies)
 module alongside the example strategy. When you build the project, your Trading Strategy will be included in the BX-bot jar. 
 You can also create your own jar for your strats, e.g. `my-strats.jar`, and include it on BX-bot's runtime classpath -
 see the _Installation Guide_ for how to do this.
