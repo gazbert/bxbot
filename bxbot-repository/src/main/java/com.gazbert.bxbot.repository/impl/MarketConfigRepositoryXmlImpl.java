@@ -23,13 +23,21 @@
 
 package com.gazbert.bxbot.repository.impl;
 
+import com.gazbert.bxbot.datastore.ConfigurationManager;
+import com.gazbert.bxbot.datastore.market.generated.MarketType;
+import com.gazbert.bxbot.datastore.market.generated.MarketsType;
 import com.gazbert.bxbot.domain.market.MarketConfig;
 import com.gazbert.bxbot.repository.MarketConfigRepository;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
+
+import static com.gazbert.bxbot.datastore.FileLocations.MARKETS_CONFIG_XML_FILENAME;
+import static com.gazbert.bxbot.datastore.FileLocations.MARKETS_CONFIG_XSD_FILENAME;
 
 /**
  * Implementation of the Market config repository.
@@ -40,36 +48,59 @@ import java.util.List;
 @Transactional
 public class MarketConfigRepositoryXmlImpl implements MarketConfigRepository {
 
+    private static final Logger LOG = LogManager.getLogger();
+
     @Override
+
     public List<MarketConfig> findAllMarkets() {
-        return Arrays.asList(getCannedMarketConfig());
+
+        final MarketsType internalMarketsConfig = ConfigurationManager.loadConfig(MarketsType.class,
+                MARKETS_CONFIG_XML_FILENAME, MARKETS_CONFIG_XSD_FILENAME);
+        return adaptAllInternalToAllExternalConfig(internalMarketsConfig);
     }
 
     @Override
     public MarketConfig findById(String id) {
-        return getCannedMarketConfig();
+        throw new UnsupportedOperationException("findById not coded yet!");
     }
 
     @Override
     public MarketConfig saveMarket(MarketConfig config) {
-        return getCannedMarketConfig();
+        throw new UnsupportedOperationException("saveMarket not coded yet!");
     }
 
     @Override
     public MarketConfig updateMarket(MarketConfig config) {
-        return getCannedMarketConfig();
+        throw new UnsupportedOperationException("updateMarket not coded yet!");
     }
 
     @Override
     public MarketConfig deleteMarketById(String id) {
-        return getCannedMarketConfig();
+        throw new UnsupportedOperationException("deleteMarketById not coded yet!");
     }
 
-    /*
-     * TODO Hard code these for now - will come from Repository later...
-     */
-    private static MarketConfig getCannedMarketConfig() {
-        final MarketConfig marketConfig = new MarketConfig("BTC/USD", "btc_usd", "BTC", "USD", true, "scalping-strategy");
-        return marketConfig;
+    // ------------------------------------------------------------------------------------------------
+    // Adapter methods
+    // ------------------------------------------------------------------------------------------------
+
+    private static List<MarketConfig> adaptAllInternalToAllExternalConfig(MarketsType internalMarketsConfig) {
+
+        final List<MarketConfig> marketConfigItems = new ArrayList<>();
+
+        final List<MarketType> internalMarketConfigItems = internalMarketsConfig.getMarkets();
+        internalMarketConfigItems.forEach((item) -> {
+
+            final MarketConfig marketConfig = new MarketConfig();
+            marketConfig.setId(item.getId());
+            marketConfig.setLabel(item.getLabel());
+            marketConfig.setEnabled(item.isEnabled());
+            marketConfig.setBaseCurrency(item.getBaseCurrency());
+            marketConfig.setCounterCurrency(item.getCounterCurrency());
+            marketConfig.setTradingStrategy(item.getTradingStrategy());
+
+            marketConfigItems.add(marketConfig);
+        });
+
+        return marketConfigItems;
     }
 }

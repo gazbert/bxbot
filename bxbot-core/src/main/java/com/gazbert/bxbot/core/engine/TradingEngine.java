@@ -495,7 +495,7 @@ public class TradingEngine {
 
             final OtherConfigImpl adapterOtherConfig = new OtherConfigImpl();
             adapterOtherConfig.setItems(otherConfig.getItems());
-            domainExchangeConfig.setOtherConfig(otherConfig);
+            adapterExchangeConfig.setOtherConfig(adapterOtherConfig);
             LOG.info(() -> "OtherConfiguration has been set: " + adapterOtherConfig);
 
         } else {

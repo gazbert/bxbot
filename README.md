@@ -458,26 +458,29 @@ see the _Installation Guide_ for how to do this.
 A Maven `pom.xml` is included for building the bot.
 
 1. Clone the BX-bot repo locally - the [Releases](https://github.com/gazbert/bxbot/releases) page has the stable builds.
-1. Open the `config` XML files and configure them as required.
-1. If you plan on using Trading Strategies or Exchange Adapters that are packaged in separate jar files, you'll need to add
-   the dependency in the `pom.xml` file - see the commented out dependency examples inside it.
-1. Run `mvn assembly:assembly` to build the bot and produce the distribution artifacts `bxbot-app-<version>-dist.tar.gz`
-   and `bxbot-app-<version>-dist.zip`. Take a look at the Javadoc in the `./target/apidocs` folders of the 
-   bxbot-trading-api, bxbot-strategy-api, and bxbot-exchange-api modules after running this.
+1. From the project root, run `mvn clean install -Punit`. This will run the unit tests. If you want to run the exchange
+   integration tests only, use `mvn clean install -Pint`. To run all the tests, use `mvn clean install -Pall`.
+1. Take a look at the Javadoc in the `./target/apidocs` folders of the bxbot-trading-api, bxbot-strategy-api, 
+   and bxbot-exchange-api modules after the build completes.
 
 ## Installation Guide
 
 1. Prerequisite: [Oracle JDK 1.8](http://www.oracle.com/technetwork/java/javase/downloads/index-jsp-138363.html) needs to be installed
-   on the machine you want to run the bot.  
+   on the machine you want to run the bot.     
+1. Open the `config` XML files and configure them as required.
+1. If you plan on using Trading Strategies or Exchange Adapters that are packaged in separate jar files, you'll need to add
+   the dependency in the `./bxbot-app/pom.xml` file - see the commented out dependency examples inside it.
+1. From the project root, run `mvn clean assembly:assembly` to build the bot and produce the distribution 
+   artifacts `bxbot-app-<version>-dist.tar.gz` and `bxbot-app-<version>-dist.zip` in the `./target` folder.
 1. Copy either the `bxbot-app-<version>-dist.tar.gz` or the `bxbot-app-<version>-dist.zip` onto the machine you 
-   want to run the bot. Unzip it into a folder of your choice.
+   want to run the bot and unzip it someplace.
 1. Usage: `./bxbot.sh [start|stop|status]`
  
 ## Coming Soon...
 The following features are in the pipeline:
 
 - REST API for administering the bot.
-- Web UI for administering the bot.
+- Web UI for administering the bot written in [Angular](https://angular.io/).
 - An experimental project to register [BX-bot](https://github.com/gazbert/bxbot) trades using an [Ethereum](https://www.ethereum.org/) blockchain.
 - Trade Analysis app - a microservice that will feed off trading events sent by the bots.
 - Android app for administering the bot.
