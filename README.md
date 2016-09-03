@@ -220,7 +220,7 @@ You specify the Trading Strategies you wish to use in the
         <label>Basic Scalping Strat</label>
         <description>A simple trend following scalper that buys at current BID price and sells at current
          ASK price, taking profit from the spread. The exchange fees are factored in.</description>
-        <class-name>com.gazbert.bxbot.core.strategies.ExampleScalpingStrategy</class-name>
+        <class-name>com.gazbert.bxbot.strategies.ExampleScalpingStrategy</class-name>
         <configuration>
             <config-item>
                 <name>btc-buy-order-amount</name>
@@ -236,7 +236,7 @@ You specify the Trading Strategies you wish to use in the
         <id>macd-strategy</id>
         <label>MACD Based Strat</label>
         <description>Strat uses MACD data to take long position in USD.</description>
-        <class-name>com.gazbert.bxbot.core.strategies.YourMacdStrategy</class-name>
+        <class-name>com.gazbert.bxbot.strategies.YourMacdStrategy</class-name>
         <configuration>
             <config-item>
                 <name>btc-buy-order-amount</name>
@@ -392,8 +392,8 @@ The inbuilt [`BasicScalpingExampleStrategy`](./src/main/java/com/gazbert/bxbot/c
 also has a compile-time dependency on log4j and Google Guava.
 
 ##### Packaging & Deployment #####
-To get going fast, you can code your Trading Strategy and place it in the [com.gazbert.bxbot.core.strategies](./src/main/java/com/gazbert/bxbot/core/strategies)
-package alongside the example strategy. When you build the project, your Trading Strategy will be included in the BX-bot jar. 
+To get going fast, you can code your Trading Strategy and place it in the [trading-strategies](./trading-strategies)
+module alongside the example strategy. When you build the project, your Trading Strategy will be included in the BX-bot jar. 
 You can also create your own jar for your strats, e.g. `my-strats.jar`, and include it on BX-bot's runtime classpath -
 see the _Installation Guide_ for how to do this.
 
@@ -458,7 +458,7 @@ see the _Installation Guide_ for how to do this.
 A Maven `pom.xml` is included for building the bot.
 
 1. Clone the BX-bot repo locally - the [Releases](https://github.com/gazbert/bxbot/releases) page has the stable builds.
-1. Open the `./config` XML files and configure them as required.
+1. Open the `config` XML files and configure them as required.
 1. If you plan on using Trading Strategies or Exchange Adapters that are packaged in separate jar files, you'll need to add
    the dependency in the `pom.xml` file - see the commented out dependency examples inside it.
 1. Run `mvn assembly:assembly` to build the bot and produce the distribution artifacts `bxbot-core-<version>-dist.tar.gz`

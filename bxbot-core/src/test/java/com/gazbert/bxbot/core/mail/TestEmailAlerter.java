@@ -130,7 +130,7 @@ public class TestEmailAlerter {
      * Good for testing that you're all setup before deployment.
      *
      * 1. Uncomment @Test.
-     * 2. Change the ./config/email-alerts.xml to use your account SMTP settings.
+     * 2. Change the <project-root>/config/email-alerts.xml to use your account SMTP settings.
      * 3. Comment out @RunWith(PowerMockRunner.class) and @PrepareForTest(Transport.class) at top of class - they mess
      *    with the SSLContext and the test will fail - no time to debug why but related to:
      *    https://code.google.com/p/powermock/issues/detail?id=288

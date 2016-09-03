@@ -21,11 +21,11 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.core.strategies;
+package com.gazbert.bxbot.strategies;
 
-import com.gazbert.bxbot.trading.api.*;
 import com.gazbert.bxbot.strategy.api.StrategyConfig;
 import com.gazbert.bxbot.strategy.api.StrategyException;
+import com.gazbert.bxbot.trading.api.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -49,10 +49,7 @@ import static org.easymock.EasyMock.expect;
  * more thorough job than this with your own strategies.
  * </p>
  *
- * TODO cleanup duplication in test code.
- *
  * @author gazbert
- *
  */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({Market.class, MarketOrderBook.class, MarketOrder.class, OpenOrder.class})
@@ -73,10 +70,8 @@ public class TestExampleScalpingStrategy {
     private List<MarketOrder> marketSellOrders;
 
 
-    /**
+    /*
      * Each test will be the same up to the point of fetching the order book.
-     *
-     * @throws Exception if anything unexpected happens; we fail the test.
      */
     @Before
     public void setUpBeforeEachTest() throws Exception {
@@ -110,18 +105,12 @@ public class TestExampleScalpingStrategy {
         expect(marketOrderBook.getSellOrders()).andReturn(marketSellOrders);
     }
 
-    /**
-     * <p>
+    /*
      * Tests scenario when bot has just started and the strategy is invoked for the first time.
-     * </p>
-     * <p/>
-     * <ol>
-     * <li>Given the bot has just started</li>
-     * <li>When the strategy is first invoked</li>
-     * <li>Then a new buy order is sent to the exchange</li>
-     * </ol>
      *
-     * @throws Exception if anything unexpected happens and fails the test.
+     * - Given the bot has just started
+     * - When the strategy is first invoked
+     * - Then a new buy order is sent to the exchange
      */
     @Test
     public void testStrategySendsInitialBuyOrderWhenItIsFirstCalled() throws Exception {
@@ -152,18 +141,12 @@ public class TestExampleScalpingStrategy {
         PowerMock.verifyAll();
     }
 
-    /**
-     * <p>
+    /*
      * Tests scenario when strategy has had its current buy order filled. We expect it to create a new sell order.
-     * </p>
-     * <p/>
-     * <ol>
-     * <li>Given the bot has had its current buy order filled</li>
-     * <li>When the strategy is invoked</li>
-     * <li>Then a new sell order is sent to the exchange</li>
-     * </ol>
      *
-     * @throws Exception if anything unexpected happens and fails the test.
+     * - Given the bot has had its current buy order filled
+     * - When the strategy is invoked
+     * - Then a new sell order is sent to the exchange
      */
     @Test
     public void testStrategySendsNewSellOrderToExchangeWhenCurrentBuyOrderFilled() throws Exception {
@@ -214,18 +197,12 @@ public class TestExampleScalpingStrategy {
         PowerMock.verifyAll();
     }
 
-    /**
-     * <p>
+    /*
      * Tests scenario when strategy's current buy order is still waiting to be filled. We expect it to hold.
-     * </p>
-     * <p/>
-     * <ol>
-     * <li>Given the bot has placed a buy order and it had not filled</li>
-     * <li>When the strategy is invoked</li>
-     * <li>Then the bot holds until the next trade cycle</li>
-     * </ol>
      *
-     * @throws Exception if anything unexpected happens and fails the test.
+     * - Given the bot has placed a buy order and it had not filled
+     * - When the strategy is invoked
+     * - Then the bot holds until the next trade cycle
      */
     @Test
     public void testStrategyHoldsWhenCurrentBuyOrderIsNotFilled() throws Exception {
@@ -270,18 +247,12 @@ public class TestExampleScalpingStrategy {
         PowerMock.verifyAll();
     }
 
-    /**
-     * <p>
+    /*
      * Tests scenario when strategy has had its current sell order filled. We expect it to create a new buy order.
-     * </p>
-     * <p/>
-     * <ol>
-     * <li>Given the bot has had its current sell order filled</li>
-     * <li>When the strategy is invoked</li>
-     * <li>Then a new buy order is sent to the exchange</li>
-     * </ol>
      *
-     * @throws Exception if anything unexpected happens and fails the test.
+     * - Given the bot has had its current sell order filled
+     * - When the strategy is invoked
+     * - Then a new buy order is sent to the exchange
      */
     @Test
     public void testStrategySendsNewBuyOrderToExchangeWhenCurrentSellOrderFilled() throws Exception {
@@ -331,18 +302,12 @@ public class TestExampleScalpingStrategy {
         PowerMock.verifyAll();
     }
 
-    /**
-     * <p>
+    /*
      * Tests scenario when strategy's current sell order is still waiting to be filled. We expect it to hold.
-     * </p>
-     * <p/>
-     * <ol>
-     * <li>Given the bot has placed a sell order and it had not filled</li>
-     * <li>When the strategy is invoked</li>
-     * <li>Then the bot holds until the next trade cycle</li>
-     * </ol>
      *
-     * @throws Exception if anything unexpected happens and fails the test.
+     * - Given the bot has placed a sell order and it had not filled
+     * - When the strategy is invoked<
+     * - Then the bot holds until the next trade cycle<
      */
     @Test
     public void testStrategyHoldsWhenCurrentSellOrderIsNotFilled() throws Exception {
@@ -391,19 +356,13 @@ public class TestExampleScalpingStrategy {
     // Timeout exception handling tests
     // ------------------------------------------------------------------------
 
-    /**
-     * <p>
-     * When attempting to send the initial buy order to the exchange, a timeout exception is received. We expect the strategy to
-     * swallow it and exit until the next trade cycle.
-     * </p>
-     * <p/>
-     * <ol>
-     * <li>Given the strategy has just sent initial buy order</li>
-     * <li>When a timeout exception is caught</li>
-     * <li>Then the strategy returns without error</li>
-     * </ol>
+    /*
+     * When attempting to send the initial buy order to the exchange, a timeout exception is received. We expect the
+     * strategy to swallow it and exit until the next trade cycle.
      *
-     * @throws Exception if anything unexpected happens and fails the test.
+     * - Given the strategy has just sent initial buy order
+     * - When a timeout exception is caught
+     * - Then the strategy returns without error
      */
     @Test
     public void testStrategyHandlesTimeoutExceptionWhenPlacingInitialBuyOrder() throws Exception {
@@ -434,19 +393,13 @@ public class TestExampleScalpingStrategy {
         PowerMock.verifyAll();
     }
 
-    /**
-     * <p>
+    /*
      * When attempting to send a buy order to the exchange, a timeout exception is received. We expect the strategy to
      * swallow it and exit until the next trade cycle.
-     * </p>
-     * <p/>
-     * <ol>
-     * <li>Given the strategy has just sent a buy order</li>
-     * <li>When a timeout exception is caught</li>
-     * <li>Then the strategy returns without error</li>
-     * </ol>
      *
-     * @throws Exception if anything unexpected happens and fails the test.
+     * - Given the strategy has just sent a buy order
+     * - When a timeout exception is caught
+     * - Then the strategy returns without error
      */
     @Test
     public void testStrategyHandlesTimeoutExceptionWhenPlacingBuyOrder() throws Exception {
@@ -496,19 +449,13 @@ public class TestExampleScalpingStrategy {
         PowerMock.verifyAll();
     }
 
-    /**
-     * <p>
+    /*
      * When attempting to send a sell order to the exchange, a timeout exception is received. We expect the strategy to
      * swallow it and exit until the next trade cycle.
-     * </p>
-     * <p/>
-     * <ol>
-     * <li>Given the strategy has just sent a sell order</li>
-     * <li>When a timeout exception is caught</li>
-     * <li>Then the strategy returns without error</li>
-     * </ol>
      *
-     * @throws Exception if anything unexpected happens and fails the test.
+     * - Given the strategy has just sent a sell order
+     * - When a timeout exception is caught
+     * - Then the strategy returns without error
      */
     @Test
     public void testStrategyHandlesTimeoutExceptionWhenPlacingSellOrder() throws Exception {
@@ -563,21 +510,15 @@ public class TestExampleScalpingStrategy {
     // Trading API exception handling tests
     // ------------------------------------------------------------------------
 
-    /**
-     * <p>
+    /*
      * When attempting to send the initial buy order to the exchange, a Trading API exception is received. We expect the
      * strategy to wrap it in a Strategy exception and throw it to the Trading Engine.
-     * </p>
-     * <p/>
-     * <ol>
-     * <li>Given the strategy has just sent initial buy order</li>
-     * <li>When a Trading API exception is caught</li>
-     * <li>Then the strategy throws a Strategy exception</li>
-     * </ol>
      *
-     * @throws Exception if anything unexpected happens and fails the test.
+     * - Given the strategy has just sent initial buy order
+     * - When a Trading API exception is caught
+     * - Then the strategy throws a Strategy exception
      */
-    @Test (expected = StrategyException.class)
+    @Test(expected = StrategyException.class)
     public void testStrategyHandlesTradingApiExceptionWhenPlacingInitialBuyOrder() throws Exception {
 
         // expect to get current bid and ask spot prices
@@ -606,21 +547,15 @@ public class TestExampleScalpingStrategy {
         PowerMock.verifyAll();
     }
 
-    /**
-     * <p>
-     * When attempting to send a buy order to the exchange, a Trading API exception is received. We expect the strategy to
-     * wrap it in a Strategy exception and throw it to the Trading Engine.
-     * </p>
-     * <p/>
-     * <ol>
-     * <li>Given the strategy has just sent a buy order</li>
-     * <li>When a Trading API exception is caught</li>
-     * <li>Then the strategy throws a Strategy exception</li>
-     * </ol>
+    /*
+     * When attempting to send a buy order to the exchange, a Trading API exception is received. We expect the strategy
+     * to wrap it in a Strategy exception and throw it to the Trading Engine.
      *
-     * @throws Exception if anything unexpected happens and fails the test.
+     * - Given the strategy has just sent a buy order
+     * - When a Trading API exception is caught
+     * - Then the strategy throws a Strategy exception
      */
-    @Test (expected = StrategyException.class)
+    @Test(expected = StrategyException.class)
     public void testStrategyHandlesTradingApiExceptionWhenPlacingBuyOrder() throws Exception {
 
         // expect to get current bid and ask spot prices
@@ -668,21 +603,15 @@ public class TestExampleScalpingStrategy {
         PowerMock.verifyAll();
     }
 
-    /**
-     * <p>
-     * When attempting to send a sell order to the exchange, a Trading API exception is received. We expect the strategy to
-     * wrap it in a Strategy exception and throw it to the Trading Engine.
-     * </p>
-     * <p/>
-     * <ol>
-     * <li>Given the strategy has just sent a sell order</li>
-     * <li>When a Trading API exception is caught</li>
-     * <li>Then the strategy throws a Strategy exception</li>
-     * </ol>
+    /*
+     * When attempting to send a sell order to the exchange, a Trading API exception is received. We expect the strategy
+     * to wrap it in a Strategy exception and throw it to the Trading Engine.
      *
-     * @throws Exception if anything unexpected happens and fails the test.
+     * - Given the strategy has just sent a sell order
+     * - When a Trading API exception is caught
+     * - Then the strategy throws a Strategy exception
      */
-    @Test (expected = StrategyException.class)
+    @Test(expected = StrategyException.class)
     public void testStrategyHandlesTradingApiExceptionWhenPlacingSellOrder() throws Exception {
 
         // expect to get current bid and ask spot prices

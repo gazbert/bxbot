@@ -21,7 +21,7 @@
  * <li>implement the {@link com.gazbert.bxbot.exchange.api.ExchangeAdapter} and
  *     {@link com.gazbert.bxbot.trading.api.TradingApi} interfaces.
  * <li>be placed on the Trading Engine's runtime classpath: keep it here, or in a separate jar file.</li>
- * <li>include a configuration entry in the ./config/exchanges.xml file.</li>
+ * <li>include a configuration entry in the exchanges.xml file.</li>
  * </ol>
  *
  * </p>

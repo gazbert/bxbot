@@ -62,7 +62,7 @@ public class TestStrategyConfigurationManagement {
         assertTrue(tradingStrategiesType.getStrategies().get(0).getDescription().trim().equals(
                 "A simple trend following scalper that buys at current BID price and sells at current ASK price, " +
                         "taking profit from the spread. The exchange fees are factored in."));
-        assertEquals("com.gazbert.bxbot.core.strategies.ExampleScalpingStrategy", tradingStrategiesType.getStrategies().get(0).getClassName());
+        assertEquals("com.gazbert.bxbot.strategies.ExampleScalpingStrategy", tradingStrategiesType.getStrategies().get(0).getClassName());
 
         assertTrue(2 == tradingStrategiesType.getStrategies().get(0).getConfiguration().getConfigItem().size());
         assertEquals("btc-buy-order-amount", tradingStrategiesType.getStrategies().get(0).getConfiguration().getConfigItem().get(0).getName());
@@ -76,7 +76,7 @@ public class TestStrategyConfigurationManagement {
         assertEquals("ema-shorting-strategy", tradingStrategiesType.getStrategies().get(1).getId());
         assertEquals("EMA Based Shorting Strat", tradingStrategiesType.getStrategies().get(1).getLabel());
         assertNull(tradingStrategiesType.getStrategies().get(1).getDescription()); // optional element check
-        assertEquals("com.gazbert.bxbot.core.strategies.YourEmaShortingStrategy", tradingStrategiesType.getStrategies().get(1).getClassName());
+        assertEquals("com.gazbert.bxbot.strategies.YourEmaShortingStrategy", tradingStrategiesType.getStrategies().get(1).getClassName());
 
         assertTrue(4 == tradingStrategiesType.getStrategies().get(1).getConfiguration().getConfigItem().size());
 
@@ -99,7 +99,7 @@ public class TestStrategyConfigurationManagement {
         assertEquals("MACD Based Strat", tradingStrategiesType.getStrategies().get(2).getLabel());
         assertTrue(tradingStrategiesType.getStrategies().get(2).getDescription().trim().equals(
                 "Strat uses MACD data to take long position in USD."));
-        assertEquals("com.gazbert.bxbot.core.strategies.YourMacdStrategy", tradingStrategiesType.getStrategies().get(2).getClassName());
+        assertEquals("com.gazbert.bxbot.strategies.YourMacdStrategy", tradingStrategiesType.getStrategies().get(2).getClassName());
         assertNull(tradingStrategiesType.getStrategies().get(2).getConfiguration()); // optional element check
     }
 

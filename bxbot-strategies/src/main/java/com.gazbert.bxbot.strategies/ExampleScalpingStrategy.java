@@ -21,7 +21,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.core.strategies;
+package com.gazbert.bxbot.strategies;
 
 import com.gazbert.bxbot.strategy.api.StrategyConfig;
 import com.gazbert.bxbot.strategy.api.StrategyException;
@@ -118,7 +118,7 @@ public class ExampleScalpingStrategy implements TradingStrategy {
     private OrderState lastOrder;
 
     /**
-     * BTC buy order amount. This was loaded from the strategy entry in the ./config/strategies.xml config file.
+     * BTC buy order amount. This was loaded from the strategy entry in the strategies.xml config file.
      */
     private BigDecimal btcBuyOrderAmount;
 
@@ -449,7 +449,6 @@ public class ExampleScalpingStrategy implements TradingStrategy {
                             + lastOrder.price + "] - holding last SELL order...");
 
                 } else if (currentAskPrice.compareTo(lastOrder.price) > 0) {
-                    // TODO throw illegal state exception
                     LOG.error(market.getName() + " >>> Current ask price [" + currentAskPrice
                             + "] is HIGHER than last order price ["
                             + lastOrder.price + "] - IMPOSSIBLE! BX-bot must have sold?????");
@@ -513,7 +512,7 @@ public class ExampleScalpingStrategy implements TradingStrategy {
 
     /**
      * Loads the config for the strategy. We expect the 'btc-buy-order-amount' config item to be present in the
-     * ./config/strategies.xml config file.
+     * strategies.xml config file.
      *
      * @param config the config for the Trading Strategy.
      */
