@@ -458,8 +458,8 @@ see the _Installation Guide_ for how to do this.
 A Maven `pom.xml` is included for building the bot.
 
 1. Clone the BX-bot repo locally - the [Releases](https://github.com/gazbert/bxbot/releases) page has the stable builds.
-1. From the project root, run `mvn clean install -Punit`. This will run the unit tests. If you want to run the exchange
-   integration tests only, use `mvn clean install -Pint`. To run all the tests, use `mvn clean install -Pall`.
+1. From the project root, run `mvn clean install`. If you want to run the exchange integration tests, use `mvn clean install -Pint`.
+   To execute both unit and integration tests, use `mvn clean install -Pall`.
 1. Take a look at the Javadoc in the `./target/apidocs` folders of the bxbot-trading-api, bxbot-strategy-api, 
    and bxbot-exchange-api modules after the build completes.
 
@@ -469,7 +469,7 @@ A Maven `pom.xml` is included for building the bot.
    on the machine you want to run the bot.     
 1. Open the `config` XML files and configure them as required.
 1. If you plan on using Trading Strategies or Exchange Adapters that are packaged in separate jar files, you'll need to add
-   the dependency in the `./bxbot-app/pom.xml` file - see the commented out dependency examples inside it.
+   the dependency in the [bxbot-app/pom.xml](./bxbot-app/pom.xml) - see the commented out dependency examples inside it.
 1. From the project root, run `mvn clean assembly:assembly` to build the bot and produce the distribution 
    artifacts `bxbot-app-<version>-dist.tar.gz` and `bxbot-app-<version>-dist.zip` in the `./target` folder.
 1. Copy either the `bxbot-app-<version>-dist.tar.gz` or the `bxbot-app-<version>-dist.zip` onto the machine you 
