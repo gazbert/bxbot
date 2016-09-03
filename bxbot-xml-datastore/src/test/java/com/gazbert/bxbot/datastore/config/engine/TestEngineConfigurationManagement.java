@@ -23,7 +23,6 @@
 
 package com.gazbert.bxbot.datastore.config.engine;
 
-
 import com.gazbert.bxbot.datastore.ConfigurationManager;
 import com.gazbert.bxbot.datastore.engine.generated.EngineType;
 import org.junit.Test;

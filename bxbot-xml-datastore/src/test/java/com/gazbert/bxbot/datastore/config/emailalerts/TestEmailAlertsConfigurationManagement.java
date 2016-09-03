@@ -23,7 +23,6 @@
 
 package com.gazbert.bxbot.datastore.config.emailalerts;
 
-
 import com.gazbert.bxbot.datastore.ConfigurationManager;
 import com.gazbert.bxbot.datastore.emailalerts.generated.EmailAlertsType;
 import com.gazbert.bxbot.datastore.emailalerts.generated.SmtpConfigType;

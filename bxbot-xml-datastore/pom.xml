@@ -6,7 +6,7 @@
     <artifactId>bxbot-xml-datastore</artifactId>
     <packaging>jar</packaging>
     <name>BX-bot XML Datastore</name>
-    <description>An XML backed datastore for holding the bot's configuration</description>
+    <description>A simple XML backed datastore for holding the bot's configuration</description>
     <url>http://github.com/gazbert/bxbot</url>
     <parent>
         <groupId>com.gazbert.bxbot</groupId>
