@@ -18,12 +18,16 @@ hs_err_pid*
 /out
 
 # Build and log dirs
-/bin
-/target
-/dist
-/libs
-/logs
+**/bin
+**/target
+**/dist
+**/libs
+**/logs
 *.log
+*.log.gz
+
+# Allow maven wrapper jar - we need this for TravisCI
+!.mvn/wrapper/maven-wrapper.jar
 
 # bot pid when running locally
 .bxbot.pid
