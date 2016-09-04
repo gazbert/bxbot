@@ -31,3 +31,97 @@ subprojects {
         maven { url "http://repo.maven.apache.org/maven2" }
     }
 }
+
+task buildZipDist(type: Zip, dependsOn: build) {
+
+    baseName = 'bxbot-app'
+
+    into("$baseName-$version") {
+
+        into('libs') {
+            from 'bxbot-app/build/libs'
+            include '*.jar' //copy the fat jar created by bootRepackage
+        }
+
+        into('') {
+            from 'README.md'
+        }
+
+        into('') {
+            from 'CONTRIBUTING.md'
+        }
+
+        into('') {
+            from 'LICENSE'
+        }
+
+        into('') {
+            from 'third_party_licenses.txt'
+        }
+
+        into('') {
+            from 'MAINTAINERS.txt'
+        }
+
+        into('') {
+            from 'bxbot.sh'
+        }
+
+        from('config/application.properties') {
+            into 'config'
+        }
+
+        into('config') {
+            from 'config'
+            include('*.xml')
+        }
+    }
+}
+
+task buildTarGzipDist(type: Tar, dependsOn: build) {
+
+    baseName = 'bxbot-app'
+    extension = 'tar.gz'
+    compression = Compression.GZIP
+
+    into("$baseName-$version") {
+
+        into('libs') {
+            from 'bxbot-app/build/libs'
+            include '*.jar' //copy the fat jar created by bootRepackage
+        }
+
+        into('') {
+            from 'README.md'
+        }
+
+        into('') {
+            from 'CONTRIBUTING.md'
+        }
+
+        into('') {
+            from 'LICENSE'
+        }
+
+        into('') {
+            from 'third_party_licenses.txt'
+        }
+
+        into('') {
+            from 'MAINTAINERS.txt'
+        }
+
+        into('') {
+            from 'bxbot.sh'
+        }
+
+        from('config/application.properties') {
+            into 'config'
+        }
+
+        into('config') {
+            from 'config'
+            include('*.xml')
+        }
+    }
+}
