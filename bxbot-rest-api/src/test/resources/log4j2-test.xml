@@ -20,9 +20,9 @@
     </Appenders>
     <Loggers>
         <!--
-        info for testing the REST API - debug chucks out all the Spring Boot stuff!
+        debug for testing
         -->
-        <Root level="info">
+        <Root level="debug">
             <AppenderRef ref="STDOUT"/>
             <!--<AppenderRef ref="BXBot_RollingFile"/>-->
         </Root>
