@@ -46,11 +46,11 @@ it will log the error, send an email alert (if configured), and then shutdown.
 BX-bot requires [Oracle JDK 1.8](http://www.oracle.com/technetwork/java/javase/downloads/index-jsp-138363.html) for the
 development and runtime environment.
 
-You'll also need [Maven 3](https://maven.apache.org) installed in order to build the bot and pull in the dependencies;
+You can use [Maven 3](https://maven.apache.org) or [Gradle 3](https://gradle.org/) to build the bot and pull in the dependencies;
 BX-bot depends on [log4j](http://logging.apache.org/log4j), [JavaMail](https://java.net/projects/javamail/pages/Home),
 [Google Gson](https://code.google.com/p/google-gson/), [Google Guava](https://github.com/google/guava), and 
 [Spring Boot](http://projects.spring.io/spring-boot/).
-See the [`pom.xml`](./pom.xml) for details.
+See the Maven [`pom.xml`](./pom.xml) for details.
 
 ## Testing
 The bot has undergone basic unit testing on a _best-effort_ basis; there is a continuous integration build 
@@ -454,26 +454,48 @@ You can also create your own jar for your adapters, e.g. `my-adapters.jar`, and 
 see the _Installation Guide_ for how to do this.
 
 ## Build Guide
+Gradle and Maven builds are available.
 
-A Maven `pom.xml` is included for building the bot.
+### Gradle
 
 1. Clone the BX-bot repo locally - the [Releases](https://github.com/gazbert/bxbot/releases) page has the stable builds.
-1. From the project root, run `mvn clean install`. If you want to run the exchange integration tests, use `mvn clean install -Pint`.
-   To execute both unit and integration tests, use `mvn clean install -Pall`.
-1. Take a look at the Javadoc in the `./target/apidocs` folders of the bxbot-trading-api, bxbot-strategy-api, 
+1. From the project root, run `./gradlew build`. If you want to run the exchange integration tests, use `./gradlew integrationTests`.
+   To execute both unit and integration tests, use `./gradlew build integrationTests`.
+1. Take a look at the Javadoc in the TODO `./target/apidocs` folders of the bxbot-trading-api, bxbot-strategy-api, 
    and bxbot-exchange-api modules after the build completes.
-
-## Installation Guide
+   
+#### Installation
 
 1. Prerequisite: [Oracle JDK 1.8](http://www.oracle.com/technetwork/java/javase/downloads/index-jsp-138363.html) needs to be installed
    on the machine you want to run the bot.     
 1. Open the `config` XML files and configure them as required.
 1. If you plan on using Trading Strategies or Exchange Adapters that are packaged in separate jar files, you'll need to add
    the dependency in the [bxbot-app/pom.xml](./bxbot-app/pom.xml) - see the commented out dependency examples inside it.
-1. From the project root, run `mvn clean assembly:assembly` to build the bot and produce the distribution 
+1. From the project root, run `./mvnw clean assembly:assembly` to build the bot and produce the distribution 
    artifacts `bxbot-app-<version>-dist.tar.gz` and `bxbot-app-<version>-dist.zip` in the `./target` folder.
 1. Copy either the `bxbot-app-<version>-dist.tar.gz` or the `bxbot-app-<version>-dist.zip` onto the machine you 
    want to run the bot and unzip it someplace.
+1. Usage: `./bxbot.sh [start|stop|status]`   
+    
+### Maven
+
+1. Clone the BX-bot repo locally - the [Releases](https://github.com/gazbert/bxbot/releases) page has the stable builds.
+1. From the project root, run `./mvnw clean install`. If you want to run the exchange integration tests, use `./mvnw clean install -Pint`.
+   To execute both unit and integration tests, use `./mvnw clean install -Pall`.
+1. Take a look at the Javadoc in the `./target/apidocs` folders of the bxbot-trading-api, bxbot-strategy-api, 
+   and bxbot-exchange-api modules after the build completes.
+   
+### Installation
+ 
+1. Prerequisite: [Oracle JDK 1.8](http://www.oracle.com/technetwork/java/javase/downloads/index-jsp-138363.html) needs to be installed
+    on the machine you want to run the bot.     
+1. Open the `config` XML files and configure them as required.
+1. If you plan on using Trading Strategies or Exchange Adapters that are packaged in separate jar files, you'll need to add
+    the dependency in the [bxbot-app/pom.xml](./bxbot-app/pom.xml) - see the commented out dependency examples inside it.
+1. From the project root, run `./mvnw clean assembly:assembly` to build the bot and produce the distribution 
+    artifacts `bxbot-app-<version>-dist.tar.gz` and `bxbot-app-<version>-dist.zip` in the `./target` folder.
+1. Copy either the `bxbot-app-<version>-dist.tar.gz` or the `bxbot-app-<version>-dist.zip` onto the machine you 
+    want to run the bot and unzip it someplace.
 1. Usage: `./bxbot.sh [start|stop|status]`
  
 ## Coming Soon...
