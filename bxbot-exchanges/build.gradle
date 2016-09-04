@@ -1,4 +1,5 @@
 description = 'BX-bot Exchange Adapters'
+
 dependencies {
     compile project(':bxbot-trading-api')
     compile project(':bxbot-exchange-api')
@@ -18,4 +19,29 @@ dependencies {
     }
     testCompile group: 'org.objenesis', name: 'objenesis', version: '2.1'
     testCompile group: 'cglib', name: 'cglib-nodep', version: '2.2.2'
+}
+
+sourceSets {
+    integrationTest {
+        compileClasspath += main.output + test.output
+        runtimeClasspath += main.output + test.output
+
+        java.srcDir 'src/integration-test/java'
+        resources.srcDir 'src/integration-test/resources'
+    }
+}
+
+configurations {
+    integrationTestCompile.extendsFrom testCompile
+    integrationTestRuntime.extendsFrom testRuntime
+}
+
+task integrationTest(type: Test) {
+
+    testClassesDir = sourceSets.integrationTest.output.classesDir
+    classpath = sourceSets.integrationTest.runtimeClasspath
+
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
 }

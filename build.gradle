@@ -32,6 +32,12 @@ subprojects {
         mavenLocal()
         maven { url "http://repo.maven.apache.org/maven2" }
     }
+
+    test {
+        testLogging {
+            events "passed", "skipped", "failed"
+        }
+    }
 }
 
 task buildZipDist(type: Zip, dependsOn: build) {
