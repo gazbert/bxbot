@@ -35,7 +35,6 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
  * Web security config for telling Spring about our User Details service.
  *
  * @author gazbert
- * @since 21/08/2016
  */
 @Configuration
 @EnableWebSecurity

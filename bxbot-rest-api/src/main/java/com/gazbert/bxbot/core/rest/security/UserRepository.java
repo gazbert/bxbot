@@ -29,7 +29,6 @@ import org.springframework.data.repository.CrudRepository;
  * Repository for Users.
  *
  * @author gazbert
- * @since 21/08/2016
  */
 public interface UserRepository extends CrudRepository<User, Long> {
 

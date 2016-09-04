@@ -39,7 +39,6 @@ import java.util.Collection;
  * User Details service for authenticating and authorizing users of the REST API.
  *
  * @author gazbert
- * @since 21/08/2016
  */
 @Service("userService")
 @ComponentScan(basePackages={"com.gazbert.bxbot.repository"})

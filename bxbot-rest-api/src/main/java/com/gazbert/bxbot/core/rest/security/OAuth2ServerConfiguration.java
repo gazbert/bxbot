@@ -47,7 +47,6 @@ import org.springframework.security.oauth2.provider.token.store.InMemoryTokenSto
  * OAuth2 server config for the REST API.
  *
  * @author gazbert
- * @since 21/08/2016
  */
 @Configuration
 public class OAuth2ServerConfiguration {
