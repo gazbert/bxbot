@@ -6,7 +6,7 @@ dependencies {
     compile(group: 'org.springframework.boot', name: 'spring-boot-starter', version: '1.4.0.RELEASE') {
         exclude(module: 'spring-boot-starter-logging')
     }
-    compile group: 'org.springframework.boot', name: 'spring-boot-starter-log4j2', version: '1.4.0.RELEASE'
+    compile libraries.spring_boot_starter_log4j2
     compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.6.2'
     compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.6.2'
     compile group: 'com.google.code.gson', name: 'gson', version: '2.7'

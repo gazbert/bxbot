@@ -12,6 +12,10 @@ buildscript {
     }
 }
 
+ext.libraries = [
+        spring_boot_starter_log4j2: dependencies.create("org.springframework.boot:spring-boot-starter-log4j2:1.4.0.RELEASE")
+]
+
 allprojects {
 
     apply plugin: "io.spring.dependency-management"
