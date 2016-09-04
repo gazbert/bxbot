@@ -98,7 +98,6 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
         mockMvc = MockMvcBuilders.webAppContextSetup(ctx).addFilter(springSecurityFilterChain).build();
     }
 
-    @Ignore("FIXME Broken log4j dependency using Gradle build :-(")
     @Test
     public void testGetAllStrategyConfig() throws Exception {
 
@@ -124,7 +123,6 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
                 );
     }
 
-    @Ignore("FIXME Broken log4j dependency using Gradle build :-(")
     @Test
     public void testGetAllStrategyConfigWhenUnauthorized() throws Exception {
 
@@ -134,7 +132,6 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
                 .andExpect(jsonPath("$.error", is("unauthorized")));
     }
 
-    @Ignore("FIXME Broken log4j dependency using Gradle build :-(")
     @Test
     public void testGetStrategyConfigById() throws Exception {
 
@@ -153,7 +150,6 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
                 );
     }
 
-    @Ignore("FIXME Broken log4j dependency using Gradle build :-(")
     @Test
     public void testGetStrategyConfigByIdWhenUnauthorized() throws Exception {
 
@@ -163,7 +159,6 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
                 .andExpect(jsonPath("$.error", is("unauthorized")));
     }
 
-    @Ignore("FIXME Broken log4j dependency using Gradle build :-(")
     @Test
     public void testGetStrategyConfigByIdWhenNotRecognized() throws Exception {
 
@@ -187,7 +182,6 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
                 .andExpect(status().isNoContent());
     }
 
-    @Ignore("FIXME Broken log4j dependency using Gradle build :-(")
     @Test
     public void testUpdateStrategyConfigWhenUnauthorized() throws Exception {
 
@@ -199,7 +193,6 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
                 .andExpect(jsonPath("$.error", is("unauthorized")));
     }
 
-    @Ignore("FIXME Broken log4j dependency using Gradle build :-(")
     @Test
     public void testUpdateStrategyConfigWhenIdNotRecognized() throws Exception {
 

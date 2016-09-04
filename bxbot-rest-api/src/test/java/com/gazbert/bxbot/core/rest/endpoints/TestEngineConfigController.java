@@ -28,7 +28,6 @@ import com.gazbert.bxbot.core.mail.EmailAlerter;
 import com.gazbert.bxbot.domain.engine.EngineConfig;
 import com.gazbert.bxbot.services.EngineConfigService;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -69,6 +68,11 @@ public class TestEngineConfigController extends AbstractConfigControllerTest {
     private static final BigDecimal ENGINE_EMERGENCY_STOP_BALANCE = new BigDecimal("0.9232320");
     private static final int ENGINE_TRADE_CYCLE_INTERVAL = 60;
 
+    @Test
+    public void testSomin() {
+
+    }
+
     @MockBean
     private EngineConfigService engineConfigService;
 
@@ -83,7 +87,6 @@ public class TestEngineConfigController extends AbstractConfigControllerTest {
         mockMvc = MockMvcBuilders.webAppContextSetup(ctx).addFilter(springSecurityFilterChain).build();
     }
 
-    @Ignore("FIXME Broken log4j dependency using Gradle build :-(")
     @Test
     public void testGetEngineConfig() throws Exception {
 
@@ -100,7 +103,6 @@ public class TestEngineConfigController extends AbstractConfigControllerTest {
                 );
     }
 
-    @Ignore("FIXME Broken log4j dependency using Gradle build :-(")
     @Test
     public void testGetEngineConfigWhenUnauthorized() throws Exception {
 
@@ -110,7 +112,6 @@ public class TestEngineConfigController extends AbstractConfigControllerTest {
                 .andExpect(jsonPath("$.error", is("unauthorized")));
     }
 
-    @Ignore("FIXME Broken log4j dependency using Gradle build :-(")
     @Test
     public void testUpdateEngineConfig() throws Exception {
 
@@ -121,7 +122,6 @@ public class TestEngineConfigController extends AbstractConfigControllerTest {
                 .andExpect(status().isNoContent());
     }
 
-    @Ignore("FIXME Broken log4j dependency using Gradle build :-(")
     @Test
     public void testUpdateEngineConfigWhenUnauthorized() throws Exception {
 

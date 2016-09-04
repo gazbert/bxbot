@@ -68,6 +68,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebAppConfiguration
 public class TestMarketConfigController {
 
+    @Test
+    public void testSomin() {
+
+    }
+
     private static final MediaType CONTENT_TYPE = new MediaType(MediaType.APPLICATION_JSON.getType(),
             MediaType.APPLICATION_JSON.getSubtype(),
             Charset.forName("utf8"));
@@ -126,7 +131,6 @@ public class TestMarketConfigController {
                 );
     }
 
-    @Ignore("FIXME Broken log4j dependency using Gradle build :-(")
     @Test
     public void testUpdateMarketConfig() throws Exception {
 
