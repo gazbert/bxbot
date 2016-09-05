@@ -16,4 +16,7 @@ dependencies {
     compile project(':bxbot-repository')
     compile project(':bxbot-core')
     compile project(':bxbot-rest-api')
+
+    // optional custom trading strategies
+    // compile group: 'com.gazbert.bxbot', name: 'bxbot-strategies', version: '3.0-SNAPSHOT'
 }

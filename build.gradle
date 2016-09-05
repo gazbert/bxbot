@@ -119,7 +119,7 @@ task buildZipDist(type: Zip, dependsOn: build) {
 task buildTarGzipDist(type: Tar, dependsOn: build) {
 
     baseName = 'bxbot-app'
-    extension = '-dist.tar.gz'
+    extension = 'tar.gz'
     compression = Compression.GZIP
 
     into("$baseName-$version") {
