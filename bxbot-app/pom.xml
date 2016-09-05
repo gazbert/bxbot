@@ -79,10 +79,10 @@
 
         <!-- Add your (optional) Exchange Adapters here -->
         <!--<dependency>-->
-        <!--<groupId>com.gazbert.bxbot</groupId>-->
-        <!--<artifactId>bxbot-exchanges</artifactId>-->
-        <!--<version>1.0-SNAPSHOT</version>-->
-        <!--<scope>runtime</scope>-->
+            <!--<groupId>com.your.stuff</groupId>-->
+            <!--<artifactId>your-custom-exchanges</artifactId>-->
+            <!--<version>1.0-SNAPSHOT</version>-->
+            <!--<scope>runtime</scope>-->
         <!--</dependency>-->
 
     </dependencies>

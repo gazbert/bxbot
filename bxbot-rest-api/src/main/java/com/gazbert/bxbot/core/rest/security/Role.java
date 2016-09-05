@@ -35,7 +35,6 @@ import java.util.Set;
  * Encapsulates a role containing selected users of the REST API.
  *
  * @author gazbert
- * @since 21/08/2016
  */
 @Entity
 public class Role implements GrantedAuthority {
