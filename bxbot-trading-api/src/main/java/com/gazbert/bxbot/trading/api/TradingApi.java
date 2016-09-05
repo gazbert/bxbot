@@ -35,7 +35,7 @@ import java.util.List;
  * </p>
  * <p>
  * Exchange Adapters provide their own implementation of the API for the exchange they wish to trade on.
- * </p>>
+ * </p>
  * <p>
  * This version of the Trading API only supports <a href="http://www.investopedia.com/terms/l/limitorder.asp">limit orders</a>
  * traded at the <a href="http://www.investopedia.com/terms/s/spotprice.asp">spot price</a>.

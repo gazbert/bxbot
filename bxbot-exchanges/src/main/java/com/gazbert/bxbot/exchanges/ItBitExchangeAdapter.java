@@ -67,7 +67,6 @@ import java.util.*;
  * <p>
  * The adapter only supports the REST implementation of the <a href="https://api.itbit.com/docs">Trading API</a>.
  * </p>
- * <p>
  * <p>The itBit exchange uses XBT for the Bitcoin currency code instead of the usual BTC. So, if you were to call
  * {@link #getBalanceInfo()}, you would need to use XBT (instead of BTC) as the key when fetching your Bitcoin balance
  * info from the returned maps.</p>
@@ -88,7 +87,6 @@ import java.util.*;
  * {@link java.math.RoundingMode#HALF_EVEN}, E.g. 250.176 would be sent to the exchange as 250.18. The same is done for
  * the order amount, but to 4 decimal places.
  * </p>
- * <p>
  * <p>
  * The Exchange Adapter is <em>not</em> thread safe. It expects to be called using a single thread in order to
  * preserve trade execution order. The {@link URLConnection} achieves this by blocking/waiting on the input stream

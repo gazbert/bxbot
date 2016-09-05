@@ -57,17 +57,19 @@ See the Maven [`pom.xml`](./pom.xml) for details.
 
 ### Maven
  
-2. From the project root, run `./mvnw clean install`. If you want to run the exchange integration tests, use `./mvnw clean install -Pint`.
+2. From the project root, run `./mvnw clean install`.
+   If you want to run the exchange integration tests, use `./mvnw clean install -Pint`. 
    To execute both unit and integration tests, use `./mvnw clean install -Pall`.
 3. Take a look at the Javadoc in the `./target/apidocs` folders of the bxbot-trading-api, bxbot-strategy-api, 
    and bxbot-exchange-api modules after the build completes.
    
 ### Gradle
 
-2. From the project root, run `./gradlew build`. If you want to run the exchange integration tests, use `./gradlew integrationTests`.
+2. From the project root, run `./gradlew build`.
+   If you want to run the exchange integration tests, use `./gradlew integrationTests`.
    To execute both unit and integration tests, use `./gradlew build integrationTests`.
-3. Take a look at the Javadoc in the TODO `./target/apidocs` folders of the bxbot-trading-api, bxbot-strategy-api, 
-   and bxbot-exchange-api modules after the build completes.     
+3. To generate the Javadoc, run `./gradlew javadoc` and look in the `./build/docs/javadoc` folders of the bxbot-trading-api, 
+   bxbot-strategy-api, and bxbot-exchange-api modules.
 
 ## Testing
 The bot has undergone basic unit testing on a _best-effort_ basis; there is a continuous integration build 
@@ -371,9 +373,6 @@ interface. This allows the Trading Engine to:
 
 The Trading Engine will only send 1 thread through your Trading Strategy; you do not have to code for concurrency.
 
-The project Javadoc will be useful too. It can be found in the `./strategy-api/target/apidocs` and 
-`./trading-api/target/apidocs` folders after running the Maven build - see the _Build Guide_ section.
-
 ##### Making Trades
 You use the [`TradingApi`](./bxbot-trading-api/src/main/java/com/gazbert/bxbot/trading/api/TradingApi.java)
 to make trades etc. The API is passed to your Trading Strategy implementation `init` method when the bot starts up. 
@@ -429,9 +428,6 @@ is a handy base class that all the inbuilt Exchange Adapters extend - it could b
 
 The Trading Engine will only send 1 thread through your Exchange Adapter; you do not have to code for concurrency.
 
-The project Javadoc will be useful too. It can be found in the `./bxbot-exchange-api/target/apidocs` and 
-`./bxbot-trading-api/target/apidocs` folders after running the Maven build - see the _Build Guide_ section.
-
 ##### Error Handling
 Your Exchange Adapter implementation should throw a [`TradingApiException`](./bxbot-trading-api/src/main/java/com/gazbert/bxbot/trading/api/TradingApiException.java)
 whenever it breaks; the Trading Strategies should catch this and decide how they want to proceed.
@@ -474,13 +470,13 @@ see the _Installation Guide_ for how to do this.
 
 1. Prerequisite: [Oracle JDK 1.8](http://www.oracle.com/technetwork/java/javase/downloads/index-jsp-138363.html) needs to be installed
    on the machine you want to run the bot.     
-1. Open the `config` XML files and configure them as required.
+1. Edit the `config` XML files as required.
 
 ### Maven
 
 3. If you plan on using Trading Strategies or Exchange Adapters that are packaged in separate jar files, you'll need to add
    the dependency in the [bxbot-app/pom.xml](./bxbot-app/pom.xml) - see the commented out dependency examples inside it.
-4. From the project root, run `./mvnw clean assembly:assembly` to build the bot and produce the distribution 
+4. From the project root, run `./mvnw clean assembly:assembly` to produce the distribution 
    artifacts `bxbot-app-<version>-dist.tar.gz` and `bxbot-app-<version>-dist.zip` in the `./target` folder.
 5. Copy either the `bxbot-app-<version>-dist.tar.gz` or the `bxbot-app-<version>-dist.zip` onto the machine you 
    want to run the bot and unzip it someplace.
@@ -488,14 +484,13 @@ see the _Installation Guide_ for how to do this.
     
 ### Gradle    
  
-TODO ...
- 
 3. If you plan on using Trading Strategies or Exchange Adapters that are packaged in separate jar files, you'll need to add
-    the dependency in the [bxbot-app/pom.xml](./bxbot-app/pom.xml) - see the commented out dependency examples inside it.
-4. From the project root, run `./mvnw clean assembly:assembly` to build the bot and produce the distribution 
-    artifacts `bxbot-app-<version>-dist.tar.gz` and `bxbot-app-<version>-dist.zip` in the `./target` folder.
-5. Copy either the `bxbot-app-<version>-dist.tar.gz` or the `bxbot-app-<version>-dist.zip` onto the machine you 
-    want to run the bot and unzip it someplace.
+   the dependency in the [bxbot-strategies/build.gradle](bxbot-strategies/build.gradle) and 
+   [bxbot-exchanges/build.gradle](bxbot-exchanges/build.gradle) respectively. See the commented out dependency examples inside them.
+4. From the project root, run `./gradlew buildTarGzipDist` or `./gradlew buildZipDist` to build the distribution 
+   artifact: either `bxbot-app-<version>-dist.tar.gz` or `bxbot-app-<version>-dist.zip` respectively. 
+   It will be placed in the `./build/distributions` folder.
+5. Copy the artifact onto the machine you want to run the bot and unzip it someplace.
 6. Usage: `./bxbot.sh [start|stop|status]`
  
 ## Coming Soon...
@@ -508,5 +503,3 @@ The following features are in the pipeline:
 - Android app for administering the bot.
 
 See the main project [Issue Tracker](https://github.com/gazbert/bxbot/issues) for timescales and progress.
-
-

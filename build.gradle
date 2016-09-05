@@ -42,6 +42,10 @@ subprojects {
             events "passed", "skipped", "failed"
         }
     }
+
+    javadoc {
+        include "**/api/**"
+    }
 }
 
 task buildZipDist(type: Zip, dependsOn: build) {
@@ -93,7 +97,7 @@ task buildZipDist(type: Zip, dependsOn: build) {
 task buildTarGzipDist(type: Tar, dependsOn: build) {
 
     baseName = 'bxbot-app'
-    extension = 'tar.gz'
+    extension = '-dist.tar.gz'
     compression = Compression.GZIP
 
     into("$baseName-$version") {

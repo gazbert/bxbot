@@ -1,4 +1,5 @@
 description = 'BX-bot REST API'
+
 dependencies {
     compile project(':bxbot-services')
     compile project(':bxbot-core')
@@ -40,3 +41,5 @@ dependencies {
         exclude(module: 'logback-classic')
     }
 }
+
+
