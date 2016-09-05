@@ -1,9 +1,13 @@
 description = 'BX-bot REST API'
 
+// TODO revisit this and get to the bottom of the logback-classic jar being sucked in...
 dependencies {
+
     compile project(':bxbot-services')
     compile project(':bxbot-core')
-    compile group: 'org.springframework.security.oauth', name: 'spring-security-oauth2', version: '2.0.11.RELEASE'
+
+    compile libraries.spring_security_oauth2
+
     compile( group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: '1.4.0.RELEASE') {
         exclude(module: 'spring-boot-starter-logging')
         exclude(module: 'logback-classic')
@@ -24,18 +28,20 @@ dependencies {
     compile( group: 'org.springframework.boot', name: 'spring-boot-starter-log4j2', version: '1.4.0.RELEASE') {
         exclude(module: 'logback-classic')
     }
-    compile group: 'com.google.guava', name: 'guava', version: '19.0'
+
+    compile libraries.google_guava
+
     compile(group: 'org.hsqldb', name: 'hsqldb', version: '2.3.4') {
         exclude(module: 'logback-classic')
     }
-    testCompile group: 'junit', name: 'junit', version: '4.12'
-    testCompile group: 'org.powermock', name: 'powermock-module-junit4', version: '1.6.2'
-    testCompile group: 'org.powermock', name: 'powermock-api-easymock', version: '1.6.2'
-    testCompile(group: 'org.easymock', name: 'easymock', version: '3.3.1') {
-        exclude(module: 'cglib-nodep')
-    }
-    testCompile group: 'org.objenesis', name: 'objenesis', version: '2.1'
-    testCompile group: 'cglib', name: 'cglib-nodep', version: '2.2.2'
+
+    testCompile libraries.junit
+    testCompile libraries.powermock_junit
+    testCompile libraries.powermock_api_easymock
+    testCompile libraries.easymock
+    testCompile libraries.objenesis
+    testCompile libraries.cglib_nodep
+
     testCompile (group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: '1.4.0.RELEASE') {
         exclude(module: 'spring-boot-starter-logging')
         exclude(module: 'logback-classic')

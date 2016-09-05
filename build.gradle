@@ -13,7 +13,29 @@ buildscript {
 }
 
 ext.libraries = [
-        spring_boot_starter_log4j2: dependencies.create("org.springframework.boot:spring-boot-starter-log4j2:1.4.0.RELEASE")
+        spring_boot_starter: dependencies.create("org.springframework.boot:spring-boot-starter:1.4.0.RELEASE") {
+            exclude module: "spring-boot-starter-logging"
+            force = true
+        },
+        spring_boot_starter_log4j2: dependencies.create("org.springframework.boot:spring-boot-starter-log4j2:1.4.0.RELEASE"),
+        spring_core: dependencies.create("org.springframework:spring-core:4.3.1.RELEASE"),
+        spring_tx: dependencies.create("org.springframework:spring-tx:4.3.1.RELEASE"),
+        spring_security_oauth2: dependencies.create("org.springframework.security.oauth:spring-security-oauth2:2.0.11.RELEASE"),
+        google_guava: dependencies.create("com.google.guava:guava:19.0"),
+        google_gson: dependencies.create("com.google.code.gson:gson:2.7"),
+        javax_mail_api: dependencies.create("javax.mail:javax.mail-api:1.5.5"),
+        javax_mail_sun: dependencies.create("com.sun.mail:javax.mail:1.5.5"),
+
+        junit: dependencies.create("junit:junit:4.12"),
+        powermock_junit: dependencies.create("org.powermock:powermock-module-junit4:1.6.2"),
+        powermock_api_easymock: dependencies.create("org.powermock:powermock-api-easymock:1.6.2"),
+        easymock: dependencies.create("org.easymock:easymock:3.3.1") {
+            exclude module: "cglib-nodep"
+            force = true
+        },
+        objenesis: dependencies.create("org.objenesis:objenesis:2.1"),
+        cglib_nodep: dependencies.create("cglib:cglib-nodep:2.2.2"),
+        spring_boot_starter_test: dependencies.create("org.springframework.boot:spring-boot-starter-test:1.4.0.RELEASE")
 ]
 
 allprojects {

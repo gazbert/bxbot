@@ -1,19 +1,19 @@
 description = 'BX-bot Services'
+
 dependencies {
+
     compile project(':bxbot-repository')
-    compile group: 'org.springframework', name: 'spring-tx', version: '4.3.1.RELEASE'
-    compile(group: 'org.springframework.boot', name: 'spring-boot-starter', version: '1.4.0.RELEASE') {
-        exclude(module: 'spring-boot-starter-logging')
-    }
-    compile group: 'org.springframework.boot', name: 'spring-boot-starter-log4j2', version: '1.4.0.RELEASE'
-    compile group: 'com.google.guava', name: 'guava', version: '19.0'
-    testCompile group: 'junit', name: 'junit', version: '4.12'
-    testCompile group: 'org.powermock', name: 'powermock-module-junit4', version: '1.6.2'
-    testCompile group: 'org.powermock', name: 'powermock-api-easymock', version: '1.6.2'
-    testCompile(group: 'org.easymock', name: 'easymock', version: '3.3.1') {
-        exclude(module: 'cglib-nodep')
-    }
-    testCompile group: 'org.objenesis', name: 'objenesis', version: '2.1'
-    testCompile group: 'cglib', name: 'cglib-nodep', version: '2.2.2'
-    testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: '1.4.0.RELEASE'
+
+    compile libraries.spring_tx
+    compile libraries.spring_boot_starter
+    compile libraries.spring_boot_starter_log4j2
+    compile libraries.google_guava
+
+    testCompile libraries.junit
+    testCompile libraries.powermock_junit
+    testCompile libraries.powermock_api_easymock
+    testCompile libraries.easymock
+    testCompile libraries.objenesis
+    testCompile libraries.cglib_nodep
+    testCompile libraries.spring_boot_starter_test
 }
