@@ -18,6 +18,22 @@ ext.libraries = [
             force = true
         },
         spring_boot_starter_log4j2: dependencies.create("org.springframework.boot:spring-boot-starter-log4j2:1.4.0.RELEASE"),
+        spring_boot_starter_web: dependencies.create("org.springframework.boot:spring-boot-starter-web:1.4.0.RELEASE") {
+            exclude module: "logback-classic"
+            force = true
+        },
+        spring_boot_starter_actuator: dependencies.create("org.springframework.boot:spring-boot-starter-actuator:1.4.0.RELEASE") {
+            exclude module: "logback-classic"
+            force = true
+        },
+        spring_boot_starter_security: dependencies.create("org.springframework.boot:spring-boot-starter-security:1.4.0.RELEASE") {
+            exclude module: "logback-classic"
+            force = true
+        },
+        spring_boot_starter_data_jpa: dependencies.create("org.springframework.boot:spring-boot-starter-data-jpa:1.4.0.RELEASE") {
+            exclude module: "logback-classic"
+            force = true
+        },
         spring_core: dependencies.create("org.springframework:spring-core:4.3.1.RELEASE"),
         spring_tx: dependencies.create("org.springframework:spring-tx:4.3.1.RELEASE"),
         spring_security_oauth2: dependencies.create("org.springframework.security.oauth:spring-security-oauth2:2.0.11.RELEASE"),
@@ -25,6 +41,7 @@ ext.libraries = [
         google_gson: dependencies.create("com.google.code.gson:gson:2.7"),
         javax_mail_api: dependencies.create("javax.mail:javax.mail-api:1.5.5"),
         javax_mail_sun: dependencies.create("com.sun.mail:javax.mail:1.5.5"),
+        hsqldb: dependencies.create("org.hsqldb:hsqldb:2.3.4"),
 
         junit: dependencies.create("junit:junit:4.12"),
         powermock_junit: dependencies.create("org.powermock:powermock-module-junit4:1.6.2"),
@@ -70,6 +87,7 @@ subprojects {
     }
 }
 
+// TODO strip out common stuff into separate method?
 task buildZipDist(type: Zip, dependsOn: build) {
 
     baseName = 'bxbot-app'
@@ -116,6 +134,7 @@ task buildZipDist(type: Zip, dependsOn: build) {
     }
 }
 
+// TODO strip out common stuff into separate method?
 task buildTarGzipDist(type: Tar, dependsOn: build) {
 
     baseName = 'bxbot-app'

@@ -68,11 +68,6 @@ public class TestEngineConfigController extends AbstractConfigControllerTest {
     private static final BigDecimal ENGINE_EMERGENCY_STOP_BALANCE = new BigDecimal("0.9232320");
     private static final int ENGINE_TRADE_CYCLE_INTERVAL = 60;
 
-    @Test
-    public void testSomin() {
-
-    }
-
     @MockBean
     private EngineConfigService engineConfigService;
 

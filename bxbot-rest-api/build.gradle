@@ -1,39 +1,19 @@
 description = 'BX-bot REST API'
 
-// TODO revisit this and get to the bottom of the logback-classic jar being sucked in...
 dependencies {
 
     compile project(':bxbot-services')
     compile project(':bxbot-core')
 
+    compile libraries.spring_boot_starter_web
+    compile libraries.spring_boot_starter_actuator
+    compile libraries.spring_boot_starter_security
+    compile libraries.spring_boot_starter_data_jpa
     compile libraries.spring_security_oauth2
-
-    compile( group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: '1.4.0.RELEASE') {
-        exclude(module: 'spring-boot-starter-logging')
-        exclude(module: 'logback-classic')
-    }
-    compile (group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version: '1.4.0.RELEASE') {
-        exclude(module: 'logback-classic')
-    }
-    compile (group: 'org.springframework.boot', name: 'spring-boot-starter-security', version: '1.4.0.RELEASE') {
-        exclude(module: 'logback-classic')
-    }
-    compile( group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa', version: '1.4.0.RELEASE') {
-        exclude(module: 'logback-classic')
-    }
-    compile(group: 'org.springframework.boot', name: 'spring-boot-starter', version: '1.4.0.RELEASE') {
-        exclude(module: 'spring-boot-starter-logging')
-        exclude(module: 'logback-classic')
-    }
-    compile( group: 'org.springframework.boot', name: 'spring-boot-starter-log4j2', version: '1.4.0.RELEASE') {
-        exclude(module: 'logback-classic')
-    }
-
+    compile libraries.spring_boot_starter
+    compile libraries.spring_boot_starter_log4j2
     compile libraries.google_guava
-
-    compile(group: 'org.hsqldb', name: 'hsqldb', version: '2.3.4') {
-        exclude(module: 'logback-classic')
-    }
+    compile libraries.hsqldb
 
     testCompile libraries.junit
     testCompile libraries.powermock_junit
@@ -41,11 +21,5 @@ dependencies {
     testCompile libraries.easymock
     testCompile libraries.objenesis
     testCompile libraries.cglib_nodep
-
-    testCompile (group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: '1.4.0.RELEASE') {
-        exclude(module: 'spring-boot-starter-logging')
-        exclude(module: 'logback-classic')
-    }
+    testCompile libraries.spring_boot_starter_test
 }
-
-

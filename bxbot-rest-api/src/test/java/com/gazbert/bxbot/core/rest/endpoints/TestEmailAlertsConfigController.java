@@ -71,10 +71,6 @@ public class TestEmailAlertsConfigController extends AbstractConfigControllerTes
     private static final String FROM_ADDRESS = "boba.fett@Mandalore.com";
     private static final String TO_ADDRESS = "darth.vader@deathstar.com";
 
-    @Test
-    public void testSomin() {
-
-    }
     @MockBean
     EmailAlertsConfigService emailAlertsConfigService;
 
