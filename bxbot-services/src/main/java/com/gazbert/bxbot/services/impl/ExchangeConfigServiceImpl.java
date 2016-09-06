@@ -35,8 +35,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 /**
- * TODO Strip out Auth info!
- *
  * Implementation of the Exchange config service.
  *
  * @author gazbert

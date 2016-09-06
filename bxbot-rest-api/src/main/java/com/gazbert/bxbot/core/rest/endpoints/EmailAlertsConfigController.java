@@ -68,7 +68,12 @@ public class EmailAlertsConfigController {
      */
     @RequestMapping(value = "/config/emailalerts", method = RequestMethod.GET)
     public EmailAlertsConfig getEngine(@AuthenticationPrincipal User user) {
-        return emailAlertsConfigService.getConfig();
+
+        final EmailAlertsConfig emailAlertsConfig = emailAlertsConfigService.getConfig();
+
+        // Strip out the Account password for now - too risky to expose.
+        emailAlertsConfig.getSmtpConfig().setAccountPassword(null);
+        return emailAlertsConfig;
     }
 
     /**

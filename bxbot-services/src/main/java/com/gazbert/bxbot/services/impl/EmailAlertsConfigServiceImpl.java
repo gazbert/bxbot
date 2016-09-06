@@ -35,8 +35,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 /**
- * TODO Strip out account info!
- *
  * Implementation of the Email Alerts configuration service.
  *
  * @author gazbert

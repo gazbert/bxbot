@@ -83,9 +83,7 @@ public class TestEmailAlertsConfigRepository {
         assertThat(emailAlertsConfig.getSmtpConfig().getFromAddress()).isEqualTo(FROM_ADDRESS);
         assertThat(emailAlertsConfig.getSmtpConfig().getToAddress()).isEqualTo(TO_ADDRESS);
         assertThat(emailAlertsConfig.getSmtpConfig().getAccountUsername()).isEqualTo(ACCOUNT_USERNAME);
-
-        // We don't expose email account password in the service - security risk
-        assertThat(emailAlertsConfig.getSmtpConfig().getAccountPassword()).isNull();
+        assertThat(emailAlertsConfig.getSmtpConfig().getAccountPassword()).isEqualTo(ACCOUNT_PASSWORD);
 
         PowerMock.verifyAll();
     }
