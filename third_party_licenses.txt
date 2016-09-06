@@ -14,5 +14,6 @@ Building & Testing
 * Objenesis                 - http://objenesis.org/index.html        - http://objenesis.org/license.html
 * cglib                     - https://github.com/cglib/cglib         - https://github.com/cglib/cglib/blob/master/LICENSE
 * Maven                     - https://maven.apache.org/              - http://www.apache.org/licenses/
+* Gradle                    - https://gradle.org/                    - https://gradle.org/license/
 * JsonPath                  - https://github.com/jayway/JsonPath     - https://github.com/jayway/JsonPath/blob/master/LICENSE
 * spring-boot-starter-test  - http://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-testing.html

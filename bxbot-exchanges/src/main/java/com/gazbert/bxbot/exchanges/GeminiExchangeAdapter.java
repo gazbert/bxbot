@@ -66,12 +66,11 @@ import java.util.*;
  * The adapter only supports the REST implementation of the <a href="https://docs.gemini.com/rest-api/">Trading API</a>.
  * </p>
  * <p>
- * Gemini operates <a href=https://docs.gemini.com/rest-api/#rate-limits">rate limits</a>:
+ * Gemini operates <a href="https://docs.gemini.com/rest-api/#rate-limits">rate limits</a>:
  * <ul>
  * <li>For public API entry points, they limit requests to 120 requests per minute, and recommend that you do not exceed 1 request per second.</li>
  * <li>For private API entry points, they limit requests to 600 requests per minute, and recommend that you not exceed 5 requests per second.</li>
  * </ul>
- * </p>
  * <p>
  * Exchange fees are loaded from the exchange.xml file on startup; they are not fetched from the exchange
  * at runtime as the Gemini REST API does not support this. The fees are used across all markets. Make sure you keep

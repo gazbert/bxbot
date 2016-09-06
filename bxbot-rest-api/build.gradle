@@ -1,0 +1,25 @@
+description = 'BX-bot REST API'
+
+dependencies {
+
+    compile project(':bxbot-services')
+    compile project(':bxbot-core')
+
+    compile libraries.spring_boot_starter_web
+    compile libraries.spring_boot_starter_actuator
+    compile libraries.spring_boot_starter_security
+    compile libraries.spring_boot_starter_data_jpa
+    compile libraries.spring_security_oauth2
+    compile libraries.spring_boot_starter
+    compile libraries.spring_boot_starter_log4j2
+    compile libraries.google_guava
+    compile libraries.hsqldb
+
+    testCompile libraries.junit
+    testCompile libraries.powermock_junit
+    testCompile libraries.powermock_api_easymock
+    testCompile libraries.easymock
+    testCompile libraries.objenesis
+    testCompile libraries.cglib_nodep
+    testCompile libraries.spring_boot_starter_test
+}

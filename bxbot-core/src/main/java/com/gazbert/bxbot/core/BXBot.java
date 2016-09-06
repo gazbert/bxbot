@@ -25,9 +25,9 @@ package com.gazbert.bxbot.core;
 
 import com.gazbert.bxbot.core.engine.TradingEngine;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.util.Assert;
 
 /**
  * BX-bot - here be the main boot app.
@@ -35,15 +35,32 @@ import org.springframework.util.Assert;
  * @author gazbert
  */
 @SpringBootApplication
-public class BXBot {
+public class BXBot implements CommandLineRunner {
 
     @Autowired
-    public BXBot(TradingEngine tradingEngine) {
-        Assert.notNull(tradingEngine, "tradingEngine dependency cannot be null!");
-        tradingEngine.start();
+    private TradingEngine tradingEngine;
+
+    /*
+     * Can't use constructor injection within @SpringBootApplication:
+     * http://stackoverflow.com/questions/36696803/spring-boot-no-default-constructor-found-on-springbootapplication-class
+     *
+     * New feature coming in Boot 4.3: https://jira.spring.io/browse/SPR-13471
+     */
+//    @Autowired
+//    public BXBot(TradingEngine tradingEngine) {
+//        Assert.notNull(tradingEngine, "tradingEngine dependency cannot be null!");
+//        this.tradingEngine = tradingEngine;
+//    }
+
+    public BXBot() {
     }
 
     public static void main(String[] args) {
         SpringApplication.run(BXBot.class, args);
+    }
+
+    @Override
+    public void run(String... strings) throws Exception {
+        tradingEngine.start();
     }
 }

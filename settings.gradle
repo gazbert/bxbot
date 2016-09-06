@@ -1,0 +1,26 @@
+rootProject.name = 'bxbot-parent'
+include ':bxbot-trading-api'
+include ':bxbot-exchange-api'
+include ':bxbot-strategy-api'
+include ':bxbot-exchanges'
+include ':bxbot-strategies'
+include ':bxbot-domain-objects'
+include ':bxbot-xml-datastore'
+include ':bxbot-repository'
+include ':bxbot-core'
+include ':bxbot-services'
+include ':bxbot-rest-api'
+include ':bxbot-app'
+
+project(':bxbot-trading-api').projectDir = "$rootDir/bxbot-trading-api" as File
+project(':bxbot-exchange-api').projectDir = "$rootDir/bxbot-exchange-api" as File
+project(':bxbot-strategy-api').projectDir = "$rootDir/bxbot-strategy-api" as File
+project(':bxbot-exchanges').projectDir = "$rootDir/bxbot-exchanges" as File
+project(':bxbot-strategies').projectDir = "$rootDir/bxbot-strategies" as File
+project(':bxbot-domain-objects').projectDir = "$rootDir/bxbot-domain-objects" as File
+project(':bxbot-xml-datastore').projectDir = "$rootDir/bxbot-xml-datastore" as File
+project(':bxbot-repository').projectDir = "$rootDir/bxbot-repository" as File
+project(':bxbot-core').projectDir = "$rootDir/bxbot-core" as File
+project(':bxbot-services').projectDir = "$rootDir/bxbot-services" as File
+project(':bxbot-rest-api').projectDir = "$rootDir/bxbot-rest-api" as File
+project(':bxbot-app').projectDir = "$rootDir/bxbot-app" as File

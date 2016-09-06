@@ -24,7 +24,7 @@
  * <li>include a configuration entry in the exchanges.xml file.</li>
  * </ol>
  *
- * </p>
+ * <p>
  * See the project README "How do I write my own Exchange Adapter?" section.
  * </p>
  * 
