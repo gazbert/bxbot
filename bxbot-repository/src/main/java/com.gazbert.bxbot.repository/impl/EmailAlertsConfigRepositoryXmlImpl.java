@@ -77,7 +77,7 @@ public class EmailAlertsConfigRepositoryXmlImpl implements EmailAlertsConfigRepo
         smtpConfig.setToAddress(internalEmailAlertsConfig.getSmtpConfig().getToAddr());
         smtpConfig.setFromAddress(internalEmailAlertsConfig.getSmtpConfig().getFromAddr());
         smtpConfig.setAccountUsername(internalEmailAlertsConfig.getSmtpConfig().getAccountUsername());
-        // We don't expose email account password - potential security risk
+        smtpConfig.setAccountPassword(internalEmailAlertsConfig.getSmtpConfig().getAccountPassword());
 
         final EmailAlertsConfig emailAlertsConfig = new EmailAlertsConfig();
         emailAlertsConfig.setEnabled(internalEmailAlertsConfig.isEnabled());

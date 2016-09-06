@@ -172,12 +172,6 @@ public class TradingEngine {
 
         Assert.notNull(emailAlerter, "emailAlerter dependency cannot be null!");
         this.emailAlerter = emailAlerter;
-
-        // the sequence order of these methods is significant - don't change it.
-        loadExchangeAdapterConfig();
-        loadEngineConfig();
-        loadTradingStrategyConfig();
-        loadMarketConfigAndInitialiseTradingStrategies();
     }
 
     public void start() throws IllegalStateException {
@@ -196,8 +190,19 @@ public class TradingEngine {
         // store this so we can shutdown the engine later
         engineThread = Thread.currentThread();
 
-        LOG.info(() -> "Starting Trading Engine...");
+        initConfig();
         runMainControlLoop();
+    }
+
+    private void initConfig() {
+
+        LOG.info(() -> "Initialising BX-Bot config...");
+
+        // the sequence order of these methods is significant - don't change it.
+        loadExchangeAdapterConfig();
+        loadEngineConfig();
+        loadTradingStrategyConfig();
+        loadMarketConfigAndInitialiseTradingStrategies();
     }
 
     /*
@@ -206,6 +211,8 @@ public class TradingEngine {
      * The code fails hard and fast if an unexpected occurs. Network exceptions *should* recover.
      */
     private void runMainControlLoop() {
+
+        LOG.info(() -> "Starting Trading Engine...");
 
         while (keepAlive) {
 
@@ -432,7 +439,7 @@ public class TradingEngine {
     private void loadExchangeAdapterConfig() {
 
         final ExchangeConfig domainExchangeConfig = exchangeConfigRepository.getConfig();
-        LOG.info(() -> "*** Loaded Exchange config: " + domainExchangeConfig);
+        LOG.info(() -> "Fetched Exchange config from repository: " + domainExchangeConfig);
 
         exchangeAdapter = ConfigurableComponentFactory.createComponent(domainExchangeConfig.getExchangeAdapter());
         LOG.info(() -> "Trading Engine will use Exchange Adapter for: " + exchangeAdapter.getImplName());
@@ -508,7 +515,7 @@ public class TradingEngine {
     private void loadEngineConfig() {
 
         final EngineConfig engineConfig = engineConfigRepository.getConfig();
-        LOG.info(() -> "*** Loaded Engine config: " + engineConfig);
+        LOG.info(() -> "Fetched Engine config from repository: " + engineConfig);
 
         tradeExecutionInterval = engineConfig.getTradeCycleInterval();
         emergencyStopCurrency = engineConfig.getEmergencyStopCurrency();
@@ -518,7 +525,7 @@ public class TradingEngine {
     private void loadTradingStrategyConfig() {
 
         final List<StrategyConfig> strategies = strategyConfigRepository.findAllStrategies();
-        LOG.info(() -> "*** Loaded Strategy config: " + strategies);
+        LOG.debug(() -> "Fetched Strategy config from repository: " + strategies);
 
         for (final StrategyConfig strategy : strategies) {
             strategyDescriptions.put(strategy.getId(), strategy);
@@ -529,34 +536,21 @@ public class TradingEngine {
     private void loadMarketConfigAndInitialiseTradingStrategies() {
 
         final List<MarketConfig> markets = marketConfigRepository.findAllMarkets();
-        LOG.info(() -> "*** Loaded Markets config: " + markets);
+        LOG.info(() -> "Fetched Markets config from repository: " + markets);
 
         // used only as crude mechanism for checking for duplicate Markets
         final Set<Market> loadedMarkets = new HashSet<>();
 
         // Load em up and create the Strategies
         for (final MarketConfig market : markets) {
+
             final String marketName = market.getLabel();
-            LOG.info(() -> "Market Name: " + marketName);
-
-            final String marketId = market.getId();
-            LOG.info(() -> "Market Id: " + marketId);
-
-            final String baseCurrency = market.getBaseCurrency();
-            LOG.info(() -> "Market Base Currency code: " + baseCurrency);
-
-            final String counterCurrency = market.getCounterCurrency();
-            LOG.info(() -> "Market Counter Currency code: " + counterCurrency);
-
-            final boolean isMarketEnabled = market.isEnabled();
-            LOG.info(() -> "Is Market Enabled: " + isMarketEnabled);
-
-            if (!isMarketEnabled) {
+            if (!market.isEnabled()) {
                 LOG.info(() -> marketName + " market is NOT enabled for trading - skipping to next market...");
                 continue;
             }
 
-            final Market tradingMarket = new Market(marketName, marketId, baseCurrency, counterCurrency);
+            final Market tradingMarket = new Market(marketName, market.getId(), market.getBaseCurrency(), market.getCounterCurrency());
             final boolean wasAdded = loadedMarkets.add(tradingMarket);
             if (!wasAdded) {
                 final String errorMsg = "Found duplicate Market! Market details: " + market;

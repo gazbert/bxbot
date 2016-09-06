@@ -69,7 +69,12 @@ public class ExchangeConfigController {
      */
     @RequestMapping(value = "/config/exchange", method = RequestMethod.GET)
     public ExchangeConfig getExchange(@AuthenticationPrincipal User user) {
-        return exchangeConfigService.getConfig();
+
+        final ExchangeConfig exchangeConfig = exchangeConfigService.getConfig();
+
+        // Strip out the Authentication config for now - too risky to expose trading api keys
+        exchangeConfig.setAuthenticationConfig(null);
+        return exchangeConfig;
     }
 
     /**
