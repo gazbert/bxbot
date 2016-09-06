@@ -1,6 +1,6 @@
 # BX-bot
 
-[![Build Status](https://travis-ci.org/gazbert/bxbot.svg?branch=bxbot-gradle)](https://travis-ci.org/gazbert/bxbot)
+[![Build Status](https://travis-ci.org/gazbert/bxbot.svg?branch=master)](https://travis-ci.org/gazbert/bxbot)
 
 ## What is BX-bot?
 BX-bot (_Bex_) is a simple Java automated trading bot for trading [Bitcoin](https://bitcoin.org) on 
@@ -53,7 +53,7 @@ BX-bot depends on [log4j](http://logging.apache.org/log4j), [JavaMail](https://j
 [Spring Boot](http://projects.spring.io/spring-boot/).
 See the Maven [`pom.xml`](./pom.xml) for details.
 
-1. Clone the BX-bot repo locally - the [Releases](https://github.com/gazbert/bxbot/releases) page has the stable builds.
+1. Clone the repo locally (master branch).
 
 ### Maven
  
@@ -467,6 +467,9 @@ You can also create your own jar for your adapters, e.g. `my-adapters.jar`, and 
 see the _Installation Guide_ for how to do this.
 
 ## Installation Guide
+
+The [Releases](https://github.com/gazbert/bxbot/releases) page has the stable releases. 
+Or you can grab the latest code from the head of the master branch.
 
 1. Prerequisite: [Oracle JDK 1.8](http://www.oracle.com/technetwork/java/javase/downloads/index-jsp-138363.html) needs to be installed
    on the machine you want to run the bot.     
