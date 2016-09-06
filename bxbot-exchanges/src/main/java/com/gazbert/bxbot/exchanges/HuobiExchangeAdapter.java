@@ -98,7 +98,7 @@ import java.util.*;
  * places when creating orders. This adapter truncates any prices with more than 2 decimal places and rounds using
  * {@link java.math.RoundingMode#HALF_EVEN}, E.g. 250.176 would be sent to the exchange as 250.18. The same is done for
  * the order amount, but to 4 decimal places.
- * </p
+ * </p>
  * <p>
  * The Exchange Adapter is <em>not</em> thread safe. It expects to be called using a single thread in order to
  * preserve trade execution order. The {@link URLConnection} achieves this by blocking/waiting on the input stream

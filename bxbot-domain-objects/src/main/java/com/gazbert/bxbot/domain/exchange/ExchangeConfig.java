@@ -23,7 +23,6 @@
 
 package com.gazbert.bxbot.domain.exchange;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.MoreObjects;
 
 /**
@@ -35,9 +34,6 @@ public class ExchangeConfig {
 
     private String exchangeName;
     private String exchangeAdapter;
-
-    // We don't expose AuthenticationConfig in the REST API - security risk.
-    @JsonIgnore
     private AuthenticationConfig authenticationConfig;
 
     private NetworkConfig networkConfig;

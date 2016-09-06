@@ -1,0 +1,26 @@
+description = 'BX-bot App'
+
+apply plugin: 'spring-boot'
+bootRepackage {
+    mainClass = 'com.gazbert.bxbot.core.BXBot'
+}
+
+dependencies {
+
+    compile project(':bxbot-trading-api')
+    compile project(':bxbot-strategy-api')
+    compile project(':bxbot-exchange-api')
+    compile project(':bxbot-strategies')
+    compile project(':bxbot-exchanges')
+    compile project(':bxbot-domain-objects')
+    compile project(':bxbot-xml-datastore')
+    compile project(':bxbot-repository')
+    compile project(':bxbot-core')
+    compile project(':bxbot-rest-api')
+
+    // Add your (optional) Trading Strategies here
+//    compile group: 'com.gazbert.bxbot', name: 'bxbot-strategies', version: '3.0-SNAPSHOT'
+
+    // Add your (optional) Exchange Adapters here
+//    compile group: 'com.your.stuff', name: 'your-custom-exchanges', version: '1.0-SNAPSHOT'
+}

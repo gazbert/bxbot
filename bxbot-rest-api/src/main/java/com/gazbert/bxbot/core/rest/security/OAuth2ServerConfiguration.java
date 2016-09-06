@@ -47,7 +47,6 @@ import org.springframework.security.oauth2.provider.token.store.InMemoryTokenSto
  * OAuth2 server config for the REST API.
  *
  * @author gazbert
- * @since 21/08/2016
  */
 @Configuration
 public class OAuth2ServerConfiguration {
@@ -76,7 +75,7 @@ public class OAuth2ServerConfiguration {
                     .antMatchers("/api/config/exchange/**").authenticated()
                     .antMatchers("/api/config/strategy/**").authenticated()
                     .antMatchers("/api/config/emailalerts/**").authenticated()
-                    ;
+            ;
         }
     }
 
@@ -85,16 +84,27 @@ public class OAuth2ServerConfiguration {
     protected static class AuthorizationServerConfiguration extends AuthorizationServerConfigurerAdapter {
 
         private final TokenStore tokenStore = new InMemoryTokenStore();
-        private final AuthenticationManager authenticationManager;
-        private final UserDetailsServiceImpl userDetailsService;
 
         @Autowired
-        public AuthorizationServerConfiguration(UserDetailsServiceImpl userDetailsService,
-               @Qualifier("authenticationManagerBean") AuthenticationManager authenticationManager) {
+        @Qualifier("authenticationManagerBean")
+        private AuthenticationManager authenticationManager;
 
-            this.userDetailsService = userDetailsService;
-            this.authenticationManager = authenticationManager;
-        }
+        @Autowired
+        private UserDetailsServiceImpl userDetailsService;
+
+        /*
+         * Can't use constructor injection within @Configuration:
+         * http://stackoverflow.com/questions/35845106/is-constructor-injection-possible-in-spring-configuration-classes/35846123#35846123
+         *
+         * New feature coming in Boot 4.3: https://jira.spring.io/browse/SPR-13471
+         */
+//        @Autowired
+//        public AuthorizationServerConfiguration(UserDetailsServiceImpl userDetailsService,
+//               @Qualifier("authenticationManagerBean") AuthenticationManager authenticationManager) {
+//
+//            this.userDetailsService = userDetailsService;
+//            this.authenticationManager = authenticationManager;
+//        }
 
         @Override
         public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
