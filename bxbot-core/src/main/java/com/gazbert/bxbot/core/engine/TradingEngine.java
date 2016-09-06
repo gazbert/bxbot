@@ -172,12 +172,6 @@ public class TradingEngine {
 
         Assert.notNull(emailAlerter, "emailAlerter dependency cannot be null!");
         this.emailAlerter = emailAlerter;
-
-        // the sequence order of these methods is significant - don't change it.
-        loadExchangeAdapterConfig();
-        loadEngineConfig();
-        loadTradingStrategyConfig();
-        loadMarketConfigAndInitialiseTradingStrategies();
     }
 
     public void start() throws IllegalStateException {
@@ -196,8 +190,19 @@ public class TradingEngine {
         // store this so we can shutdown the engine later
         engineThread = Thread.currentThread();
 
-        LOG.info(() -> "Starting Trading Engine...");
+        initConfig();
         runMainControlLoop();
+    }
+
+    private void initConfig() {
+
+        LOG.info(() -> "Initialising BX-Bot config...");
+
+        // the sequence order of these methods is significant - don't change it.
+        loadExchangeAdapterConfig();
+        loadEngineConfig();
+        loadTradingStrategyConfig();
+        loadMarketConfigAndInitialiseTradingStrategies();
     }
 
     /*
@@ -206,6 +211,8 @@ public class TradingEngine {
      * The code fails hard and fast if an unexpected occurs. Network exceptions *should* recover.
      */
     private void runMainControlLoop() {
+
+        LOG.info(() -> "Starting Trading Engine...");
 
         while (keepAlive) {
 

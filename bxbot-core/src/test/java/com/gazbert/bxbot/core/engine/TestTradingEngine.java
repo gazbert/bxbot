@@ -139,10 +139,6 @@ public class TestTradingEngine {
         marketConfigRepository = PowerMock.createMock(MarketConfigRepository.class);
 
         PowerMock.mockStatic(ConfigurableComponentFactory.class);
-
-        setupExchangeAdapterConfigExpectations();
-        setupEngineConfigExpectations();
-        setupStrategyAndMarketConfigExpectations();
     }
 
     @Test
@@ -160,6 +156,8 @@ public class TestTradingEngine {
 
     @Test
     public void testEngineShutsDownWhenEmergencyStopBalanceIfBreached() throws Exception {
+
+        setupConfigLoadingExpectations();
 
         final Map<String, BigDecimal> balancesAvailable = new HashMap<>();
         // balance limit has been breached for BTC
@@ -195,6 +193,8 @@ public class TestTradingEngine {
      */
     @Test
     public void testEngineExecutesTradeCyclesAndCanBeShutdownSuccessfully() throws Exception {
+
+        setupConfigLoadingExpectations();
 
         final int numberOfTradeCycles = 2;
         final Map<String, BigDecimal> balancesAvailable = new HashMap<>();
@@ -239,6 +239,8 @@ public class TestTradingEngine {
     @Test
     public void testEngineShutsDownWhenItReceivesStrategyExceptionFromTradingStrategy() throws Exception {
 
+        setupConfigLoadingExpectations();
+
         final String exceptionErrorMsg = "Eeek! My strat just broke. Please shutdown!";
         final Map<String, BigDecimal> balancesAvailable = new HashMap<>();
         // balance limit NOT breached for BTC
@@ -280,6 +282,8 @@ public class TestTradingEngine {
      */
     @Test
     public void testEngineShutsDownWhenItReceivesUnexpectedExceptionFromTradingStrategy() throws Exception {
+
+        setupConfigLoadingExpectations();
 
         final String exceptionErrorMsg = "Ah, curse your sudden but inevitable betrayal!";
         final Map<String, BigDecimal> balancesAvailable = new HashMap<>();
@@ -323,6 +327,8 @@ public class TestTradingEngine {
     @Test
     public void testEngineShutsDownWhenItReceivesUnexpectedExceptionFromExchangeAdapter() throws Exception {
 
+        setupConfigLoadingExpectations();
+
         final String exceptionErrorMsg = "I had to rewire the grav thrust because somebody won't replace that crappy compression coil.";
         final Map<String, BigDecimal> balancesAvailable = new HashMap<>();
         // balance limit NOT breached for BTC
@@ -361,6 +367,8 @@ public class TestTradingEngine {
      */
     @Test
     public void testEngineShutsDownWhenItReceivesTradingApiExceptionFromExchangeAdapter() throws Exception {
+
+        setupConfigLoadingExpectations();
 
         final String exceptionErrorMsg = "Ten percent of nothin' is ... let me do the math here ... nothin' into nothin' ... carry the nothin' ...";
         final Map<String, BigDecimal> balancesAvailable = new HashMap<>();
@@ -401,6 +409,8 @@ public class TestTradingEngine {
      */
     @Test
     public void testEngineExecutesNextTradeCyclesAfterReceivingExchangeNetworkException() throws Exception {
+
+        setupConfigLoadingExpectations();
 
         final String exceptionErrorMsg = "Man walks down the street in a hat like that, you know he's not afraid of anything...";
         final int numberOfTradeCycles = 3;
@@ -447,6 +457,8 @@ public class TestTradingEngine {
      */
     @Test(expected = IllegalStateException.class)
     public void testEngineCannotBeStartedMoreThanOnce() throws Exception {
+
+        setupConfigLoadingExpectations();
 
         final int numberOfTradeCycles = 1;
         final Map<String, BigDecimal> balancesAvailable = new HashMap<>();
@@ -499,6 +511,12 @@ public class TestTradingEngine {
         expect(marketConfigRepository.findAllMarkets()).andReturn(allTheMarketsConfig());
         expect(ConfigurableComponentFactory.createComponent(STRATEGY_IMPL_CLASS)).andReturn(tradingStrategy);
         tradingStrategy.init(eq(exchangeAdapter), anyObject(Market.class), anyObject(com.gazbert.bxbot.strategy.api.StrategyConfig.class));
+    }
+
+    private void setupConfigLoadingExpectations() throws Exception {
+        setupExchangeAdapterConfigExpectations();
+        setupEngineConfigExpectations();
+        setupStrategyAndMarketConfigExpectations();
     }
 
     private static com.gazbert.bxbot.domain.exchange.ExchangeConfig someExchangeConfig() {
