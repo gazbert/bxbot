@@ -169,7 +169,6 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
                 .andExpect(status().isNotFound());
     }
 
-    @Ignore("FIXME Broken log4j dependency using Gradle build :-(")
     @Test
     public void testUpdateStrategyConfig() throws Exception {
 
