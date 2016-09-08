@@ -93,6 +93,10 @@ public class StrategyConfigController {
     @RequestMapping(value = "/strategy", method = RequestMethod.PUT)
     ResponseEntity<?> updateStrategy(@AuthenticationPrincipal User user, @RequestBody StrategyConfig config) {
 
+        if (config == null || config.getId() == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
         final StrategyConfig updatedConfig = strategyConfigService.updateStrategy(config);
         return updatedConfig.getId() != null
                 ? new ResponseEntity<>(HttpStatus.NO_CONTENT)
@@ -108,6 +112,10 @@ public class StrategyConfigController {
      */
     @RequestMapping(value = "/strategy", method = RequestMethod.POST)
     ResponseEntity<?> createStrategy(@AuthenticationPrincipal User user, @RequestBody StrategyConfig config) {
+
+        if (config == null || config.getId() == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
 
         final StrategyConfig updatedConfig = strategyConfigService.saveStrategy(config);
 

@@ -205,6 +205,17 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
     }
 
     @Test
+    public void testUpdateStrategyConfigWhenIdIsMissing() throws Exception {
+
+        mockMvc.perform(put("/api/config/strategy/")
+                .header("Authorization", "Bearer " + getAccessToken(VALID_USER_LOGINID, VALID_USER_PASSWORD))
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(CONTENT_TYPE)
+                .content(jsonify(someStrategyConfigWithMissingId())))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
     public void testDeleteStrategyConfig() throws Exception {
 
         given(this.strategyConfigService.deleteStrategyById(STRAT_ID_1)).willReturn(someStrategyConfig());
@@ -270,6 +281,17 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
                 .andExpect(status().isConflict());
     }
 
+    @Test
+    public void testCreateStrategyConfigWhenIdIsMissing() throws Exception {
+
+        mockMvc.perform(post("/api/config/strategy/")
+                .header("Authorization", "Bearer " + getAccessToken(VALID_USER_LOGINID, VALID_USER_PASSWORD))
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(CONTENT_TYPE)
+                .content(jsonify(someStrategyConfigWithMissingId())))
+                .andExpect(status().isBadRequest());
+    }
+
     // ------------------------------------------------------------------------------------------------
     // Private utils
     // ------------------------------------------------------------------------------------------------
@@ -296,6 +318,14 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
         configItems.put(BUY_PRICE_CONFIG_ITEM_KEY, BUY_PRICE_CONFIG_ITEM_VALUE);
         configItems.put(AMOUNT_TO_BUY_CONFIG_ITEM_KEY, AMOUNT_TO_BUY_CONFIG_ITEM_VALUE);
         return new StrategyConfig(STRAT_ID_1, STRAT_LABEL_1, STRAT_DESCRIPTION_1, STRAT_CLASSNAME_1, configItems);
+    }
+
+    private static StrategyConfig someStrategyConfigWithMissingId() {
+
+        final Map<String, String> configItems = new HashMap<>();
+        configItems.put(BUY_PRICE_CONFIG_ITEM_KEY, BUY_PRICE_CONFIG_ITEM_VALUE);
+        configItems.put(AMOUNT_TO_BUY_CONFIG_ITEM_KEY, AMOUNT_TO_BUY_CONFIG_ITEM_VALUE);
+        return new StrategyConfig(null, STRAT_LABEL_1, STRAT_DESCRIPTION_1, STRAT_CLASSNAME_1, configItems);
     }
 
     private static StrategyConfig unrecognizedStrategyConfig() {
