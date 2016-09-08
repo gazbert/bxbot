@@ -44,7 +44,7 @@ import java.util.List;
  * @since 1.0
  */
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/config")
 public class StrategyConfigController {
 
     private final StrategyConfigService strategyConfigService;
@@ -55,12 +55,12 @@ public class StrategyConfigController {
         this.strategyConfigService = strategyConfigService;
     }
 
-    @RequestMapping(value = "/config/strategy", method = RequestMethod.GET)
+    @RequestMapping(value = "/strategy", method = RequestMethod.GET)
     public List<StrategyConfig> getAllStrategies() {
         return strategyConfigService.findAllStrategies();
     }
 
-    @RequestMapping(value = "/config/strategy/{strategyId}", method = RequestMethod.GET)
+    @RequestMapping(value = "/strategy/{strategyId}", method = RequestMethod.GET)
     public ResponseEntity<?> getStrategy(@PathVariable String strategyId) {
 
         final StrategyConfig strategyConfig = strategyConfigService.findById(strategyId);
@@ -69,30 +69,39 @@ public class StrategyConfigController {
                 : new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    @RequestMapping(value = "/config/strategy/{strategyId}", method = RequestMethod.PUT)
-    ResponseEntity<?> updateStrategy(@PathVariable String strategyId, @RequestBody StrategyConfig config) {
+    @RequestMapping(value = "/strategy", method = RequestMethod.PUT)
+    ResponseEntity<?> updateStrategy(@RequestBody StrategyConfig config) {
 
-        final StrategyConfig updatedConfig = strategyConfigService.updateStrategy(strategyId, config);
+        final StrategyConfig updatedConfig = strategyConfigService.updateStrategy(config.getId(), config);
         return updatedConfig.getId() != null
                 ? new ResponseEntity<>(HttpStatus.NO_CONTENT)
                 : new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    @RequestMapping(value = "/config/strategy/{strategyId}", method = RequestMethod.POST)
-    ResponseEntity<?> createStrategy(@PathVariable String strategyId, @RequestBody StrategyConfig config) {
+    @RequestMapping(value = "/strategy", method = RequestMethod.POST)
+    ResponseEntity<?> createStrategy(@RequestBody StrategyConfig config) {
 
         final StrategyConfig updatedConfig = strategyConfigService.saveStrategy(config);
-        final HttpHeaders httpHeaders = new HttpHeaders();
 
-        httpHeaders.setLocation(ServletUriComponentsBuilder
-                .fromCurrentRequest().path("/{strategyId}")
-                .buildAndExpand(updatedConfig.getId()).toUri());
-        return new ResponseEntity<>(null, httpHeaders, HttpStatus.CREATED);
+        if (updatedConfig.getId() != null) {
+            final HttpHeaders httpHeaders = new HttpHeaders();
+            httpHeaders.setLocation(ServletUriComponentsBuilder
+                    .fromCurrentRequest().path("/{strategyId}")
+                    .buildAndExpand(updatedConfig.getId()).toUri());
+            return new ResponseEntity<>(null, httpHeaders, HttpStatus.CREATED);
+        } else {
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        }
     }
 
-    @RequestMapping(value = "/config/strategy/{strategyId}", method = RequestMethod.DELETE)
-    public StrategyConfig deleteStrategy(@PathVariable String strategyId) {
-        return strategyConfigService.deleteStrategyById(strategyId);
+    @RequestMapping(value = "/strategy/{strategyId}", method = RequestMethod.DELETE)
+    public ResponseEntity<?> deleteStrategy(@PathVariable String strategyId) {
+
+        final StrategyConfig deletedConfig = strategyConfigService.deleteStrategyById(strategyId);
+        return deletedConfig.getId() != null
+                ? new ResponseEntity<>(HttpStatus.NO_CONTENT)
+                : new ResponseEntity<>(HttpStatus.NOT_FOUND);
+
     }
 }
 
