@@ -185,7 +185,7 @@ public class TestStrategyConfigRepository {
         PowerMock.replayAll();
 
         final StrategyConfigRepository strategyConfigRepository = new StrategyConfigRepositoryXmlImpl();
-        final StrategyConfig strategyConfig = strategyConfigRepository.updateStrategy(STRAT_ID_1, someExternalStrategyConfig());
+        final StrategyConfig strategyConfig = strategyConfigRepository.updateStrategy(someExternalStrategyConfig());
 
         assertThat(strategyConfig.getId()).isEqualTo(STRAT_ID_1);
         assertThat(strategyConfig.getLabel()).isEqualTo(STRAT_LABEL_1);
@@ -211,7 +211,7 @@ public class TestStrategyConfigRepository {
         PowerMock.replayAll();
 
         final StrategyConfigRepository strategyConfigRepository = new StrategyConfigRepositoryXmlImpl();
-        final StrategyConfig strategyConfig = strategyConfigRepository.updateStrategy("unknown-id", someExternalStrategyConfig());
+        final StrategyConfig strategyConfig = strategyConfigRepository.updateStrategy(someExternalStrategyConfigWithUnknownId());
 
         assertThat(strategyConfig.getId()).isEqualTo(null);
         assertThat(strategyConfig.getLabel()).isEqualTo(null);
@@ -271,6 +271,16 @@ public class TestStrategyConfigRepository {
         configItems.put(AMOUNT_TO_BUY_CONFIG_ITEM_KEY, AMOUNT_TO_BUY_CONFIG_ITEM_VALUE);
 
         final StrategyConfig strategyConfig = new StrategyConfig(STRAT_ID_1, STRAT_LABEL_1, STRAT_DESCRIPTION_1, STRAT_CLASSNAME_1, configItems);
+        return strategyConfig;
+    }
+
+    private static StrategyConfig someExternalStrategyConfigWithUnknownId() {
+
+        final Map<String, String> configItems = new HashMap<>();
+        configItems.put(BUY_PRICE_CONFIG_ITEM_KEY, BUY_PRICE_CONFIG_ITEM_VALUE);
+        configItems.put(AMOUNT_TO_BUY_CONFIG_ITEM_KEY, AMOUNT_TO_BUY_CONFIG_ITEM_VALUE);
+
+        final StrategyConfig strategyConfig = new StrategyConfig("unknown-id", STRAT_LABEL_1, STRAT_DESCRIPTION_1, STRAT_CLASSNAME_1, configItems);
         return strategyConfig;
     }
 
