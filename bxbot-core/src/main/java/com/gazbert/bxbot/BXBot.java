@@ -41,10 +41,8 @@ public class BXBot implements CommandLineRunner {
     private TradingEngine tradingEngine;
 
     /*
-     * Can't use constructor injection within @SpringBootApplication:
+     * Don't seem to be able to use constructor injection within @SpringBootApplication:
      * http://stackoverflow.com/questions/36696803/spring-boot-no-default-constructor-found-on-springbootapplication-class
-     *
-     * New feature coming in Boot 4.3: https://jira.spring.io/browse/SPR-13471
      */
 //    @Autowired
 //    public BXBot(TradingEngine tradingEngine) {

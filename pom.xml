@@ -44,7 +44,7 @@
         <maven>3.2.1</maven>
     </prerequisites>
     <properties>
-        <springframework.version>4.3.1.RELEASE</springframework.version>
+        <springframework.version>4.3.2.RELEASE</springframework.version>
         <spring-boot-starter.version>1.4.0.RELEASE</spring-boot-starter.version>
         <powermock.version>1.6.2</powermock.version>
     </properties>
