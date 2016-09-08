@@ -36,10 +36,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 /**
- * TODO Javadoc this - it's a public API!
- *
+ * <p>
  * Controller for directing Email Alerts config requests.
  * <p>
  * Email Alerts config can only be fetched and updated - there is only 1 Email Alerts configuration per bot.
@@ -48,7 +48,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @since 1.0
  */
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/config")
 public class EmailAlertsConfigController {
 
     private final EmailAlertsConfigService emailAlertsConfigService;
@@ -62,12 +62,10 @@ public class EmailAlertsConfigController {
     /**
      * Returns Email Alerts configuration for the bot.
      *
-     * TODO check user permissions and make authz more specific?
-     *
      * @return the Email Alerts configuration.
      */
-    @RequestMapping(value = "/config/emailalerts", method = RequestMethod.GET)
-    public EmailAlertsConfig getEngine(@AuthenticationPrincipal User user) {
+    @RequestMapping(value = "/emailalerts", method = RequestMethod.GET)
+    public EmailAlertsConfig getEmailAlerts(@AuthenticationPrincipal User user) {
 
         final EmailAlertsConfig emailAlertsConfig = emailAlertsConfigService.getConfig();
 
@@ -79,15 +77,14 @@ public class EmailAlertsConfigController {
     /**
      * Updates Email Alerts configuration for the bot.
      *
-     * TODO check user permissions and make authz more specific?
-     *
-     * @return HttpStatus.NO_CONTENT if Email Alerts config was updated, any other HTTP status code otherwise.
+     * @return 204 'No Content' HTTP status code if Email Alerts config was updated, some other HTTP status code otherwise.
      */
-    @RequestMapping(value = "/config/emailalerts", method = RequestMethod.PUT)
-    ResponseEntity<?> updateEngine(@AuthenticationPrincipal User user, @RequestBody EmailAlertsConfig config) {
+    @RequestMapping(value = "/emailalerts", method = RequestMethod.PUT)
+    ResponseEntity<?> updateEmailAlerts(@AuthenticationPrincipal User user, @RequestBody EmailAlertsConfig config) {
 
         emailAlertsConfigService.updateConfig(config);
         final HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setLocation(ServletUriComponentsBuilder.fromCurrentRequest().path("/").buildAndExpand().toUri());
         return new ResponseEntity<>(null, httpHeaders, HttpStatus.NO_CONTENT);
     }
 }

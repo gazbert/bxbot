@@ -39,8 +39,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 /**
- * TODO Javadoc this - it's a public API!
- *
  * Controller for directing Engine config requests.
  * <p>
  * Engine config can only be fetched and updated - there is only 1 Trading Engine per bot.
@@ -49,7 +47,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
  * @since 1.0
  */
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/config")
 public class EngineConfigController {
 
     private final EngineConfigService engineConfigService;
@@ -63,11 +61,9 @@ public class EngineConfigController {
     /**
      * Returns Engine configuration for the bot.
      *
-     * TODO check user permissions and make authz more specific?
-     *
      * @return the Engine configuration.
      */
-    @RequestMapping(value = "/config/engine", method = RequestMethod.GET)
+    @RequestMapping(value = "/engine", method = RequestMethod.GET)
     public EngineConfig getEngine(@AuthenticationPrincipal User user) {
         return engineConfigService.getConfig();
     }
@@ -75,11 +71,9 @@ public class EngineConfigController {
     /**
      * Updates Engine configuration for the bot.
      *
-     * TODO check user permissions and make authz more specific?
-     *
-     * @return HttpStatus.NO_CONTENT if engine config was updated successfully, some other HTTP status code otherwise.
+     * @return 204 'No Content' HTTP status code if engine config was updated successfully, some other HTTP status code otherwise.
      */
-    @RequestMapping(value = "/config/engine", method = RequestMethod.PUT)
+    @RequestMapping(value = "/engine", method = RequestMethod.PUT)
     public ResponseEntity<?> updateEngine(@AuthenticationPrincipal User user, @RequestBody EngineConfig config) {
 
         engineConfigService.updateConfig(config);

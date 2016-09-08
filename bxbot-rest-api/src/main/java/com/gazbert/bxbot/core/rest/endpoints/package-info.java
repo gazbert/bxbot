@@ -1,14 +1,19 @@
 /**
- * <h2>REST Endpoints</h2>
+ * <h2>Configuration REST API</h2>
  *
  * <p>
- * This is the bot's REST API - TODO bla bla
+ * This is the REST API for administering the bot.
  * </p>
  *
  * <p>
- * It provides a secure (OAuth2 protected) REST API for administering the bot.
+ *
+ * TODO Work in progress...
+ *
+ * It is secured using OAuth2.
+ * Should always be accessed using HTTPS in production environment.
+ * TODO keystores, OAuth2 credentials, logging access/audit log...
  * </p>
- * 
+ *
  * @author gazbert
  * @since 1.0
  */

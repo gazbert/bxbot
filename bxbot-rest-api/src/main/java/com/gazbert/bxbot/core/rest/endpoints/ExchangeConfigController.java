@@ -23,7 +23,6 @@
 
 package com.gazbert.bxbot.core.rest.endpoints;
 
-
 import com.gazbert.bxbot.core.rest.security.User;
 import com.gazbert.bxbot.domain.exchange.ExchangeConfig;
 import com.gazbert.bxbot.services.ExchangeConfigService;
@@ -37,9 +36,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 /**
- * TODO Javadoc this - it's a public API!
  * <p>
  * Controller for directing Exchange config requests.
  * <p>
@@ -49,7 +48,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @since 1.0
  */
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/config/")
 public class ExchangeConfigController {
 
     private final ExchangeConfigService exchangeConfigService;
@@ -62,12 +61,10 @@ public class ExchangeConfigController {
 
     /**
      * Returns Exchange configuration for the bot.
-     * <p>
-     * TODO check user permissions and make authz more specific?
      *
      * @return the Exchange configuration.
      */
-    @RequestMapping(value = "/config/exchange", method = RequestMethod.GET)
+    @RequestMapping(value = "/exchange", method = RequestMethod.GET)
     public ExchangeConfig getExchange(@AuthenticationPrincipal User user) {
 
         final ExchangeConfig exchangeConfig = exchangeConfigService.getConfig();
@@ -79,16 +76,15 @@ public class ExchangeConfigController {
 
     /**
      * Updates Exchange configuration for the bot.
-     * <p>
-     * TODO check user permissions and make authz more specific?
      *
-     * @return HttpStatus.NO_CONTENT if exchange config was updated, any other HTTP status code otherwise.
+     * @return 204 'No Content' HTTP status code if exchange config was updated, some other HTTP status code otherwise.
      */
-    @RequestMapping(value = "/config/exchange", method = RequestMethod.PUT)
+    @RequestMapping(value = "/exchange", method = RequestMethod.PUT)
     ResponseEntity<?> updateExchange(@AuthenticationPrincipal User user, @RequestBody ExchangeConfig config) {
 
         exchangeConfigService.updateConfig(config);
         final HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setLocation(ServletUriComponentsBuilder.fromCurrentRequest().path("/").buildAndExpand().toUri());
         return new ResponseEntity<>(null, httpHeaders, HttpStatus.NO_CONTENT);
     }
 }
