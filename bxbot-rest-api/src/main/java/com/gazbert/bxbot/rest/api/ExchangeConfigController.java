@@ -21,11 +21,11 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.core.rest.endpoints;
+package com.gazbert.bxbot.rest.api;
 
-import com.gazbert.bxbot.core.rest.security.User;
-import com.gazbert.bxbot.domain.emailalerts.EmailAlertsConfig;
-import com.gazbert.bxbot.services.EmailAlertsConfigService;
+import com.gazbert.bxbot.rest.security.User;
+import com.gazbert.bxbot.domain.exchange.ExchangeConfig;
+import com.gazbert.bxbot.services.ExchangeConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -40,49 +40,49 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 /**
  * <p>
- * Controller for directing Email Alerts config requests.
+ * Controller for directing Exchange config requests.
  * <p>
- * Email Alerts config can only be fetched and updated - there is only 1 Email Alerts configuration per bot.
+ * Exchange config can only be fetched and updated - there is only 1 Exchange Adapter per bot.
  *
  * @author gazbert
  * @since 1.0
  */
 @RestController
-@RequestMapping("/api/config")
-public class EmailAlertsConfigController {
+@RequestMapping("/api/config/")
+public class ExchangeConfigController {
 
-    private final EmailAlertsConfigService emailAlertsConfigService;
+    private final ExchangeConfigService exchangeConfigService;
 
     @Autowired
-    public EmailAlertsConfigController(EmailAlertsConfigService emailAlertsConfigService) {
-        Assert.notNull(emailAlertsConfigService, "emailAlertsConfigService dependency cannot be null!");
-        this.emailAlertsConfigService = emailAlertsConfigService;
+    public ExchangeConfigController(ExchangeConfigService exchangeConfigService) {
+        Assert.notNull(exchangeConfigService, "exchangeConfigService dependency cannot be null!");
+        this.exchangeConfigService = exchangeConfigService;
     }
 
     /**
-     * Returns Email Alerts configuration for the bot.
+     * Returns Exchange configuration for the bot.
      *
-     * @return the Email Alerts configuration.
+     * @return the Exchange configuration.
      */
-    @RequestMapping(value = "/emailalerts", method = RequestMethod.GET)
-    public EmailAlertsConfig getEmailAlerts(@AuthenticationPrincipal User user) {
+    @RequestMapping(value = "/exchange", method = RequestMethod.GET)
+    public ExchangeConfig getExchange(@AuthenticationPrincipal User user) {
 
-        final EmailAlertsConfig emailAlertsConfig = emailAlertsConfigService.getConfig();
+        final ExchangeConfig exchangeConfig = exchangeConfigService.getConfig();
 
-        // Strip out the Account password for now - too risky to expose.
-        emailAlertsConfig.getSmtpConfig().setAccountPassword(null);
-        return emailAlertsConfig;
+        // Strip out the Authentication config for now - too risky to expose trading api keys
+        exchangeConfig.setAuthenticationConfig(null);
+        return exchangeConfig;
     }
 
     /**
-     * Updates Email Alerts configuration for the bot.
+     * Updates Exchange configuration for the bot.
      *
-     * @return 204 'No Content' HTTP status code if Email Alerts config was updated, some other HTTP status code otherwise.
+     * @return 204 'No Content' HTTP status code if exchange config was updated, some other HTTP status code otherwise.
      */
-    @RequestMapping(value = "/emailalerts", method = RequestMethod.PUT)
-    ResponseEntity<?> updateEmailAlerts(@AuthenticationPrincipal User user, @RequestBody EmailAlertsConfig config) {
+    @RequestMapping(value = "/exchange", method = RequestMethod.PUT)
+    ResponseEntity<?> updateExchange(@AuthenticationPrincipal User user, @RequestBody ExchangeConfig config) {
 
-        emailAlertsConfigService.updateConfig(config);
+        exchangeConfigService.updateConfig(config);
         final HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setLocation(ServletUriComponentsBuilder.fromCurrentRequest().path("/").buildAndExpand().toUri());
         return new ResponseEntity<>(null, httpHeaders, HttpStatus.NO_CONTENT);

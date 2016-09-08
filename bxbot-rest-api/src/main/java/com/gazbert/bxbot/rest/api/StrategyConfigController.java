@@ -21,9 +21,9 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.core.rest.endpoints;
+package com.gazbert.bxbot.rest.api;
 
-import com.gazbert.bxbot.core.rest.security.User;
+import com.gazbert.bxbot.rest.security.User;
 import com.gazbert.bxbot.domain.strategy.StrategyConfig;
 import com.gazbert.bxbot.services.StrategyConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +38,6 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.util.List;
 
 /**
- * <p>
  * Controller for directing Strategy config requests.
  *
  * @author gazbert
@@ -117,14 +116,14 @@ public class StrategyConfigController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        final StrategyConfig updatedConfig = strategyConfigService.saveStrategy(config);
-
-        if (updatedConfig.getId() != null) {
+        final StrategyConfig createdConfig = strategyConfigService.saveStrategy(config);
+        if (createdConfig.getId() != null) {
             final HttpHeaders httpHeaders = new HttpHeaders();
             httpHeaders.setLocation(ServletUriComponentsBuilder
                     .fromCurrentRequest().path("/{strategyId}")
-                    .buildAndExpand(updatedConfig.getId()).toUri());
+                    .buildAndExpand(createdConfig.getId()).toUri());
             return new ResponseEntity<>(null, httpHeaders, HttpStatus.CREATED);
+
         } else {
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }

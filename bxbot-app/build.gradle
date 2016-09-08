@@ -2,7 +2,7 @@ description = 'BX-bot App'
 
 apply plugin: 'spring-boot'
 bootRepackage {
-    mainClass = 'com.gazbert.bxbot.core.BXBot'
+    mainClass = 'com.gazbert.bxbot.BXBot'
 }
 
 dependencies {

@@ -21,9 +21,9 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.core.rest.endpoints;
+package com.gazbert.bxbot.rest.api;
 
-import com.gazbert.bxbot.core.rest.security.User;
+import com.gazbert.bxbot.rest.security.User;
 import com.gazbert.bxbot.domain.market.MarketConfig;
 import com.gazbert.bxbot.services.MarketConfigService;
 import org.springframework.beans.factory.annotation.Autowired;

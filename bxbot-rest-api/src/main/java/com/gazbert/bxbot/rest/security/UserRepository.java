@@ -21,7 +21,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.core.rest.security;
+package com.gazbert.bxbot.rest.security;
 
 import org.springframework.data.repository.CrudRepository;
 

@@ -17,4 +17,4 @@
  * @author gazbert
  * @since 1.0
  */
-package com.gazbert.bxbot.core.rest.endpoints;
+package com.gazbert.bxbot.rest.api;

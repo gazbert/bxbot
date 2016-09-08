@@ -21,22 +21,25 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.core.rest.security;
+package com.gazbert.bxbot.rest.security;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.validator.constraints.NotEmpty;
+import org.springframework.security.core.GrantedAuthority;
 
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Represents a User of the REST API.
+ * Encapsulates a role containing selected users of the REST API.
  *
  * @author gazbert
  */
 @Entity
-public class User {
+public class Role implements GrantedAuthority {
+
+    private static final long serialVersionUID = 8224732733933233303L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -45,28 +48,13 @@ public class User {
     @NotEmpty
     private String name;
 
-    @NotEmpty
-    @Column(name = "login_id", unique = true, nullable = false)
-    private String loginId;
-
-    @NotEmpty
-    private String password;
-
     @JsonIgnore
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "user_role", joinColumns = {@JoinColumn(name = "user_id")}, inverseJoinColumns = {@JoinColumn(name = "role_id")})
-    private Set<Role> roles = new HashSet<>();
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "roles")
+    private Set<User> users = new HashSet<>();
 
-    public User() {
-    }
-
-    public User(User user) {
-        super();
-        this.id = user.getId();
-        this.name = user.getName();
-        this.loginId = user.getLoginId();
-        this.password = user.getPassword();
-        this.roles = user.getRoles();
+    @Override
+    public String getAuthority() {
+        return name;
     }
 
     public Integer getId() {
@@ -85,28 +73,11 @@ public class User {
         this.name = name;
     }
 
-    public String getLoginId() {
-        return loginId;
+    public Set<User> getUsers() {
+        return users;
     }
 
-    public void setLoginId(String loginId) {
-        this.loginId = loginId;
+    public void setUsers(Set<User> users) {
+        this.users = users;
     }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public Set<Role> getRoles() {
-        return roles;
-    }
-
-    public void setRoles(Set<Role> roles) {
-        this.roles = roles;
-    }
-
 }

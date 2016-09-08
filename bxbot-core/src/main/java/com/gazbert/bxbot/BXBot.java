@@ -21,7 +21,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.core;
+package com.gazbert.bxbot;
 
 import com.gazbert.bxbot.core.engine.TradingEngine;
 import org.springframework.beans.factory.annotation.Autowired;
