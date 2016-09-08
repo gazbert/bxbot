@@ -171,7 +171,7 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
     @Test
     public void testUpdateStrategyConfig() throws Exception {
 
-        given(this.strategyConfigService.updateStrategy(STRAT_ID_1, someStrategyConfig())).willReturn(someStrategyConfig());
+        given(this.strategyConfigService.updateStrategy(someStrategyConfig())).willReturn(someStrategyConfig());
 
         this.mockMvc.perform(put("/api/config/strategy")
                 .header("Authorization", "Bearer " + getAccessToken(VALID_USER_LOGINID, VALID_USER_PASSWORD))
@@ -194,7 +194,7 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
     @Test
     public void testUpdateStrategyConfigWhenIdNotRecognized() throws Exception {
 
-        given(this.strategyConfigService.updateStrategy("unknown-id", unrecognizedStrategyConfig())).willReturn(emptyStrategyConfig());
+        given(this.strategyConfigService.updateStrategy(unrecognizedStrategyConfig())).willReturn(emptyStrategyConfig());
 
         mockMvc.perform(put("/api/config/strategy/")
                 .header("Authorization", "Bearer " + getAccessToken(VALID_USER_LOGINID, VALID_USER_PASSWORD))

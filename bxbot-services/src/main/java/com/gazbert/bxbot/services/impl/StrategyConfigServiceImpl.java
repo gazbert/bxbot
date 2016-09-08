@@ -68,9 +68,9 @@ public class StrategyConfigServiceImpl implements StrategyConfigService {
     }
 
     @Override
-    public StrategyConfig updateStrategy(String id, StrategyConfig config) {
+    public StrategyConfig updateStrategy(StrategyConfig config) {
         LOG.info(() -> "About to update: " + config);
-        return strategyConfigRepository.updateStrategy(id, config);
+        return strategyConfigRepository.updateStrategy(config);
     }
 
     @Override

@@ -39,7 +39,7 @@ public interface StrategyConfigService {
 
     StrategyConfig findById(String id);
 
-    StrategyConfig updateStrategy(String id, StrategyConfig config);
+    StrategyConfig updateStrategy(StrategyConfig config);
 
     StrategyConfig saveStrategy(StrategyConfig config);
 

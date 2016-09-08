@@ -78,7 +78,7 @@ public class StrategyConfigRepositoryXmlImpl implements StrategyConfigRepository
     }
 
     @Override
-    public StrategyConfig updateStrategy(String id, StrategyConfig config) {
+    public StrategyConfig updateStrategy(StrategyConfig config) {
 
         LOG.info(() -> "About to update: " + config);
 
@@ -87,7 +87,7 @@ public class StrategyConfigRepositoryXmlImpl implements StrategyConfigRepository
 
         final List<StrategyType> strategyTypes = internalStrategiesConfig.getStrategies()
                 .stream()
-                .filter((item) -> item.getId().equals(id))
+                .filter((item) -> item.getId().equals(config.getId()))
                 .distinct()
                 .collect(Collectors.toList());
 
@@ -104,7 +104,7 @@ public class StrategyConfigRepositoryXmlImpl implements StrategyConfigRepository
             return adaptInternalToExternalConfig(
                     updatedInternalStrategiesConfig.getStrategies()
                             .stream()
-                            .filter((item) -> item.getId().equals(id))
+                            .filter((item) -> item.getId().equals(config.getId()))
                             .distinct()
                             .collect(Collectors.toList()));
         } else {

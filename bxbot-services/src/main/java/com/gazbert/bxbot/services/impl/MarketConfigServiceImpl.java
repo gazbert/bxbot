@@ -37,6 +37,8 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
+ * TODO Work in progress...
+ *
  * Implementation of the Market config service.
  *
  * @author gazbert

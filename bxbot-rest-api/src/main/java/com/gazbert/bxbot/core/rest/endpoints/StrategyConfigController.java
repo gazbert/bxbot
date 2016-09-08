@@ -93,7 +93,7 @@ public class StrategyConfigController {
     @RequestMapping(value = "/strategy", method = RequestMethod.PUT)
     ResponseEntity<?> updateStrategy(@AuthenticationPrincipal User user, @RequestBody StrategyConfig config) {
 
-        final StrategyConfig updatedConfig = strategyConfigService.updateStrategy(config.getId(), config);
+        final StrategyConfig updatedConfig = strategyConfigService.updateStrategy(config);
         return updatedConfig.getId() != null
                 ? new ResponseEntity<>(HttpStatus.NO_CONTENT)
                 : new ResponseEntity<>(HttpStatus.NOT_FOUND);
