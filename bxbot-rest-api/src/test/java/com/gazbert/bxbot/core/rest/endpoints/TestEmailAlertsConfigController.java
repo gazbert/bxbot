@@ -56,7 +56,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebAppConfiguration
 public class TestEmailAlertsConfigController extends AbstractConfigControllerTest {
 
-
     // This must match a user's login_id in the user table in src/test/resources/import.sql
     private static final String VALID_USER_LOGINID = "user1";
 

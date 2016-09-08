@@ -59,6 +59,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
+ * TODO Work in progress...
+ *
  * Tests the Market config controller behaviour.
  *
  * @author gazbert

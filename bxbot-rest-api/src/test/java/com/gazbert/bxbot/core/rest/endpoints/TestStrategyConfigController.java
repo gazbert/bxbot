@@ -172,6 +172,7 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
     public void testUpdateStrategyConfig() throws Exception {
 
         given(this.strategyConfigService.updateStrategy(STRAT_ID_1, someStrategyConfig())).willReturn(someStrategyConfig());
+
         this.mockMvc.perform(put("/api/config/strategy")
                 .header("Authorization", "Bearer " + getAccessToken(VALID_USER_LOGINID, VALID_USER_PASSWORD))
                 .contentType(CONTENT_TYPE)
@@ -194,6 +195,7 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
     public void testUpdateStrategyConfigWhenIdNotRecognized() throws Exception {
 
         given(this.strategyConfigService.updateStrategy("unknown-id", unrecognizedStrategyConfig())).willReturn(emptyStrategyConfig());
+
         mockMvc.perform(put("/api/config/strategy/")
                 .header("Authorization", "Bearer " + getAccessToken(VALID_USER_LOGINID, VALID_USER_PASSWORD))
                 .accept(MediaType.APPLICATION_JSON)
@@ -236,6 +238,7 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
     public void testSaveStrategyConfig() throws Exception {
 
         given(this.strategyConfigService.saveStrategy(someStrategyConfig())).willReturn(someStrategyConfig());
+
         this.mockMvc.perform(post("/api/config/strategy/")
                 .header("Authorization", "Bearer " + getAccessToken(VALID_USER_LOGINID, VALID_USER_PASSWORD))
                 .contentType(CONTENT_TYPE)
