@@ -41,7 +41,7 @@ public interface StrategyConfigRepository {
 
     StrategyConfig updateStrategy(StrategyConfig config);
 
-    StrategyConfig saveStrategy(StrategyConfig config);
+    StrategyConfig createStrategy(StrategyConfig config);
 
     StrategyConfig deleteStrategyById(String id);
 }

@@ -74,9 +74,9 @@ public class StrategyConfigServiceImpl implements StrategyConfigService {
     }
 
     @Override
-    public StrategyConfig saveStrategy(StrategyConfig config) {
+    public StrategyConfig createStrategy(StrategyConfig config) {
         LOG.info(() -> "About to create: " + config);
-        return strategyConfigRepository.saveStrategy(config);
+        return strategyConfigRepository.createStrategy(config);
     }
 
     @Override

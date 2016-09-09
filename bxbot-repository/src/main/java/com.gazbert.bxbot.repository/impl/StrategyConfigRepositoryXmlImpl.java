@@ -116,7 +116,7 @@ public class StrategyConfigRepositoryXmlImpl implements StrategyConfigRepository
     }
 
     @Override
-    public StrategyConfig saveStrategy(StrategyConfig config) {
+    public StrategyConfig createStrategy(StrategyConfig config) {
 
         final TradingStrategiesType internalStrategiesConfig = ConfigurationManager.loadConfig(TradingStrategiesType.class,
                 STRATEGIES_CONFIG_XML_FILENAME, STRATEGIES_CONFIG_XSD_FILENAME);

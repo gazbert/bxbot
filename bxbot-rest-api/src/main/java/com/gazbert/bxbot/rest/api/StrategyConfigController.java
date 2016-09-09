@@ -116,7 +116,7 @@ public class StrategyConfigController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        final StrategyConfig createdConfig = strategyConfigService.saveStrategy(config);
+        final StrategyConfig createdConfig = strategyConfigService.createStrategy(config);
         if (createdConfig.getId() != null) {
             final HttpHeaders httpHeaders = new HttpHeaders();
             httpHeaders.setLocation(ServletUriComponentsBuilder

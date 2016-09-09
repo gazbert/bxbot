@@ -301,7 +301,7 @@ public class TestStrategyConfigRepository {
         PowerMock.replayAll();
 
         final StrategyConfigRepository strategyConfigRepository = new StrategyConfigRepositoryXmlImpl();
-        final StrategyConfig strategyConfig = strategyConfigRepository.saveStrategy(someExternalStrategyConfigWithUnknownId());
+        final StrategyConfig strategyConfig = strategyConfigRepository.createStrategy(someExternalStrategyConfigWithUnknownId());
 
         assertThat(strategyConfig.getId()).isEqualTo(UNKNOWN_STRAT_ID);
         assertThat(strategyConfig.getLabel()).isEqualTo(STRAT_LABEL_1);
@@ -327,7 +327,7 @@ public class TestStrategyConfigRepository {
         PowerMock.replayAll();
 
         final StrategyConfigRepository strategyConfigRepository = new StrategyConfigRepositoryXmlImpl();
-        final StrategyConfig strategyConfig = strategyConfigRepository.saveStrategy(someExternalStrategyConfig());
+        final StrategyConfig strategyConfig = strategyConfigRepository.createStrategy(someExternalStrategyConfig());
 
         assertThat(strategyConfig.getId()).isEqualTo(null);
         assertThat(strategyConfig.getLabel()).isEqualTo(null);

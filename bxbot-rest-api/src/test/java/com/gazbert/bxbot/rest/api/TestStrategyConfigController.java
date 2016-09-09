@@ -248,7 +248,7 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
     @Test
     public void testSaveStrategyConfig() throws Exception {
 
-        given(this.strategyConfigService.saveStrategy(someStrategyConfig())).willReturn(someStrategyConfig());
+        given(this.strategyConfigService.createStrategy(someStrategyConfig())).willReturn(someStrategyConfig());
 
         this.mockMvc.perform(post("/api/config/strategy/")
                 .header("Authorization", "Bearer " + getAccessToken(VALID_USER_LOGINID, VALID_USER_PASSWORD))
@@ -271,7 +271,7 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
     @Test
     public void testCreateStrategyConfigWhenIdAlreadyExists() throws Exception {
 
-        given(this.strategyConfigService.saveStrategy(someStrategyConfig())).willReturn(emptyStrategyConfig());
+        given(this.strategyConfigService.createStrategy(someStrategyConfig())).willReturn(emptyStrategyConfig());
 
         mockMvc.perform(post("/api/config/strategy")
                 .header("Authorization", "Bearer " + getAccessToken(VALID_USER_LOGINID, VALID_USER_PASSWORD))
