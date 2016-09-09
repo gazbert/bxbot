@@ -394,79 +394,29 @@ public class TestStrategyConfigRepository {
         configurationType.getConfigItem().add(buyPriceConfigItem);
         configurationType.getConfigItem().add(amountToBuyConfigItem);
 
-        final StrategyType strategyType1 = new StrategyType();
-        strategyType1.setId(STRAT_ID_1);
-        strategyType1.setLabel(STRAT_LABEL_1);
-        strategyType1.setDescription(STRAT_DESCRIPTION_1);
-        strategyType1.setClassName(STRAT_CLASSNAME_1);
-        strategyType1.setConfiguration(configurationType);
+        final StrategyType newStrat = new StrategyType();
+        newStrat.setId(UNKNOWN_STRAT_ID);
+        newStrat.setLabel(STRAT_LABEL_1);
+        newStrat.setDescription(STRAT_DESCRIPTION_1);
+        newStrat.setClassName(STRAT_CLASSNAME_1);
+        newStrat.setConfiguration(configurationType);
 
-        final StrategyType strategyType2 = new StrategyType();
-        strategyType2.setId(STRAT_ID_2);
-        strategyType2.setLabel(STRAT_LABEL_2);
-        strategyType2.setDescription(STRAT_DESCRIPTION_2);
-        strategyType2.setClassName(STRAT_CLASSNAME_2);
-        strategyType2.setConfiguration(configurationType);
-
-        final StrategyType strategyType3 = new StrategyType();
-        strategyType3.setId(UNKNOWN_STRAT_ID);
-        strategyType3.setLabel(STRAT_LABEL_1);
-        strategyType3.setDescription(STRAT_DESCRIPTION_1);
-        strategyType3.setClassName(STRAT_CLASSNAME_1);
-        strategyType3.setConfiguration(configurationType);
-
-        final TradingStrategiesType tradingStrategiesType = new TradingStrategiesType();
-        tradingStrategiesType.getStrategies().add(strategyType1);
-        tradingStrategiesType.getStrategies().add(strategyType2);
-        tradingStrategiesType.getStrategies().add(strategyType3);
-
-        return tradingStrategiesType;
+        final TradingStrategiesType existingStatsPlusNewOne = allTheInternalStrategiesConfig();
+        existingStatsPlusNewOne.getStrategies().add(newStrat);
+        return existingStatsPlusNewOne;
     }
 
     private static StrategyConfig someExternalStrategyConfig() {
-
         final Map<String, String> configItems = new HashMap<>();
         configItems.put(BUY_PRICE_CONFIG_ITEM_KEY, BUY_PRICE_CONFIG_ITEM_VALUE);
         configItems.put(AMOUNT_TO_BUY_CONFIG_ITEM_KEY, AMOUNT_TO_BUY_CONFIG_ITEM_VALUE);
-
-        final StrategyConfig strategyConfig = new StrategyConfig(STRAT_ID_1, STRAT_LABEL_1, STRAT_DESCRIPTION_1, STRAT_CLASSNAME_1, configItems);
-        return strategyConfig;
+        return new StrategyConfig(STRAT_ID_1, STRAT_LABEL_1, STRAT_DESCRIPTION_1, STRAT_CLASSNAME_1, configItems);
     }
 
     private static StrategyConfig someExternalStrategyConfigWithUnknownId() {
-
         final Map<String, String> configItems = new HashMap<>();
         configItems.put(BUY_PRICE_CONFIG_ITEM_KEY, BUY_PRICE_CONFIG_ITEM_VALUE);
         configItems.put(AMOUNT_TO_BUY_CONFIG_ITEM_KEY, AMOUNT_TO_BUY_CONFIG_ITEM_VALUE);
-
-        final StrategyConfig strategyConfig = new StrategyConfig(UNKNOWN_STRAT_ID, STRAT_LABEL_1, STRAT_DESCRIPTION_1, STRAT_CLASSNAME_1, configItems);
-        return strategyConfig;
-    }
-
-    private static TradingStrategiesType someInternalStrategyConfig() {
-
-        final ConfigItemType buyPriceConfigItem = new ConfigItemType();
-        buyPriceConfigItem.setName(BUY_PRICE_CONFIG_ITEM_KEY);
-        buyPriceConfigItem.setValue(BUY_PRICE_CONFIG_ITEM_VALUE);
-
-        final ConfigItemType amountToBuyConfigItem = new ConfigItemType();
-        amountToBuyConfigItem.setName(AMOUNT_TO_BUY_CONFIG_ITEM_KEY);
-        amountToBuyConfigItem.setValue(AMOUNT_TO_BUY_CONFIG_ITEM_VALUE);
-
-        final ConfigurationType configurationType = new ConfigurationType();
-        configurationType.getConfigItem().add(buyPriceConfigItem);
-        configurationType.getConfigItem().add(amountToBuyConfigItem);
-
-        final StrategyType strategyType1 = new StrategyType();
-        strategyType1.setId(STRAT_ID_1);
-        strategyType1.setLabel(STRAT_LABEL_1);
-        strategyType1.setDescription(STRAT_DESCRIPTION_1);
-        strategyType1.setClassName(STRAT_CLASSNAME_1);
-        strategyType1.setConfiguration(configurationType);
-
-        final TradingStrategiesType tradingStrategiesType = new TradingStrategiesType();
-        tradingStrategiesType.getStrategies().add(strategyType1);
-
-        return tradingStrategiesType;
+        return new StrategyConfig(UNKNOWN_STRAT_ID, STRAT_LABEL_1, STRAT_DESCRIPTION_1, STRAT_CLASSNAME_1, configItems);
     }
 }
