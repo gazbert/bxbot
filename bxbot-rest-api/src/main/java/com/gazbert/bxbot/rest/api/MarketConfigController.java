@@ -76,7 +76,7 @@ public class MarketConfigController {
     @RequestMapping(value = "/market/{marketId}", method = RequestMethod.POST)
     ResponseEntity<?> createMarket(@AuthenticationPrincipal User user, @PathVariable String marketId, @RequestBody MarketConfig config) {
 
-        final MarketConfig updatedMarketConfig = marketConfigService.saveMarket(config);
+        final MarketConfig updatedMarketConfig = marketConfigService.createMarket(config);
         final HttpHeaders httpHeaders = new HttpHeaders();
 
         httpHeaders.setLocation(ServletUriComponentsBuilder

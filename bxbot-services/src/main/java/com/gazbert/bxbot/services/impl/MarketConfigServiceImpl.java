@@ -67,7 +67,7 @@ public class MarketConfigServiceImpl implements MarketConfigService {
     }
 
     @Override
-    public MarketConfig saveMarket(MarketConfig config) {
+    public MarketConfig createMarket(MarketConfig config) {
         return getCannedMarketConfig();
     }
 

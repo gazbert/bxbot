@@ -65,8 +65,8 @@ public class MarketConfigRepositoryXmlImpl implements MarketConfigRepository {
     }
 
     @Override
-    public MarketConfig saveMarket(MarketConfig config) {
-        throw new UnsupportedOperationException("saveMarket not coded yet!");
+    public MarketConfig createMarket(MarketConfig config) {
+        throw new UnsupportedOperationException("createMarket not coded yet!");
     }
 
     @Override
