@@ -117,7 +117,35 @@ public class StrategyConfigRepositoryXmlImpl implements StrategyConfigRepository
 
     @Override
     public StrategyConfig saveStrategy(StrategyConfig config) {
-        throw new UnsupportedOperationException("saveStrategy not coded yet");
+
+        final TradingStrategiesType internalStrategiesConfig = ConfigurationManager.loadConfig(TradingStrategiesType.class,
+                STRATEGIES_CONFIG_XML_FILENAME, STRATEGIES_CONFIG_XSD_FILENAME);
+
+        final List<StrategyType> strategyTypes = internalStrategiesConfig.getStrategies()
+                .stream()
+                .filter((item) -> item.getId().equals(config.getId()))
+                .distinct()
+                .collect(Collectors.toList());
+
+        if (strategyTypes.isEmpty()) {
+
+            internalStrategiesConfig.getStrategies().add(adaptExternalToInternalConfig(config));
+            ConfigurationManager.saveConfig(TradingStrategiesType.class, internalStrategiesConfig,
+                    STRATEGIES_CONFIG_XML_FILENAME);
+
+            final TradingStrategiesType updatedInternalStrategiesConfig = ConfigurationManager.loadConfig(
+                    TradingStrategiesType.class, STRATEGIES_CONFIG_XML_FILENAME, STRATEGIES_CONFIG_XSD_FILENAME);
+
+            return adaptInternalToExternalConfig(
+                    updatedInternalStrategiesConfig.getStrategies()
+                            .stream()
+                            .filter((item) -> item.getId().equals(config.getId()))
+                            .distinct()
+                            .collect(Collectors.toList()));
+        } else {
+            // already have a matching id :-(
+            return new StrategyConfig();
+        }
     }
 
     @Override

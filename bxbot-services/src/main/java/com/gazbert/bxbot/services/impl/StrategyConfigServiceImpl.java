@@ -75,7 +75,8 @@ public class StrategyConfigServiceImpl implements StrategyConfigService {
 
     @Override
     public StrategyConfig saveStrategy(StrategyConfig config) {
-        throw new UnsupportedOperationException("saveStrategy not coded yet");
+        LOG.info(() -> "About to create: " + config);
+        return strategyConfigRepository.saveStrategy(config);
     }
 
     @Override
