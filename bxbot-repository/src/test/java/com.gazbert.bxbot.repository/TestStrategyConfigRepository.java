@@ -222,6 +222,60 @@ public class TestStrategyConfigRepository {
         PowerMock.verifyAll();
     }
 
+    @Test
+    public void whenDeleteByIdCalledWithRecognizedIdThenReturnMatchingStrategy() throws Exception {
+
+        expect(ConfigurationManager.loadConfig(
+                eq(TradingStrategiesType.class),
+                eq(STRATEGIES_CONFIG_XML_FILENAME),
+                eq(STRATEGIES_CONFIG_XSD_FILENAME))).
+                andReturn(allTheInternalStrategiesConfig());
+
+        ConfigurationManager.saveConfig(
+                eq(TradingStrategiesType.class),
+                anyObject(TradingStrategiesType.class),
+                eq(STRATEGIES_CONFIG_XML_FILENAME));
+
+        PowerMock.replayAll();
+
+        final StrategyConfigRepository strategyConfigRepository = new StrategyConfigRepositoryXmlImpl();
+        final StrategyConfig strategyConfig = strategyConfigRepository.deleteStrategyById(STRAT_ID_1);
+
+        assertThat(strategyConfig.getId()).isEqualTo(STRAT_ID_1);
+        assertThat(strategyConfig.getLabel()).isEqualTo(STRAT_LABEL_1);
+        assertThat(strategyConfig.getDescription()).isEqualTo(STRAT_DESCRIPTION_1);
+        assertThat(strategyConfig.getClassName()).isEqualTo(STRAT_CLASSNAME_1);
+        assertThat(strategyConfig.getConfigItems().containsKey(BUY_PRICE_CONFIG_ITEM_KEY));
+        assertThat(strategyConfig.getConfigItems().containsValue(BUY_PRICE_CONFIG_ITEM_VALUE));
+        assertThat(strategyConfig.getConfigItems().containsKey(AMOUNT_TO_BUY_CONFIG_ITEM_KEY));
+        assertThat(strategyConfig.getConfigItems().containsValue(AMOUNT_TO_BUY_CONFIG_ITEM_VALUE));
+
+        PowerMock.verifyAll();
+    }
+
+    @Test
+    public void whenDeleteByIdCalledWithUnrecognizedIdThenReturnEmptyStrategy() throws Exception {
+
+        expect(ConfigurationManager.loadConfig(
+                eq(TradingStrategiesType.class),
+                eq(STRATEGIES_CONFIG_XML_FILENAME),
+                eq(STRATEGIES_CONFIG_XSD_FILENAME))).
+                andReturn(allTheInternalStrategiesConfig());
+
+        PowerMock.replayAll();
+
+        final StrategyConfigRepository strategyConfigRepository = new StrategyConfigRepositoryXmlImpl();
+        final StrategyConfig strategyConfig = strategyConfigRepository.deleteStrategyById("unknown-id");
+
+        assertThat(strategyConfig.getId()).isEqualTo(null);
+        assertThat(strategyConfig.getLabel()).isEqualTo(null);
+        assertThat(strategyConfig.getDescription()).isEqualTo(null);
+        assertThat(strategyConfig.getClassName()).isEqualTo(null);
+        assertThat(strategyConfig.getConfigItems().isEmpty());
+
+        PowerMock.verifyAll();
+    }
+
     // ------------------------------------------------------------------------------------------------
     // Private utils
     // ------------------------------------------------------------------------------------------------

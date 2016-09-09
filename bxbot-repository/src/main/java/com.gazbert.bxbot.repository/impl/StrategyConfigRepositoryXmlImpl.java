@@ -36,6 +36,8 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -108,6 +110,7 @@ public class StrategyConfigRepositoryXmlImpl implements StrategyConfigRepository
                             .distinct()
                             .collect(Collectors.toList()));
         } else {
+            // no matching id :-(
             return new StrategyConfig();
         }
     }
@@ -119,7 +122,30 @@ public class StrategyConfigRepositoryXmlImpl implements StrategyConfigRepository
 
     @Override
     public StrategyConfig deleteStrategyById(String id) {
-        throw new UnsupportedOperationException("deleteStrategyById not coded yet");
+
+        LOG.info(() -> "Deleting config for Strategy id: " + id);
+
+        final TradingStrategiesType internalStrategiesConfig = ConfigurationManager.loadConfig(TradingStrategiesType.class,
+                STRATEGIES_CONFIG_XML_FILENAME, STRATEGIES_CONFIG_XSD_FILENAME);
+
+        final List<StrategyType> strategyTypes = internalStrategiesConfig.getStrategies()
+                .stream()
+                .filter((item) -> item.getId().equals(id))
+                .distinct()
+                .collect(Collectors.toList());
+
+        if (!strategyTypes.isEmpty()) {
+
+            final StrategyType strategyToRemove = strategyTypes.get(0); // will only be 1 unique strat
+            internalStrategiesConfig.getStrategies().remove(strategyToRemove);
+            ConfigurationManager.saveConfig(TradingStrategiesType.class, internalStrategiesConfig,
+                    STRATEGIES_CONFIG_XML_FILENAME);
+
+            return adaptInternalToExternalConfig(Collections.singletonList(strategyToRemove));
+        } else {
+            // no matching id :-(
+            return new StrategyConfig();
+        }
     }
 
     // ------------------------------------------------------------------------------------------------

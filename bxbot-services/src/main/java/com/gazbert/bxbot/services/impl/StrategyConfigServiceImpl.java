@@ -80,6 +80,7 @@ public class StrategyConfigServiceImpl implements StrategyConfigService {
 
     @Override
     public StrategyConfig deleteStrategyById(String id) {
-        throw new UnsupportedOperationException("deleteStrategyById not coded yet");
+        LOG.info(() -> "About to delete Strategy config for id: " + id);
+        return strategyConfigRepository.deleteStrategyById(id);
     }
 }
