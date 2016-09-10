@@ -86,13 +86,14 @@ public class StrategyConfigController {
      * Updates a given Strategy configuration.
      *
      * @param user the authenticated user.
-     * @param config the Strategy config to update.
+     * @param strategyId id of the Strategy config to update.
+     * @param config the updated Strategy config.
      * @return 204 'No Content' HTTP status code if update successful, 404 'Not Found' HTTP status code if Strategy config not found.
      */
-    @RequestMapping(value = "/strategy", method = RequestMethod.PUT)
-    ResponseEntity<?> updateStrategy(@AuthenticationPrincipal User user, @RequestBody StrategyConfig config) {
+    @RequestMapping(value = "/strategy/{strategyId}", method = RequestMethod.PUT)
+    ResponseEntity<?> updateStrategy(@AuthenticationPrincipal User user, @PathVariable String strategyId, @RequestBody StrategyConfig config) {
 
-        if (config == null || config.getId() == null) {
+        if (config == null || config.getId() == null || !strategyId.equals(config.getId())) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
@@ -106,13 +107,14 @@ public class StrategyConfigController {
      * Creates a new Strategy configuration.
      *
      * @param user the authenticated user.
+     * @param strategyId id of the Strategy config to create.
      * @param config the new Strategy config.
      * @return 201 'Created' HTTP status code if create successful, 409 'Conflict' HTTP status code if Strategy config already exists.
      */
-    @RequestMapping(value = "/strategy", method = RequestMethod.POST)
-    ResponseEntity<?> createStrategy(@AuthenticationPrincipal User user, @RequestBody StrategyConfig config) {
+    @RequestMapping(value = "/strategy/{strategyId}", method = RequestMethod.POST)
+    ResponseEntity<?> createStrategy(@AuthenticationPrincipal User user, @PathVariable String strategyId, @RequestBody StrategyConfig config) {
 
-        if (config == null || config.getId() == null) {
+        if (config == null || config.getId() == null || !strategyId.equals(config.getId())) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
