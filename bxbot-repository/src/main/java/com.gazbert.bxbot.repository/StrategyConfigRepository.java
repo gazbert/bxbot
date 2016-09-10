@@ -39,9 +39,9 @@ public interface StrategyConfigRepository {
 
     StrategyConfig findById(String id);
 
-    StrategyConfig updateStrategy(String id, StrategyConfig config);
+    StrategyConfig updateStrategy(StrategyConfig config);
 
-    StrategyConfig saveStrategy(StrategyConfig config);
+    StrategyConfig createStrategy(StrategyConfig config);
 
     StrategyConfig deleteStrategyById(String id);
 }

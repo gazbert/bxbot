@@ -21,7 +21,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.core.rest.security;
+package com.gazbert.bxbot.rest.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -93,10 +93,8 @@ public class OAuth2ServerConfiguration {
         private UserDetailsServiceImpl userDetailsService;
 
         /*
-         * Can't use constructor injection within @Configuration:
+         * Don't seem to be able use constructor injection within @Configuration:
          * http://stackoverflow.com/questions/35845106/is-constructor-injection-possible-in-spring-configuration-classes/35846123#35846123
-         *
-         * New feature coming in Boot 4.3: https://jira.spring.io/browse/SPR-13471
          */
 //        @Autowired
 //        public AuthorizationServerConfiguration(UserDetailsServiceImpl userDetailsService,

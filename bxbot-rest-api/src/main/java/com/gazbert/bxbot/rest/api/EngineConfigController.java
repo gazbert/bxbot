@@ -21,12 +21,11 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.core.rest.endpoints;
+package com.gazbert.bxbot.rest.api;
 
-
-import com.gazbert.bxbot.core.rest.security.User;
-import com.gazbert.bxbot.domain.exchange.ExchangeConfig;
-import com.gazbert.bxbot.services.ExchangeConfigService;
+import com.gazbert.bxbot.rest.security.User;
+import com.gazbert.bxbot.domain.engine.EngineConfig;
+import com.gazbert.bxbot.services.EngineConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -37,58 +36,49 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 /**
- * TODO Javadoc this - it's a public API!
+ * Controller for directing Engine config requests.
  * <p>
- * Controller for directing Exchange config requests.
- * <p>
- * Exchange config can only be fetched and updated - there is only 1 Exchange Adapter per bot.
+ * Engine config can only be fetched and updated - there is only 1 Trading Engine per bot.
  *
  * @author gazbert
  * @since 1.0
  */
 @RestController
-@RequestMapping("/api")
-public class ExchangeConfigController {
+@RequestMapping("/api/config")
+public class EngineConfigController {
 
-    private final ExchangeConfigService exchangeConfigService;
+    private final EngineConfigService engineConfigService;
 
     @Autowired
-    public ExchangeConfigController(ExchangeConfigService exchangeConfigService) {
-        Assert.notNull(exchangeConfigService, "exchangeConfigService dependency cannot be null!");
-        this.exchangeConfigService = exchangeConfigService;
+    public EngineConfigController(EngineConfigService engineConfigService) {
+        Assert.notNull(engineConfigService, "engineConfigService dependency cannot be null!");
+        this.engineConfigService = engineConfigService;
     }
 
     /**
-     * Returns Exchange configuration for the bot.
-     * <p>
-     * TODO check user permissions and make authz more specific?
+     * Returns Engine configuration for the bot.
      *
-     * @return the Exchange configuration.
+     * @return the Engine configuration.
      */
-    @RequestMapping(value = "/config/exchange", method = RequestMethod.GET)
-    public ExchangeConfig getExchange(@AuthenticationPrincipal User user) {
-
-        final ExchangeConfig exchangeConfig = exchangeConfigService.getConfig();
-
-        // Strip out the Authentication config for now - too risky to expose trading api keys
-        exchangeConfig.setAuthenticationConfig(null);
-        return exchangeConfig;
+    @RequestMapping(value = "/engine", method = RequestMethod.GET)
+    public EngineConfig getEngine(@AuthenticationPrincipal User user) {
+        return engineConfigService.getConfig();
     }
 
     /**
-     * Updates Exchange configuration for the bot.
-     * <p>
-     * TODO check user permissions and make authz more specific?
+     * Updates Engine configuration for the bot.
      *
-     * @return HttpStatus.NO_CONTENT if exchange config was updated, any other HTTP status code otherwise.
+     * @return 204 'No Content' HTTP status code if engine config was updated successfully, some other HTTP status code otherwise.
      */
-    @RequestMapping(value = "/config/exchange", method = RequestMethod.PUT)
-    ResponseEntity<?> updateExchange(@AuthenticationPrincipal User user, @RequestBody ExchangeConfig config) {
+    @RequestMapping(value = "/engine", method = RequestMethod.PUT)
+    public ResponseEntity<?> updateEngine(@AuthenticationPrincipal User user, @RequestBody EngineConfig config) {
 
-        exchangeConfigService.updateConfig(config);
+        engineConfigService.updateConfig(config);
         final HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setLocation(ServletUriComponentsBuilder.fromCurrentRequest().path("/").buildAndExpand().toUri());
         return new ResponseEntity<>(null, httpHeaders, HttpStatus.NO_CONTENT);
     }
 }

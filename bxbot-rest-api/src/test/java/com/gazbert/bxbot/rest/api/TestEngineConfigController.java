@@ -21,13 +21,12 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.core.rest.endpoints;
+package com.gazbert.bxbot.rest.api;
 
 import com.gazbert.bxbot.core.engine.TradingEngine;
 import com.gazbert.bxbot.core.mail.EmailAlerter;
-import com.gazbert.bxbot.domain.emailalerts.EmailAlertsConfig;
-import com.gazbert.bxbot.domain.emailalerts.SmtpConfig;
-import com.gazbert.bxbot.services.EmailAlertsConfigService;
+import com.gazbert.bxbot.domain.engine.EngineConfig;
+import com.gazbert.bxbot.services.EngineConfigService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,6 +37,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.math.BigDecimal;
+
 import static org.hamcrest.Matchers.is;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -47,15 +48,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
- * Tests the Email Alerts config controller behaviour.
+ * Tests the Engine config controller behaviour.
  *
  * @author gazbert
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @WebAppConfiguration
-public class TestEmailAlertsConfigController extends AbstractConfigControllerTest {
-
+public class TestEngineConfigController extends AbstractConfigControllerTest {
 
     // This must match a user's login_id in the user table in src/test/resources/import.sql
     private static final String VALID_USER_LOGINID = "user1";
@@ -63,16 +63,13 @@ public class TestEmailAlertsConfigController extends AbstractConfigControllerTes
     // This must match a user's password in the user table in src/test/resources/import.sql
     private static final String VALID_USER_PASSWORD = "user1-password";
 
-    // Canned data
-    private static final boolean ENABLED = true;
-    private static final String HOST = "smtp.host.deathstar.com";
-    private static final int TLS_PORT = 573;
-    private static final String ACCOUNT_USERNAME = "boba@google.com";
-    private static final String FROM_ADDRESS = "boba.fett@Mandalore.com";
-    private static final String TO_ADDRESS = "darth.vader@deathstar.com";
+    // Canned test data
+    private static final String ENGINE_EMERGENCY_STOP_CURRENCY = "BTC";
+    private static final BigDecimal ENGINE_EMERGENCY_STOP_BALANCE = new BigDecimal("0.9232320");
+    private static final int ENGINE_TRADE_CYCLE_INTERVAL = 60;
 
     @MockBean
-    EmailAlertsConfigService emailAlertsConfigService;
+    private EngineConfigService engineConfigService;
 
     @MockBean
     private EmailAlerter emailAlerter;
@@ -80,58 +77,50 @@ public class TestEmailAlertsConfigController extends AbstractConfigControllerTes
     @MockBean
     private TradingEngine tradingEngine;
 
-
     @Before
     public void setupBeforeEachTest() {
         mockMvc = MockMvcBuilders.webAppContextSetup(ctx).addFilter(springSecurityFilterChain).build();
     }
 
     @Test
-    public void testGetEmailAlertsConfig() throws Exception {
+    public void testGetEngineConfig() throws Exception {
 
-        given(this.emailAlertsConfigService.getConfig()).willReturn(someEmailAlertsConfig());
+        given(this.engineConfigService.getConfig()).willReturn(someEngineConfig());
         this.tradingEngine.start();
 
-        this.mockMvc.perform(get("/api/config/emailalerts")
+        this.mockMvc.perform(get("/api/config/engine")
                 .header("Authorization", "Bearer " + getAccessToken(VALID_USER_LOGINID, VALID_USER_PASSWORD)))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.smtpConfig.host").value(HOST))
-                .andExpect(jsonPath("$.smtpConfig.tlsPort").value(TLS_PORT))
-                .andExpect(jsonPath("$.enabled").value(ENABLED))
-                .andExpect(jsonPath("$.smtpConfig.fromAddress").value(FROM_ADDRESS))
-                .andExpect(jsonPath("$.smtpConfig.toAddress").value(TO_ADDRESS))
-                .andExpect(jsonPath("$.smtpConfig.accountUsername").value(ACCOUNT_USERNAME))
-
-                // REST API does not expose email account password - potential security risk
-                .andExpect(jsonPath("$.smtpConfig.accountPassword").doesNotExist()
+                .andExpect(jsonPath("$.emergencyStopCurrency").value(ENGINE_EMERGENCY_STOP_CURRENCY))
+                .andExpect(jsonPath("$.emergencyStopBalance").value(ENGINE_EMERGENCY_STOP_BALANCE.doubleValue()))
+                .andExpect(jsonPath("$.tradeCycleInterval").value(ENGINE_TRADE_CYCLE_INTERVAL)
                 );
     }
 
     @Test
-    public void testGetEmailAlertsConfigWhenUnauthorized() throws Exception {
+    public void testGetEngineConfigWhenUnauthorized() throws Exception {
 
-        mockMvc.perform(get("/api/config/emailalerts")
+        mockMvc.perform(get("/api/config/engine")
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.error", is("unauthorized")));
     }
 
     @Test
-    public void testUpdateEmailAlertsConfig() throws Exception {
+    public void testUpdateEngineConfig() throws Exception {
 
-        final String configJson = jsonify(someEmailAlertsConfig());
-        this.mockMvc.perform(put("/api/config/emailalerts")
+        this.mockMvc.perform(put("/api/config/engine")
                 .header("Authorization", "Bearer " + getAccessToken(VALID_USER_LOGINID, VALID_USER_PASSWORD))
                 .contentType(CONTENT_TYPE)
-                .content(configJson))
+                .content(jsonify(someEngineConfig())))
                 .andExpect(status().isNoContent());
     }
 
     @Test
-    public void testUpdateEmailAlertsConfigWhenUnauthorized() throws Exception {
+    public void testUpdateEngineConfigWhenUnauthorized() throws Exception {
 
-        mockMvc.perform(put("/api/config/emailalerts")
+        mockMvc.perform(put("/api/config/engine")
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.error", is("unauthorized")));
@@ -141,15 +130,11 @@ public class TestEmailAlertsConfigController extends AbstractConfigControllerTes
     // Private utils
     // ------------------------------------------------------------------------------------------------
 
-    private static EmailAlertsConfig someEmailAlertsConfig() {
-
-        // REST API does not expose email account password - potential security risk
-        final SmtpConfig smtpConfig = new SmtpConfig(
-                HOST, TLS_PORT, ACCOUNT_USERNAME, null, FROM_ADDRESS, TO_ADDRESS);
-
-        final EmailAlertsConfig emailAlertsConfig = new EmailAlertsConfig();
-        emailAlertsConfig.setEnabled(true);
-        emailAlertsConfig.setSmtpConfig(smtpConfig);
-        return emailAlertsConfig;
+    private static EngineConfig someEngineConfig() {
+        final EngineConfig engineConfig = new EngineConfig();
+        engineConfig.setEmergencyStopCurrency(ENGINE_EMERGENCY_STOP_CURRENCY);
+        engineConfig.setEmergencyStopBalance(ENGINE_EMERGENCY_STOP_BALANCE);
+        engineConfig.setTradeCycleInterval(ENGINE_TRADE_CYCLE_INTERVAL);
+        return engineConfig;
     }
 }

@@ -37,6 +37,8 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
+ * TODO Work in progress...
+ *
  * Implementation of the Market config service.
  *
  * @author gazbert
@@ -65,7 +67,7 @@ public class MarketConfigServiceImpl implements MarketConfigService {
     }
 
     @Override
-    public MarketConfig saveMarket(MarketConfig config) {
+    public MarketConfig createMarket(MarketConfig config) {
         return getCannedMarketConfig();
     }
 

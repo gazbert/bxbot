@@ -21,14 +21,16 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.core.rest.endpoints;
+package com.gazbert.bxbot.rest.api;
 
+import com.gazbert.bxbot.rest.security.User;
 import com.gazbert.bxbot.domain.market.MarketConfig;
 import com.gazbert.bxbot.services.MarketConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -36,15 +38,15 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.util.List;
 
 /**
- * TODO Javadoc this - it's a public API!
- *
+ * TODO Work in progress...
+ * <p>
  * Controller for directing Market config requests.
  *
  * @author gazbert
  * @since 1.0
  */
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/config")
 public class MarketConfigController {
 
     private final MarketConfigService marketConfigService;
@@ -55,23 +57,26 @@ public class MarketConfigController {
         this.marketConfigService = marketConfigService;
     }
 
-    @RequestMapping(value = "/config/market/{marketId}", method = RequestMethod.GET)
-    public MarketConfig getMarket(@PathVariable String marketId) {
+    @RequestMapping(value = "/market/{marketId}", method = RequestMethod.GET)
+    public MarketConfig getMarket(@AuthenticationPrincipal User user, @PathVariable String marketId) {
         return marketConfigService.findById(marketId);
     }
 
-    @RequestMapping(value = "/config/market/{marketId}", method = RequestMethod.PUT)
-    ResponseEntity<?> updateMarket(@PathVariable String marketId, @RequestBody MarketConfig config) {
+    @RequestMapping(value = "/market/{marketId}", method = RequestMethod.PUT)
+    ResponseEntity<?> updateMarket(@AuthenticationPrincipal User user, @PathVariable String marketId, @RequestBody MarketConfig config) {
 
         final MarketConfig updatedMarketConfig = marketConfigService.updateMarket(config);
         final HttpHeaders httpHeaders = new HttpHeaders();
-        return new ResponseEntity<>(updatedMarketConfig, httpHeaders, HttpStatus.OK);
+        httpHeaders.setLocation(ServletUriComponentsBuilder
+                .fromCurrentRequest().path("/{marketId}")
+                .buildAndExpand(updatedMarketConfig.getId()).toUri());
+        return new ResponseEntity<>(updatedMarketConfig, httpHeaders, HttpStatus.NO_CONTENT);
     }
 
-    @RequestMapping(value = "/config/market/{marketId}", method = RequestMethod.POST)
-    ResponseEntity<?> createMarket(@PathVariable String marketId, @RequestBody MarketConfig config) {
+    @RequestMapping(value = "/market/{marketId}", method = RequestMethod.POST)
+    ResponseEntity<?> createMarket(@AuthenticationPrincipal User user, @PathVariable String marketId, @RequestBody MarketConfig config) {
 
-        final MarketConfig updatedMarketConfig = marketConfigService.saveMarket(config);
+        final MarketConfig updatedMarketConfig = marketConfigService.createMarket(config);
         final HttpHeaders httpHeaders = new HttpHeaders();
 
         httpHeaders.setLocation(ServletUriComponentsBuilder
@@ -80,13 +85,13 @@ public class MarketConfigController {
         return new ResponseEntity<>(null, httpHeaders, HttpStatus.CREATED);
     }
 
-    @RequestMapping(value = "/config/market/{marketId}", method = RequestMethod.DELETE)
-    public MarketConfig deleteMarket(@PathVariable String marketId) {
+    @RequestMapping(value = "/market/{marketId}", method = RequestMethod.DELETE)
+    public MarketConfig deleteMarket(@AuthenticationPrincipal User user, @PathVariable String marketId) {
         return marketConfigService.deleteMarketById(marketId);
     }
 
-    @RequestMapping(value = "/config/market", method = RequestMethod.GET)
-    public List<MarketConfig> getAllMarkets() {
+    @RequestMapping(value = "/market", method = RequestMethod.GET)
+    public List<MarketConfig> getAllMarkets(@AuthenticationPrincipal User user) {
         return marketConfigService.findAllMarkets();
     }
 }

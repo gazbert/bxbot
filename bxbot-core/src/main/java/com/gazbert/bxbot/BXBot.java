@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016 Gareth Jon Lynch
+ * Copyright (c) 2015 Gareth Jon Lynch
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -21,38 +21,44 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.core.rest.security;
+package com.gazbert.bxbot;
 
+import com.gazbert.bxbot.core.engine.TradingEngine;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /**
- * Web security config for telling Spring about our User Details service.
+ * BX-bot - here be the main boot app.
  *
  * @author gazbert
  */
-@Configuration
-@EnableWebSecurity
-@ComponentScan
-public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
+@SpringBootApplication
+public class BXBot implements CommandLineRunner {
 
     @Autowired
-    private UserDetailsServiceImpl userDetailsService;
+    private TradingEngine tradingEngine;
 
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userDetailsService);
+    /*
+     * Don't seem to be able to use constructor injection within @SpringBootApplication:
+     * http://stackoverflow.com/questions/36696803/spring-boot-no-default-constructor-found-on-springbootapplication-class
+     */
+//    @Autowired
+//    public BXBot(TradingEngine tradingEngine) {
+//        Assert.notNull(tradingEngine, "tradingEngine dependency cannot be null!");
+//        this.tradingEngine = tradingEngine;
+//    }
+
+    public BXBot() {
+    }
+
+    public static void main(String[] args) {
+        SpringApplication.run(BXBot.class, args);
     }
 
     @Override
-    @Bean
-    public AuthenticationManager authenticationManagerBean() throws Exception {
-        return super.authenticationManagerBean();
+    public void run(String... strings) throws Exception {
+        tradingEngine.start();
     }
 }

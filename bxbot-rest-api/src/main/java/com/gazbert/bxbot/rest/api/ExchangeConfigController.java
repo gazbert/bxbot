@@ -21,11 +21,11 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.core.rest.endpoints;
+package com.gazbert.bxbot.rest.api;
 
-import com.gazbert.bxbot.core.rest.security.User;
-import com.gazbert.bxbot.domain.engine.EngineConfig;
-import com.gazbert.bxbot.services.EngineConfigService;
+import com.gazbert.bxbot.rest.security.User;
+import com.gazbert.bxbot.domain.exchange.ExchangeConfig;
+import com.gazbert.bxbot.services.ExchangeConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -39,50 +39,50 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 /**
- * TODO Javadoc this - it's a public API!
- *
- * Controller for directing Engine config requests.
  * <p>
- * Engine config can only be fetched and updated - there is only 1 Trading Engine per bot.
+ * Controller for directing Exchange config requests.
+ * <p>
+ * Exchange config can only be fetched and updated - there is only 1 Exchange Adapter per bot.
  *
  * @author gazbert
  * @since 1.0
  */
 @RestController
-@RequestMapping("/api")
-public class EngineConfigController {
+@RequestMapping("/api/config/")
+public class ExchangeConfigController {
 
-    private final EngineConfigService engineConfigService;
+    private final ExchangeConfigService exchangeConfigService;
 
     @Autowired
-    public EngineConfigController(EngineConfigService engineConfigService) {
-        Assert.notNull(engineConfigService, "engineConfigService dependency cannot be null!");
-        this.engineConfigService = engineConfigService;
+    public ExchangeConfigController(ExchangeConfigService exchangeConfigService) {
+        Assert.notNull(exchangeConfigService, "exchangeConfigService dependency cannot be null!");
+        this.exchangeConfigService = exchangeConfigService;
     }
 
     /**
-     * Returns Engine configuration for the bot.
+     * Returns Exchange configuration for the bot.
      *
-     * TODO check user permissions and make authz more specific?
-     *
-     * @return the Engine configuration.
+     * @return the Exchange configuration.
      */
-    @RequestMapping(value = "/config/engine", method = RequestMethod.GET)
-    public EngineConfig getEngine(@AuthenticationPrincipal User user) {
-        return engineConfigService.getConfig();
+    @RequestMapping(value = "/exchange", method = RequestMethod.GET)
+    public ExchangeConfig getExchange(@AuthenticationPrincipal User user) {
+
+        final ExchangeConfig exchangeConfig = exchangeConfigService.getConfig();
+
+        // Strip out the Authentication config for now - too risky to expose trading api keys
+        exchangeConfig.setAuthenticationConfig(null);
+        return exchangeConfig;
     }
 
     /**
-     * Updates Engine configuration for the bot.
+     * Updates Exchange configuration for the bot.
      *
-     * TODO check user permissions and make authz more specific?
-     *
-     * @return HttpStatus.NO_CONTENT if engine config was updated successfully, some other HTTP status code otherwise.
+     * @return 204 'No Content' HTTP status code if exchange config was updated, some other HTTP status code otherwise.
      */
-    @RequestMapping(value = "/config/engine", method = RequestMethod.PUT)
-    public ResponseEntity<?> updateEngine(@AuthenticationPrincipal User user, @RequestBody EngineConfig config) {
+    @RequestMapping(value = "/exchange", method = RequestMethod.PUT)
+    ResponseEntity<?> updateExchange(@AuthenticationPrincipal User user, @RequestBody ExchangeConfig config) {
 
-        engineConfigService.updateConfig(config);
+        exchangeConfigService.updateConfig(config);
         final HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setLocation(ServletUriComponentsBuilder.fromCurrentRequest().path("/").buildAndExpand().toUri());
         return new ResponseEntity<>(null, httpHeaders, HttpStatus.NO_CONTENT);

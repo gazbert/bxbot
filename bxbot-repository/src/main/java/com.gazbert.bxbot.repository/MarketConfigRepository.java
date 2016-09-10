@@ -38,7 +38,7 @@ public interface MarketConfigRepository {
 
     MarketConfig findById(String id);
 
-    MarketConfig saveMarket(MarketConfig config);
+    MarketConfig createMarket(MarketConfig config);
 
     MarketConfig updateMarket(MarketConfig config);
 

@@ -21,14 +21,13 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.core.rest.endpoints;
+package com.gazbert.bxbot.rest.api;
 
 import com.gazbert.bxbot.core.engine.TradingEngine;
 import com.gazbert.bxbot.core.mail.EmailAlerter;
 import com.gazbert.bxbot.domain.strategy.StrategyConfig;
 import com.gazbert.bxbot.services.StrategyConfigService;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -45,8 +44,7 @@ import java.util.Map;
 
 import static org.hamcrest.Matchers.is;
 import static org.mockito.BDDMockito.given;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -68,6 +66,8 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
     private static final String VALID_USER_PASSWORD = "user1-password";
 
     // Canned data
+    private static final String UNKNOWN_STRAT_ID = "unknown-id";
+
     private static final String STRAT_ID_1 = "macd-long-position";
     private static final String STRAT_LABEL_1 = "MACD Long Position Algo";
     private static final String STRAT_DESCRIPTION_1 = "Uses MACD as indicator and takes long position in base currency.";
@@ -162,18 +162,18 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
     @Test
     public void testGetStrategyConfigByIdWhenNotRecognized() throws Exception {
 
-        given(this.strategyConfigService.findById("unknown-id")).willReturn(emptyStrategyConfig());
-        mockMvc.perform(get("/api/config/strategy/unknown-id")
+        given(this.strategyConfigService.findById(UNKNOWN_STRAT_ID)).willReturn(emptyStrategyConfig());
+
+        mockMvc.perform(get("/api/config/strategy/" + UNKNOWN_STRAT_ID)
                 .header("Authorization", "Bearer " + getAccessToken(VALID_USER_LOGINID, VALID_USER_PASSWORD))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
     }
 
-    @Ignore("FIXME Broken log4j dependency using Gradle build :-(")
     @Test
     public void testUpdateStrategyConfig() throws Exception {
 
-        given(this.strategyConfigService.updateStrategy(STRAT_ID_1, someStrategyConfig())).willReturn(someStrategyConfig());
+        given(this.strategyConfigService.updateStrategy(someStrategyConfig())).willReturn(someStrategyConfig());
 
         this.mockMvc.perform(put("/api/config/strategy/" + STRAT_ID_1)
                 .header("Authorization", "Bearer " + getAccessToken(VALID_USER_LOGINID, VALID_USER_PASSWORD))
@@ -185,7 +185,7 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
     @Test
     public void testUpdateStrategyConfigWhenUnauthorized() throws Exception {
 
-        mockMvc.perform(put("/api/config/strategy")
+        mockMvc.perform(put("/api/config/strategy/" + STRAT_ID_1)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(CONTENT_TYPE)
                 .content(jsonify(someStrategyConfig())))
@@ -196,13 +196,102 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
     @Test
     public void testUpdateStrategyConfigWhenIdNotRecognized() throws Exception {
 
-        given(this.strategyConfigService.updateStrategy("unknown-id", someStrategyConfig())).willReturn(emptyStrategyConfig());
-        mockMvc.perform(put("/api/config/strategy/unknown-id")
+        given(this.strategyConfigService.updateStrategy(unrecognizedStrategyConfig())).willReturn(emptyStrategyConfig());
+
+        mockMvc.perform(put("/api/config/strategy/" + UNKNOWN_STRAT_ID)
+                .header("Authorization", "Bearer " + getAccessToken(VALID_USER_LOGINID, VALID_USER_PASSWORD))
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(CONTENT_TYPE)
+                .content(jsonify(unrecognizedStrategyConfig())))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void testUpdateStrategyConfigWhenIdIsMissing() throws Exception {
+
+        mockMvc.perform(put("/api/config/strategy/" + STRAT_ID_1)
+                .header("Authorization", "Bearer " + getAccessToken(VALID_USER_LOGINID, VALID_USER_PASSWORD))
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(CONTENT_TYPE)
+                .content(jsonify(someStrategyConfigWithMissingId())))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void testDeleteStrategyConfig() throws Exception {
+
+        given(this.strategyConfigService.deleteStrategyById(STRAT_ID_1)).willReturn(someStrategyConfig());
+
+        this.mockMvc.perform(delete("/api/config/strategy/" + STRAT_ID_1)
+                .header("Authorization", "Bearer " + getAccessToken(VALID_USER_LOGINID, VALID_USER_PASSWORD)))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    public void testDeleteStrategyConfigWhenUnauthorized() throws Exception {
+
+        mockMvc.perform(delete("/api/config/strategy/" + STRAT_ID_1)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.error", is("unauthorized")));
+    }
+
+    @Test
+    public void testDeleteStrategyConfigWhenIdNotRecognized() throws Exception {
+
+        given(this.strategyConfigService.deleteStrategyById(UNKNOWN_STRAT_ID)).willReturn(emptyStrategyConfig());
+
+        mockMvc.perform(delete("/api/config/strategy/unknown-id")
+                .header("Authorization", "Bearer " + getAccessToken(VALID_USER_LOGINID, VALID_USER_PASSWORD))
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void testSaveStrategyConfig() throws Exception {
+
+        given(this.strategyConfigService.createStrategy(someStrategyConfig())).willReturn(someStrategyConfig());
+
+        this.mockMvc.perform(post("/api/config/strategy/" + STRAT_ID_1)
+                .header("Authorization", "Bearer " + getAccessToken(VALID_USER_LOGINID, VALID_USER_PASSWORD))
+                .contentType(CONTENT_TYPE)
+                .content(jsonify(someStrategyConfig())))
+                .andExpect(status().isCreated());
+    }
+
+    @Test
+    public void testCreateStrategyConfigWhenUnauthorized() throws Exception {
+
+        mockMvc.perform(post("/api/config/strategy/" + STRAT_ID_1)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(CONTENT_TYPE)
+                .content(jsonify(someStrategyConfig())))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.error", is("unauthorized")));
+    }
+
+    @Test
+    public void testCreateStrategyConfigWhenIdAlreadyExists() throws Exception {
+
+        given(this.strategyConfigService.createStrategy(someStrategyConfig())).willReturn(emptyStrategyConfig());
+
+        mockMvc.perform(post("/api/config/strategy/" + STRAT_ID_1)
                 .header("Authorization", "Bearer " + getAccessToken(VALID_USER_LOGINID, VALID_USER_PASSWORD))
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(CONTENT_TYPE)
                 .content(jsonify(someStrategyConfig())))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isConflict());
+    }
+
+    @Test
+    public void testCreateStrategyConfigWhenIdIsMissing() throws Exception {
+
+        mockMvc.perform(post("/api/config/strategy/" + STRAT_ID_1)
+                .header("Authorization", "Bearer " + getAccessToken(VALID_USER_LOGINID, VALID_USER_PASSWORD))
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(CONTENT_TYPE)
+                .content(jsonify(someStrategyConfigWithMissingId())))
+                .andExpect(status().isBadRequest());
     }
 
     // ------------------------------------------------------------------------------------------------
@@ -230,9 +319,23 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
         final Map<String, String> configItems = new HashMap<>();
         configItems.put(BUY_PRICE_CONFIG_ITEM_KEY, BUY_PRICE_CONFIG_ITEM_VALUE);
         configItems.put(AMOUNT_TO_BUY_CONFIG_ITEM_KEY, AMOUNT_TO_BUY_CONFIG_ITEM_VALUE);
+        return new StrategyConfig(STRAT_ID_1, STRAT_LABEL_1, STRAT_DESCRIPTION_1, STRAT_CLASSNAME_1, configItems);
+    }
 
-        final StrategyConfig strategyConfig = new StrategyConfig(STRAT_ID_1, STRAT_LABEL_1, STRAT_DESCRIPTION_1, STRAT_CLASSNAME_1, configItems);
-        return strategyConfig;
+    private static StrategyConfig someStrategyConfigWithMissingId() {
+
+        final Map<String, String> configItems = new HashMap<>();
+        configItems.put(BUY_PRICE_CONFIG_ITEM_KEY, BUY_PRICE_CONFIG_ITEM_VALUE);
+        configItems.put(AMOUNT_TO_BUY_CONFIG_ITEM_KEY, AMOUNT_TO_BUY_CONFIG_ITEM_VALUE);
+        return new StrategyConfig(null, STRAT_LABEL_1, STRAT_DESCRIPTION_1, STRAT_CLASSNAME_1, configItems);
+    }
+
+    private static StrategyConfig unrecognizedStrategyConfig() {
+
+        final Map<String, String> configItems = new HashMap<>();
+        configItems.put(BUY_PRICE_CONFIG_ITEM_KEY, BUY_PRICE_CONFIG_ITEM_VALUE);
+        configItems.put(AMOUNT_TO_BUY_CONFIG_ITEM_KEY, AMOUNT_TO_BUY_CONFIG_ITEM_VALUE);
+        return new StrategyConfig("unknown-id", STRAT_LABEL_1, STRAT_DESCRIPTION_1, STRAT_CLASSNAME_1, configItems);
     }
 
     private static StrategyConfig emptyStrategyConfig() {

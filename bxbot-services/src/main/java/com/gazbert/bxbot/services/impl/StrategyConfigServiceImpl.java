@@ -68,18 +68,20 @@ public class StrategyConfigServiceImpl implements StrategyConfigService {
     }
 
     @Override
-    public StrategyConfig updateStrategy(String id, StrategyConfig config) {
+    public StrategyConfig updateStrategy(StrategyConfig config) {
         LOG.info(() -> "About to update: " + config);
-        return strategyConfigRepository.updateStrategy(id, config);
+        return strategyConfigRepository.updateStrategy(config);
     }
 
     @Override
-    public StrategyConfig saveStrategy(StrategyConfig config) {
-        throw new UnsupportedOperationException("saveStrategy not coded yet");
+    public StrategyConfig createStrategy(StrategyConfig config) {
+        LOG.info(() -> "About to create: " + config);
+        return strategyConfigRepository.createStrategy(config);
     }
 
     @Override
     public StrategyConfig deleteStrategyById(String id) {
-        throw new UnsupportedOperationException("deleteStrategyById not coded yet");
+        LOG.info(() -> "About to delete Strategy config for id: " + id);
+        return strategyConfigRepository.deleteStrategyById(id);
     }
 }
