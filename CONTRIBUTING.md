@@ -9,7 +9,7 @@ existing one - refactoring, improving Javadoc, and boosting test coverage is alw
 
 One of the project's maintainers should respond to your issue within 48 hours... if not, bump the issue and request that it be reviewed.
 
-There's also a channel on [Gitter](https://gitter.im/BX-bot/) if you need some help with stuff.
+There's also a channel on [Gitter](https://gitter.im/BX-bot/Lobby) if you need some help with stuff.
 
 ## Contributor workflow
 

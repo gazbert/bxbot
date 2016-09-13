@@ -85,7 +85,7 @@ submit bugs here.
  
 You are welcome to take on new features or fix bugs! See [here](CONTRIBUTING.md) for how to get involved.
 
-There's also a channel on [Gitter](https://gitter.im/BX-bot/) for all things BX-bot :-) 
+There's also a channel on [Gitter](https://gitter.im/BX-bot/Lobby) for all things BX-bot :-) 
 
 ## User Guide
 
