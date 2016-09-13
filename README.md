@@ -80,10 +80,12 @@ The SNAPSHOT builds on master are active development builds, but the tests shoul
 be deployable.
 
 ## Issue & Change Management
-Issues and new features will be managed using the project [Issue Tracker](https://github.com/gazbert/bxbot/issues) -
+Issues and new features are managed using the project [Issue Tracker](https://github.com/gazbert/bxbot/issues) -
 submit bugs here.
  
 You are welcome to take on new features or fix bugs! See [here](CONTRIBUTING.md) for how to get involved.
+
+There's also a channel on [Gitter](https://gitter.im/BX-bot/) for all things BX-bot :-) 
 
 ## User Guide
 
@@ -499,7 +501,7 @@ Or you can grab the latest code from the head of the master branch.
 The following features are in the pipeline:
 
 - REST API for administering the bot.
-- Web UI for administering the bot written in [Angular](https://angular.io/).
+- [Web UI](https://github.com/gazbert/bxbot-ui) for administering the bot written in [Angular](https://angular.io/).
 - An experimental project to register [BX-bot](https://github.com/gazbert/bxbot) trades using an [Ethereum](https://www.ethereum.org/) blockchain.
 - Trade Analysis app - a microservice that will feed off trading events sent by the bots.
 - Android app for administering the bot.
