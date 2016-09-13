@@ -415,6 +415,8 @@ You can also create your own jar for your strats, e.g. `my-strats.jar`, and incl
 see the _Installation Guide_ for how to do this.
 
 ### How do I write my own Exchange Adapter?
+_"I was seldom able to see an opportunity until it had ceased to be one."_ - Mark Twain
+
 The best place to start is with one of the sample Exchange Adapters provided - see the latest 
 [`BitstampExchangeAdapter`](./bxbot-exchanges/src/main/java/com/gazbert/bxbot/exchanges/BitstampExchangeAdapter.java)
 for example.
