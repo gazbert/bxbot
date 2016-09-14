@@ -85,10 +85,10 @@ public class TestEngineConfigController extends AbstractConfigControllerTest {
     @Test
     public void testGetEngineConfig() throws Exception {
 
-        given(this.engineConfigService.getConfig()).willReturn(someEngineConfig());
-        this.tradingEngine.start();
+        given(engineConfigService.getConfig()).willReturn(someEngineConfig());
+        tradingEngine.start();
 
-        this.mockMvc.perform(get("/api/config/engine")
+        mockMvc.perform(get("/api/config/engine")
                 .header("Authorization", "Bearer " + getAccessToken(VALID_USER_LOGINID, VALID_USER_PASSWORD)))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -110,7 +110,7 @@ public class TestEngineConfigController extends AbstractConfigControllerTest {
     @Test
     public void testUpdateEngineConfig() throws Exception {
 
-        this.mockMvc.perform(put("/api/config/engine")
+        mockMvc.perform(put("/api/config/engine")
                 .header("Authorization", "Bearer " + getAccessToken(VALID_USER_LOGINID, VALID_USER_PASSWORD))
                 .contentType(CONTENT_TYPE)
                 .content(jsonify(someEngineConfig())))

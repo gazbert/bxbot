@@ -84,14 +84,14 @@ abstract class AbstractConfigControllerTest {
 
     @Autowired
     void setConverters(HttpMessageConverter<?>[] converters) {
-        this.mappingJackson2HttpMessageConverter =
+        mappingJackson2HttpMessageConverter =
                 Arrays.stream(converters)
                         .filter(converter -> converter instanceof MappingJackson2HttpMessageConverter)
                         .findAny()
                         .get();
 
         Assert.assertNotNull("The JSON message converter must not be null",
-                this.mappingJackson2HttpMessageConverter);
+                mappingJackson2HttpMessageConverter);
     }
 
     // ------------------------------------------------------------------------------------------------
@@ -132,7 +132,7 @@ abstract class AbstractConfigControllerTest {
      */
     String jsonify(Object objectToJsonify) throws IOException {
         final MockHttpOutputMessage mockHttpOutputMessage = new MockHttpOutputMessage();
-        this.mappingJackson2HttpMessageConverter.write(objectToJsonify, MediaType.APPLICATION_JSON, mockHttpOutputMessage);
+        mappingJackson2HttpMessageConverter.write(objectToJsonify, MediaType.APPLICATION_JSON, mockHttpOutputMessage);
         return mockHttpOutputMessage.getBodyAsString();
     }
 }

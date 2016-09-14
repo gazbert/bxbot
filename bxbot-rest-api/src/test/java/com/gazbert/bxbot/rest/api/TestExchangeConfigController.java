@@ -98,10 +98,10 @@ public class TestExchangeConfigController extends AbstractConfigControllerTest {
     @Test
     public void testGetExchangeConfig() throws Exception {
 
-        given(this.exchangeConfigService.getConfig()).willReturn(someExchangeConfig());
-        this.tradingEngine.start();
+        given(exchangeConfigService.getConfig()).willReturn(someExchangeConfig());
+        tradingEngine.start();
 
-        this.mockMvc.perform(get("/api/config/exchange")
+        mockMvc.perform(get("/api/config/exchange")
                 .header("Authorization", "Bearer " + getAccessToken(VALID_USER_LOGINID, VALID_USER_PASSWORD)))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -138,7 +138,7 @@ public class TestExchangeConfigController extends AbstractConfigControllerTest {
     @Test
     public void testUpdateExchangeConfig() throws Exception {
 
-        this.mockMvc.perform(put("/api/config/exchange")
+        mockMvc.perform(put("/api/config/exchange")
                 .header("Authorization", "Bearer " + getAccessToken(VALID_USER_LOGINID, VALID_USER_PASSWORD))
                 .contentType(CONTENT_TYPE)
                 .content(jsonify(someExchangeConfig())))

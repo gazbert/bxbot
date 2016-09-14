@@ -101,10 +101,10 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
     @Test
     public void testGetAllStrategyConfig() throws Exception {
 
-        given(this.strategyConfigService.findAllStrategies()).willReturn(allTheStrategiesConfig());
-        this.tradingEngine.start();
+        given(strategyConfigService.findAllStrategies()).willReturn(allTheStrategiesConfig());
+        tradingEngine.start();
 
-        this.mockMvc.perform(get("/api/config/strategy/")
+        mockMvc.perform(get("/api/config/strategy/")
                 .header("Authorization", "Bearer " + getAccessToken(VALID_USER_LOGINID, VALID_USER_PASSWORD)))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -137,13 +137,14 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
     @Test
     public void testGetStrategyConfigById() throws Exception {
 
-        given(this.strategyConfigService.findById(STRAT_1_ID)).willReturn(someStrategyConfig());
+        given(strategyConfigService.findById(STRAT_1_ID)).willReturn(someStrategyConfig());
 
-        this.mockMvc.perform(get("/api/config/strategy/" + STRAT_1_ID)
+        mockMvc.perform(get("/api/config/strategy/" + STRAT_1_ID)
                 .header("Authorization", "Bearer " + getAccessToken(VALID_USER_LOGINID, VALID_USER_PASSWORD)))
                 .andDo(print())
                 .andExpect(status().isOk())
 
+                .andExpect(jsonPath("$.id").value(STRAT_1_ID))
                 .andExpect(jsonPath("$.label").value(STRAT_1_LABEL))
                 .andExpect(jsonPath("$.description").value(STRAT_1_DESCRIPTION))
                 .andExpect(jsonPath("$.className").value(STRAT_1_CLASSNAME))
@@ -164,7 +165,7 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
     @Test
     public void testGetStrategyConfigByIdWhenNotRecognized() throws Exception {
 
-        given(this.strategyConfigService.findById(UNKNOWN_STRAT_ID)).willReturn(emptyStrategyConfig());
+        given(strategyConfigService.findById(UNKNOWN_STRAT_ID)).willReturn(emptyStrategyConfig());
 
         mockMvc.perform(get("/api/config/strategy/" + UNKNOWN_STRAT_ID)
                 .header("Authorization", "Bearer " + getAccessToken(VALID_USER_LOGINID, VALID_USER_PASSWORD))
@@ -175,9 +176,9 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
     @Test
     public void testUpdateStrategyConfig() throws Exception {
 
-        given(this.strategyConfigService.updateStrategy(someStrategyConfig())).willReturn(someStrategyConfig());
+        given(strategyConfigService.updateStrategy(someStrategyConfig())).willReturn(someStrategyConfig());
 
-        this.mockMvc.perform(put("/api/config/strategy/" + STRAT_1_ID)
+        mockMvc.perform(put("/api/config/strategy/" + STRAT_1_ID)
                 .header("Authorization", "Bearer " + getAccessToken(VALID_USER_LOGINID, VALID_USER_PASSWORD))
                 .contentType(CONTENT_TYPE)
                 .content(jsonify(someStrategyConfig())))
@@ -198,7 +199,7 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
     @Test
     public void testUpdateStrategyConfigWhenIdNotRecognized() throws Exception {
 
-        given(this.strategyConfigService.updateStrategy(unrecognizedStrategyConfig())).willReturn(emptyStrategyConfig());
+        given(strategyConfigService.updateStrategy(unrecognizedStrategyConfig())).willReturn(emptyStrategyConfig());
 
         mockMvc.perform(put("/api/config/strategy/" + UNKNOWN_STRAT_ID)
                 .header("Authorization", "Bearer " + getAccessToken(VALID_USER_LOGINID, VALID_USER_PASSWORD))
@@ -222,9 +223,9 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
     @Test
     public void testDeleteStrategyConfig() throws Exception {
 
-        given(this.strategyConfigService.deleteStrategyById(STRAT_1_ID)).willReturn(someStrategyConfig());
+        given(strategyConfigService.deleteStrategyById(STRAT_1_ID)).willReturn(someStrategyConfig());
 
-        this.mockMvc.perform(delete("/api/config/strategy/" + STRAT_1_ID)
+        mockMvc.perform(delete("/api/config/strategy/" + STRAT_1_ID)
                 .header("Authorization", "Bearer " + getAccessToken(VALID_USER_LOGINID, VALID_USER_PASSWORD)))
                 .andExpect(status().isNoContent());
     }
@@ -241,20 +242,20 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
     @Test
     public void testDeleteStrategyConfigWhenIdNotRecognized() throws Exception {
 
-        given(this.strategyConfigService.deleteStrategyById(UNKNOWN_STRAT_ID)).willReturn(emptyStrategyConfig());
+        given(strategyConfigService.deleteStrategyById(UNKNOWN_STRAT_ID)).willReturn(emptyStrategyConfig());
 
-        mockMvc.perform(delete("/api/config/strategy/unknown-id")
+        mockMvc.perform(delete("/api/config/strategy/" + UNKNOWN_STRAT_ID)
                 .header("Authorization", "Bearer " + getAccessToken(VALID_USER_LOGINID, VALID_USER_PASSWORD))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
     }
 
     @Test
-    public void testSaveStrategyConfig() throws Exception {
+    public void testCreateStrategyConfig() throws Exception {
 
-        given(this.strategyConfigService.createStrategy(someStrategyConfig())).willReturn(someStrategyConfig());
+        given(strategyConfigService.createStrategy(someStrategyConfig())).willReturn(someStrategyConfig());
 
-        this.mockMvc.perform(post("/api/config/strategy/" + STRAT_1_ID)
+        mockMvc.perform(post("/api/config/strategy/" + STRAT_1_ID)
                 .header("Authorization", "Bearer " + getAccessToken(VALID_USER_LOGINID, VALID_USER_PASSWORD))
                 .contentType(CONTENT_TYPE)
                 .content(jsonify(someStrategyConfig())))
@@ -275,7 +276,7 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
     @Test
     public void testCreateStrategyConfigWhenIdAlreadyExists() throws Exception {
 
-        given(this.strategyConfigService.createStrategy(someStrategyConfig())).willReturn(emptyStrategyConfig());
+        given(strategyConfigService.createStrategy(someStrategyConfig())).willReturn(emptyStrategyConfig());
 
         mockMvc.perform(post("/api/config/strategy/" + STRAT_1_ID)
                 .header("Authorization", "Bearer " + getAccessToken(VALID_USER_LOGINID, VALID_USER_PASSWORD))
