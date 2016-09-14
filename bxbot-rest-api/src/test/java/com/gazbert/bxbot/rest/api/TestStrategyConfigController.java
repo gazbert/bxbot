@@ -68,15 +68,15 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
     // Canned data
     private static final String UNKNOWN_STRAT_ID = "unknown-id";
 
-    private static final String STRAT_ID_1 = "macd-long-position";
-    private static final String STRAT_LABEL_1 = "MACD Long Position Algo";
-    private static final String STRAT_DESCRIPTION_1 = "Uses MACD as indicator and takes long position in base currency.";
-    private static final String STRAT_CLASSNAME_1 = "com.gazbert.nova.algos.MacdLongBase";
+    private static final String STRAT_1_ID = "macd-long-position";
+    private static final String STRAT_1_LABEL= "MACD Strat Algo";
+    private static final String STRAT_1_DESCRIPTION = "Uses MACD as indicator and takes long position in base currency.";
+    private static final String STRAT_1_CLASSNAME = "com.gazbert.nova.algos.MacdLongBase";
 
-    private static final String STRAT_ID_2 = "long-scalper";
-    private static final String STRAT_LABEL_2 = "Long Position Scalper Algo";
-    private static final String STRAT_DESCRIPTION_2 = "Scalps and goes long...";
-    private static final String STRAT_CLASSNAME_2 = "com.gazbert.nova.algos.LongScalper";
+    private static final String STRAT_2_ID = "long-scalper";
+    private static final String STRAT_2_LABEL= "Long Position Scalper Algo";
+    private static final String STRAT_2_DESCRIPTION = "Scalps and goes long...";
+    private static final String STRAT_2_CLASSNAME = "com.gazbert.nova.algos.LongScalper";
 
     private static final String BUY_PRICE_CONFIG_ITEM_KEY = "buy-price";
     private static final String BUY_PRICE_CONFIG_ITEM_VALUE = "671.15";
@@ -109,15 +109,17 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
 
-                .andExpect(jsonPath("$.[0].label").value(STRAT_LABEL_1))
-                .andExpect(jsonPath("$.[0].description").value(STRAT_DESCRIPTION_1))
-                .andExpect(jsonPath("$.[0].className").value(STRAT_CLASSNAME_1))
+                .andExpect(jsonPath("$.[0].id").value(STRAT_1_ID))
+                .andExpect(jsonPath("$.[0].label").value(STRAT_1_LABEL))
+                .andExpect(jsonPath("$.[0].description").value(STRAT_1_DESCRIPTION))
+                .andExpect(jsonPath("$.[0].className").value(STRAT_1_CLASSNAME))
                 .andExpect(jsonPath("$.[0].configItems.buy-price").value(BUY_PRICE_CONFIG_ITEM_VALUE))
                 .andExpect(jsonPath("$.[0].configItems.buy-amount").value(AMOUNT_TO_BUY_CONFIG_ITEM_VALUE))
 
-                .andExpect(jsonPath("$.[1].label").value(STRAT_LABEL_2))
-                .andExpect(jsonPath("$.[1].description").value(STRAT_DESCRIPTION_2))
-                .andExpect(jsonPath("$.[1].className").value(STRAT_CLASSNAME_2))
+                .andExpect(jsonPath("$.[1].id").value(STRAT_2_ID))
+                .andExpect(jsonPath("$.[1].label").value(STRAT_2_LABEL))
+                .andExpect(jsonPath("$.[1].description").value(STRAT_2_DESCRIPTION))
+                .andExpect(jsonPath("$.[1].className").value(STRAT_2_CLASSNAME))
                 .andExpect(jsonPath("$.[1].configItems.buy-price").value(BUY_PRICE_CONFIG_ITEM_VALUE))
                 .andExpect(jsonPath("$.[1].configItems.buy-amount").value(AMOUNT_TO_BUY_CONFIG_ITEM_VALUE)
                 );
@@ -135,16 +137,16 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
     @Test
     public void testGetStrategyConfigById() throws Exception {
 
-        given(this.strategyConfigService.findById(STRAT_ID_1)).willReturn(someStrategyConfig());
+        given(this.strategyConfigService.findById(STRAT_1_ID)).willReturn(someStrategyConfig());
 
-        this.mockMvc.perform(get("/api/config/strategy/" + STRAT_ID_1)
+        this.mockMvc.perform(get("/api/config/strategy/" + STRAT_1_ID)
                 .header("Authorization", "Bearer " + getAccessToken(VALID_USER_LOGINID, VALID_USER_PASSWORD)))
                 .andDo(print())
                 .andExpect(status().isOk())
 
-                .andExpect(jsonPath("$.label").value(STRAT_LABEL_1))
-                .andExpect(jsonPath("$.description").value(STRAT_DESCRIPTION_1))
-                .andExpect(jsonPath("$.className").value(STRAT_CLASSNAME_1))
+                .andExpect(jsonPath("$.label").value(STRAT_1_LABEL))
+                .andExpect(jsonPath("$.description").value(STRAT_1_DESCRIPTION))
+                .andExpect(jsonPath("$.className").value(STRAT_1_CLASSNAME))
                 .andExpect(jsonPath("$.configItems.buy-price").value(BUY_PRICE_CONFIG_ITEM_VALUE))
                 .andExpect(jsonPath("$.configItems.buy-amount").value(AMOUNT_TO_BUY_CONFIG_ITEM_VALUE)
                 );
@@ -153,7 +155,7 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
     @Test
     public void testGetStrategyConfigByIdWhenUnauthorized() throws Exception {
 
-        mockMvc.perform(get("/api/config/strategy/" + STRAT_ID_1)
+        mockMvc.perform(get("/api/config/strategy/" + STRAT_1_ID)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.error", is("unauthorized")));
@@ -175,7 +177,7 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
 
         given(this.strategyConfigService.updateStrategy(someStrategyConfig())).willReturn(someStrategyConfig());
 
-        this.mockMvc.perform(put("/api/config/strategy/" + STRAT_ID_1)
+        this.mockMvc.perform(put("/api/config/strategy/" + STRAT_1_ID)
                 .header("Authorization", "Bearer " + getAccessToken(VALID_USER_LOGINID, VALID_USER_PASSWORD))
                 .contentType(CONTENT_TYPE)
                 .content(jsonify(someStrategyConfig())))
@@ -185,7 +187,7 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
     @Test
     public void testUpdateStrategyConfigWhenUnauthorized() throws Exception {
 
-        mockMvc.perform(put("/api/config/strategy/" + STRAT_ID_1)
+        mockMvc.perform(put("/api/config/strategy/" + STRAT_1_ID)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(CONTENT_TYPE)
                 .content(jsonify(someStrategyConfig())))
@@ -209,7 +211,7 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
     @Test
     public void testUpdateStrategyConfigWhenIdIsMissing() throws Exception {
 
-        mockMvc.perform(put("/api/config/strategy/" + STRAT_ID_1)
+        mockMvc.perform(put("/api/config/strategy/" + STRAT_1_ID)
                 .header("Authorization", "Bearer " + getAccessToken(VALID_USER_LOGINID, VALID_USER_PASSWORD))
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(CONTENT_TYPE)
@@ -220,9 +222,9 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
     @Test
     public void testDeleteStrategyConfig() throws Exception {
 
-        given(this.strategyConfigService.deleteStrategyById(STRAT_ID_1)).willReturn(someStrategyConfig());
+        given(this.strategyConfigService.deleteStrategyById(STRAT_1_ID)).willReturn(someStrategyConfig());
 
-        this.mockMvc.perform(delete("/api/config/strategy/" + STRAT_ID_1)
+        this.mockMvc.perform(delete("/api/config/strategy/" + STRAT_1_ID)
                 .header("Authorization", "Bearer " + getAccessToken(VALID_USER_LOGINID, VALID_USER_PASSWORD)))
                 .andExpect(status().isNoContent());
     }
@@ -230,7 +232,7 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
     @Test
     public void testDeleteStrategyConfigWhenUnauthorized() throws Exception {
 
-        mockMvc.perform(delete("/api/config/strategy/" + STRAT_ID_1)
+        mockMvc.perform(delete("/api/config/strategy/" + STRAT_1_ID)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.error", is("unauthorized")));
@@ -252,7 +254,7 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
 
         given(this.strategyConfigService.createStrategy(someStrategyConfig())).willReturn(someStrategyConfig());
 
-        this.mockMvc.perform(post("/api/config/strategy/" + STRAT_ID_1)
+        this.mockMvc.perform(post("/api/config/strategy/" + STRAT_1_ID)
                 .header("Authorization", "Bearer " + getAccessToken(VALID_USER_LOGINID, VALID_USER_PASSWORD))
                 .contentType(CONTENT_TYPE)
                 .content(jsonify(someStrategyConfig())))
@@ -262,7 +264,7 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
     @Test
     public void testCreateStrategyConfigWhenUnauthorized() throws Exception {
 
-        mockMvc.perform(post("/api/config/strategy/" + STRAT_ID_1)
+        mockMvc.perform(post("/api/config/strategy/" + STRAT_1_ID)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(CONTENT_TYPE)
                 .content(jsonify(someStrategyConfig())))
@@ -275,7 +277,7 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
 
         given(this.strategyConfigService.createStrategy(someStrategyConfig())).willReturn(emptyStrategyConfig());
 
-        mockMvc.perform(post("/api/config/strategy/" + STRAT_ID_1)
+        mockMvc.perform(post("/api/config/strategy/" + STRAT_1_ID)
                 .header("Authorization", "Bearer " + getAccessToken(VALID_USER_LOGINID, VALID_USER_PASSWORD))
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(CONTENT_TYPE)
@@ -286,7 +288,7 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
     @Test
     public void testCreateStrategyConfigWhenIdIsMissing() throws Exception {
 
-        mockMvc.perform(post("/api/config/strategy/" + STRAT_ID_1)
+        mockMvc.perform(post("/api/config/strategy/" + STRAT_1_ID)
                 .header("Authorization", "Bearer " + getAccessToken(VALID_USER_LOGINID, VALID_USER_PASSWORD))
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(CONTENT_TYPE)
@@ -305,8 +307,8 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
         configItems.put(BUY_PRICE_CONFIG_ITEM_KEY, BUY_PRICE_CONFIG_ITEM_VALUE);
         configItems.put(AMOUNT_TO_BUY_CONFIG_ITEM_KEY, AMOUNT_TO_BUY_CONFIG_ITEM_VALUE);
 
-        final StrategyConfig strategyConfig1 = new StrategyConfig(STRAT_ID_1, STRAT_LABEL_1, STRAT_DESCRIPTION_1, STRAT_CLASSNAME_1, configItems);
-        final StrategyConfig strategyConfig2 = new StrategyConfig(STRAT_ID_2, STRAT_LABEL_2, STRAT_DESCRIPTION_2, STRAT_CLASSNAME_2, configItems);
+        final StrategyConfig strategyConfig1 = new StrategyConfig(STRAT_1_ID, STRAT_1_LABEL, STRAT_1_DESCRIPTION, STRAT_1_CLASSNAME, configItems);
+        final StrategyConfig strategyConfig2 = new StrategyConfig(STRAT_2_ID, STRAT_2_LABEL, STRAT_2_DESCRIPTION, STRAT_2_CLASSNAME, configItems);
 
         final List<StrategyConfig> allStrategies = new ArrayList<>();
         allStrategies.add(strategyConfig1);
@@ -319,7 +321,7 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
         final Map<String, String> configItems = new HashMap<>();
         configItems.put(BUY_PRICE_CONFIG_ITEM_KEY, BUY_PRICE_CONFIG_ITEM_VALUE);
         configItems.put(AMOUNT_TO_BUY_CONFIG_ITEM_KEY, AMOUNT_TO_BUY_CONFIG_ITEM_VALUE);
-        return new StrategyConfig(STRAT_ID_1, STRAT_LABEL_1, STRAT_DESCRIPTION_1, STRAT_CLASSNAME_1, configItems);
+        return new StrategyConfig(STRAT_1_ID, STRAT_1_LABEL, STRAT_1_DESCRIPTION, STRAT_1_CLASSNAME, configItems);
     }
 
     private static StrategyConfig someStrategyConfigWithMissingId() {
@@ -327,7 +329,7 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
         final Map<String, String> configItems = new HashMap<>();
         configItems.put(BUY_PRICE_CONFIG_ITEM_KEY, BUY_PRICE_CONFIG_ITEM_VALUE);
         configItems.put(AMOUNT_TO_BUY_CONFIG_ITEM_KEY, AMOUNT_TO_BUY_CONFIG_ITEM_VALUE);
-        return new StrategyConfig(null, STRAT_LABEL_1, STRAT_DESCRIPTION_1, STRAT_CLASSNAME_1, configItems);
+        return new StrategyConfig(null, STRAT_1_LABEL, STRAT_1_DESCRIPTION, STRAT_1_CLASSNAME, configItems);
     }
 
     private static StrategyConfig unrecognizedStrategyConfig() {
@@ -335,7 +337,7 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
         final Map<String, String> configItems = new HashMap<>();
         configItems.put(BUY_PRICE_CONFIG_ITEM_KEY, BUY_PRICE_CONFIG_ITEM_VALUE);
         configItems.put(AMOUNT_TO_BUY_CONFIG_ITEM_KEY, AMOUNT_TO_BUY_CONFIG_ITEM_VALUE);
-        return new StrategyConfig("unknown-id", STRAT_LABEL_1, STRAT_DESCRIPTION_1, STRAT_CLASSNAME_1, configItems);
+        return new StrategyConfig("unknown-id", STRAT_1_LABEL, STRAT_1_DESCRIPTION, STRAT_1_CLASSNAME, configItems);
     }
 
     private static StrategyConfig emptyStrategyConfig() {

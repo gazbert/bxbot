@@ -23,8 +23,8 @@
 
 package com.gazbert.bxbot.rest.api;
 
-import com.gazbert.bxbot.rest.security.User;
 import com.gazbert.bxbot.domain.market.MarketConfig;
+import com.gazbert.bxbot.rest.security.User;
 import com.gazbert.bxbot.services.MarketConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -38,8 +38,6 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.util.List;
 
 /**
- * TODO Work in progress...
- * <p>
  * Controller for directing Market config requests.
  *
  * @author gazbert
@@ -57,42 +55,96 @@ public class MarketConfigController {
         this.marketConfigService = marketConfigService;
     }
 
-    @RequestMapping(value = "/market/{marketId}", method = RequestMethod.GET)
-    public MarketConfig getMarket(@AuthenticationPrincipal User user, @PathVariable String marketId) {
-        return marketConfigService.findById(marketId);
-    }
-
-    @RequestMapping(value = "/market/{marketId}", method = RequestMethod.PUT)
-    ResponseEntity<?> updateMarket(@AuthenticationPrincipal User user, @PathVariable String marketId, @RequestBody MarketConfig config) {
-
-        final MarketConfig updatedMarketConfig = marketConfigService.updateMarket(config);
-        final HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.setLocation(ServletUriComponentsBuilder
-                .fromCurrentRequest().path("/{marketId}")
-                .buildAndExpand(updatedMarketConfig.getId()).toUri());
-        return new ResponseEntity<>(updatedMarketConfig, httpHeaders, HttpStatus.NO_CONTENT);
-    }
-
-    @RequestMapping(value = "/market/{marketId}", method = RequestMethod.POST)
-    ResponseEntity<?> createMarket(@AuthenticationPrincipal User user, @PathVariable String marketId, @RequestBody MarketConfig config) {
-
-        final MarketConfig updatedMarketConfig = marketConfigService.createMarket(config);
-        final HttpHeaders httpHeaders = new HttpHeaders();
-
-        httpHeaders.setLocation(ServletUriComponentsBuilder
-                .fromCurrentRequest().path("/{marketId}")
-                .buildAndExpand(updatedMarketConfig.getId()).toUri());
-        return new ResponseEntity<>(null, httpHeaders, HttpStatus.CREATED);
-    }
-
-    @RequestMapping(value = "/market/{marketId}", method = RequestMethod.DELETE)
-    public MarketConfig deleteMarket(@AuthenticationPrincipal User user, @PathVariable String marketId) {
-        return marketConfigService.deleteMarketById(marketId);
-    }
-
+    /**
+     * Returns all of the Market configuration for the bot.
+     *
+     * @param user the authenticated user.
+     * @return a list of Market configurations.
+     */
     @RequestMapping(value = "/market", method = RequestMethod.GET)
     public List<MarketConfig> getAllMarkets(@AuthenticationPrincipal User user) {
         return marketConfigService.findAllMarkets();
+    }
+
+    /**
+     * Returns the Market configuration for a given id.
+     *
+     * @param user the authenticated user.
+     * @param marketId the id of the Market to fetch.
+     * @return the Market configuration.
+     */
+    @RequestMapping(value = "/market/{marketId}", method = RequestMethod.GET)
+    public ResponseEntity<?> getMarket(@AuthenticationPrincipal User user, @PathVariable String marketId) {
+
+        final MarketConfig marketConfig = marketConfigService.findById(marketId);
+        return marketConfig.getId() != null
+                ? new ResponseEntity<>(marketConfig, null, HttpStatus.OK)
+                : new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    /**
+     * Updates a given Market configuration.
+     *
+     * @param user the authenticated user.
+     * @param marketId id of the Market config to update.
+     * @param config the updated Market config.
+     * @return 204 'No Content' HTTP status code if update successful, 404 'Not Found' HTTP status code if Market config not found.
+     */
+    @RequestMapping(value = "/market/{marketId}", method = RequestMethod.PUT)
+    ResponseEntity<?> updateMarket(@AuthenticationPrincipal User user, @PathVariable String marketId, @RequestBody MarketConfig config) {
+
+        if (config == null || config.getId() == null || !marketId.equals(config.getId())) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        final MarketConfig updatedConfig = marketConfigService.updateMarket(config);
+        return updatedConfig.getId() != null
+                ? new ResponseEntity<>(HttpStatus.NO_CONTENT)
+                : new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    /**
+     * Creates a new Market configuration.
+     *
+     * @param user the authenticated user.
+     * @param marketId id of the Market config to create.
+     * @param config the new Market config.
+     * @return 201 'Created' HTTP status code if create successful, 409 'Conflict' HTTP status code if Market config already exists.
+     */
+    @RequestMapping(value = "/market/{marketId}", method = RequestMethod.POST)
+    ResponseEntity<?> createMarket(@AuthenticationPrincipal User user, @PathVariable String marketId, @RequestBody MarketConfig config) {
+
+        if (config == null || config.getId() == null || !marketId.equals(config.getId())) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        final MarketConfig createdConfig = marketConfigService.createMarket(config);
+        if (createdConfig.getId() != null) {
+            final HttpHeaders httpHeaders = new HttpHeaders();
+            httpHeaders.setLocation(ServletUriComponentsBuilder
+                    .fromCurrentRequest().path("/{marketId}")
+                    .buildAndExpand(createdConfig.getId()).toUri());
+            return new ResponseEntity<>(null, httpHeaders, HttpStatus.CREATED);
+
+        } else {
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        }
+    }
+
+    /**
+     * Deletes a Market configuration for a given id.
+     *
+     * @param user the authenticated user.
+     * @param marketId the id of the Market configuration to delete.
+     * @return 204 'No Content' HTTP status code if update successful, 404 'Not Found' HTTP status code if Market config not found.
+     */
+    @RequestMapping(value = "/market/{marketId}", method = RequestMethod.DELETE)
+    public ResponseEntity<?> deleteMarket(@AuthenticationPrincipal User user, @PathVariable String marketId) {
+
+        final MarketConfig deletedConfig = marketConfigService.deleteMarketById(marketId);
+        return deletedConfig.getId() != null
+                ? new ResponseEntity<>(HttpStatus.NO_CONTENT)
+                : new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 }
 
