@@ -27,18 +27,17 @@ package com.gazbert.bxbot.services.impl;
 import com.gazbert.bxbot.domain.market.MarketConfig;
 import com.gazbert.bxbot.repository.MarketConfigRepository;
 import com.gazbert.bxbot.services.MarketConfigService;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
-import java.util.Arrays;
 import java.util.List;
 
 /**
- * TODO Work in progress...
- *
  * Implementation of the Market config service.
  *
  * @author gazbert
@@ -47,6 +46,8 @@ import java.util.List;
 @Transactional
 @ComponentScan(basePackages = {"com.gazbert.bxbot.repository"})
 public class MarketConfigServiceImpl implements MarketConfigService {
+
+    private static final Logger LOG = LogManager.getLogger();
 
     private final MarketConfigRepository marketConfigRepository;
 
@@ -58,34 +59,30 @@ public class MarketConfigServiceImpl implements MarketConfigService {
 
     @Override
     public List<MarketConfig> findAllMarkets() {
-        return Arrays.asList(getCannedMarketConfig());
+        return marketConfigRepository.findAllMarkets();
     }
 
     @Override
     public MarketConfig findById(String id) {
-        return getCannedMarketConfig();
-    }
-
-    @Override
-    public MarketConfig createMarket(MarketConfig config) {
-        return getCannedMarketConfig();
+        LOG.info(() -> "Fetching config for Market id: " + id);
+        return marketConfigRepository.findById(id);
     }
 
     @Override
     public MarketConfig updateMarket(MarketConfig config) {
-        return getCannedMarketConfig();
+        LOG.info(() -> "About to update: " + config);
+        return marketConfigRepository.updateMarket(config);
+    }
+
+    @Override
+    public MarketConfig createMarket(MarketConfig config) {
+        LOG.info(() -> "About to create: " + config);
+        return marketConfigRepository.createMarket(config);
     }
 
     @Override
     public MarketConfig deleteMarketById(String id) {
-        return getCannedMarketConfig();
-    }
-
-    /*
-     * TODO Hard code these for now - will come from Repository later...
-     */
-    private static MarketConfig getCannedMarketConfig() {
-        final MarketConfig marketConfig = new MarketConfig("BTC/USD", "btc_usd", "BTC", "USD", true, "scalper-strategy");
-        return marketConfig;
+        LOG.info(() -> "About to delete Market config for id: " + id);
+        return marketConfigRepository.deleteMarketById(id);
     }
 }

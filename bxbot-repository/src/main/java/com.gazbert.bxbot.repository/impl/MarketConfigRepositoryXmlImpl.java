@@ -35,6 +35,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.gazbert.bxbot.datastore.FileLocations.MARKETS_CONFIG_XML_FILENAME;
 import static com.gazbert.bxbot.datastore.FileLocations.MARKETS_CONFIG_XSD_FILENAME;
@@ -61,7 +62,18 @@ public class MarketConfigRepositoryXmlImpl implements MarketConfigRepository {
 
     @Override
     public MarketConfig findById(String id) {
-        throw new UnsupportedOperationException("findById not coded yet!");
+
+        LOG.info(() -> "Fetching config for market id: " + id);
+
+        final MarketsType internalMarketsConfig = ConfigurationManager.loadConfig(MarketsType.class,
+                MARKETS_CONFIG_XML_FILENAME, MARKETS_CONFIG_XSD_FILENAME);
+
+        return adaptInternalToExternalConfig(
+                internalMarketsConfig.getMarkets()
+                        .stream()
+                        .filter((item) -> item.getId().equals(id))
+                        .distinct()
+                        .collect(Collectors.toList()));
     }
 
     @Override
@@ -102,5 +114,23 @@ public class MarketConfigRepositoryXmlImpl implements MarketConfigRepository {
         });
 
         return marketConfigItems;
+    }
+
+    private static MarketConfig adaptInternalToExternalConfig(List<MarketType> internalMarketConfigItems) {
+
+        final MarketConfig marketConfig = new MarketConfig();
+
+        if (!internalMarketConfigItems.isEmpty()) {
+
+            // Should only ever be 1 unique Market id
+            final MarketType internalMarketConfig = internalMarketConfigItems.get(0);
+            marketConfig.setId(internalMarketConfig.getId());
+            marketConfig.setLabel(internalMarketConfig.getLabel());
+            marketConfig.setEnabled(internalMarketConfig.isEnabled());
+            marketConfig.setBaseCurrency(internalMarketConfig.getBaseCurrency());
+            marketConfig.setCounterCurrency(internalMarketConfig.getCounterCurrency());
+            marketConfig.setTradingStrategy(internalMarketConfig.getTradingStrategy());
+        }
+        return marketConfig;
     }
 }
