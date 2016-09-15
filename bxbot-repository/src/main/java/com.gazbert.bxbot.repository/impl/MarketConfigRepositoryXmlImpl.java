@@ -83,7 +83,36 @@ public class MarketConfigRepositoryXmlImpl implements MarketConfigRepository {
 
     @Override
     public MarketConfig updateMarket(MarketConfig config) {
-        throw new UnsupportedOperationException("updateMarket not coded yet!");
+
+        final MarketsType internalMarketsConfig = ConfigurationManager.loadConfig(MarketsType.class,
+                MARKETS_CONFIG_XML_FILENAME, MARKETS_CONFIG_XSD_FILENAME);
+
+        final List<MarketType> marketTypes = internalMarketsConfig.getMarkets()
+                .stream()
+                .filter((item) -> item.getId().equals(config.getId()))
+                .distinct()
+                .collect(Collectors.toList());
+
+        if (!marketTypes.isEmpty()) {
+
+            internalMarketsConfig.getMarkets().remove(marketTypes.get(0)); // will only be 1 unique strat
+            internalMarketsConfig.getMarkets().add(adaptExternalToInternalConfig(config));
+            ConfigurationManager.saveConfig(MarketsType.class, internalMarketsConfig,
+                    MARKETS_CONFIG_XML_FILENAME);
+
+            final MarketsType updatedInternalMarketsConfig = ConfigurationManager.loadConfig(
+                    MarketsType.class, MARKETS_CONFIG_XML_FILENAME, MARKETS_CONFIG_XSD_FILENAME);
+
+            return adaptInternalToExternalConfig(
+                    updatedInternalMarketsConfig.getMarkets()
+                            .stream()
+                            .filter((item) -> item.getId().equals(config.getId()))
+                            .distinct()
+                            .collect(Collectors.toList()));
+        } else {
+            // no matching id :-(
+            return new MarketConfig();
+        }
     }
 
     @Override
@@ -132,5 +161,17 @@ public class MarketConfigRepositoryXmlImpl implements MarketConfigRepository {
             marketConfig.setTradingStrategy(internalMarketConfig.getTradingStrategy());
         }
         return marketConfig;
+    }
+
+    private static MarketType adaptExternalToInternalConfig(MarketConfig externalMarketConfig) {
+
+        final MarketType marketType = new MarketType();
+        marketType.setId(externalMarketConfig.getId());
+        marketType.setLabel(externalMarketConfig.getLabel());
+        marketType.setEnabled(externalMarketConfig.isEnabled());
+        marketType.setBaseCurrency(externalMarketConfig.getBaseCurrency());
+        marketType.setCounterCurrency(externalMarketConfig.getCounterCurrency());
+        marketType.setTradingStrategy(externalMarketConfig.getTradingStrategy());
+        return marketType;
     }
 }
