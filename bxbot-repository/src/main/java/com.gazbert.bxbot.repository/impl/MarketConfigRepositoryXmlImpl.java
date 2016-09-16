@@ -34,6 +34,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -117,7 +118,31 @@ public class MarketConfigRepositoryXmlImpl implements MarketConfigRepository {
 
     @Override
     public MarketConfig deleteMarketById(String id) {
-        throw new UnsupportedOperationException("deleteMarketById not coded yet!");
+
+        LOG.info(() -> "Deleting config for Market id: " + id);
+
+        final MarketsType internalMarketsConfig = ConfigurationManager.loadConfig(MarketsType.class,
+                MARKETS_CONFIG_XML_FILENAME, MARKETS_CONFIG_XSD_FILENAME);
+
+        final List<MarketType> marketTypes = internalMarketsConfig.getMarkets()
+                .stream()
+                .filter((item) -> item.getId().equals(id))
+                .distinct()
+                .collect(Collectors.toList());
+
+        if (!marketTypes.isEmpty()) {
+
+            final MarketType marketToRemove = marketTypes.get(0); // will only be 1 unique strat
+            internalMarketsConfig.getMarkets().remove(marketToRemove);
+            ConfigurationManager.saveConfig(MarketsType.class, internalMarketsConfig,
+                    MARKETS_CONFIG_XML_FILENAME);
+
+            return adaptInternalToExternalConfig(Collections.singletonList(marketToRemove));
+        } else {
+            // no matching id :-(
+            return new MarketConfig();
+        }
+
     }
 
     // ------------------------------------------------------------------------------------------------
