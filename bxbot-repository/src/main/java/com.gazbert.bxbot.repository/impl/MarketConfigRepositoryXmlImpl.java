@@ -79,7 +79,35 @@ public class MarketConfigRepositoryXmlImpl implements MarketConfigRepository {
 
     @Override
     public MarketConfig createMarket(MarketConfig config) {
-        throw new UnsupportedOperationException("createMarket not coded yet!");
+
+        final MarketsType internalMarketsConfig = ConfigurationManager.loadConfig(MarketsType.class,
+                MARKETS_CONFIG_XML_FILENAME, MARKETS_CONFIG_XSD_FILENAME);
+
+        final List<MarketType> marketTypes = internalMarketsConfig.getMarkets()
+                .stream()
+                .filter((item) -> item.getId().equals(config.getId()))
+                .distinct()
+                .collect(Collectors.toList());
+
+        if (marketTypes.isEmpty()) {
+
+            internalMarketsConfig.getMarkets().add(adaptExternalToInternalConfig(config));
+            ConfigurationManager.saveConfig(MarketsType.class, internalMarketsConfig,
+                    MARKETS_CONFIG_XML_FILENAME);
+
+            final MarketsType updatedInternalMarketsConfig = ConfigurationManager.loadConfig(
+                    MarketsType.class, MARKETS_CONFIG_XML_FILENAME, MARKETS_CONFIG_XSD_FILENAME);
+
+            return adaptInternalToExternalConfig(
+                    updatedInternalMarketsConfig.getMarkets()
+                            .stream()
+                            .filter((item) -> item.getId().equals(config.getId()))
+                            .distinct()
+                            .collect(Collectors.toList()));
+        } else {
+            // already have a matching id :-(
+            return new MarketConfig();
+        }
     }
 
     @Override
