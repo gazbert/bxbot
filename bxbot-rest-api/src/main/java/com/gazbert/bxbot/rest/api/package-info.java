@@ -1,18 +1,12 @@
 /**
- * <h2>Configuration REST API</h2>
+ * <h2>BX-Bot REST API</h2>
  *
  * <p>
  * This is the REST API for administering the bot.
  * </p>
  *
- * <p>
- *
- * TODO Work in progress...
- *
- * It is secured using OAuth2.
- * Should always be accessed using HTTPS in production environment.
- * TODO keystores, OAuth2 credentials, logging access/audit log...
- * </p>
+ * TODO Work in progress: endpoint for stopping|starting|status of bot, Keystores, OAuth2 credentials, logging access/audit log...
+ * TODO It is secured using OAuth2. Should always be accessed using HTTPS in production environment.
  *
  * @author gazbert
  * @since 1.0

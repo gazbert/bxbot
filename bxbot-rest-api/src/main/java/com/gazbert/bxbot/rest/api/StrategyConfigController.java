@@ -145,7 +145,6 @@ public class StrategyConfigController {
         return deletedConfig.getId() != null
                 ? new ResponseEntity<>(HttpStatus.NO_CONTENT)
                 : new ResponseEntity<>(HttpStatus.NOT_FOUND);
-
     }
 }
 

@@ -4,7 +4,7 @@
 [![Join the chat at https://gitter.im/BX-bot/Lobby](https://badges.gitter.im/BX-bot/Lobby.svg)](https://gitter.im/BX-bot/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 ## What is BX-bot?
-BX-bot (_Bex_) is a simple Java automated trading bot for trading [Bitcoin](https://bitcoin.org) on 
+BX-bot (_Bex_) is a simple Java trading bot for trading [Bitcoin](https://bitcoin.org) on 
 cryptocurrency [exchanges](https://bitcoinwisdom.com/).
 
 The project contains the basic infrastructure to trade on a [cryptocurrency](http://coinmarketcap.com/) exchange...
@@ -415,6 +415,8 @@ You can also create your own jar for your strats, e.g. `my-strats.jar`, and incl
 see the _Installation Guide_ for how to do this.
 
 ### How do I write my own Exchange Adapter?
+_"I was seldom able to see an opportunity until it had ceased to be one."_ - Mark Twain
+
 The best place to start is with one of the sample Exchange Adapters provided - see the latest 
 [`BitstampExchangeAdapter`](./bxbot-exchanges/src/main/java/com/gazbert/bxbot/exchanges/BitstampExchangeAdapter.java)
 for example.
@@ -504,7 +506,7 @@ The following features are in the pipeline:
 - REST API for administering the bot.
 - [Web UI](https://github.com/gazbert/bxbot-ui) for administering the bot written in [Angular](https://angular.io/).
 - An experimental project to register [BX-bot](https://github.com/gazbert/bxbot) trades using an [Ethereum](https://www.ethereum.org/) blockchain.
-- Trade Analysis app - a microservice that will feed off trading events sent by the bots.
+- Trade Analysis app - a microservice that will feed off trading events sent by the bot.
 - Android app for administering the bot.
 
 See the main project [Issue Tracker](https://github.com/gazbert/bxbot/issues) for timescales and progress.

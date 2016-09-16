@@ -88,10 +88,10 @@ public class TestEmailAlertsConfigController extends AbstractConfigControllerTes
     @Test
     public void testGetEmailAlertsConfig() throws Exception {
 
-        given(this.emailAlertsConfigService.getConfig()).willReturn(someEmailAlertsConfig());
-        this.tradingEngine.start();
+        given(emailAlertsConfigService.getConfig()).willReturn(someEmailAlertsConfig());
+        tradingEngine.start();
 
-        this.mockMvc.perform(get("/api/config/emailalerts")
+        mockMvc.perform(get("/api/config/emailalerts")
                 .header("Authorization", "Bearer " + getAccessToken(VALID_USER_LOGINID, VALID_USER_PASSWORD)))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -120,7 +120,7 @@ public class TestEmailAlertsConfigController extends AbstractConfigControllerTes
     public void testUpdateEmailAlertsConfig() throws Exception {
 
         final String configJson = jsonify(someEmailAlertsConfig());
-        this.mockMvc.perform(put("/api/config/emailalerts")
+        mockMvc.perform(put("/api/config/emailalerts")
                 .header("Authorization", "Bearer " + getAccessToken(VALID_USER_LOGINID, VALID_USER_PASSWORD))
                 .contentType(CONTENT_TYPE)
                 .content(configJson))

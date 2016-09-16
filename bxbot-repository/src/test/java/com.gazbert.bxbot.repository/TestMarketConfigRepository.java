@@ -40,8 +40,7 @@ import java.util.List;
 import static com.gazbert.bxbot.datastore.FileLocations.MARKETS_CONFIG_XML_FILENAME;
 import static com.gazbert.bxbot.datastore.FileLocations.MARKETS_CONFIG_XSD_FILENAME;
 import static org.assertj.core.api.Java6Assertions.assertThat;
-import static org.easymock.EasyMock.eq;
-import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.*;
 
 /**
  * Tests Market configuration repository behaves as expected.
@@ -51,6 +50,8 @@ import static org.easymock.EasyMock.expect;
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ConfigurationManager.class})
 public class TestMarketConfigRepository {
+
+    private static final String UNKNOWN_MARKET_ID = "muh";
 
     private static final String MARKET_1_LABEL = "BTC/USD";
     private static final String MARKET_1_ID = "gemini_usd/btc";
@@ -73,7 +74,7 @@ public class TestMarketConfigRepository {
     }
 
     @Test
-    public void whenFindAllStrategiesCalledThenExpectServiceToReturnThemAll() throws Exception {
+    public void whenFindAllMarketsCalledThenExpectServiceToReturnThemAll() throws Exception {
 
         expect(ConfigurationManager.loadConfig(
                 eq(MarketsType.class),
@@ -105,6 +106,225 @@ public class TestMarketConfigRepository {
         PowerMock.verifyAll();
     }
 
+    @Test
+    public void whenFindByIdCalledWithRecognizedIdThenReturnMatchingMarket() throws Exception {
+
+        expect(ConfigurationManager.loadConfig(
+                eq(MarketsType.class),
+                eq(MARKETS_CONFIG_XML_FILENAME),
+                eq(MARKETS_CONFIG_XSD_FILENAME))).
+                andReturn(allTheInternalMarketsConfig());
+
+        PowerMock.replayAll();
+
+        final MarketConfigRepository marketConfigRepository = new MarketConfigRepositoryXmlImpl();
+        final MarketConfig marketConfig = marketConfigRepository.findById(MARKET_1_ID);
+
+        assertThat(marketConfig.getId()).isEqualTo(MARKET_1_ID);
+        assertThat(marketConfig.getLabel()).isEqualTo(MARKET_1_LABEL);
+        assertThat(marketConfig.isEnabled()).isEqualTo(MARKET_1_IS_ENABLED);
+        assertThat(marketConfig.getBaseCurrency()).isEqualTo(MARKET_1_BASE_CURRENCY);
+        assertThat(marketConfig.getCounterCurrency()).isEqualTo(MARKET_1_COUNTER_CURRENCY);
+        assertThat(marketConfig.getTradingStrategy()).isEqualTo(MARKET_1_TRADING_STRATEGY);
+
+        PowerMock.verifyAll();
+    }
+
+    @Test
+    public void whenFindByIdCalledWithUnrecognizedIdThenReturnEmptyMarket() throws Exception {
+
+        expect(ConfigurationManager.loadConfig(
+                eq(MarketsType.class),
+                eq(MARKETS_CONFIG_XML_FILENAME),
+                eq(MARKETS_CONFIG_XSD_FILENAME))).
+                andReturn(allTheInternalMarketsConfig());
+
+        PowerMock.replayAll();
+
+        final MarketConfigRepository marketConfigRepository = new MarketConfigRepositoryXmlImpl();
+        final MarketConfig marketConfig = marketConfigRepository.findById("unknown-id");
+
+        assertThat(marketConfig.getId()).isNull();
+        assertThat(marketConfig.getLabel()).isNull();
+        assertThat(marketConfig.isEnabled()).isFalse();
+        assertThat(marketConfig.getBaseCurrency()).isNull();
+        assertThat(marketConfig.getCounterCurrency()).isNull();
+        assertThat(marketConfig.getTradingStrategy()).isNull();
+
+        PowerMock.verifyAll();
+    }
+
+    @Test
+    public void whenUpdateMarketCalledWithKnownIdThenExpectServiceToReturnUpdatedMarket() throws Exception {
+
+        expect(ConfigurationManager.loadConfig(
+                eq(MarketsType.class),
+                eq(MARKETS_CONFIG_XML_FILENAME),
+                eq(MARKETS_CONFIG_XSD_FILENAME))).
+                andReturn(allTheInternalMarketsConfig());
+
+        ConfigurationManager.saveConfig(
+                eq(MarketsType.class),
+                anyObject(MarketsType.class),
+                eq(MARKETS_CONFIG_XML_FILENAME));
+
+        expect(ConfigurationManager.loadConfig(
+                eq(MarketsType.class),
+                eq(MARKETS_CONFIG_XML_FILENAME),
+                eq(MARKETS_CONFIG_XSD_FILENAME))).
+                andReturn(allTheInternalMarketsConfig());
+
+        PowerMock.replayAll();
+
+        final MarketConfigRepository marketConfigRepository = new MarketConfigRepositoryXmlImpl();
+        final MarketConfig marketConfig = marketConfigRepository.updateMarket(someExternalMarketConfig());
+
+        assertThat(marketConfig.getId()).isEqualTo(MARKET_1_ID);
+        assertThat(marketConfig.getLabel()).isEqualTo(MARKET_1_LABEL);
+        assertThat(marketConfig.isEnabled()).isEqualTo(MARKET_1_IS_ENABLED);
+        assertThat(marketConfig.getBaseCurrency()).isEqualTo(MARKET_1_BASE_CURRENCY);
+        assertThat(marketConfig.getCounterCurrency()).isEqualTo(MARKET_1_COUNTER_CURRENCY);
+        assertThat(marketConfig.getTradingStrategy()).isEqualTo(MARKET_1_TRADING_STRATEGY);
+
+        PowerMock.verifyAll();
+    }
+
+    @Test
+    public void whenUpdateMarketConfigCalledWithUnrecognizedIdThenReturnEmptyMarket() throws Exception {
+
+        expect(ConfigurationManager.loadConfig(
+                eq(MarketsType.class),
+                eq(MARKETS_CONFIG_XML_FILENAME),
+                eq(MARKETS_CONFIG_XSD_FILENAME))).
+                andReturn(allTheInternalMarketsConfig());
+
+        PowerMock.replayAll();
+
+        final MarketConfigRepository marketConfigRepository = new MarketConfigRepositoryXmlImpl();
+        final MarketConfig marketConfig = marketConfigRepository.updateMarket(someExternalMarketConfigWithUnknownId());
+
+        assertThat(marketConfig.getId()).isEqualTo(null);
+        assertThat(marketConfig.getLabel()).isEqualTo(null);
+        assertThat(marketConfig.getBaseCurrency()).isEqualTo(null);
+        assertThat(marketConfig.getCounterCurrency()).isEqualTo(null);
+        assertThat(marketConfig.getTradingStrategy()).isEqualTo(null);
+        assertThat(marketConfig.isEnabled()).isFalse();
+
+        PowerMock.verifyAll();
+    }
+
+    @Test
+    public void whenDeleteByIdCalledWithRecognizedIdThenReturnMatchingMarket() throws Exception {
+
+        expect(ConfigurationManager.loadConfig(
+                eq(MarketsType.class),
+                eq(MARKETS_CONFIG_XML_FILENAME),
+                eq(MARKETS_CONFIG_XSD_FILENAME))).
+                andReturn(allTheInternalMarketsConfig());
+
+        ConfigurationManager.saveConfig(
+                eq(MarketsType.class),
+                anyObject(MarketsType.class),
+                eq(MARKETS_CONFIG_XML_FILENAME));
+
+        PowerMock.replayAll();
+
+        final MarketConfigRepository marketConfigRepository = new MarketConfigRepositoryXmlImpl();
+        final MarketConfig marketConfig = marketConfigRepository.deleteMarketById(MARKET_1_ID);
+
+        assertThat(marketConfig.getId()).isEqualTo(MARKET_1_ID);
+        assertThat(marketConfig.getLabel()).isEqualTo(MARKET_1_LABEL);
+        assertThat(marketConfig.isEnabled()).isEqualTo(MARKET_1_IS_ENABLED);
+        assertThat(marketConfig.getBaseCurrency()).isEqualTo(MARKET_1_BASE_CURRENCY);
+        assertThat(marketConfig.getCounterCurrency()).isEqualTo(MARKET_1_COUNTER_CURRENCY);
+        assertThat(marketConfig.getTradingStrategy()).isEqualTo(MARKET_1_TRADING_STRATEGY);
+
+        PowerMock.verifyAll();
+    }
+
+    @Test
+    public void whenDeleteByIdCalledWithUnrecognizedIdThenReturnEmptyMarket() throws Exception {
+
+        expect(ConfigurationManager.loadConfig(
+                eq(MarketsType.class),
+                eq(MARKETS_CONFIG_XML_FILENAME),
+                eq(MARKETS_CONFIG_XSD_FILENAME))).
+                andReturn(allTheInternalMarketsConfig());
+
+        PowerMock.replayAll();
+
+        final MarketConfigRepository marketConfigRepository = new MarketConfigRepositoryXmlImpl();
+        final MarketConfig marketConfig = marketConfigRepository.deleteMarketById("unknown-id");
+
+        assertThat(marketConfig.getId()).isNull();
+        assertThat(marketConfig.getLabel()).isNull();
+        assertThat(marketConfig.isEnabled()).isFalse();
+        assertThat(marketConfig.getBaseCurrency()).isNull();
+        assertThat(marketConfig.getCounterCurrency()).isNull();
+        assertThat(marketConfig.getTradingStrategy()).isNull();
+
+        PowerMock.verifyAll();
+    }
+
+    @Test
+    public void whenCreateMarketCalledWithUnknownThenExpectServiceToReturnCreatedMarket() throws Exception {
+
+        expect(ConfigurationManager.loadConfig(
+                eq(MarketsType.class),
+                eq(MARKETS_CONFIG_XML_FILENAME),
+                eq(MARKETS_CONFIG_XSD_FILENAME))).
+                andReturn(allTheInternalMarketsConfig());
+
+        ConfigurationManager.saveConfig(
+                eq(MarketsType.class),
+                anyObject(MarketsType.class),
+                eq(MARKETS_CONFIG_XML_FILENAME));
+
+        expect(ConfigurationManager.loadConfig(
+                eq(MarketsType.class),
+                eq(MARKETS_CONFIG_XML_FILENAME),
+                eq(MARKETS_CONFIG_XSD_FILENAME))).
+                andReturn(allTheInternalMarketsConfigPlusNewOne());
+
+        PowerMock.replayAll();
+
+        final MarketConfigRepository marketConfigRepository = new MarketConfigRepositoryXmlImpl();
+        final MarketConfig marketConfig = marketConfigRepository.createMarket(someExternalMarketConfigWithUnknownId());
+
+        assertThat(marketConfig.getId()).isEqualTo(UNKNOWN_MARKET_ID);
+        assertThat(marketConfig.getLabel()).isEqualTo(MARKET_1_LABEL);
+        assertThat(marketConfig.isEnabled()).isEqualTo(MARKET_1_IS_ENABLED);
+        assertThat(marketConfig.getBaseCurrency()).isEqualTo(MARKET_1_BASE_CURRENCY);
+        assertThat(marketConfig.getCounterCurrency()).isEqualTo(MARKET_1_COUNTER_CURRENCY);
+        assertThat(marketConfig.getTradingStrategy()).isEqualTo(MARKET_1_TRADING_STRATEGY);
+
+        PowerMock.verifyAll();
+    }
+
+    @Test
+    public void whenCreateMarketConfigCalledWithExistingIdThenReturnEmptyMarket() throws Exception {
+
+        expect(ConfigurationManager.loadConfig(
+                eq(MarketsType.class),
+                eq(MARKETS_CONFIG_XML_FILENAME),
+                eq(MARKETS_CONFIG_XSD_FILENAME))).
+                andReturn(allTheInternalMarketsConfig());
+
+        PowerMock.replayAll();
+
+        final MarketConfigRepository marketConfigRepository = new MarketConfigRepositoryXmlImpl();
+        final MarketConfig marketConfig = marketConfigRepository.createMarket(someExternalMarketConfig());
+
+        assertThat(marketConfig.getId()).isEqualTo(null);
+        assertThat(marketConfig.getLabel()).isEqualTo(null);
+        assertThat(marketConfig.getBaseCurrency()).isEqualTo(null);
+        assertThat(marketConfig.getCounterCurrency()).isEqualTo(null);
+        assertThat(marketConfig.getTradingStrategy()).isEqualTo(null);
+        assertThat(marketConfig.isEnabled()).isFalse();
+
+        PowerMock.verifyAll();
+    }
+
     // ------------------------------------------------------------------------------------------------
     // Private utils
     // ------------------------------------------------------------------------------------------------
@@ -132,5 +352,30 @@ public class TestMarketConfigRepository {
         marketsType.getMarkets().add(marketType2);
 
         return marketsType;
+    }
+
+    private static MarketsType allTheInternalMarketsConfigPlusNewOne() {
+
+        final MarketType newMarket = new MarketType();
+        newMarket.setId(UNKNOWN_MARKET_ID);
+        newMarket.setLabel(MARKET_1_LABEL);
+        newMarket.setEnabled(MARKET_1_IS_ENABLED);
+        newMarket.setBaseCurrency(MARKET_1_BASE_CURRENCY);
+        newMarket.setCounterCurrency(MARKET_1_COUNTER_CURRENCY);
+        newMarket.setTradingStrategy(MARKET_1_TRADING_STRATEGY);
+
+        final MarketsType existingMarketsPlusNewOne = allTheInternalMarketsConfig();
+        existingMarketsPlusNewOne.getMarkets().add(newMarket);
+        return existingMarketsPlusNewOne;
+    }
+
+    private static MarketConfig someExternalMarketConfig() {
+        return new MarketConfig(MARKET_1_LABEL, MARKET_1_ID, MARKET_1_BASE_CURRENCY, MARKET_1_COUNTER_CURRENCY,
+                MARKET_1_IS_ENABLED, MARKET_1_TRADING_STRATEGY);
+    }
+
+    private static MarketConfig someExternalMarketConfigWithUnknownId() {
+        return new MarketConfig(MARKET_1_LABEL, UNKNOWN_MARKET_ID, MARKET_1_BASE_CURRENCY, MARKET_1_COUNTER_CURRENCY,
+                MARKET_1_IS_ENABLED, MARKET_1_TRADING_STRATEGY);
     }
 }

@@ -27,40 +27,28 @@ import com.gazbert.bxbot.core.engine.TradingEngine;
 import com.gazbert.bxbot.core.mail.EmailAlerter;
 import com.gazbert.bxbot.domain.market.MarketConfig;
 import com.gazbert.bxbot.services.MarketConfigService;
-import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.mock.http.MockHttpOutputMessage;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
 
-import java.io.IOException;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
+import static org.hamcrest.Matchers.is;
 import static org.mockito.BDDMockito.given;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
- * TODO Work in progress...
- *
  * Tests the Market config controller behaviour.
  *
  * @author gazbert
@@ -68,17 +56,30 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @WebAppConfiguration
-public class TestMarketConfigController {
+public class TestMarketConfigController extends AbstractConfigControllerTest {
 
-    private static final MediaType CONTENT_TYPE = new MediaType(MediaType.APPLICATION_JSON.getType(),
-            MediaType.APPLICATION_JSON.getSubtype(),
-            Charset.forName("utf8"));
+    // This must match a user's login_id in the user table in src/test/resources/import.sql
+    private static final String VALID_USER_LOGINID = "user1";
 
-    private HttpMessageConverter mappingJackson2HttpMessageConverter;
-    private MockMvc mockMvc;
+    // This must match a user's password in the user table in src/test/resources/import.sql
+    private static final String VALID_USER_PASSWORD = "user1-password";
 
-    @Autowired
-    private WebApplicationContext ctx;
+    // Canned data
+    private static final String UNKNOWN_MARKET_ID = "unknown-id";
+
+    private static final String MARKET_1_ID = "btc_usd";
+    private static final String MARKET_1_LABEL = "BTC/USD";
+    private static final String MARKET_1_BASE_CURRENCY = "BTC";
+    private static final String MARKET_1_COUNTER_CURRENCY = "USD";
+    private static final boolean MARKET_1_ENABLED = true;
+    private static final String MARKET_1_STRATEGY = "scalper-strategy";
+
+    private static final String MARKET_2_ID = "btc_gbp";
+    private static final String MARKET_2_LABEL = "BTC/GBP";
+    private static final String MARKET_2_BASE_CURRENCY = "BTC";
+    private static final String MARKET_2_COUNTER_CURRENCY = "GBP";
+    private static final boolean MARKET_2_ENABLED = false;
+    private static final String MARKET_2_STRATEGY = "macd-strategy";
 
     @MockBean
     MarketConfigService marketConfigService;
@@ -90,77 +91,246 @@ public class TestMarketConfigController {
     private TradingEngine tradingEngine;
 
 
-    @Autowired
-    void setConverters(HttpMessageConverter<?>[] converters) {
-        this.mappingJackson2HttpMessageConverter =
-                Arrays.stream(converters)
-                        .filter(converter -> converter instanceof MappingJackson2HttpMessageConverter).findAny().get();
-
-        Assert.assertNotNull("The JSON message converter must not be null",
-                this.mappingJackson2HttpMessageConverter);
-    }
-
     @Before
     public void setupBeforeEachTest() {
-        this.mockMvc = MockMvcBuilders.webAppContextSetup(ctx).build();
+        mockMvc = MockMvcBuilders.webAppContextSetup(ctx).addFilter(springSecurityFilterChain).build();
     }
 
-    @Ignore("FIXME test needs fixing once service wired up")
     @Test
-    public void testGetMarketConfig() throws Exception {
+    public void testGetAllMarketConfig() throws Exception {
 
-        given(this.marketConfigService.findAllMarkets()).willReturn(allMarketConfig());
-        this.tradingEngine.start();
+        given(marketConfigService.findAllMarkets()).willReturn(allMarketConfig());
+        tradingEngine.start();
 
-        final MarketConfig marketConfig = someMarketConfig();
-
-        this.mockMvc.perform(get("/api/config/market/" + marketConfig.getId()))
+        mockMvc.perform(get("/api/config/market/")
+                .header("Authorization", "Bearer " + getAccessToken(VALID_USER_LOGINID, VALID_USER_PASSWORD)))
                 .andDo(print())
                 .andExpect(status().isOk())
 
-                .andExpect(jsonPath("$.label").value(marketConfig.getLabel()))
-                .andExpect(jsonPath("$.id").value(marketConfig.getId()))
-                .andExpect(jsonPath("$.baseCurrency").value(marketConfig.getBaseCurrency()))
-                .andExpect(jsonPath("$.counterCurrency").value(marketConfig.getCounterCurrency()))
-                .andExpect(jsonPath("$.enabled").value(marketConfig.isEnabled()))
-                .andExpect(jsonPath("$.tradingStrategy").value(marketConfig.getTradingStrategy())
+                .andExpect(jsonPath("$.[0].id").value(MARKET_1_ID))
+                .andExpect(jsonPath("$.[0].label").value(MARKET_1_LABEL))
+                .andExpect(jsonPath("$.[0].baseCurrency").value(MARKET_1_BASE_CURRENCY))
+                .andExpect(jsonPath("$.[0].counterCurrency").value(MARKET_1_COUNTER_CURRENCY))
+                .andExpect(jsonPath("$.[0].enabled").value(MARKET_1_ENABLED))
+                .andExpect(jsonPath("$.[0].tradingStrategy").value(MARKET_1_STRATEGY))
+
+                .andExpect(jsonPath("$.[1].id").value(MARKET_2_ID))
+                .andExpect(jsonPath("$.[1].label").value(MARKET_2_LABEL))
+                .andExpect(jsonPath("$.[1].baseCurrency").value(MARKET_2_BASE_CURRENCY))
+                .andExpect(jsonPath("$.[1].counterCurrency").value(MARKET_2_COUNTER_CURRENCY))
+                .andExpect(jsonPath("$.[1].enabled").value(MARKET_2_ENABLED))
+                .andExpect(jsonPath("$.[1].tradingStrategy").value(MARKET_2_STRATEGY)
 
                 );
     }
 
-    @Ignore("FIXME test needs fixing once service wired up")
+    @Test
+    public void testGetAllMarketConfigWhenUnauthorized() throws Exception {
+
+        mockMvc.perform(get("/api/config/market")
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.error", is("unauthorized")));
+    }
+
+    @Test
+    public void testGetMarketConfigById() throws Exception {
+
+        given(marketConfigService.findById(MARKET_1_ID)).willReturn(someMarketConfig());
+
+        mockMvc.perform(get("/api/config/market/" + MARKET_1_ID)
+                .header("Authorization", "Bearer " + getAccessToken(VALID_USER_LOGINID, VALID_USER_PASSWORD)))
+                .andDo(print())
+                .andExpect(status().isOk())
+
+                .andExpect(jsonPath("$.id").value(MARKET_1_ID))
+                .andExpect(jsonPath("$.label").value(MARKET_1_LABEL))
+                .andExpect(jsonPath("$.baseCurrency").value(MARKET_1_BASE_CURRENCY))
+                .andExpect(jsonPath("$.counterCurrency").value(MARKET_1_COUNTER_CURRENCY))
+                .andExpect(jsonPath("$.enabled").value(MARKET_1_ENABLED))
+                .andExpect(jsonPath("$.tradingStrategy").value(MARKET_1_STRATEGY)
+                );
+    }
+
+    @Test
+    public void testGetMarketConfigByIdWhenUnauthorized() throws Exception {
+
+        mockMvc.perform(get("/api/config/market/" + MARKET_1_ID)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.error", is("unauthorized")));
+    }
+
+    @Test
+    public void testGetMarketConfigByIdWhenNotRecognized() throws Exception {
+
+        given(marketConfigService.findById(UNKNOWN_MARKET_ID)).willReturn(emptyMarketConfig());
+
+        mockMvc.perform(get("/api/config/market/" + UNKNOWN_MARKET_ID)
+                .header("Authorization", "Bearer " + getAccessToken(VALID_USER_LOGINID, VALID_USER_PASSWORD))
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
+
     @Test
     public void testUpdateMarketConfig() throws Exception {
 
-        final MarketConfig marketConfig = someMarketConfig();
-        final String marketConfigJson = jsonify(marketConfig);
-        this.mockMvc.perform(put("/api/config/market/" + marketConfig.getId())
+        given(marketConfigService.updateMarket(someMarketConfig())).willReturn(someMarketConfig());
+
+        mockMvc.perform(put("/api/config/market/" + MARKET_1_ID)
+                .header("Authorization", "Bearer " + getAccessToken(VALID_USER_LOGINID, VALID_USER_PASSWORD))
                 .contentType(CONTENT_TYPE)
-                .content(marketConfigJson))
-                .andExpect(status().isOk());
+                .content(jsonify(someMarketConfig())))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    public void testUpdateMarketConfigWhenUnauthorized() throws Exception {
+
+        mockMvc.perform(put("/api/config/market/" + MARKET_1_ID)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(CONTENT_TYPE)
+                .content(jsonify(someMarketConfig())))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.error", is("unauthorized")));
+    }
+
+    @Test
+    public void testUpdateMarketConfigWhenIdNotRecognized() throws Exception {
+
+        given(marketConfigService.updateMarket(unrecognizedMarketConfig())).willReturn(emptyMarketConfig());
+
+        mockMvc.perform(put("/api/config/market/" + UNKNOWN_MARKET_ID)
+                .header("Authorization", "Bearer " + getAccessToken(VALID_USER_LOGINID, VALID_USER_PASSWORD))
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(CONTENT_TYPE)
+                .content(jsonify(unrecognizedMarketConfig())))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void testUpdateMarketConfigWhenIdIsMissing() throws Exception {
+
+        mockMvc.perform(put("/api/config/market/" + MARKET_1_ID)
+                .header("Authorization", "Bearer " + getAccessToken(VALID_USER_LOGINID, VALID_USER_PASSWORD))
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(CONTENT_TYPE)
+                .content(jsonify(someMarketConfigWithMissingId())))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void testDeleteMarketConfig() throws Exception {
+
+        given(marketConfigService.deleteMarketById(MARKET_1_ID)).willReturn(someMarketConfig());
+
+        mockMvc.perform(delete("/api/config/market/" + MARKET_1_ID)
+                .header("Authorization", "Bearer " + getAccessToken(VALID_USER_LOGINID, VALID_USER_PASSWORD)))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    public void testDeleteMarketConfigWhenUnauthorized() throws Exception {
+
+        mockMvc.perform(delete("/api/config/market/" + MARKET_1_ID)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.error", is("unauthorized")));
+    }
+
+    @Test
+    public void testDeleteMarketConfigWhenIdNotRecognized() throws Exception {
+
+        given(marketConfigService.deleteMarketById(UNKNOWN_MARKET_ID)).willReturn(emptyMarketConfig());
+
+        mockMvc.perform(delete("/api/config/market/" + UNKNOWN_MARKET_ID)
+                .header("Authorization", "Bearer " + getAccessToken(VALID_USER_LOGINID, VALID_USER_PASSWORD))
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void testCreateMarketConfig() throws Exception {
+
+        given(marketConfigService.createMarket(someMarketConfig())).willReturn(someMarketConfig());
+
+        mockMvc.perform(post("/api/config/market/" + MARKET_1_ID)
+                .header("Authorization", "Bearer " + getAccessToken(VALID_USER_LOGINID, VALID_USER_PASSWORD))
+                .contentType(CONTENT_TYPE)
+                .content(jsonify(someMarketConfig())))
+                .andExpect(status().isCreated());
+    }
+
+    @Test
+    public void testCreateMarketConfigWhenUnauthorized() throws Exception {
+
+        mockMvc.perform(post("/api/config/market/" + MARKET_1_ID)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(CONTENT_TYPE)
+                .content(jsonify(someMarketConfig())))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.error", is("unauthorized")));
+    }
+
+    @Test
+    public void testCreateMarketConfigWhenIdAlreadyExists() throws Exception {
+
+        given(marketConfigService.createMarket(someMarketConfig())).willReturn(emptyMarketConfig());
+
+        mockMvc.perform(post("/api/config/market/" + MARKET_1_ID)
+                .header("Authorization", "Bearer " + getAccessToken(VALID_USER_LOGINID, VALID_USER_PASSWORD))
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(CONTENT_TYPE)
+                .content(jsonify(someMarketConfig())))
+                .andExpect(status().isConflict());
+    }
+
+    @Test
+    public void testCreateMarketConfigWhenIdIsMissing() throws Exception {
+
+        mockMvc.perform(post("/api/config/market/" + MARKET_1_ID)
+                .header("Authorization", "Bearer " + getAccessToken(VALID_USER_LOGINID, VALID_USER_PASSWORD))
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(CONTENT_TYPE)
+                .content(jsonify(someMarketConfigWithMissingId())))
+                .andExpect(status().isBadRequest());
     }
 
     // ------------------------------------------------------------------------------------------------
     // Private utils
     // ------------------------------------------------------------------------------------------------
 
-    private String jsonify(Object objectToJsonify) throws IOException {
-        MockHttpOutputMessage mockHttpOutputMessage = new MockHttpOutputMessage();
-        this.mappingJackson2HttpMessageConverter.write(objectToJsonify, MediaType.APPLICATION_JSON, mockHttpOutputMessage);
-        return mockHttpOutputMessage.getBodyAsString();
+    private static MarketConfig someMarketConfig() {
+        final MarketConfig marketConfig = new MarketConfig(MARKET_1_LABEL, MARKET_1_ID, MARKET_1_BASE_CURRENCY,
+                MARKET_1_COUNTER_CURRENCY, MARKET_1_ENABLED, MARKET_1_STRATEGY);
+        return marketConfig;
     }
 
-    private static MarketConfig someMarketConfig() {
-        final MarketConfig marketConfig = new MarketConfig("BTC/USD", "btc_usd", "BTC", "USD", true, "scalper-strategy");
+    private static MarketConfig unrecognizedMarketConfig() {
+        final MarketConfig marketConfig = new MarketConfig(MARKET_1_LABEL, UNKNOWN_MARKET_ID, MARKET_1_BASE_CURRENCY,
+                MARKET_1_COUNTER_CURRENCY, MARKET_1_ENABLED, MARKET_1_STRATEGY);
+        return marketConfig;
+    }
+
+    private static MarketConfig someMarketConfigWithMissingId() {
+        final MarketConfig marketConfig = new MarketConfig(MARKET_1_LABEL, null, MARKET_1_BASE_CURRENCY,
+                MARKET_1_COUNTER_CURRENCY, MARKET_1_ENABLED, MARKET_1_STRATEGY);
         return marketConfig;
     }
 
     private static List<MarketConfig> allMarketConfig() {
-        final MarketConfig marketConfig1 = new MarketConfig("BTC/USD", "btc_usd", "BTC", "USD", true, "scalper-strategy");
-        final MarketConfig marketConfig2 = new MarketConfig("BTC/GBP", "btc_gbp", "BTC", "GBP", true, "scalper-strategy");
+        final MarketConfig market1Config = new MarketConfig(MARKET_1_LABEL, MARKET_1_ID, MARKET_1_BASE_CURRENCY,
+                MARKET_1_COUNTER_CURRENCY, MARKET_1_ENABLED, MARKET_1_STRATEGY);
+        final MarketConfig market2Config = new MarketConfig(MARKET_2_LABEL, MARKET_2_ID, MARKET_2_BASE_CURRENCY,
+                MARKET_2_COUNTER_CURRENCY, MARKET_2_ENABLED, MARKET_2_STRATEGY);
+
         final List<MarketConfig> allMarkets = new ArrayList<>();
-        allMarkets.add(marketConfig1);
-        allMarkets.add(marketConfig2);
+        allMarkets.add(market1Config);
+        allMarkets.add(market2Config);
         return allMarkets;
+    }
+
+    private static MarketConfig emptyMarketConfig() {
+        return new MarketConfig();
     }
 }
