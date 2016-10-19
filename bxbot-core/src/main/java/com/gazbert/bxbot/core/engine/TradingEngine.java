@@ -196,7 +196,7 @@ public class TradingEngine {
 
     private void initConfig() {
 
-        LOG.info(() -> "Initialising BX-Bot config...");
+        LOG.info(() -> "Initialising BX-bot config...");
 
         // the sequence order of these methods is significant - don't change it.
         loadExchangeAdapterConfig();

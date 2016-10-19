@@ -1,5 +1,5 @@
 /**
- * <h2>BX-Bot REST API</h2>
+ * <h2>BX-bot REST API</h2>
  *
  * <p>
  * This is the REST API for administering the bot.
