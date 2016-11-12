@@ -4,8 +4,8 @@
 [![Join the chat at https://gitter.im/BX-bot/Lobby](https://badges.gitter.im/BX-bot/Lobby.svg)](https://gitter.im/BX-bot/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 ## What is BX-bot?
-BX-bot (_Bex_) is a simple Java trading bot for trading [Bitcoin](https://bitcoin.org) on 
-cryptocurrency [exchanges](https://bitcoinwisdom.com/).
+BX-bot (_Bex_) is a simple [Bitcoin](https://bitcoin.org) trading bot written in Java for trading on cryptocurrency 
+[exchanges](https://bitcoinwisdom.com/).
 
 The project contains the basic infrastructure to trade on a [cryptocurrency](http://coinmarketcap.com/) exchange...
 except for the trading strategies - you'll need to write those yourself. A simple example
