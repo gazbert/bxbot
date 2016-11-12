@@ -11,7 +11,7 @@
     <parent>
         <groupId>com.gazbert.bxbot</groupId>
         <artifactId>bxbot-parent</artifactId>
-        <version>0.5-beta</version>
+        <version>0.5-beta.1-SNAPSHOT</version>
     </parent>
     <dependencies>
 
@@ -47,7 +47,6 @@
         <dependency>
             <groupId>org.powermock</groupId>
             <artifactId>powermock-module-junit4</artifactId>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.powermock</groupId>
