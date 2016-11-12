@@ -239,7 +239,6 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
             LOG.debug(() -> "Create Order response: " + response);
 
             if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
-
                 final GdaxOrder createOrderResponse = gson.fromJson(response.getPayload(), GdaxOrder.class);
                 if (createOrderResponse != null && (createOrderResponse.id != null && !createOrderResponse.id.isEmpty())) {
                     return createOrderResponse.id;
@@ -275,12 +274,13 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
             LOG.debug(() -> "Cancel Order response: " + response);
 
             if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
-
-                // eek! Wish they stuck with a proper JSON response with maybe cancelTime, orderId etc in it...
-                if (response.getPayload().equalsIgnoreCase("OK")) {
+                // response payload is now a JSON array with 1 String entry: the orderId :-)
+                final String[] cancelledOrderId = gson.fromJson(response.getPayload(), String[].class);
+                if (cancelledOrderId[0].equals(orderId)) {
                     return true;
                 } else {
-                    final String errorMsg = "Failed to cancel order on exchange. Details: " + response;
+                    final String errorMsg = "Failed to cancel order on exchange due to Order Id mismatch. " +
+                            "OrderId sent: " + orderId + " ResponseOrderId: " + cancelledOrderId + " Response: " + response;
                     LOG.error(errorMsg);
                     return false;
                 }
