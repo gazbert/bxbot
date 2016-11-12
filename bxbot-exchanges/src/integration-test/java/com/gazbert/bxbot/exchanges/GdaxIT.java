@@ -58,8 +58,8 @@ public class GdaxIT {
 
     // Canned test data
     private static final String MARKET_ID = "BTC-GBP";
-    private static final BigDecimal SELL_ORDER_PRICE = new BigDecimal("10000.176");
-    private static final BigDecimal SELL_ORDER_QUANTITY = new BigDecimal("0.01");
+    private static final BigDecimal BUY_ORDER_PRICE = new BigDecimal("450.176");
+    private static final BigDecimal BUY_ORDER_QUANTITY = new BigDecimal("0.01");
 
     // Exchange Adapter config for the tests
     private static final String PASSPHRASE = "lePassPhrase";
@@ -132,7 +132,7 @@ public class GdaxIT {
         assertNotNull(balanceInfo.getBalancesAvailable().get("BTC"));
 
 //      // Careful here - make sure the SELL_ORDER_PRICE is sensible!
-//        final String orderId = exchangeAdapter.createOrder(MARKET_ID, OrderType.SELL, SELL_ORDER_QUANTITY, SELL_ORDER_PRICE);
+//        final String orderId = exchangeAdapter.createOrder(MARKET_ID, OrderType.BUY, BUY_ORDER_QUANTITY, BUY_ORDER_PRICE);
 //        final List<OpenOrder> openOrders = exchangeAdapter.getYourOpenOrders(MARKET_ID);
 //        assertTrue(openOrders.stream().anyMatch(o -> o.getId().equals(orderId)));
 //        assertTrue(exchangeAdapter.cancelOrder(orderId, MARKET_ID));
