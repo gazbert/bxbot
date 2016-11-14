@@ -186,6 +186,41 @@ public class TestTradingEngine {
         PowerMock.verifyAll();
     }
 
+    @Test
+    public void testEngineDoesNotPerformEmergencyStopCheckWhenEmergencyStopBalanceIsZero() throws Exception {
+
+        setupConfigLoadingExpectationsForNoEmergencyStopCheck();
+
+        final int numberOfTradeCycles = 1;
+        final Map<String, BigDecimal> balancesAvailable = new HashMap<>();
+        // Emergency stop check disabled, i.e. ZERO
+        balancesAvailable.put(ENGINE_EMERGENCY_STOP_CURRENCY, BigDecimal.ZERO);
+
+        // expect Trading Strategy to be invoked at least 1 time
+        tradingStrategy.execute();
+        expectLastCall().atLeastOnce();
+
+        PowerMock.replayAll();
+
+        final TradingEngine tradingEngine = new TradingEngine(exchangeConfigRepository, engineConfigRepository,
+                strategyConfigRepository, marketConfigRepository, emailAlerter);
+
+        final Executor executor = Executors.newSingleThreadExecutor();
+        executor.execute(tradingEngine::start);
+
+        // sleep for 1s to let 1 trade cycles occur
+        // TODO FIXME - bit icky here with races... ;-o
+        Thread.sleep(numberOfTradeCycles * 1000);
+        assertTrue(tradingEngine.isRunning());
+
+        tradingEngine.shutdown();
+
+        // sleep for 1s and check if shutdown ok
+        Thread.sleep(1 * 1000);
+        assertFalse(tradingEngine.isRunning());
+
+        PowerMock.verifyAll();
+    }
 
     /*
      * Tests the engine starts up and executes trade cycles successfully.
@@ -506,6 +541,10 @@ public class TestTradingEngine {
         expect(engineConfigRepository.getConfig()).andReturn(someEngineConfig());
     }
 
+    private void setupEngineConfigForNoEmergencyStopCheckExpectations() throws Exception {
+        expect(engineConfigRepository.getConfig()).andReturn(someEngineConfigForNoEmergencyStopCheck());
+    }
+
     private void setupStrategyAndMarketConfigExpectations() throws Exception {
         expect(strategyConfigRepository.findAllStrategies()).andReturn(allTheStrategiesConfig());
         expect(marketConfigRepository.findAllMarkets()).andReturn(allTheMarketsConfig());
@@ -516,6 +555,12 @@ public class TestTradingEngine {
     private void setupConfigLoadingExpectations() throws Exception {
         setupExchangeAdapterConfigExpectations();
         setupEngineConfigExpectations();
+        setupStrategyAndMarketConfigExpectations();
+    }
+
+    private void setupConfigLoadingExpectationsForNoEmergencyStopCheck() throws Exception {
+        setupExchangeAdapterConfigExpectations();
+        setupEngineConfigForNoEmergencyStopCheckExpectations();
         setupStrategyAndMarketConfigExpectations();
     }
 
@@ -547,6 +592,14 @@ public class TestTradingEngine {
         final EngineConfig engineConfig = new EngineConfig();
         engineConfig.setEmergencyStopCurrency(ENGINE_EMERGENCY_STOP_CURRENCY);
         engineConfig.setEmergencyStopBalance(ENGINE_EMERGENCY_STOP_BALANCE);
+        engineConfig.setTradeCycleInterval(ENGINE_TRADE_CYCLE_INTERVAL);
+        return engineConfig;
+    }
+
+    private static EngineConfig someEngineConfigForNoEmergencyStopCheck() {
+        final EngineConfig engineConfig = new EngineConfig();
+        engineConfig.setEmergencyStopCurrency(ENGINE_EMERGENCY_STOP_CURRENCY);
+        engineConfig.setEmergencyStopBalance(BigDecimal.ZERO); // ZERO bypasses the check
         engineConfig.setTradeCycleInterval(ENGINE_TRADE_CYCLE_INTERVAL);
         return engineConfig;
     }
