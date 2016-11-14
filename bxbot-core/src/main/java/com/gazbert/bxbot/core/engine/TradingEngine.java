@@ -340,6 +340,10 @@ public class TradingEngine {
 
         boolean isEmergencyStopLimitBreached = true;
 
+        if(emergencyStopBalance.compareTo(BigDecimal.ZERO) == 0){
+            return false;
+        }
+
         LOG.info(() -> "Performing Emergency Stop check...");
 
         BalanceInfo balanceInfo;
