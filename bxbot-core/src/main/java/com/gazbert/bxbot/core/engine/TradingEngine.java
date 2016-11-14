@@ -340,9 +340,7 @@ public class TradingEngine {
 
         boolean isEmergencyStopLimitBreached = true;
 
-        //Added by Gondee. This prevents an API Call from being wasted if the user elects not to use the emergency stop
-        //This is elected by putting 0 in the config file as the emergency stop balance
-        if(emergencyStopBalance.equals(new BigDecimal("0"))){
+        if(emergencyStopBalance.compareTo(BigDecimal.ZERO) == 0){
             return false;
         }
 
