@@ -309,6 +309,7 @@ wallet, e.g. BTC, LTC, USD. This value can be case sensitive for some exchanges 
 The `<emergency-stop-balance>` value must be set to prevent catastrophic loss on the exchange. 
 The Trading Engine checks this value at the start of every trade cycle: if your `<emergency-stop-currency>` wallet balance on
 the exchange drops below this value, the Trading Engine will log it, send an Email Alert (if configured) and then shutdown.
+If you set this value to 0, the bot will bypass the check - be careful.
 
 The `<trade-cycle-interval>` value is the interval in _seconds_ that the Trading Engine will wait/sleep before executing
 each trade cycle. The minimum value is 1 second. Some exchanges allow you to hit them harder than others. However, while
