@@ -54,7 +54,7 @@ BX-bot depends on [log4j](http://logging.apache.org/log4j), [JavaMail](https://j
 [Spring Boot](http://projects.spring.io/spring-boot/).
 See the Maven [`pom.xml`](./pom.xml) for details.
 
-1. Clone the repo locally (master branch).
+Clone the repo locally (master branch).
 
 ### Maven
  
@@ -474,12 +474,12 @@ see the _Installation Guide_ for how to do this.
 
 ## Installation Guide
 
-The [Releases](https://github.com/gazbert/bxbot/releases) page has the stable releases. 
-Or you can grab the latest code from the head of the master branch.
+The [Releases](https://github.com/gazbert/bxbot/releases) page has the stable releases, or you can grab the latest code 
+from the head of the master branch.
 
-1. Prerequisite: [Oracle JDK 1.8](http://www.oracle.com/technetwork/java/javase/downloads/index-jsp-138363.html) needs to be installed
+* [Oracle JDK 1.8](http://www.oracle.com/technetwork/java/javase/downloads/index-jsp-138363.html) needs to be installed
    on the machine you want to run the bot.     
-1. Edit the `config` XML files as required.
+* Edit the `config` XML files as required.
 
 ### Maven
 
