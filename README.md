@@ -504,10 +504,8 @@ from the head of the master branch.
 ## Coming Soon...
 The following features are in the pipeline:
 
-- REST API for administering the bot.
-- [Web UI](https://github.com/gazbert/bxbot-ui) for administering the bot written in [Angular](https://angular.io/).
-- An experimental project to register [BX-bot](https://github.com/gazbert/bxbot) trades using an [Ethereum](https://www.ethereum.org/) blockchain.
-- Trade Analysis app - a microservice that will feed off trading events sent by the bot.
-- Android app for administering the bot.
+- REST API for administering the bot - under development in this project.
+- [Web UI](https://github.com/gazbert/bxbot-ui) written in [Angular](https://angular.io/).
+- An [Admin Router](https://github.com/gazbert/bxbot-admin-router) for sending commands to BX-bot(s) in the cloud.
 
 See the main project [Issue Tracker](https://github.com/gazbert/bxbot/issues) for timescales and progress.
