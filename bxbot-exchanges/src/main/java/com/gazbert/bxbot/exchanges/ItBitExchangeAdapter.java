@@ -413,7 +413,7 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
         ExchangeHttpResponse response = null;
 
         try {
-            response = sendPublicRequestToExchange("/markets/" + marketId + "/order_book");
+            response = sendPublicRequestToExchange("markets/" + marketId + "/order_book");
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Market Orders response: " + response);
             }
@@ -465,7 +465,7 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
 
         try {
 
-            response = sendPublicRequestToExchange("/markets/" + marketId + "/ticker");
+            response = sendPublicRequestToExchange("markets/" + marketId + "/ticker");
             if (LOG.isDebugEnabled()) {
                 LOG.debug( "Latest Market Price response: " + response);
             }
