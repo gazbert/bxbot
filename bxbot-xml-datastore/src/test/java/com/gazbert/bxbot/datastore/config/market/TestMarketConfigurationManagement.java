@@ -24,12 +24,15 @@
 package com.gazbert.bxbot.datastore.config.market;
 
 import com.gazbert.bxbot.datastore.ConfigurationManager;
+import com.gazbert.bxbot.datastore.market.generated.MarketType;
 import com.gazbert.bxbot.datastore.market.generated.MarketsType;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+
+import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.junit.Assert.*;
 
 /**
  * Tests the Market configuration is loaded as expected.
@@ -44,6 +47,21 @@ public class TestMarketConfigurationManagement {
     /* Test XML config */
     private static final String VALID_XML_CONFIG_FILENAME = "src/test/config/markets/valid-markets.xml";
     private static final String MISSING_XML_CONFIG_FILENAME = "src/test/config/markets/missing-markets.xml";
+    private static final String XML_CONFIG_TO_SAVE_FILENAME = "src/test/config/markets/saved-markets.xml";
+
+    private static final String MARKET_1_LABEL = "BTC/USD";
+    private static final String MARKET_1_ID = "gemini_usd/btc";
+    private static final String MARKET_1_BASE_CURRENCY = "BTC";
+    private static final String MARKET_1_COUNTER_CURRENCY = "USD";
+    private static final boolean MARKET_1_IS_ENABLED = true;
+    private static final String MARKET_1_TRADING_STRATEGY = "macd_trend_follower";
+
+    private static final String MARKET_2_LABEL = "BTC/GBP";
+    private static final String MARKET_2_ID = "gdax_gbp/btc";
+    private static final String MARKET_2_BASE_CURRENCY = "BTC";
+    private static final String MARKET_2_COUNTER_CURRENCY = "GBP";
+    private static final boolean MARKET_2_IS_ENABLED = false;
+    private static final String MARKET_2_TRADING_STRATEGY = "scalper";
 
 
     @Test
@@ -74,5 +92,52 @@ public class TestMarketConfigurationManagement {
 
         ConfigurationManager.loadConfig(MarketsType.class,
                 MISSING_XML_CONFIG_FILENAME, XML_SCHEMA_FILENAME);
+    }
+
+    @Test
+    public void testSavingConfigToXmlIsSuccessful() throws Exception {
+
+        final MarketType market1 = new MarketType();
+        market1.setEnabled(MARKET_1_IS_ENABLED);
+        market1.setId(MARKET_1_ID);
+        market1.setLabel(MARKET_1_LABEL);
+        market1.setBaseCurrency(MARKET_1_BASE_CURRENCY);
+        market1.setCounterCurrency(MARKET_1_COUNTER_CURRENCY);
+        market1.setTradingStrategy(MARKET_1_TRADING_STRATEGY);
+
+        final MarketType market2 = new MarketType();
+        market2.setEnabled(MARKET_2_IS_ENABLED);
+        market2.setId(MARKET_2_ID);
+        market2.setLabel(MARKET_2_LABEL);
+        market2.setBaseCurrency(MARKET_2_BASE_CURRENCY);
+        market2.setCounterCurrency(MARKET_2_COUNTER_CURRENCY);
+        market2.setTradingStrategy(MARKET_2_TRADING_STRATEGY);
+
+        final MarketsType marketsConfig = new MarketsType();
+        marketsConfig.getMarkets().add(market1);
+        marketsConfig.getMarkets().add(market2);
+
+        ConfigurationManager.saveConfig(MarketsType.class, marketsConfig, XML_CONFIG_TO_SAVE_FILENAME);
+
+        // Read it back in
+        final MarketsType marketsReloaded = ConfigurationManager.loadConfig(MarketsType.class,
+                XML_CONFIG_TO_SAVE_FILENAME, XML_SCHEMA_FILENAME);
+
+        assertThat(marketsReloaded.getMarkets().get(0).isEnabled()).isEqualTo(MARKET_1_IS_ENABLED);
+        assertThat(marketsReloaded.getMarkets().get(0).getId()).isEqualTo(MARKET_1_ID);
+        assertThat(marketsReloaded.getMarkets().get(0).getLabel()).isEqualTo(MARKET_1_LABEL);
+        assertThat(marketsReloaded.getMarkets().get(0).getBaseCurrency()).isEqualTo(MARKET_1_BASE_CURRENCY);
+        assertThat(marketsReloaded.getMarkets().get(0).getCounterCurrency()).isEqualTo(MARKET_1_COUNTER_CURRENCY);
+        assertThat(marketsReloaded.getMarkets().get(0).getTradingStrategy()).isEqualTo(MARKET_1_TRADING_STRATEGY);
+
+        assertThat(marketsReloaded.getMarkets().get(1).isEnabled()).isEqualTo(MARKET_2_IS_ENABLED);
+        assertThat(marketsReloaded.getMarkets().get(1).getId()).isEqualTo(MARKET_2_ID);
+        assertThat(marketsReloaded.getMarkets().get(1).getLabel()).isEqualTo(MARKET_2_LABEL);
+        assertThat(marketsReloaded.getMarkets().get(1).getBaseCurrency()).isEqualTo(MARKET_2_BASE_CURRENCY);
+        assertThat(marketsReloaded.getMarkets().get(1).getCounterCurrency()).isEqualTo(MARKET_2_COUNTER_CURRENCY);
+        assertThat(marketsReloaded.getMarkets().get(1).getTradingStrategy()).isEqualTo(MARKET_2_TRADING_STRATEGY);
+
+        // cleanup
+        Files.delete(FileSystems.getDefault().getPath(XML_CONFIG_TO_SAVE_FILENAME));
     }
 }
