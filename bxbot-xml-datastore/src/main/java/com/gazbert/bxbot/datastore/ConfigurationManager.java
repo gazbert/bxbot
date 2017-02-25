@@ -32,10 +32,7 @@ import javax.xml.bind.*;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.InputStream;
+import java.io.*;
 
 /**
  * The generic configuration manager loads config from a given XML config file.
@@ -58,7 +55,6 @@ public final class ConfigurationManager {
         LOG.info(() -> "Loading configuration for [" + configClass + "] from: " + xmlConfigFile + " ...");
 
         try {
-
             final JAXBContext jaxbContext = JAXBContext.newInstance(configClass.getPackage().getName());
             final Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
 
@@ -72,10 +68,11 @@ public final class ConfigurationManager {
             }
 
             synchronized (MUTEX) {
-                final JAXBElement<?> requestedConfigRootXmlElement = (JAXBElement<?>) unmarshaller.unmarshal(
-                        new FileInputStream(xmlConfigFile));
-
+                final FileInputStream fileInputStream = new FileInputStream(xmlConfigFile);
+                final JAXBElement<?> requestedConfigRootXmlElement = (JAXBElement<?>) unmarshaller.unmarshal(fileInputStream);
                 final T requestedConfig = (T) requestedConfigRootXmlElement.getValue();
+                fileInputStream.close();
+
                 LOG.info(() -> "Loaded and set configuration for [" + configClass + "] successfully!");
                 return requestedConfig;
             }
@@ -84,7 +81,7 @@ public final class ConfigurationManager {
             final String errorMsg = "Failed to load [" + xmlConfigFile + "] file and validate it using XML Schema [" + xmlSchemaFile + "]";
             LOG.error(errorMsg, e);
             throw new IllegalArgumentException(errorMsg, e);
-        } catch (FileNotFoundException e) {
+        } catch (IOException e) {
             final String errorMsg = "Failed to find or read [" + xmlConfigFile + "] config";
             LOG.error(errorMsg, e);
             throw new IllegalStateException(errorMsg, e);
@@ -99,20 +96,21 @@ public final class ConfigurationManager {
         LOG.info(() -> "Saving configuration for [" + configClass + "] to: " + xmlConfigFile + " ...");
 
         try {
-
             final JAXBContext context = JAXBContext.newInstance(config.getClass());
             final Marshaller marshaller = context.createMarshaller();
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
 
             synchronized (MUTEX) {
-                marshaller.marshal(config, new FileOutputStream(xmlConfigFile));
+                final FileOutputStream fileOutputStream = new FileOutputStream(xmlConfigFile);
+                marshaller.marshal(config, fileOutputStream);
+                fileOutputStream.close();
             }
 
         } catch (JAXBException e) {
             final String errorMsg = "Failed to save config to [" + xmlConfigFile + "] file.";
             LOG.error(errorMsg, e);
             throw new IllegalArgumentException(errorMsg, e);
-        } catch (FileNotFoundException e) {
+        } catch (IOException e) {
             final String errorMsg = "Failed to find or read [" + xmlConfigFile + "] config";
             LOG.error(errorMsg, e);
             throw new IllegalStateException(errorMsg, e);
