@@ -53,7 +53,7 @@ case "$1" in
        sleep 1
        pid=`ps -aef | grep ${pid} | grep -v grep`
        if [[ ${pid} -gt 1 ]]; then
-          echo "Failed to stop BX-bot. Kill action required!"
+          echo "Failed to stop BX-bot. Manual kill required!"
        else
           echo "BX-bot has stopped."
           rm ${PID_FILE}
@@ -70,6 +70,6 @@ case "$1" in
       ;;
 
    *)
-         echo "Invalid arg. Usage: $0 [start|stop|status]"
+         echo "Invalid args. Usage: $0 [start|stop|status]"
       ;;
 esac
