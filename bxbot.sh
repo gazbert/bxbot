@@ -11,7 +11,7 @@
 #
 # This script expects all the jar files to live in the LIB_DIR.
 #
-# You can change the bxbot_core var to the version you want to run; it has been defaulted to the current release.
+# You can change the bxbot_jar var to the version you want to run; it has been defaulted to the current release.
 #
 # You can start, stop, and query the bot's status: ./bxbot.sh [start|stop|status]
 #
@@ -20,8 +20,8 @@ LIB_DIR=./libs
 # log4j2 config file location
 log4j2_config=./config/log4j2.xml
 
-# The BX-bot core jar (Spring Boot app containing all the dependencies)
-bxbot_core=bxbot-app-0.5-beta.3-SNAPSHOT.jar
+# The BX-bot 'fat' jar (Spring Boot app containing all the dependencies)
+bxbot_jar=bxbot-app-0.5-beta.3-SNAPSHOT.jar
 
 # PID file for checking if bot is running
 PID_FILE=./.bxbot.pid
@@ -34,7 +34,7 @@ case "$1" in
           echo "BX-bot is already running with PID: $pid"
        else
           echo "Starting BX-bot..."
-          java -Xmx64m -Xss256k -Dlog4j.configurationFile=file:${log4j2_config} -jar ${LIB_DIR}/${bxbot_core} 2>&1 >/dev/null &
+          java -Xmx64m -Xss256k -Dlog4j.configurationFile=file:${log4j2_config} -jar ${LIB_DIR}/${bxbot_jar} 2>&1 >/dev/null &
 
           echo "BX-bot started with PID: $!"
           echo $! > ${PID_FILE}

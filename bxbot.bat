@@ -11,7 +11,7 @@ REM You need the Java runtime installed - Oracle JDK 1.8 is supported.
 REM
 REM This script expects all the jar files to live in the LIB_DIR.
 REM
-REM You can change the bxbot_core var to the version you want to run; it has been defaulted to the current release.
+REM You can change the bxbot_jar var to the version you want to run; it has been defaulted to the current release.
 REM
 REM You can start, stop, and query the bot's status: bxbot.bat [start|stop|status]
 REM
@@ -20,8 +20,8 @@ SET LIB_DIR=.\libs
 REM log4j2 config file location
 SET log4j2_config=.\config\log4j2.xml
 
-REM The BX-bot core jar (Spring Boot app containing all the dependencies)
-SET bxbot_core=bxbot-app-0.5-beta.3-SNAPSHOT.jar
+REM The BX-bot 'fat' jar (Spring Boot app containing all the dependencies)
+SET bxbot_jar=bxbot-app-0.5-beta.3-SNAPSHOT.jar
 
 REM PID file for checking if bot is running
 SET PID_FILE=.\.bxbot.pid
@@ -37,7 +37,7 @@ IF NOT "%1"=="status" GOTO:invalidArgs
 REM TODO - check if bot is already running before trying to start it!
 SET START_TIME=%time%
 ECHO Starting BX-bot...
-START "BX-bot - %START_TIME%" java -Xmx64m -Xss256k -Dlog4j.configurationFile=%log4j2_config% -jar %LIB_DIR%\%bxbot_core%
+START "BX-bot - %START_TIME%" java -Xmx64m -Xss256k -Dlog4j.configurationFile=%log4j2_config% -jar %LIB_DIR%\%bxbot_jar%
 FOR /F "tokens=2" %%i in ('TASKLIST /NH /FI "WINDOWTITLE eq BX-bot - %START_TIME%"' ) DO (SET PID=%%i)
 ECHO %PID% > %PID_FILE%
 ECHO BX-bot started with PID: %PID%
