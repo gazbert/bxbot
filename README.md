@@ -501,7 +501,7 @@ from the head of the master branch.
 1. Copy the artifact onto the machine you want to run the bot and unzip it someplace.
 1. Usage: `./bxbot.sh [start|stop|status]`
  
-## Coming Soon...
+## Coming Soon... (Definitely Maybe)
 The following features are in the pipeline:
 
 - REST API for administering the bot. It's being developed on the [bxbot-restapi](https://github.com/gazbert/bxbot/tree/bxbot-restapi) branch.
