@@ -29,16 +29,16 @@ and released under the [MIT license](http://opensource.org/licenses/MIT).
 ## Architecture
 ![bxbot-core-architecture.png](./docs/bxbot-core-architecture.png)
 
-- **Trading Engine** - the execution unit. It provides a framework for integrating and executing Exchange Adapters and Trading Strategies.
+- **Trading Engine** - the execution unit. It provides a framework for integrating Exchange Adapters and executing Trading Strategies.
 - **Exchange Adapters** - the data stream unit. They provide access to a given exchange.
 - **Trading Strategies** - the decision or strategy unit. This is where the trading decisions happen.
 - **Trading API** - Trading Strategies use this API to make trades. Exchange Adapters implement this to provide access
   to a given exchange.
-- **Strategy API** - Trading Strategies implement this for the Trading Engine to execute them.
+- **Strategy API** - Trading Strategies implement this so the Trading Engine can execute them.
  
 Trading Strategies and Exchange Adapters are injected by the Trading Engine on startup. The bot uses a crude XML based
-dependency injection framework to achieve this; the long term goal is to run it as a [Spring Boot](http://projects.spring.io/spring-boot/)
-app in a [microservice](http://martinfowler.com/articles/microservices.html) system.
+dependency injection framework to achieve this; the long term goal is to convert it into a fully configurable 
+[Spring Boot](http://projects.spring.io/spring-boot/) app.
 
 The bot was designed to fail hard and fast if any unexpected errors occur in the Exchange Adapters or Trading Strategies:
 it will log the error, send an email alert (if configured), and then shutdown.
@@ -504,7 +504,7 @@ from the head of the master branch.
 ## Coming Soon...
 The following features are in the pipeline:
 
-- REST API for administering the bot - under development in this project.
+- REST API for administering the bot. It's being developed on the [bxbot-restapi](https://github.com/gazbert/bxbot/tree/bxbot-restapi) branch.
 - [Web UI](https://github.com/gazbert/bxbot-ui) written in [Angular](https://angular.io/).
 - [Admin Router](https://github.com/gazbert/bxbot-admin-router) for sending commands and config changes to BX-bot(s) in the cloud.
 - An experimental [Blockchain project](https://github.com/gazbert/bxbot-hyperledger) to register BX-bot trades using 
