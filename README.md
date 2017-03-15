@@ -481,6 +481,8 @@ from the head of the master branch.
    on the machine you want to run the bot.     
 * Edit the `config` XML files as required.
 
+You can use [Maven](https://maven.apache.org) or [Gradle](https://gradle.org/) to build the bot and distribution artifact.
+
 ### Maven
 
 1. If you plan on using Trading Strategies or Exchange Adapters that are packaged in separate jar files, you'll need to add
