@@ -82,7 +82,7 @@ The bot runs on Linux and macOS, but there is a Windows [bxbot.bat](./bxbot.bat)
 
 * [Oracle JDK 1.8](http://www.oracle.com/technetwork/java/javase/downloads/index-jsp-138363.html) needs to be installed
    on the machine you want to run the bot.     
-* Edit the `config` XML files as required - see the _User Guide_ section.
+* Edit the `config` XML files as required - see the _[Configuration](#configuration)_ section.
 
 You can use [Maven](https://maven.apache.org) or [Gradle](https://gradle.org/) to build the bot and distribution artifact.
 The instructions below are for Linux and macOS, but Windows scripts are included. 
@@ -186,8 +186,8 @@ All elements are mandatory unless stated otherwise.
 The `<name>` value is for descriptive use only. It is used in the log statements.
 
 For the `<adapter>` value, you must specify the fully qualified name of the Exchange Adapter class for the Trading Engine
-to inject on startup. The class must be on the runtime classpath. See the _How do I write my own Exchange Adapter?_ 
-section for more details.
+to inject on startup. The class must be on the runtime classpath. See the 
+_[How do I write my own Exchange Adapter?](#how-do-i-write-my-own-exchange-adapter)_ section for more details.
 
 The `<authentication-config>` section is optional. If present, at least 1 `<config-item>` must be set - these are repeating
 key/value String pairs. This section is used by the inbuilt Exchange Adapters to configure their exchange trading API credentials - see
@@ -320,7 +320,8 @@ For the `<class-name>` value, you must specify the fully qualified name of your 
 Trading Engine to inject on startup. The class _must_ be on the runtime classpath.
 
 The `<configuration>` section is optional. It allows you to set custom key/value pair String config - this is passed
-to your Trading Strategy when the bot starts up; see the _How do I write my own Trading Strategy?_ section.
+to your Trading Strategy when the bot starts up; see the 
+_[How do I write my own Trading Strategy?](#how-do-i-write-my-own-trading-strategy)_ section.
 
 ##### Engine
 The [`engine.xml`](./config/engine.xml) file is used to configure the Trading Engine.
@@ -427,7 +428,7 @@ choose what to do next, e.g. retry the previous Trading API call, or 'swallow' t
 Engine invokes the strategy again at the next trade cycle.
 
 ##### Configuration
-You specify the Trading Strategies you wish to use in the `strategies.xml` file - see the main _Configuration_ section 
+You specify the Trading Strategies you wish to use in the `strategies.xml` file - see the main _[Configuration](#configuration)_ section 
 for full details.
 
 The optional `<configuration>` section in the `strategies.xml` allows you to set key/value pair String config to pass to
@@ -446,7 +447,7 @@ also has a compile-time dependency on log4j and Google Guava.
 To get going fast, you can code your Trading Strategy and place it in the [bxbot-strategies](./bxbot-strategies)
 module alongside the example strategy. When you build the project, your Trading Strategy will be included in the BX-bot jar. 
 You can also create your own jar for your strats, e.g. `my-strats.jar`, and include it on BX-bot's runtime classpath -
-see the _Installation Guide_ for how to do this.
+see the _[Installation Guide](#installation-guide)_ for how to do this.
 
 ### How do I write my own Exchange Adapter?
 _"I was seldom able to see an opportunity until it had ceased to be one."_ - Mark Twain
@@ -491,7 +492,8 @@ Email Alert (if configured), and shutdown. If the API call failed due to an `Exc
 Trading Engine will log the error and sleep until the next trade cycle.
 
 ##### Configuration
-You provide your Exchange Adapter details in the `exchange.xml` file - see the main _Configuration_ section for full details.
+You provide your Exchange Adapter details in the `exchange.xml` file - see the main _[Configuration](#configuration)_ 
+section for full details.
 
 ##### Dependencies
 Your Exchange Adapter implementation has a compile-time dependency on the 
@@ -503,7 +505,7 @@ The inbuilt Exchange Adapters also have compile-time dependencies on log4j, Goog
 To get going fast, you can code your Exchange Adapter and place it in the [bxbot-exchanges](./bxbot-exchanges)
 module alongside the other inbuilt adapters. When you build the project, your Exchange Adapter will be included in the BX-bot jar. 
 You can also create your own jar for your adapters, e.g. `my-adapters.jar`, and include it on BX-bot's runtime classpath -
-see the _Installation Guide_ for how to do this.
+see the _[Installation Guide](#installation-guide)_ for how to do this.
  
 ## Coming Soon...
 The following features are in the pipeline:
