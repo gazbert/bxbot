@@ -1,7 +1,6 @@
 # BX-bot
 
 [![Build Status](https://travis-ci.org/gazbert/bxbot.svg?branch=master)](https://travis-ci.org/gazbert/bxbot)
-[![Join the chat at https://gitter.im/BX-bot/Lobby](https://badges.gitter.im/BX-bot/Lobby.svg)](https://gitter.im/BX-bot/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 ## What is BX-bot?
 BX-bot (_Bex_) is a simple [Bitcoin](https://bitcoin.org) trading bot written in Java for trading on cryptocurrency 
@@ -48,16 +47,17 @@ it will log the error, send an email alert (if configured), and then shutdown.
 BX-bot requires [Oracle JDK 1.8](http://www.oracle.com/technetwork/java/javase/downloads/index-jsp-138363.html) for the
 development and runtime environment.
 
-You can use [Maven 3](https://maven.apache.org) or [Gradle 3](https://gradle.org/) to build the bot and pull in the dependencies;
+You can use [Maven](https://maven.apache.org) or [Gradle](https://gradle.org/) to build the bot and pull in the dependencies;
 BX-bot depends on [log4j](http://logging.apache.org/log4j), [JavaMail](https://java.net/projects/javamail/pages/Home),
 [Google Gson](https://code.google.com/p/google-gson/), [Google Guava](https://github.com/google/guava), and 
 [Spring Boot](http://projects.spring.io/spring-boot/).
 See the Maven [`pom.xml`](./pom.xml) for details.
 
-Clone the repo locally (master branch).
+The instructions below are for Linux and macOS, but Windows scripts are included.
 
 ### Maven
  
+1. Clone the repo locally (master branch).
 1. From the project root, run `./mvnw clean install`.
    If you want to run the exchange integration tests, use `./mvnw clean install -Pint`. 
    To execute both unit and integration tests, use `./mvnw clean install -Pall`.
@@ -66,11 +66,46 @@ Clone the repo locally (master branch).
    
 ### Gradle
 
+1. Clone the repo locally (master branch).
 1. From the project root, run `./gradlew build`.
    If you want to run the exchange integration tests, use `./gradlew integrationTests`.
    To execute both unit and integration tests, use `./gradlew build integrationTests`.
 1. To generate the Javadoc, run `./gradlew javadoc` and look in the `./build/docs/javadoc` folders of the bxbot-trading-api, 
    bxbot-strategy-api, and bxbot-exchange-api modules.
+
+## Installation Guide
+
+The [Releases](https://github.com/gazbert/bxbot/releases) page has the stable releases, or you can grab the latest code 
+from the head of the master branch.
+
+The bot runs on Linux and macOS, but there is Windows [bxbot.bat](./bxbot.bat) script under development.
+
+* [Oracle JDK 1.8](http://www.oracle.com/technetwork/java/javase/downloads/index-jsp-138363.html) needs to be installed
+   on the machine you want to run the bot.     
+* Edit the `config` XML files as required - see the User Guide section.
+
+You can use [Maven](https://maven.apache.org) or [Gradle](https://gradle.org/) to build the bot and distribution artifact.
+The instructions below are for Linux and macOS, but Windows scripts are included. 
+
+### Maven
+
+1. If you plan on using your own Trading Strategies/Exchange Adapters packaged in separate jar files, you'll need to add
+   the dependency in the [bxbot-app/pom.xml](./bxbot-app/pom.xml) - see the commented out dependency examples inside it.
+1. From the project root, run `./mvnw clean assembly:assembly` to produce the distribution 
+   artifacts `bxbot-app-<version>-dist.tar.gz` and `bxbot-app-<version>-dist.zip` in the `./target` folder.
+1. Copy either the `bxbot-app-<version>-dist.tar.gz` or the `bxbot-app-<version>-dist.zip` onto the machine you 
+   want to run the bot and unzip it someplace.
+1. Usage: `./bxbot.sh [start|stop|status]`   
+    
+### Gradle    
+ 
+1. If you plan on using your own Trading Strategies/Exchange Adapters packaged in separate jar files, you'll need to add
+   the dependency in the [bxbot-app/build.gradle](bxbot-app/build.gradle) - see the commented out dependency examples inside it.
+1. From the project root, run `./gradlew buildTarGzipDist` or `./gradlew buildZipDist` to build the distribution 
+   artifact: either `bxbot-app-<version>.tar.gz` or `bxbot-app-<version>.zip` respectively. 
+   It will be placed in the `./build/distributions` folder.
+1. Copy the artifact onto the machine you want to run the bot and unzip it someplace.
+1. Usage: `./bxbot.sh [start|stop|status]`
 
 ## Testing
 The bot has undergone basic unit testing on a _best-effort_ basis; there is a continuous integration build 
@@ -84,9 +119,7 @@ be deployable.
 Issues and new features are managed using the project [Issue Tracker](https://github.com/gazbert/bxbot/issues) -
 submit bugs here.
  
-You are welcome to take on new features or fix bugs! See [here](CONTRIBUTING.md) for how to get involved.
-
-There's also a channel on [Gitter](https://gitter.im/BX-bot/Lobby) for all things BX-bot :-) 
+You are welcome to take on new features or fix bugs! See [here](CONTRIBUTING.md) for how to get involved. 
 
 ## User Guide
 
@@ -471,39 +504,8 @@ To get going fast, you can code your Exchange Adapter and place it in the [bxbot
 module alongside the other inbuilt adapters. When you build the project, your Exchange Adapter will be included in the BX-bot jar. 
 You can also create your own jar for your adapters, e.g. `my-adapters.jar`, and include it on BX-bot's runtime classpath -
 see the _Installation Guide_ for how to do this.
-
-## Installation Guide
-
-The [Releases](https://github.com/gazbert/bxbot/releases) page has the stable releases, or you can grab the latest code 
-from the head of the master branch.
-
-* [Oracle JDK 1.8](http://www.oracle.com/technetwork/java/javase/downloads/index-jsp-138363.html) needs to be installed
-   on the machine you want to run the bot.     
-* Edit the `config` XML files as required.
-
-You can use [Maven](https://maven.apache.org) or [Gradle](https://gradle.org/) to build the bot and distribution artifact.
-
-### Maven
-
-1. If you plan on using Trading Strategies or Exchange Adapters that are packaged in separate jar files, you'll need to add
-   the dependency in the [bxbot-app/pom.xml](./bxbot-app/pom.xml) - see the commented out dependency examples inside it.
-1. From the project root, run `./mvnw clean assembly:assembly` to produce the distribution 
-   artifacts `bxbot-app-<version>-dist.tar.gz` and `bxbot-app-<version>-dist.zip` in the `./target` folder.
-1. Copy either the `bxbot-app-<version>-dist.tar.gz` or the `bxbot-app-<version>-dist.zip` onto the machine you 
-   want to run the bot and unzip it someplace.
-1. Usage: `./bxbot.sh [start|stop|status]`   
-    
-### Gradle    
  
-1. If you plan on using Trading Strategies or Exchange Adapters that are packaged in separate jar files, you'll need to add
-   the dependency in the [bxbot-app/build.gradle](bxbot-app/build.gradle) - see the commented out dependency examples inside it.
-1. From the project root, run `./gradlew buildTarGzipDist` or `./gradlew buildZipDist` to build the distribution 
-   artifact: either `bxbot-app-<version>.tar.gz` or `bxbot-app-<version>.zip` respectively. 
-   It will be placed in the `./build/distributions` folder.
-1. Copy the artifact onto the machine you want to run the bot and unzip it someplace.
-1. Usage: `./bxbot.sh [start|stop|status]`
- 
-## Coming Soon... (Definitely Maybe)
+## Coming Soon...
 The following features are in the pipeline:
 
 - REST API for administering the bot. It's being developed on the [bxbot-restapi](https://github.com/gazbert/bxbot/tree/bxbot-restapi) branch.
