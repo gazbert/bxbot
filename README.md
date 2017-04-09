@@ -507,7 +507,7 @@ module alongside the other inbuilt adapters. When you build the project, your Ex
 You can also create your own jar for your adapters, e.g. `my-adapters.jar`, and include it on BX-bot's runtime classpath -
 see the _[Installation Guide](#installation-guide)_ for how to do this.
  
-## Coming Soon...
+## Coming Soon
 The following features are in the pipeline:
 
 - REST API for administering the bot. It's being developed on the [bxbot-restapi](https://github.com/gazbert/bxbot/tree/bxbot-restapi) branch.
