@@ -14,7 +14,6 @@
         <version>0.5-beta.3-SNAPSHOT</version>
     </parent>
     <properties>
-        <springframework.version>4.3.1.RELEASE</springframework.version>
         <start-class>com.gazbert.bxbot.BXBot</start-class>
     </properties>
     <dependencies>
