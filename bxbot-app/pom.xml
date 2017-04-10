@@ -69,12 +69,12 @@
         </dependency>
 
         <!-- Add your (optional) Trading Strategies here -->
-        <dependency>
-            <groupId>com.gazbert.bxbot</groupId>
-            <artifactId>bxbot-strategies</artifactId>
-            <version>5.0-SNAPSHOT</version>
-            <scope>runtime</scope>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>com.gazbert.bxbot</groupId>-->
+            <!--<artifactId>bxbot-strategies</artifactId>-->
+            <!--<version>5.0-SNAPSHOT</version>-->
+            <!--<scope>runtime</scope>-->
+        <!--</dependency>-->
 
         <!-- Add your (optional) Exchange Adapters here -->
         <!--<dependency>-->
