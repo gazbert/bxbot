@@ -22,7 +22,7 @@ buildScan {
 }
 
 ext.versions = [
-        springBootVersion:'1.4.5.RELEASE',
+        springBootVersion:'1.5.2.RELEASE',
         springCoreVersion:'4.3.7.RELEASE'
 ]
 

@@ -85,25 +85,17 @@ public class OAuth2ServerConfiguration {
     protected static class AuthorizationServerConfiguration extends AuthorizationServerConfigurerAdapter {
 
         private final TokenStore tokenStore = new InMemoryTokenStore();
-
-        @Autowired
-        @Qualifier("authenticationManagerBean")
         private AuthenticationManager authenticationManager;
-
-        @Autowired
         private UserDetailsServiceImpl userDetailsService;
 
-        /*
-         * Don't seem to be able use constructor injection within @Configuration:
-         * http://stackoverflow.com/questions/35845106/is-constructor-injection-possible-in-spring-configuration-classes/35846123#35846123
-         */
-//        @Autowired
-//        public AuthorizationServerConfiguration(UserDetailsServiceImpl userDetailsService,
-//               @Qualifier("authenticationManagerBean") AuthenticationManager authenticationManager) {
-//
-//            this.userDetailsService = userDetailsService;
-//            this.authenticationManager = authenticationManager;
-//        }
+
+        @Autowired
+        public AuthorizationServerConfiguration(UserDetailsServiceImpl userDetailsService,
+               @Qualifier("authenticationManagerBean") AuthenticationManager authenticationManager) {
+
+            this.userDetailsService = userDetailsService;
+            this.authenticationManager = authenticationManager;
+        }
 
         @Override
         public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
