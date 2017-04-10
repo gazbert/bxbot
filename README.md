@@ -107,6 +107,12 @@ The instructions below are for Linux and macOS, but Windows scripts are included
 1. Copy the artifact onto the machine you want to run the bot and unzip it someplace.
 1. Usage: `./bxbot.sh [start|stop|status]`
 
+## Issue & Change Management
+Issues and new features are managed using the project [Issue Tracker](https://github.com/gazbert/bxbot/issues) -
+submit bugs here.
+ 
+You are welcome to take on new features or fix bugs! See [here](CONTRIBUTING.md) for how to get involved. 
+
 ## Testing
 The bot has undergone basic unit testing on a _best-effort_ basis; there is a continuous integration build 
 running on [Travis CI](https://travis-ci.org/gazbert/bxbot).
@@ -114,12 +120,6 @@ running on [Travis CI](https://travis-ci.org/gazbert/bxbot).
 The latest stable build can always be found on the [Releases](https://github.com/gazbert/bxbot/releases) page. 
 The SNAPSHOT builds on master are active development builds, but the tests should always pass and the bot should always 
 be deployable.
-
-## Issue & Change Management
-Issues and new features are managed using the project [Issue Tracker](https://github.com/gazbert/bxbot/issues) -
-submit bugs here.
- 
-You are welcome to take on new features or fix bugs! See [here](CONTRIBUTING.md) for how to get involved. 
 
 ## User Guide
 

@@ -11,7 +11,7 @@
     <parent>
         <groupId>com.gazbert.bxbot</groupId>
         <artifactId>bxbot-parent</artifactId>
-        <version>0.5-beta.3-SNAPSHOT</version>
+        <version>0.6.0</version>
     </parent>
     <properties>
         <start-class>com.gazbert.bxbot.BXBot</start-class>
@@ -69,12 +69,12 @@
         </dependency>
 
         <!-- Add your (optional) Trading Strategies here -->
-        <!--<dependency>-->
-            <!--<groupId>com.gazbert.bxbot</groupId>-->
-            <!--<artifactId>bxbot-strategies</artifactId>-->
-            <!--<version>3.0-SNAPSHOT</version>-->
-            <!--<scope>runtime</scope>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>com.gazbert.bxbot</groupId>
+            <artifactId>bxbot-strategies</artifactId>
+            <version>5.0-SNAPSHOT</version>
+            <scope>runtime</scope>
+        </dependency>
 
         <!-- Add your (optional) Exchange Adapters here -->
         <!--<dependency>-->
