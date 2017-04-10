@@ -50,29 +50,28 @@ import java.util.List;
  * </strong>
  * </p>
  * <p>
- * It was been written to trade altcoins on <a href="https://btc-e.com">BTC-e</a>, but can be
- * adapted to trade on any exchange. It adopts a long position in BTC. In other words, it initiates trades to buy
- * altcoins using BTC and then sells those altcoins at a profit to receive additional BTC. The algorithm expects you to
- * have deposited sufficient BTC into your exchange wallet.
+ * It was originally written to trade on <a href="https://btc-e.com">BTC-e</a>, but should work for any exchange.
+ * It adopts a long position in the base currency - BTC in this example. In other words, it initiates trades to buy
+ * BTC using the counter currency (USD in this example), and then sells BTC at a profit to receive additional USD.
+ * The algorithm expects you to have deposited sufficient USD into your exchange wallet.
  * </p>
  * <p>
- * This algorithm places an order at the current BID price, holds until the current ASK price (+ exchange fees) is
+ * It places an order at the current BID price, holds until the current ASK price (+ exchange fees) is
  * higher than the order fill price, and then places a sell order at the current ASK price. Assuming the sell
- * order fills, we take the profit from the spread. The process then repeats.
+ * order fills, it takes profit from the spread. The process then repeats.
  * </p>
  * <p>
- * This algorithm does consider being outbid when placing buy orders, i.e. it does not cancel its current order
+ * The algorithm does not factor in being outbid when placing buy orders, i.e. it does not cancel its current order
  * and place a new order at a higher price; it simply holds until the current BID price falls again. Likewise, the
- * algorithm does consider being undercut when placing sell orders; it does not cancel the current order and place a
+ * algorithm does not factor in being undercut when placing sell orders; it does not cancel the current order and place a
  * new order at a lower price.
  * </p>
  * <p>
  * Chances are you will either get a stuck 'buy' order if the market is going up, or a stuck 'sell' order if the market
- * goes down. You could manually execute the trades on the exchanges and restart the bot to get going again... but a
+ * goes down. You could manually execute the trades on the exchange and restart the bot to get going again... but a
  * much better solution would be to modify this algorithm to deal with it: cancel your current 'buy' order and place a
  * new order matching the current BID price, or cancel your current 'sell' order and place a new order matching the
- * current ASK price. The {@link TradingApi} allows you to add this behaviour, but I've kept things simple in this
- * sample strategy.
+ * current ASK price. The {@link TradingApi} allows you to add this behaviour.
  * </p>
  * <p>
  * Remember to include the correct exchange fees (both buy and sell) in your buy/sell calculations, otherwise you'll
@@ -83,14 +82,15 @@ import java.util.List;
  * </p>
  * <p>
  * You can pass configuration to your Strategy from the strategies.xml file - you access it from the
- * {@link #init(TradingApi, Market, StrategyConfig)} method via the StrategyConfigImpl argument.
+ * {@link #init(TradingApi, Market, StrategyConfig)} method via the StrategyConfigImpl argument. This algo will use
+ * config from the sample {project-root}/config/strategies.xml and {project-root}/config/markets.xml files.
  * </p>
  * <p>
  * The Trading Engine will only send 1 thread through your strategy code at a time - you do not have to code for concurrency.
  * </p>
  * <p>
  * This <a href="http://www.investopedia.com/articles/active-trading/101014/basics-algorithmic-trading-concepts-and-examples.asp">
- * site</a> might give you a few ideas...
+ * site</a> might give you a few ideas.
  * </p>
  * <p>
  * Good luck!
@@ -118,9 +118,10 @@ public class ExampleScalpingStrategy implements TradingStrategy {
     private OrderState lastOrder;
 
     /**
-     * BTC buy order amount. This was loaded from the strategy entry in the strategies.xml config file.
+     * The counter currency amount to use when placing the buy order.
+     * This was loaded from the strategy entry in the {project-root}/config/strategies.xml config file.
      */
-    private BigDecimal btcBuyOrderAmount;
+    private BigDecimal counterCurrencyBuyOrderAmount;
 
 
     /**
@@ -151,7 +152,7 @@ public class ExampleScalpingStrategy implements TradingStrategy {
      * </p>
      * <p>
      * It is called by the Trading Engine during each trade cycle, e.g. every 60s. The trade cycle is configured in
-     * the .config/engine.xml file.
+     * the {project-root}/config/engine.xml file.
      * </p>
      *
      * @throws StrategyException if something unexpected occurs. This tells the Trading Engine to shutdown the bot
@@ -245,20 +246,21 @@ public class ExampleScalpingStrategy implements TradingStrategy {
 
         try {
 
-            // Calculate the amount of altcoin to buy for given amount of BTC.
-            final BigDecimal amountOfAltcoinToBuyForGivenBtc = getAmountOfAltcoinToBuyForGivenBtcAmount(btcBuyOrderAmount);
+            // Calculate the amount of base currency (BTC) to buy for given amount of counter currency (USD).
+            final BigDecimal amountOfBaseCurrencyToBuy =
+                    getAmountOfBaseCurrencyToBuyForGivenCounterCurrencyAmount(counterCurrencyBuyOrderAmount);
 
             // Send the order to the exchange
             LOG.info(() -> market.getName() + " Sending initial BUY order to exchange --->");
 
-            lastOrder.id = tradingApi.createOrder(market.getId(), OrderType.BUY, amountOfAltcoinToBuyForGivenBtc, currentBidPrice);
+            lastOrder.id = tradingApi.createOrder(market.getId(), OrderType.BUY, amountOfBaseCurrencyToBuy, currentBidPrice);
 
             LOG.info(() -> market.getName() + " Initial BUY Order sent successfully. ID: " + lastOrder.id);
 
             // update last order details
             lastOrder.price = currentBidPrice;
             lastOrder.type = OrderType.BUY;
-            lastOrder.amount = amountOfAltcoinToBuyForGivenBtc;
+            lastOrder.amount = amountOfBaseCurrencyToBuy;
 
         } catch (ExchangeNetworkException e) {
 
@@ -310,16 +312,17 @@ public class ExampleScalpingStrategy implements TradingStrategy {
                         " ^^^ Yay!!! Last BUY Order Id [" + lastOrder.id + "] filled at [" + lastOrder.price + "]");
 
                 /*
-                 * The last buy order was filled, so lets see if we can send a new sell order...
+                 * The last buy order was filled, so lets see if we can send a new sell order.
                  *
                  * IMPORTANT - new sell order ASK price must be > (last order price + exchange fees) because:
                  *
-                 * 1. if we put sell amount in as same amount as previous buy, the exchange barfs because we don't have
+                 * 1. If we put sell amount in as same amount as previous buy, the exchange barfs because we don't have
                  *    enough units to cover the transaction fee.
-                 * 2. we could end up selling at a loss.
+                 * 2. We could end up selling at a loss.
                  *
                  * For this example strategy, we're just going to add 1% on top of original bid price (last order)
-                 * and combine the exchange buy and sell fees. Your algo will have other ideas on how much profit to make ;-)
+                 * and combine the exchange buy and sell fees. Your algo will have other ideas on how much profit to make
+                 * and when to apply the exchange fees... ;-)
                  */
                 final BigDecimal percentProfitToMake = new BigDecimal("0.01");
                 LOG.info(() -> market.getName() +
@@ -358,10 +361,10 @@ public class ExampleScalpingStrategy implements TradingStrategy {
 
                 /*
                  * BUY order has not filled yet.
-                 * Could be nobody has jumped on it yet... the order is only part filled... or market has gone up and
-                 * we've been outbid and have a stuck buy order, in which case we have, to wait for the market to fall...
-                 * unless you tweak this code to cancel the current order and raise your bid - remember to deal with any
-                 * part-filled orders!
+                 * Could be nobody has jumped on it yet... or the order is only part filled... or market has gone up and
+                 * we've been outbid and have a stuck buy order. In which case, we have to wait for the market to
+                 * fall/order to fill... or you could tweak this code to cancel the current order and raise your bid -
+                 * remember to deal with any part-filled orders!
                  */
                 LOG.info(() -> market.getName() + " !!! Still have BUY Order " + lastOrder.id
                         + " waiting to fill at [" + lastOrder.price + "] - holding last BUY order...");
@@ -419,29 +422,31 @@ public class ExampleScalpingStrategy implements TradingStrategy {
                 LOG.info(() -> market.getName() +
                         " ^^^ Yay!!! Last SELL Order Id [" + lastOrder.id + "] filled at [" + lastOrder.price + "]");
 
-                // Get amount of altcoin we can buy for given BTC amount.
-                final BigDecimal amountOfAltcoinToBuyForGivenBtc = getAmountOfAltcoinToBuyForGivenBtcAmount(btcBuyOrderAmount);
+                // Get amount of base currency (BTC) we can buy for given counter currency (USD) amount.
+                final BigDecimal amountOfBaseCurrencyToBuy =
+                        getAmountOfBaseCurrencyToBuyForGivenCounterCurrencyAmount(counterCurrencyBuyOrderAmount);
+
                 LOG.info(() -> market.getName() + " Placing new BUY order at bid price [" +
                         new DecimalFormat("#.########").format(currentBidPrice) + "]");
 
                 LOG.info(() -> market.getName() + " Sending new BUY order to exchange --->");
 
                 // Send the buy order to the exchange.
-                lastOrder.id = tradingApi.createOrder(market.getId(), OrderType.BUY, amountOfAltcoinToBuyForGivenBtc, currentBidPrice);
+                lastOrder.id = tradingApi.createOrder(market.getId(), OrderType.BUY, amountOfBaseCurrencyToBuy, currentBidPrice);
                 LOG.info(() -> market.getName() + " New BUY Order sent successfully. ID: " + lastOrder.id);
 
                 // update last order details
                 lastOrder.price = currentBidPrice;
                 lastOrder.type = OrderType.BUY;
-                lastOrder.amount = amountOfAltcoinToBuyForGivenBtc;
+                lastOrder.amount = amountOfBaseCurrencyToBuy;
             } else {
 
                 /*
                  * SELL order not filled yet.
-                 * Could be nobody has jumped on it yet... it is only part filled... or market has gone down and we've
-                 * been undercut and have a stuck sell order, in which case we have to wait for market to recover...
-                 * unless you tweak this code to cancel the current order and lower your ask - remember to deal with any
-                 * part-filled orders!
+                 * Could be nobody has jumped on it yet... or the order is only part filled... or market has gone down
+                 * and we've been undercut and have a stuck sell order. In which case, we have to wait for market to
+                 * recover/order to fill... or you could tweak this code to cancel the current order and lower your ask
+                 * - remember to deal with any part-filled orders!
                  */
                 if (currentAskPrice.compareTo(lastOrder.price) < 0) {
                     LOG.info(() -> market.getName() + " <<< Current ask price [" + currentAskPrice
@@ -478,56 +483,57 @@ public class ExampleScalpingStrategy implements TradingStrategy {
     }
 
     /**
-     * Returns amount of altcoin to buy for a given amount of BTC based on last market trade price.
+     * Returns amount of base currency (BTC) to buy for a given amount of counter currency (USD) based on last
+     * market trade price.
      *
-     * @param amountOfBtcToTrade the amount of BTC we have to trade (buy) with.
-     * @return the amount of altcoin we can buy for the given BTC amount.
+     * @param amountOfCounterCurrencyToTrade the amount of counter currency (USD) we have to trade (buy) with.
+     * @return the amount of base currency (BTC) we can buy for the given counter currency (USD) amount.
      * @throws TradingApiException      if an unexpected error occurred contacting the exchange.
      * @throws ExchangeNetworkException if a request to the exchange has timed out.
      */
-    private BigDecimal getAmountOfAltcoinToBuyForGivenBtcAmount(BigDecimal amountOfBtcToTrade) throws
+    private BigDecimal getAmountOfBaseCurrencyToBuyForGivenCounterCurrencyAmount(BigDecimal amountOfCounterCurrencyToTrade) throws
             TradingApiException, ExchangeNetworkException {
 
-        LOG.info(() -> market.getName() + " Calculating amount of altcoin to buy for " +
-                new DecimalFormat("#.########").format(amountOfBtcToTrade) + " BTC");
+        LOG.info(() -> market.getName() + " Calculating amount of base currency (BTC) to buy for amount of counter currency " +
+                new DecimalFormat("#.########").format(amountOfCounterCurrencyToTrade) + " " + market.getCounterCurrency());
 
         // Fetch the last trade price
-        final BigDecimal lastTradePriceInBtcForOneAltcoin = tradingApi.getLatestMarketPrice(market.getId());
-        LOG.info(() -> market.getName() + " Last trade price for 1 altcoin was: " +
-                new DecimalFormat("#.########").format(lastTradePriceInBtcForOneAltcoin) + " BTC");
+        final BigDecimal lastTradePriceInUsdForOneBtc = tradingApi.getLatestMarketPrice(market.getId());
+        LOG.info(() -> market.getName() + " Last trade price for 1 " + market.getBaseCurrency() + " was: " +
+                new DecimalFormat("#.########").format(lastTradePriceInUsdForOneBtc) + " " + market.getCounterCurrency());
 
         /*
          * Most exchanges (if not all) use 8 decimal places and typically round in favour of the exchange.
          * It's usually safest to round down the order quantity in your calculations.
          */
-        final BigDecimal amountOfAltcoinToBuyForGivenBtc = amountOfBtcToTrade.divide(
-                lastTradePriceInBtcForOneAltcoin, 8, RoundingMode.HALF_DOWN);
+        final BigDecimal amountOfBaseCurrencyToBuy = amountOfCounterCurrencyToTrade.divide(
+                lastTradePriceInUsdForOneBtc, 8, RoundingMode.HALF_DOWN);
 
-        LOG.info(() -> market.getName() + " Amount of altcoin to BUY for [" +
-                new DecimalFormat("#.########").format(amountOfBtcToTrade) +
-                " BTC] based on last market trade price: " + amountOfAltcoinToBuyForGivenBtc);
+        LOG.info(() -> market.getName() + " Amount of base currency (" + market.getBaseCurrency() + ") to BUY for "
+                + new DecimalFormat("#.########").format(amountOfCounterCurrencyToTrade) +
+                " " + market.getCounterCurrency() + " based on last market trade price: " + amountOfBaseCurrencyToBuy);
 
-        return amountOfAltcoinToBuyForGivenBtc;
+        return amountOfBaseCurrencyToBuy;
     }
 
     /**
-     * Loads the config for the strategy. We expect the 'btc-buy-order-amount' config item to be present in the
-     * strategies.xml config file.
+     * Loads the config for the strategy. We expect the 'counter-currency-buy-order-amount' config item to be present
+     * in the {project-root}/config/strategies.xml config file.
      *
      * @param config the config for the Trading Strategy.
      */
     private void getConfigForStrategy(StrategyConfig config) {
 
-        final String btcBuyOrderAmountFromConfigAsString = config.getConfigItem("btc-buy-order-amount");
-        if (btcBuyOrderAmountFromConfigAsString == null) {
+        final String counterCurrencyBuyOrderAmountFromConfigAsString = config.getConfigItem("counter-currency-buy-order-amount");
+        if (counterCurrencyBuyOrderAmountFromConfigAsString == null) {
             // game over - kill it off now.
-            throw new IllegalArgumentException("Mandatory btc-buy-order-amount value missing in strategy.xml config.");
+            throw new IllegalArgumentException("Mandatory counter-currency-buy-order-amount value missing in strategy.xml config.");
         }
-        LOG.info(() -> "<btc-buy-order-amount> from config is: " + btcBuyOrderAmountFromConfigAsString);
+        LOG.info(() -> "<counter-currency-buy-order-amount> from config is: " + counterCurrencyBuyOrderAmountFromConfigAsString);
 
         // will fail fast if value is not a number!
-        btcBuyOrderAmount = new BigDecimal(btcBuyOrderAmountFromConfigAsString);
-        LOG.info(() -> "btcBuyOrderAmount: " + btcBuyOrderAmount);
+        counterCurrencyBuyOrderAmount = new BigDecimal(counterCurrencyBuyOrderAmountFromConfigAsString);
+        LOG.info(() -> "counterCurrencyBuyOrderAmount: " + counterCurrencyBuyOrderAmount);
     }
 
     /**

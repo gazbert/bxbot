@@ -56,7 +56,9 @@ import static org.easymock.EasyMock.expect;
 public class TestExampleScalpingStrategy {
 
     // canned data
-    private static String MARKET_ID = "3";
+    private static String MARKET_ID = "btc_ltc";
+    private static String BASE_CURRENCY = "BTC";
+    private static String COUNTER_CURRENCY = "LTC";
     private static final BigDecimal EXCHANGE_BUY_FEE_PERCENTAGE = new BigDecimal("0.01");
     private static final BigDecimal EXCHANGE_SELL_FEE_PERCENTAGE = new BigDecimal("0.02");
 
@@ -76,7 +78,7 @@ public class TestExampleScalpingStrategy {
     @Before
     public void setUpBeforeEachTest() throws Exception {
 
-        final String CONFIG_ITEM_BTC_BUY_ORDER_AMOUNT = "0.5";
+        final String CONFIG_ITEM_COUNTER_CURRENCY_BUY_ORDER_AMOUNT = "0.5"; // LTC amount
         final String MARKET_NAME = "BTC_LTC";
 
         tradingApi = PowerMock.createMock(TradingApi.class);
@@ -93,7 +95,7 @@ public class TestExampleScalpingStrategy {
         marketSellOrders.add(marketSellOrder);
 
         // expect config to be loaded
-        expect(config.getConfigItem("btc-buy-order-amount")).andReturn(CONFIG_ITEM_BTC_BUY_ORDER_AMOUNT);
+        expect(config.getConfigItem("counter-currency-buy-order-amount")).andReturn(CONFIG_ITEM_COUNTER_CURRENCY_BUY_ORDER_AMOUNT);
 
         // expect Market name to be logged zero or more times. Loose mock behaviour here; name is cosmetic.
         expect(market.getName()).andReturn(MARKET_NAME).anyTimes();
@@ -121,7 +123,7 @@ public class TestExampleScalpingStrategy {
         final BigDecimal askSpotPrice = new BigDecimal("0.016");
         expect(marketSellOrders.get(0).getPrice()).andReturn(askSpotPrice);
 
-        // expect to get amount of altcoin to buy for given BTC amount
+        // expect to get amount of base currency to buy for given counter currency amount
         expect(market.getId()).andReturn(MARKET_ID);
         final BigDecimal lastTradePrice = new BigDecimal("0.015");
         expect(tradingApi.getLatestMarketPrice(MARKET_ID)).andReturn(lastTradePrice);
@@ -130,6 +132,8 @@ public class TestExampleScalpingStrategy {
         final String orderId = "4239407233";
         final BigDecimal amountOfUnitsToBuy = new BigDecimal("33.33333333");
         expect(market.getId()).andReturn(MARKET_ID);
+        expect(market.getCounterCurrency()).andReturn(COUNTER_CURRENCY).atLeastOnce();
+        expect(market.getBaseCurrency()).andReturn(BASE_CURRENCY).atLeastOnce();
         expect(tradingApi.createOrder(MARKET_ID, OrderType.BUY, amountOfUnitsToBuy, bidSpotPrice)).andReturn(orderId);
 
         PowerMock.replayAll();
@@ -277,7 +281,7 @@ public class TestExampleScalpingStrategy {
         expect(market.getId()).andReturn(MARKET_ID);
         expect(tradingApi.getYourOpenOrders(MARKET_ID)).andReturn(new ArrayList<>()); // empty list; order has filled
 
-        // expect to get amount of altcoin to buy for given BTC amount
+        // expect to get amount of base currency to buy for given counter currency amount
         expect(market.getId()).andReturn(MARKET_ID);
         final BigDecimal lastTradePrice = new BigDecimal("0.015");
         expect(tradingApi.getLatestMarketPrice(MARKET_ID)).andReturn(lastTradePrice);
@@ -286,6 +290,8 @@ public class TestExampleScalpingStrategy {
         final String orderId = "4239407233";
         final BigDecimal amountOfUnitsToBuy = new BigDecimal("33.33333333");
         expect(market.getId()).andReturn(MARKET_ID);
+        expect(market.getCounterCurrency()).andReturn(COUNTER_CURRENCY).atLeastOnce();
+        expect(market.getBaseCurrency()).andReturn(BASE_CURRENCY).atLeastOnce();
         expect(tradingApi.createOrder(MARKET_ID, OrderType.BUY, amountOfUnitsToBuy, bidSpotPrice)).andReturn(orderId);
 
         PowerMock.replayAll();
@@ -373,7 +379,7 @@ public class TestExampleScalpingStrategy {
         final BigDecimal askSpotPrice = new BigDecimal("0.016");
         expect(marketSellOrders.get(0).getPrice()).andReturn(askSpotPrice);
 
-        // expect to get amount of altcoin to buy for given BTC amount
+        // expect to get amount of base currency to buy for given counter currency amount
         expect(market.getId()).andReturn(MARKET_ID);
         final BigDecimal lastTradePrice = new BigDecimal("0.015");
         expect(tradingApi.getLatestMarketPrice(MARKET_ID)).andReturn(lastTradePrice);
@@ -381,6 +387,8 @@ public class TestExampleScalpingStrategy {
         // expect to send initial buy order to exchange and receive timeout exception
         final BigDecimal amountOfUnitsToBuy = new BigDecimal("33.33333333");
         expect(market.getId()).andReturn(MARKET_ID);
+        expect(market.getCounterCurrency()).andReturn(COUNTER_CURRENCY).atLeastOnce();
+        expect(market.getBaseCurrency()).andReturn(BASE_CURRENCY).atLeastOnce();
         expect(tradingApi.createOrder(MARKET_ID, OrderType.BUY, amountOfUnitsToBuy, bidSpotPrice)).andThrow(
                 new ExchangeNetworkException("Timeout waiting for exchange!"));
 
@@ -424,7 +432,7 @@ public class TestExampleScalpingStrategy {
         expect(market.getId()).andReturn(MARKET_ID);
         expect(tradingApi.getYourOpenOrders(MARKET_ID)).andReturn(new ArrayList<>()); // empty list; order has filled
 
-        // expect to get amount of altcoin to buy for given BTC amount
+        // expect to get amount of base currency to buy for given counter currency amount
         expect(market.getId()).andReturn(MARKET_ID);
         final BigDecimal lastTradePrice = new BigDecimal("0.015");
         expect(tradingApi.getLatestMarketPrice(MARKET_ID)).andReturn(lastTradePrice);
@@ -432,6 +440,8 @@ public class TestExampleScalpingStrategy {
         // expect to send new buy order to exchange and receive timeout exception
         final BigDecimal amountOfUnitsToBuy = new BigDecimal("33.33333333");
         expect(market.getId()).andReturn(MARKET_ID);
+        expect(market.getCounterCurrency()).andReturn(COUNTER_CURRENCY).atLeastOnce();
+        expect(market.getBaseCurrency()).andReturn(BASE_CURRENCY).atLeastOnce();
         expect(tradingApi.createOrder(MARKET_ID, OrderType.BUY, amountOfUnitsToBuy, bidSpotPrice)).andThrow(
                 new ExchangeNetworkException("Timeout waiting for exchange!"));
 
@@ -527,7 +537,7 @@ public class TestExampleScalpingStrategy {
         final BigDecimal askSpotPrice = new BigDecimal("0.016");
         expect(marketSellOrders.get(0).getPrice()).andReturn(askSpotPrice);
 
-        // expect to get amount of altcoin to buy for given BTC amount
+        // expect to get amount of base currency to buy for given counter currency amount
         expect(market.getId()).andReturn(MARKET_ID);
         final BigDecimal lastTradePrice = new BigDecimal("0.015");
         expect(tradingApi.getLatestMarketPrice(MARKET_ID)).andReturn(lastTradePrice);
@@ -535,6 +545,8 @@ public class TestExampleScalpingStrategy {
         // expect to send initial buy order to exchange and receive timeout exception
         final BigDecimal amountOfUnitsToBuy = new BigDecimal("33.33333333");
         expect(market.getId()).andReturn(MARKET_ID).atLeastOnce();
+        expect(market.getCounterCurrency()).andReturn(COUNTER_CURRENCY).atLeastOnce();
+        expect(market.getBaseCurrency()).andReturn(BASE_CURRENCY).atLeastOnce();
         expect(tradingApi.createOrder(MARKET_ID, OrderType.BUY, amountOfUnitsToBuy, bidSpotPrice)).andThrow(
                 new TradingApiException("Exchange returned a 500 status code!"));
 
@@ -578,7 +590,7 @@ public class TestExampleScalpingStrategy {
         expect(market.getId()).andReturn(MARKET_ID);
         expect(tradingApi.getYourOpenOrders(MARKET_ID)).andReturn(new ArrayList<>()); // empty list; order has filled
 
-        // expect to get amount of altcoin to buy for given BTC amount
+        // expect to get amount of base currency to buy for given counter currency amount
         expect(market.getId()).andReturn(MARKET_ID);
         final BigDecimal lastTradePrice = new BigDecimal("0.015");
         expect(tradingApi.getLatestMarketPrice(MARKET_ID)).andReturn(lastTradePrice);
@@ -586,6 +598,8 @@ public class TestExampleScalpingStrategy {
         // expect to send new buy order to exchange and receive timeout exception
         final BigDecimal amountOfUnitsToBuy = new BigDecimal("33.33333333");
         expect(market.getId()).andReturn(MARKET_ID);
+        expect(market.getCounterCurrency()).andReturn(COUNTER_CURRENCY).atLeastOnce();
+        expect(market.getBaseCurrency()).andReturn(BASE_CURRENCY).atLeastOnce();
         expect(tradingApi.createOrder(MARKET_ID, OrderType.BUY, amountOfUnitsToBuy, bidSpotPrice)).andThrow(
                 new TradingApiException("Exchange returned a 500 status code!"));
 
