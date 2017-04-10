@@ -78,7 +78,8 @@ The instructions below are for Linux and macOS, but Windows scripts are included
 The [Releases](https://github.com/gazbert/bxbot/releases) page has the stable releases, or you can grab the latest code 
 from the head of the master branch.
 
-The bot runs on Linux and macOS, but there is a Windows [bxbot.bat](./bxbot.bat) script under development.
+The bot runs on Linux, macOS, and Windows. The Windows [bxbot.bat](./bxbot.bat) script for starting/stopping the bot is
+basic and still under development.
 
 * [Oracle JDK 1.8](http://www.oracle.com/technetwork/java/javase/downloads/index-jsp-138363.html) needs to be installed
    on the machine you want to run the bot.     
