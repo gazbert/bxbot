@@ -79,7 +79,13 @@ basic and still under development.
 
 * [Oracle JDK 1.8](http://www.oracle.com/technetwork/java/javase/downloads/index-jsp-138363.html) needs to be installed
    on the machine you want to run the bot.     
-* Edit the `config` XML files as required - see the _[Configuration](#configuration)_ section.
+* Configure the bot as required - see the main _[Configuration](#configuration-2)_ section.
+  The bot's default configuration uses the 
+  [`ExampleScalpingStrategy`](./bxbot-strategies/src/main/java/com/gazbert/bxbot/strategies/ExampleScalpingStrategy.java), 
+  but you'll probably want to [write your own](#how-do-i-write-my-own-trading-strategy). The   
+  [TestExchangeAdapter](./bxbot-exchanges/src/main/com/gazbert/bxbot/exchanges/TestExchangeAdapter.java) is configured 
+  by default - it makes public API calls to [BTC-e](https://btc-e.com), but stubs out the private API (order sending) 
+  calls; it's good for testing your initial setup.
 
 You can use [Maven](https://maven.apache.org) or [Gradle](https://gradle.org/) to build the bot and distribution artifact.
 The instructions below are for Linux and macOS, but Windows scripts are included. 
@@ -121,7 +127,7 @@ be deployable.
 _"Battle not with monsters, lest ye become a monster, and if you gaze into the abyss, the abyss gazes also into you."_ - Friedrich Nietzsche
 
 The best place to start is with the sample Trading Strategy provided - see the latest 
-[`BasicScalpingExampleStrategy`](./bxbot-strategies/src/main/java/com/gazbert/bxbot/strategies/ExampleScalpingStrategy.java).
+[`ExampleScalpingStrategy`](./bxbot-strategies/src/main/java/com/gazbert/bxbot/strategies/ExampleScalpingStrategy.java).
 More ideas can be found
 [here](http://www.investopedia.com/articles/active-trading/101014/basics-algorithmic-trading-concepts-and-examples.asp).
 
@@ -163,7 +169,7 @@ On startup, the Trading Engine will pass the config to your Trading Strategy's `
 Your Trading Strategy implementation has a compile-time dependency on the [Strategy API](./bxbot-strategy-api)
 and the [Trading API](./bxbot-trading-api).
 
-The inbuilt [`BasicScalpingExampleStrategy`](./bxbot-strategies/src/main/java/com/gazbert/bxbot/strategies/ExampleScalpingStrategy.java)
+The inbuilt [`ExampleScalpingStrategy`](./bxbot-strategies/src/main/java/com/gazbert/bxbot/strategies/ExampleScalpingStrategy.java)
 also has a compile-time dependency on log4j and Google Guava.
 
 ##### Packaging & Deployment #####
