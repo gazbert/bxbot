@@ -83,8 +83,8 @@ basic and still under development.
   The bot's default configuration uses the 
   [`ExampleScalpingStrategy`](./bxbot-strategies/src/main/java/com/gazbert/bxbot/strategies/ExampleScalpingStrategy.java), 
   but you'll probably want to [write your own](#how-do-i-write-my-own-trading-strategy). The   
-  [TestExchangeAdapter](./bxbot-exchanges/src/main/com/gazbert/bxbot/exchanges/TestExchangeAdapter.java) is configured 
-  by default - it makes public API calls to [BTC-e](https://btc-e.com), but stubs out the private API (order sending) 
+  [TestExchangeAdapter](./bxbot-exchanges/src/main/java/com/gazbert/bxbot/exchanges/TestExchangeAdapter.java) is configured 
+  by default - it makes public API calls to [BTC-e](https://btc-e.com), but stubs out the private API (order management) 
   calls; it's good for testing your initial setup.
 
 You can use [Maven](https://maven.apache.org) or [Gradle](https://gradle.org/) to build the bot and distribution artifact.
@@ -360,7 +360,7 @@ All elements are mandatory unless stated otherwise.
 
 The `<label>` value is for descriptive use only. It is used in the log statements.
 
-The `<id>` value is the market id as defined on the exchange. E.g the BTC-e BTC/USD market id is btc_usd - see https://btc-e.com/api/3/docs
+The `<id>` value is the market id as defined on the exchange. E.g the BTC/USD market id is btc_usd on [BTC-e](https://btc-e.com/api/3/docs).
 
 The `<base-currency>` value is the currency short code for the base currency in the currency pair. When you buy or sell a
 currency pair, you are performing that action on the base currency. The base currency is the commodity you are buying or
