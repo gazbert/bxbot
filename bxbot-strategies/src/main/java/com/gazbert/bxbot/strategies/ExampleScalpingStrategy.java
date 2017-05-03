@@ -51,20 +51,28 @@ import java.util.List;
  * </p>
  * <p>
  * It was originally written to trade on <a href="https://btc-e.com">BTC-e</a>, but should work for any exchange.
- * It adopts a long position in the base currency - BTC in this example. In other words, it initiates trades to buy
- * BTC using the counter currency (USD in this example), and then sells BTC at a profit to receive additional USD.
- * The algorithm expects you to have deposited sufficient USD into your exchange wallet.
+ * It initiates trades to buy the base currency (BTC in this example) using the counter currency (USD in this example),
+ * and then sells BTC at a higher price to take profit from the spread. The algorithm expects you to have deposited
+ * sufficient USD into your exchange wallet in order to buy BTC.
  * </p>
  * <p>
- * It places an order at the current BID price, holds until the current ASK price (+ exchange fees) is
- * higher than the order fill price, and then places a sell order at the current ASK price. Assuming the sell
- * order fills, it takes profit from the spread. The process then repeats.
+ * Wen it starts up, it places an order at the current BID price and uses x amount of counter currency (USD) to 'buy'
+ * the base currency (BTC). The value of x comes from the sample {project-root}/config/strategies.xml
+ * 'counter-currency-buy-order-amount' config-item, currently set to 20 USD. Make sure that the value you use for x is
+ * large enough to be able to meet the minimum BTC order size on the exchange, e.g. Bitfinex min order size is 0.01 BTC
+ * as of 3 May 2017. The algorithm then waits for the buy order to fill...
+ * </p>
+ * <p>
+ * Once the buy order fills, the it then waits until the ASK price is at least y % higher than the previous buy fill price.
+ * The value of y comes from the sample {project-root}/config/strategies.xml 'minimum-percentage-gain' config-item,
+ * currently set to 1%. Once the % gain has been achieved, the algorithm will place a sell order at the current ASK price.
+ * It then waits for the sell order to fill... and the cycle repeats.
  * </p>
  * <p>
  * The algorithm does not factor in being outbid when placing buy orders, i.e. it does not cancel its current order
  * and place a new order at a higher price; it simply holds until the current BID price falls again. Likewise, the
- * algorithm does not factor in being undercut when placing sell orders; it does not cancel the current order and place a
- * new order at a lower price.
+ * algorithm does not factor in being undercut when placing sell orders; it does not cancel the current order and place
+ * a new order at a lower price.
  * </p>
  * <p>
  * Chances are you will either get a stuck 'buy' order if the market is going up, or a stuck 'sell' order if the market
@@ -74,16 +82,23 @@ import java.util.List;
  * current ASK price. The {@link TradingApi} allows you to add this behaviour.
  * </p>
  * <p>
- * Remember to include the correct exchange fees (both buy and sell) in your buy/sell calculations, otherwise you'll
- * end up bleeding fiat/crypto to the exchange...
+ * Remember to include the correct exchange fees (both buy and sell) in your buy/sell calculations when you write
+ * your own algorithms, otherwise you'll end up bleeding fiat/crypto to the exchange... This simple algorithm relies on
+ * {project-root}/config/strategies.xml 'minimum-percentage-gain' config-item value being high enough to make a profit
+ * and cover the exchange fees. You could tweak the algo to call the
+ * {@link com.gazbert.bxbot.trading.api.TradingApi#getPercentageOfBuyOrderTakenForExchangeFee(String)} and
+ * {@link com.gazbert.bxbot.trading.api.TradingApi#getPercentageOfSellOrderTakenForExchangeFee(String)} when calculating
+ * the order to send to the exchange... See the sample {project-root}/config/samples/{exchange}/exchange.xml for an
+ * idea of the different exchange fees.
  * </p>
  * <p>
  * This algorithm only manages 1 order at a time to keep things simple.
  * </p>
  * <p>
- * You can pass configuration to your Strategy from the strategies.xml file - you access it from the
- * {@link #init(TradingApi, Market, StrategyConfig)} method via the StrategyConfigImpl argument. This algo will use
- * config from the sample {project-root}/config/strategies.xml and {project-root}/config/markets.xml files.
+ * The algorithm relies on config from the sample {project-root}/config/strategies.xml and
+ * {project-root}/config/markets.xml files. You can pass additional config-items to your Strategy using the
+ * {project-root}/config/strategies.xml file - you access it from the {@link #init(TradingApi, Market, StrategyConfig)}
+ * method via the StrategyConfigImpl argument.
  * </p>
  * <p>
  * The Trading Engine will only send 1 thread through your strategy code at a time - you do not have to code for concurrency.
@@ -122,6 +137,12 @@ public class ExampleScalpingStrategy implements TradingStrategy {
      * This was loaded from the strategy entry in the {project-root}/config/strategies.xml config file.
      */
     private BigDecimal counterCurrencyBuyOrderAmount;
+
+    /**
+     * The minimum % gain was to achieve before placing a SELL oder.
+     * This was loaded from the strategy entry in the {project-root}/config/strategies.xml config file.
+     */
+    private BigDecimal minimumPercentageGain;
 
 
     /**
@@ -320,25 +341,20 @@ public class ExampleScalpingStrategy implements TradingStrategy {
                  *    enough units to cover the transaction fee.
                  * 2. We could end up selling at a loss.
                  *
-                 * For this example strategy, we're just going to add 1% on top of original bid price (last order)
-                 * and combine the exchange buy and sell fees. Your algo will have other ideas on how much profit to make
-                 * and when to apply the exchange fees... ;-)
+                 * For this example strategy, we're just going to add 2% (taken from the 'minimum-percentage-gain'
+                 * config item in the {project-root}/config/strategies.xml config file) on top of previous bid price
+                 * to make a little profit and cover the exchange fees.
+                 *
+                 * Your algo will have other ideas on how much profit to make and when to apply the exchange fees - you
+                 * could try calling the TradingApi#getPercentageOfBuyOrderTakenForExchangeFee() and
+                 * TradingApi#getPercentageOfSellOrderTakenForExchangeFee() when calculating the order to send to the
+                 * exchange...
                  */
-                final BigDecimal percentProfitToMake = new BigDecimal("0.01");
-                LOG.info(() -> market.getName() +
-                        " Percentage profit to make on sell order is: " + percentProfitToMake);
+                LOG.info(() -> market.getName() + " Percentage profit (in decimal) to make for the sell order is: "
+                        + minimumPercentageGain);
 
-                final BigDecimal buyOrderPercentageFee = tradingApi.getPercentageOfBuyOrderTakenForExchangeFee(market.getId());
-                LOG.info(() -> market.getName() + " Exchange fee in percent for buy order is: " + buyOrderPercentageFee);
-
-                final BigDecimal sellOrderPercentageFee = tradingApi.getPercentageOfSellOrderTakenForExchangeFee(market.getId());
-                LOG.info(() -> market.getName() + " Exchange fee in percent for sell order is: " + sellOrderPercentageFee);
-
-                final BigDecimal totalPercentageIncrease = percentProfitToMake.add(buyOrderPercentageFee).add(sellOrderPercentageFee);
-                LOG.info(() -> market.getName() + " Total percentage increase for new sell order is: " + totalPercentageIncrease);
-
-                final BigDecimal amountToAdd = lastOrder.price.multiply(totalPercentageIncrease);
-                LOG.info(() -> market.getName() + " Amount to add last order price: " + amountToAdd);
+                final BigDecimal amountToAdd = lastOrder.price.multiply(minimumPercentageGain);
+                LOG.info(() -> market.getName() + " Amount to add buy last order fill price: " + amountToAdd);
 
                 /*
                  * Most exchanges (if not all) use 8 decimal places.
@@ -517,13 +533,16 @@ public class ExampleScalpingStrategy implements TradingStrategy {
     }
 
     /**
-     * Loads the config for the strategy. We expect the 'counter-currency-buy-order-amount' config item to be present
-     * in the {project-root}/config/strategies.xml config file.
+     * Loads the config for the strategy. We expect the 'counter-currency-buy-order-amount' and 'minimum-percentage-gain'
+     * config items to be present in the {project-root}/config/strategies.xml config file.
      *
      * @param config the config for the Trading Strategy.
      */
     private void getConfigForStrategy(StrategyConfig config) {
 
+        // --------------------------------------------------------------------
+        // counter currency buy amount
+        // --------------------------------------------------------------------
         final String counterCurrencyBuyOrderAmountFromConfigAsString = config.getConfigItem("counter-currency-buy-order-amount");
         if (counterCurrencyBuyOrderAmountFromConfigAsString == null) {
             // game over - kill it off now.
@@ -534,6 +553,21 @@ public class ExampleScalpingStrategy implements TradingStrategy {
         // will fail fast if value is not a number!
         counterCurrencyBuyOrderAmount = new BigDecimal(counterCurrencyBuyOrderAmountFromConfigAsString);
         LOG.info(() -> "counterCurrencyBuyOrderAmount: " + counterCurrencyBuyOrderAmount);
+
+        // --------------------------------------------------------------------
+        // min % gain
+        // --------------------------------------------------------------------
+        final String minimumPercentageGainFromConfigAsString = config.getConfigItem("minimum-percentage-gain");
+        if (minimumPercentageGainFromConfigAsString == null) {
+            // game over - kill it off now.
+            throw new IllegalArgumentException("Mandatory minimum-percentage-gain value missing in strategy.xml config.");
+        }
+        LOG.info(() -> "<minimum-percentage-gain> from config is: " + minimumPercentageGainFromConfigAsString);
+
+        // will fail fast if value is not a number!
+        final BigDecimal minimumPercentageGainFromConfig = new BigDecimal(minimumPercentageGainFromConfigAsString);
+        minimumPercentageGain = minimumPercentageGainFromConfig.divide(new BigDecimal(100), 8, RoundingMode.HALF_UP);
+        LOG.info(() -> "minimumPercentageGain in decimal is: " + minimumPercentageGain);
     }
 
     /**

@@ -56,9 +56,9 @@ import static org.easymock.EasyMock.expect;
 public class TestExampleScalpingStrategy {
 
     // canned data
-    private static String MARKET_ID = "btc_ltc";
+    private static String MARKET_ID = "btc_usd";
     private static String BASE_CURRENCY = "BTC";
-    private static String COUNTER_CURRENCY = "LTC";
+    private static String COUNTER_CURRENCY = "USD";
     private static final BigDecimal EXCHANGE_BUY_FEE_PERCENTAGE = new BigDecimal("0.01");
     private static final BigDecimal EXCHANGE_SELL_FEE_PERCENTAGE = new BigDecimal("0.02");
 
@@ -78,8 +78,9 @@ public class TestExampleScalpingStrategy {
     @Before
     public void setUpBeforeEachTest() throws Exception {
 
-        final String CONFIG_ITEM_COUNTER_CURRENCY_BUY_ORDER_AMOUNT = "0.5"; // LTC amount
-        final String MARKET_NAME = "BTC_LTC";
+        final String CONFIG_ITEM_COUNTER_CURRENCY_BUY_ORDER_AMOUNT = "20"; // USD amount
+        final String CONFIG_ITEM_MINIMUM_PERCENTAGE_GAIN = "2";
+        final String MARKET_NAME = "BTC_USD";
 
         tradingApi = PowerMock.createMock(TradingApi.class);
         market = PowerMock.createMock(Market.class);
@@ -96,6 +97,7 @@ public class TestExampleScalpingStrategy {
 
         // expect config to be loaded
         expect(config.getConfigItem("counter-currency-buy-order-amount")).andReturn(CONFIG_ITEM_COUNTER_CURRENCY_BUY_ORDER_AMOUNT);
+        expect(config.getConfigItem("minimum-percentage-gain")).andReturn(CONFIG_ITEM_MINIMUM_PERCENTAGE_GAIN);
 
         // expect Market name to be logged zero or more times. Loose mock behaviour here; name is cosmetic.
         expect(market.getName()).andReturn(MARKET_NAME).anyTimes();
@@ -130,7 +132,7 @@ public class TestExampleScalpingStrategy {
 
         // expect to send initial buy order to exchange
         final String orderId = "4239407233";
-        final BigDecimal amountOfUnitsToBuy = new BigDecimal("33.33333333");
+        final BigDecimal amountOfUnitsToBuy = new BigDecimal("1333.33333333");
         expect(market.getId()).andReturn(MARKET_ID);
         expect(market.getCounterCurrency()).andReturn(COUNTER_CURRENCY).atLeastOnce();
         expect(market.getBaseCurrency()).andReturn(BASE_CURRENCY).atLeastOnce();
@@ -175,14 +177,9 @@ public class TestExampleScalpingStrategy {
         expect(market.getId()).andReturn(MARKET_ID);
         expect(tradingApi.getYourOpenOrders(MARKET_ID)).andReturn(new ArrayList<>()); // empty list; order has filled
 
-        // expect to get exchange fees
-        expect(tradingApi.getPercentageOfBuyOrderTakenForExchangeFee(MARKET_ID)).andReturn(EXCHANGE_BUY_FEE_PERCENTAGE);
-        expect(tradingApi.getPercentageOfSellOrderTakenForExchangeFee(MARKET_ID)).andReturn(EXCHANGE_SELL_FEE_PERCENTAGE);
-
         // expect to send new sell order to exchange
-        final BigDecimal requiredProfitInPercent = new BigDecimal("0.01");
-        final BigDecimal totalPercentageGainRequired = EXCHANGE_BUY_FEE_PERCENTAGE.add(EXCHANGE_SELL_FEE_PERCENTAGE).add(requiredProfitInPercent);
-        final BigDecimal newAskPrice = lastOrderPrice.multiply(totalPercentageGainRequired).add(lastOrderPrice).setScale(8, RoundingMode.HALF_UP);
+        final BigDecimal requiredProfitInPercent = new BigDecimal("0.02");
+        final BigDecimal newAskPrice = lastOrderPrice.multiply(requiredProfitInPercent).add(lastOrderPrice).setScale(8, RoundingMode.HALF_UP);
         final String orderId = "4239407234";
         expect(market.getId()).andReturn(MARKET_ID).atLeastOnce();
         expect(tradingApi.createOrder(MARKET_ID, OrderType.SELL, lastOrderAmount, newAskPrice)).andReturn(orderId);
@@ -288,7 +285,7 @@ public class TestExampleScalpingStrategy {
 
         // expect to send new buy order to exchange
         final String orderId = "4239407233";
-        final BigDecimal amountOfUnitsToBuy = new BigDecimal("33.33333333");
+        final BigDecimal amountOfUnitsToBuy = new BigDecimal("1333.33333333");
         expect(market.getId()).andReturn(MARKET_ID);
         expect(market.getCounterCurrency()).andReturn(COUNTER_CURRENCY).atLeastOnce();
         expect(market.getBaseCurrency()).andReturn(BASE_CURRENCY).atLeastOnce();
@@ -385,7 +382,7 @@ public class TestExampleScalpingStrategy {
         expect(tradingApi.getLatestMarketPrice(MARKET_ID)).andReturn(lastTradePrice);
 
         // expect to send initial buy order to exchange and receive timeout exception
-        final BigDecimal amountOfUnitsToBuy = new BigDecimal("33.33333333");
+        final BigDecimal amountOfUnitsToBuy = new BigDecimal("1333.33333333");
         expect(market.getId()).andReturn(MARKET_ID);
         expect(market.getCounterCurrency()).andReturn(COUNTER_CURRENCY).atLeastOnce();
         expect(market.getBaseCurrency()).andReturn(BASE_CURRENCY).atLeastOnce();
@@ -438,7 +435,7 @@ public class TestExampleScalpingStrategy {
         expect(tradingApi.getLatestMarketPrice(MARKET_ID)).andReturn(lastTradePrice);
 
         // expect to send new buy order to exchange and receive timeout exception
-        final BigDecimal amountOfUnitsToBuy = new BigDecimal("33.33333333");
+        final BigDecimal amountOfUnitsToBuy = new BigDecimal("1333.33333333");
         expect(market.getId()).andReturn(MARKET_ID);
         expect(market.getCounterCurrency()).andReturn(COUNTER_CURRENCY).atLeastOnce();
         expect(market.getBaseCurrency()).andReturn(BASE_CURRENCY).atLeastOnce();
@@ -490,14 +487,9 @@ public class TestExampleScalpingStrategy {
         expect(market.getId()).andReturn(MARKET_ID);
         expect(tradingApi.getYourOpenOrders(MARKET_ID)).andReturn(new ArrayList<>()); // empty list; order has filled
 
-        // expect to get exchange fees
-        expect(tradingApi.getPercentageOfBuyOrderTakenForExchangeFee(MARKET_ID)).andReturn(EXCHANGE_BUY_FEE_PERCENTAGE);
-        expect(tradingApi.getPercentageOfSellOrderTakenForExchangeFee(MARKET_ID)).andReturn(EXCHANGE_SELL_FEE_PERCENTAGE);
-
         // expect to send new sell order to exchange and receive timeout exception
-        final BigDecimal requiredProfitInPercent = new BigDecimal("0.01");
-        final BigDecimal totalPercentageGainRequired = EXCHANGE_BUY_FEE_PERCENTAGE.add(EXCHANGE_SELL_FEE_PERCENTAGE).add(requiredProfitInPercent);
-        final BigDecimal newAskPrice = lastOrderPrice.multiply(totalPercentageGainRequired).add(lastOrderPrice).setScale(8, RoundingMode.HALF_UP);
+        final BigDecimal requiredProfitInPercent = new BigDecimal("0.02");
+        final BigDecimal newAskPrice = lastOrderPrice.multiply(requiredProfitInPercent).add(lastOrderPrice).setScale(8, RoundingMode.HALF_UP);
         expect(market.getId()).andReturn(MARKET_ID).atLeastOnce();
         expect(tradingApi.createOrder(MARKET_ID, OrderType.SELL, lastOrderAmount, newAskPrice)).andThrow(
                 new ExchangeNetworkException("Timeout waiting for exchange!"));
@@ -543,7 +535,7 @@ public class TestExampleScalpingStrategy {
         expect(tradingApi.getLatestMarketPrice(MARKET_ID)).andReturn(lastTradePrice);
 
         // expect to send initial buy order to exchange and receive timeout exception
-        final BigDecimal amountOfUnitsToBuy = new BigDecimal("33.33333333");
+        final BigDecimal amountOfUnitsToBuy = new BigDecimal("1333.33333333");
         expect(market.getId()).andReturn(MARKET_ID).atLeastOnce();
         expect(market.getCounterCurrency()).andReturn(COUNTER_CURRENCY).atLeastOnce();
         expect(market.getBaseCurrency()).andReturn(BASE_CURRENCY).atLeastOnce();
@@ -596,7 +588,7 @@ public class TestExampleScalpingStrategy {
         expect(tradingApi.getLatestMarketPrice(MARKET_ID)).andReturn(lastTradePrice);
 
         // expect to send new buy order to exchange and receive timeout exception
-        final BigDecimal amountOfUnitsToBuy = new BigDecimal("33.33333333");
+        final BigDecimal amountOfUnitsToBuy = new BigDecimal("1333.33333333");
         expect(market.getId()).andReturn(MARKET_ID);
         expect(market.getCounterCurrency()).andReturn(COUNTER_CURRENCY).atLeastOnce();
         expect(market.getBaseCurrency()).andReturn(BASE_CURRENCY).atLeastOnce();
@@ -653,9 +645,8 @@ public class TestExampleScalpingStrategy {
         expect(tradingApi.getPercentageOfSellOrderTakenForExchangeFee(MARKET_ID)).andReturn(EXCHANGE_SELL_FEE_PERCENTAGE);
 
         // expect to send new sell order to exchange and receive timeout exception
-        final BigDecimal requiredProfitInPercent = new BigDecimal("0.01");
-        final BigDecimal totalPercentageGainRequired = EXCHANGE_BUY_FEE_PERCENTAGE.add(EXCHANGE_SELL_FEE_PERCENTAGE).add(requiredProfitInPercent);
-        final BigDecimal newAskPrice = lastOrderPrice.multiply(totalPercentageGainRequired).add(lastOrderPrice).setScale(8, RoundingMode.HALF_UP);
+        final BigDecimal requiredProfitInPercent = new BigDecimal("0.02");
+        final BigDecimal newAskPrice = lastOrderPrice.multiply(requiredProfitInPercent).add(lastOrderPrice).setScale(8, RoundingMode.HALF_UP);
         expect(market.getId()).andReturn(MARKET_ID).atLeastOnce();
         expect(tradingApi.createOrder(MARKET_ID, OrderType.SELL, lastOrderAmount, newAskPrice)).andThrow(
                 new TradingApiException("Exchange returned a 500 status code!"));

@@ -394,7 +394,7 @@ You specify the Trading Strategies you wish to use in the
             </config-item>
             <config-item>
                 <name>minimum-percentage-gain</name>
-                <value>1</value>
+                <value>2</value>
             </config-item>
         </configuration>
     </strategy>
