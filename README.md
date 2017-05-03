@@ -384,8 +384,11 @@ You specify the Trading Strategies you wish to use in the
     <strategy>
         <id>scalping-strategy</id>
         <label>Basic Scalping Strat</label>
-        <description>A simple trend following scalper that buys at current BID price and sells at current
-         ASK price, taking profit from the spread. The exchange fees are factored in.</description>
+         <description>
+         A simple trend following scalper that buys at the current BID price, holds until current market 
+         price has reached a configurable minimum percentage gain, and then sells at current ASK price, thereby 
+         taking profit from the spread. Don't forget to factor in the exchange fees!
+         </description>
         <class-name>com.gazbert.bxbot.strategies.ExampleScalpingStrategy</class-name>
         <configuration>
             <config-item>

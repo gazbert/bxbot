@@ -81,8 +81,9 @@ public class TestStrategyConfigurationManagement {
         assertEquals("scalping-strategy", tradingStrategiesType.getStrategies().get(0).getId());
         assertEquals("Basic Scalping Strat", tradingStrategiesType.getStrategies().get(0).getLabel());
         assertTrue(tradingStrategiesType.getStrategies().get(0).getDescription().trim().equals(
-                "A simple trend following scalper that buys at current BID price and sells at current ASK price, " +
-                        "taking profit from the spread. The exchange fees are factored in."));
+                "A simple trend following scalper that buys at the current BID price, holds until current market " +
+                "price has reached a configurable minimum percentage gain, and then sells at current ASK price, thereby " +
+                "taking profit from the spread. Don't forget to factor in the exchange fees!"));
         assertEquals("com.gazbert.bxbot.strategies.ExampleScalpingStrategy", tradingStrategiesType.getStrategies().get(0).getClassName());
 
         assertTrue(2 == tradingStrategiesType.getStrategies().get(0).getConfiguration().getConfigItem().size());
