@@ -288,14 +288,14 @@ public class ExampleScalpingStrategy implements TradingStrategy {
             // Your timeout handling code could go here, e.g. you might want to check if the order actually
             // made it to the exchange? And if not, resend it...
             // We are just going to log it and swallow it, and wait for next trade cycle.
-            LOG.error(market.getName() + " Initial order to BUY altcoin failed because Exchange threw network exception. " +
+            LOG.error(market.getName() + " Initial order to BUY base currency failed because Exchange threw network exception. " +
                     "Waiting until next trade cycle.", e);
 
         } catch (TradingApiException e) {
 
             // Your error handling code could go here...
             // We are just going to re-throw as StrategyException for engine to deal with - it will shutdown the bot.
-            LOG.error(market.getName() + " Initial order to BUY altcoin failed because Exchange threw TradingApi exception. " +
+            LOG.error(market.getName() + " Initial order to BUY base currency failed because Exchange threw TradingApi exception. " +
                     " Telling Trading Engine to shutdown bot!", e);
             throw new StrategyException(e);
         }
@@ -391,14 +391,14 @@ public class ExampleScalpingStrategy implements TradingStrategy {
             // Your timeout handling code could go here, e.g. you might want to check if the order actually
             // made it to the exchange? And if not, resend it...
             // We are just going to log it and swallow it, and wait for next trade cycle.
-            LOG.error(market.getName() + " New Order to SELL altcoin failed because Exchange threw network exception. " +
+            LOG.error(market.getName() + " New Order to SELL base currency failed because Exchange threw network exception. " +
                     "Waiting until next trade cycle. Last Order: " + lastOrder, e);
 
         } catch (TradingApiException e) {
 
             // Your error handling code could go here...
             // We are just going to re-throw as StrategyException for engine to deal with - it will shutdown the bot.
-            LOG.error(market.getName() + " New order to SELL altcoin failed because Exchange threw TradingApi exception. " +
+            LOG.error(market.getName() + " New order to SELL base currency failed because Exchange threw TradingApi exception. " +
                     " Telling Trading Engine to shutdown bot! Last Order: " + lastOrder, e);
             throw new StrategyException(e);
         }
@@ -485,14 +485,14 @@ public class ExampleScalpingStrategy implements TradingStrategy {
             // Your timeout handling code could go here, e.g. you might want to check if the order actually
             // made it to the exchange? And if not, resend it...
             // We are just going to log it and swallow it, and wait for next trade cycle.
-            LOG.error(market.getName() + " New Order to BUY altcoin failed because Exchange threw network exception. " +
+            LOG.error(market.getName() + " New Order to BUY base currency failed because Exchange threw network exception. " +
                     "Waiting until next trade cycle. Last Order: " + lastOrder, e);
 
         } catch (TradingApiException e) {
 
             // Your error handling code could go here...
             // We are just going to re-throw as StrategyException for engine to deal with - it will shutdown the bot.
-            LOG.error(market.getName() + " New order to BUY altcoin failed because Exchange threw TradingApi exception. " +
+            LOG.error(market.getName() + " New order to BUY base currency failed because Exchange threw TradingApi exception. " +
                     " Telling Trading Engine to shutdown bot! Last Order: " + lastOrder, e);
             throw new StrategyException(e);
         }
