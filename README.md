@@ -389,11 +389,11 @@ You specify the Trading Strategies you wish to use in the
         <class-name>com.gazbert.bxbot.strategies.ExampleScalpingStrategy</class-name>
         <configuration>
             <config-item>
-                <name>btc-buy-order-amount</name>
-                <value>0.5</value>
+                <name>counter-currency-buy-order-amount</name>
+                <value>20</value>
             </config-item>
             <config-item>
-                <name>minimumPercentageGain</name>
+                <name>minimum-percentage-gain</name>
                 <value>1</value>
             </config-item>
         </configuration>
@@ -405,8 +405,8 @@ You specify the Trading Strategies you wish to use in the
         <class-name>com.gazbert.bxbot.strategies.YourMacdStrategy</class-name>
         <configuration>
             <config-item>
-                <name>btc-buy-order-amount</name>
-                <value>0.5</value>
+                <name>counter-currency-buy-order-amount</name>
+                <value>20</value>
             </config-item>
             <config-item>
                 <name>shortEmaInterval</name>

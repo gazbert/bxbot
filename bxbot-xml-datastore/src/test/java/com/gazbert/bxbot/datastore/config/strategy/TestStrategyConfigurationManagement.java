@@ -86,9 +86,9 @@ public class TestStrategyConfigurationManagement {
         assertEquals("com.gazbert.bxbot.strategies.ExampleScalpingStrategy", tradingStrategiesType.getStrategies().get(0).getClassName());
 
         assertTrue(2 == tradingStrategiesType.getStrategies().get(0).getConfiguration().getConfigItem().size());
-        assertEquals("btc-buy-order-amount", tradingStrategiesType.getStrategies().get(0).getConfiguration().getConfigItem().get(0).getName());
-        assertEquals("0.5", tradingStrategiesType.getStrategies().get(0).getConfiguration().getConfigItem().get(0).getValue());
-        assertEquals("minimumPercentageGain", tradingStrategiesType.getStrategies().get(0).getConfiguration().getConfigItem().get(1).getName());
+        assertEquals("counter-currency-buy-order-amount", tradingStrategiesType.getStrategies().get(0).getConfiguration().getConfigItem().get(0).getName());
+        assertEquals("20", tradingStrategiesType.getStrategies().get(0).getConfiguration().getConfigItem().get(0).getValue());
+        assertEquals("minimum-percentage-gain", tradingStrategiesType.getStrategies().get(0).getConfiguration().getConfigItem().get(1).getName());
         assertEquals("1", tradingStrategiesType.getStrategies().get(0).getConfiguration().getConfigItem().get(1).getValue());
 
         /*
