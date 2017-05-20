@@ -465,8 +465,7 @@ The `<trade-cycle-interval>` value is the interval in _seconds_ that the Trading
 each trade cycle. The minimum value is 1 second. Some exchanges allow you to hit them harder than others. However, while
 their API documentation might say one thing, the reality is you might get socket timeouts and 5xx responses if you hit it
 too hard - you cannot perform [low latency]("https://en.wikipedia.org/wiki/Low_latency_(capital_markets)") trading over 
-the public internet ;-) I might have EMA/MACD strats running every 5 mins and 'scalping'
-strats running every 60s on BTC-e. You'll need to experiment with the trade cycle interval for different exchanges.
+the public internet ;-) You'll need to experiment with the trade cycle interval for different exchanges.
 
 ##### Email Alerts
 You specify the Email Alerts config in the 
