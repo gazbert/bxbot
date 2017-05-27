@@ -83,7 +83,7 @@ basic and still under development.
   The bot's default configuration uses the 
   [`ExampleScalpingStrategy`](./bxbot-strategies/src/main/java/com/gazbert/bxbot/strategies/ExampleScalpingStrategy.java), 
   but you'll probably want to [write your own](#how-do-i-write-my-own-trading-strategy). The   
-  [TestExchangeAdapter](./bxbot-exchanges/src/main/java/com/gazbert/bxbot/exchanges/TestExchangeAdapter.java) is configured 
+  [`TestExchangeAdapter`(./bxbot-exchanges/src/main/java/com/gazbert/bxbot/exchanges/TestExchangeAdapter.java) is configured 
   by default - it makes public API calls to [BTC-e](https://btc-e.com), but stubs out the private API (order management) 
   calls; it's good for testing your initial setup.
 
