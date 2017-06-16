@@ -356,7 +356,7 @@ public class ExampleScalpingStrategy implements TradingStrategy {
                         + minimumPercentageGain);
 
                 final BigDecimal amountToAdd = lastOrder.price.multiply(minimumPercentageGain);
-                LOG.info(() -> market.getName() + " Amount to add buy last order fill price: " + amountToAdd);
+                LOG.info(() -> market.getName() + " Amount to add to last buy order fill price: " + amountToAdd);
 
                 /*
                  * Most exchanges (if not all) use 8 decimal places.
