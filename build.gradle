@@ -5,11 +5,8 @@ buildscript {
     }
 
     dependencies {
-        classpath("io.spring.gradle:dependency-management-plugin:0.6.0.RELEASE")
-
-        // Broken since 1.4.0 - does not include my classes in the uber jar :-(
-        // classpath("org.springframework.boot:spring-boot-gradle-plugin:1.5.2.RELEASE")
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.3.6.RELEASE")
+        classpath("io.spring.gradle:dependency-management-plugin:1.0.3.RELEASE")
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.5.2.RELEASE")
     }
 }
 
@@ -198,6 +195,6 @@ task buildTarGzipDist(type: Tar, dependsOn: build) {
     }
 
     task wrapper(type: Wrapper) {
-        gradleVersion = '3.4.1'
+        gradleVersion = '4.0'
     }
 }
