@@ -333,6 +333,11 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter impleme
 
             final List<OpenOrder> ordersToReturn = new ArrayList<>();
             for (final GeminiOpenOrder geminiOpenOrder : geminiOpenOrders) {
+
+                if (!marketId.equalsIgnoreCase(geminiOpenOrder.symbol)) {
+                    continue;
+                }
+
                 OrderType orderType;
                 switch (geminiOpenOrder.side) {
                     case "buy":
