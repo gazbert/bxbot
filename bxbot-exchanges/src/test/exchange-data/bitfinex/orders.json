@@ -32,5 +32,39 @@
     "original_amount": "0.03",
     "remaining_amount": "0.03",
     "executed_amount": "0.0"
+  },
+  {
+    "id": 423763785,
+    "symbol": "ltcusd",
+    "exchange": null,
+    "price": "44.954",
+    "avg_execution_price": "0.0",
+    "side": "sell",
+    "type": "exchange limit",
+    "timestamp": "1442073807.0",
+    "is_live": true,
+    "is_cancelled": false,
+    "is_hidden": false,
+    "was_forced": false,
+    "original_amount": "3.1",
+    "remaining_amount": "3.1",
+    "executed_amount": "0"
+  },
+  {
+    "id": 423763715,
+    "symbol": "ethusd",
+    "exchange": null,
+    "price": "336.05",
+    "avg_execution_price": "0.0",
+    "side": "sell",
+    "type": "exchange limit",
+    "timestamp": "1442073807.0",
+    "is_live": true,
+    "is_cancelled": false,
+    "is_hidden": false,
+    "was_forced": false,
+    "original_amount": "1.01",
+    "remaining_amount": "1.01",
+    "executed_amount": "0"
   }
 ]

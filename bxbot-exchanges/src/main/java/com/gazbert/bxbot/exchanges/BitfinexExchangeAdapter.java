@@ -221,6 +221,11 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter imple
 
             final List<OpenOrder> ordersToReturn = new ArrayList<>();
             for (final BitfinexOpenOrder bitfinexOpenOrder : bitfinexOpenOrders) {
+
+                if (!marketId.equalsIgnoreCase(bitfinexOpenOrder.symbol)) {
+                    continue;
+                }
+
                 OrderType orderType;
                 switch (bitfinexOpenOrder.side) {
                     case "buy":
