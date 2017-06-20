@@ -366,6 +366,11 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
                 // adapt
                 final List<OpenOrder> ordersToReturn = new ArrayList<>();
                 for (final ItBitYourOrder itBitOpenOrder : itBitOpenOrders) {
+
+                    if (!marketId.equalsIgnoreCase(itBitOpenOrder.instrument)) {
+                        continue;
+                    }
+
                     OrderType orderType;
                     switch (itBitOpenOrder.side) {
                         case "buy":
