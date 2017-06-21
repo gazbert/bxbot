@@ -18,6 +18,7 @@
                 <include>MAINTAINERS.txt</include>
                 <include>CONTRIBUTING.md</include>
                 <include>bxbot.sh</include>
+                <include>bxbot.bat</include>
                 <include>config/*.xml</include>
                 <include>config/application.properties</include>
                 <include>config/log4j2.xml</include>

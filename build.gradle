@@ -135,6 +135,10 @@ task buildZipDist(type: Zip, dependsOn: build) {
             from 'bxbot.sh'
         }
 
+        into('') {
+            from 'bxbot.bat'
+        }
+
         from('config/application.properties') {
             into 'config'
         }
@@ -182,6 +186,10 @@ task buildTarGzipDist(type: Tar, dependsOn: build) {
 
         into('') {
             from 'bxbot.sh'
+        }
+
+        into('') {
+            from 'bxbot.bat'
         }
 
         from('config/application.properties') {
