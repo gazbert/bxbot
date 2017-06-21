@@ -77,8 +77,11 @@ import java.util.*;
  * <p>
  * Kraken markets assets (e.g. currencies) can be referenced using their ISO4217-A3 names in the case of ISO registered names,
  * their 3 letter commonly used names in the case of unregistered names, or their X-ISO4217-A3 code (see http://www.ifex-project.org/).
- * E.g. you can access the XBT/USD market using either of the following ids: 'XBTUSD' or 'XXBTZUSD'. The exchange always
- * returns the market id back in the latter format, i.e. 'XXBTZUSD'.
+ *
+ * This adapter expects the market id to use the 3 letter commonly used names, e.g. you access the XBT/USD market using
+ * 'XBTUSD'. Note: the exchange always returns the market id back in the X-ISO4217-A3 format, i.e. 'XXBTZUSD'. The
+ * reason for doing this is because the Open Order response contains the asset pair in the 3 letter format ('XBTUSD'),
+ * and we need to be able to filter only the orders for the given market id.
  * </p>
  * <p>
  * The Exchange Adapter is <em>not</em> thread safe. It expects to be called using a single thread in order to
@@ -269,7 +272,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
                     // Assume we'll always get something here if errors array is empty; else blow fast wih NPE
                     final KrakenMarketOrderBookResult krakenOrderBookResult = (KrakenMarketOrderBookResult) krakenResponse.result;
 
-                    final KrakenOrderBook krakenOrderBook = krakenOrderBookResult.get(marketId);
+                    final KrakenOrderBook krakenOrderBook = krakenOrderBookResult.values().stream().findFirst().get();
                     if (krakenOrderBook != null) {
 
                         final List<MarketOrder> buyOrders = new ArrayList<>();
@@ -347,6 +350,10 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
                         OrderType orderType;
                         final KrakenOpenOrder krakenOpenOrder = openOrder.getValue();
                         final KrakenOpenOrderDescription krakenOpenOrderDescription = krakenOpenOrder.descr;
+
+                        if (!marketId.equalsIgnoreCase(krakenOpenOrderDescription.pair)) {
+                            continue;
+                        }
 
                         switch (krakenOpenOrderDescription.type) {
                             case "buy":
@@ -532,7 +539,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
                     final KrakenTickerResult tickerResult = (KrakenTickerResult) krakenResponse.result;
 
                     // We'll always get something here - else we'd have barfed in KrakenTickerResultDeserializer
-                    final Map<String, List<String>> tickerParams = tickerResult.get(marketId);
+                    final Map<String, List<String>> tickerParams = tickerResult.entrySet().stream().findFirst().get().getValue();
 
                     // 'c' key into map is the last market price: last trade closed array(<price>, <lot volume>)
                     return new BigDecimal(tickerParams.get("c").get(0));

@@ -57,7 +57,8 @@ import static org.junit.Assert.assertTrue;
 public class KrakenIT {
 
     // Canned test data
-    private static final String MARKET_ID = "XXBTZUSD";
+    // Market id must be the same as the Asset Pair id. See: https://www.kraken.com/help/api#get-tradable-pairs
+    private static final String MARKET_ID = "XBTUSD";
     private static final BigDecimal SELL_ORDER_PRICE = new BigDecimal("10000.176");
     private static final BigDecimal SELL_ORDER_QUANTITY = new BigDecimal("0.001");
 
