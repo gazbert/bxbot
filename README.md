@@ -519,7 +519,5 @@ The following features are in the pipeline:
 - REST API for administering the bot. It's being developed on the [bxbot-restapi](https://github.com/gazbert/bxbot/tree/bxbot-restapi) branch.
 - [Web UI](https://github.com/gazbert/bxbot-ui) written in [Angular](https://angular.io/).
 - [Admin Router](https://github.com/gazbert/bxbot-admin-router) for sending commands and config changes to BX-bot(s) in the cloud.
-- An experimental [Blockchain project](https://github.com/gazbert/bxbot-hyperledger) to register BX-bot trades using 
-[Hyperledger](https://www.hyperledger.org/).
 
 See the main project [Issue Tracker](https://github.com/gazbert/bxbot/issues) for timescales and progress.
