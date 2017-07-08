@@ -54,7 +54,7 @@ and evaluate the bot, Docker is the way to go.
 
 1. Install [Docker](https://docs.docker.com/engine/installation/) on the machine you want to run the bot.
 1. Fetch the BX-bot image from [Docker Hub](https://hub.docker.com/r/gazbert/bxbot/): `docker pull gazbert/bxbot:x.x.x` -
-   replace `x.x.x` with the [Release](https://github.com/gazbert/bxbot/releases) version of the bot you want, e.g.
+   replace `x.x.x` with the [Release](https://github.com/gazbert/bxbot/releases) version of the bot you want to run, e.g.
    `docker pull gazbert/bxbot:0.6.3`
 1. Run the Docker container: `docker container run --name bxbot-x.x.x -it gazbert/bxbot:x.x.x bash` - again, replace `x.x.x`
    with the bot release version, e.g. `docker container run --name bxbot-0.6.3 -it gazbert/bxbot:0.6.3 bash`
@@ -218,7 +218,7 @@ also has a compile-time dependency on log4j and Google Guava.
 To get going fast, you can code your Trading Strategy and place it in the [bxbot-strategies](./bxbot-strategies/src/main/java/com/gazbert/bxbot/strategies)
 module alongside the example strategy. When you build the project, your Trading Strategy will be included in the BX-bot jar. 
 You can also create your own jar for your strats, e.g. `my-strats.jar`, and include it on BX-bot's runtime classpath -
-see the _[Installation Guide](#installation-guide)_ for how to do this.
+see the _[Installation Guide](#the-manual-way)_ for how to do this.
 
 ### How do I write my own Exchange Adapter?
 _"I was seldom able to see an opportunity until it had ceased to be one."_ - Mark Twain
@@ -277,7 +277,7 @@ To get going fast, you can code your Exchange Adapter and place it in the
 [bxbot-exchanges](./bxbot-exchanges/src/main/java/com/gazbert/bxbot/exchanges) module alongside the other inbuilt adapters. 
 When you build the project, your Exchange Adapter will be included in the BX-bot jar. You can also create your own jar 
 for your adapters, e.g. `my-adapters.jar`, and include it on BX-bot's runtime classpath -
-see the _[Installation Guide](#installation-guide)_ for how to do this.
+see the _[Installation Guide](#the-manual-way)_ for how to do this.
 
 ### Configuration
 The bot provides a simple plugin framework for:
