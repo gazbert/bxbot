@@ -48,7 +48,7 @@ it will log the error, send an email alert (if configured), and then shutdown.
 ## Installation Guide
 
 ### The Docker way
-If you want to just play around with the example [`TradingStrategy`](./bxbot-strategy-api/src/main/java/com/gazbert/bxbot/strategy/api/TradingStrategy.java) 
+If you want to just play around with the example [`ExampleScalpingStrategy`](./bxbot-strategies/src/main/java/com/gazbert/bxbot/strategies/ExampleScalpingStrategy.java)  
 and evaluate the bot, Docker is the way to go.
 
 1. Install [Docker](https://docs.docker.com/engine/installation/) on the machine you want to run the bot.
@@ -71,8 +71,9 @@ and evaluate the bot, Docker is the way to go.
    
 A Docker image for each release is available on [Docker Hub](https://hub.docker.com/r/gazbert/bxbot/tags/).
 
-There is also a [Dockerfile](./Dockerfile) included in the project. You can use this to create your own Docker images 
-for including your own custom Trading Strategies and Exchange Adapters.
+There is also a [Dockerfile](./Dockerfile) included in the project. You can use this to create your own Docker images. 
+This is handy for developers to include custom Trading Strategies and Exchange Adapters in a Docker image - 
+see _[The Manual way](#the-manual-way)_ for how to include them in the build and distribution artifact.
   
 ### The Manual way
 The [Releases](https://github.com/gazbert/bxbot/releases) page has the stable releases, or you can grab the latest code 
