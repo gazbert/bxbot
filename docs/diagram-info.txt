@@ -1,2 +1,2 @@
 The PNG diagram (and associated XML) was created using: https://www.draw.io/
-- a very cool drawing too.
+- a very cool drawing tool.

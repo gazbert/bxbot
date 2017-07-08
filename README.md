@@ -46,8 +46,8 @@ The bot was designed to fail hard and fast if any unexpected errors occur in the
 it will log the error, send an email alert (if configured), and then shutdown.
 
 ## Build Guide
-BX-bot requires [Oracle JDK 1.8](http://www.oracle.com/technetwork/java/javase/downloads/index-jsp-138363.html) for the
-development and runtime environment.
+BX-bot requires Java 8 JDK ([OpenJDK 8](http://openjdk.java.net/install/) or 
+[Oracle JDK 1.8](http://www.oracle.com/technetwork/java/javase/downloads/index-jsp-138363.html)) for the development and runtime environment.
 
 You can use [Maven](https://maven.apache.org) or [Gradle](https://gradle.org/) to build the bot and pull in the dependencies;
 BX-bot depends on [log4j](http://logging.apache.org/log4j), [JavaMail](https://java.net/projects/javamail/pages/Home),
@@ -80,7 +80,8 @@ from the head of the master branch.
 The bot runs on Linux, macOS, and Windows. The Windows [bxbot.bat](./bxbot.bat) script for starting/stopping the bot is
 basic and still under development.
 
-* [Oracle JDK 1.8](http://www.oracle.com/technetwork/java/javase/downloads/index-jsp-138363.html) needs to be installed
+* [OpenJDK 8](http://openjdk.java.net/install/) or 
+  [Oracle JDK 1.8](http://www.oracle.com/technetwork/java/javase/downloads/index-jsp-138363.html) needs to be installed
    on the machine you want to run the bot.     
 * Configure the bot as required - see the main _[Configuration](#configuration-2)_ section.
   The bot's default configuration uses the 
