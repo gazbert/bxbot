@@ -46,7 +46,7 @@ The bot was designed to fail hard and fast if any unexpected errors occur in the
 it will log the error, send an email alert (if configured), and then shutdown.
 
 ## Build Guide
-BX-bot requires Java 8 JDK ([OpenJDK 8](http://openjdk.java.net/install/) or 
+BX-bot requires a Java 8 JDK ([OpenJDK 8](http://openjdk.java.net/install/) or 
 [Oracle JDK 1.8](http://www.oracle.com/technetwork/java/javase/downloads/index-jsp-138363.html)) for the development and runtime environment.
 
 You can use [Maven](https://maven.apache.org) or [Gradle](https://gradle.org/) to build the bot and pull in the dependencies;
@@ -519,6 +519,5 @@ The following features are in the pipeline:
 
 - REST API for administering the bot. It's being developed on the [bxbot-restapi](https://github.com/gazbert/bxbot/tree/bxbot-restapi) branch.
 - [Web UI](https://github.com/gazbert/bxbot-ui) written in [Angular](https://angular.io/).
-- [Admin Router](https://github.com/gazbert/bxbot-admin-router) for sending commands and config changes to BX-bot(s) in the cloud.
 
 See the main project [Issue Tracker](https://github.com/gazbert/bxbot/issues) for timescales and progress.
