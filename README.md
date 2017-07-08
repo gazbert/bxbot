@@ -126,9 +126,9 @@ If you want to just play around with the example Trading Strategy and evaluate t
 
 1. Install [Docker](https://docs.docker.com/engine/installation/) on the machine you want to run the bot.
 1. Fetch the BX-bot image from Docker Hub: `docker pull gazbert/bxbot:x.x.x` - replace x.x.x with the
-   [Releases](https://github.com/gazbert/bxbot/releases) of the bot you want, e.g. `docker pull gazbert/bxbot:0.6.3`.
-1. Run the Docker container: `docker container run --name bxbot-x.x.x -it gazbert/bxbot:x.x.x bash`.
-1. Change into the bot's directory: `cd bxbot*`.
+   [Release](https://github.com/gazbert/bxbot/releases) of the bot you want, e.g. `docker pull gazbert/bxbot:0.6.3`
+1. Run the Docker container: `docker container run --name bxbot-x.x.x -it gazbert/bxbot:x.x.x bash`
+1. Change into the bot's directory: `cd bxbot*`
 1. Configure the bot as required - see the main _[Configuration](#configuration-2)_ section.
    The bot's default configuration uses the 
    [`ExampleScalpingStrategy`](./bxbot-strategies/src/main/java/com/gazbert/bxbot/strategies/ExampleScalpingStrategy.java).
@@ -136,14 +136,14 @@ If you want to just play around with the example Trading Strategy and evaluate t
    by default - it makes public API calls to [BTC-e](https://btc-e.com), but stubs out the private API (order management) 
    calls; it's good for testing your initial setup.
 1. Usage: `./bxbot.sh [start|stop|status]`
-1. To exit the Docker container and keep it running, you detach with `CTRL+P+Q`.
+1. To exit the Docker container and keep it running, you detach with `CTRL+P+Q`
 1. To re-attach to the Docker container later, run `docker container ls` to get the CONTAINER ID. 
-   Then run: `docker container attach <CONTAINER ID>`.
+   Then run: `docker container attach <CONTAINER ID>`
    
-A Docker image for each release is available on [Docker Hub](https://hub.docker.com/r/gazbert/bxbot/).
+A Docker image for each release is available on [Docker Hub](https://hub.docker.com/r/gazbert/bxbot/tags/).
 
-There is also a [Dockerfile](./Dockerfile) included in the project. You can use this to create your own Docker images 
-- handy for including your own custom Trading Strategies and Exchange Adapters.
+There is also a [Dockerfile](./Dockerfile) included in the project. You can use this to create your own Docker images - 
+handy for including your own custom Trading Strategies and Exchange Adapters.
    
 ## Issue & Change Management
 Issues and new features are managed using the project [Issue Tracker](https://github.com/gazbert/bxbot/issues) -
