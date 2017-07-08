@@ -48,12 +48,15 @@ it will log the error, send an email alert (if configured), and then shutdown.
 ## Installation Guide
 
 ### The Docker way
-If you want to just play around with the example Trading Strategy and evaluate the bot, Docker is the way to go.
+If you want to just play around with the example [`TradingStrategy`](./bxbot-strategy-api/src/main/java/com/gazbert/bxbot/strategy/api/TradingStrategy.java) 
+and evaluate the bot, Docker is the way to go.
 
 1. Install [Docker](https://docs.docker.com/engine/installation/) on the machine you want to run the bot.
-1. Fetch the BX-bot image from Docker Hub: `docker pull gazbert/bxbot:x.x.x` - replace x.x.x with the
-   [Release](https://github.com/gazbert/bxbot/releases) of the bot you want, e.g. `docker pull gazbert/bxbot:0.6.3`
-1. Run the Docker container: `docker container run --name bxbot-x.x.x -it gazbert/bxbot:x.x.x bash`
+1. Fetch the BX-bot image from [Docker Hub](https://hub.docker.com/r/gazbert/bxbot/): `docker pull gazbert/bxbot:x.x.x` -
+   replace `x.x.x` with the [Release](https://github.com/gazbert/bxbot/releases) version of the bot you want, e.g.
+   `docker pull gazbert/bxbot:0.6.3`
+1. Run the Docker container: `docker container run --name bxbot-x.x.x -it gazbert/bxbot:x.x.x bash` - again, replace `x.x.x`
+   with the bot release version, e.g. `docker container run --name bxbot-0.6.3 -it gazbert/bxbot:0.6.3 bash`
 1. Change into the bot's directory: `cd bxbot*`
 1. Configure the bot as required - see the main _[Configuration](#configuration-2)_ section.
    The bot's default configuration uses the 
