@@ -7,7 +7,7 @@
 #
 # Could be made better, but will do for now...
 #
-# You need the Java runtime installed - Oracle JDK 1.8 is supported.
+# You need the Java 8 JRE installed.
 #
 # This script expects all the jar files to live in the lib_dir.
 #
