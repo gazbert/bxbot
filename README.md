@@ -48,7 +48,7 @@ it will log the error, send an email alert (if configured), and then shutdown.
 ## Installation Guide
 
 ### The Docker way
-If you want to just play around with the example 
+If you want to just play around with the  
 [`ExampleScalpingStrategy`](./bxbot-strategies/src/main/java/com/gazbert/bxbot/strategies/ExampleScalpingStrategy.java) 
 and evaluate the bot, Docker is the way to go.
 
