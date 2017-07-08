@@ -45,36 +45,32 @@ dependency injection framework to achieve this; the long term goal is to convert
 The bot was designed to fail hard and fast if any unexpected errors occur in the Exchange Adapters or Trading Strategies:
 it will log the error, send an email alert (if configured), and then shutdown.
 
-## Build Guide
-BX-bot requires a Java 8 JDK ([OpenJDK 8](http://openjdk.java.net/install/) or 
-[Oracle JDK 1.8](http://www.oracle.com/technetwork/java/javase/downloads/index-jsp-138363.html)) for the development and runtime environment.
-
-You can use [Maven](https://maven.apache.org) or [Gradle](https://gradle.org/) to build the bot and pull in the dependencies;
-BX-bot depends on [log4j](http://logging.apache.org/log4j), [JavaMail](https://java.net/projects/javamail/pages/Home),
-[Google Gson](https://code.google.com/p/google-gson/), [Google Guava](https://github.com/google/guava), and 
-[Spring Boot](http://projects.spring.io/spring-boot/).
-See the Maven [`pom.xml`](./pom.xml) for details.
-
-The instructions below are for Linux and macOS, but Windows scripts are included.
-
-### Maven
-1. Clone the repo locally (master branch).
-1. From the project root, run `./mvnw clean install`.
-   If you want to run the exchange integration tests, use `./mvnw clean install -Pint`. 
-   To execute both unit and integration tests, use `./mvnw clean install -Pall`.
-1. Take a look at the Javadoc in the `./target/apidocs` folders of the bxbot-trading-api, bxbot-strategy-api, 
-   and bxbot-exchange-api modules after the build completes.
-   
-### Gradle
-1. Clone the repo locally (master branch).
-1. From the project root, run `./gradlew build`.
-   If you want to run the exchange integration tests, use `./gradlew integrationTests`.
-   To execute both unit and integration tests, use `./gradlew build integrationTests`.
-1. To generate the Javadoc, run `./gradlew javadoc` and look in the `./build/docs/javadoc` folders of the bxbot-trading-api, 
-   bxbot-strategy-api, and bxbot-exchange-api modules.
-
 ## Installation Guide
-     
+
+### The Docker way
+If you want to just play around with the example Trading Strategy and evaluate the bot, Docker is the way to go.
+
+1. Install [Docker](https://docs.docker.com/engine/installation/) on the machine you want to run the bot.
+1. Fetch the BX-bot image from Docker Hub: `docker pull gazbert/bxbot:x.x.x` - replace x.x.x with the
+   [Release](https://github.com/gazbert/bxbot/releases) of the bot you want, e.g. `docker pull gazbert/bxbot:0.6.3`
+1. Run the Docker container: `docker container run --name bxbot-x.x.x -it gazbert/bxbot:x.x.x bash`
+1. Change into the bot's directory: `cd bxbot*`
+1. Configure the bot as required - see the main _[Configuration](#configuration-2)_ section.
+   The bot's default configuration uses the 
+   [`ExampleScalpingStrategy`](./bxbot-strategies/src/main/java/com/gazbert/bxbot/strategies/ExampleScalpingStrategy.java).
+   The [`TestExchangeAdapter`](./bxbot-exchanges/src/main/java/com/gazbert/bxbot/exchanges/TestExchangeAdapter.java) is configured 
+   by default - it makes public API calls to [BTC-e](https://btc-e.com), but stubs out the private API (order management) 
+   calls; it's good for testing your initial setup.
+1. Usage: `./bxbot.sh [start|stop|status]`
+1. To exit the Docker container and keep it running, you detach by pressing keys: `CTRL+P+Q`
+1. To re-attach to the Docker container later, run `docker container ls` to get the CONTAINER ID. 
+   Then run: `docker container attach <CONTAINER ID>`
+   
+A Docker image for each release is available on [Docker Hub](https://hub.docker.com/r/gazbert/bxbot/tags/).
+
+There is also a [Dockerfile](./Dockerfile) included in the project. You can use this to create your own Docker images 
+for including your own custom Trading Strategies and Exchange Adapters.
+  
 ### The Manual way
 The [Releases](https://github.com/gazbert/bxbot/releases) page has the stable releases, or you can grab the latest code 
 from the head of the master branch.
@@ -120,30 +116,34 @@ The instructions below are for Linux and macOS, but Windows scripts are included
    by default - it makes public API calls to [BTC-e](https://btc-e.com), but stubs out the private API (order management) 
    calls; it's good for testing your initial setup.
 1. Usage: `./bxbot.sh [start|stop|status]`
-
-### The Docker way
-If you want to just play around with the example Trading Strategy and evaluate the bot, Docker is the way to go.
-
-1. Install [Docker](https://docs.docker.com/engine/installation/) on the machine you want to run the bot.
-1. Fetch the BX-bot image from Docker Hub: `docker pull gazbert/bxbot:x.x.x` - replace x.x.x with the
-   [Release](https://github.com/gazbert/bxbot/releases) of the bot you want, e.g. `docker pull gazbert/bxbot:0.6.3`
-1. Run the Docker container: `docker container run --name bxbot-x.x.x -it gazbert/bxbot:x.x.x bash`
-1. Change into the bot's directory: `cd bxbot*`
-1. Configure the bot as required - see the main _[Configuration](#configuration-2)_ section.
-   The bot's default configuration uses the 
-   [`ExampleScalpingStrategy`](./bxbot-strategies/src/main/java/com/gazbert/bxbot/strategies/ExampleScalpingStrategy.java).
-   The [`TestExchangeAdapter`](./bxbot-exchanges/src/main/java/com/gazbert/bxbot/exchanges/TestExchangeAdapter.java) is configured 
-   by default - it makes public API calls to [BTC-e](https://btc-e.com), but stubs out the private API (order management) 
-   calls; it's good for testing your initial setup.
-1. Usage: `./bxbot.sh [start|stop|status]`
-1. To exit the Docker container and keep it running, you detach with `CTRL+P+Q`
-1. To re-attach to the Docker container later, run `docker container ls` to get the CONTAINER ID. 
-   Then run: `docker container attach <CONTAINER ID>`
    
-A Docker image for each release is available on [Docker Hub](https://hub.docker.com/r/gazbert/bxbot/tags/).
+## Build Guide
+BX-bot requires a Java 8 JDK ([OpenJDK 8](http://openjdk.java.net/install/) or 
+[Oracle JDK 1.8](http://www.oracle.com/technetwork/java/javase/downloads/index-jsp-138363.html)) for the development and runtime environment.
 
-There is also a [Dockerfile](./Dockerfile) included in the project. You can use this to create your own Docker images - 
-handy for including your own custom Trading Strategies and Exchange Adapters.
+You can use [Maven](https://maven.apache.org) or [Gradle](https://gradle.org/) to build the bot and pull in the dependencies;
+BX-bot depends on [log4j](http://logging.apache.org/log4j), [JavaMail](https://java.net/projects/javamail/pages/Home),
+[Google Gson](https://code.google.com/p/google-gson/), [Google Guava](https://github.com/google/guava), and 
+[Spring Boot](http://projects.spring.io/spring-boot/).
+See the Maven [`pom.xml`](./pom.xml) for details.
+
+The instructions below are for Linux and macOS, but Windows scripts are included.
+
+### Maven
+1. Clone the repo locally (master branch).
+1. From the project root, run `./mvnw clean install`.
+   If you want to run the exchange integration tests, use `./mvnw clean install -Pint`. 
+   To execute both unit and integration tests, use `./mvnw clean install -Pall`.
+1. Take a look at the Javadoc in the `./target/apidocs` folders of the bxbot-trading-api, bxbot-strategy-api, 
+   and bxbot-exchange-api modules after the build completes.
+   
+### Gradle
+1. Clone the repo locally (master branch).
+1. From the project root, run `./gradlew build`.
+   If you want to run the exchange integration tests, use `./gradlew integrationTests`.
+   To execute both unit and integration tests, use `./gradlew build integrationTests`.
+1. To generate the Javadoc, run `./gradlew javadoc` and look in the `./build/docs/javadoc` folders of the bxbot-trading-api, 
+   bxbot-strategy-api, and bxbot-exchange-api modules.
    
 ## Issue & Change Management
 Issues and new features are managed using the project [Issue Tracker](https://github.com/gazbert/bxbot/issues) -
