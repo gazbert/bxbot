@@ -80,17 +80,3 @@ These convention should (ideally!) be followed:
 * Add some Javadocs.
 * In general commits should be atomic and diffs should be easy to read. For this reason do not mix any formatting fixes 
   or code moves with actual code changes.
-
-### Squashing commits
-
-If your pull request is accepted for merging, you may be asked by a maintainer to squash and or 
-[rebase](https://git-scm.com/docs/git-rebase) your commits before it will be merged. 
-The basic squashing workflow is shown below:
-
-    git checkout your_branch_name
-    git rebase -i HEAD~n
-    # n is normally the number of commits in the pull
-    # set commits from 'pick' to 'squash', save and quit
-    # on the next screen, edit/refine commit messages
-    # save and quit
-    git push -f # (force push to GitHub)
