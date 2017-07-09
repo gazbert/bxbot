@@ -381,7 +381,7 @@ public class ExampleScalpingStrategy implements TradingStrategy {
                  * BUY order has not filled yet.
                  * Could be nobody has jumped on it yet... or the order is only part filled... or market has gone up and
                  * we've been outbid and have a stuck buy order. In which case, we have to wait for the market to
-                 * fall/order to fill... or you could tweak this code to cancel the current order and raise your bid -
+                 * fall for the order to fill... or you could tweak this code to cancel the current order and raise your bid -
                  * remember to deal with any part-filled orders!
                  */
                 LOG.info(() -> market.getName() + " !!! Still have BUY Order " + lastOrder.id
@@ -463,7 +463,7 @@ public class ExampleScalpingStrategy implements TradingStrategy {
                  * SELL order not filled yet.
                  * Could be nobody has jumped on it yet... or the order is only part filled... or market has gone down
                  * and we've been undercut and have a stuck sell order. In which case, we have to wait for market to
-                 * recover/order to fill... or you could tweak this code to cancel the current order and lower your ask
+                 * recover for the order to fill... or you could tweak this code to cancel the current order and lower your ask
                  * - remember to deal with any part-filled orders!
                  */
                 if (currentAskPrice.compareTo(lastOrder.price) < 0) {

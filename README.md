@@ -18,7 +18,7 @@ for more ideas.
 Exchange Adapters for using [BTC-e](https://btc-e.com), [Bitstamp](https://www.bitstamp.net), 
 [Bitfinex](https://www.bitfinex.com), [OKCoin](https://www.okcoin.com/), [Huobi](https://www.huobi.com/), 
 [GDAX](https://www.gdax.com/), [itBit](https://www.itbit.com/), [Kraken](https://www.kraken.com), and [Gemini](https://gemini.com/) 
-are included. Feel free to improve these or contribute new adapters to the project, that would be shiny.
+are included. Feel free to improve these or contribute new adapters to the project; that would be shiny.
 
 The Trading API provides support for [limit orders](http://www.investopedia.com/terms/l/limitorder.asp)
 traded at the [spot price](http://www.investopedia.com/terms/s/spotprice.asp);
@@ -64,7 +64,7 @@ and evaluate the bot, Docker is the way to go.
    [`ExampleScalpingStrategy`](./bxbot-strategies/src/main/java/com/gazbert/bxbot/strategies/ExampleScalpingStrategy.java).
    The [`TestExchangeAdapter`](./bxbot-exchanges/src/main/java/com/gazbert/bxbot/exchanges/TestExchangeAdapter.java) is configured 
    by default - it makes public API calls to [BTC-e](https://btc-e.com), but stubs out the private API (order management) 
-   calls; it's good for testing your initial setup.
+   calls; it's good for testing your initial setup without sending actual orders to the exchange.
 1. Usage: `./bxbot.sh [start|stop|status]`
 1. To exit the Docker container and keep it running, you detach by pressing keys: `CTRL+P+Q`
 1. To re-attach to the Docker container later, run `docker container ls` to get the CONTAINER ID. 
@@ -74,9 +74,9 @@ A Docker image for each release is available on [Docker Hub](https://hub.docker.
 
 There is also a [Dockerfile](./Dockerfile) included in the project. You can use this to create your own Docker images. 
 This is handy for developers to include custom Trading Strategies and Exchange Adapters in a Docker image - 
-see _[The Manual way](#the-manual-way)_ for how to include them in the build and distribution artifact.
+see _[The manual way](#the-manual-way)_ for how to include them in the build and distribution artifact.
   
-### The Manual way
+### The manual way
 The [Releases](https://github.com/gazbert/bxbot/releases) page has the stable releases, or you can grab the latest code 
 from the head of the master branch.
 
@@ -126,7 +126,7 @@ The instructions below are for Linux and macOS, but Windows scripts are included
 BX-bot requires a Java 8 JDK ([OpenJDK 8](http://openjdk.java.net/install/) or 
 [Oracle JDK 1.8](http://www.oracle.com/technetwork/java/javase/downloads/index-jsp-138363.html)) for the development and runtime environment.
 
-You can use [Maven](https://maven.apache.org) or [Gradle](https://gradle.org/) to build the bot and pull in the dependencies;
+You can use [Maven](https://maven.apache.org) or [Gradle](https://gradle.org/) to build the bot and pull down the dependencies;
 BX-bot depends on [log4j](http://logging.apache.org/log4j), [JavaMail](https://java.net/projects/javamail/pages/Home),
 [Google Gson](https://code.google.com/p/google-gson/), [Google Guava](https://github.com/google/guava), and 
 [Spring Boot](http://projects.spring.io/spring-boot/).
@@ -556,6 +556,6 @@ output from the Exchange Adapters; it's very handy for debugging, but not so goo
 The following features are in the pipeline:
 
 - REST API for administering the bot. It's being developed on the [bxbot-restapi](https://github.com/gazbert/bxbot/tree/bxbot-restapi) branch.
-- [Web UI](https://github.com/gazbert/bxbot-ui) written in [Angular](https://angular.io/).
+- A [Web UI](https://github.com/gazbert/bxbot-ui) written in [Angular](https://angular.io/).
 
 See the main project [Issue Tracker](https://github.com/gazbert/bxbot/issues) for timescales and progress.
