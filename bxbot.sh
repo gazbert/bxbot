@@ -21,7 +21,7 @@ lib_dir=./libs
 log4j2_config=./config/log4j2.xml
 
 # The BX-bot 'fat' jar (Spring Boot app containing all the dependencies)
-bxbot_jar=bxbot-app-0.6.4.jar
+bxbot_jar=bxbot-app-0.6.5-SNAPSHOT.jar
 
 # PID file for checking if bot is running
 pid_file=./.bxbot.pid
