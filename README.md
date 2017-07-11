@@ -56,8 +56,8 @@ and evaluate the bot, Docker is the way to go.
 1. Fetch the BX-bot image from [Docker Hub](https://hub.docker.com/r/gazbert/bxbot/): `docker pull gazbert/bxbot:x.x.x` -
    replace `x.x.x` with the [Release](https://github.com/gazbert/bxbot/releases) version of the bot you want to run, e.g.
    `docker pull gazbert/bxbot:0.6.4`
-1. Run the Docker container: `docker container run --name bxbot-x.x.x -it gazbert/bxbot:x.x.x bash` - again, replace `x.x.x`
-   with the bot release version, e.g. `docker container run --name bxbot-0.6.4 -it gazbert/bxbot:0.6.4 bash`
+1. Run the Docker container: `docker container run --name bxbot-0.6.4 -it gazbert/bxbot:0.6.4 bash` - substitute 0.6.4
+   with the version you want.
 1. Change into the bot's directory: `cd bxbot*`
 1. Configure the bot as required - see the main _[Configuration](#configuration-2)_ section.
    The bot's default configuration uses the 
@@ -66,8 +66,8 @@ and evaluate the bot, Docker is the way to go.
    by default - it makes public API calls to [BTC-e](https://btc-e.com), but stubs out the private API (order management) 
    calls; it's good for testing your initial setup without sending actual orders to the exchange.
 1. Usage: `./bxbot.sh [start|stop|status]`
-1. To exit the Docker container and keep it running, you detach by pressing keys: `CTRL+P+Q`
-1. To re-attach to the Docker container later, run `docker container ls` to get the CONTAINER ID. 
+1. You can detach from the container and leave the bot running using the `CTRL-p` `CTRL-q` key sequence.
+1. To re-attach to the Docker container, run `docker container ls` to get the CONTAINER ID. 
    Then run: `docker container attach <CONTAINER ID>`
    
 A Docker image for each release is available on [Docker Hub](https://hub.docker.com/r/gazbert/bxbot/tags/).
