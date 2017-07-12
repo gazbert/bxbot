@@ -42,7 +42,7 @@ import static org.junit.Assert.*;
 public class TestMarketConfigurationManagement {
 
     /* Production XSD */
-    private static final String XML_SCHEMA_FILENAME = "com/gazbert/bxbot/core/config/market/markets.xsd";
+    private static final String XML_SCHEMA_FILENAME = "com/gazbert/bxbot/datastore/config/market/markets.xsd";
 
     /* Test XML config */
     private static final String VALID_XML_CONFIG_FILENAME = "src/test/config/markets/valid-markets.xml";

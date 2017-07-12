@@ -44,7 +44,7 @@ import static org.junit.Assert.*;
 public class TestStrategyConfigurationManagement {
 
     /* Production XSD */
-    private static final String XML_SCHEMA_FILENAME = "com/gazbert/bxbot/core/config/strategy/strategies.xsd";
+    private static final String XML_SCHEMA_FILENAME = "com/gazbert/bxbot/datastore/config/strategy/strategies.xsd";
 
     /* Test XML config */
     private static final String VALID_XML_CONFIG_FILENAME = "src/test/config/strategies/valid-strategies.xml";
