@@ -20,6 +20,7 @@ hs_err_pid*
 # Build and log dirs
 **/bin
 **/target
+**/build
 **/dist
 **/libs
 **/logs
@@ -33,13 +34,3 @@ hs_err_pid*
 # bot pid when running locally
 .bxbot.pid
 
-# Ignore my key props files!
-/resources/bitstamp/bitstamp-config.properties
-/resources/btce/btce-config.properties
-/resources/bitfinex/bitfinex-config.properties
-/resources/okcoin/okcoin-config.properties
-/resources/huobi/huobi-config.properties
-/resources/itbit/itbit-config.properties
-/resources/gdax/gdax-config.properties
-/resources/kraken/kraken-config.properties
-/resources/gemini/gemini-config.properties
