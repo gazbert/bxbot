@@ -34,3 +34,5 @@ hs_err_pid*
 # bot pid when running locally
 .bxbot.pid
 
+# Gradle
+.gradle
