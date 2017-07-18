@@ -555,7 +555,10 @@ output from the Exchange Adapters; it's very handy for debugging, but not so goo
 ## Coming Soon
 The following features are in the pipeline:
 
-- REST API for administering the bot. It's being developed on the [bxbot-restapi](https://github.com/gazbert/bxbot/tree/bxbot-restapi) branch.
-- A [Web UI](https://github.com/gazbert/bxbot-ui) written in [Angular](https://angular.io/).
-
+- A REST API for administering the bot. It's being developed on the [bxbot-restapi](https://github.com/gazbert/bxbot/tree/bxbot-restapi) branch.
+- An [admin server](https://github.com/gazbert/bxbot-ui-server) for proxying commands and config updates to BX-bots in the cloud. 
+  It will consume the bot's REST API.
+- A [Web UI](https://github.com/gazbert/bxbot-ui) written in [Angular](https://angular.io/) for administering multiple
+  bots in the cloud. It will integrate with the admin server. 
+  
 See the main project [Issue Tracker](https://github.com/gazbert/bxbot/issues) for timescales and progress.
