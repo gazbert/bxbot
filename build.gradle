@@ -21,7 +21,7 @@ buildScan {
 
 ext.versions = [
         springBootVersion:'1.5.4.RELEASE',
-        springCoreVersion:'4.3.7.RELEASE'
+        springCoreVersion:'4.3.10.RELEASE'
 ]
 
 ext.libraries = [
