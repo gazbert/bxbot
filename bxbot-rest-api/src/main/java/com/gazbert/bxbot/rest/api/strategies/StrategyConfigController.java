@@ -21,7 +21,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.rest.api;
+package com.gazbert.bxbot.rest.api.strategies;
 
 import com.gazbert.bxbot.rest.security.User;
 import com.gazbert.bxbot.domain.strategy.StrategyConfig;

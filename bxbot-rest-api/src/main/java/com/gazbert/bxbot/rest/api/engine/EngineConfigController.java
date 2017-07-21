@@ -21,7 +21,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.rest.api;
+package com.gazbert.bxbot.rest.api.engine;
 
 import com.gazbert.bxbot.rest.security.User;
 import com.gazbert.bxbot.domain.engine.EngineConfig;

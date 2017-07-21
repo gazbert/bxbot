@@ -23,7 +23,6 @@
 
 package com.gazbert.bxbot.rest.api;
 
-import com.gazbert.bxbot.rest.security.OAuth2ServerConfiguration;
 import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -57,13 +56,11 @@ abstract class AbstractConfigControllerTest {
             MediaType.APPLICATION_JSON.getSubtype(), Charset.forName("utf8"));
 
     /**
-     * This must match the {@link OAuth2ServerConfiguration#OAUTH_CLIENT_ID} value.
      * TODO Mock this somehow...
      */
     private static final String OAUTH_CLIENT_ID = "bxbot-ui";
 
     /**
-     * This must match the {@link OAuth2ServerConfiguration#OAUTH_CLIENT_SECRET} value.
      * TODO Mock this somehow...
      */
     private static final String OAUTH_CLIENT_SECRET = "S3cr3t";

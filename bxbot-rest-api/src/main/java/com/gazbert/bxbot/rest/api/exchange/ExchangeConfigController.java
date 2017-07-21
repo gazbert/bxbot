@@ -21,12 +21,11 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.rest.api;
+package com.gazbert.bxbot.rest.api.exchange;
 
 import com.gazbert.bxbot.rest.security.User;
 import com.gazbert.bxbot.domain.exchange.ExchangeConfig;
 import com.gazbert.bxbot.services.ExchangeConfigService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -53,7 +52,6 @@ public class ExchangeConfigController {
 
     private final ExchangeConfigService exchangeConfigService;
 
-    @Autowired
     public ExchangeConfigController(ExchangeConfigService exchangeConfigService) {
         Assert.notNull(exchangeConfigService, "exchangeConfigService dependency cannot be null!");
         this.exchangeConfigService = exchangeConfigService;
@@ -65,13 +63,9 @@ public class ExchangeConfigController {
      * @return the Exchange configuration.
      */
     @RequestMapping(value = "/exchange", method = RequestMethod.GET)
-    public ExchangeConfig getExchange(@AuthenticationPrincipal User user) {
-
+    public ExchangeAdapterConfig getExchange(@AuthenticationPrincipal User user) {
         final ExchangeConfig exchangeConfig = exchangeConfigService.getConfig();
-
-        // Strip out the Authentication config for now - too risky to expose trading api keys
-        exchangeConfig.setAuthenticationConfig(null);
-        return exchangeConfig;
+        return adaptInternalConfigToExternalPayload(exchangeConfig);
     }
 
     /**
@@ -86,6 +80,25 @@ public class ExchangeConfigController {
         final HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setLocation(ServletUriComponentsBuilder.fromCurrentRequest().path("/").buildAndExpand().toUri());
         return new ResponseEntity<>(null, httpHeaders, HttpStatus.NO_CONTENT);
+    }
+
+    private ExchangeAdapterConfig adaptInternalConfigToExternalPayload(ExchangeConfig internalConfig) {
+
+        final NetworkConfig networkConfig = new NetworkConfig();
+        networkConfig.setConnectionTimeout(internalConfig.getNetworkConfig().getConnectionTimeout());
+        networkConfig.setNonFatalErrorHttpStatusCodes(internalConfig.getNetworkConfig().getNonFatalErrorCodes());
+        networkConfig.setNonFatalErrorMessages(internalConfig.getNetworkConfig().getNonFatalErrorMessages());
+
+        final OtherConfig otherConfig = new OtherConfig();
+        otherConfig.setItems(internalConfig.getOtherConfig().getItems());
+
+        final ExchangeAdapterConfig exchangeAdapterConfig = new ExchangeAdapterConfig();
+        exchangeAdapterConfig.setName(internalConfig.getExchangeName());
+        exchangeAdapterConfig.setClassName(internalConfig.getExchangeAdapter());
+        exchangeAdapterConfig.setNetworkConfig(networkConfig);
+        exchangeAdapterConfig.setOtherConfig(otherConfig);
+
+        return exchangeAdapterConfig;
     }
 }
 
