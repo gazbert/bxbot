@@ -21,7 +21,7 @@ buildScan {
 
 ext.versions = [
         springBootVersion:'1.5.4.RELEASE',
-        springCoreVersion:'4.3.7.RELEASE'
+        springCoreVersion:'4.3.10.RELEASE'
 ]
 
 ext.libraries = [
@@ -49,21 +49,21 @@ ext.libraries = [
         spring_core: dependencies.create("org.springframework:spring-core:" + ext.versions.springCoreVersion),
         spring_tx: dependencies.create("org.springframework:spring-tx:" + ext.versions.springCoreVersion),
         spring_security_oauth2: dependencies.create("org.springframework.security.oauth:spring-security-oauth2:2.1.0.RELEASE"),
-        google_guava: dependencies.create("com.google.guava:guava:21.0"),
-        google_gson: dependencies.create("com.google.code.gson:gson:2.8.0"),
-        javax_mail_api: dependencies.create("javax.mail:javax.mail-api:1.5.6"),
-        javax_mail_sun: dependencies.create("com.sun.mail:javax.mail:1.5.6"),
+        google_guava: dependencies.create("com.google.guava:guava:22.0"),
+        google_gson: dependencies.create("com.google.code.gson:gson:2.8.1"),
+        javax_mail_api: dependencies.create("javax.mail:javax.mail-api:1.6.0"),
+        javax_mail_sun: dependencies.create("com.sun.mail:javax.mail:1.6.0"),
         hsqldb: dependencies.create("org.hsqldb:hsqldb:2.3.4"),
 
         junit: dependencies.create("junit:junit:4.12"),
-        powermock_junit: dependencies.create("org.powermock:powermock-module-junit4:1.6.6"),
-        powermock_api_easymock: dependencies.create("org.powermock:powermock-api-easymock:1.6.6"),
+        powermock_junit: dependencies.create("org.powermock:powermock-module-junit4:1.7.0"),
+        powermock_api_easymock: dependencies.create("org.powermock:powermock-api-easymock:1.7.0"),
         easymock: dependencies.create("org.easymock:easymock:3.4") {
             exclude module: "cglib-nodep"
             force = true
         },
-        objenesis: dependencies.create("org.objenesis:objenesis:2.2"),
-        cglib_nodep: dependencies.create("cglib:cglib-nodep:2.2.2"),
+        objenesis: dependencies.create("org.objenesis:objenesis:2.6"),
+        cglib_nodep: dependencies.create("cglib:cglib-nodep:3.2.5"),
         spring_boot_starter_test: dependencies.create("org.springframework.boot:spring-boot-starter-test:" + ext.versions.springBootVersion)
 ]
 
@@ -73,7 +73,7 @@ allprojects {
     apply plugin: 'maven'
 
     group = 'com.gazbert.bxbot'
-        version = '0.6.5-SNAPSHOT'
+        version = '0.6.6-SNAPSHOT'
 }
 
 subprojects {
