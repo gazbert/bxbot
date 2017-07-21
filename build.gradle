@@ -56,14 +56,14 @@ ext.libraries = [
         hsqldb: dependencies.create("org.hsqldb:hsqldb:2.3.4"),
 
         junit: dependencies.create("junit:junit:4.12"),
-        powermock_junit: dependencies.create("org.powermock:powermock-module-junit4:1.6.6"),
-        powermock_api_easymock: dependencies.create("org.powermock:powermock-api-easymock:1.6.6"),
+        powermock_junit: dependencies.create("org.powermock:powermock-module-junit4:1.7.0"),
+        powermock_api_easymock: dependencies.create("org.powermock:powermock-api-easymock:1.7.0"),
         easymock: dependencies.create("org.easymock:easymock:3.4") {
             exclude module: "cglib-nodep"
             force = true
         },
-        objenesis: dependencies.create("org.objenesis:objenesis:2.2"),
-        cglib_nodep: dependencies.create("cglib:cglib-nodep:2.2.2"),
+        objenesis: dependencies.create("org.objenesis:objenesis:2.6"),
+        cglib_nodep: dependencies.create("cglib:cglib-nodep:3.2.5"),
         spring_boot_starter_test: dependencies.create("org.springframework.boot:spring-boot-starter-test:" + ext.versions.springBootVersion)
 ]
 
