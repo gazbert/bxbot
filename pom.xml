@@ -45,13 +45,13 @@
     </prerequisites>
     <properties>
         <springframework.version>4.3.7.RELEASE</springframework.version>
-        <spring-boot-starter.version>1.5.2.RELEASE</spring-boot-starter.version>
+        <spring-boot-starter.version>1.5.4.RELEASE</spring-boot-starter.version>
         <powermock.version>1.6.6</powermock.version>
     </properties>
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>1.5.2.RELEASE</version>
+        <version>1.5.4.RELEASE</version>
     </parent>
     <profiles>
         <profile>
