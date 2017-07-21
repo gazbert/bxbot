@@ -3,47 +3,47 @@
 #set -x
 
 #
-# Bare bones script for starting BX-bot on linux systems.
+# Bare bones script for starting BX-bot on Linux/OSX systems.
 #
 # Could be made better, but will do for now...
 #
-# You need the Java runtime installed - Oracle JDK 1.8 is supported.
+# You need the Java 8 JRE installed.
 #
-# This script expects all the jar files to live in the LIB_DIR.
+# This script expects all the jar files to live in the lib_dir.
 #
-# You can change the bxbot_core var to the version you want to run; it has been defaulted to the current release.
+# You can change the bxbot_jar var to the version you want to run; it has been defaulted to the current release.
 #
 # You can start, stop, and query the bot's status: ./bxbot.sh [start|stop|status]
 #
-LIB_DIR=./libs
+lib_dir=./libs
 
 # log4j2 config file location
 log4j2_config=./config/log4j2.xml
 
-# The BX-bot core jar (Spring Boot app containing all the dependencies)
-bxbot_core=bxbot-app-0.5-beta.1-SNAPSHOT.jar
+# The BX-bot 'fat' jar (Spring Boot app containing all the dependencies)
+bxbot_jar=bxbot-app-0.6.5-SNAPSHOT.jar
 
 # PID file for checking if bot is running
-PID_FILE=./.bxbot.pid
+pid_file=./.bxbot.pid
 
 # Process args passed to script
 case "$1" in
    'start')
-       if [[ -e ${PID_FILE} ]]; then
-          pid=$(cat ${PID_FILE});
+       if [[ -e ${pid_file} ]]; then
+          pid=$(cat ${pid_file});
           echo "BX-bot is already running with PID: $pid"
        else
           echo "Starting BX-bot..."
-          java -Xmx64m -Xss256k -Dlog4j.configurationFile=file:${log4j2_config} -jar ${LIB_DIR}/${bxbot_core} 2>&1 >/dev/null &
+          java -Xmx64m -Xss256k -Dlog4j.configurationFile=file:${log4j2_config} -jar ${lib_dir}/${bxbot_jar} 2>&1 >/dev/null &
 
           echo "BX-bot started with PID: $!"
-          echo $! > ${PID_FILE}
+          echo $! > ${pid_file}
        fi
        ;;
 
     'stop')
-       if [[ -e ${PID_FILE} ]]; then
-          pid=$(cat ${PID_FILE});
+       if [[ -e ${pid_file} ]]; then
+          pid=$(cat ${pid_file});
        else
           echo "BX-bot is not running. Nothing to stop."
           exit
@@ -53,16 +53,16 @@ case "$1" in
        sleep 1
        pid=`ps -aef | grep ${pid} | grep -v grep`
        if [[ ${pid} -gt 1 ]]; then
-          echo "Failed to stop BX-bot. Kill action required!"
+          echo "Failed to stop BX-bot. Manual kill required!"
        else
           echo "BX-bot has stopped."
-          rm ${PID_FILE}
+          rm ${pid_file}
        fi
        ;;
 
    'status')
-      if [[ -e ${PID_FILE} ]]; then
-         pid=$(cat ${PID_FILE});
+      if [[ -e ${pid_file} ]]; then
+         pid=$(cat ${pid_file});
          echo "BX-bot is running with PID: $pid"
       else
          echo "BX-bot is not running."
@@ -70,6 +70,6 @@ case "$1" in
       ;;
 
    *)
-         echo "Invalid arg. Usage: $0 [start|stop|status]"
+         echo "Invalid args. Usage: $0 [start|stop|status]"
       ;;
 esac

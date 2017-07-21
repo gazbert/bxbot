@@ -58,7 +58,7 @@ public class GeminiIT {
 
     // Canned test data
     private static final String MARKET_ID = "ethbtc";
-    private static final BigDecimal SELL_ORDER_PRICE = new BigDecimal("10000.176");
+    private static final BigDecimal SELL_ORDER_PRICE = new BigDecimal("10000.12345");
     private static final BigDecimal SELL_ORDER_QUANTITY = new BigDecimal("0.001");
 
     // Exchange Adapter config for the tests

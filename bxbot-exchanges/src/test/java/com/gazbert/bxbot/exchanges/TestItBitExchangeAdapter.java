@@ -93,9 +93,9 @@ public class TestItBitExchangeAdapter {
 
     // Exchange API calls
     private static final String WALLETS = "wallets";
-    private static final String ORDER_BOOK = "/markets/" + MARKET_ID + "/order_book";
+    private static final String ORDER_BOOK = "markets/" + MARKET_ID + "/order_book";
     private static final String OPEN_ORDERS = "wallets/" + WALLET_ID + "/orders";
-    private static final String TICKER = "/markets/" + MARKET_ID + "/ticker";
+    private static final String TICKER = "markets/" + MARKET_ID + "/ticker";
     private static final String NEW_ORDER = "wallets/" + WALLET_ID + "/orders"; // same as ORDERS but uses POST
     private static final String CANCEL_ORDER = "wallets/" + WALLET_ID + "/orders/" + ORDER_ID_TO_CANCEL;
 

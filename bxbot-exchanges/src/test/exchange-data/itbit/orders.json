@@ -30,5 +30,37 @@
     "status": "open",
     "metadata": {},
     "clientOrderIdentifier": null
+  },
+  {
+    "id": "b0c6e31b-237b-4d75-83f0-cbf6a14ce6ad",
+    "walletId": "a2897e3-f19a-67bf-8d3f-663fa4f0f1ad",
+    "side": "sell",
+    "instrument": "XBTEUR",
+    "type": "limit",
+    "amount": "0.01000000",
+    "displayAmount": "0.01000000",
+    "price": "2481.35",
+    "volumeWeightedAveragePrice": "0",
+    "amountFilled": "0",
+    "createdTime": "2015-10-01T18:10:39.3930000Z",
+    "status": "open",
+    "metadata": {},
+    "clientOrderIdentifier": null
+  },
+  {
+    "id": "b0c6e31b-237b-4d75-83f0-cb16a14ce6ad",
+    "walletId": "a2897e3-f19a-67bf-1d3f-663fa4f0f1ad",
+    "side": "sell",
+    "instrument": "XBTSGD",
+    "type": "limit",
+    "amount": "0.11000000",
+    "displayAmount": "0.11000000",
+    "price": "3839.92",
+    "volumeWeightedAveragePrice": "0",
+    "amountFilled": "0",
+    "createdTime": "2015-10-01T18:10:39.3930000Z",
+    "status": "open",
+    "metadata": {},
+    "clientOrderIdentifier": null
   }
 ]

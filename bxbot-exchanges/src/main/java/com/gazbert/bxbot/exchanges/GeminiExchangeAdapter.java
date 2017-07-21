@@ -77,6 +77,13 @@ import java.util.*;
  * an eye on the <a href="https://gemini.com/fee-schedule/">exchange fees</a> and update the config accordingly.
  * </p>
  * <p>
+ * NOTE: Gemini requires "btcusd" and "ethusd" market price currency (USD) values to be limited to 2 decimal places when creating
+ * orders - the adapter truncates any prices with more than 2 decimal places and rounds using
+ * {@link java.math.RoundingMode#HALF_EVEN}, E.g. 250.176 would be sent to the exchange as 250.18.
+ * For the "ethbtc" market, price currency (BTC) values are limited to 5 decimal places - the adapter will truncate and
+ * round accordingly.
+ * </p>
+ * <p>
  * The Exchange Adapter is <em>not</em> thread safe. It expects to be called using a single thread in order to
  * preserve trade execution order. The {@link URLConnection} achieves this by blocking/waiting on the input stream
  * (response) for each API call.
@@ -142,6 +149,25 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter impleme
      * Nonce used for sending authenticated messages to the exchange.
      */
     private static long nonce = 0;
+
+    /**
+     * Markets on the exchange. Used for determining order price truncation/rounding policy.
+     * See: https://docs.gemini.com/rest-api/#symbols-and-minimums
+     */
+    private enum MarketId {
+
+        BTC_USD("btcusd"), ETH_USD("ethusd"), ETH_BTC("ethbtc");
+
+        private String market;
+
+        MarketId(String market) {
+            this.market = market;
+        }
+
+        public String getStringValue() {
+            return market;
+        }
+    }
 
     /**
      * Exchange buy fees in % in {@link BigDecimal} format.
@@ -210,7 +236,21 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter impleme
 
             // note we need to limit amount and price to 6 decimal places else exchange will barf with 400 response
             params.put("amount", new DecimalFormat("#.######").format(quantity));
-            params.put("price", new DecimalFormat("#.######").format(price));
+
+            // Decimal precision of price varies with market price currency
+            if (marketId.equals(MarketId.BTC_USD.getStringValue()) || marketId.equals(MarketId.ETH_USD.getStringValue())) {
+                params.put("price", new DecimalFormat("#.##").format(price));
+            } else if (marketId.equals(MarketId.ETH_BTC.getStringValue())) {
+                params.put("price", new DecimalFormat("#.#####").format(price));
+            } else {
+                final String errorMsg = "Invalid market id: " + marketId
+                        + " - Can only be "
+                        + MarketId.BTC_USD.getStringValue() + " or "
+                        + MarketId.ETH_USD.getStringValue() + " or "
+                        + MarketId.ETH_BTC.getStringValue();
+                LOG.error(errorMsg);
+                throw new IllegalArgumentException(errorMsg);
+            }
 
             if (orderType == OrderType.BUY) {
                 params.put("side", "buy");
@@ -293,6 +333,11 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter impleme
 
             final List<OpenOrder> ordersToReturn = new ArrayList<>();
             for (final GeminiOpenOrder geminiOpenOrder : geminiOpenOrders) {
+
+                if (!marketId.equalsIgnoreCase(geminiOpenOrder.symbol)) {
+                    continue;
+                }
+
                 OrderType orderType;
                 switch (geminiOpenOrder.side) {
                     case "buy":

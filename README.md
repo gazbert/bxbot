@@ -4,11 +4,14 @@
 [![Join the chat at https://gitter.im/BX-bot/Lobby](https://badges.gitter.im/BX-bot/Lobby.svg)](https://gitter.im/BX-bot/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 ## What is BX-bot?
+
+<img src="./docs/bxbot-cropped.png" align="right" width="25%" />
+
 BX-bot (_Bex_) is a simple [Bitcoin](https://bitcoin.org) trading bot written in Java for trading on cryptocurrency 
 [exchanges](https://bitcoinwisdom.com/).
 
 The project contains the basic infrastructure to trade on a [cryptocurrency](http://coinmarketcap.com/) exchange...
-except for the trading strategies - you'll need to write those yourself. A simple example
+except for the trading strategies - you'll need to write those yourself! A simple example
 [scalping strategy](http://www.investopedia.com/articles/trading/02/081902.asp) is included to get you started with the
 Trading API - take a look [here](http://www.investopedia.com/articles/active-trading/101014/basics-algorithmic-trading-concepts-and-examples.asp)
 for more ideas.
@@ -16,7 +19,7 @@ for more ideas.
 Exchange Adapters for using [BTC-e](https://btc-e.com), [Bitstamp](https://www.bitstamp.net), 
 [Bitfinex](https://www.bitfinex.com), [OKCoin](https://www.okcoin.com/), [Huobi](https://www.huobi.com/), 
 [GDAX](https://www.gdax.com/), [itBit](https://www.itbit.com/), [Kraken](https://www.kraken.com), and [Gemini](https://gemini.com/) 
-are included. Feel free to improve these or contribute new adapters to the project, that would be shiny.
+are included. Feel free to improve these or contribute new adapters to the project; that would be shiny.
 
 The Trading API provides support for [limit orders](http://www.investopedia.com/terms/l/limitorder.asp)
 traded at the [spot price](http://www.investopedia.com/terms/s/spotprice.asp);
@@ -29,35 +32,111 @@ and released under the [MIT license](http://opensource.org/licenses/MIT).
 ## Architecture
 ![bxbot-core-architecture.png](./docs/bxbot-core-architecture.png)
 
-- **Trading Engine** - the execution unit. It provides a framework for integrating and executing Exchange Adapters and Trading Strategies.
+- **Trading Engine** - the execution unit. It provides a framework for integrating Exchange Adapters and executing Trading Strategies.
 - **Exchange Adapters** - the data stream unit. They provide access to a given exchange.
 - **Trading Strategies** - the decision or strategy unit. This is where the trading decisions happen.
 - **Trading API** - Trading Strategies use this API to make trades. Exchange Adapters implement this to provide access
   to a given exchange.
-- **Strategy API** - Trading Strategies implement this for the Trading Engine to execute them.
+- **Strategy API** - Trading Strategies implement this so the Trading Engine can execute them.
  
 Trading Strategies and Exchange Adapters are injected by the Trading Engine on startup. The bot uses a crude XML based
-dependency injection framework to achieve this; the long term goal is to run it as a [Spring Boot](http://projects.spring.io/spring-boot/)
-app in a [microservice](http://martinfowler.com/articles/microservices.html) system.
+dependency injection framework to achieve this; the long term goal is to convert it into a fully configurable 
+[Spring Boot](http://projects.spring.io/spring-boot/) app.
 
 The bot was designed to fail hard and fast if any unexpected errors occur in the Exchange Adapters or Trading Strategies:
 it will log the error, send an email alert (if configured), and then shutdown.
 
+## Installation Guide
+
+### The Docker way
+If you want to just play around with the 
+[`ExampleScalpingStrategy`](./bxbot-strategies/src/main/java/com/gazbert/bxbot/strategies/ExampleScalpingStrategy.java) 
+and evaluate the bot, Docker is the way to go.
+
+1. Install [Docker](https://docs.docker.com/engine/installation/) on the machine you want to run the bot.
+1. Fetch the BX-bot image from [Docker Hub](https://hub.docker.com/r/gazbert/bxbot/): `docker pull gazbert/bxbot:x.x.x` -
+   replace `x.x.x` with the [Release](https://github.com/gazbert/bxbot/releases) version of the bot you want to run, e.g.
+   `docker pull gazbert/bxbot:0.6.4`
+1. Run the Docker container: `docker container run --name bxbot-0.6.4 -it gazbert/bxbot:0.6.4 bash` - substitute 0.6.4
+   with the version you want.
+1. Change into the bot's directory: `cd bxbot*`
+1. Configure the bot as required - see the main _[Configuration](#configuration-2)_ section.
+   The bot's default configuration uses the 
+   [`ExampleScalpingStrategy`](./bxbot-strategies/src/main/java/com/gazbert/bxbot/strategies/ExampleScalpingStrategy.java).
+   The [`TestExchangeAdapter`](./bxbot-exchanges/src/main/java/com/gazbert/bxbot/exchanges/TestExchangeAdapter.java) is configured 
+   by default - it makes public API calls to [BTC-e](https://btc-e.com), but stubs out the private API (order management) 
+   calls; it's good for testing your initial setup without sending actual orders to the exchange.
+1. Usage: `./bxbot.sh [start|stop|status]`
+1. You can detach from the container and leave the bot running using the `CTRL-p` `CTRL-q` key sequence.
+1. To re-attach to the Docker container, run `docker container ls` to get the CONTAINER ID. 
+   Then run: `docker container attach <CONTAINER ID>`
+   
+A Docker image for each release is available on [Docker Hub](https://hub.docker.com/r/gazbert/bxbot/tags/).
+
+There is also a [Dockerfile](./Dockerfile) included in the project. You can use this to create your own Docker images. 
+This is handy for developers to include custom Trading Strategies and Exchange Adapters in a Docker image - 
+see _[The manual way](#the-manual-way)_ for how to include them in the build and distribution artifact.
+  
+### The manual way
+The [Releases](https://github.com/gazbert/bxbot/releases) page has the stable releases, or you can grab the latest code 
+from the head of the master branch.
+
+The bot runs on Linux, macOS, and Windows. The Windows [bxbot.bat](./bxbot.bat) script for starting/stopping the bot is
+basic and still under development.
+
+[OpenJDK 8](http://openjdk.java.net/install/) or 
+[Oracle JDK 1.8](http://www.oracle.com/technetwork/java/javase/downloads/index-jsp-138363.html) needs to be installed
+on the machine you want to run the bot.     
+
+You can use [Maven](https://maven.apache.org) or [Gradle](https://gradle.org/) to build the bot and distribution artifact.
+The instructions below are for Linux and macOS, but Windows scripts are included. 
+
+#### Maven
+1. If you plan on using your own Trading Strategies/Exchange Adapters packaged in separate jar files, you'll need to add
+   the dependency in the [bxbot-app/pom.xml](./bxbot-app/pom.xml) - see the commented out dependency examples inside it.
+1. From the project root, run `./mvnw clean assembly:assembly` to produce the distribution 
+   artifacts `bxbot-app-<version>-dist.tar.gz` and `bxbot-app-<version>-dist.zip` in the `./target` folder.
+1. Copy either the `bxbot-app-<version>-dist.tar.gz` or the `bxbot-app-<version>-dist.zip` onto the machine you 
+   want to run the bot and unzip it someplace.
+1. Configure the bot as required - see the main _[Configuration](#configuration-2)_ section.
+   The bot's default configuration uses the 
+   [`ExampleScalpingStrategy`](./bxbot-strategies/src/main/java/com/gazbert/bxbot/strategies/ExampleScalpingStrategy.java), 
+   but you'll probably want to [write your own](#how-do-i-write-my-own-trading-strategy). The 
+   [`TestExchangeAdapter`](./bxbot-exchanges/src/main/java/com/gazbert/bxbot/exchanges/TestExchangeAdapter.java) is configured 
+   by default - it makes public API calls to [BTC-e](https://btc-e.com), but stubs out the private API (order management) 
+   calls; it's good for testing your initial setup.   
+1. Usage: `./bxbot.sh [start|stop|status]`   
+    
+#### Gradle    
+1. If you plan on using your own Trading Strategies/Exchange Adapters packaged in separate jar files, you'll need to add
+   the dependency in the [bxbot-app/build.gradle](bxbot-app/build.gradle) - see the commented out dependency examples inside it.
+1. From the project root, run `./gradlew buildTarGzipDist` or `./gradlew buildZipDist` to build the distribution 
+   artifact: either `bxbot-app-<version>.tar.gz` or `bxbot-app-<version>.zip` respectively. 
+   It will be placed in the `./build/distributions` folder.
+1. Copy the artifact onto the machine you want to run the bot and unzip it someplace.
+1. Configure the bot as required - see the main _[Configuration](#configuration-2)_ section.
+   The bot's default configuration uses the 
+   [`ExampleScalpingStrategy`](./bxbot-strategies/src/main/java/com/gazbert/bxbot/strategies/ExampleScalpingStrategy.java), 
+   but you'll probably want to [write your own](#how-do-i-write-my-own-trading-strategy). The 
+   [`TestExchangeAdapter`](./bxbot-exchanges/src/main/java/com/gazbert/bxbot/exchanges/TestExchangeAdapter.java) is configured 
+   by default - it makes public API calls to [BTC-e](https://btc-e.com), but stubs out the private API (order management) 
+   calls; it's good for testing your initial setup.
+1. Usage: `./bxbot.sh [start|stop|status]`
+   
 ## Build Guide
+BX-bot requires a Java 8 JDK ([OpenJDK 8](http://openjdk.java.net/install/) or 
+[Oracle JDK 1.8](http://www.oracle.com/technetwork/java/javase/downloads/index-jsp-138363.html)) for the development and runtime environment.
 
-BX-bot requires [Oracle JDK 1.8](http://www.oracle.com/technetwork/java/javase/downloads/index-jsp-138363.html) for the
-development and runtime environment.
-
-You can use [Maven 3](https://maven.apache.org) or [Gradle 3](https://gradle.org/) to build the bot and pull in the dependencies;
+You can use [Maven](https://maven.apache.org) or [Gradle](https://gradle.org/) to build the bot and pull down the dependencies;
 BX-bot depends on [log4j](http://logging.apache.org/log4j), [JavaMail](https://java.net/projects/javamail/pages/Home),
 [Google Gson](https://code.google.com/p/google-gson/), [Google Guava](https://github.com/google/guava), and 
 [Spring Boot](http://projects.spring.io/spring-boot/).
 See the Maven [`pom.xml`](./pom.xml) for details.
 
-1. Clone the repo locally (master branch).
+The instructions below are for Linux and macOS, but Windows scripts are included.
 
 ### Maven
- 
+1. Clone the repo locally (master branch).
 1. From the project root, run `./mvnw clean install`.
    If you want to run the exchange integration tests, use `./mvnw clean install -Pint`. 
    To execute both unit and integration tests, use `./mvnw clean install -Pall`.
@@ -65,12 +144,18 @@ See the Maven [`pom.xml`](./pom.xml) for details.
    and bxbot-exchange-api modules after the build completes.
    
 ### Gradle
-
+1. Clone the repo locally (master branch).
 1. From the project root, run `./gradlew build`.
    If you want to run the exchange integration tests, use `./gradlew integrationTests`.
    To execute both unit and integration tests, use `./gradlew build integrationTests`.
 1. To generate the Javadoc, run `./gradlew javadoc` and look in the `./build/docs/javadoc` folders of the bxbot-trading-api, 
    bxbot-strategy-api, and bxbot-exchange-api modules.
+   
+## Issue & Change Management
+Issues and new features are managed using the project [Issue Tracker](https://github.com/gazbert/bxbot/issues) -
+submit bugs here.
+ 
+You are welcome to take on new features or fix bugs! See [here](CONTRIBUTING.md) for how to get involved. 
 
 ## Testing
 The bot has undergone basic unit testing on a _best-effort_ basis; there is a continuous integration build 
@@ -80,15 +165,120 @@ The latest stable build can always be found on the [Releases](https://github.com
 The SNAPSHOT builds on master are active development builds, but the tests should always pass and the bot should always 
 be deployable.
 
-## Issue & Change Management
-Issues and new features are managed using the project [Issue Tracker](https://github.com/gazbert/bxbot/issues) -
-submit bugs here.
- 
-You are welcome to take on new features or fix bugs! See [here](CONTRIBUTING.md) for how to get involved.
-
-There's also a channel on [Gitter](https://gitter.im/BX-bot/Lobby) for all things BX-bot :-) 
-
 ## User Guide
+### How do I write my own Trading Strategy?
+_"Battle not with monsters, lest ye become a monster, and if you gaze into the abyss, the abyss gazes also into you."_ - Friedrich Nietzsche
+
+The best place to start is with the sample Trading Strategy provided - see the latest 
+[`ExampleScalpingStrategy`](./bxbot-strategies/src/main/java/com/gazbert/bxbot/strategies/ExampleScalpingStrategy.java).
+More ideas can be found
+[here](http://www.investopedia.com/articles/active-trading/101014/basics-algorithmic-trading-concepts-and-examples.asp).
+
+Your strategy must implement the [`TradingStrategy`](./bxbot-strategy-api/src/main/java/com/gazbert/bxbot/strategy/api/TradingStrategy.java)
+interface. This allows the Trading Engine to:
+
+* inject your strategy on startup of the bot.
+* pass any configuration (you set up in the `strategies.xml`) to your strategy.
+* invoke your strategy during each trade cycle.
+
+The Trading Engine will only send 1 thread through your Trading Strategy; you do not have to code for concurrency.
+
+##### Making Trades
+You use the [`TradingApi`](./bxbot-trading-api/src/main/java/com/gazbert/bxbot/trading/api/TradingApi.java)
+to make trades etc. The API is passed to your Trading Strategy implementation `init` method when the bot starts up. 
+See the Javadoc for full details of the API.
+
+##### Error Handling
+Your Trading Strategy implementation should throw a [`StrategyException`](./bxbot-strategy-api/src/main/java/com/gazbert/bxbot/strategy/api/StrategyException.java)
+whenever it 'breaks'. BX-bot's error handling policy is designed to fail hard and fast; it will log the error, send an
+Email Alert (if configured), and shutdown.
+
+Note that the inbuilt Exchange Adapters will (some more often than others!) throw an
+[`ExchangeNetworkException`](./bxbot-trading-api/src/main/java/com/gazbert/bxbot/trading/api/ExchangeNetworkException.java)
+if they encounter network issues connecting with the exchange. Your strategy should always catch this exception and
+choose what to do next, e.g. retry the previous Trading API call, or 'swallow' the exception and wait until the Trading
+Engine invokes the strategy again at the next trade cycle.
+
+##### Configuration
+You specify the Trading Strategies you wish to use in the `strategies.xml` file - see the _[Strategies Configuration](#strategies)_ section 
+for full details.
+
+The optional `<configuration>` section in the `strategies.xml` allows you to set key/value pair String config to pass to
+your Trading Strategy implementation.
+
+On startup, the Trading Engine will pass the config to your Trading Strategy's `init` method in the `StrategyConfig` arg. 
+
+##### Dependencies
+Your Trading Strategy implementation has a compile-time dependency on the [Strategy API](./bxbot-strategy-api)
+and the [Trading API](./bxbot-trading-api).
+
+The inbuilt [`ExampleScalpingStrategy`](./bxbot-strategies/src/main/java/com/gazbert/bxbot/strategies/ExampleScalpingStrategy.java)
+also has a compile-time dependency on log4j and Google Guava.
+
+##### Packaging & Deployment #####
+To get going fast, you can code your Trading Strategy and place it in the [bxbot-strategies](./bxbot-strategies/src/main/java/com/gazbert/bxbot/strategies)
+module alongside the example strategy. When you build the project, your Trading Strategy will be included in the BX-bot jar. 
+You can also create your own jar for your strats, e.g. `my-strats.jar`, and include it on BX-bot's runtime classpath -
+see the _[Installation Guide](#the-manual-way)_ for how to do this.
+
+### How do I write my own Exchange Adapter?
+_"I was seldom able to see an opportunity until it had ceased to be one."_ - Mark Twain
+
+The best place to start is with one of the sample Exchange Adapters provided - see the latest 
+[`BitstampExchangeAdapter`](./bxbot-exchanges/src/main/java/com/gazbert/bxbot/exchanges/BitstampExchangeAdapter.java)
+for example.
+
+Your adapter must implement the [`TradingApi`](./bxbot-trading-api/src/main/java/com/gazbert/bxbot/trading/api/TradingApi.java)
+and the [`ExchangeAdapter`](./bxbot-exchange-api/src/main/java/com/gazbert/bxbot/exchange/api/ExchangeAdapter.java)
+interfaces. This allows for:
+
+* the main Trading Engine to inject your adapter on startup and initialise it with config from the `exchange.xml` file.
+* the Trading Strategies to invoke your adapter's implementation of the `TradingApi` during each trade cycle.
+
+[`AbstractExchangeAdapter`](./bxbot-exchanges/src/main/java/com/gazbert/bxbot/exchanges/AbstractExchangeAdapter.java)
+is a handy base class that all the inbuilt Exchange Adapters extend - it could be useful.
+
+The Trading Engine will only send 1 thread through your Exchange Adapter; you do not have to code for concurrency.
+
+##### Error Handling
+Your Exchange Adapter implementation should throw a [`TradingApiException`](./bxbot-trading-api/src/main/java/com/gazbert/bxbot/trading/api/TradingApiException.java)
+whenever it breaks; the Trading Strategies should catch this and decide how they want to proceed.
+
+The Trading API provides an [`ExchangeNetworkException`](./bxbot-trading-api/src/main/java/com/gazbert/bxbot/trading/api/ExchangeNetworkException.java)
+for adapters to throw when they cannot connect to the exchange to make Trading API calls. This allows for
+Trading Strategies to recover from temporary network failures. The `exchange.xml` config file has an optional `<network-config>`
+section, which contains `<non-fatal-error-codes>` and `<non-fatal-error-messages>` elements - these can be used to tell the
+adapter when to throw the exception.
+
+The first release of the bot is _single-threaded_ for simplicity. The downside to this is that if an API call to the 
+exchange gets blocked on IO, BX-bot will get stuck until your Exchange Adapter frees the block. The Trading API provides
+an `ExchangeNetworkException` for your adapter to throw if it times-out connecting to the exchange. It is your responsibility to free up any blocked
+connections - see the [`AbstractExchangeAdapter`](./bxbot-exchanges/src/main/java/com/gazbert/bxbot/exchanges/AbstractExchangeAdapter.java)
+for an example how to do this.
+
+The Trading Engine will also call your adapter directly when performing the _Emergency Stop_ check to see if your 
+`<emergency-stop-currency>` wallet balance on the exchange drops below the configured `<emergency-stop-value>` value. If this call to the
+[`TradingApi`](./bxbot-trading-api/src/main/java/com/gazbert/bxbot/trading/api/TradingApi.java)
+`getBalanceInfo()` fails and is not due to a `TradingApiException`, the Trading Engine will log the error, send an 
+Email Alert (if configured), and shutdown. If the API call failed due to an `ExchangeNetworkException`, the 
+Trading Engine will log the error and sleep until the next trade cycle.
+
+##### Configuration
+You provide your Exchange Adapter details in the `exchange.xml` file - see the _[Exchange Adapters Configuration](#exchange-adapters)_ 
+section for full details.
+
+##### Dependencies
+Your Exchange Adapter implementation has a compile-time dependency on the 
+[Trading API](./bxbot-trading-api/src/main/java/com/gazbert/bxbot/trading/api/TradingApi.java).
+
+The inbuilt Exchange Adapters also have compile-time dependencies on log4j, Google Gson, and Google Guava.
+
+##### Packaging & Deployment
+To get going fast, you can code your Exchange Adapter and place it in the 
+[bxbot-exchanges](./bxbot-exchanges/src/main/java/com/gazbert/bxbot/exchanges) module alongside the other inbuilt adapters. 
+When you build the project, your Exchange Adapter will be included in the BX-bot jar. You can also create your own jar 
+for your adapters, e.g. `my-adapters.jar`, and include it on BX-bot's runtime classpath -
+see the _[Installation Guide](#the-manual-way)_ for how to do this.
 
 ### Configuration
 The bot provides a simple plugin framework for:
@@ -153,8 +343,8 @@ All elements are mandatory unless stated otherwise.
 The `<name>` value is for descriptive use only. It is used in the log statements.
 
 For the `<adapter>` value, you must specify the fully qualified name of the Exchange Adapter class for the Trading Engine
-to inject on startup. The class must be on the runtime classpath. See the _How do I write my own Exchange Adapter?_ 
-section for more details.
+to inject on startup. The class must be on the runtime classpath. See the 
+_[How do I write my own Exchange Adapter?](#how-do-i-write-my-own-exchange-adapter)_ section for more details.
 
 The `<authentication-config>` section is optional. If present, at least 1 `<config-item>` must be set - these are repeating
 key/value String pairs. This section is used by the inbuilt Exchange Adapters to configure their exchange trading API credentials - see
@@ -214,7 +404,7 @@ All elements are mandatory unless stated otherwise.
 
 The `<label>` value is for descriptive use only. It is used in the log statements.
 
-The `<id>` value is the market id as defined on the exchange. E.g the BTC-e BTC/USD market id is btc_usd - see https://btc-e.com/api/3/docs
+The `<id>` value is the market id as defined on the exchange. E.g the BTC/USD market id is btc_usd on [BTC-e](https://btc-e.com/api/3/docs).
 
 The `<base-currency>` value is the currency short code for the base currency in the currency pair. When you buy or sell a
 currency pair, you are performing that action on the base currency. The base currency is the commodity you are buying or
@@ -238,17 +428,20 @@ You specify the Trading Strategies you wish to use in the
     <strategy>
         <id>scalping-strategy</id>
         <label>Basic Scalping Strat</label>
-        <description>A simple trend following scalper that buys at current BID price and sells at current
-         ASK price, taking profit from the spread. The exchange fees are factored in.</description>
+         <description>
+         A simple trend following scalper that buys at the current BID price, holds until current market 
+         price has reached a configurable minimum percentage gain, and then sells at current ASK price, thereby 
+         taking profit from the spread. Don't forget to factor in the exchange fees!
+         </description>
         <class-name>com.gazbert.bxbot.strategies.ExampleScalpingStrategy</class-name>
         <configuration>
             <config-item>
-                <name>btc-buy-order-amount</name>
-                <value>0.5</value>
+                <name>counter-currency-buy-order-amount</name>
+                <value>20</value>
             </config-item>
             <config-item>
-                <name>minimumPercentageGain</name>
-                <value>1</value>
+                <name>minimum-percentage-gain</name>
+                <value>2</value>
             </config-item>
         </configuration>
     </strategy>
@@ -259,8 +452,8 @@ You specify the Trading Strategies you wish to use in the
         <class-name>com.gazbert.bxbot.strategies.YourMacdStrategy</class-name>
         <configuration>
             <config-item>
-                <name>btc-buy-order-amount</name>
-                <value>0.5</value>
+                <name>counter-currency-buy-order-amount</name>
+                <value>20</value>
             </config-item>
             <config-item>
                 <name>shortEmaInterval</name>
@@ -287,7 +480,8 @@ For the `<class-name>` value, you must specify the fully qualified name of your 
 Trading Engine to inject on startup. The class _must_ be on the runtime classpath.
 
 The `<configuration>` section is optional. It allows you to set custom key/value pair String config - this is passed
-to your Trading Strategy when the bot starts up; see the _How do I write my own Trading Strategy?_ section.
+to your Trading Strategy when the bot starts up; see the 
+_[How do I write my own Trading Strategy?](#how-do-i-write-my-own-trading-strategy)_ section.
 
 ##### Engine
 The [`engine.xml`](./config/engine.xml) file is used to configure the Trading Engine.
@@ -309,13 +503,13 @@ wallet, e.g. BTC, LTC, USD. This value can be case sensitive for some exchanges 
 The `<emergency-stop-balance>` value must be set to prevent catastrophic loss on the exchange. 
 The Trading Engine checks this value at the start of every trade cycle: if your `<emergency-stop-currency>` wallet balance on
 the exchange drops below this value, the Trading Engine will log it, send an Email Alert (if configured) and then shutdown.
+If you set this value to 0, the bot will bypass the check - be careful.
 
 The `<trade-cycle-interval>` value is the interval in _seconds_ that the Trading Engine will wait/sleep before executing
 each trade cycle. The minimum value is 1 second. Some exchanges allow you to hit them harder than others. However, while
 their API documentation might say one thing, the reality is you might get socket timeouts and 5xx responses if you hit it
 too hard - you cannot perform [low latency]("https://en.wikipedia.org/wiki/Low_latency_(capital_markets)") trading over 
-the public internet ;-) I might have EMA/MACD strats running every 5 mins and 'scalping'
-strats running every 60s on BTC-e. You'll need to experiment with the trade cycle interval for different exchanges.
+the public internet ;-) You'll need to experiment with the trade cycle interval for different exchanges.
 
 ##### Email Alerts
 You specify the Email Alerts config in the 
@@ -358,155 +552,14 @@ You can change this default logging configuration in the [`config/log4j2.xml`](.
 
 I recommend running at `info` level, as `debug` level logging will produce a *lot* of
 output from the Exchange Adapters; it's very handy for debugging, but not so good for your disk space!
-
-### How do I write my own Trading Strategy?
-_"Battle not with monsters, lest ye become a monster, and if you gaze into the abyss, the abyss gazes also into you."_ - Friedrich Nietzsche
-
-The best place to start is with the sample Trading Strategy provided - see the latest 
-[`BasicScalpingExampleStrategy`](./bxbot-strategies/src/main/java/com/gazbert/bxbot/strategies/ExampleScalpingStrategy.java).
-More information can be found
-[here](http://www.investopedia.com/articles/active-trading/101014/basics-algorithmic-trading-concepts-and-examples.asp).
-
-Your strategy must implement the [`TradingStrategy`](./bxbot-strategy-api/src/main/java/com/gazbert/bxbot/strategy/api/TradingStrategy.java)
-interface. This allows the Trading Engine to:
-
-* inject your strategy on startup of the bot.
-* pass any configuration (you set up in the `strategies.xml`) to your strategy.
-* invoke your strategy during each trade cycle.
-
-The Trading Engine will only send 1 thread through your Trading Strategy; you do not have to code for concurrency.
-
-##### Making Trades
-You use the [`TradingApi`](./bxbot-trading-api/src/main/java/com/gazbert/bxbot/trading/api/TradingApi.java)
-to make trades etc. The API is passed to your Trading Strategy implementation `init` method when the bot starts up. 
-See the Javadoc for full details of the API.
-
-##### Error Handling
-Your Trading Strategy implementation should throw a [`StrategyException`](./bxbot-strategy-api/src/main/java/com/gazbert/bxbot/strategy/api/StrategyException.java)
-whenever it 'breaks'. BX-bot's error handling policy is designed to fail hard and fast; it will log the error, send an
-Email Alert (if configured), and shutdown.
-
-Note that the inbuilt Exchange Adapters will (some more often than others!) throw an
-[`ExchangeNetworkException`](./bxbot-trading-api/src/main/java/com/gazbert/bxbot/trading/api/ExchangeNetworkException.java)
-if they encounter network issues connecting with the exchange. Your strategy should always catch this exception and
-choose what to do next, e.g. retry the previous Trading API call, or 'swallow' the exception and wait until the Trading
-Engine invokes the strategy again at the next trade cycle.
-
-##### Configuration
-You specify the Trading Strategies you wish to use in the `strategies.xml` file - see the main _Configuration_ section 
-for full details.
-
-The optional `<configuration>` section in the `strategies.xml` allows you to set key/value pair String config to pass to
-your Trading Strategy implementation.
-
-On startup, the Trading Engine will pass the config to your Trading Strategy's `init` method in the `StrategyConfig` arg. 
-
-##### Dependencies
-Your Trading Strategy implementation has a compile-time dependency on the [Strategy API](./bxbot-strategy-api)
-and the [Trading API](./bxbot-trading-api).
-
-The inbuilt [`BasicScalpingExampleStrategy`](./bxbot-strategies/src/main/java/com/gazbert/bxbot/strategies/ExampleScalpingStrategy.java)
-also has a compile-time dependency on log4j and Google Guava.
-
-##### Packaging & Deployment #####
-To get going fast, you can code your Trading Strategy and place it in the [bxbot-strategies](./bxbot-strategies)
-module alongside the example strategy. When you build the project, your Trading Strategy will be included in the BX-bot jar. 
-You can also create your own jar for your strats, e.g. `my-strats.jar`, and include it on BX-bot's runtime classpath -
-see the _Installation Guide_ for how to do this.
-
-### How do I write my own Exchange Adapter?
-_"I was seldom able to see an opportunity until it had ceased to be one."_ - Mark Twain
-
-The best place to start is with one of the sample Exchange Adapters provided - see the latest 
-[`BitstampExchangeAdapter`](./bxbot-exchanges/src/main/java/com/gazbert/bxbot/exchanges/BitstampExchangeAdapter.java)
-for example.
-
-Your adapter must implement the [`TradingApi`](./bxbot-trading-api/src/main/java/com/gazbert/bxbot/trading/api/TradingApi.java)
-and the [`ExchangeAdapter`](./bxbot-exchange-api/src/main/java/com/gazbert/bxbot/exchange/api/ExchangeAdapter.java)
-interfaces. This allows for:
-
-* the main Trading Engine to inject your adapter on startup and initialise it with config from the `exchange.xml` file.
-* the Trading Strategies to invoke your adapter's implementation of the `TradingApi` during each trade cycle.
-
-[`AbstractExchangeAdapter`](./bxbot-exchanges/src/main/java/com/gazbert/bxbot/exchanges/AbstractExchangeAdapter.java)
-is a handy base class that all the inbuilt Exchange Adapters extend - it could be useful.
-
-The Trading Engine will only send 1 thread through your Exchange Adapter; you do not have to code for concurrency.
-
-##### Error Handling
-Your Exchange Adapter implementation should throw a [`TradingApiException`](./bxbot-trading-api/src/main/java/com/gazbert/bxbot/trading/api/TradingApiException.java)
-whenever it breaks; the Trading Strategies should catch this and decide how they want to proceed.
-
-The Trading API provides an [`ExchangeNetworkException`](./bxbot-trading-api/src/main/java/com/gazbert/bxbot/trading/api/ExchangeNetworkException.java)
-for adapters to throw when they cannot connect to the exchange to make Trading API calls. This allows for
-Trading Strategies to recover from temporary network failures. The `exchange.xml` config file has an optional `<network-config>`
-section, which contains `<non-fatal-error-codes>` and `<non-fatal-error-messages>` elements - these can be used to tell the
-adapter when to throw the exception.
-
-The first release of the bot is _single-threaded_ for simplicity. The downside to this is that if an API call to the 
-exchange gets blocked on IO, BX-bot will get stuck until your Exchange Adapter frees the block. The Trading API provides
-an `ExchangeNetworkException` for your adapter to throw if it times-out connecting to the exchange. It is your responsibility to free up any blocked
-connections - see the [`AbstractExchangeAdapter`](./bxbot-exchanges/src/main/java/com/gazbert/bxbot/exchanges/AbstractExchangeAdapter.java)
-for an example how to do this.
-
-The Trading Engine will also call your adapter directly when performing the _Emergency Stop_ check to see if your 
-`<emergency-stop-currency>` wallet balance on the exchange drops below the configured `<emergency-stop-value>` value. If this call to the
-[`TradingApi`](./bxbot-trading-api/src/main/java/com/gazbert/bxbot/trading/api/TradingApi.java)
-`getBalanceInfo()` fails and is not due to a `TradingApiException`, the Trading Engine will log the error, send an 
-Email Alert (if configured), and shutdown. If the API call failed due to an `ExchangeNetworkException`, the 
-Trading Engine will log the error and sleep until the next trade cycle.
-
-##### Configuration
-You provide your Exchange Adapter details in the `exchange.xml` file - see the main _Configuration_ section for full details.
-
-##### Dependencies
-Your Exchange Adapter implementation has a compile-time dependency on the 
-[Trading API](./bxbot-trading-api/src/main/java/com/gazbert/bxbot/trading/api/TradingApi.java).
-
-The inbuilt Exchange Adapters also have compile-time dependencies on log4j, Google Gson, and Google Guava.
-
-##### Packaging & Deployment
-To get going fast, you can code your Exchange Adapter and place it in the [bxbot-exchanges](./bxbot-exchanges)
-module alongside the other inbuilt adapters. When you build the project, your Exchange Adapter will be included in the BX-bot jar. 
-You can also create your own jar for your adapters, e.g. `my-adapters.jar`, and include it on BX-bot's runtime classpath -
-see the _Installation Guide_ for how to do this.
-
-## Installation Guide
-
-The [Releases](https://github.com/gazbert/bxbot/releases) page has the stable releases. 
-Or you can grab the latest code from the head of the master branch.
-
-1. Prerequisite: [Oracle JDK 1.8](http://www.oracle.com/technetwork/java/javase/downloads/index-jsp-138363.html) needs to be installed
-   on the machine you want to run the bot.     
-1. Edit the `config` XML files as required.
-
-### Maven
-
-1. If you plan on using Trading Strategies or Exchange Adapters that are packaged in separate jar files, you'll need to add
-   the dependency in the [bxbot-app/pom.xml](./bxbot-app/pom.xml) - see the commented out dependency examples inside it.
-1. From the project root, run `./mvnw clean assembly:assembly` to produce the distribution 
-   artifacts `bxbot-app-<version>-dist.tar.gz` and `bxbot-app-<version>-dist.zip` in the `./target` folder.
-1. Copy either the `bxbot-app-<version>-dist.tar.gz` or the `bxbot-app-<version>-dist.zip` onto the machine you 
-   want to run the bot and unzip it someplace.
-1. Usage: `./bxbot.sh [start|stop|status]`   
-    
-### Gradle    
  
-1. If you plan on using Trading Strategies or Exchange Adapters that are packaged in separate jar files, you'll need to add
-   the dependency in the [bxbot-app/build.gradle](bxbot-app/build.gradle) - see the commented out dependency examples inside it.
-1. From the project root, run `./gradlew buildTarGzipDist` or `./gradlew buildZipDist` to build the distribution 
-   artifact: either `bxbot-app-<version>.tar.gz` or `bxbot-app-<version>.zip` respectively. 
-   It will be placed in the `./build/distributions` folder.
-1. Copy the artifact onto the machine you want to run the bot and unzip it someplace.
-1. Usage: `./bxbot.sh [start|stop|status]`
- 
-## Coming Soon...
+## Coming Soon
 The following features are in the pipeline:
 
-- REST API for administering the bot.
-- [Web UI](https://github.com/gazbert/bxbot-ui) for administering the bot written in [Angular](https://angular.io/).
-- An experimental project to register [BX-bot](https://github.com/gazbert/bxbot) trades using an [Ethereum](https://www.ethereum.org/) blockchain.
-- Trade Analysis app - a microservice that will feed off trading events sent by the bot.
-- Android app for administering the bot.
-
+- A REST API for administering the bot. It's being developed on the [bxbot-restapi](https://github.com/gazbert/bxbot/tree/bxbot-restapi) branch.
+- An [admin server](https://github.com/gazbert/bxbot-ui-server) for proxying commands and config updates to BX-bots in the cloud. 
+  It will consume the bot's REST API.
+- A [Web UI](https://github.com/gazbert/bxbot-ui) written in [Angular](https://angular.io/) for administering multiple
+  bots in the cloud. It will integrate with the admin server. 
+  
 See the main project [Issue Tracker](https://github.com/gazbert/bxbot/issues) for timescales and progress.

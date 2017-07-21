@@ -314,6 +314,11 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
 
                 final List<OpenOrder> ordersToReturn = new ArrayList<>();
                 for (final GdaxOrder openOrder : gdaxOpenOrders) {
+
+                    if (!marketId.equalsIgnoreCase(openOrder.product_id)) {
+                        continue;
+                    }
+
                     OrderType orderType;
                     switch (openOrder.side) {
                         case "buy":

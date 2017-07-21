@@ -56,9 +56,9 @@ import static org.easymock.EasyMock.expect;
 public class TestExampleScalpingStrategy {
 
     // canned data
-    private static String MARKET_ID = "3";
-    private static final BigDecimal EXCHANGE_BUY_FEE_PERCENTAGE = new BigDecimal("0.01");
-    private static final BigDecimal EXCHANGE_SELL_FEE_PERCENTAGE = new BigDecimal("0.02");
+    private static String MARKET_ID = "btc_usd";
+    private static String BASE_CURRENCY = "BTC";
+    private static String COUNTER_CURRENCY = "USD";
 
     // Strategy init() arguments
     private TradingApi tradingApi;
@@ -76,8 +76,9 @@ public class TestExampleScalpingStrategy {
     @Before
     public void setUpBeforeEachTest() throws Exception {
 
-        final String CONFIG_ITEM_BTC_BUY_ORDER_AMOUNT = "0.5";
-        final String MARKET_NAME = "BTC_LTC";
+        final String CONFIG_ITEM_COUNTER_CURRENCY_BUY_ORDER_AMOUNT = "20"; // USD amount
+        final String CONFIG_ITEM_MINIMUM_PERCENTAGE_GAIN = "2";
+        final String MARKET_NAME = "BTC_USD";
 
         tradingApi = PowerMock.createMock(TradingApi.class);
         market = PowerMock.createMock(Market.class);
@@ -93,7 +94,8 @@ public class TestExampleScalpingStrategy {
         marketSellOrders.add(marketSellOrder);
 
         // expect config to be loaded
-        expect(config.getConfigItem("btc-buy-order-amount")).andReturn(CONFIG_ITEM_BTC_BUY_ORDER_AMOUNT);
+        expect(config.getConfigItem("counter-currency-buy-order-amount")).andReturn(CONFIG_ITEM_COUNTER_CURRENCY_BUY_ORDER_AMOUNT);
+        expect(config.getConfigItem("minimum-percentage-gain")).andReturn(CONFIG_ITEM_MINIMUM_PERCENTAGE_GAIN);
 
         // expect Market name to be logged zero or more times. Loose mock behaviour here; name is cosmetic.
         expect(market.getName()).andReturn(MARKET_NAME).anyTimes();
@@ -116,20 +118,22 @@ public class TestExampleScalpingStrategy {
     public void testStrategySendsInitialBuyOrderWhenItIsFirstCalled() throws Exception {
 
         // expect to get current bid and ask spot prices
-        final BigDecimal bidSpotPrice = new BigDecimal("0.014");
+        final BigDecimal bidSpotPrice = new BigDecimal("1453.014");
         expect(marketBuyOrders.get(0).getPrice()).andReturn(bidSpotPrice);
-        final BigDecimal askSpotPrice = new BigDecimal("0.016");
+        final BigDecimal askSpotPrice = new BigDecimal("1455.016");
         expect(marketSellOrders.get(0).getPrice()).andReturn(askSpotPrice);
 
-        // expect to get amount of altcoin to buy for given BTC amount
+        // expect to get amount of base currency to buy for given counter currency amount
         expect(market.getId()).andReturn(MARKET_ID);
-        final BigDecimal lastTradePrice = new BigDecimal("0.015");
+        final BigDecimal lastTradePrice = new BigDecimal("1454.018");
         expect(tradingApi.getLatestMarketPrice(MARKET_ID)).andReturn(lastTradePrice);
 
         // expect to send initial buy order to exchange
         final String orderId = "4239407233";
-        final BigDecimal amountOfUnitsToBuy = new BigDecimal("33.33333333");
+        final BigDecimal amountOfUnitsToBuy = new BigDecimal("0.01375499");
         expect(market.getId()).andReturn(MARKET_ID);
+        expect(market.getCounterCurrency()).andReturn(COUNTER_CURRENCY).atLeastOnce();
+        expect(market.getBaseCurrency()).andReturn(BASE_CURRENCY).atLeastOnce();
         expect(tradingApi.createOrder(MARKET_ID, OrderType.BUY, amountOfUnitsToBuy, bidSpotPrice)).andReturn(orderId);
 
         PowerMock.replayAll();
@@ -152,14 +156,14 @@ public class TestExampleScalpingStrategy {
     public void testStrategySendsNewSellOrderToExchangeWhenCurrentBuyOrderFilled() throws Exception {
 
         // expect to get current bid and ask spot prices
-        final BigDecimal bidSpotPrice = new BigDecimal("0.014");
+        final BigDecimal bidSpotPrice = new BigDecimal("1453.014");
         expect(marketBuyOrders.get(0).getPrice()).andReturn(bidSpotPrice);
-        final BigDecimal askSpotPrice = new BigDecimal("0.016");
+        final BigDecimal askSpotPrice = new BigDecimal("1455.016");
         expect(marketSellOrders.get(0).getPrice()).andReturn(askSpotPrice);
 
         // mock an existing buy order state
         final BigDecimal lastOrderAmount = new BigDecimal("35");
-        final BigDecimal lastOrderPrice = new BigDecimal("0.012");
+        final BigDecimal lastOrderPrice = new BigDecimal("1454.018");
         final Class orderStateClass = Whitebox.getInnerClassType(ExampleScalpingStrategy.class, "OrderState");
         final Object orderState = PowerMock.createMock(orderStateClass);
         Whitebox.setInternalState(orderState, "id", "45345346");
@@ -171,14 +175,9 @@ public class TestExampleScalpingStrategy {
         expect(market.getId()).andReturn(MARKET_ID);
         expect(tradingApi.getYourOpenOrders(MARKET_ID)).andReturn(new ArrayList<>()); // empty list; order has filled
 
-        // expect to get exchange fees
-        expect(tradingApi.getPercentageOfBuyOrderTakenForExchangeFee(MARKET_ID)).andReturn(EXCHANGE_BUY_FEE_PERCENTAGE);
-        expect(tradingApi.getPercentageOfSellOrderTakenForExchangeFee(MARKET_ID)).andReturn(EXCHANGE_SELL_FEE_PERCENTAGE);
-
         // expect to send new sell order to exchange
-        final BigDecimal requiredProfitInPercent = new BigDecimal("0.01");
-        final BigDecimal totalPercentageGainRequired = EXCHANGE_BUY_FEE_PERCENTAGE.add(EXCHANGE_SELL_FEE_PERCENTAGE).add(requiredProfitInPercent);
-        final BigDecimal newAskPrice = lastOrderPrice.multiply(totalPercentageGainRequired).add(lastOrderPrice).setScale(8, RoundingMode.HALF_UP);
+        final BigDecimal requiredProfitInPercent = new BigDecimal("0.02");
+        final BigDecimal newAskPrice = lastOrderPrice.multiply(requiredProfitInPercent).add(lastOrderPrice).setScale(8, RoundingMode.HALF_UP);
         final String orderId = "4239407234";
         expect(market.getId()).andReturn(MARKET_ID).atLeastOnce();
         expect(tradingApi.createOrder(MARKET_ID, OrderType.SELL, lastOrderAmount, newAskPrice)).andReturn(orderId);
@@ -208,14 +207,14 @@ public class TestExampleScalpingStrategy {
     public void testStrategyHoldsWhenCurrentBuyOrderIsNotFilled() throws Exception {
 
         // expect to get current bid and ask spot prices
-        final BigDecimal bidSpotPrice = new BigDecimal("0.014");
+        final BigDecimal bidSpotPrice = new BigDecimal("1453.014");
         expect(marketBuyOrders.get(0).getPrice()).andReturn(bidSpotPrice);
-        final BigDecimal askSpotPrice = new BigDecimal("0.016");
+        final BigDecimal askSpotPrice = new BigDecimal("1455.016");
         expect(marketSellOrders.get(0).getPrice()).andReturn(askSpotPrice);
 
         // mock an existing buy order state
         final BigDecimal lastOrderAmount = new BigDecimal("35");
-        final BigDecimal lastOrderPrice = new BigDecimal("0.012");
+        final BigDecimal lastOrderPrice = new BigDecimal("1454.018");
         final Class orderStateClass = Whitebox.getInnerClassType(ExampleScalpingStrategy.class, "OrderState");
         final Object orderState = PowerMock.createMock(orderStateClass);
         Whitebox.setInternalState(orderState, "id", "45345346");
@@ -258,14 +257,14 @@ public class TestExampleScalpingStrategy {
     public void testStrategySendsNewBuyOrderToExchangeWhenCurrentSellOrderFilled() throws Exception {
 
         // expect to get current bid and ask spot prices
-        final BigDecimal bidSpotPrice = new BigDecimal("0.0123");
+        final BigDecimal bidSpotPrice = new BigDecimal("1453.014");
         expect(marketBuyOrders.get(0).getPrice()).andReturn(bidSpotPrice);
-        final BigDecimal askSpotPrice = new BigDecimal("0.016");
+        final BigDecimal askSpotPrice = new BigDecimal("1455.016");
         expect(marketSellOrders.get(0).getPrice()).andReturn(askSpotPrice);
 
         // mock an existing sell order state
         final BigDecimal lastOrderAmount = new BigDecimal("35");
-        final BigDecimal lastOrderPrice = new BigDecimal("0.012");
+        final BigDecimal lastOrderPrice = new BigDecimal("1454.018");
         final Class orderStateClass = Whitebox.getInnerClassType(ExampleScalpingStrategy.class, "OrderState");
         final Object orderState = PowerMock.createMock(orderStateClass);
         Whitebox.setInternalState(orderState, "id", "45345346");
@@ -277,15 +276,17 @@ public class TestExampleScalpingStrategy {
         expect(market.getId()).andReturn(MARKET_ID);
         expect(tradingApi.getYourOpenOrders(MARKET_ID)).andReturn(new ArrayList<>()); // empty list; order has filled
 
-        // expect to get amount of altcoin to buy for given BTC amount
+        // expect to get amount of base currency to buy for given counter currency amount
         expect(market.getId()).andReturn(MARKET_ID);
         final BigDecimal lastTradePrice = new BigDecimal("0.015");
         expect(tradingApi.getLatestMarketPrice(MARKET_ID)).andReturn(lastTradePrice);
 
         // expect to send new buy order to exchange
         final String orderId = "4239407233";
-        final BigDecimal amountOfUnitsToBuy = new BigDecimal("33.33333333");
+        final BigDecimal amountOfUnitsToBuy = new BigDecimal("1333.33333333");
         expect(market.getId()).andReturn(MARKET_ID);
+        expect(market.getCounterCurrency()).andReturn(COUNTER_CURRENCY).atLeastOnce();
+        expect(market.getBaseCurrency()).andReturn(BASE_CURRENCY).atLeastOnce();
         expect(tradingApi.createOrder(MARKET_ID, OrderType.BUY, amountOfUnitsToBuy, bidSpotPrice)).andReturn(orderId);
 
         PowerMock.replayAll();
@@ -313,14 +314,14 @@ public class TestExampleScalpingStrategy {
     public void testStrategyHoldsWhenCurrentSellOrderIsNotFilled() throws Exception {
 
         // expect to get current bid and ask spot prices
-        final BigDecimal bidSpotPrice = new BigDecimal("0.010");
+        final BigDecimal bidSpotPrice = new BigDecimal("1453.014");
         expect(marketBuyOrders.get(0).getPrice()).andReturn(bidSpotPrice);
-        final BigDecimal askSpotPrice = new BigDecimal("0.011");
+        final BigDecimal askSpotPrice = new BigDecimal("1455.016");
         expect(marketSellOrders.get(0).getPrice()).andReturn(askSpotPrice);
 
         // mock an existing sell order state
         final BigDecimal lastOrderAmount = new BigDecimal("35");
-        final BigDecimal lastOrderPrice = new BigDecimal("0.012");
+        final BigDecimal lastOrderPrice = new BigDecimal("1454.018");
         final Class orderStateClass = Whitebox.getInnerClassType(ExampleScalpingStrategy.class, "OrderState");
         final Object orderState = PowerMock.createMock(orderStateClass);
         Whitebox.setInternalState(orderState, "id", "45345346");
@@ -368,19 +369,21 @@ public class TestExampleScalpingStrategy {
     public void testStrategyHandlesTimeoutExceptionWhenPlacingInitialBuyOrder() throws Exception {
 
         // expect to get current bid and ask spot prices
-        final BigDecimal bidSpotPrice = new BigDecimal("0.014");
+        final BigDecimal bidSpotPrice = new BigDecimal("1453.014");
         expect(marketBuyOrders.get(0).getPrice()).andReturn(bidSpotPrice);
-        final BigDecimal askSpotPrice = new BigDecimal("0.016");
+        final BigDecimal askSpotPrice = new BigDecimal("1455.016");
         expect(marketSellOrders.get(0).getPrice()).andReturn(askSpotPrice);
 
-        // expect to get amount of altcoin to buy for given BTC amount
+        // expect to get amount of base currency to buy for given counter currency amount
         expect(market.getId()).andReturn(MARKET_ID);
-        final BigDecimal lastTradePrice = new BigDecimal("0.015");
+        final BigDecimal lastTradePrice = new BigDecimal("1454.018");
         expect(tradingApi.getLatestMarketPrice(MARKET_ID)).andReturn(lastTradePrice);
 
         // expect to send initial buy order to exchange and receive timeout exception
-        final BigDecimal amountOfUnitsToBuy = new BigDecimal("33.33333333");
+        final BigDecimal amountOfUnitsToBuy = new BigDecimal("0.01375499");
         expect(market.getId()).andReturn(MARKET_ID);
+        expect(market.getCounterCurrency()).andReturn(COUNTER_CURRENCY).atLeastOnce();
+        expect(market.getBaseCurrency()).andReturn(BASE_CURRENCY).atLeastOnce();
         expect(tradingApi.createOrder(MARKET_ID, OrderType.BUY, amountOfUnitsToBuy, bidSpotPrice)).andThrow(
                 new ExchangeNetworkException("Timeout waiting for exchange!"));
 
@@ -405,14 +408,14 @@ public class TestExampleScalpingStrategy {
     public void testStrategyHandlesTimeoutExceptionWhenPlacingBuyOrder() throws Exception {
 
         // expect to get current bid and ask spot prices
-        final BigDecimal bidSpotPrice = new BigDecimal("0.0123");
+        final BigDecimal bidSpotPrice = new BigDecimal("1453.014");
         expect(marketBuyOrders.get(0).getPrice()).andReturn(bidSpotPrice);
-        final BigDecimal askSpotPrice = new BigDecimal("0.016");
+        final BigDecimal askSpotPrice = new BigDecimal("1455.016");
         expect(marketSellOrders.get(0).getPrice()).andReturn(askSpotPrice);
 
         // mock an existing sell order state
         final BigDecimal lastOrderAmount = new BigDecimal("35");
-        final BigDecimal lastOrderPrice = new BigDecimal("0.012");
+        final BigDecimal lastOrderPrice = new BigDecimal("1454.018");
         final Class orderStateClass = Whitebox.getInnerClassType(ExampleScalpingStrategy.class, "OrderState");
         final Object orderState = PowerMock.createMock(orderStateClass);
         Whitebox.setInternalState(orderState, "id", "45345346");
@@ -424,14 +427,16 @@ public class TestExampleScalpingStrategy {
         expect(market.getId()).andReturn(MARKET_ID);
         expect(tradingApi.getYourOpenOrders(MARKET_ID)).andReturn(new ArrayList<>()); // empty list; order has filled
 
-        // expect to get amount of altcoin to buy for given BTC amount
+        // expect to get amount of base currency to buy for given counter currency amount
         expect(market.getId()).andReturn(MARKET_ID);
         final BigDecimal lastTradePrice = new BigDecimal("0.015");
         expect(tradingApi.getLatestMarketPrice(MARKET_ID)).andReturn(lastTradePrice);
 
         // expect to send new buy order to exchange and receive timeout exception
-        final BigDecimal amountOfUnitsToBuy = new BigDecimal("33.33333333");
+        final BigDecimal amountOfUnitsToBuy = new BigDecimal("1333.33333333");
         expect(market.getId()).andReturn(MARKET_ID);
+        expect(market.getCounterCurrency()).andReturn(COUNTER_CURRENCY).atLeastOnce();
+        expect(market.getBaseCurrency()).andReturn(BASE_CURRENCY).atLeastOnce();
         expect(tradingApi.createOrder(MARKET_ID, OrderType.BUY, amountOfUnitsToBuy, bidSpotPrice)).andThrow(
                 new ExchangeNetworkException("Timeout waiting for exchange!"));
 
@@ -461,14 +466,14 @@ public class TestExampleScalpingStrategy {
     public void testStrategyHandlesTimeoutExceptionWhenPlacingSellOrder() throws Exception {
 
         // expect to get current bid and ask spot prices
-        final BigDecimal bidSpotPrice = new BigDecimal("0.014");
+        final BigDecimal bidSpotPrice = new BigDecimal("1453.014");
         expect(marketBuyOrders.get(0).getPrice()).andReturn(bidSpotPrice);
-        final BigDecimal askSpotPrice = new BigDecimal("0.016");
+        final BigDecimal askSpotPrice = new BigDecimal("1455.016");
         expect(marketSellOrders.get(0).getPrice()).andReturn(askSpotPrice);
 
         // mock an existing buy order state
         final BigDecimal lastOrderAmount = new BigDecimal("35");
-        final BigDecimal lastOrderPrice = new BigDecimal("0.012");
+        final BigDecimal lastOrderPrice = new BigDecimal("1454.018");
         final Class orderStateClass = Whitebox.getInnerClassType(ExampleScalpingStrategy.class, "OrderState");
         final Object orderState = PowerMock.createMock(orderStateClass);
         Whitebox.setInternalState(orderState, "id", "45345346");
@@ -480,14 +485,9 @@ public class TestExampleScalpingStrategy {
         expect(market.getId()).andReturn(MARKET_ID);
         expect(tradingApi.getYourOpenOrders(MARKET_ID)).andReturn(new ArrayList<>()); // empty list; order has filled
 
-        // expect to get exchange fees
-        expect(tradingApi.getPercentageOfBuyOrderTakenForExchangeFee(MARKET_ID)).andReturn(EXCHANGE_BUY_FEE_PERCENTAGE);
-        expect(tradingApi.getPercentageOfSellOrderTakenForExchangeFee(MARKET_ID)).andReturn(EXCHANGE_SELL_FEE_PERCENTAGE);
-
         // expect to send new sell order to exchange and receive timeout exception
-        final BigDecimal requiredProfitInPercent = new BigDecimal("0.01");
-        final BigDecimal totalPercentageGainRequired = EXCHANGE_BUY_FEE_PERCENTAGE.add(EXCHANGE_SELL_FEE_PERCENTAGE).add(requiredProfitInPercent);
-        final BigDecimal newAskPrice = lastOrderPrice.multiply(totalPercentageGainRequired).add(lastOrderPrice).setScale(8, RoundingMode.HALF_UP);
+        final BigDecimal requiredProfitInPercent = new BigDecimal("0.02");
+        final BigDecimal newAskPrice = lastOrderPrice.multiply(requiredProfitInPercent).add(lastOrderPrice).setScale(8, RoundingMode.HALF_UP);
         expect(market.getId()).andReturn(MARKET_ID).atLeastOnce();
         expect(tradingApi.createOrder(MARKET_ID, OrderType.SELL, lastOrderAmount, newAskPrice)).andThrow(
                 new ExchangeNetworkException("Timeout waiting for exchange!"));
@@ -522,19 +522,21 @@ public class TestExampleScalpingStrategy {
     public void testStrategyHandlesTradingApiExceptionWhenPlacingInitialBuyOrder() throws Exception {
 
         // expect to get current bid and ask spot prices
-        final BigDecimal bidSpotPrice = new BigDecimal("0.014");
+        final BigDecimal bidSpotPrice = new BigDecimal("1453.014");
         expect(marketBuyOrders.get(0).getPrice()).andReturn(bidSpotPrice);
-        final BigDecimal askSpotPrice = new BigDecimal("0.016");
+        final BigDecimal askSpotPrice = new BigDecimal("1455.016");
         expect(marketSellOrders.get(0).getPrice()).andReturn(askSpotPrice);
 
-        // expect to get amount of altcoin to buy for given BTC amount
+        // expect to get amount of base currency to buy for given counter currency amount
         expect(market.getId()).andReturn(MARKET_ID);
-        final BigDecimal lastTradePrice = new BigDecimal("0.015");
+        final BigDecimal lastTradePrice = new BigDecimal("1454.018");
         expect(tradingApi.getLatestMarketPrice(MARKET_ID)).andReturn(lastTradePrice);
 
         // expect to send initial buy order to exchange and receive timeout exception
-        final BigDecimal amountOfUnitsToBuy = new BigDecimal("33.33333333");
+        final BigDecimal amountOfUnitsToBuy = new BigDecimal("0.01375499");
         expect(market.getId()).andReturn(MARKET_ID).atLeastOnce();
+        expect(market.getCounterCurrency()).andReturn(COUNTER_CURRENCY).atLeastOnce();
+        expect(market.getBaseCurrency()).andReturn(BASE_CURRENCY).atLeastOnce();
         expect(tradingApi.createOrder(MARKET_ID, OrderType.BUY, amountOfUnitsToBuy, bidSpotPrice)).andThrow(
                 new TradingApiException("Exchange returned a 500 status code!"));
 
@@ -559,14 +561,14 @@ public class TestExampleScalpingStrategy {
     public void testStrategyHandlesTradingApiExceptionWhenPlacingBuyOrder() throws Exception {
 
         // expect to get current bid and ask spot prices
-        final BigDecimal bidSpotPrice = new BigDecimal("0.0123");
+        final BigDecimal bidSpotPrice = new BigDecimal("1453.014");
         expect(marketBuyOrders.get(0).getPrice()).andReturn(bidSpotPrice);
-        final BigDecimal askSpotPrice = new BigDecimal("0.016");
+        final BigDecimal askSpotPrice = new BigDecimal("1455.016");
         expect(marketSellOrders.get(0).getPrice()).andReturn(askSpotPrice);
 
         // mock an existing sell order state
         final BigDecimal lastOrderAmount = new BigDecimal("35");
-        final BigDecimal lastOrderPrice = new BigDecimal("0.012");
+        final BigDecimal lastOrderPrice = new BigDecimal("1454.018");
         final Class orderStateClass = Whitebox.getInnerClassType(ExampleScalpingStrategy.class, "OrderState");
         final Object orderState = PowerMock.createMock(orderStateClass);
         Whitebox.setInternalState(orderState, "id", "45345346");
@@ -578,14 +580,16 @@ public class TestExampleScalpingStrategy {
         expect(market.getId()).andReturn(MARKET_ID);
         expect(tradingApi.getYourOpenOrders(MARKET_ID)).andReturn(new ArrayList<>()); // empty list; order has filled
 
-        // expect to get amount of altcoin to buy for given BTC amount
+        // expect to get amount of base currency to buy for given counter currency amount
         expect(market.getId()).andReturn(MARKET_ID);
         final BigDecimal lastTradePrice = new BigDecimal("0.015");
         expect(tradingApi.getLatestMarketPrice(MARKET_ID)).andReturn(lastTradePrice);
 
         // expect to send new buy order to exchange and receive timeout exception
-        final BigDecimal amountOfUnitsToBuy = new BigDecimal("33.33333333");
+        final BigDecimal amountOfUnitsToBuy = new BigDecimal("1333.33333333");
         expect(market.getId()).andReturn(MARKET_ID);
+        expect(market.getCounterCurrency()).andReturn(COUNTER_CURRENCY).atLeastOnce();
+        expect(market.getBaseCurrency()).andReturn(BASE_CURRENCY).atLeastOnce();
         expect(tradingApi.createOrder(MARKET_ID, OrderType.BUY, amountOfUnitsToBuy, bidSpotPrice)).andThrow(
                 new TradingApiException("Exchange returned a 500 status code!"));
 
@@ -615,14 +619,14 @@ public class TestExampleScalpingStrategy {
     public void testStrategyHandlesTradingApiExceptionWhenPlacingSellOrder() throws Exception {
 
         // expect to get current bid and ask spot prices
-        final BigDecimal bidSpotPrice = new BigDecimal("0.014");
+        final BigDecimal bidSpotPrice = new BigDecimal("1453.014");
         expect(marketBuyOrders.get(0).getPrice()).andReturn(bidSpotPrice);
-        final BigDecimal askSpotPrice = new BigDecimal("0.016");
+        final BigDecimal askSpotPrice = new BigDecimal("1455.016");
         expect(marketSellOrders.get(0).getPrice()).andReturn(askSpotPrice);
 
         // mock an existing buy order state
         final BigDecimal lastOrderAmount = new BigDecimal("35");
-        final BigDecimal lastOrderPrice = new BigDecimal("0.012");
+        final BigDecimal lastOrderPrice = new BigDecimal("1454.018");
         final Class orderStateClass = Whitebox.getInnerClassType(ExampleScalpingStrategy.class, "OrderState");
         final Object orderState = PowerMock.createMock(orderStateClass);
         Whitebox.setInternalState(orderState, "id", "45345346");
@@ -634,14 +638,9 @@ public class TestExampleScalpingStrategy {
         expect(market.getId()).andReturn(MARKET_ID);
         expect(tradingApi.getYourOpenOrders(MARKET_ID)).andReturn(new ArrayList<>()); // empty list; order has filled
 
-        // expect to get exchange fees
-        expect(tradingApi.getPercentageOfBuyOrderTakenForExchangeFee(MARKET_ID)).andReturn(EXCHANGE_BUY_FEE_PERCENTAGE);
-        expect(tradingApi.getPercentageOfSellOrderTakenForExchangeFee(MARKET_ID)).andReturn(EXCHANGE_SELL_FEE_PERCENTAGE);
-
         // expect to send new sell order to exchange and receive timeout exception
-        final BigDecimal requiredProfitInPercent = new BigDecimal("0.01");
-        final BigDecimal totalPercentageGainRequired = EXCHANGE_BUY_FEE_PERCENTAGE.add(EXCHANGE_SELL_FEE_PERCENTAGE).add(requiredProfitInPercent);
-        final BigDecimal newAskPrice = lastOrderPrice.multiply(totalPercentageGainRequired).add(lastOrderPrice).setScale(8, RoundingMode.HALF_UP);
+        final BigDecimal requiredProfitInPercent = new BigDecimal("0.02");
+        final BigDecimal newAskPrice = lastOrderPrice.multiply(requiredProfitInPercent).add(lastOrderPrice).setScale(8, RoundingMode.HALF_UP);
         expect(market.getId()).andReturn(MARKET_ID).atLeastOnce();
         expect(tradingApi.createOrder(MARKET_ID, OrderType.SELL, lastOrderAmount, newAskPrice)).andThrow(
                 new TradingApiException("Exchange returned a 500 status code!"));

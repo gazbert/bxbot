@@ -229,6 +229,8 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
     public String createOrder(String marketId, OrderType orderType, BigDecimal quantity, BigDecimal price) throws
             TradingApiException, ExchangeNetworkException {
 
+        ExchangeHttpResponse response = null;
+
         try {
 
             if (walletId == null) {
@@ -272,9 +274,11 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
             // params.put("metadata", "{}");
             // params.put("clientOrderIdentifier", "id_123");
 
-            final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange(
+            response = sendAuthenticatedRequestToExchange(
                     "POST", "wallets/" + walletId + "/orders", params);
-            LOG.debug(() -> "Create Order response: " + response);
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Create Order response: " + response);
+            }
 
             if (response.getStatusCode() == HttpURLConnection.HTTP_CREATED) {
                 final ItBitNewOrderResponse itBitNewOrderResponse = gson.fromJson(response.getPayload(),
@@ -289,8 +293,9 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
         } catch (ExchangeNetworkException | TradingApiException e) {
             throw e;
         } catch (Exception e) {
-            LOG.error(UNEXPECTED_ERROR_MSG, e);
-            throw new TradingApiException(UNEXPECTED_ERROR_MSG, e);
+            final String unexpectedErrorMsg = UNEXPECTED_ERROR_MSG + (response == null ? "NULL RESPONSE" : response);
+            LOG.error(unexpectedErrorMsg, e);
+            throw new TradingApiException(unexpectedErrorMsg, e);
         }
     }
 
@@ -300,6 +305,8 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
     @Override
     public boolean cancelOrder(String orderId, String marketIdNotNeeded) throws TradingApiException, ExchangeNetworkException {
 
+        ExchangeHttpResponse response = null;
+
         try {
 
             if (walletId == null) {
@@ -307,9 +314,11 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
                 getBalanceInfo();
             }
 
-            final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange(
+            response = sendAuthenticatedRequestToExchange(
                     "DELETE", "wallets/" + walletId + "/orders/" + orderId, null);
-            LOG.debug(() -> "Cancel Order response: " + response);
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Cancel Order response: " + response);
+            }
 
             if (response.getStatusCode() == HttpURLConnection.HTTP_ACCEPTED) {
                 gson.fromJson(response.getPayload(), ItBitCancelOrderResponse.class);
@@ -323,13 +332,16 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
         } catch (ExchangeNetworkException | TradingApiException e) {
             throw e;
         } catch (Exception e) {
-            LOG.error(UNEXPECTED_ERROR_MSG, e);
-            throw new TradingApiException(UNEXPECTED_ERROR_MSG, e);
+            final String unexpectedErrorMsg = UNEXPECTED_ERROR_MSG + (response == null ? "NULL RESPONSE" : response);
+            LOG.error(unexpectedErrorMsg, e);
+            throw new TradingApiException(unexpectedErrorMsg, e);
         }
     }
 
     @Override
     public List<OpenOrder> getYourOpenOrders(String marketId) throws TradingApiException, ExchangeNetworkException {
+
+        ExchangeHttpResponse response = null;
 
         try {
 
@@ -341,9 +353,11 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
             final Map<String, String> params = getRequestParamMap();
             params.put("status", "open"); // we only want open orders
 
-            final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange(
+            response = sendAuthenticatedRequestToExchange(
                     "GET", "wallets/" + walletId + "/orders", params);
-            LOG.debug(() -> "Open Orders response: " + response);
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Open Orders response: " + response);
+            }
 
             if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
 
@@ -352,6 +366,11 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
                 // adapt
                 final List<OpenOrder> ordersToReturn = new ArrayList<>();
                 for (final ItBitYourOrder itBitOpenOrder : itBitOpenOrders) {
+
+                    if (!marketId.equalsIgnoreCase(itBitOpenOrder.instrument)) {
+                        continue;
+                    }
+
                     OrderType orderType;
                     switch (itBitOpenOrder.side) {
                         case "buy":
@@ -387,17 +406,22 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
         } catch (ExchangeNetworkException | TradingApiException e) {
             throw e;
         } catch (Exception e) {
-            LOG.error(UNEXPECTED_ERROR_MSG, e);
-            throw new TradingApiException(UNEXPECTED_ERROR_MSG, e);
+            final String unexpectedErrorMsg = UNEXPECTED_ERROR_MSG + (response == null ? "NULL RESPONSE" : response);
+            LOG.error(unexpectedErrorMsg, e);
+            throw new TradingApiException(unexpectedErrorMsg, e);
         }
     }
 
     @Override
     public MarketOrderBook getMarketOrders(String marketId) throws TradingApiException, ExchangeNetworkException {
 
+        ExchangeHttpResponse response = null;
+
         try {
-            final ExchangeHttpResponse response = sendPublicRequestToExchange("/markets/" + marketId + "/order_book");
-            LOG.debug(() -> "Market Orders response: " + response);
+            response = sendPublicRequestToExchange("markets/" + marketId + "/order_book");
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Market Orders response: " + response);
+            }
 
             if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
 
@@ -433,18 +457,23 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
         } catch (ExchangeNetworkException | TradingApiException e) {
             throw e;
         } catch (Exception e) {
-            LOG.error(UNEXPECTED_ERROR_MSG, e);
-            throw new TradingApiException(UNEXPECTED_ERROR_MSG, e);
+            final String unexpectedErrorMsg = UNEXPECTED_ERROR_MSG + (response == null ? "NULL RESPONSE" : response);
+            LOG.error(unexpectedErrorMsg, e);
+            throw new TradingApiException(unexpectedErrorMsg, e);
         }
     }
 
     @Override
     public BigDecimal getLatestMarketPrice(String marketId) throws TradingApiException, ExchangeNetworkException {
 
+        ExchangeHttpResponse response = null;
+
         try {
 
-            final ExchangeHttpResponse response = sendPublicRequestToExchange("/markets/" + marketId + "/ticker");
-            LOG.debug(() -> "Latest Market Price response: " + response);
+            response = sendPublicRequestToExchange("markets/" + marketId + "/ticker");
+            if (LOG.isDebugEnabled()) {
+                LOG.debug( "Latest Market Price response: " + response);
+            }
 
             if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
 
@@ -459,21 +488,26 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
         } catch (ExchangeNetworkException | TradingApiException e) {
             throw e;
         } catch (Exception e) {
-            LOG.error(UNEXPECTED_ERROR_MSG, e);
-            throw new TradingApiException(UNEXPECTED_ERROR_MSG, e);
+            final String unexpectedErrorMsg = UNEXPECTED_ERROR_MSG + (response == null ? "NULL RESPONSE" : response);
+            LOG.error(unexpectedErrorMsg, e);
+            throw new TradingApiException(unexpectedErrorMsg, e);
         }
     }
 
     @Override
     public BalanceInfo getBalanceInfo() throws TradingApiException, ExchangeNetworkException {
 
+        ExchangeHttpResponse response = null;
+
         try {
 
             final Map<String, String> params = getRequestParamMap();
             params.put("userId", userId);
 
-            final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("GET", "wallets", params);
-            LOG.debug(() -> "Balance Info response: " + response);
+            response = sendAuthenticatedRequestToExchange("GET", "wallets", params);
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Balance Info response: " + response);
+            }
 
             if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
 
@@ -509,8 +543,9 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
         } catch (ExchangeNetworkException | TradingApiException e) {
             throw e;
         } catch (Exception e) {
-            LOG.error(UNEXPECTED_ERROR_MSG, e);
-            throw new TradingApiException(UNEXPECTED_ERROR_MSG, e);
+            final String unexpectedErrorMsg = UNEXPECTED_ERROR_MSG + (response == null ? "NULL RESPONSE" : response);
+            LOG.error(unexpectedErrorMsg , e);
+            throw new TradingApiException(unexpectedErrorMsg, e);
         }
     }
 

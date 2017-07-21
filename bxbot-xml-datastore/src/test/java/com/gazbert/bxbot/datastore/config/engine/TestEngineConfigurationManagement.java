@@ -31,6 +31,7 @@ import java.math.BigDecimal;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -41,7 +42,7 @@ import static org.junit.Assert.assertTrue;
 public class TestEngineConfigurationManagement {
 
     /* Production XSD */
-    private static final String XML_SCHEMA_FILENAME = "com/gazbert/bxbot/core/config/engine/engine.xsd";
+    private static final String XML_SCHEMA_FILENAME = "com/gazbert/bxbot/datastore/config/engine/engine.xsd";
 
     /* Test XML config */
     private static final String VALID_XML_CONFIG_FILENAME = "src/test/config/engine/valid-engine.xml";
@@ -62,9 +63,6 @@ public class TestEngineConfigurationManagement {
         assertEquals(EMERGENCY_STOP_CURRENCY, engine.getEmergencyStopCurrency());
         assertTrue(EMERGENCY_STOP_BALANCE.compareTo(engine.getEmergencyStopBalance()) == 0);
         assertTrue(TRADE_CYCLE_INTERVAL == engine.getTradeCycleInterval());
-    }
-
-    private void assertEquals(String emergencyStopCurrency, String emergencyStopCurrency1) {
     }
 
     @Test(expected = IllegalStateException.class)

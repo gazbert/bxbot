@@ -230,7 +230,22 @@ public abstract class AbstractExchangeAdapter {
                     throw new ExchangeNetworkException(errorMsg, e);
 
                 } else {
-                    final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
+                    String errorMsg = UNEXPECTED_IO_ERROR_MSG;
+
+                    // Check for any clue in the response...
+                    if (exchangeConnection != null) {
+                        final InputStream rawErrorStream = exchangeConnection.getErrorStream();
+                        if (rawErrorStream != null) {
+                            final BufferedReader errorInputStream = new BufferedReader(new InputStreamReader(rawErrorStream));
+                            final StringBuilder errorResponse = new StringBuilder();
+                            String errorLine;
+                            while ((errorLine = errorInputStream.readLine()) != null) {
+                                errorResponse.append(errorLine);
+                            }
+                            errorInputStream.close();
+                            errorMsg += " ErrorStream Response: " + errorResponse;
+                        }
+                    }
                     LOG.error(errorMsg, e);
                     throw new TradingApiException(errorMsg, e);
                 }
