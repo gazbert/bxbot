@@ -39,6 +39,7 @@ import java.math.BigDecimal;
 import static com.gazbert.bxbot.datastore.FileLocations.ENGINE_CONFIG_XML_FILENAME;
 import static com.gazbert.bxbot.datastore.FileLocations.ENGINE_CONFIG_XSD_FILENAME;
 import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.assertj.core.api.Java6Assertions.in;
 import static org.easymock.EasyMock.*;
 
 /**
@@ -50,6 +51,8 @@ import static org.easymock.EasyMock.*;
 @PrepareForTest({ConfigurationManager.class})
 public class TestEngineConfigRepository {
 
+    private static final String BOT_ID = "avro-707_1";
+    private static final String BOT_NAME = "Avro 707";
     private static final String ENGINE_EMERGENCY_STOP_CURRENCY = "BTC";
     private static final BigDecimal ENGINE_EMERGENCY_STOP_BALANCE = new BigDecimal("0.5");
     private static final int ENGINE_TRADE_CYCLE_INTERVAL = 60;
@@ -73,6 +76,8 @@ public class TestEngineConfigRepository {
 
         final EngineConfigRepository engineConfigRepository = new EngineConfigRepositoryXmlImpl();
         final EngineConfig engineConfig = engineConfigRepository.getConfig();
+        assertThat(engineConfig.getBotId()).isEqualTo(BOT_ID);
+        assertThat(engineConfig.getBotName()).isEqualTo(BOT_NAME);
         assertThat(engineConfig.getEmergencyStopCurrency()).isEqualTo(ENGINE_EMERGENCY_STOP_CURRENCY);
         assertThat(engineConfig.getEmergencyStopBalance()).isEqualTo(ENGINE_EMERGENCY_STOP_BALANCE);
         assertThat(engineConfig.getTradeCycleInterval()).isEqualTo(ENGINE_TRADE_CYCLE_INTERVAL);
@@ -98,6 +103,8 @@ public class TestEngineConfigRepository {
 
     private static EngineType someInternalEngineConfig() {
         final EngineType internalConfig = new EngineType();
+        internalConfig.setBotId(BOT_ID);
+        internalConfig.setBotName(BOT_NAME);
         internalConfig.setEmergencyStopBalance(ENGINE_EMERGENCY_STOP_BALANCE);
         internalConfig.setEmergencyStopCurrency(ENGINE_EMERGENCY_STOP_CURRENCY);
         internalConfig.setTradeCycleInterval(ENGINE_TRADE_CYCLE_INTERVAL);
@@ -106,6 +113,8 @@ public class TestEngineConfigRepository {
 
     private static EngineConfig withSomeExternalEngineConfig() {
         final EngineConfig externalConfig = new EngineConfig();
+        externalConfig.setBotId(BOT_ID);
+        externalConfig.setBotName(BOT_NAME);
         externalConfig.setEmergencyStopBalance(ENGINE_EMERGENCY_STOP_BALANCE);
         externalConfig.setEmergencyStopCurrency(ENGINE_EMERGENCY_STOP_CURRENCY);
         externalConfig.setTradeCycleInterval(ENGINE_TRADE_CYCLE_INTERVAL);

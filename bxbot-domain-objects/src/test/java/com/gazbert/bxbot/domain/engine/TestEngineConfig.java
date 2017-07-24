@@ -36,6 +36,8 @@ import static org.junit.Assert.assertEquals;
  */
 public class TestEngineConfig {
 
+    private static final String BOT_ID = "avro-707_1";
+    private static final String BOT_NAME = "Avro 707";
     private static final String EMERGENCY_STOP_CURRENCY = "BTC";
     private static final BigDecimal EMERGENCY_STOP_BALANCE = new BigDecimal("1.5");
     private static final int TRADE_CYCLE_INTERVAL = 30;
@@ -43,7 +45,11 @@ public class TestEngineConfig {
     @Test
     public void testInitialisationWorksAsExpected() {
 
-        final EngineConfig engineConfig = new EngineConfig(EMERGENCY_STOP_CURRENCY, EMERGENCY_STOP_BALANCE, TRADE_CYCLE_INTERVAL);
+        final EngineConfig engineConfig = new EngineConfig(BOT_ID, BOT_NAME, EMERGENCY_STOP_CURRENCY,
+                EMERGENCY_STOP_BALANCE, TRADE_CYCLE_INTERVAL);
+
+        assertEquals(BOT_ID, engineConfig.getBotId());
+        assertEquals(BOT_NAME, engineConfig.getBotName());
         assertEquals(EMERGENCY_STOP_CURRENCY, engineConfig.getEmergencyStopCurrency());
         assertEquals(EMERGENCY_STOP_BALANCE, engineConfig.getEmergencyStopBalance());
         assertEquals(TRADE_CYCLE_INTERVAL, engineConfig.getTradeCycleInterval());
@@ -53,9 +59,17 @@ public class TestEngineConfig {
     public void testSettersWorkAsExpected() {
 
         final EngineConfig engineConfig = new EngineConfig();
+        assertEquals(null, engineConfig.getBotId());
+        assertEquals(null, engineConfig.getBotName());
         assertEquals(null, engineConfig.getEmergencyStopCurrency());
         assertEquals(null, engineConfig.getEmergencyStopBalance());
         assertEquals(0, engineConfig.getTradeCycleInterval());
+
+        engineConfig.setBotId(BOT_ID);
+        assertEquals(BOT_ID, engineConfig.getBotId());
+
+        engineConfig.setBotName(BOT_NAME);
+        assertEquals(BOT_NAME, engineConfig.getBotName());
 
         engineConfig.setEmergencyStopCurrency(EMERGENCY_STOP_CURRENCY);
         assertEquals(EMERGENCY_STOP_CURRENCY, engineConfig.getEmergencyStopCurrency());

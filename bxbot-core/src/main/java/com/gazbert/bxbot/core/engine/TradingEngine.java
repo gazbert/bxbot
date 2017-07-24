@@ -141,6 +141,9 @@ public class TradingEngine {
      */
     private BigDecimal emergencyStopBalance;
 
+    private String botId;
+    private String botName;
+
     private EmailAlerter emailAlerter;
     private ExchangeAdapter exchangeAdapter;
 
@@ -212,7 +215,7 @@ public class TradingEngine {
      */
     private void runMainControlLoop() {
 
-        LOG.info(() -> "Starting Trading Engine...");
+        LOG.info(() -> "Starting Trading Engine for " + botId + " ...");
 
         while (keepAlive) {
 
@@ -301,7 +304,7 @@ public class TradingEngine {
             }
         }
 
-        LOG.fatal("BX-bot is shutting down NOW!");
+        LOG.fatal("BX-bot " + botId + " is shutting down NOW!");
         synchronized (IS_RUNNING_MONITOR) {
             isRunning = false;
         }
@@ -400,6 +403,14 @@ public class TradingEngine {
         msgContent.append(NEWLINE).append(NEWLINE);
 
         msgContent.append(HORIZONTAL_RULE);
+        msgContent.append("Bot Id / Name:");
+        msgContent.append(NEWLINE).append(NEWLINE);
+        msgContent.append(botId);
+        msgContent.append(" / ");
+        msgContent.append(botName);
+        msgContent.append(NEWLINE).append(NEWLINE);
+
+        msgContent.append(HORIZONTAL_RULE);
         msgContent.append("Exchange Adapter:");
         msgContent.append(NEWLINE).append(NEWLINE);
         msgContent.append(exchangeAdapter.getClass().getName());
@@ -420,7 +431,7 @@ public class TradingEngine {
         msgContent.append(HORIZONTAL_RULE);
         msgContent.append("Action Taken:");
         msgContent.append(NEWLINE).append(NEWLINE);
-        msgContent.append("The bot will shutdown NOW! Check the bot logs for more information.");
+        msgContent.append("The bot will shut down NOW! Check the bot logs for more information.");
         msgContent.append(NEWLINE).append(NEWLINE);
 
         if (exception != null) {
@@ -520,6 +531,9 @@ public class TradingEngine {
 
         final EngineConfig engineConfig = engineConfigRepository.getConfig();
         LOG.info(() -> "Fetched Engine config from repository: " + engineConfig);
+
+        botId = engineConfig.getBotId();
+        botName = engineConfig.getBotName();
 
         tradeExecutionInterval = engineConfig.getTradeCycleInterval();
         emergencyStopCurrency = engineConfig.getEmergencyStopCurrency();

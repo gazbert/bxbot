@@ -42,13 +42,16 @@ import static org.junit.Assert.assertTrue;
 public class TestEngineConfigurationManagement {
 
     /* Production XSD */
-    private static final String XML_SCHEMA_FILENAME = "com/gazbert/bxbot/datastore/config/engine/engine.xsd";
+    private static final String XML_SCHEMA_FILENAME = "com/gazbert/bxbot/datastore/config/engine.xsd";
 
     /* Test XML config */
     private static final String VALID_XML_CONFIG_FILENAME = "src/test/config/engine/valid-engine.xml";
+    private static final String INVALID_XML_CONFIG_FILENAME = "src/test/config/engine/invalid-engine.xml";
     private static final String MISSING_XML_CONFIG_FILENAME = "src/test/config/engine/missing-engine.xml";
     private static final String XML_CONFIG_TO_SAVE_FILENAME = "src/test/config/engine/saved-engine.xml";
 
+    private static final String BOT_ID = "avro-707_1";
+    private static final String BOT_NAME = "Avro 707";
     private static final String EMERGENCY_STOP_CURRENCY = "BTC";
     private static final BigDecimal EMERGENCY_STOP_BALANCE = new BigDecimal("0.5");
     private static final int TRADE_CYCLE_INTERVAL = 60;
@@ -60,6 +63,8 @@ public class TestEngineConfigurationManagement {
         final EngineType engine = ConfigurationManager.loadConfig(EngineType.class,
                 VALID_XML_CONFIG_FILENAME, XML_SCHEMA_FILENAME);
 
+        assertEquals(BOT_ID, engine.getBotId());
+        assertEquals(BOT_NAME, engine.getBotName());
         assertEquals(EMERGENCY_STOP_CURRENCY, engine.getEmergencyStopCurrency());
         assertTrue(EMERGENCY_STOP_BALANCE.compareTo(engine.getEmergencyStopBalance()) == 0);
         assertTrue(TRADE_CYCLE_INTERVAL == engine.getTradeCycleInterval());
@@ -70,10 +75,17 @@ public class TestEngineConfigurationManagement {
         ConfigurationManager.loadConfig(EngineType.class, MISSING_XML_CONFIG_FILENAME, XML_SCHEMA_FILENAME);
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testLoadingInvalidXmlConfigThrowsException() {
+        ConfigurationManager.loadConfig(EngineType.class, INVALID_XML_CONFIG_FILENAME, XML_SCHEMA_FILENAME);
+    }
+
     @Test
     public void testSavingConfigToXmlIsSuccessful() throws Exception {
 
         final EngineType engineConfig = new EngineType();
+        engineConfig.setBotId(BOT_ID);
+        engineConfig.setBotName(BOT_NAME);
         engineConfig.setEmergencyStopCurrency(EMERGENCY_STOP_CURRENCY);
         engineConfig.setEmergencyStopBalance(EMERGENCY_STOP_BALANCE);
         engineConfig.setTradeCycleInterval(TRADE_CYCLE_INTERVAL);
@@ -84,6 +96,8 @@ public class TestEngineConfigurationManagement {
         final EngineType engineReloaded = ConfigurationManager.loadConfig(EngineType.class,
                 XML_CONFIG_TO_SAVE_FILENAME, XML_SCHEMA_FILENAME);
 
+        assertEquals(BOT_ID, engineReloaded.getBotId());
+        assertEquals(BOT_NAME, engineReloaded.getBotName());
         assertEquals(EMERGENCY_STOP_CURRENCY, engineReloaded.getEmergencyStopCurrency());
         assertTrue(EMERGENCY_STOP_BALANCE.compareTo(engineReloaded.getEmergencyStopBalance()) == 0);
         assertTrue(TRADE_CYCLE_INTERVAL == engineReloaded.getTradeCycleInterval());

@@ -487,6 +487,8 @@ The [`engine.xml`](./config/engine.xml) file is used to configure the Trading En
 
 ```xml
 <engine>
+    <bot-id>my-btce-bot_1</bot-id>
+    <bot-name>BTC-e Bot</bot-name>
     <emergency-stop-currency>BTC</emergency-stop-currency>
     <emergency-stop-balance>1.0</emergency-stop-balance>
     <trade-cycle-interval>60</trade-cycle-interval>
@@ -495,6 +497,13 @@ The [`engine.xml`](./config/engine.xml) file is used to configure the Trading En
 
 All elements are mandatory.
 
+The `<bot-id>` value is a unique identifier for the bot. This is used by  
+[BX-bot UI Server](https://github.com/gazbert/bxbot-ui-server) (work in progress) to identify and route configuration 
+updates and commands to the bot. Value must be an alphanumeric string. Underscores and dashes are also permitted.
+
+The `<bot-name>` is a friendly name for the bot. The is used by [BX-bot UI](https://github.com/gazbert/bxbot-ui) 
+(work in progress) to display the bot's name. Value must be an alphanumeric string. Spaces are allowed.
+      
 The `<emergency-stop-currency>` value must be set to prevent catastrophic loss on the exchange. 
 This is normally the currency you intend to hold a long position in. It should be set to the currency short code for the
 wallet, e.g. BTC, LTC, USD. This value can be case sensitive for some exchanges - check the Exchange Adapter documentation.
