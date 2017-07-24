@@ -42,7 +42,7 @@ import static org.junit.Assert.*;
 public class TestEmailAlertsConfigurationManagement {
 
     /* Production XSD */
-    private static final String XML_SCHEMA_LOCATION = "com/gazbert/bxbot/datastore/config/emailalerts/email-alerts.xsd";
+    private static final String XML_SCHEMA_LOCATION = "com/gazbert/bxbot/datastore/config/email-alerts.xsd";
 
     /* Test XML config */
     private static final String VALID_XML_CONFIG_FILENAME = "src/test/config/emailalerts/valid-email-alerts.xml";
