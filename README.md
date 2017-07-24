@@ -341,7 +341,9 @@ You specify the Exchange Adapter you want BX-bot to use in the
 
 All elements are mandatory unless stated otherwise.
 
-The `<name>` value is for descriptive use only. It is used in the log statements.
+The `<name>` value is a friendly name for the Exchange. It is used in log statements and by
+[BX-bot UI](https://github.com/gazbert/bxbot-ui) (work in progress) to display the Exchange's name.
+Value must be an alphanumeric string. Spaces are allowed.
 
 For the `<adapter>` value, you must specify the fully qualified name of the Exchange Adapter class for the Trading Engine
 to inject on startup. The class must be on the runtime classpath. See the 
@@ -383,29 +385,31 @@ You specify which markets you want to trade on in the
 ```xml
 <markets>      
     <market>
-        <label>BTC/USD</label>
-        <id>btc_usd</id>
+        <id>btc_usd</id>    
+        <name>BTC/USD</name>        
         <base-currency>BTC</base-currency>
         <counter-currency>USD</counter-currency>
         <enabled>true</enabled>
-        <trading-strategy>scalping-strategy</trading-strategy>
+        <trading-strategy-id>scalping-strategy</trading-strategy-id>
     </market>
     <market>
-        <label>LTC/BTC</label>
         <id>ltc_usd</id>
+        <name>LTC/BTC</name>
         <base-currency>LTC</base-currency>
         <counter-currency>BTC</counter-currency>
         <enabled>false</enabled>
-        <trading-strategy>scalping-strategy</trading-strategy>
+        <trading-strategy-id>scalping-strategy</trading-strategy-id>
     </market>        
 </markets>
 ```
 
 All elements are mandatory unless stated otherwise.
 
-The `<label>` value is for descriptive use only. It is used in the log statements.
-
 The `<id>` value is the market id as defined on the exchange. E.g the BTC/USD market id is btc_usd on [BTC-e](https://btc-e.com/api/3/docs).
+
+The `<name>` value is a friendly name for the market. The is used in the logs and by
+[BX-bot UI](https://github.com/gazbert/bxbot-ui) (work in progress) to display the market's name.
+Value must be an alphanumeric string.
 
 The `<base-currency>` value is the currency short code for the base currency in the currency pair. When you buy or sell a
 currency pair, you are performing that action on the base currency. The base currency is the commodity you are buying or
@@ -417,8 +421,8 @@ as the quote currency.
 
 The `<enabled>` value allows you to toggle trading on the market. Remember, config changes are only applied on startup.
 
-The `<trading-strategy>` value _must_ match a strategy `<id>` defined in your `strategies.xml` config.
-Currently, BX-bot only supports 1 `<trading-strategy>` per `<market>`.
+The `<trading-strategy-id>` value _must_ match a strategy `<id>` defined in your `strategies.xml` config.
+Currently, BX-bot only supports 1 `<strategy>` per `<market>`.
 
 ##### Strategies #####
 You specify the Trading Strategies you wish to use in the 
@@ -428,12 +432,12 @@ You specify the Trading Strategies you wish to use in the
 <trading-strategies>
     <strategy>
         <id>scalping-strategy</id>
-        <label>Basic Scalping Strat</label>
-         <description>
+        <name>Basic Scalping Strat</name>
+        <description>
          A simple trend following scalper that buys at the current BID price, holds until current market 
          price has reached a configurable minimum percentage gain, and then sells at current ASK price, thereby 
          taking profit from the spread. Don't forget to factor in the exchange fees!
-         </description>
+        </description>
         <class-name>com.gazbert.bxbot.strategies.ExampleScalpingStrategy</class-name>
         <configuration>
             <config-item>
@@ -448,7 +452,7 @@ You specify the Trading Strategies you wish to use in the
     </strategy>
     <strategy>
         <id>macd-strategy</id>
-        <label>MACD Based Strat</label>
+        <name>MACD Based Strat</name>
         <description>Strat uses MACD data to take long position in USD.</description>
         <class-name>com.gazbert.bxbot.strategies.YourMacdStrategy</class-name>
         <configuration>
@@ -471,11 +475,15 @@ You specify the Trading Strategies you wish to use in the
 
 All elements are mandatory unless stated otherwise.
 
-The `<id>` value must be unique. The markets.xml `<market><trading-strategy>` entries cross-reference this.
+The `<id>` value is a unique identifier for the strategy. The markets.xml `<trading-strategy-id>` entries cross-reference this.
+Value must be an alphanumeric string. Underscores and dashes are also permitted.
 
-The `<label>` value is for descriptive use only. It is used in the log statements.
+The `<name>` value is a friendly name for the strategy. The is used in the logs and by
+[BX-bot UI](https://github.com/gazbert/bxbot-ui) (work in progress) to display the strategy's name.
+Value must be an alphanumeric string. Spaces are allowed.
 
-The `<description>` value is optional and not used anywhere yet; a new Web UI will in the future.
+The `<description>` value is optional, and used by [BX-bot UI](https://github.com/gazbert/bxbot-ui) (work in progress)
+to display the strategy's description.
 
 For the `<class-name>` value, you must specify the fully qualified name of your Trading Strategy class for the
 Trading Engine to inject on startup. The class _must_ be on the runtime classpath.
@@ -489,6 +497,8 @@ The [`engine.xml`](./config/engine.xml) file is used to configure the Trading En
 
 ```xml
 <engine>
+    <bot-id>my-btce-bot_1</bot-id>
+    <bot-name>BTC-e Bot</bot-name>
     <emergency-stop-currency>BTC</emergency-stop-currency>
     <emergency-stop-balance>1.0</emergency-stop-balance>
     <trade-cycle-interval>60</trade-cycle-interval>
@@ -497,6 +507,13 @@ The [`engine.xml`](./config/engine.xml) file is used to configure the Trading En
 
 All elements are mandatory.
 
+The `<bot-id>` value is a unique identifier for the bot. This is used by 
+[BX-bot UI Server](https://github.com/gazbert/bxbot-ui-server) (work in progress) to identify and route configuration 
+updates and commands to the bot. Value must be an alphanumeric string. Underscores and dashes are also permitted.
+
+The `<bot-name>` is a friendly name for the bot. The is used by [BX-bot UI](https://github.com/gazbert/bxbot-ui) 
+(work in progress) to display the bot's name. Value must be an alphanumeric string. Spaces are allowed.
+      
 The `<emergency-stop-currency>` value must be set to prevent catastrophic loss on the exchange. 
 This is normally the currency you intend to hold a long position in. It should be set to the currency short code for the
 wallet, e.g. BTC, LTC, USD. This value can be case sensitive for some exchanges - check the Exchange Adapter documentation.

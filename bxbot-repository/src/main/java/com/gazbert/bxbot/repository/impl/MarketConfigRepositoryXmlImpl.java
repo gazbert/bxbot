@@ -186,11 +186,11 @@ public class MarketConfigRepositoryXmlImpl implements MarketConfigRepository {
 
             final MarketConfig marketConfig = new MarketConfig();
             marketConfig.setId(item.getId());
-            marketConfig.setLabel(item.getLabel());
+            marketConfig.setName(item.getName());
             marketConfig.setEnabled(item.isEnabled());
             marketConfig.setBaseCurrency(item.getBaseCurrency());
             marketConfig.setCounterCurrency(item.getCounterCurrency());
-            marketConfig.setTradingStrategy(item.getTradingStrategy());
+            marketConfig.setTradingStrategyId(item.getTradingStrategyId());
 
             marketConfigItems.add(marketConfig);
         });
@@ -207,11 +207,11 @@ public class MarketConfigRepositoryXmlImpl implements MarketConfigRepository {
             // Should only ever be 1 unique Market id
             final MarketType internalMarketConfig = internalMarketConfigItems.get(0);
             marketConfig.setId(internalMarketConfig.getId());
-            marketConfig.setLabel(internalMarketConfig.getLabel());
+            marketConfig.setName(internalMarketConfig.getName());
             marketConfig.setEnabled(internalMarketConfig.isEnabled());
             marketConfig.setBaseCurrency(internalMarketConfig.getBaseCurrency());
             marketConfig.setCounterCurrency(internalMarketConfig.getCounterCurrency());
-            marketConfig.setTradingStrategy(internalMarketConfig.getTradingStrategy());
+            marketConfig.setTradingStrategyId(internalMarketConfig.getTradingStrategyId());
         }
         return marketConfig;
     }
@@ -220,11 +220,11 @@ public class MarketConfigRepositoryXmlImpl implements MarketConfigRepository {
 
         final MarketType marketType = new MarketType();
         marketType.setId(externalMarketConfig.getId());
-        marketType.setLabel(externalMarketConfig.getLabel());
+        marketType.setName(externalMarketConfig.getName());
         marketType.setEnabled(externalMarketConfig.isEnabled());
         marketType.setBaseCurrency(externalMarketConfig.getBaseCurrency());
         marketType.setCounterCurrency(externalMarketConfig.getCounterCurrency());
-        marketType.setTradingStrategy(externalMarketConfig.getTradingStrategy());
+        marketType.setTradingStrategyId(externalMarketConfig.getTradingStrategyId());
         return marketType;
     }
 }

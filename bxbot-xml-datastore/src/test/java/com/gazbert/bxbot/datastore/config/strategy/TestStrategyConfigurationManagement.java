@@ -44,20 +44,21 @@ import static org.junit.Assert.*;
 public class TestStrategyConfigurationManagement {
 
     /* Production XSD */
-    private static final String XML_SCHEMA_FILENAME = "com/gazbert/bxbot/datastore/config/strategy/strategies.xsd";
+    private static final String XML_SCHEMA_FILENAME = "com/gazbert/bxbot/datastore/config/strategies.xsd";
 
     /* Test XML config */
     private static final String VALID_XML_CONFIG_FILENAME = "src/test/config/strategies/valid-strategies.xml";
+    private static final String INVALID_XML_CONFIG_FILENAME = "src/test/config/strategies/invalid-strategies.xml";
     private static final String MISSING_XML_CONFIG_FILENAME = "src/test/config/strategies/missing-strategies.xml";
     private static final String XML_CONFIG_TO_SAVE_FILENAME = "src/test/config/strategies/saved-strategies.xml";
 
     private static final String STRAT_ID_1 = "macd-long-position";
-    private static final String STRAT_LABEL_1 = "MACD Long Position Algo";
+    private static final String STRAT_NAME_1 = "MACD Long Position Algo";
     private static final String STRAT_DESCRIPTION_1 = "Uses MACD as indicator and takes long position in base currency.";
     private static final String STRAT_CLASSNAME_1 = "com.gazbert.nova.algos.MacdLongBase";
 
     private static final String STRAT_ID_2 = "long-scalper";
-    private static final String STRAT_LABEL_2 = "Long Position Scalper Algo";
+    private static final String STRAT_NAME_2 = "Long Position Scalper Algo";
     private static final String STRAT_DESCRIPTION_2 = "Scalps and goes long...";
     private static final String STRAT_CLASSNAME_2 = "com.gazbert.nova.algos.LongScalper";
 
@@ -79,7 +80,7 @@ public class TestStrategyConfigurationManagement {
          * Strat 1
          */
         assertEquals("scalping-strategy", tradingStrategiesType.getStrategies().get(0).getId());
-        assertEquals("Basic Scalping Strat", tradingStrategiesType.getStrategies().get(0).getLabel());
+        assertEquals("Basic Scalping Strat", tradingStrategiesType.getStrategies().get(0).getName());
         assertTrue(tradingStrategiesType.getStrategies().get(0).getDescription().trim().equals(
                 "A simple trend following scalper that buys at the current BID price, holds until current market " +
                 "price has reached a configurable minimum percentage gain, and then sells at current ASK price, thereby " +
@@ -96,7 +97,7 @@ public class TestStrategyConfigurationManagement {
          * Strat 2
          */
         assertEquals("ema-shorting-strategy", tradingStrategiesType.getStrategies().get(1).getId());
-        assertEquals("EMA Based Shorting Strat", tradingStrategiesType.getStrategies().get(1).getLabel());
+        assertEquals("EMA Based Shorting Strat", tradingStrategiesType.getStrategies().get(1).getName());
         assertNull(tradingStrategiesType.getStrategies().get(1).getDescription()); // optional element check
         assertEquals("com.gazbert.bxbot.strategies.YourEmaShortingStrategy", tradingStrategiesType.getStrategies().get(1).getClassName());
 
@@ -118,7 +119,7 @@ public class TestStrategyConfigurationManagement {
          * Strat 3
          */
         assertEquals("macd-strategy", tradingStrategiesType.getStrategies().get(2).getId());
-        assertEquals("MACD Based Strat", tradingStrategiesType.getStrategies().get(2).getLabel());
+        assertEquals("MACD Based Strat", tradingStrategiesType.getStrategies().get(2).getName());
         assertTrue(tradingStrategiesType.getStrategies().get(2).getDescription().trim().equals(
                 "Strat uses MACD data to take long position in USD."));
         assertEquals("com.gazbert.bxbot.strategies.YourMacdStrategy", tradingStrategiesType.getStrategies().get(2).getClassName());
@@ -131,6 +132,13 @@ public class TestStrategyConfigurationManagement {
         ConfigurationManager.loadConfig(TradingStrategiesType.class,
                 MISSING_XML_CONFIG_FILENAME, XML_SCHEMA_FILENAME);
     }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testLoadingInvalidXmlConfigFileThrowsException() {
+
+        ConfigurationManager.loadConfig(TradingStrategiesType.class,
+                INVALID_XML_CONFIG_FILENAME, XML_SCHEMA_FILENAME);
+    }    
 
     @Test
     public void testSavingConfigToXmlIsSuccessful() throws Exception {
@@ -150,7 +158,7 @@ public class TestStrategyConfigurationManagement {
 
         final StrategyType strategy1 = new StrategyType();
         strategy1.setId(STRAT_ID_1);
-        strategy1.setLabel(STRAT_LABEL_1);
+        strategy1.setName(STRAT_NAME_1);
         strategy1.setDescription(STRAT_DESCRIPTION_1);
         strategy1.setClassName(STRAT_CLASSNAME_1);
         strategy1.setConfiguration(strat1Config);
@@ -162,7 +170,7 @@ public class TestStrategyConfigurationManagement {
 
         final StrategyType strategy2 = new StrategyType();
         strategy2.setId(STRAT_ID_2);
-        strategy2.setLabel(STRAT_LABEL_2);
+        strategy2.setName(STRAT_NAME_2);
         strategy2.setDescription(STRAT_DESCRIPTION_2);
         strategy2.setClassName(STRAT_CLASSNAME_2);
         strategy2.setConfiguration(strat2Config);
@@ -179,7 +187,7 @@ public class TestStrategyConfigurationManagement {
 
         // Strat 1
         assertThat(strategiesReloaded.getStrategies().get(0).getId()).isEqualTo(STRAT_ID_1);
-        assertThat(strategiesReloaded.getStrategies().get(0).getLabel()).isEqualTo(STRAT_LABEL_1);
+        assertThat(strategiesReloaded.getStrategies().get(0).getName()).isEqualTo(STRAT_NAME_1);
         assertThat(strategiesReloaded.getStrategies().get(0).getDescription()).isEqualTo(STRAT_DESCRIPTION_1);
         assertThat(strategiesReloaded.getStrategies().get(0).getClassName()).isEqualTo(STRAT_CLASSNAME_1);
 
@@ -194,7 +202,7 @@ public class TestStrategyConfigurationManagement {
 
         // Strat 2
         assertThat(strategiesReloaded.getStrategies().get(1).getId()).isEqualTo(STRAT_ID_2);
-        assertThat(strategiesReloaded.getStrategies().get(1).getLabel()).isEqualTo(STRAT_LABEL_2);
+        assertThat(strategiesReloaded.getStrategies().get(1).getName()).isEqualTo(STRAT_NAME_2);
         assertThat(strategiesReloaded.getStrategies().get(1).getDescription()).isEqualTo(STRAT_DESCRIPTION_2);
         assertThat(strategiesReloaded.getStrategies().get(1).getClassName()).isEqualTo(STRAT_CLASSNAME_2);
 

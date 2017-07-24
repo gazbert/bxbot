@@ -65,6 +65,8 @@ public class TestEngineConfigController extends AbstractConfigControllerTest {
     private static final String VALID_USER_PASSWORD = "user1-password";
 
     // Canned test data
+    private static final String BOT_ID = "avro-707_1";
+    private static final String BOT_NAME = "Avro 707";
     private static final String ENGINE_EMERGENCY_STOP_CURRENCY = "BTC";
     private static final BigDecimal ENGINE_EMERGENCY_STOP_BALANCE = new BigDecimal("0.9232320");
     private static final int ENGINE_TRADE_CYCLE_INTERVAL = 60;
@@ -94,6 +96,8 @@ public class TestEngineConfigController extends AbstractConfigControllerTest {
                 .header("Authorization", "Bearer " + getAccessToken(VALID_USER_LOGINID, VALID_USER_PASSWORD)))
                 .andDo(print())
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$.botId").value(BOT_ID))
+                .andExpect(jsonPath("$.botName").value(BOT_NAME))
                 .andExpect(jsonPath("$.emergencyStopCurrency").value(ENGINE_EMERGENCY_STOP_CURRENCY))
                 .andExpect(jsonPath("$.emergencyStopBalance").value(ENGINE_EMERGENCY_STOP_BALANCE.doubleValue()))
                 .andExpect(jsonPath("$.tradeCycleInterval").value(ENGINE_TRADE_CYCLE_INTERVAL)
@@ -137,6 +141,8 @@ public class TestEngineConfigController extends AbstractConfigControllerTest {
 
     private static EngineConfig someEngineConfig() {
         final EngineConfig engineConfig = new EngineConfig();
+        engineConfig.setBotId(BOT_ID);
+        engineConfig.setBotName(BOT_NAME);
         engineConfig.setEmergencyStopCurrency(ENGINE_EMERGENCY_STOP_CURRENCY);
         engineConfig.setEmergencyStopBalance(ENGINE_EMERGENCY_STOP_BALANCE);
         engineConfig.setTradeCycleInterval(ENGINE_TRADE_CYCLE_INTERVAL);

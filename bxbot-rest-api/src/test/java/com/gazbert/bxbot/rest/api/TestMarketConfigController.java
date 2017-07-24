@@ -69,18 +69,18 @@ public class TestMarketConfigController extends AbstractConfigControllerTest {
     private static final String UNKNOWN_MARKET_ID = "unknown-id";
 
     private static final String MARKET_1_ID = "btc_usd";
-    private static final String MARKET_1_LABEL = "BTC/USD";
+    private static final String MARKET_1_NAME = "BTC/USD";
     private static final String MARKET_1_BASE_CURRENCY = "BTC";
     private static final String MARKET_1_COUNTER_CURRENCY = "USD";
     private static final boolean MARKET_1_ENABLED = true;
-    private static final String MARKET_1_STRATEGY = "scalper-strategy";
+    private static final String MARKET_1_STRATEGY_ID = "scalper-strategy";
 
     private static final String MARKET_2_ID = "btc_gbp";
-    private static final String MARKET_2_LABEL = "BTC/GBP";
+    private static final String MARKET_2_NAME = "BTC/GBP";
     private static final String MARKET_2_BASE_CURRENCY = "BTC";
     private static final String MARKET_2_COUNTER_CURRENCY = "GBP";
     private static final boolean MARKET_2_ENABLED = false;
-    private static final String MARKET_2_STRATEGY = "macd-strategy";
+    private static final String MARKET_2_STRATEGY_ID = "macd-strategy";
 
     @MockBean
     MarketConfigService marketConfigService;
@@ -110,18 +110,18 @@ public class TestMarketConfigController extends AbstractConfigControllerTest {
                 .andExpect(status().isOk())
 
                 .andExpect(jsonPath("$.[0].id").value(MARKET_1_ID))
-                .andExpect(jsonPath("$.[0].label").value(MARKET_1_LABEL))
+                .andExpect(jsonPath("$.[0].name").value(MARKET_1_NAME))
                 .andExpect(jsonPath("$.[0].baseCurrency").value(MARKET_1_BASE_CURRENCY))
                 .andExpect(jsonPath("$.[0].counterCurrency").value(MARKET_1_COUNTER_CURRENCY))
                 .andExpect(jsonPath("$.[0].enabled").value(MARKET_1_ENABLED))
-                .andExpect(jsonPath("$.[0].tradingStrategy").value(MARKET_1_STRATEGY))
+                .andExpect(jsonPath("$.[0].tradingStrategyId").value(MARKET_1_STRATEGY_ID))
 
                 .andExpect(jsonPath("$.[1].id").value(MARKET_2_ID))
-                .andExpect(jsonPath("$.[1].label").value(MARKET_2_LABEL))
+                .andExpect(jsonPath("$.[1].name").value(MARKET_2_NAME))
                 .andExpect(jsonPath("$.[1].baseCurrency").value(MARKET_2_BASE_CURRENCY))
                 .andExpect(jsonPath("$.[1].counterCurrency").value(MARKET_2_COUNTER_CURRENCY))
                 .andExpect(jsonPath("$.[1].enabled").value(MARKET_2_ENABLED))
-                .andExpect(jsonPath("$.[1].tradingStrategy").value(MARKET_2_STRATEGY)
+                .andExpect(jsonPath("$.[1].tradingStrategyId").value(MARKET_2_STRATEGY_ID)
 
                 );
     }
@@ -148,11 +148,11 @@ public class TestMarketConfigController extends AbstractConfigControllerTest {
                 .andExpect(status().isOk())
 
                 .andExpect(jsonPath("$.id").value(MARKET_1_ID))
-                .andExpect(jsonPath("$.label").value(MARKET_1_LABEL))
+                .andExpect(jsonPath("$.name").value(MARKET_1_NAME))
                 .andExpect(jsonPath("$.baseCurrency").value(MARKET_1_BASE_CURRENCY))
                 .andExpect(jsonPath("$.counterCurrency").value(MARKET_1_COUNTER_CURRENCY))
                 .andExpect(jsonPath("$.enabled").value(MARKET_1_ENABLED))
-                .andExpect(jsonPath("$.tradingStrategy").value(MARKET_1_STRATEGY)
+                .andExpect(jsonPath("$.tradingStrategyId").value(MARKET_1_STRATEGY_ID)
                 );
     }
 
@@ -318,28 +318,28 @@ public class TestMarketConfigController extends AbstractConfigControllerTest {
     // ------------------------------------------------------------------------------------------------
 
     private static MarketConfig someMarketConfig() {
-        final MarketConfig marketConfig = new MarketConfig(MARKET_1_LABEL, MARKET_1_ID, MARKET_1_BASE_CURRENCY,
-                MARKET_1_COUNTER_CURRENCY, MARKET_1_ENABLED, MARKET_1_STRATEGY);
+        final MarketConfig marketConfig = new MarketConfig(MARKET_1_ID, MARKET_1_NAME, MARKET_1_BASE_CURRENCY,
+                MARKET_1_COUNTER_CURRENCY, MARKET_1_ENABLED, MARKET_1_STRATEGY_ID);
         return marketConfig;
     }
 
     private static MarketConfig unrecognizedMarketConfig() {
-        final MarketConfig marketConfig = new MarketConfig(MARKET_1_LABEL, UNKNOWN_MARKET_ID, MARKET_1_BASE_CURRENCY,
-                MARKET_1_COUNTER_CURRENCY, MARKET_1_ENABLED, MARKET_1_STRATEGY);
+        final MarketConfig marketConfig = new MarketConfig(UNKNOWN_MARKET_ID, MARKET_1_NAME, MARKET_1_BASE_CURRENCY,
+                MARKET_1_COUNTER_CURRENCY, MARKET_1_ENABLED, MARKET_1_STRATEGY_ID);
         return marketConfig;
     }
 
     private static MarketConfig someMarketConfigWithMissingId() {
-        final MarketConfig marketConfig = new MarketConfig(MARKET_1_LABEL, null, MARKET_1_BASE_CURRENCY,
-                MARKET_1_COUNTER_CURRENCY, MARKET_1_ENABLED, MARKET_1_STRATEGY);
+        final MarketConfig marketConfig = new MarketConfig(null, MARKET_1_NAME, MARKET_1_BASE_CURRENCY,
+                MARKET_1_COUNTER_CURRENCY, MARKET_1_ENABLED, MARKET_1_STRATEGY_ID);
         return marketConfig;
     }
 
     private static List<MarketConfig> allMarketConfig() {
-        final MarketConfig market1Config = new MarketConfig(MARKET_1_LABEL, MARKET_1_ID, MARKET_1_BASE_CURRENCY,
-                MARKET_1_COUNTER_CURRENCY, MARKET_1_ENABLED, MARKET_1_STRATEGY);
-        final MarketConfig market2Config = new MarketConfig(MARKET_2_LABEL, MARKET_2_ID, MARKET_2_BASE_CURRENCY,
-                MARKET_2_COUNTER_CURRENCY, MARKET_2_ENABLED, MARKET_2_STRATEGY);
+        final MarketConfig market1Config = new MarketConfig(MARKET_1_ID, MARKET_1_NAME, MARKET_1_BASE_CURRENCY,
+                MARKET_1_COUNTER_CURRENCY, MARKET_1_ENABLED, MARKET_1_STRATEGY_ID);
+        final MarketConfig market2Config = new MarketConfig(MARKET_2_ID, MARKET_2_NAME, MARKET_2_BASE_CURRENCY,
+                MARKET_2_COUNTER_CURRENCY, MARKET_2_ENABLED, MARKET_2_STRATEGY_ID);
 
         final List<MarketConfig> allMarkets = new ArrayList<>();
         allMarkets.add(market1Config);

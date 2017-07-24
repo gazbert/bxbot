@@ -71,6 +71,8 @@ public class EngineConfigRepositoryXmlImpl implements EngineConfigRepository {
     private static EngineConfig adaptInternalToExternalConfig(EngineType internalEngineConfig) {
 
         final EngineConfig externalEngineConfig = new EngineConfig();
+        externalEngineConfig.setBotId(internalEngineConfig.getBotId());
+        externalEngineConfig.setBotName(internalEngineConfig.getBotName());
         externalEngineConfig.setEmergencyStopCurrency(internalEngineConfig.getEmergencyStopCurrency());
         externalEngineConfig.setEmergencyStopBalance(internalEngineConfig.getEmergencyStopBalance());
         externalEngineConfig.setTradeCycleInterval(internalEngineConfig.getTradeCycleInterval());
@@ -80,6 +82,8 @@ public class EngineConfigRepositoryXmlImpl implements EngineConfigRepository {
     private static EngineType adaptExternalToInternalConfig(EngineConfig externalEngineConfig) {
 
         final EngineType internalEngineConfig = new EngineType();
+        internalEngineConfig.setBotId(externalEngineConfig.getBotId());
+        internalEngineConfig.setBotName(externalEngineConfig.getBotName());
         internalEngineConfig.setEmergencyStopCurrency(externalEngineConfig.getEmergencyStopCurrency());
         internalEngineConfig.setEmergencyStopBalance(externalEngineConfig.getEmergencyStopBalance());
         internalEngineConfig.setTradeCycleInterval(externalEngineConfig.getTradeCycleInterval());

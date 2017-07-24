@@ -79,7 +79,7 @@ public class TestTradingEngine {
 
     // Exchange Adapter config
     private static final String EXCHANGE_ADAPTER_IMPL_CLASS = "com.my.adapters.DummyBtceExchangeAdapter";
-    private static final String EXCHANGE_ADAPTER_NAME = "My BTC-e Adapter";
+    private static final String EXCHANGE_NAME = "BTC-e";
     private static final Integer EXCHANGE_ADAPTER_NETWORK_TIMEOUT = new Integer("30");
     private static final List<Integer> EXCHANGE_ADAPTER_NONFATAL_ERROR_CODES = Arrays.asList(502, 503, 504);
     private static final List<String> EXCHANGE_ADAPTER_NONFATAL_ERROR_MESSAGES = Arrays.asList(
@@ -98,14 +98,14 @@ public class TestTradingEngine {
 
     // Strategies config
     private static final String STRATEGY_ID = "MyMacdStrategy_v3";
-    private static final String STRATEGY_LABEL = "MACD Shorting algo";
+    private static final String STRATEGY_NAME = "MACD Shorting algo";
     private static final String STRATEGY_DESCRIPTION = "MACD Shorting algo description";
     private static final String STRATEGY_IMPL_CLASS = "com.my.strats.MyMacdStrategy";
     private static final String STRATEGY_CONFIG_ITEM_NAME = "btc-sell-order-amount";
     private static final String STRATEGY_CONFIG_ITEM_VALUE = "0.2";
 
     // Markets config
-    private static final String MARKET_LABEL = "BTC/USD";
+    private static final String MARKET_NAME = "BTC/USD";
     private static final String MARKET_ID = "btc_usd";
     private static final String MARKET_BASE_CURRENCY = "BTC";
     private static final String MARKET_COUNTER_CURRENCY = "USD";
@@ -533,7 +533,7 @@ public class TestTradingEngine {
     private void setupExchangeAdapterConfigExpectations() throws Exception {
         expect(exchangeConfigRepository.getConfig()).andReturn(someExchangeConfig());
         expect(ConfigurableComponentFactory.createComponent(EXCHANGE_ADAPTER_IMPL_CLASS)).andReturn(exchangeAdapter);
-        expect(exchangeAdapter.getImplName()).andReturn(EXCHANGE_ADAPTER_NAME);
+        expect(exchangeAdapter.getImplName()).andReturn(EXCHANGE_NAME);
         exchangeAdapter.init(anyObject(ExchangeConfig.class));
     }
 
@@ -580,7 +580,7 @@ public class TestTradingEngine {
 
         final com.gazbert.bxbot.domain.exchange.ExchangeConfig exchangeConfig = new com.gazbert.bxbot.domain.exchange.ExchangeConfig();
         exchangeConfig.setAuthenticationConfig(authenticationConfig);
-        exchangeConfig.setExchangeName(EXCHANGE_ADAPTER_NAME);
+        exchangeConfig.setExchangeName(EXCHANGE_NAME);
         exchangeConfig.setExchangeAdapter(EXCHANGE_ADAPTER_IMPL_CLASS);
         exchangeConfig.setNetworkConfig(networkConfig);
         exchangeConfig.setOtherConfig(otherConfig);
@@ -610,7 +610,7 @@ public class TestTradingEngine {
         configItems.put(STRATEGY_CONFIG_ITEM_NAME, STRATEGY_CONFIG_ITEM_VALUE);
 
         final StrategyConfig strategyConfig1 = new StrategyConfig(
-                STRATEGY_ID, STRATEGY_LABEL, STRATEGY_DESCRIPTION, STRATEGY_IMPL_CLASS, configItems);
+                STRATEGY_ID, STRATEGY_NAME, STRATEGY_DESCRIPTION, STRATEGY_IMPL_CLASS, configItems);
 
         final List<StrategyConfig> allStrategies = new ArrayList<>();
         allStrategies.add(strategyConfig1);
@@ -618,7 +618,7 @@ public class TestTradingEngine {
     }
 
     private static List<MarketConfig> allTheMarketsConfig() {
-        final MarketConfig marketConfig1 = new MarketConfig(MARKET_ID, MARKET_LABEL, MARKET_BASE_CURRENCY,
+        final MarketConfig marketConfig1 = new MarketConfig(MARKET_ID, MARKET_NAME, MARKET_BASE_CURRENCY,
                 MARKET_COUNTER_CURRENCY, MARKET_IS_ENABLED, STRATEGY_ID);
         final List<MarketConfig> allMarkets = new ArrayList<>();
         allMarkets.add(marketConfig1);

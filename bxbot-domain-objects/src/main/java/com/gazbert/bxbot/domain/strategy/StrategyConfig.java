@@ -37,7 +37,7 @@ import java.util.Map;
 public class StrategyConfig {
 
     private String id;
-    private String label;
+    private String name;
     private String description;
     private String className;
     private Map<String, String> configItems = new HashMap<>();
@@ -47,9 +47,9 @@ public class StrategyConfig {
     public StrategyConfig() {
     }
 
-    public StrategyConfig(String id, String label, String description, String className, Map<String, String> configItems) {
+    public StrategyConfig(String id, String name, String description, String className, Map<String, String> configItems) {
         this.id = id;
-        this.label = label;
+        this.name = name;
         this.description = description;
         this.className = className;
         this.configItems = configItems;
@@ -63,12 +63,12 @@ public class StrategyConfig {
         this.id = id;
     }
 
-    public String getLabel() {
-        return label;
+    public String getName() {
+        return name;
     }
 
-    public void setLabel(String label) {
-        this.label = label;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getDescription() {
@@ -112,7 +112,7 @@ public class StrategyConfig {
     public String toString() {
         return MoreObjects.toStringHelper(this)
                 .add("id", id)
-                .add("label", label)
+                .add("name", name)
                 .add("description", description)
                 .add("className", className)
                 .add("configItems", configItems)
