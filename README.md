@@ -428,7 +428,7 @@ You specify the Trading Strategies you wish to use in the
 <trading-strategies>
     <strategy>
         <id>scalping-strategy</id>
-        <label>Basic Scalping Strat</label>
+        <name>Basic Scalping Strat</name>
          <description>
          A simple trend following scalper that buys at the current BID price, holds until current market 
          price has reached a configurable minimum percentage gain, and then sells at current ASK price, thereby 
@@ -448,7 +448,7 @@ You specify the Trading Strategies you wish to use in the
     </strategy>
     <strategy>
         <id>macd-strategy</id>
-        <label>MACD Based Strat</label>
+        <name>MACD Based Strat</name>
         <description>Strat uses MACD data to take long position in USD.</description>
         <class-name>com.gazbert.bxbot.strategies.YourMacdStrategy</class-name>
         <configuration>
@@ -471,11 +471,15 @@ You specify the Trading Strategies you wish to use in the
 
 All elements are mandatory unless stated otherwise.
 
-The `<id>` value must be unique. The markets.xml `<market><trading-strategy>` entries cross-reference this.
+The `<id>` value is a unique identifier for the strategy. The markets.xml `<trading-strategy-id>` entries cross-reference this.
+Value must be an alphanumeric string. Underscores and dashes are also permitted.
 
-The `<label>` value is for descriptive use only. It is used in the log statements.
+The `<name>` value is a friendly name for the strategy. The is used in the logs and by
+[BX-bot UI](https://github.com/gazbert/bxbot-ui) (work in progress) to display the strategy's name.
+Value must be an alphanumeric string. Spaces are allowed.
 
-The `<description>` value is optional and not used anywhere yet; a new Web UI will in the future.
+The `<description>` value is optional, and used by [BX-bot UI](https://github.com/gazbert/bxbot-ui) (work in progress)
+to display the strategy's description.
 
 For the `<class-name>` value, you must specify the fully qualified name of your Trading Strategy class for the
 Trading Engine to inject on startup. The class _must_ be on the runtime classpath.

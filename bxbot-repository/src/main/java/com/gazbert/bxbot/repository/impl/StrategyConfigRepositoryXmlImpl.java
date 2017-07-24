@@ -36,7 +36,6 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -189,7 +188,7 @@ public class StrategyConfigRepositoryXmlImpl implements StrategyConfigRepository
 
             final StrategyConfig strategyConfig = new StrategyConfig();
             strategyConfig.setId(item.getId());
-            strategyConfig.setLabel(item.getLabel());
+            strategyConfig.setName(item.getName());
             strategyConfig.setDescription(item.getDescription());
             strategyConfig.setClassName(item.getClassName());
 
@@ -211,7 +210,7 @@ public class StrategyConfigRepositoryXmlImpl implements StrategyConfigRepository
             // Should only ever be 1 unique Strategy id
             final StrategyType internalStrategyConfig = internalStrategyConfigItems.get(0);
             strategyConfig.setId(internalStrategyConfig.getId());
-            strategyConfig.setLabel(internalStrategyConfig.getLabel());
+            strategyConfig.setName(internalStrategyConfig.getName());
             strategyConfig.setDescription(internalStrategyConfig.getDescription());
             strategyConfig.setClassName(internalStrategyConfig.getClassName());
 
@@ -234,7 +233,7 @@ public class StrategyConfigRepositoryXmlImpl implements StrategyConfigRepository
 
         final StrategyType strategyType = new StrategyType();
         strategyType.setId(externalStrategyConfig.getId());
-        strategyType.setLabel(externalStrategyConfig.getLabel());
+        strategyType.setName(externalStrategyConfig.getName());
         strategyType.setDescription(externalStrategyConfig.getDescription());
         strategyType.setClassName(externalStrategyConfig.getClassName());
         strategyType.setConfiguration(configurationType);

@@ -50,7 +50,7 @@ public class TestStrategyConfig {
 
         final StrategyConfig strategyConfig = new StrategyConfig(ID, LABEL, DESCRIPTION, CLASSNAME, CONFIG_ITEMS);
         assertEquals(ID, strategyConfig.getId());
-        assertEquals(LABEL, strategyConfig.getLabel());
+        assertEquals(LABEL, strategyConfig.getName());
         assertEquals(DESCRIPTION, strategyConfig.getDescription());
         assertEquals(CLASSNAME, strategyConfig.getClassName());
         assertEquals(CONFIG_ITEMS, strategyConfig.getConfigItems());
@@ -61,7 +61,7 @@ public class TestStrategyConfig {
 
         final StrategyConfig strategyConfig = new StrategyConfig();
         assertEquals(null, strategyConfig.getId());
-        assertEquals(null, strategyConfig.getLabel());
+        assertEquals(null, strategyConfig.getName());
         assertEquals(null, strategyConfig.getDescription());
         assertEquals(null, strategyConfig.getClassName());
         assertTrue(strategyConfig.getConfigItems().isEmpty());
@@ -69,8 +69,8 @@ public class TestStrategyConfig {
         strategyConfig.setId(ID);
         assertEquals(ID, strategyConfig.getId());
 
-        strategyConfig.setLabel(LABEL);
-        assertEquals(LABEL, strategyConfig.getLabel());
+        strategyConfig.setName(LABEL);
+        assertEquals(LABEL, strategyConfig.getName());
 
         strategyConfig.setDescription(DESCRIPTION);
         assertEquals(DESCRIPTION, strategyConfig.getDescription());

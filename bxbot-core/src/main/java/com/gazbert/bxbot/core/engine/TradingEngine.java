@@ -602,7 +602,7 @@ public class TradingEngine {
                 final TradingStrategy strategyImpl = ConfigurableComponentFactory.createComponent(tradingStrategyClassname);
                 strategyImpl.init(exchangeAdapter, tradingMarket, tradingStrategyConfig);
 
-                LOG.info(() -> "Initialized trading strategy successfully. Name: [" + tradingStrategy.getLabel()
+                LOG.info(() -> "Initialized trading strategy successfully. Name: [" + tradingStrategy.getName()
                         + "] Class: " + tradingStrategy.getClassName());
 
                 tradingStrategiesToExecute.add(strategyImpl);
