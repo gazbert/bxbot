@@ -22,7 +22,7 @@ public final class FileLocations {
      */
     public static final String EMAIL_ALERTS_CONFIG_XSD_FILENAME = "com/gazbert/bxbot/datastore/config/emailalerts/email-alerts.xsd";
     public static final String ENGINE_CONFIG_XSD_FILENAME = "com/gazbert/bxbot/datastore/config/engine.xsd";
-    public static final String EXCHANGE_CONFIG_XSD_FILENAME = "com/gazbert/bxbot/datastore/config/exchange/exchange.xsd";
+    public static final String EXCHANGE_CONFIG_XSD_FILENAME = "com/gazbert/bxbot/datastore/config/exchange.xsd";
     public static final String MARKETS_CONFIG_XSD_FILENAME = "com/gazbert/bxbot/datastore/config/market/markets.xsd";
     public static final String STRATEGIES_CONFIG_XSD_FILENAME = "com/gazbert/bxbot/datastore/config/strategy/strategies.xsd";
 

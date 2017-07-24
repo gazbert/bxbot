@@ -339,7 +339,9 @@ You specify the Exchange Adapter you want BX-bot to use in the
 
 All elements are mandatory unless stated otherwise.
 
-The `<name>` value is for descriptive use only. It is used in the log statements.
+The `<name>` value is a friendly name for the Exchange. It is used in log statements and by
+[BX-bot UI](https://github.com/gazbert/bxbot-ui) (work in progress) to display the Exchange's name.
+Value must be an alphanumeric string. Spaces are allowed.
 
 For the `<adapter>` value, you must specify the fully qualified name of the Exchange Adapter class for the Trading Engine
 to inject on startup. The class must be on the runtime classpath. See the 
@@ -497,7 +499,7 @@ The [`engine.xml`](./config/engine.xml) file is used to configure the Trading En
 
 All elements are mandatory.
 
-The `<bot-id>` value is a unique identifier for the bot. This is used by  
+The `<bot-id>` value is a unique identifier for the bot. This is used by 
 [BX-bot UI Server](https://github.com/gazbert/bxbot-ui-server) (work in progress) to identify and route configuration 
 updates and commands to the bot. Value must be an alphanumeric string. Underscores and dashes are also permitted.
 
