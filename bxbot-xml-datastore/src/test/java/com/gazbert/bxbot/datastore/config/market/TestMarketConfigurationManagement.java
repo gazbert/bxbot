@@ -46,6 +46,7 @@ public class TestMarketConfigurationManagement {
 
     /* Test XML config */
     private static final String VALID_XML_CONFIG_FILENAME = "src/test/config/markets/valid-markets.xml";
+    private static final String INVALID_XML_CONFIG_FILENAME = "src/test/config/markets/invalid-markets.xml";
     private static final String MISSING_XML_CONFIG_FILENAME = "src/test/config/markets/missing-markets.xml";
     private static final String XML_CONFIG_TO_SAVE_FILENAME = "src/test/config/markets/saved-markets.xml";
 
@@ -92,6 +93,13 @@ public class TestMarketConfigurationManagement {
 
         ConfigurationManager.loadConfig(MarketsType.class,
                 MISSING_XML_CONFIG_FILENAME, XML_SCHEMA_FILENAME);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testLoadingInvalidXmlConfigFileThrowsException() {
+
+        ConfigurationManager.loadConfig(MarketsType.class,
+                INVALID_XML_CONFIG_FILENAME, XML_SCHEMA_FILENAME);
     }
 
     @Test
