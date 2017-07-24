@@ -431,11 +431,11 @@ You specify the Trading Strategies you wish to use in the
     <strategy>
         <id>scalping-strategy</id>
         <name>Basic Scalping Strat</name>
-         <description>
+        <description>
          A simple trend following scalper that buys at the current BID price, holds until current market 
          price has reached a configurable minimum percentage gain, and then sells at current ASK price, thereby 
          taking profit from the spread. Don't forget to factor in the exchange fees!
-         </description>
+        </description>
         <class-name>com.gazbert.bxbot.strategies.ExampleScalpingStrategy</class-name>
         <configuration>
             <config-item>
