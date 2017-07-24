@@ -405,7 +405,7 @@ All elements are mandatory unless stated otherwise.
 
 The `<id>` value is the market id as defined on the exchange. E.g the BTC/USD market id is btc_usd on [BTC-e](https://btc-e.com/api/3/docs).
 
-The `<name>` value is friendly name for the market. The is used in the logs and by
+The `<name>` value is a friendly name for the market. The is used in the logs and by
 [BX-bot UI](https://github.com/gazbert/bxbot-ui) (work in progress) to display the market's name.
 Value must be an alphanumeric string.
 
