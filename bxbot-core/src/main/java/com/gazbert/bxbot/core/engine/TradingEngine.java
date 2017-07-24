@@ -562,7 +562,7 @@ public class TradingEngine {
         // Load em up and create the Strategies
         for (final MarketConfig market : markets) {
 
-            final String marketName = market.getLabel();
+            final String marketName = market.getName();
             if (!market.isEnabled()) {
                 LOG.info(() -> marketName + " market is NOT enabled for trading - skipping to next market...");
                 continue;
@@ -577,7 +577,7 @@ public class TradingEngine {
             }
 
             // Get the strategy to use for this Market
-            final String strategyToUse = market.getTradingStrategy();
+            final String strategyToUse = market.getTradingStrategyId();
             LOG.info(() -> "Market Trading Strategy Id: " + strategyToUse);
 
             if (strategyDescriptions.containsKey(strategyToUse)) {

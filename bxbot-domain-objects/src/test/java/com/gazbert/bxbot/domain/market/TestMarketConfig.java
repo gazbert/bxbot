@@ -34,8 +34,8 @@ import static org.junit.Assert.assertEquals;
  */
 public class TestMarketConfig {
 
-    private static final String LABEL = "BTC/USD";
     private static final String ID = "gemini_usd/btc";
+    private static final String NAME = "BTC/USD";
     private static final String BASE_CURRENCY = "BTC";
     private static final String COUNTER_CURRENCY = "USD";
     private static final boolean IS_ENABLED = true;
@@ -45,32 +45,31 @@ public class TestMarketConfig {
     @Test
     public void testInitialisationWorksAsExpected() {
 
-        final MarketConfig marketConfig = new MarketConfig(LABEL, ID, BASE_CURRENCY, COUNTER_CURRENCY, IS_ENABLED, TRADING_STRATEGY);
-        assertEquals(LABEL, marketConfig.getLabel());
+        final MarketConfig marketConfig = new MarketConfig(ID, NAME, BASE_CURRENCY, COUNTER_CURRENCY, IS_ENABLED, TRADING_STRATEGY);
+        assertEquals(NAME, marketConfig.getName());
         assertEquals(ID, marketConfig.getId());
         assertEquals(BASE_CURRENCY, marketConfig.getBaseCurrency());
         assertEquals(COUNTER_CURRENCY, marketConfig.getCounterCurrency());
         assertEquals(IS_ENABLED, marketConfig.isEnabled());
-        assertEquals(TRADING_STRATEGY, marketConfig.getTradingStrategy());
+        assertEquals(TRADING_STRATEGY, marketConfig.getTradingStrategyId());
     }
 
     @Test
     public void testSettersWorkAsExpected() {
 
         final MarketConfig marketConfig = new MarketConfig();
-        assertEquals(null, marketConfig.getLabel());
         assertEquals(null, marketConfig.getId());
+        assertEquals(null, marketConfig.getName());
         assertEquals(null, marketConfig.getBaseCurrency());
         assertEquals(null, marketConfig.getCounterCurrency());
         assertEquals(false, marketConfig.isEnabled());
-        assertEquals(null, marketConfig.getTradingStrategy());
-
-
-        marketConfig.setLabel(LABEL);
-        assertEquals(LABEL, marketConfig.getLabel());
+        assertEquals(null, marketConfig.getTradingStrategyId());
 
         marketConfig.setId(ID);
         assertEquals(ID, marketConfig.getId());
+
+        marketConfig.setName(NAME);
+        assertEquals(NAME, marketConfig.getName());
 
         marketConfig.setBaseCurrency(BASE_CURRENCY);
         assertEquals(BASE_CURRENCY, marketConfig.getBaseCurrency());
@@ -81,7 +80,7 @@ public class TestMarketConfig {
         marketConfig.setEnabled(IS_ENABLED);
         assertEquals(IS_ENABLED, marketConfig.isEnabled());
 
-        marketConfig.setTradingStrategy(TRADING_STRATEGY);
-        assertEquals(TRADING_STRATEGY, marketConfig.getTradingStrategy());
+        marketConfig.setTradingStrategyId(TRADING_STRATEGY);
+        assertEquals(TRADING_STRATEGY, marketConfig.getTradingStrategyId());
     }
 }

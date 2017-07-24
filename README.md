@@ -383,29 +383,31 @@ You specify which markets you want to trade on in the
 ```xml
 <markets>      
     <market>
-        <label>BTC/USD</label>
-        <id>btc_usd</id>
+        <id>btc_usd</id>    
+        <name>BTC/USD</name>        
         <base-currency>BTC</base-currency>
         <counter-currency>USD</counter-currency>
         <enabled>true</enabled>
-        <trading-strategy>scalping-strategy</trading-strategy>
+        <trading-strategy-id>scalping-strategy</trading-strategy-id>
     </market>
     <market>
-        <label>LTC/BTC</label>
         <id>ltc_usd</id>
+        <name>LTC/BTC</name>
         <base-currency>LTC</base-currency>
         <counter-currency>BTC</counter-currency>
         <enabled>false</enabled>
-        <trading-strategy>scalping-strategy</trading-strategy>
+        <trading-strategy-id>scalping-strategy</trading-strategy-id>
     </market>        
 </markets>
 ```
 
 All elements are mandatory unless stated otherwise.
 
-The `<label>` value is for descriptive use only. It is used in the log statements.
-
 The `<id>` value is the market id as defined on the exchange. E.g the BTC/USD market id is btc_usd on [BTC-e](https://btc-e.com/api/3/docs).
+
+The `<name>` value is friendly name for the market. The is used in the logs and by
+[BX-bot UI](https://github.com/gazbert/bxbot-ui) (work in progress) to display the market's name.
+Value must be an alphanumeric string.
 
 The `<base-currency>` value is the currency short code for the base currency in the currency pair. When you buy or sell a
 currency pair, you are performing that action on the base currency. The base currency is the commodity you are buying or
@@ -417,8 +419,8 @@ as the quote currency.
 
 The `<enabled>` value allows you to toggle trading on the market. Remember, config changes are only applied on startup.
 
-The `<trading-strategy>` value _must_ match a strategy `<id>` defined in your `strategies.xml` config.
-Currently, BX-bot only supports 1 `<trading-strategy>` per `<market>`.
+The `<trading-strategy-id>` value _must_ match a strategy `<id>` defined in your `strategies.xml` config.
+Currently, BX-bot only supports 1 `<strategy>` per `<market>`.
 
 ##### Strategies #####
 You specify the Trading Strategies you wish to use in the 
