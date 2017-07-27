@@ -2,6 +2,10 @@
 
 [![Build Status](https://travis-ci.org/gazbert/bxbot.svg?branch=master)](https://travis-ci.org/gazbert/bxbot)
 
+**28 July 2017:** BTC-e is currently down due to 
+[recent events](https://www.coindesk.com/110-million-btc-e-fined-us-vows-crackdown-unregulated-exchanges/). BX-bot's 
+integration tests with the exchange have been disabled until more information becomes available...
+
 ## What is BX-bot?
 
 <img src="./docs/bxbot-cropped.png" align="right" width="25%" />
