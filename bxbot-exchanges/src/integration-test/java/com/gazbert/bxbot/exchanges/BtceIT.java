@@ -55,6 +55,8 @@ import static org.junit.Assert.*;
 @RunWith(PowerMockRunner.class)
 @PowerMockIgnore({"javax.crypto.*"})
 @PrepareForTest(BtceExchangeAdapter.class)
+@Ignore("28 July 2017 - disabling BTC-e IT tests in light of recent events: https://www.coindesk.com/110-million-btc-e-fined-us-vows-crackdown-unregulated-exchanges/" +
+        " - Exchange is still down and currently no info if/when it will come back up.")
 public class BtceIT {
 
     // Canned test data
