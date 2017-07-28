@@ -19,9 +19,9 @@ except for the trading strategies - you'll need to write those yourself! A simpl
 Trading API - take a look [here](http://www.investopedia.com/articles/active-trading/101014/basics-algorithmic-trading-concepts-and-examples.asp)
 for more ideas.
 
-Exchange Adapters for using [BTC-e](https://btc-e.com), [Bitstamp](https://www.bitstamp.net), 
-[Bitfinex](https://www.bitfinex.com), [OKCoin](https://www.okcoin.com/), [Huobi](https://www.huobi.com/), 
-[GDAX](https://www.gdax.com/), [itBit](https://www.itbit.com/), [Kraken](https://www.kraken.com), and [Gemini](https://gemini.com/) 
+Exchange Adapters for using [Bitstamp](https://www.bitstamp.net), [Bitfinex](https://www.bitfinex.com),
+[OKCoin](https://www.okcoin.com/), [Huobi](https://www.huobi.com/), [GDAX](https://www.gdax.com/),
+[itBit](https://www.itbit.com/), [Kraken](https://www.kraken.com), [BTC-e](https://btc-e.com), and [Gemini](https://gemini.com/) 
 are included. Feel free to improve these or contribute new adapters to the project; that would be shiny.
 
 The Trading API provides support for [limit orders](http://www.investopedia.com/terms/l/limitorder.asp)
@@ -67,7 +67,7 @@ and evaluate the bot, Docker is the way to go.
    The bot's default configuration uses the 
    [`ExampleScalpingStrategy`](./bxbot-strategies/src/main/java/com/gazbert/bxbot/strategies/ExampleScalpingStrategy.java).
    The [`TestExchangeAdapter`](./bxbot-exchanges/src/main/java/com/gazbert/bxbot/exchanges/TestExchangeAdapter.java) is configured 
-   by default - it makes public API calls to [BTC-e](https://btc-e.com), but stubs out the private API (order management) 
+   by default - it makes public API calls to [Bitstamp](https://www.bitstamp.net), but stubs out the private API (order management) 
    calls; it's good for testing your initial setup without sending actual orders to the exchange.
 1. Usage: `./bxbot.sh [start|stop|status]`
 1. You can detach from the container and leave the bot running using the `CTRL-p` `CTRL-q` key sequence.
@@ -106,7 +106,7 @@ The instructions below are for Linux and macOS, but Windows scripts are included
    [`ExampleScalpingStrategy`](./bxbot-strategies/src/main/java/com/gazbert/bxbot/strategies/ExampleScalpingStrategy.java), 
    but you'll probably want to [write your own](#how-do-i-write-my-own-trading-strategy). The 
    [`TestExchangeAdapter`](./bxbot-exchanges/src/main/java/com/gazbert/bxbot/exchanges/TestExchangeAdapter.java) is configured 
-   by default - it makes public API calls to [BTC-e](https://btc-e.com), but stubs out the private API (order management) 
+   by default - it makes public API calls to [Bitstamp](https://www.bitstamp.net), but stubs out the private API (order management) 
    calls; it's good for testing your initial setup.   
 1. Usage: `./bxbot.sh [start|stop|status]`   
     
@@ -122,7 +122,7 @@ The instructions below are for Linux and macOS, but Windows scripts are included
    [`ExampleScalpingStrategy`](./bxbot-strategies/src/main/java/com/gazbert/bxbot/strategies/ExampleScalpingStrategy.java), 
    but you'll probably want to [write your own](#how-do-i-write-my-own-trading-strategy). The 
    [`TestExchangeAdapter`](./bxbot-exchanges/src/main/java/com/gazbert/bxbot/exchanges/TestExchangeAdapter.java) is configured 
-   by default - it makes public API calls to [BTC-e](https://btc-e.com), but stubs out the private API (order management) 
+   by default - it makes public API calls to [Bitstamp](https://www.bitstamp.net), but stubs out the private API (order management) 
    calls; it's good for testing your initial setup.
 1. Usage: `./bxbot.sh [start|stop|status]`
    
@@ -305,9 +305,13 @@ You specify the Exchange Adapter you want BX-bot to use in the
 
 ```xml
 <exchange>
-    <name>BTC-e</name>
-    <adapter>com.gazbert.bxbot.exchanges.BtceExchangeAdapter</adapter>
+    <name>Bitstamp</name>
+    <adapter>com.gazbert.bxbot.exchanges.BitstampExchangeAdapter</adapter>
     <authentication-config>
+        <config-item>
+            <name>client-id</name>
+            <value>your-client-id</value>
+        </config-item>    
         <config-item>
             <name>key</name>
             <value>your-api-key</value>
@@ -322,20 +326,25 @@ You specify the Exchange Adapter you want BX-bot to use in the
         <non-fatal-error-codes>
             <code>502</code>
             <code>503</code>
+            <code>520</code>
+            <code>522</code>
+            <code>525</code>            
         </non-fatal-error-codes>
         <non-fatal-error-messages>
             <message>Connection reset</message>
             <message>Connection refused</message>
+            <message>Remote host closed connection during handshake</message>
+            <message>Unexpected end of file from server</message>           
         </non-fatal-error-messages>
     </network-config>
     <other-config>
         <config-item>
-            <name>buy-fee</name>
-            <value>0.5</value>
+            <name>not-needed-on-bitstamp-1</name>
+            <value>here for illustration purposes only</value>
         </config-item>
         <config-item>
-            <name>sell-fee</name>
-            <value>0.5</value>
+            <name>not-needed-on-bitstamp-2</name>
+            <value>here for illustration purposes only</value>
         </config-item>
     </other-config>
 </exchange>
@@ -373,9 +382,9 @@ This allows the bot to recover from temporary network issues. See the sample `ex
 throw a non-fatal `ExchangeNetworkException`.
 This allows the bot to recover from temporary network issues. See the sample `exchange.xml` config files for messages to use.
 
-The `<other-config>` section is optional. If present, at least 1 `<config-item>` must be set - these are repeating
-key/value String pairs. This section is used by the inbuilt Exchange Adapters to configure any additional config,
-e.g. buy/sell fees.
+The `<other-config>` section is optional. It is not needed for Bitstamp, but shown above for illustration purposes.
+If present, at least 1 `<config-item>` must be set - these are repeating key/value String pairs.
+This section is used by the inbuilt Exchange Adapters to configure any additional config, e.g. buy/sell fees.
 
 BX-bot only supports 1 Exchange Adapter for each instance of the bot; you will need to create multiple (runtime) 
 instances of the bot to run against different exchanges.
@@ -387,7 +396,7 @@ You specify which markets you want to trade on in the
 ```xml
 <markets>      
     <market>
-        <id>btc_usd</id>    
+        <id>btcusd</id>    
         <name>BTC/USD</name>        
         <base-currency>BTC</base-currency>
         <counter-currency>USD</counter-currency>
@@ -395,7 +404,7 @@ You specify which markets you want to trade on in the
         <trading-strategy-id>scalping-strategy</trading-strategy-id>
     </market>
     <market>
-        <id>ltc_usd</id>
+        <id>ltcusd</id>
         <name>LTC/BTC</name>
         <base-currency>LTC</base-currency>
         <counter-currency>BTC</counter-currency>
@@ -407,7 +416,8 @@ You specify which markets you want to trade on in the
 
 All elements are mandatory unless stated otherwise.
 
-The `<id>` value is the market id as defined on the exchange. E.g the BTC/USD market id is btc_usd on [BTC-e](https://btc-e.com/api/3/docs).
+The `<id>` value is the market id as defined on the exchange. E.g the BTC/USD market id is `btcusd` on 
+[Bitstamp](https://www.bitstamp.net/api/) - see currency_pair values.
 
 The `<name>` value is a friendly name for the market. The is used in the logs and by
 [BX-bot UI](https://github.com/gazbert/bxbot-ui) (work in progress) to display the market's name.
@@ -499,11 +509,11 @@ The [`engine.xml`](./config/engine.xml) file is used to configure the Trading En
 
 ```xml
 <engine>
-    <bot-id>my-btce-bot_1</bot-id>
-    <bot-name>BTC-e Bot</bot-name>
+    <bot-id>my-bitstamp-bot_1</bot-id>
+    <bot-name>Bitstamp Bot</bot-name>
     <emergency-stop-currency>BTC</emergency-stop-currency>
     <emergency-stop-balance>1.0</emergency-stop-balance>
-    <trade-cycle-interval>60</trade-cycle-interval>
+    <trade-cycle-interval>20</trade-cycle-interval>
 </engine>
 ```
 

@@ -50,6 +50,10 @@ import java.util.Map.Entry;
 
 /**
  * <p>
+ * <strong>28 July 2017:</strong> BTC-e is currently down due to recent events:
+ * https://www.coindesk.com/110-million-btc-e-fined-us-vows-crackdown-unregulated-exchanges
+ * </p>
+ * <p>
  * Exchange Adapter for integrating with the BTC-e exchange.
  * The BTC-e API is documented <a href="https://btc-e.com/api/documentation">here</a> and
  * <a href="https://btc-e.com/page/2">here</a>.
