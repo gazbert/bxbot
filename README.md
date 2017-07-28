@@ -271,7 +271,7 @@ You provide your Exchange Adapter details in the `exchange.xml` file - see the _
 section for full details.
 
 ##### Dependencies
-Your Exchange Adapter implementation has a compile-time dependency on the ([Trading API](./bxbot-trading-api)).
+Your Exchange Adapter implementation has a compile-time dependency on the [Trading API](./bxbot-trading-api).
 
 The inbuilt Exchange Adapters also have compile-time dependencies on log4j, Google Gson, and Google Guava.
 
