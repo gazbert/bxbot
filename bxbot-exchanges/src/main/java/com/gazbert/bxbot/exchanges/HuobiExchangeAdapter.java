@@ -216,7 +216,7 @@ public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implemen
 
         BTC_USD("BTC-USD"), BTC_CNY("BTC-CNY");
 
-        private String market;
+        private final String market;
 
         PublicExchangeCallMarket(String market) {
             this.market = market;
@@ -233,7 +233,7 @@ public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implemen
     private enum AuthenticatedExchangeCallMarket {
 
         USD("usd"), CNY("cny");
-        private String market;
+        private final String market;
 
         AuthenticatedExchangeCallMarket(String market) {
             this.market = market;

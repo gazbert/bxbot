@@ -41,7 +41,7 @@ public enum OrderType {
      */
     SELL("Sell");
 
-    private String orderType;
+    private final String orderType;
 
     OrderType(String orderType) {
         this.orderType = orderType;

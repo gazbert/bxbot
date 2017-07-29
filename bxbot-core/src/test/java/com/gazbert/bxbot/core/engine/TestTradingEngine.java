@@ -180,7 +180,7 @@ public class TestTradingEngine {
         tradingEngine.start();
 
         // sleep for bit then and check if shutdown ok
-        Thread.sleep(1 * 1000);
+        Thread.sleep(1000);
         assertFalse(tradingEngine.isRunning());
 
         PowerMock.verifyAll();
@@ -213,7 +213,7 @@ public class TestTradingEngine {
         tradingEngine.shutdown();
 
         // sleep for 1s and check if shutdown ok
-        Thread.sleep(1 * 1000);
+        Thread.sleep(1000);
         assertFalse(tradingEngine.isRunning());
 
         PowerMock.verifyAll();
@@ -258,7 +258,7 @@ public class TestTradingEngine {
         tradingEngine.shutdown();
 
         // sleep for 1s and check if shutdown ok
-        Thread.sleep(1 * 1000);
+        Thread.sleep(1000);
         assertFalse(tradingEngine.isRunning());
 
         PowerMock.verifyAll();
@@ -302,7 +302,7 @@ public class TestTradingEngine {
         tradingEngine.start();
 
         // sleep for 1s and check if shutdown ok
-        Thread.sleep(1 * 1000);
+        Thread.sleep(1000);
         assertFalse(tradingEngine.isRunning());
 
         PowerMock.verifyAll();
@@ -346,7 +346,7 @@ public class TestTradingEngine {
         tradingEngine.start();
 
         // sleep for 1s and check if shutdown ok
-        Thread.sleep(1 * 1000);
+        Thread.sleep(1000);
         assertFalse(tradingEngine.isRunning());
 
         PowerMock.verifyAll();
@@ -387,7 +387,7 @@ public class TestTradingEngine {
         tradingEngine.start();
 
         // sleep for 1s and check if shutdown ok
-        Thread.sleep(1 * 1000);
+        Thread.sleep(1000);
         assertFalse(tradingEngine.isRunning());
 
         PowerMock.verifyAll();
@@ -428,7 +428,7 @@ public class TestTradingEngine {
         tradingEngine.start();
 
         // sleep for 1s and check if shutdown ok
-        Thread.sleep(1 * 1000);
+        Thread.sleep(1000);
         assertFalse(tradingEngine.isRunning());
 
         PowerMock.verifyAll();
@@ -478,7 +478,7 @@ public class TestTradingEngine {
         tradingEngine.shutdown();
 
         // sleep for 1s and check if shutdown ok
-        Thread.sleep(1 * 1000);
+        Thread.sleep(1000);
         assertFalse(tradingEngine.isRunning());
 
         PowerMock.verifyAll();
@@ -527,35 +527,35 @@ public class TestTradingEngine {
     //  private utils
     // ------------------------------------------------------------------------------------------------
 
-    private void setupExchangeAdapterConfigExpectations() throws Exception {
+    private void setupExchangeAdapterConfigExpectations() {
         expect(exchangeConfigRepository.getConfig()).andReturn(someExchangeConfig());
         expect(ConfigurableComponentFactory.createComponent(EXCHANGE_ADAPTER_IMPL_CLASS)).andReturn(exchangeAdapter);
         expect(exchangeAdapter.getImplName()).andReturn(EXCHANGE_NAME);
         exchangeAdapter.init(anyObject(ExchangeConfig.class));
     }
 
-    private void setupEngineConfigExpectations() throws Exception {
+    private void setupEngineConfigExpectations() {
         expect(engineConfigRepository.getConfig()).andReturn(someEngineConfig());
     }
 
-    private void setupEngineConfigForNoEmergencyStopCheckExpectations() throws Exception {
+    private void setupEngineConfigForNoEmergencyStopCheckExpectations() {
         expect(engineConfigRepository.getConfig()).andReturn(someEngineConfigForNoEmergencyStopCheck());
     }
 
-    private void setupStrategyAndMarketConfigExpectations() throws Exception {
+    private void setupStrategyAndMarketConfigExpectations() {
         expect(strategyConfigRepository.findAllStrategies()).andReturn(allTheStrategiesConfig());
         expect(marketConfigRepository.findAllMarkets()).andReturn(allTheMarketsConfig());
         expect(ConfigurableComponentFactory.createComponent(STRATEGY_IMPL_CLASS)).andReturn(tradingStrategy);
         tradingStrategy.init(eq(exchangeAdapter), anyObject(Market.class), anyObject(com.gazbert.bxbot.strategy.api.StrategyConfig.class));
     }
 
-    private void setupConfigLoadingExpectations() throws Exception {
+    private void setupConfigLoadingExpectations() {
         setupExchangeAdapterConfigExpectations();
         setupEngineConfigExpectations();
         setupStrategyAndMarketConfigExpectations();
     }
 
-    private void setupConfigLoadingExpectationsForNoEmergencyStopCheck() throws Exception {
+    private void setupConfigLoadingExpectationsForNoEmergencyStopCheck() {
         setupExchangeAdapterConfigExpectations();
         setupEngineConfigForNoEmergencyStopCheckExpectations();
         setupStrategyAndMarketConfigExpectations();

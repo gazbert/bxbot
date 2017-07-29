@@ -42,7 +42,7 @@ import java.util.*;
  * @author gazbert
  * @since 1.0
  */
-public abstract class AbstractExchangeAdapter {
+abstract class AbstractExchangeAdapter {
 
     private static final Logger LOG = LogManager.getLogger();
 
@@ -110,19 +110,19 @@ public abstract class AbstractExchangeAdapter {
      * HTTP status codes for non-fatal network connection failures.
      * Used to decide to throw {@link ExchangeNetworkException}.
      */
-    private Set<Integer> nonFatalNetworkErrorCodes;
+    private final Set<Integer> nonFatalNetworkErrorCodes;
 
     /**
      * java.io exception messages for non-fatal network connection failures.
      * Used to decide to throw {@link ExchangeNetworkException}.
      */
-    private Set<String> nonFatalNetworkErrorMessages;
+    private final Set<String> nonFatalNetworkErrorMessages;
 
 
     /**
      * Constructor set some sensible defaults for the network config.
      */
-    protected AbstractExchangeAdapter() {
+    AbstractExchangeAdapter() {
         connectionTimeout = 30;
         nonFatalNetworkErrorCodes = new HashSet<>();
         nonFatalNetworkErrorMessages = new HashSet<>();
@@ -215,15 +215,13 @@ public abstract class AbstractExchangeAdapter {
             // Check if this is a non-fatal network error
             try {
 
-                if (nonFatalNetworkErrorMessages != null && e.getMessage() != null &&
-                        nonFatalNetworkErrorMessages.contains(e.getMessage())) {
+                if (e.getMessage() != null && nonFatalNetworkErrorMessages.contains(e.getMessage())) {
 
                     final String errorMsg = "Failed to connect to Exchange. SSL Connection was refused or reset by the server.";
                     LOG.error(errorMsg, e);
                     throw new ExchangeNetworkException(errorMsg, e);
 
-                } else if (nonFatalNetworkErrorCodes != null && exchangeConnection != null &&
-                        nonFatalNetworkErrorCodes.contains(exchangeConnection.getResponseCode())) {
+                } else if (exchangeConnection != null && nonFatalNetworkErrorCodes.contains(exchangeConnection.getResponseCode())) {
 
                     final String errorMsg = IO_5XX_TIMEOUT_ERROR_MSG;
                     LOG.error(errorMsg, e);
@@ -393,9 +391,9 @@ public abstract class AbstractExchangeAdapter {
      */
     static class ExchangeHttpResponse {
 
-        private int statusCode;
-        private String reasonPhrase;
-        private String payload;
+        private final int statusCode;
+        private final String reasonPhrase;
+        private final String payload;
 
         ExchangeHttpResponse(int statusCode, String reasonPhrase, String payload) {
             this.statusCode = statusCode;

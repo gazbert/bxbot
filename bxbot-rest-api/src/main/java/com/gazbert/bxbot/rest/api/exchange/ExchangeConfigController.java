@@ -48,7 +48,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
  */
 @RestController
 @RequestMapping("/api/config/")
-public class ExchangeConfigController {
+class ExchangeConfigController {
 
     private final ExchangeConfigService exchangeConfigService;
 

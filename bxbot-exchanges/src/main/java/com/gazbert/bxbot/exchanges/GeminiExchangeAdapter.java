@@ -158,7 +158,7 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter impleme
 
         BTC_USD("btcusd"), ETH_USD("ethusd"), ETH_BTC("ethbtc");
 
-        private String market;
+        private final String market;
 
         MarketId(String market) {
             this.market = market;
@@ -795,9 +795,8 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter impleme
      *
      * @param byteArrayToConvert byte array to convert.
      * @return the string representation of the given byte array.
-     * @throws UnsupportedEncodingException if the byte array encoding is not recognised.
      */
-    private String toHex(byte[] byteArrayToConvert) throws UnsupportedEncodingException {
+    private String toHex(byte[] byteArrayToConvert) {
 
         final StringBuilder hexString = new StringBuilder();
 

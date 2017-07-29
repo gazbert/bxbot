@@ -48,7 +48,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
  */
 @RestController
 @RequestMapping("/api/config")
-public class EngineConfigController {
+class EngineConfigController {
 
     private final EngineConfigService engineConfigService;
 

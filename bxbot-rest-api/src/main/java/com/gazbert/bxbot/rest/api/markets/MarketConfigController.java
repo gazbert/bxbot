@@ -45,7 +45,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/api/config")
-public class MarketConfigController {
+class MarketConfigController {
 
     private final MarketConfigService marketConfigService;
 

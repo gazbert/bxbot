@@ -773,12 +773,14 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
             }
 
             // Build the signature string
-            final StringBuilder signatureBuilder = new StringBuilder(timestamp);
-            signatureBuilder.append(httpMethod.toUpperCase()).append("/").append(apiMethod).append(requestBody);
+            final String signatureBuilder = timestamp + httpMethod.toUpperCase() +
+                    "/" +
+                    apiMethod +
+                    requestBody;
 
             // Sign the signature string and Base64 encode it
             mac.reset();
-            mac.update(signatureBuilder.toString().getBytes("UTF-8"));
+            mac.update(signatureBuilder.getBytes("UTF-8"));
             final String signature = DatatypeConverter.printBase64Binary(mac.doFinal());
 
             // Request headers required by Exchange

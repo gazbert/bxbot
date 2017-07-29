@@ -354,7 +354,7 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
 
             // For some reason, OKCoin sorts ask orders in descending order instead of ascending.
             // We need to re-order price ascending - lowest ASK price will be first in list.
-            Collections.sort(sellOrders, (thisOrder, thatOrder) -> {
+            sellOrders.sort((thisOrder, thatOrder) -> {
                 if (thisOrder.getPrice().compareTo(thatOrder.getPrice()) < 0) {
                     return -1;
                 } else if (thisOrder.getPrice().compareTo(thatOrder.getPrice()) > 0) {

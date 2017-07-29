@@ -655,7 +655,7 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
      * </pre>
      */
     private static class BitstampDateDeserializer implements JsonDeserializer<Date> {
-        private SimpleDateFormat bitstampDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        private final SimpleDateFormat bitstampDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
         public Date deserialize(JsonElement json, Type type, JsonDeserializationContext context)
                 throws JsonParseException {
@@ -782,9 +782,8 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
      *
      * @param byteArrayToConvert byte array to convert.
      * @return the string representation of the given byte array.
-     * @throws UnsupportedEncodingException if the byte array encoding is not recognised.
      */
-    private String toHex(byte[] byteArrayToConvert) throws UnsupportedEncodingException {
+    private String toHex(byte[] byteArrayToConvert) {
         final StringBuilder hexString = new StringBuilder();
 
         for (final byte aByte : byteArrayToConvert) {

@@ -85,7 +85,7 @@ abstract class AbstractConfigControllerTest {
                 Arrays.stream(converters)
                         .filter(converter -> converter instanceof MappingJackson2HttpMessageConverter)
                         .findAny()
-                        .get();
+                        .orElse(null);
 
         Assert.assertNotNull("The JSON message converter must not be null",
                 mappingJackson2HttpMessageConverter);

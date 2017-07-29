@@ -44,7 +44,6 @@ import java.util.List;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -318,21 +317,18 @@ public class TestMarketConfigController extends AbstractConfigControllerTest {
     // ------------------------------------------------------------------------------------------------
 
     private static MarketConfig someMarketConfig() {
-        final MarketConfig marketConfig = new MarketConfig(MARKET_1_ID, MARKET_1_NAME, MARKET_1_BASE_CURRENCY,
+        return new MarketConfig(MARKET_1_ID, MARKET_1_NAME, MARKET_1_BASE_CURRENCY,
                 MARKET_1_COUNTER_CURRENCY, MARKET_1_ENABLED, MARKET_1_STRATEGY_ID);
-        return marketConfig;
     }
 
     private static MarketConfig unrecognizedMarketConfig() {
-        final MarketConfig marketConfig = new MarketConfig(UNKNOWN_MARKET_ID, MARKET_1_NAME, MARKET_1_BASE_CURRENCY,
+        return new MarketConfig(UNKNOWN_MARKET_ID, MARKET_1_NAME, MARKET_1_BASE_CURRENCY,
                 MARKET_1_COUNTER_CURRENCY, MARKET_1_ENABLED, MARKET_1_STRATEGY_ID);
-        return marketConfig;
     }
 
     private static MarketConfig someMarketConfigWithMissingId() {
-        final MarketConfig marketConfig = new MarketConfig(null, MARKET_1_NAME, MARKET_1_BASE_CURRENCY,
+        return new MarketConfig(null, MARKET_1_NAME, MARKET_1_BASE_CURRENCY,
                 MARKET_1_COUNTER_CURRENCY, MARKET_1_ENABLED, MARKET_1_STRATEGY_ID);
-        return marketConfig;
     }
 
     private static List<MarketConfig> allMarketConfig() {

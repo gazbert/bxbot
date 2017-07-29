@@ -484,7 +484,7 @@ public final class BtceExchangeAdapter extends AbstractExchangeAdapter implement
     private static class BtceMessageBase {
         // field names map to the JSON arg names
         public int success;
-        public String error;
+        public final String error;
 
         BtceMessageBase() {
             error = "";
@@ -935,9 +935,8 @@ public final class BtceExchangeAdapter extends AbstractExchangeAdapter implement
      *
      * @param byteArrayToConvert byte array to convert.
      * @return the string representation of the given byte array.
-     * @throws UnsupportedEncodingException if the byte array encoding is not recognised.
      */
-    private String toHex(byte[] byteArrayToConvert) throws UnsupportedEncodingException {
+    private String toHex(byte[] byteArrayToConvert) {
         final StringBuilder hexString = new StringBuilder();
 
         for (final byte aByte : byteArrayToConvert) {

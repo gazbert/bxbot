@@ -45,7 +45,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/api/config")
-public class StrategyConfigController {
+class StrategyConfigController {
 
     private final StrategyConfigService strategyConfigService;
 

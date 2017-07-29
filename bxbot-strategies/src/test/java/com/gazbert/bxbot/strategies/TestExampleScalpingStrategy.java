@@ -56,9 +56,9 @@ import static org.easymock.EasyMock.expect;
 public class TestExampleScalpingStrategy {
 
     // canned data
-    private static String MARKET_ID = "btc_usd";
-    private static String BASE_CURRENCY = "BTC";
-    private static String COUNTER_CURRENCY = "USD";
+    private final static String MARKET_ID = "btc_usd";
+    private final static String BASE_CURRENCY = "BTC";
+    private final static String COUNTER_CURRENCY = "USD";
 
     // Strategy init() arguments
     private TradingApi tradingApi;

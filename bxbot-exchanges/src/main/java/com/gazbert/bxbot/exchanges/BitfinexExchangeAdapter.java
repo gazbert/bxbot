@@ -942,10 +942,9 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter imple
      * Converts a given byte array to a hex String.
      *
      * @param byteArrayToConvert byte array to convert.
-     * @return the string representation of the given byte array.
-     * @throws UnsupportedEncodingException if the byte array encoding is not recognised.
+     * @return the string representation of the given byte array..
      */
-    private String toHex(byte[] byteArrayToConvert) throws UnsupportedEncodingException {
+    private String toHex(byte[] byteArrayToConvert) {
 
         final StringBuilder hexString = new StringBuilder();
 

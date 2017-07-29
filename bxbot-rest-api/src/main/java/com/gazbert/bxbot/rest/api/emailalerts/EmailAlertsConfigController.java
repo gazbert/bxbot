@@ -49,7 +49,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
  */
 @RestController
 @RequestMapping("/api/config")
-public class EmailAlertsConfigController {
+class EmailAlertsConfigController {
 
     private final EmailAlertsConfigService emailAlertsConfigService;
 

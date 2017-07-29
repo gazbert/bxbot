@@ -281,7 +281,7 @@ public final class TestExchangeAdapter extends AbstractExchangeAdapter implement
      * </pre>
      */
     private static class BitstampDateDeserializer implements JsonDeserializer<Date> {
-        private SimpleDateFormat bitstampDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        private final SimpleDateFormat bitstampDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
         public Date deserialize(JsonElement json, Type type, JsonDeserializationContext context)
                 throws JsonParseException {

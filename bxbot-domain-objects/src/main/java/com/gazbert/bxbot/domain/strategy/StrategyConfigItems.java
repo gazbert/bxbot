@@ -33,7 +33,7 @@ import java.util.Map;
  *
  * @author gazbert
  */
-public final class StrategyConfigItems {
+final class StrategyConfigItems {
 
     private Map<String, String> items = new HashMap<>();
 

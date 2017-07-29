@@ -33,7 +33,7 @@ import java.util.Map;
  *
  * @author gazbert
  */
-public class AuthenticationConfig {
+class AuthenticationConfig {
 
     private Map<String, String> items;
 
