@@ -80,7 +80,7 @@ public class TestTradingEngine {
     // Exchange Adapter config
     private static final String EXCHANGE_ADAPTER_IMPL_CLASS = "com.my.adapters.DummyBtceExchangeAdapter";
     private static final String EXCHANGE_NAME = "BTC-e";
-    private static final Integer EXCHANGE_ADAPTER_NETWORK_TIMEOUT = new Integer("30");
+    private static final Integer EXCHANGE_ADAPTER_NETWORK_TIMEOUT = Integer.valueOf("30");
     private static final List<Integer> EXCHANGE_ADAPTER_NONFATAL_ERROR_CODES = Arrays.asList(502, 503, 504);
     private static final List<String> EXCHANGE_ADAPTER_NONFATAL_ERROR_MESSAGES = Arrays.asList(
             "Connection reset",
@@ -192,9 +192,6 @@ public class TestTradingEngine {
         setupConfigLoadingExpectationsForNoEmergencyStopCheck();
 
         final int numberOfTradeCycles = 1;
-        final Map<String, BigDecimal> balancesAvailable = new HashMap<>();
-        // Emergency stop check disabled, i.e. ZERO
-        balancesAvailable.put(ENGINE_EMERGENCY_STOP_CURRENCY, BigDecimal.ZERO);
 
         // expect Trading Strategy to be invoked at least 1 time
         tradingStrategy.execute();

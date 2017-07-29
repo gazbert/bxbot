@@ -581,7 +581,7 @@ public class ExampleScalpingStrategy implements TradingStrategy {
      * restarts and for audit purposes. In this example, we are storing the state in memory to keep it simple.
      * </p>
      */
-    private class OrderState {
+    private static class OrderState {
 
         /**
          * Id - default to null.

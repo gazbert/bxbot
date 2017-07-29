@@ -21,31 +21,33 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.trading.api;
+package com.gazbert.bxbot.strategy.api;
 
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
 /**
- * Tests Trading API Exception is created as expected.
+ * Tests Strategy Exception is created as expected.
  *
  * @author gazbert
  */
-public class TestTradingApiException {
+public class TestStrategyExceptionCreation {
 
-    private static final String ERROR_MSG = "Exchange has fallen over";
+    private static final String ERROR_MSG = "Received unknown order id in current active orders API call";
     private static final RuntimeException CAUSE = new RuntimeException("The cause of the exception");
 
     @Test
     public void testCreationOfExceptionIsAsExpected() {
-        final TradingApiException exception = new TradingApiException(ERROR_MSG);
+
+        final StrategyException exception = new StrategyException(ERROR_MSG);
         assertEquals(ERROR_MSG, exception.getMessage());
     }
 
     @Test
     public void testCreationOfExceptionWithCauseIsAsExpected() {
-        final TradingApiException exception = new TradingApiException(ERROR_MSG, CAUSE);
+
+        final StrategyException exception = new StrategyException(ERROR_MSG, CAUSE);
         assertEquals(ERROR_MSG, exception.getMessage());
         assertEquals(CAUSE, exception.getCause());
     }

@@ -25,27 +25,27 @@ package com.gazbert.bxbot.trading.api;
 
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
- * Tests Exchange Network created is created as expected.
+ * Tests Trading API Exception is created as expected.
  *
  * @author gazbert
  */
-public class TestExchangeNetworkException {
+public class TestTradingApiExceptionCreation {
 
-    private static final String ERROR_MSG = "Network timeout connecting to exchange";
+    private static final String ERROR_MSG = "Exchange has fallen over";
     private static final RuntimeException CAUSE = new RuntimeException("The cause of the exception");
 
     @Test
     public void testCreationOfExceptionIsAsExpected() {
-        final ExchangeNetworkException exception = new ExchangeNetworkException(ERROR_MSG);
+        final TradingApiException exception = new TradingApiException(ERROR_MSG);
         assertEquals(ERROR_MSG, exception.getMessage());
     }
 
     @Test
     public void testCreationOfExceptionWithCauseIsAsExpected() {
-        final ExchangeNetworkException exception = new ExchangeNetworkException(ERROR_MSG, CAUSE);
+        final TradingApiException exception = new TradingApiException(ERROR_MSG, CAUSE);
         assertEquals(ERROR_MSG, exception.getMessage());
         assertEquals(CAUSE, exception.getCause());
     }

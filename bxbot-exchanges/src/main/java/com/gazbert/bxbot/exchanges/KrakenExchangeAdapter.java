@@ -77,7 +77,7 @@ import java.util.*;
  * <p>
  * Kraken markets assets (e.g. currencies) can be referenced using their ISO4217-A3 names in the case of ISO registered names,
  * their 3 letter commonly used names in the case of unregistered names, or their X-ISO4217-A3 code (see http://www.ifex-project.org/).
- *
+ * <p>
  * This adapter expects the market id to use the 3 letter commonly used names, e.g. you access the XBT/USD market using
  * 'XBTUSD'. Note: the exchange always returns the market id back in the X-ISO4217-A3 format, i.e. 'XXBTZUSD'. The
  * reason for doing this is because the Open Order response contains the asset pair in the 3 letter format ('XBTUSD'),
@@ -193,7 +193,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
     /**
      * Nonce used for sending authenticated messages to the exchange.
      */
-    private static long nonce = 0;
+    private long nonce = 0;
 
     /**
      * Exchange buy fees in % in {@link BigDecimal} format.
@@ -263,7 +263,8 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
 
             if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
 
-                final Type resultType = new TypeToken<KrakenResponse<KrakenMarketOrderBookResult>>() {}.getType();
+                final Type resultType = new TypeToken<KrakenResponse<KrakenMarketOrderBookResult>>() {
+                }.getType();
                 final KrakenResponse krakenResponse = gson.fromJson(response.getPayload(), resultType);
 
                 final List<String> errors = krakenResponse.error;
@@ -273,35 +274,28 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
                     final KrakenMarketOrderBookResult krakenOrderBookResult = (KrakenMarketOrderBookResult) krakenResponse.result;
 
                     final KrakenOrderBook krakenOrderBook = krakenOrderBookResult.values().stream().findFirst().get();
-                    if (krakenOrderBook != null) {
 
-                        final List<MarketOrder> buyOrders = new ArrayList<>();
-                        for (KrakenMarketOrder krakenBuyOrder : krakenOrderBook.bids) {
-                            final MarketOrder buyOrder = new MarketOrder(
-                                    OrderType.BUY,
-                                    krakenBuyOrder.get(0),
-                                    krakenBuyOrder.get(1),
-                                    krakenBuyOrder.get(0).multiply(krakenBuyOrder.get(1)));
-                            buyOrders.add(buyOrder);
-                        }
-
-                        final List<MarketOrder> sellOrders = new ArrayList<>();
-                        for (KrakenMarketOrder krakenSellOrder : krakenOrderBook.asks) {
-                            final MarketOrder sellOrder = new MarketOrder(
-                                    OrderType.SELL,
-                                    krakenSellOrder.get(0),
-                                    krakenSellOrder.get(1),
-                                    krakenSellOrder.get(0).multiply(krakenSellOrder.get(1)));
-                            sellOrders.add(sellOrder);
-                        }
-
-                        return new MarketOrderBook(marketId, sellOrders, buyOrders);
-
-                    } else {
-                        final String errorMsg = FAILED_TO_GET_MARKET_ORDERS + response;
-                        LOG.error(errorMsg);
-                        throw new TradingApiException(errorMsg);
+                    final List<MarketOrder> buyOrders = new ArrayList<>();
+                    for (KrakenMarketOrder krakenBuyOrder : krakenOrderBook.bids) {
+                        final MarketOrder buyOrder = new MarketOrder(
+                                OrderType.BUY,
+                                krakenBuyOrder.get(0),
+                                krakenBuyOrder.get(1),
+                                krakenBuyOrder.get(0).multiply(krakenBuyOrder.get(1)));
+                        buyOrders.add(buyOrder);
                     }
+
+                    final List<MarketOrder> sellOrders = new ArrayList<>();
+                    for (KrakenMarketOrder krakenSellOrder : krakenOrderBook.asks) {
+                        final MarketOrder sellOrder = new MarketOrder(
+                                OrderType.SELL,
+                                krakenSellOrder.get(0),
+                                krakenSellOrder.get(1),
+                                krakenSellOrder.get(0).multiply(krakenSellOrder.get(1)));
+                        sellOrders.add(sellOrder);
+                    }
+
+                    return new MarketOrderBook(marketId, sellOrders, buyOrders);
 
                 } else {
                     final String errorMsg = FAILED_TO_GET_MARKET_ORDERS + response;
@@ -333,7 +327,8 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
 
             if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
 
-                final Type resultType = new TypeToken<KrakenResponse<KrakenOpenOrderResult>>() {}.getType();
+                final Type resultType = new TypeToken<KrakenResponse<KrakenOpenOrderResult>>() {
+                }.getType();
                 final KrakenResponse krakenResponse = gson.fromJson(response.getPayload(), resultType);
 
                 final List<String> errors = krakenResponse.error;
@@ -345,42 +340,44 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
                     final KrakenOpenOrderResult krakenOpenOrderResult = (KrakenOpenOrderResult) krakenResponse.result;
 
                     final Map<String, KrakenOpenOrder> krakenOpenOrders = krakenOpenOrderResult.open;
-                    for (final Map.Entry<String, KrakenOpenOrder> openOrder : krakenOpenOrders.entrySet()) {
+                    if (krakenOpenOrders != null) {
+                        for (final Map.Entry<String, KrakenOpenOrder> openOrder : krakenOpenOrders.entrySet()) {
 
-                        OrderType orderType;
-                        final KrakenOpenOrder krakenOpenOrder = openOrder.getValue();
-                        final KrakenOpenOrderDescription krakenOpenOrderDescription = krakenOpenOrder.descr;
+                            OrderType orderType;
+                            final KrakenOpenOrder krakenOpenOrder = openOrder.getValue();
+                            final KrakenOpenOrderDescription krakenOpenOrderDescription = krakenOpenOrder.descr;
 
-                        if (!marketId.equalsIgnoreCase(krakenOpenOrderDescription.pair)) {
-                            continue;
+                            if (!marketId.equalsIgnoreCase(krakenOpenOrderDescription.pair)) {
+                                continue;
+                            }
+
+                            switch (krakenOpenOrderDescription.type) {
+                                case "buy":
+                                    orderType = OrderType.BUY;
+                                    break;
+                                case "sell":
+                                    orderType = OrderType.SELL;
+                                    break;
+                                default:
+                                    throw new TradingApiException(
+                                            "Unrecognised order type received in getYourOpenOrders(). Value: " +
+                                                    openOrder.getValue().descr.ordertype);
+                            }
+
+                            final OpenOrder order = new OpenOrder(
+                                    openOrder.getKey(),
+                                    new Date((long) krakenOpenOrder.opentm), // opentm == creationDate
+                                    marketId,
+                                    orderType,
+                                    krakenOpenOrderDescription.price,
+                                    (krakenOpenOrder.vol.subtract(krakenOpenOrder.vol_exec)), // vol_exec == amount of order that has been executed
+                                    krakenOpenOrder.vol, // vol == orig order amount
+                                    //krakenOpenOrder.cost, // cost == total value of order in API docs, but it's always 0 :-(
+                                    krakenOpenOrderDescription.price.multiply(krakenOpenOrder.vol)
+                            );
+
+                            openOrders.add(order);
                         }
-
-                        switch (krakenOpenOrderDescription.type) {
-                            case "buy":
-                                orderType = OrderType.BUY;
-                                break;
-                            case "sell":
-                                orderType = OrderType.SELL;
-                                break;
-                            default:
-                                throw new TradingApiException(
-                                        "Unrecognised order type received in getYourOpenOrders(). Value: " +
-                                                openOrder.getValue().descr.ordertype);
-                        }
-
-                        final OpenOrder order = new OpenOrder(
-                                openOrder.getKey(),
-                                new Date((long) krakenOpenOrder.opentm), // opentm == creationDate
-                                marketId,
-                                orderType,
-                                krakenOpenOrderDescription.price,
-                                (krakenOpenOrder.vol.subtract(krakenOpenOrder.vol_exec)), // vol_exec == amount of order that has been executed
-                                krakenOpenOrder.vol, // vol == orig order amount
-                                //krakenOpenOrder.cost, // cost == total value of order in API docs, but it's always 0 :-(
-                                krakenOpenOrderDescription.price.multiply(krakenOpenOrder.vol)
-                        );
-
-                        openOrders.add(order);
                     }
 
                     return openOrders;
@@ -436,7 +433,8 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
 
             if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
 
-                final Type resultType = new TypeToken<KrakenResponse<KrakenAddOrderResult>>() {}.getType();
+                final Type resultType = new TypeToken<KrakenResponse<KrakenAddOrderResult>>() {
+                }.getType();
                 final KrakenResponse krakenResponse = gson.fromJson(response.getPayload(), resultType);
 
                 final List<String> errors = krakenResponse.error;
@@ -480,7 +478,8 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
 
             if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
 
-                final Type resultType = new TypeToken<KrakenResponse<KrakenCancelOrderResult>>() {}.getType();
+                final Type resultType = new TypeToken<KrakenResponse<KrakenCancelOrderResult>>() {
+                }.getType();
                 final KrakenResponse krakenResponse = gson.fromJson(response.getPayload(), resultType);
 
                 final List<String> errors = krakenResponse.error;
@@ -488,8 +487,14 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
 
                     // Assume we'll always get something here if errors array is empty; else blow fast wih NPE
                     final KrakenCancelOrderResult krakenCancelOrderResult = (KrakenCancelOrderResult) krakenResponse.result;
-                    if (krakenCancelOrderResult.count > 0) {
-                        return true;
+                    if (krakenCancelOrderResult != null) {
+                        if (krakenCancelOrderResult.count > 0) {
+                            return true;
+                        } else {
+                            final String errorMsg = FAILED_TO_CANCEL_ORDER + response;
+                            LOG.error(errorMsg);
+                            return false;
+                        }
                     } else {
                         final String errorMsg = FAILED_TO_CANCEL_ORDER + response;
                         LOG.error(errorMsg);
@@ -529,7 +534,8 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
 
             if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
 
-                final Type resultType = new TypeToken<KrakenResponse<KrakenTickerResult>>() {}.getType();
+                final Type resultType = new TypeToken<KrakenResponse<KrakenTickerResult>>() {
+                }.getType();
                 final KrakenResponse krakenResponse = gson.fromJson(response.getPayload(), resultType);
 
                 final List<String> errors = krakenResponse.error;
@@ -574,24 +580,31 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
 
             if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
 
-                final Type resultType = new TypeToken<KrakenResponse<KrakenBalanceResult>>() {}.getType();
+                final Type resultType = new TypeToken<KrakenResponse<KrakenBalanceResult>>() {
+                }.getType();
                 final KrakenResponse krakenResponse = gson.fromJson(response.getPayload(), resultType);
 
-                final List<String> errors = krakenResponse.error;
-                if (errors == null || errors.isEmpty()) {
+                if (krakenResponse != null) {
+                    final List<String> errors = krakenResponse.error;
+                    if (errors == null || errors.isEmpty()) {
 
-                    // Assume we'll always get something here if errors array is empty; else blow fast wih NPE
-                    final KrakenBalanceResult balanceResult = (KrakenBalanceResult) krakenResponse.result;
+                        // Assume we'll always get something here if errors array is empty; else blow fast wih NPE
+                        final KrakenBalanceResult balanceResult = (KrakenBalanceResult) krakenResponse.result;
 
-                    final Map<String, BigDecimal> balancesAvailable = new HashMap<>();
-                    final Set<Map.Entry<String, BigDecimal>> entries = balanceResult.entrySet();
-                    for (final Map.Entry<String, BigDecimal> entry : entries) {
-                        balancesAvailable.put(entry.getKey(), entry.getValue());
+                        final Map<String, BigDecimal> balancesAvailable = new HashMap<>();
+                        final Set<Map.Entry<String, BigDecimal>> entries = balanceResult.entrySet();
+                        for (final Map.Entry<String, BigDecimal> entry : entries) {
+                            balancesAvailable.put(entry.getKey(), entry.getValue());
+                        }
+
+                        // 2nd arg of BalanceInfo constructor for reserved/on-hold balances is not provided by exchange.
+                        return new BalanceInfo(balancesAvailable, new HashMap<>());
+
+                    } else {
+                        final String errorMsg = FAILED_TO_GET_BALANCE + response;
+                        LOG.error(errorMsg);
+                        throw new TradingApiException(errorMsg);
                     }
-
-                    // 2nd arg of BalanceInfo constructor for reserved/on-hold balances is not provided by exchange.
-                    return new BalanceInfo(balancesAvailable, new HashMap<>());
-
                 } else {
                     final String errorMsg = FAILED_TO_GET_BALANCE + response;
                     LOG.error(errorMsg);
@@ -850,7 +863,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
      * <p>
      * Have to do this because last entry in the Ticker param map is a String, not an array like the rest of 'em!
      */
-    private class KrakenTickerResultDeserializer implements JsonDeserializer<KrakenTickerResult> {
+    private static class KrakenTickerResultDeserializer implements JsonDeserializer<KrakenTickerResult> {
 
         public KrakenTickerResult deserialize(JsonElement json, Type type, JsonDeserializationContext context)
                 throws JsonParseException {
@@ -906,26 +919,28 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
             params = new HashMap<>(); // no params, so empty query string
         }
 
-        // Build the query string with any given params
-        final StringBuilder queryString = new StringBuilder("?");
-        for (final String param : params.keySet()) {
-            if (queryString.length() > 1) {
-                queryString.append("&");
-            }
-            //noinspection deprecation
-            queryString.append(param).append("=").append(URLEncoder.encode(params.get(param)));
-        }
-
-        // Request headers required by Exchange
-        final Map<String, String> requestHeaders = new HashMap<>();
-        requestHeaders.put("Content-Type", "application/x-www-form-urlencoded");
-
         try {
+
+            // Build the query string with any given params
+            final StringBuilder queryString = new StringBuilder("?");
+            for (final Map.Entry<String, String> param : params.entrySet()) {
+                if (queryString.length() > 1) {
+                    queryString.append("&");
+                }
+                //noinspection deprecation
+                queryString.append(param.getKey());
+                queryString.append("=");
+                queryString.append(URLEncoder.encode(param.getValue(), "UTF-8"));
+            }
+
+            // Request headers required by Exchange
+            final Map<String, String> requestHeaders = new HashMap<>();
+            requestHeaders.put("Content-Type", "application/x-www-form-urlencoded");
 
             final URL url = new URL(PUBLIC_API_BASE_URL + apiMethod + queryString);
             return sendNetworkRequest(url, "GET", null, requestHeaders);
 
-        } catch (MalformedURLException e) {
+        } catch (MalformedURLException | UnsupportedEncodingException e) {
             final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
             LOG.error(errorMsg, e);
             throw new TradingApiException(errorMsg, e);
@@ -983,13 +998,14 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
             // params.put("otp", "false");
 
             // Build the URL with query param args in it - yuk!
-            String postData = "";
-            for (final String param : params.keySet()) {
+            final StringBuilder postData = new StringBuilder("");
+            for (final Map.Entry<String, String> param : params.entrySet()) {
                 if (postData.length() > 0) {
-                    postData += "&";
+                    postData.append("&");
                 }
-                //noinspection deprecation
-                postData += param + "=" + URLEncoder.encode(params.get(param));
+                postData.append(param.getKey());
+                postData.append("=");
+                postData.append(URLEncoder.encode(param.getValue(), "UTF-8"));
             }
 
             // And now the tricky part... ;-o
@@ -1017,7 +1033,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
             requestHeaders.put("API-Sign", signature);
 
             final URL url = new URL(AUTHENTICATED_API_URL + apiMethod);
-            return sendNetworkRequest(url, "POST", postData, requestHeaders);
+            return sendNetworkRequest(url, "POST", postData.toString(), requestHeaders);
 
         } catch (MalformedURLException | NoSuchAlgorithmException | UnsupportedEncodingException e) {
 

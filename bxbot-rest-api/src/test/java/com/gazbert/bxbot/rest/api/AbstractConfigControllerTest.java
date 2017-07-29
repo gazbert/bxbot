@@ -101,7 +101,8 @@ abstract class AbstractConfigControllerTest {
      */
     String getAccessToken(String username, String password) throws Exception {
 
-        final String authorization = "Basic " + new String(Base64Utils.encode((OAUTH_CLIENT_ID + ":" + OAUTH_CLIENT_SECRET).getBytes()));
+        final String authorization = "Basic " + new String(Base64Utils.encode(
+                (OAUTH_CLIENT_ID + ":" + OAUTH_CLIENT_SECRET).getBytes("UTF-8")), Charset.forName("UTF-8"));
         final String contentType = MediaType.APPLICATION_JSON + ";charset=UTF-8";
 
         final String content = mockMvc.perform(post("/oauth/token").header("Authorization", authorization)

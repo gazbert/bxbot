@@ -125,7 +125,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter imple
     /**
      * Nonce used for sending authenticated messages to the exchange.
      */
-    private static long nonce = 0;
+    private long nonce = 0;
 
     /**
      * Used to indicate if we have initialised the MAC authentication protocol.
@@ -387,16 +387,18 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter imple
              * The adapter only fetches the 'exchange' account balance details - this is the Bitfinex 'exchange' account,
              * i.e. the limit order trading account balance.
              */
-            allAccountBalances
-                    .stream()
-                    .filter(accountBalance -> accountBalance.type.equalsIgnoreCase("exchange"))
-                    .forEach(accountBalance -> {
-                        if (accountBalance.currency.equalsIgnoreCase("usd")) {
-                            balancesAvailable.put("USD", accountBalance.available);
-                        } else if (accountBalance.currency.equalsIgnoreCase("btc")) {
-                            balancesAvailable.put("BTC", accountBalance.available);
-                        }
-                    });
+            if (allAccountBalances != null) {
+                allAccountBalances
+                        .stream()
+                        .filter(accountBalance -> accountBalance.type.equalsIgnoreCase("exchange"))
+                        .forEach(accountBalance -> {
+                            if (accountBalance.currency.equalsIgnoreCase("usd")) {
+                                balancesAvailable.put("USD", accountBalance.available);
+                            } else if (accountBalance.currency.equalsIgnoreCase("btc")) {
+                                balancesAvailable.put("BTC", accountBalance.available);
+                            }
+                        });
+            }
 
             // 2nd arg of BalanceInfo constructor for reserved/on-hold balances is not provided by exchange.
             return new BalanceInfo(balancesAvailable, new HashMap<>());
@@ -901,7 +903,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter imple
             final String paramsInJson = gson.toJson(params);
 
             // Need to base64 encode payload as per API
-            final String base64payload = DatatypeConverter.printBase64Binary(paramsInJson.getBytes());
+            final String base64payload = DatatypeConverter.printBase64Binary(paramsInJson.getBytes("UTF-8"));
 
             // Request headers required by Exchange
             final Map<String, String> requestHeaders = new HashMap<>();
@@ -913,7 +915,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter imple
 
             // Add the signature
             mac.reset(); // force reset
-            mac.update(base64payload.getBytes());
+            mac.update(base64payload.getBytes("UTF-8"));
 
             /*
              * signature = HMAC-SHA384(payload, api-secret) as hexadecimal - MUST be in LOWERCASE else signature fails.

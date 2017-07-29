@@ -96,7 +96,9 @@ public final class OpenOrder {
                      BigDecimal price, BigDecimal quantity, BigDecimal originalQuantity,
                      BigDecimal total) {
         this.id = id;
-        this.creationDate = creationDate;
+        if (creationDate != null) {
+            this.creationDate = new Date(creationDate.getTime());
+        }
         this.marketId = marketId;
         this.type = type;
         this.price = price;
@@ -129,7 +131,10 @@ public final class OpenOrder {
      * @return The exchange date/time.
      */
     public Date getCreationDate() {
-        return creationDate;
+        if (creationDate != null) {
+            return new Date(creationDate.getTime());
+        }
+        return null;
     }
 
     /**
@@ -138,7 +143,9 @@ public final class OpenOrder {
      * @param creationDate the creation date of the order.
      */
     public void setCreationDate(Date creationDate) {
-        this.creationDate = creationDate;
+        if (creationDate != null) {
+            this.creationDate = new Date(creationDate.getTime());
+        }
     }
 
     /**

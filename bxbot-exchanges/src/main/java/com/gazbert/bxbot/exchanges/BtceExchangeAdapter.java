@@ -120,7 +120,7 @@ public final class BtceExchangeAdapter extends AbstractExchangeAdapter implement
     /**
      * Nonce used for sending authenticated messages to the exchange.
      */
-    private static long nonce = 0;
+    private long nonce = 0;
 
     /**
      * Used to indicate if we have initialised the MAC authentication protocol
@@ -178,24 +178,28 @@ public final class BtceExchangeAdapter extends AbstractExchangeAdapter implement
 
             final List<MarketOrder> buyOrders = new ArrayList<>();
             final List<List<BigDecimal>> btceBuyOrders = marketOrderWrapper.orderBook.bids;
-            for (final List<BigDecimal> order : btceBuyOrders) {
-                final MarketOrder buyOrder = new MarketOrder(
-                        OrderType.BUY,
-                        order.get(0), // price
-                        order.get(1), // quantity
-                        order.get(0).multiply(order.get(1)));
-                buyOrders.add(buyOrder);
+            if (btceBuyOrders != null) {
+                for (final List<BigDecimal> order : btceBuyOrders) {
+                    final MarketOrder buyOrder = new MarketOrder(
+                            OrderType.BUY,
+                            order.get(0), // price
+                            order.get(1), // quantity
+                            order.get(0).multiply(order.get(1)));
+                    buyOrders.add(buyOrder);
+                }
             }
 
             final List<MarketOrder> sellOrders = new ArrayList<>();
             final List<List<BigDecimal>> btceSellOrders = marketOrderWrapper.orderBook.asks;
-            for (final List<BigDecimal> order : btceSellOrders) {
-                final MarketOrder sellOrder = new MarketOrder(
-                        OrderType.SELL,
-                        order.get(0), // price
-                        order.get(1), // quantity
-                        order.get(0).multiply(order.get(1)));
-                sellOrders.add(sellOrder);
+            if (btceSellOrders != null) {
+                for (final List<BigDecimal> order : btceSellOrders) {
+                    final MarketOrder sellOrder = new MarketOrder(
+                            OrderType.SELL,
+                            order.get(0), // price
+                            order.get(1), // quantity
+                            order.get(0).multiply(order.get(1)));
+                    sellOrders.add(sellOrder);
+                }
             }
 
             return new MarketOrderBook(marketId, sellOrders, buyOrders);
@@ -816,7 +820,7 @@ public final class BtceExchangeAdapter extends AbstractExchangeAdapter implement
     /**
      * Deserializer needed for BTC-e open orders API call response:
      */
-    private class OpenOrdersDeserializer implements JsonDeserializer<BtceOpenOrders> {
+    private static class OpenOrdersDeserializer implements JsonDeserializer<BtceOpenOrders> {
         public BtceOpenOrders deserialize(JsonElement json, Type type, JsonDeserializationContext context)
                 throws JsonParseException {
             final BtceOpenOrders openOrders = new BtceOpenOrders();
@@ -824,7 +828,7 @@ public final class BtceExchangeAdapter extends AbstractExchangeAdapter implement
             if (json.isJsonObject()) {
                 final JsonObject jsonObject = json.getAsJsonObject();
                 for (Entry<String, JsonElement> jsonOrder : jsonObject.entrySet()) {
-                    final Long orderId = new Long(jsonOrder.getKey()); // will barf hard n fast if NaN
+                    final Long orderId = Long.valueOf(jsonOrder.getKey()); // will barf hard n fast if NaN
                     final BtceOpenOrder openOrder = context.deserialize(jsonOrder.getValue(), BtceOpenOrder.class);
                     openOrders.put(orderId, openOrder);
                 }
@@ -895,13 +899,14 @@ public final class BtceExchangeAdapter extends AbstractExchangeAdapter implement
             params.put("nonce", Long.toString(++nonce));
 
             // Build the URL with query param args in it - yuk!
-            String postData = "";
-            for (final String param : params.keySet()) {
+            final StringBuilder postData = new StringBuilder("");
+            for (final Entry<String, String> param : params.entrySet()) {
                 if (postData.length() > 0) {
-                    postData += "&";
+                    postData.append("&");
                 }
-                //noinspection deprecation
-                postData += param + "=" + URLEncoder.encode(params.get(param));
+                postData.append(param.getKey());
+                postData.append("=");
+                postData.append(URLEncoder.encode(param.getValue(), "UTF-8"));
             }
 
             // Request headers required by Exchange
@@ -912,10 +917,10 @@ public final class BtceExchangeAdapter extends AbstractExchangeAdapter implement
             requestHeaders.put("Key", key);
 
             // Sign the payload with private key
-            requestHeaders.put("Sign", toHex(mac.doFinal(postData.getBytes("UTF-8"))));
+            requestHeaders.put("Sign", toHex(mac.doFinal(postData.toString().getBytes("UTF-8"))));
 
             final URL url = new URL(AUTHENTICATED_API_URL);
-            return sendNetworkRequest(url, "POST", postData, requestHeaders);
+            return sendNetworkRequest(url, "POST", postData.toString(), requestHeaders);
 
         } catch (MalformedURLException | UnsupportedEncodingException e) {
 
