@@ -59,12 +59,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebAppConfiguration
 public class TestStrategyConfigController extends AbstractConfigControllerTest {
 
-    // This must match a user's login_id in the user table in src/test/resources/import.sql
-    private static final String VALID_USER_LOGINID = "user1";
-
-    // This must match a user's password in the user table in src/test/resources/import.sql
-    private static final String VALID_USER_PASSWORD = "user1-password";
-
     // Canned data
     private static final String UNKNOWN_STRAT_ID = "unknown-id";
 
@@ -98,7 +92,6 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
         mockMvc = MockMvcBuilders.webAppContextSetup(ctx).addFilter(springSecurityFilterChain).build();
     }
 
-    @Ignore("FIXME - need to adapt external -> internal strat model")
     @Test
     public void testGetAllStrategyConfig() throws Exception {
 
@@ -143,7 +136,6 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
                 .andExpect(status().isUnauthorized());
     }
 
-    @Ignore("FIXME - need to adapt external -> internal strat model")
     @Test
     public void testGetStrategyConfigById() throws Exception {
 
@@ -180,7 +172,6 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
                 .andExpect(status().isUnauthorized());
     }
 
-    @Ignore("FIXME - need to adapt external -> internal strat model")
     @Test
     public void testGetStrategyConfigByIdWhenNotRecognized() throws Exception {
 
@@ -192,7 +183,6 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
                 .andExpect(status().isNotFound());
     }
 
-    @Ignore("FIXME - need to adapt external -> internal strat model")
     @Test
     public void testUpdateStrategyConfig() throws Exception {
 
@@ -205,7 +195,6 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
                 .andExpect(status().isNoContent());
     }
 
-    @Ignore("FIXME - need to adapt external -> internal strat model")
     @Test
     public void testUpdateStrategyConfigWhenUnauthorizedWithMissingCredentials() throws Exception {
 
@@ -227,7 +216,6 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
                 .andExpect(status().isUnauthorized());
     }
 
-    @Ignore("FIXME - need to adapt external -> internal strat model")
     @Test
     public void testUpdateStrategyConfigWhenIdNotRecognized() throws Exception {
 
@@ -241,7 +229,6 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
                 .andExpect(status().isNotFound());
     }
 
-    @Ignore("FIXME - need to adapt external -> internal strat model")
     @Test
     public void testUpdateStrategyConfigWhenIdIsMissing() throws Exception {
 
@@ -253,7 +240,6 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
                 .andExpect(status().isBadRequest());
     }
 
-    @Ignore("FIXME - need to adapt external -> internal strat model")
     @Test
     public void testDeleteStrategyConfig() throws Exception {
 
@@ -281,7 +267,6 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
                 .andExpect(status().isUnauthorized());
     }
 
-    @Ignore("FIXME - need to adapt external -> internal strat model")
     @Test
     public void testDeleteStrategyConfigWhenIdNotRecognized() throws Exception {
 
@@ -293,7 +278,6 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
                 .andExpect(status().isNotFound());
     }
 
-    @Ignore("FIXME - need to adapt external -> internal strat model")
     @Test
     public void testCreateStrategyConfig() throws Exception {
 
@@ -327,7 +311,6 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
                 .andExpect(status().isUnauthorized());
     }
 
-    @Ignore("FIXME - need to adapt external -> internal strat model")
     @Test
     public void testCreateStrategyConfigWhenIdAlreadyExists() throws Exception {
 
@@ -341,7 +324,6 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
                 .andExpect(status().isConflict());
     }
 
-    @Ignore("FIXME - need to adapt external -> internal strat model")
     @Test
     public void testCreateStrategyConfigWhenIdIsMissing() throws Exception {
 
