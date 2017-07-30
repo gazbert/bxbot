@@ -21,12 +21,13 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.rest.api;
+package com.gazbert.bxbot.rest.api.exchange;
 
-import com.gazbert.bxbot.rest.security.User;
+import org.springframework.security.core.userdetails.User;
 import com.gazbert.bxbot.domain.exchange.ExchangeConfig;
 import com.gazbert.bxbot.services.ExchangeConfigService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -49,11 +50,11 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
  */
 @RestController
 @RequestMapping("/api/config/")
-public class ExchangeConfigController {
+class ExchangeConfigController {
 
+    private static final Logger LOG = LogManager.getLogger();
     private final ExchangeConfigService exchangeConfigService;
 
-    @Autowired
     public ExchangeConfigController(ExchangeConfigService exchangeConfigService) {
         Assert.notNull(exchangeConfigService, "exchangeConfigService dependency cannot be null!");
         this.exchangeConfigService = exchangeConfigService;
@@ -65,13 +66,15 @@ public class ExchangeConfigController {
      * @return the Exchange configuration.
      */
     @RequestMapping(value = "/exchange", method = RequestMethod.GET)
-    public ExchangeConfig getExchange(@AuthenticationPrincipal User user) {
+    public ExchangeAdapterConfig getExchange(@AuthenticationPrincipal User user) {
+
+        LOG.info("GET /exchange - getExchange - caller: " + user.getUsername());
 
         final ExchangeConfig exchangeConfig = exchangeConfigService.getConfig();
+        final ExchangeAdapterConfig exchangeAdapterConfig = adaptInternalConfigToExternalPayload(exchangeConfig);
 
-        // Strip out the Authentication config for now - too risky to expose trading api keys
-        exchangeConfig.setAuthenticationConfig(null);
-        return exchangeConfig;
+        LOG.info("Response: " + exchangeAdapterConfig);
+        return exchangeAdapterConfig;
     }
 
     /**
@@ -82,10 +85,38 @@ public class ExchangeConfigController {
     @RequestMapping(value = "/exchange", method = RequestMethod.PUT)
     ResponseEntity<?> updateExchange(@AuthenticationPrincipal User user, @RequestBody ExchangeConfig config) {
 
+        LOG.info("PUT /exchange - updateExchange - caller: " + user.getUsername());
+        LOG.info("Request: " + config);
+
         exchangeConfigService.updateConfig(config);
         final HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setLocation(ServletUriComponentsBuilder.fromCurrentRequest().path("/").buildAndExpand().toUri());
         return new ResponseEntity<>(null, httpHeaders, HttpStatus.NO_CONTENT);
+    }
+
+    // ------------------------------------------------------------------------
+    // Private utils
+    // ------------------------------------------------------------------------
+
+    private ExchangeAdapterConfig adaptInternalConfigToExternalPayload(ExchangeConfig internalConfig) {
+
+        final NetworkConfig networkConfig = new NetworkConfig();
+        networkConfig.setConnectionTimeout(internalConfig.getNetworkConfig().getConnectionTimeout());
+        networkConfig.setNonFatalErrorHttpStatusCodes(internalConfig.getNetworkConfig().getNonFatalErrorCodes());
+        networkConfig.setNonFatalErrorMessages(internalConfig.getNetworkConfig().getNonFatalErrorMessages());
+
+        final OtherConfig otherConfig = new OtherConfig();
+        otherConfig.setItems(internalConfig.getOtherConfig().getItems());
+
+        final ExchangeAdapterConfig exchangeAdapterConfig = new ExchangeAdapterConfig();
+        exchangeAdapterConfig.setName(internalConfig.getExchangeName());
+        exchangeAdapterConfig.setClassName(internalConfig.getExchangeAdapter());
+        exchangeAdapterConfig.setNetworkConfig(networkConfig);
+
+        // TODO - Not exposing AuthenticationConfig for now - too risky?
+        // final AuthenticationConfig authenticationConfig = new AuthenticationConfig();
+
+        return exchangeAdapterConfig;
     }
 }
 

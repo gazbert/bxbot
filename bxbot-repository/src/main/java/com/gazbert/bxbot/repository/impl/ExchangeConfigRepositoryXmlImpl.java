@@ -108,13 +108,12 @@ public class ExchangeConfigRepositoryXmlImpl implements ExchangeConfigRepository
         networkConfig.setNonFatalErrorMessages(nonFatalErrorMessages);
 
         final OtherConfigType otherConfig = new OtherConfigType();
-        externalExchangeConfig.getOtherConfig().getItems().entrySet()
-                .forEach(item -> {
-                    final ConfigItemType configItem = new ConfigItemType();
-                    configItem.setName(item.getKey());
-                    configItem.setValue(item.getValue());
-                    otherConfig.getConfigItems().add(configItem);
-                });
+        externalExchangeConfig.getOtherConfig().getItems().forEach((key, value) -> {
+            final ConfigItemType configItem = new ConfigItemType();
+            configItem.setName(key);
+            configItem.setValue(value);
+            otherConfig.getConfigItems().add(configItem);
+        });
 
         final ExchangeType exchangeConfig = new ExchangeType();
         exchangeConfig.setName(externalExchangeConfig.getExchangeName());

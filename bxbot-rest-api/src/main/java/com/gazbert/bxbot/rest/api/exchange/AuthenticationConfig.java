@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2015 Gareth Jon Lynch
+ * Copyright (c) 2017 Gareth Jon Lynch
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -12,7 +12,7 @@
  *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
  * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
@@ -21,33 +21,39 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.trading.api;
+package com.gazbert.bxbot.rest.api.exchange;
+
+import com.google.common.base.MoreObjects;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * Defines the different order types for sending to the exchange.
+ * Domain object representing the Exchange Adapter Authentication config.
  *
  * @author gazbert
- * @since 1.0
  */
-public enum OrderType {
+class AuthenticationConfig {
 
-    /**
-     * Buy order.
-     */
-    BUY("Buy"),
+    private Map<String, String> items;
 
-    /**
-     * Sell order.
-     */
-    SELL("Sell");
-
-    private final String orderType;
-
-    OrderType(String orderType) {
-        this.orderType = orderType;
+    public AuthenticationConfig() {
+        items = new HashMap<>();
     }
 
-    public String getStringValue() {
-        return orderType;
+    public Map<String, String> getItems() {
+        return items;
+    }
+
+    public void setItems(Map<String, String> items) {
+        this.items = items;
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                // WARNING - careful showing this!
+                // .add("items", items)
+                .toString();
     }
 }

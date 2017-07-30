@@ -42,7 +42,7 @@ import java.util.*;
  * @author gazbert
  * @since 1.0
  */
-public abstract class AbstractExchangeAdapter {
+abstract class AbstractExchangeAdapter {
 
     private static final Logger LOG = LogManager.getLogger();
 
@@ -110,19 +110,19 @@ public abstract class AbstractExchangeAdapter {
      * HTTP status codes for non-fatal network connection failures.
      * Used to decide to throw {@link ExchangeNetworkException}.
      */
-    private Set<Integer> nonFatalNetworkErrorCodes;
+    private final Set<Integer> nonFatalNetworkErrorCodes;
 
     /**
      * java.io exception messages for non-fatal network connection failures.
      * Used to decide to throw {@link ExchangeNetworkException}.
      */
-    private Set<String> nonFatalNetworkErrorMessages;
+    private final Set<String> nonFatalNetworkErrorMessages;
 
 
     /**
      * Constructor set some sensible defaults for the network config.
      */
-    protected AbstractExchangeAdapter() {
+    AbstractExchangeAdapter() {
         connectionTimeout = 30;
         nonFatalNetworkErrorCodes = new HashSet<>();
         nonFatalNetworkErrorMessages = new HashSet<>();
@@ -156,9 +156,9 @@ public abstract class AbstractExchangeAdapter {
             exchangeConnection.setDoOutput(true);
             exchangeConnection.setRequestMethod(httpMethod); // GET|POST|DELETE
 
-            // Er, perhaps, I need to be a bit more stealth here...
+            // Er, perhaps, I need to be a bit more stealth here... this was needed for some exchanges back in the day!
             exchangeConnection.setRequestProperty("User-Agent",
-                    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.106 Safari/537.36");
+                    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.78 Safari/537.36");
 
             if (requestHeaders != null) {
                 for (final Map.Entry<String, String> requestHeader : requestHeaders.entrySet()) {
@@ -174,14 +174,14 @@ public abstract class AbstractExchangeAdapter {
 
             if (httpMethod.equalsIgnoreCase("POST") && postData != null) {
                 LOG.debug(() -> "Doing POST with request body: " + postData);
-                final OutputStreamWriter outputPostStream = new OutputStreamWriter(exchangeConnection.getOutputStream());
+                final OutputStreamWriter outputPostStream = new OutputStreamWriter(exchangeConnection.getOutputStream(), "UTF-8");
                 outputPostStream.write(postData);
                 outputPostStream.close();
             }
 
             // Grab the response - we just block here as per Connection API
             final BufferedReader responseInputStream = new BufferedReader(new InputStreamReader(
-                    exchangeConnection.getInputStream()));
+                    exchangeConnection.getInputStream(), "UTF-8"));
 
             // Read the JSON response lines into our response buffer
             String responseLine;
@@ -215,15 +215,13 @@ public abstract class AbstractExchangeAdapter {
             // Check if this is a non-fatal network error
             try {
 
-                if (nonFatalNetworkErrorMessages != null && e.getMessage() != null &&
-                        nonFatalNetworkErrorMessages.contains(e.getMessage())) {
+                if (e.getMessage() != null && nonFatalNetworkErrorMessages.contains(e.getMessage())) {
 
                     final String errorMsg = "Failed to connect to Exchange. SSL Connection was refused or reset by the server.";
                     LOG.error(errorMsg, e);
                     throw new ExchangeNetworkException(errorMsg, e);
 
-                } else if (nonFatalNetworkErrorCodes != null && exchangeConnection != null &&
-                        nonFatalNetworkErrorCodes.contains(exchangeConnection.getResponseCode())) {
+                } else if (exchangeConnection != null && nonFatalNetworkErrorCodes.contains(exchangeConnection.getResponseCode())) {
 
                     final String errorMsg = IO_5XX_TIMEOUT_ERROR_MSG;
                     LOG.error(errorMsg, e);
@@ -236,7 +234,7 @@ public abstract class AbstractExchangeAdapter {
                     if (exchangeConnection != null) {
                         final InputStream rawErrorStream = exchangeConnection.getErrorStream();
                         if (rawErrorStream != null) {
-                            final BufferedReader errorInputStream = new BufferedReader(new InputStreamReader(rawErrorStream));
+                            final BufferedReader errorInputStream = new BufferedReader(new InputStreamReader(rawErrorStream, "UTF-8"));
                             final StringBuilder errorResponse = new StringBuilder();
                             String errorLine;
                             while ((errorLine = errorInputStream.readLine()) != null) {
@@ -381,8 +379,9 @@ public abstract class AbstractExchangeAdapter {
             if (sortedQueryString.length() > 0) {
                 sortedQueryString.append("&");
             }
-            //noinspection deprecation
-            sortedQueryString.append(param).append("=").append(params.get(param));
+            sortedQueryString.append(param);
+            sortedQueryString.append("=");
+            sortedQueryString.append(params.get(param));
         }
         return sortedQueryString.toString();
     }
@@ -392,9 +391,9 @@ public abstract class AbstractExchangeAdapter {
      */
     static class ExchangeHttpResponse {
 
-        private int statusCode;
-        private String reasonPhrase;
-        private String payload;
+        private final int statusCode;
+        private final String reasonPhrase;
+        private final String payload;
 
         ExchangeHttpResponse(int statusCode, String reasonPhrase, String payload) {
             this.statusCode = statusCode;

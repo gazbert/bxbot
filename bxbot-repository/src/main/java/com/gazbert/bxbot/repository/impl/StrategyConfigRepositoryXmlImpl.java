@@ -223,13 +223,12 @@ public class StrategyConfigRepositoryXmlImpl implements StrategyConfigRepository
     private static StrategyType adaptExternalToInternalConfig(StrategyConfig externalStrategyConfig) {
 
         final ConfigurationType configurationType = new ConfigurationType();
-        externalStrategyConfig.getConfigItems().entrySet()
-                .forEach(item -> {
-                    final ConfigItemType configItem = new ConfigItemType();
-                    configItem.setName(item.getKey());
-                    configItem.setValue(item.getValue());
-                    configurationType.getConfigItem().add(configItem);
-                });
+        externalStrategyConfig.getConfigItems().forEach((key, value) -> {
+            final ConfigItemType configItem = new ConfigItemType();
+            configItem.setName(key);
+            configItem.setValue(value);
+            configurationType.getConfigItem().add(configItem);
+        });
 
         final StrategyType strategyType = new StrategyType();
         strategyType.setId(externalStrategyConfig.getId());

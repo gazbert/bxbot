@@ -124,7 +124,7 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
     /**
      * Nonce used for sending authenticated messages to the exchange.
      */
-    private static long nonce = 0;
+    private long nonce = 0;
 
     /**
      * Used to indicate if we have initialised the MAC authentication protocol.
@@ -654,8 +654,8 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
      * at com.google.gson.TreeTypeAdapter.read(TreeTypeAdapter.java:58)
      * </pre>
      */
-    private class BitstampDateDeserializer implements JsonDeserializer<Date> {
-        private SimpleDateFormat bitstampDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    private static class BitstampDateDeserializer implements JsonDeserializer<Date> {
+        private final SimpleDateFormat bitstampDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
         public Date deserialize(JsonElement json, Type type, JsonDeserializationContext context)
                 throws JsonParseException {
@@ -735,9 +735,9 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
             // Create MAC message for signature
             // message = nonce + client_id + api_key
             mac.reset(); // force reset
-            mac.update(String.valueOf(nonce).getBytes());
-            mac.update(clientId.getBytes());
-            mac.update(key.getBytes());
+            mac.update(String.valueOf(nonce).getBytes("UTF-8"));
+            mac.update(clientId.getBytes("UTF-8"));
+            mac.update(key.getBytes("UTF-8"));
 
             /*
              * Signature is a HMAC-SHA256 encoded message containing: nonce, client ID and API key.
@@ -753,13 +753,14 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
             nonce++;
 
             // Build the URL with query param args in it
-            String postData = "";
-            for (final String param : params.keySet()) {
+            final StringBuilder postData = new StringBuilder("");
+            for (final Map.Entry<String, String> param : params.entrySet()) {
                 if (postData.length() > 0) {
-                    postData += "&";
+                    postData.append("&");
                 }
-                //noinspection deprecation
-                postData += param + "=" + URLEncoder.encode(params.get(param));
+                postData.append(param.getKey());
+                postData.append("=");
+                postData.append(URLEncoder.encode(param.getValue(), "UTF-8"));
             }
 
             // Request headers required by Exchange
@@ -767,7 +768,7 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
             requestHeaders.put("Content-Type", "application/x-www-form-urlencoded");
 
             final URL url = new URL(API_BASE_URL + apiMethod + "/"); // MUST have the trailing slash else exchange barfs...
-            return sendNetworkRequest(url, "POST", postData, requestHeaders);
+            return sendNetworkRequest(url, "POST", postData.toString(), requestHeaders);
 
         } catch (MalformedURLException | UnsupportedEncodingException e) {
             final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
@@ -781,9 +782,8 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
      *
      * @param byteArrayToConvert byte array to convert.
      * @return the string representation of the given byte array.
-     * @throws UnsupportedEncodingException if the byte array encoding is not recognised.
      */
-    private String toHex(byte[] byteArrayToConvert) throws UnsupportedEncodingException {
+    private String toHex(byte[] byteArrayToConvert) {
         final StringBuilder hexString = new StringBuilder();
 
         for (final byte aByte : byteArrayToConvert) {

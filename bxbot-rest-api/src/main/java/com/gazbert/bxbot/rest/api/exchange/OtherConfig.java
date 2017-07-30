@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016 Gareth Jon Lynch
+ * Copyright (c) 2017 Gareth Jon Lynch
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -21,16 +21,38 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.rest.security;
+package com.gazbert.bxbot.rest.api.exchange;
 
-import org.springframework.data.repository.CrudRepository;
+import com.google.common.base.MoreObjects;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * Repository for Users.
+ * Domain object representing other (optional) Exchange Adapter config.
  *
  * @author gazbert
  */
-public interface UserRepository extends CrudRepository<User, Long> {
+public class OtherConfig {
 
-    User findByLoginId(String loginId);
+    private Map<String, String> items;
+
+    public OtherConfig() {
+        items = new HashMap<>();
+    }
+
+    public Map<String, String> getItems() {
+        return items;
+    }
+
+    public void setItems(Map<String, String> items) {
+        this.items = items;
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("items", items)
+                .toString();
+    }
 }

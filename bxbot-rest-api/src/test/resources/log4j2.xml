@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+The log file is written to `logs/bxbot.log` and uses a rolling policy.
+It will create up to 7 archives on the same day (1-7) that are stored in a directory based on the current year and month,
+and will compress each archive using gzip.
+Once a file reaches 100 MB or a new day is started, it is archived, and a new log file is created.
+Only the last 90 archives are kept.
+The logging level is set to 'info'.
+
+See log4j2 guide for more options: http://logging.apache.org/log4j/2.x/manual/appenders.html#RollingRandomAccessFileAppender
+-->
+<Configuration status="warn" name="BX-bot" packages="">
+    <Appenders>
+        <RollingFile name="BXBot_RollingFile" fileName="./logs/bxbot.log"
+                     filePattern="logs/$${date:yyyy-MM}/bxbot-%d{MM-dd-yyyy}-%i.log.gz">
+            <PatternLayout>
+                <Pattern>%-4r [%t] %d %-5p %c{1} %M() - %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="100 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="90"/>
+        </RollingFile>
+        <Console name="STDOUT" target="SYSTEM_OUT">
+            <PatternLayout>
+                <Pattern>%-4r [%t] %d %-5p %c{1} %M() - %m%n</Pattern>
+            </PatternLayout>
+        </Console>
+    </Appenders>
+    <Loggers>
+        <!--
+        I recommend running BX-bot at 'info'. 'debug' logging will produce a *lot* of output for the Exchange Adapters;
+        very handy for debugging, but not so good for your disk space!
+        -->
+        <Root level="info">
+            <AppenderRef ref="BXBot_RollingFile"/>
+            <AppenderRef ref="STDOUT"/>
+        </Root>
+    </Loggers>
+</Configuration>

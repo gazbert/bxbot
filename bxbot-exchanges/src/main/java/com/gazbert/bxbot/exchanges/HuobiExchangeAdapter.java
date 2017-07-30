@@ -33,6 +33,7 @@ import com.google.gson.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.net.MalformedURLException;
@@ -215,7 +216,7 @@ public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implemen
 
         BTC_USD("BTC-USD"), BTC_CNY("BTC-CNY");
 
-        private String market;
+        private final String market;
 
         PublicExchangeCallMarket(String market) {
             this.market = market;
@@ -232,7 +233,7 @@ public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implemen
     private enum AuthenticatedExchangeCallMarket {
 
         USD("usd"), CNY("cny");
-        private String market;
+        private final String market;
 
         AuthenticatedExchangeCallMarket(String market) {
             this.market = market;
@@ -1010,10 +1011,10 @@ public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implemen
             signatureParams.remove("secret_key");
 
             final StringBuilder payloadBuilder = new StringBuilder();
-            payloadBuilder.append("method=").append(URLEncoder.encode(signatureParams.get("method"))).append("&");
-            payloadBuilder.append("access_key=").append(URLEncoder.encode(signatureParams.get("access_key"))).append("&");
-            payloadBuilder.append("created=").append(URLEncoder.encode(signatureParams.get("created"))).append("&");
-            payloadBuilder.append("sign=").append(URLEncoder.encode(signatureParams.get("sign")));
+            payloadBuilder.append("method=").append(URLEncoder.encode(signatureParams.get("method"), "UTF-8")).append("&");
+            payloadBuilder.append("access_key=").append(URLEncoder.encode(signatureParams.get("access_key"), "UTF-8")).append("&");
+            payloadBuilder.append("created=").append(URLEncoder.encode(signatureParams.get("created"), "UTF-8")).append("&");
+            payloadBuilder.append("sign=").append(URLEncoder.encode(signatureParams.get("sign"), "UTF-8"));
 
             /*
              * Market id is 'optional' as per API docs for:
@@ -1033,7 +1034,7 @@ public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implemen
             // add the caller's query params
             for (final Map.Entry<String, String> queryParam : params.entrySet()) {
                 payloadBuilder.append("&").append(queryParam.getKey()).append("=").append(
-                        URLEncoder.encode(queryParam.getValue()));
+                        URLEncoder.encode(queryParam.getValue(), "UTF-8"));
             }
 
             // Request headers required by Exchange
@@ -1043,7 +1044,7 @@ public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implemen
             final URL url = new URL(AUTHENTICATED_API_URL);
             return sendNetworkRequest(url, "POST", payloadBuilder.toString(), requestHeaders);
 
-        } catch (MalformedURLException e) {
+        } catch (MalformedURLException | UnsupportedEncodingException e) {
 
             final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
             LOG.error(errorMsg, e);
@@ -1057,7 +1058,7 @@ public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implemen
      * @param stringToHash the string to create the MD5 hash for.
      * @return the MD5 hash as an lowercase string.
      */
-    private String createMd5HashAndReturnAsLowerCaseString(String stringToHash) {
+    private String createMd5HashAndReturnAsLowerCaseString(String stringToHash) throws UnsupportedEncodingException {
 
         final char[] HEX_DIGITS = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
 
@@ -1065,7 +1066,7 @@ public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implemen
             return "";
         }
 
-        messageDigest.update(stringToHash.getBytes());
+        messageDigest.update(stringToHash.getBytes("UTF-8"));
         final byte[] md5HashInBytes = messageDigest.digest();
 
         final StringBuilder md5HashAsLowerCaseString = new StringBuilder();

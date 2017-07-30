@@ -21,16 +21,18 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.rest.api;
+package com.gazbert.bxbot.rest.api.engine;
 
-import com.gazbert.bxbot.rest.security.User;
-import com.gazbert.bxbot.domain.emailalerts.EmailAlertsConfig;
-import com.gazbert.bxbot.services.EmailAlertsConfigService;
+import com.gazbert.bxbot.domain.engine.EngineConfig;
+import com.gazbert.bxbot.services.EngineConfigService;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,50 +41,55 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 /**
+ * Controller for directing Engine config requests.
  * <p>
- * Controller for directing Email Alerts config requests.
- * <p>
- * Email Alerts config can only be fetched and updated - there is only 1 Email Alerts configuration per bot.
+ * Engine config can only be fetched and updated - there is only 1 Trading Engine per bot.
  *
  * @author gazbert
  * @since 1.0
  */
 @RestController
 @RequestMapping("/api/config")
-public class EmailAlertsConfigController {
+class EngineConfigController {
 
-    private final EmailAlertsConfigService emailAlertsConfigService;
+    private static final Logger LOG = LogManager.getLogger();
+    private final EngineConfigService engineConfigService;
 
     @Autowired
-    public EmailAlertsConfigController(EmailAlertsConfigService emailAlertsConfigService) {
-        Assert.notNull(emailAlertsConfigService, "emailAlertsConfigService dependency cannot be null!");
-        this.emailAlertsConfigService = emailAlertsConfigService;
+    public EngineConfigController(EngineConfigService engineConfigService) {
+        Assert.notNull(engineConfigService, "engineConfigService dependency cannot be null!");
+        this.engineConfigService = engineConfigService;
     }
 
     /**
-     * Returns Email Alerts configuration for the bot.
+     * Returns Engine configuration for the bot.
      *
-     * @return the Email Alerts configuration.
+     * @return the Engine configuration.
      */
-    @RequestMapping(value = "/emailalerts", method = RequestMethod.GET)
-    public EmailAlertsConfig getEmailAlerts(@AuthenticationPrincipal User user) {
+    @RequestMapping(value = "/engine", method = RequestMethod.GET)
+    public EngineConfig getEngine(@AuthenticationPrincipal User user) {
 
-        final EmailAlertsConfig emailAlertsConfig = emailAlertsConfigService.getConfig();
+        LOG.info("GET /engine - getEngine - caller: " + user.getUsername());
 
-        // Strip out the Account password for now - too risky to expose.
-        emailAlertsConfig.getSmtpConfig().setAccountPassword(null);
-        return emailAlertsConfig;
+        final EngineConfig engineConfig = engineConfigService.getConfig();
+        LOG.info("Response: " + engineConfig);
+
+        return engineConfig;
     }
 
     /**
-     * Updates Email Alerts configuration for the bot.
+     * Updates Engine configuration for the bot.
      *
-     * @return 204 'No Content' HTTP status code if Email Alerts config was updated, some other HTTP status code otherwise.
+     * @return 204 'No Content' HTTP status code if engine config was updated successfully, some other HTTP status
+     * code otherwise.
      */
-    @RequestMapping(value = "/emailalerts", method = RequestMethod.PUT)
-    ResponseEntity<?> updateEmailAlerts(@AuthenticationPrincipal User user, @RequestBody EmailAlertsConfig config) {
+    @RequestMapping(value = "/engine", method = RequestMethod.PUT)
+    public ResponseEntity<?> updateEngine(@AuthenticationPrincipal User user, @RequestBody EngineConfig config) {
 
-        emailAlertsConfigService.updateConfig(config);
+        LOG.info("PUT /engine - updateEngine - caller: " + user.getUsername());
+        LOG.info("Request: " + config);
+
+        engineConfigService.updateConfig(config);
         final HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setLocation(ServletUriComponentsBuilder.fromCurrentRequest().path("/").buildAndExpand().toUri());
         return new ResponseEntity<>(null, httpHeaders, HttpStatus.NO_CONTENT);

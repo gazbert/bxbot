@@ -158,7 +158,7 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
     /**
      * Nonce used for sending authenticated messages to the exchange.
      */
-    private static long nonce = 0;
+    private long nonce = 0;
 
     /**
      * The UUID of the wallet in use on the exchange.
@@ -528,8 +528,10 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
                 // adapt
                 final Map<String, BigDecimal> balancesAvailable = new HashMap<>();
                 final List<ItBitBalance> balances = exchangeWallet.balances;
-                for (final ItBitBalance balance : balances) {
-                    balancesAvailable.put(balance.currency, balance.availableBalance);
+                if (balances != null) {
+                    for (final ItBitBalance balance : balances) {
+                        balancesAvailable.put(balance.currency, balance.availableBalance);
+                    }
                 }
 
                 // 2nd arg of BalanceInfo constructor for reserved/on-hold balances is not provided by exchange.
@@ -854,14 +856,15 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
 
                     // Build (optional) query param string
                     final StringBuilder queryParamBuilder = new StringBuilder();
-                    for (final String param : params.keySet()) {
+                    for (final Map.Entry<String, String> param : params.entrySet()) {
                         if (queryParamBuilder.length() > 0) {
                             queryParamBuilder.append("&");
                         }
-                        //noinspection deprecation
                         // Don't URL encode as it messed up the UUID params, e.g. wallet id
                         //queryParams += param + "=" + URLEncoder.encode(params.get(param));
-                        queryParamBuilder.append(param).append("=").append(params.get(param));
+                        queryParamBuilder.append(param.getKey());
+                        queryParamBuilder.append("=");
+                        queryParamBuilder.append(param.getValue());
                     }
 
                     final String queryParams = queryParamBuilder.toString();
@@ -919,13 +922,13 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
 
             // Construct the SHA-256 hash of the noncePrependedToJson. Call this the message hash.
             final MessageDigest md = MessageDigest.getInstance("SHA-256");
-            md.update(noncePrependedToJson.getBytes());
+            md.update(noncePrependedToJson.getBytes("UTF-8"));
             final byte[] messageHash = md.digest();
 
             // Prepend the UTF-8 encoded request URL to the message hash.
             // Generate the SHA-512 HMAC of the prependRequestUrlToMsgHash using your API secret as the key.
             mac.reset(); // force reset
-            mac.update(invocationUrl.getBytes());
+            mac.update(invocationUrl.getBytes("UTF-8"));
             mac.update(messageHash);
 
             final String signature = DatatypeConverter.printBase64Binary(mac.doFinal());
@@ -945,7 +948,7 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
             final URL url = new URL(invocationUrl);
             return sendNetworkRequest(url, httpMethod, requestBody, requestHeaders);
 
-        } catch (MalformedURLException e) {
+        } catch (MalformedURLException | UnsupportedEncodingException e) {
             final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
             LOG.error(errorMsg, e);
             throw new TradingApiException(errorMsg, e);

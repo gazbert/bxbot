@@ -144,7 +144,7 @@ public class TradingEngine {
     private String botId;
     private String botName;
 
-    private EmailAlerter emailAlerter;
+    private final EmailAlerter emailAlerter;
     private ExchangeAdapter exchangeAdapter;
 
     // Repos

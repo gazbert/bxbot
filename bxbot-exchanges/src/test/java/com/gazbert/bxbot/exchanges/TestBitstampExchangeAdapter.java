@@ -101,11 +101,6 @@ public class TestBitstampExchangeAdapter {
     private static final String MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD = "sendAuthenticatedRequestToExchange";
     private static final String MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD = "sendPublicRequestToExchange";
 
-    /**
-     * Bitstamp exchange Date format: 2015-01-09 21:14:50
-     */
-    private static final SimpleDateFormat EXCHANGE_DATE_FORMAT = new SimpleDateFormat("y-M-d H:m:s");
-
     // Exchange Adapter config for the tests
     private static final String CLIENT_ID = "clientId123";
     private static final String KEY = "key123";
@@ -113,6 +108,11 @@ public class TestBitstampExchangeAdapter {
     private static final List<Integer> nonFatalNetworkErrorCodes = Arrays.asList(502, 503, 504);
     private static final List<String> nonFatalNetworkErrorMessages = Arrays.asList(
             "Connection refused", "Connection reset", "Remote host closed connection during handshake");
+
+    /**
+     * Bitstamp exchange Date format: 2015-01-09 21:14:50
+     */
+    private final SimpleDateFormat bitstampExchangeDateFormat = new SimpleDateFormat("y-M-d H:m:s");
 
     private ExchangeConfig exchangeConfig;
     private AuthenticationConfig authenticationConfig;
@@ -433,7 +433,7 @@ public class TestBitstampExchangeAdapter {
         assertTrue(openOrders.get(0).getMarketId().equals(MARKET_ID));
         assertTrue(openOrders.get(0).getId().equals("52603560"));
         assertTrue(openOrders.get(0).getType() == OrderType.SELL);
-        assertTrue(openOrders.get(0).getCreationDate().getTime() == EXCHANGE_DATE_FORMAT.parse("2015-01-09 21:14:50").getTime());
+        assertTrue(openOrders.get(0).getCreationDate().getTime() == bitstampExchangeDateFormat.parse("2015-01-09 21:14:50").getTime());
         assertTrue(openOrders.get(0).getPrice().compareTo(new BigDecimal("350.00")) == 0);
         assertTrue(openOrders.get(0).getQuantity().compareTo(new BigDecimal("0.20000000")) == 0);
         assertTrue(openOrders.get(0).getTotal().compareTo(openOrders.get(0).getPrice().multiply(openOrders.get(0).getQuantity())) == 0);

@@ -21,33 +21,31 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.strategy.api;
+package com.gazbert.bxbot.trading.api;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 /**
- * Tests Strategy Exception is created as expected.
+ * Tests Exchange Network created is created as expected.
  *
  * @author gazbert
  */
-public class TestStrategyException {
+public class TestExchangeNetworkExceptionCreation {
 
-    private static final String ERROR_MSG = "Received unknown order id in current active orders API call";
+    private static final String ERROR_MSG = "Network timeout connecting to exchange";
     private static final RuntimeException CAUSE = new RuntimeException("The cause of the exception");
 
     @Test
     public void testCreationOfExceptionIsAsExpected() {
-
-        final StrategyException exception = new StrategyException(ERROR_MSG);
+        final ExchangeNetworkException exception = new ExchangeNetworkException(ERROR_MSG);
         assertEquals(ERROR_MSG, exception.getMessage());
     }
 
     @Test
     public void testCreationOfExceptionWithCauseIsAsExpected() {
-
-        final StrategyException exception = new StrategyException(ERROR_MSG, CAUSE);
+        final ExchangeNetworkException exception = new ExchangeNetworkException(ERROR_MSG, CAUSE);
         assertEquals(ERROR_MSG, exception.getMessage());
         assertEquals(CAUSE, exception.getCause());
     }

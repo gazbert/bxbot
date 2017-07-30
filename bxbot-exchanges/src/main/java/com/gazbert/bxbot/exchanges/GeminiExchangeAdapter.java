@@ -148,7 +148,7 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter impleme
     /**
      * Nonce used for sending authenticated messages to the exchange.
      */
-    private static long nonce = 0;
+    private long nonce = 0;
 
     /**
      * Markets on the exchange. Used for determining order price truncation/rounding policy.
@@ -158,7 +158,7 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter impleme
 
         BTC_USD("btcusd"), ETH_USD("ethusd"), ETH_BTC("ethbtc");
 
-        private String market;
+        private final String market;
 
         MarketId(String market) {
             this.market = market;
@@ -763,11 +763,11 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter impleme
             final String paramsInJson = gson.toJson(params);
 
             // Need to base64 encode payload as per API
-            final String base64payload = DatatypeConverter.printBase64Binary(paramsInJson.getBytes());
+            final String base64payload = DatatypeConverter.printBase64Binary(paramsInJson.getBytes("UTF-8"));
 
             // Create the signature
             mac.reset(); // force reset
-            mac.update(base64payload.getBytes());
+            mac.update(base64payload.getBytes("UTF-8"));
             final String signature = toHex(mac.doFinal()).toLowerCase();
 
             // Request headers required by Exchange
@@ -795,9 +795,8 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter impleme
      *
      * @param byteArrayToConvert byte array to convert.
      * @return the string representation of the given byte array.
-     * @throws UnsupportedEncodingException if the byte array encoding is not recognised.
      */
-    private String toHex(byte[] byteArrayToConvert) throws UnsupportedEncodingException {
+    private String toHex(byte[] byteArrayToConvert) {
 
         final StringBuilder hexString = new StringBuilder();
 

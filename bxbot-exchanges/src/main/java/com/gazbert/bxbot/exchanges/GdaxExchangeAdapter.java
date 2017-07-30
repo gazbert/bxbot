@@ -37,6 +37,7 @@ import org.apache.logging.log4j.Logger;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import javax.xml.bind.DatatypeConverter;
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.net.*;
 import java.security.InvalidKeyException;
@@ -280,7 +281,7 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
                     return true;
                 } else {
                     final String errorMsg = "Failed to cancel order on exchange due to Order Id mismatch. " +
-                            "OrderId sent: " + orderId + " ResponseOrderId: " + cancelledOrderId + " Response: " + response;
+                            "OrderId sent: " + orderId + " ResponseOrderId: " + cancelledOrderId[0] + " Response: " + response;
                     LOG.error(errorMsg);
                     return false;
                 }
@@ -634,26 +635,28 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
             params = new HashMap<>(); // no params, so empty query string
         }
 
-        // Build the query string with any given params
-        final StringBuilder queryString = new StringBuilder("?");
-        for (final String param : params.keySet()) {
-            if (queryString.length() > 1) {
-                queryString.append("&");
-            }
-            //noinspection deprecation
-            queryString.append(param).append("=").append(URLEncoder.encode(params.get(param)));
-        }
-
-        // Request headers required by Exchange
-        final Map<String, String> requestHeaders = new HashMap<>();
-        requestHeaders.put("Content-Type", "application/x-www-form-urlencoded");
-
         try {
+
+            // Build the query string with any given params
+            final StringBuilder queryString = new StringBuilder("?");
+            for (final Map.Entry<String, String> param : params.entrySet()) {
+                if (queryString.length() > 1) {
+                    queryString.append("&");
+                }
+                //noinspection deprecation
+                queryString.append(param.getKey());
+                queryString.append("=");
+                queryString.append(URLEncoder.encode(param.getValue(), "UTF-8"));
+            }
+
+            // Request headers required by Exchange
+            final Map<String, String> requestHeaders = new HashMap<>();
+            requestHeaders.put("Content-Type", "application/x-www-form-urlencoded");
 
             final URL url = new URL(PUBLIC_API_BASE_URL + apiMethod + queryString);
             return sendNetworkRequest(url, "GET", null, requestHeaders);
 
-        } catch (MalformedURLException e) {
+        } catch (MalformedURLException | UnsupportedEncodingException e) {
             final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
             LOG.error(errorMsg, e);
             throw new TradingApiException(errorMsg, e);
@@ -735,11 +738,13 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
                     LOG.debug(() -> "Building secure GET request...");
                     // Build (optional) query param string
                     final StringBuilder queryParamBuilder = new StringBuilder();
-                    for (final String param : params.keySet()) {
+                    for (final Map.Entry<String, String> param : params.entrySet()) {
                         if (queryParamBuilder.length() > 0) {
                             queryParamBuilder.append("&");
                         }
-                        queryParamBuilder.append(param).append("=").append(params.get(param));
+                        queryParamBuilder.append(param.getKey());
+                        queryParamBuilder.append("=");
+                        queryParamBuilder.append(param.getValue());
                     }
 
                     final String queryParams = queryParamBuilder.toString();
@@ -768,12 +773,14 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
             }
 
             // Build the signature string
-            final StringBuilder signatureBuilder = new StringBuilder(timestamp);
-            signatureBuilder.append(httpMethod.toUpperCase()).append("/").append(apiMethod).append(requestBody);
+            final String signatureBuilder = timestamp + httpMethod.toUpperCase() +
+                    "/" +
+                    apiMethod +
+                    requestBody;
 
             // Sign the signature string and Base64 encode it
             mac.reset();
-            mac.update(signatureBuilder.toString().getBytes());
+            mac.update(signatureBuilder.getBytes("UTF-8"));
             final String signature = DatatypeConverter.printBase64Binary(mac.doFinal());
 
             // Request headers required by Exchange
@@ -787,7 +794,7 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
             final URL url = new URL(invocationUrl);
             return sendNetworkRequest(url, httpMethod, requestBody, requestHeaders);
 
-        } catch (MalformedURLException e) {
+        } catch (MalformedURLException | UnsupportedEncodingException e) {
             final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
             LOG.error(errorMsg, e);
             throw new TradingApiException(errorMsg, e);

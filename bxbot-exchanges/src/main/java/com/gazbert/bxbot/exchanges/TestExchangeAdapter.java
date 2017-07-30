@@ -23,7 +23,6 @@
 
 package com.gazbert.bxbot.exchanges;
 
-import com.gazbert.bxbot.exchange.api.AuthenticationConfig;
 import com.gazbert.bxbot.exchange.api.ExchangeAdapter;
 import com.gazbert.bxbot.exchange.api.ExchangeConfig;
 import com.gazbert.bxbot.trading.api.*;
@@ -32,15 +31,10 @@ import com.google.gson.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
-import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -75,52 +69,6 @@ public final class TestExchangeAdapter extends AbstractExchangeAdapter implement
     private static final String UNEXPECTED_IO_ERROR_MSG = "Failed to connect to Exchange due to unexpected IO error.";
 
     /**
-     * Name of client id property in config file.
-     */
-    private static final String CLIENT_ID_PROPERTY_NAME = "client-id";
-
-    /**
-     * Name of key property in config file.
-     */
-    private static final String KEY_PROPERTY_NAME = "key";
-
-    /**
-     * Name of secret property in config file.
-     */
-    private static final String SECRET_PROPERTY_NAME = "secret";
-
-    /**
-     * Nonce used for sending authenticated messages to the exchange.
-     */
-    private static long nonce = 0;
-
-    /**
-     * Used to indicate if we have initialised the MAC authentication protocol.
-     */
-    private boolean initializedMACAuthentication = false;
-
-    /**
-     * The client id.
-     */
-    private String clientId = "";
-
-    /**
-     * The key used in the MAC message.
-     */
-    private String key = "";
-
-    /**
-     * The secret used for signing MAC message.
-     */
-    private String secret = "";
-
-    /**
-     * Provides the "Message Authentication Code" (MAC) algorithm used for the secure messaging layer.
-     * Used to encrypt the hash of the entire message with the private key to ensure message integrity.
-     */
-    private Mac mac;
-
-    /**
      * GSON engine used for parsing JSON in Bitstamp API call responses.
      */
     private Gson gson;
@@ -130,11 +78,7 @@ public final class TestExchangeAdapter extends AbstractExchangeAdapter implement
     public void init(ExchangeConfig config) {
 
         LOG.info(() -> "About to initialise Bitstamp ExchangeConfig: " + config);
-        setAuthenticationConfig(config);
         setNetworkConfig(config);
-
-        nonce = System.currentTimeMillis() / 1000; // set the initial nonce used in the secure messaging.
-        initSecureMessageLayer();
         initGson();
     }
 
@@ -336,8 +280,8 @@ public final class TestExchangeAdapter extends AbstractExchangeAdapter implement
      * at com.google.gson.TreeTypeAdapter.read(TreeTypeAdapter.java:58)
      * </pre>
      */
-    private class BitstampDateDeserializer implements JsonDeserializer<Date> {
-        private SimpleDateFormat bitstampDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    private static class BitstampDateDeserializer implements JsonDeserializer<Date> {
+        private final SimpleDateFormat bitstampDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
         public Date deserialize(JsonElement json, Type type, JsonDeserializationContext context)
                 throws JsonParseException {
@@ -384,42 +328,6 @@ public final class TestExchangeAdapter extends AbstractExchangeAdapter implement
             LOG.error(errorMsg, e);
             throw new TradingApiException(errorMsg, e);
         }
-    }
-
-    /**
-     * Initialises the secure messaging layer
-     * Sets up the MAC to safeguard the data we send to the exchange.
-     * We fail hard n fast if any of this stuff blows.
-     */
-    private void initSecureMessageLayer() {
-
-        // Setup the MAC
-        try {
-            final SecretKeySpec keyspec = new SecretKeySpec(secret.getBytes("UTF-8"), "HmacSHA256");
-            mac = Mac.getInstance("HmacSHA256");
-            mac.init(keyspec);
-            initializedMACAuthentication = true;
-        } catch (UnsupportedEncodingException | NoSuchAlgorithmException e) {
-            final String errorMsg = "Failed to setup MAC security. HINT: Is HMAC-SHA256 installed?";
-            LOG.error(errorMsg, e);
-            throw new IllegalStateException(errorMsg, e);
-        } catch (InvalidKeyException e) {
-            final String errorMsg = "Failed to setup MAC security. Secret key seems invalid!";
-            LOG.error(errorMsg, e);
-            throw new IllegalArgumentException(errorMsg, e);
-        }
-    }
-
-    // ------------------------------------------------------------------------------------------------
-    //  Config methods
-    // ------------------------------------------------------------------------------------------------
-
-    private void setAuthenticationConfig(ExchangeConfig exchangeConfig) {
-
-        final AuthenticationConfig authenticationConfig = getAuthenticationConfig(exchangeConfig);
-        clientId = getAuthenticationConfigItem(authenticationConfig, CLIENT_ID_PROPERTY_NAME);
-        key = getAuthenticationConfigItem(authenticationConfig, KEY_PROPERTY_NAME);
-        secret = getAuthenticationConfigItem(authenticationConfig, SECRET_PROPERTY_NAME);
     }
 
     // ------------------------------------------------------------------------------------------------
