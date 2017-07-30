@@ -2,8 +2,6 @@
 
 [![Build Status](https://travis-ci.org/gazbert/bxbot.svg?branch=bxbot-restapi)](https://travis-ci.org/gazbert/bxbot)
 
-**Note:** This branch is very much work in progress and not safe for production.
-
 **28 July 2017:** BTC-e is currently down due to 
 [recent events](https://www.coindesk.com/110-million-btc-e-fined-us-vows-crackdown-unregulated-exchanges/). BX-bot's 
 integration tests with the exchange have been disabled until more information becomes available...
