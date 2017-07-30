@@ -23,7 +23,9 @@
 
 package com.gazbert.bxbot.rest.api.emailalerts;
 
-import com.gazbert.bxbot.rest.security.User;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.security.core.userdetails.User;
 import com.gazbert.bxbot.domain.emailalerts.EmailAlertsConfig;
 import com.gazbert.bxbot.services.EmailAlertsConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,6 +53,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 @RequestMapping("/api/config")
 class EmailAlertsConfigController {
 
+    private static final Logger LOG = LogManager.getLogger();
     private final EmailAlertsConfigService emailAlertsConfigService;
 
     @Autowired
@@ -67,10 +70,14 @@ class EmailAlertsConfigController {
     @RequestMapping(value = "/emailalerts", method = RequestMethod.GET)
     public EmailAlertsConfig getEmailAlerts(@AuthenticationPrincipal User user) {
 
+        LOG.info("GET /emailalerts - getEmailAlerts - caller: " + user.getUsername());
+
         final EmailAlertsConfig emailAlertsConfig = emailAlertsConfigService.getConfig();
 
-        // Strip out the Account password for now - too risky to expose.
+        // TODO - Strip out the Account password for now - too risky to expose?
         emailAlertsConfig.getSmtpConfig().setAccountPassword(null);
+
+        LOG.info("Response: " + emailAlertsConfig);
         return emailAlertsConfig;
     }
 
@@ -81,6 +88,9 @@ class EmailAlertsConfigController {
      */
     @RequestMapping(value = "/emailalerts", method = RequestMethod.PUT)
     ResponseEntity<?> updateEmailAlerts(@AuthenticationPrincipal User user, @RequestBody EmailAlertsConfig config) {
+
+        LOG.info("PUT /emailalerts - updateEmailAlerts - caller: " + user.getUsername());
+        LOG.info("Request: " + config);
 
         emailAlertsConfigService.updateConfig(config);
         final HttpHeaders httpHeaders = new HttpHeaders();

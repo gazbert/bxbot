@@ -28,7 +28,6 @@ import com.gazbert.bxbot.core.mail.EmailAlerter;
 import com.gazbert.bxbot.domain.engine.EngineConfig;
 import com.gazbert.bxbot.services.EngineConfigService;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -40,7 +39,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.math.BigDecimal;
 
-import static org.hamcrest.Matchers.is;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -58,12 +56,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebAppConfiguration
 public class TestEngineConfigController extends AbstractConfigControllerTest {
 
-    // This must match a user's login_id in the user table in src/test/resources/import.sql
-    private static final String VALID_USER_LOGINID = "user1";
-
-    // This must match a user's password in the user table in src/test/resources/import.sql
-    private static final String VALID_USER_PASSWORD = "user1-password";
-
     // Canned test data
     private static final String BOT_ID = "avro-707_1";
     private static final String BOT_NAME = "Avro 707";
@@ -75,17 +67,17 @@ public class TestEngineConfigController extends AbstractConfigControllerTest {
     private EngineConfigService engineConfigService;
 
     @MockBean
-    private EmailAlerter emailAlerter;
-
-    @MockBean
     private TradingEngine tradingEngine;
+
+    // Need this even though not used in the test directly because Spring loads the Email Alerts config on startup...
+    @MockBean
+    private EmailAlerter emailAlerter;
 
     @Before
     public void setupBeforeEachTest() {
         mockMvc = MockMvcBuilders.webAppContextSetup(ctx).addFilter(springSecurityFilterChain).build();
     }
 
-    @Ignore("Ignore tests until OAuth2 replaced with JWT")
     @Test
     public void testGetEngineConfig() throws Exception {
 
@@ -93,7 +85,7 @@ public class TestEngineConfigController extends AbstractConfigControllerTest {
         tradingEngine.start();
 
         mockMvc.perform(get("/api/config/engine")
-                .header("Authorization", "Bearer " + getAccessToken(VALID_USER_LOGINID, VALID_USER_PASSWORD)))
+                .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD)))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.botId").value(BOT_ID))
@@ -104,35 +96,49 @@ public class TestEngineConfigController extends AbstractConfigControllerTest {
                 );
     }
 
-    @Ignore("Ignore tests until OAuth2 replaced with JWT")
     @Test
-    public void testGetEngineConfigWhenUnauthorized() throws Exception {
+    public void testGetEngineConfigWhenUnauthorizedWithBadCredentials() throws Exception {
 
         mockMvc.perform(get("/api/config/engine")
+                .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, INVALID_USER_PASSWORD))
                 .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("$.error", is("unauthorized")));
+                .andExpect(status().isUnauthorized());
     }
 
-    @Ignore("Ignore tests until OAuth2 replaced with JWT")
+    @Test
+    public void testGetEngineConfigWhenUnauthorizedWithMissingCredentials() throws Exception {
+
+        mockMvc.perform(get("/api/config/engine")
+                .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, INVALID_USER_PASSWORD))
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isUnauthorized());
+    }
+
     @Test
     public void testUpdateEngineConfig() throws Exception {
 
         mockMvc.perform(put("/api/config/engine")
-                .header("Authorization", "Bearer " + getAccessToken(VALID_USER_LOGINID, VALID_USER_PASSWORD))
+                .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD))
                 .contentType(CONTENT_TYPE)
                 .content(jsonify(someEngineConfig())))
                 .andExpect(status().isNoContent());
     }
 
-    @Ignore("Ignore tests until OAuth2 replaced with JWT")
     @Test
-    public void testUpdateEngineConfigWhenUnauthorized() throws Exception {
+    public void testUpdateEngineConfigWhenUnauthorizedWithMissingCredentials() throws Exception {
 
         mockMvc.perform(put("/api/config/engine")
                 .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("$.error", is("unauthorized")));
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    public void testUpdateEngineConfigWhenUnauthorizedWithInvalidCredentials() throws Exception {
+
+        mockMvc.perform(put("/api/config/engine")
+                .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, INVALID_USER_PASSWORD))
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isUnauthorized());
     }
 
     // ------------------------------------------------------------------------------------------------

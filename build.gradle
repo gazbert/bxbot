@@ -42,17 +42,12 @@ ext.libraries = [
             exclude module: "logback-classic"
             force = true
         },
-        spring_boot_starter_data_jpa: dependencies.create("org.springframework.boot:spring-boot-starter-data-jpa:" + ext.versions.springBootVersion) {
-            exclude module: "logback-classic"
-            force = true
-        },
         spring_core: dependencies.create("org.springframework:spring-core:" + ext.versions.springCoreVersion),
         spring_tx: dependencies.create("org.springframework:spring-tx:" + ext.versions.springCoreVersion),
         google_guava: dependencies.create("com.google.guava:guava:22.0"),
         google_gson: dependencies.create("com.google.code.gson:gson:2.8.1"),
         javax_mail_api: dependencies.create("javax.mail:javax.mail-api:1.6.0"),
         javax_mail_sun: dependencies.create("com.sun.mail:javax.mail:1.6.0"),
-        hsqldb: dependencies.create("org.hsqldb:hsqldb:2.3.4"),
 
         junit: dependencies.create("junit:junit:4.12"),
         powermock_junit: dependencies.create("org.powermock:powermock-module-junit4:1.7.0"),

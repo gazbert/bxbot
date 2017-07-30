@@ -23,9 +23,11 @@
 
 package com.gazbert.bxbot.rest.api.exchange;
 
-import com.gazbert.bxbot.rest.security.User;
+import org.springframework.security.core.userdetails.User;
 import com.gazbert.bxbot.domain.exchange.ExchangeConfig;
 import com.gazbert.bxbot.services.ExchangeConfigService;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -50,6 +52,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 @RequestMapping("/api/config/")
 class ExchangeConfigController {
 
+    private static final Logger LOG = LogManager.getLogger();
     private final ExchangeConfigService exchangeConfigService;
 
     public ExchangeConfigController(ExchangeConfigService exchangeConfigService) {
@@ -64,8 +67,14 @@ class ExchangeConfigController {
      */
     @RequestMapping(value = "/exchange", method = RequestMethod.GET)
     public ExchangeAdapterConfig getExchange(@AuthenticationPrincipal User user) {
+
+        LOG.info("GET /exchange - getExchange - caller: " + user.getUsername());
+
         final ExchangeConfig exchangeConfig = exchangeConfigService.getConfig();
-        return adaptInternalConfigToExternalPayload(exchangeConfig);
+        final ExchangeAdapterConfig exchangeAdapterConfig = adaptInternalConfigToExternalPayload(exchangeConfig);
+
+        LOG.info("Response: " + exchangeAdapterConfig);
+        return exchangeAdapterConfig;
     }
 
     /**
@@ -76,11 +85,18 @@ class ExchangeConfigController {
     @RequestMapping(value = "/exchange", method = RequestMethod.PUT)
     ResponseEntity<?> updateExchange(@AuthenticationPrincipal User user, @RequestBody ExchangeConfig config) {
 
+        LOG.info("PUT /exchange - updateExchange - caller: " + user.getUsername());
+        LOG.info("Request: " + config);
+
         exchangeConfigService.updateConfig(config);
         final HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setLocation(ServletUriComponentsBuilder.fromCurrentRequest().path("/").buildAndExpand().toUri());
         return new ResponseEntity<>(null, httpHeaders, HttpStatus.NO_CONTENT);
     }
+
+    // ------------------------------------------------------------------------
+    // Private utils
+    // ------------------------------------------------------------------------
 
     private ExchangeAdapterConfig adaptInternalConfigToExternalPayload(ExchangeConfig internalConfig) {
 
@@ -96,7 +112,9 @@ class ExchangeConfigController {
         exchangeAdapterConfig.setName(internalConfig.getExchangeName());
         exchangeAdapterConfig.setClassName(internalConfig.getExchangeAdapter());
         exchangeAdapterConfig.setNetworkConfig(networkConfig);
-        exchangeAdapterConfig.setOtherConfig(otherConfig);
+
+        // TODO - Not exposing AuthenticationConfig for now - too risky?
+        // final AuthenticationConfig authenticationConfig = new AuthenticationConfig();
 
         return exchangeAdapterConfig;
     }

@@ -23,14 +23,16 @@
 
 package com.gazbert.bxbot.rest.api.engine;
 
-import com.gazbert.bxbot.rest.security.User;
 import com.gazbert.bxbot.domain.engine.EngineConfig;
 import com.gazbert.bxbot.services.EngineConfigService;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -50,6 +52,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 @RequestMapping("/api/config")
 class EngineConfigController {
 
+    private static final Logger LOG = LogManager.getLogger();
     private final EngineConfigService engineConfigService;
 
     @Autowired
@@ -65,16 +68,26 @@ class EngineConfigController {
      */
     @RequestMapping(value = "/engine", method = RequestMethod.GET)
     public EngineConfig getEngine(@AuthenticationPrincipal User user) {
-        return engineConfigService.getConfig();
+
+        LOG.info("GET /engine - getEngine - caller: " + user.getUsername());
+
+        final EngineConfig engineConfig = engineConfigService.getConfig();
+        LOG.info("Response: " + engineConfig);
+
+        return engineConfig;
     }
 
     /**
      * Updates Engine configuration for the bot.
      *
-     * @return 204 'No Content' HTTP status code if engine config was updated successfully, some other HTTP status code otherwise.
+     * @return 204 'No Content' HTTP status code if engine config was updated successfully, some other HTTP status
+     * code otherwise.
      */
     @RequestMapping(value = "/engine", method = RequestMethod.PUT)
     public ResponseEntity<?> updateEngine(@AuthenticationPrincipal User user, @RequestBody EngineConfig config) {
+
+        LOG.info("PUT /engine - updateEngine - caller: " + user.getUsername());
+        LOG.info("Request: " + config);
 
         engineConfigService.updateConfig(config);
         final HttpHeaders httpHeaders = new HttpHeaders();

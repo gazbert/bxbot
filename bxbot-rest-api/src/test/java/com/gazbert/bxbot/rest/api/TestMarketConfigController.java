@@ -28,7 +28,6 @@ import com.gazbert.bxbot.core.mail.EmailAlerter;
 import com.gazbert.bxbot.domain.market.MarketConfig;
 import com.gazbert.bxbot.services.MarketConfigService;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -41,7 +40,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.hamcrest.Matchers.is;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -57,12 +55,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @WebAppConfiguration
 public class TestMarketConfigController extends AbstractConfigControllerTest {
-
-    // This must match a user's login_id in the user table in src/test/resources/import.sql
-    private static final String VALID_USER_LOGINID = "user1";
-
-    // This must match a user's password in the user table in src/test/resources/import.sql
-    private static final String VALID_USER_PASSWORD = "user1-password";
 
     // Canned data
     private static final String UNKNOWN_MARKET_ID = "unknown-id";
@@ -84,6 +76,7 @@ public class TestMarketConfigController extends AbstractConfigControllerTest {
     @MockBean
     MarketConfigService marketConfigService;
 
+    // Need this even though not used in the test directly because Spring loads the Email Alerts config on startup...
     @MockBean
     private EmailAlerter emailAlerter;
 
@@ -96,7 +89,6 @@ public class TestMarketConfigController extends AbstractConfigControllerTest {
         mockMvc = MockMvcBuilders.webAppContextSetup(ctx).addFilter(springSecurityFilterChain).build();
     }
 
-    @Ignore("Ignore tests until OAuth2 replaced with JWT")
     @Test
     public void testGetAllMarketConfig() throws Exception {
 
@@ -104,7 +96,7 @@ public class TestMarketConfigController extends AbstractConfigControllerTest {
         tradingEngine.start();
 
         mockMvc.perform(get("/api/config/market/")
-                .header("Authorization", "Bearer " + getAccessToken(VALID_USER_LOGINID, VALID_USER_PASSWORD)))
+                .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD)))
                 .andDo(print())
                 .andExpect(status().isOk())
 
@@ -125,24 +117,30 @@ public class TestMarketConfigController extends AbstractConfigControllerTest {
                 );
     }
 
-    @Ignore("Ignore tests until OAuth2 replaced with JWT")
     @Test
-    public void testGetAllMarketConfigWhenUnauthorized() throws Exception {
+    public void testGetAllMarketConfigWhenUnauthorizedWithMissingCredentials() throws Exception {
 
         mockMvc.perform(get("/api/config/market")
                 .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("$.error", is("unauthorized")));
+                .andExpect(status().isUnauthorized());
     }
 
-    @Ignore("Ignore tests until OAuth2 replaced with JWT")
+    @Test
+    public void testGetAllMarketConfigWhenUnauthorizedWithInvalidCredentials() throws Exception {
+
+        mockMvc.perform(get("/api/config/market")
+                .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, INVALID_USER_PASSWORD))
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isUnauthorized());
+    }
+
     @Test
     public void testGetMarketConfigById() throws Exception {
 
         given(marketConfigService.findById(MARKET_1_ID)).willReturn(someMarketConfig());
 
         mockMvc.perform(get("/api/config/market/" + MARKET_1_ID)
-                .header("Authorization", "Bearer " + getAccessToken(VALID_USER_LOGINID, VALID_USER_PASSWORD)))
+                .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD)))
                 .andDo(print())
                 .andExpect(status().isOk())
 
@@ -155,157 +153,180 @@ public class TestMarketConfigController extends AbstractConfigControllerTest {
                 );
     }
 
-    @Ignore("Ignore tests until OAuth2 replaced with JWT")
     @Test
-    public void testGetMarketConfigByIdWhenUnauthorized() throws Exception {
+    public void testGetMarketConfigByIdWhenUnauthorizedWithMissingCredentials() throws Exception {
 
         mockMvc.perform(get("/api/config/market/" + MARKET_1_ID)
                 .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("$.error", is("unauthorized")));
+                .andExpect(status().isUnauthorized());
     }
 
-    @Ignore("Ignore tests until OAuth2 replaced with JWT")
+    @Test
+    public void testGetMarketConfigByIdWhenUnauthorizedWithInvalidCredentials() throws Exception {
+
+        mockMvc.perform(get("/api/config/market/" + MARKET_1_ID)
+                .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, INVALID_USER_PASSWORD))
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isUnauthorized());
+    }
+
     @Test
     public void testGetMarketConfigByIdWhenNotRecognized() throws Exception {
 
         given(marketConfigService.findById(UNKNOWN_MARKET_ID)).willReturn(emptyMarketConfig());
 
         mockMvc.perform(get("/api/config/market/" + UNKNOWN_MARKET_ID)
-                .header("Authorization", "Bearer " + getAccessToken(VALID_USER_LOGINID, VALID_USER_PASSWORD))
+                .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
     }
 
-    @Ignore("Ignore tests until OAuth2 replaced with JWT")
     @Test
     public void testUpdateMarketConfig() throws Exception {
 
         given(marketConfigService.updateMarket(someMarketConfig())).willReturn(someMarketConfig());
 
         mockMvc.perform(put("/api/config/market/" + MARKET_1_ID)
-                .header("Authorization", "Bearer " + getAccessToken(VALID_USER_LOGINID, VALID_USER_PASSWORD))
+                .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD))
                 .contentType(CONTENT_TYPE)
                 .content(jsonify(someMarketConfig())))
                 .andExpect(status().isNoContent());
     }
 
-    @Ignore("Ignore tests until OAuth2 replaced with JWT")
     @Test
-    public void testUpdateMarketConfigWhenUnauthorized() throws Exception {
+    public void testUpdateMarketConfigWhenUnauthorizedWithMissingCredentials() throws Exception {
 
         mockMvc.perform(put("/api/config/market/" + MARKET_1_ID)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(CONTENT_TYPE)
                 .content(jsonify(someMarketConfig())))
-                .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("$.error", is("unauthorized")));
+                .andExpect(status().isUnauthorized());
     }
 
-    @Ignore("Ignore tests until OAuth2 replaced with JWT")
+    @Test
+    public void testUpdateMarketConfigWhenUnauthorizedWithInvalidCredentials() throws Exception {
+
+        mockMvc.perform(put("/api/config/market/" + MARKET_1_ID)
+                .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, INVALID_USER_PASSWORD))
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(CONTENT_TYPE)
+                .content(jsonify(someMarketConfig())))
+                .andExpect(status().isUnauthorized());
+    }
+
     @Test
     public void testUpdateMarketConfigWhenIdNotRecognized() throws Exception {
 
         given(marketConfigService.updateMarket(unrecognizedMarketConfig())).willReturn(emptyMarketConfig());
 
         mockMvc.perform(put("/api/config/market/" + UNKNOWN_MARKET_ID)
-                .header("Authorization", "Bearer " + getAccessToken(VALID_USER_LOGINID, VALID_USER_PASSWORD))
+                .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD))
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(CONTENT_TYPE)
                 .content(jsonify(unrecognizedMarketConfig())))
                 .andExpect(status().isNotFound());
     }
 
-    @Ignore("Ignore tests until OAuth2 replaced with JWT")
     @Test
     public void testUpdateMarketConfigWhenIdIsMissing() throws Exception {
 
         mockMvc.perform(put("/api/config/market/" + MARKET_1_ID)
-                .header("Authorization", "Bearer " + getAccessToken(VALID_USER_LOGINID, VALID_USER_PASSWORD))
+                .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD))
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(CONTENT_TYPE)
                 .content(jsonify(someMarketConfigWithMissingId())))
                 .andExpect(status().isBadRequest());
     }
 
-    @Ignore("Ignore tests until OAuth2 replaced with JWT")
     @Test
     public void testDeleteMarketConfig() throws Exception {
 
         given(marketConfigService.deleteMarketById(MARKET_1_ID)).willReturn(someMarketConfig());
 
         mockMvc.perform(delete("/api/config/market/" + MARKET_1_ID)
-                .header("Authorization", "Bearer " + getAccessToken(VALID_USER_LOGINID, VALID_USER_PASSWORD)))
+                .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD)))
                 .andExpect(status().isNoContent());
     }
 
-    @Ignore("Ignore tests until OAuth2 replaced with JWT")
     @Test
-    public void testDeleteMarketConfigWhenUnauthorized() throws Exception {
+    public void testDeleteMarketConfigWhenUnauthorizedWithMissingCredentials() throws Exception {
 
         mockMvc.perform(delete("/api/config/market/" + MARKET_1_ID)
                 .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("$.error", is("unauthorized")));
+                .andExpect(status().isUnauthorized());
     }
 
-    @Ignore("Ignore tests until OAuth2 replaced with JWT")
+    @Test
+    public void testDeleteMarketConfigWhenUnauthorizedWithInvalidCredentials() throws Exception {
+
+        mockMvc.perform(delete("/api/config/market/" + MARKET_1_ID)
+                .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, INVALID_USER_PASSWORD))
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isUnauthorized());
+    }
+
     @Test
     public void testDeleteMarketConfigWhenIdNotRecognized() throws Exception {
 
         given(marketConfigService.deleteMarketById(UNKNOWN_MARKET_ID)).willReturn(emptyMarketConfig());
 
         mockMvc.perform(delete("/api/config/market/" + UNKNOWN_MARKET_ID)
-                .header("Authorization", "Bearer " + getAccessToken(VALID_USER_LOGINID, VALID_USER_PASSWORD))
+                .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
     }
 
-    @Ignore("Ignore tests until OAuth2 replaced with JWT")
     @Test
     public void testCreateMarketConfig() throws Exception {
 
         given(marketConfigService.createMarket(someMarketConfig())).willReturn(someMarketConfig());
 
         mockMvc.perform(post("/api/config/market/" + MARKET_1_ID)
-                .header("Authorization", "Bearer " + getAccessToken(VALID_USER_LOGINID, VALID_USER_PASSWORD))
+                .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD))
                 .contentType(CONTENT_TYPE)
                 .content(jsonify(someMarketConfig())))
                 .andExpect(status().isCreated());
     }
 
-    @Ignore("Ignore tests until OAuth2 replaced with JWT")
     @Test
-    public void testCreateMarketConfigWhenUnauthorized() throws Exception {
+    public void testCreateMarketConfigWhenUnauthorizedWithMissingCredentials() throws Exception {
 
         mockMvc.perform(post("/api/config/market/" + MARKET_1_ID)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(CONTENT_TYPE)
                 .content(jsonify(someMarketConfig())))
-                .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("$.error", is("unauthorized")));
+                .andExpect(status().isUnauthorized());
     }
 
-    @Ignore("Ignore tests until OAuth2 replaced with JWT")
+    @Test
+    public void testCreateMarketConfigWhenUnauthorizedWithInvalidCredentials() throws Exception {
+
+        mockMvc.perform(post("/api/config/market/" + MARKET_1_ID)
+                .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, INVALID_USER_PASSWORD))
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(CONTENT_TYPE)
+                .content(jsonify(someMarketConfig())))
+                .andExpect(status().isUnauthorized());
+    }
+
     @Test
     public void testCreateMarketConfigWhenIdAlreadyExists() throws Exception {
 
         given(marketConfigService.createMarket(someMarketConfig())).willReturn(emptyMarketConfig());
 
         mockMvc.perform(post("/api/config/market/" + MARKET_1_ID)
-                .header("Authorization", "Bearer " + getAccessToken(VALID_USER_LOGINID, VALID_USER_PASSWORD))
+                .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD))
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(CONTENT_TYPE)
                 .content(jsonify(someMarketConfig())))
                 .andExpect(status().isConflict());
     }
 
-    @Ignore("Ignore tests until OAuth2 replaced with JWT")
     @Test
     public void testCreateMarketConfigWhenIdIsMissing() throws Exception {
 
         mockMvc.perform(post("/api/config/market/" + MARKET_1_ID)
-                .header("Authorization", "Bearer " + getAccessToken(VALID_USER_LOGINID, VALID_USER_PASSWORD))
+                .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD))
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(CONTENT_TYPE)
                 .content(jsonify(someMarketConfigWithMissingId())))

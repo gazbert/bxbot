@@ -29,7 +29,6 @@ import com.gazbert.bxbot.domain.emailalerts.EmailAlertsConfig;
 import com.gazbert.bxbot.domain.emailalerts.SmtpConfig;
 import com.gazbert.bxbot.services.EmailAlertsConfigService;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -39,7 +38,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import static org.hamcrest.Matchers.is;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -57,12 +55,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebAppConfiguration
 public class TestEmailAlertsConfigController extends AbstractConfigControllerTest {
 
-    // This must match a user's login_id in the user table in src/test/resources/import.sql
-    private static final String VALID_USER_LOGINID = "user1";
-
-    // This must match a user's password in the user table in src/test/resources/import.sql
-    private static final String VALID_USER_PASSWORD = "user1-password";
-
     // Canned data
     private static final boolean ENABLED = true;
     private static final String HOST = "smtp.host.deathstar.com";
@@ -75,18 +67,17 @@ public class TestEmailAlertsConfigController extends AbstractConfigControllerTes
     EmailAlertsConfigService emailAlertsConfigService;
 
     @MockBean
-    private EmailAlerter emailAlerter;
-
-    @MockBean
     private TradingEngine tradingEngine;
 
+    // Need this even though not used in the test directly because Spring loads the Email Alerts config on startup...
+    @MockBean
+    private EmailAlerter emailAlerter;
 
     @Before
     public void setupBeforeEachTest() {
         mockMvc = MockMvcBuilders.webAppContextSetup(ctx).addFilter(springSecurityFilterChain).build();
     }
 
-    @Ignore("Ignore tests until OAuth2 replaced with JWT")
     @Test
     public void testGetEmailAlertsConfig() throws Exception {
 
@@ -94,7 +85,7 @@ public class TestEmailAlertsConfigController extends AbstractConfigControllerTes
         tradingEngine.start();
 
         mockMvc.perform(get("/api/config/emailalerts")
-                .header("Authorization", "Bearer " + getAccessToken(VALID_USER_LOGINID, VALID_USER_PASSWORD)))
+                .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD)))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.smtpConfig.host").value(HOST))
@@ -109,36 +100,49 @@ public class TestEmailAlertsConfigController extends AbstractConfigControllerTes
                 );
     }
 
-    @Ignore("Ignore tests until OAuth2 replaced with JWT")
     @Test
-    public void testGetEmailAlertsConfigWhenUnauthorized() throws Exception {
+    public void testGetEmailAlertsConfigWhenUnauthorizedWithMissingCredentials() throws Exception {
 
         mockMvc.perform(get("/api/config/emailalerts")
                 .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("$.error", is("unauthorized")));
+                .andExpect(status().isUnauthorized());
     }
 
-    @Ignore("Ignore tests until OAuth2 replaced with JWT")
+    @Test
+    public void testGetEmailAlertsConfigWhenUnauthorizedWithInvalidCredentials() throws Exception {
+
+        mockMvc.perform(get("/api/config/emailalerts")
+                .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, INVALID_USER_PASSWORD))
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isUnauthorized());
+    }
+
     @Test
     public void testUpdateEmailAlertsConfig() throws Exception {
 
         final String configJson = jsonify(someEmailAlertsConfig());
         mockMvc.perform(put("/api/config/emailalerts")
-                .header("Authorization", "Bearer " + getAccessToken(VALID_USER_LOGINID, VALID_USER_PASSWORD))
+                .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD))
                 .contentType(CONTENT_TYPE)
                 .content(configJson))
                 .andExpect(status().isNoContent());
     }
 
-    @Ignore("Ignore tests until OAuth2 replaced with JWT")
     @Test
-    public void testUpdateEmailAlertsConfigWhenUnauthorized() throws Exception {
+    public void testUpdateEmailAlertsConfigWhenUnauthorizedWithMissingCredentials() throws Exception {
 
         mockMvc.perform(put("/api/config/emailalerts")
                 .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("$.error", is("unauthorized")));
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    public void testUpdateEmailAlertsConfigWhenUnauthorizedWithInvalidCredentials() throws Exception {
+
+        mockMvc.perform(put("/api/config/emailalerts")
+                .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, INVALID_USER_PASSWORD))
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isUnauthorized());
     }
 
     // ------------------------------------------------------------------------------------------------

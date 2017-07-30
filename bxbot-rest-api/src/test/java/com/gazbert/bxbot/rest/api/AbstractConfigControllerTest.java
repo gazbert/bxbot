@@ -38,10 +38,6 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 
-import static org.hamcrest.Matchers.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
 /**
  * Base class for controller test classes.
  *
@@ -50,20 +46,25 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 abstract class AbstractConfigControllerTest {
 
     /**
+     * This must match security.user.name in the src/test/resources/application.properties file.
+     */
+    static final String VALID_USER_LOGINID = "unit-test-user";
+
+    /**
+     * This must match a security.user.password in the src/test/resources/application.properties file.
+     */
+    static final String VALID_USER_PASSWORD = "unit-test-password";
+
+    /**
+     * Used for bad credentials tests.
+     */
+    static final String INVALID_USER_PASSWORD = "not-valid-password";
+
+    /**
      * We'll always be sending/receiving JSON content in REST API.
      */
     static final MediaType CONTENT_TYPE = new MediaType(MediaType.APPLICATION_JSON.getType(),
             MediaType.APPLICATION_JSON.getSubtype(), Charset.forName("utf8"));
-
-    /**
-     * TODO Mock this somehow...
-     */
-    private static final String OAUTH_CLIENT_ID = "bxbot-ui";
-
-    /**
-     * TODO Mock this somehow...
-     */
-    private static final String OAUTH_CLIENT_SECRET = "S3cr3t";
 
     /**
      * Used to convert Java objects into JSON - roll on Java 9... ;-)
@@ -95,34 +96,9 @@ abstract class AbstractConfigControllerTest {
     // Shared utils
     // ------------------------------------------------------------------------------------------------
 
-    /*
-     * Builds an OAuth2 access token.
-     * Kudos to royclarkson - https://github.com/royclarkson/spring-rest-service-oauth
-     */
-    String getAccessToken(String username, String password) throws Exception {
-
-        final String authorization = "Basic " + new String(Base64Utils.encode(
-                (OAUTH_CLIENT_ID + ":" + OAUTH_CLIENT_SECRET).getBytes("UTF-8")), Charset.forName("UTF-8"));
-        final String contentType = MediaType.APPLICATION_JSON + ";charset=UTF-8";
-
-        final String content = mockMvc.perform(post("/oauth/token").header("Authorization", authorization)
-                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .param("username", username)
-                .param("password", password)
-                .param("grant_type", "password")
-                .param("scope", "read write")
-                .param("client_id", OAUTH_CLIENT_ID)
-                .param("client_secret", OAUTH_CLIENT_SECRET))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(contentType))
-                .andExpect(jsonPath("$.access_token", is(notNullValue())))
-                .andExpect(jsonPath("$.token_type", is(equalTo("bearer"))))
-                .andExpect(jsonPath("$.refresh_token", is(notNullValue())))
-                .andExpect(jsonPath("$.expires_in", is(greaterThan(4000))))
-                .andExpect(jsonPath("$.scope", is(equalTo("read write"))))
-                .andReturn().getResponse().getContentAsString();
-
-        return content.substring(17, 53);
+    String buildAuthorizationHeaderValue(String username, String password) throws Exception {
+        return "Basic " + new String(Base64Utils.encode(
+                (username + ":" + password).getBytes("UTF-8")), Charset.forName("UTF-8"));
     }
 
     /*
