@@ -2,10 +2,6 @@
 
 [![Build Status](https://travis-ci.org/gazbert/bxbot.svg?branch=master)](https://travis-ci.org/gazbert/bxbot)
 
-**28 July 2017:** BTC-e is currently down due to 
-[recent events](https://www.coindesk.com/110-million-btc-e-fined-us-vows-crackdown-unregulated-exchanges/). BX-bot's 
-integration tests with the exchange have been disabled until more information becomes available...
-
 ## What is BX-bot?
 
 <img src="./docs/bxbot-cropped.png" align="right" width="25%" />
@@ -21,8 +17,8 @@ for more ideas.
 
 Exchange Adapters for using [Bitstamp](https://www.bitstamp.net), [Bitfinex](https://www.bitfinex.com),
 [OKCoin](https://www.okcoin.com/), [Huobi](https://www.huobi.com/), [GDAX](https://www.gdax.com/),
-[itBit](https://www.itbit.com/), [Kraken](https://www.kraken.com), [Gemini](https://gemini.com/), and [BTC-e](https://btc-e.com) 
-are included. Feel free to improve these or contribute new adapters to the project; that would be shiny.
+[itBit](https://www.itbit.com/), [Kraken](https://www.kraken.com), and [Gemini](https://gemini.com/) are included.
+Feel free to improve these or contribute new adapters to the project; that would be shiny.
 
 The Trading API provides support for [limit orders](http://www.investopedia.com/terms/l/limitorder.asp)
 traded at the [spot price](http://www.investopedia.com/terms/s/spotprice.asp);

@@ -41,7 +41,7 @@ import static org.junit.Assert.assertEquals;
  */
 public class TestExchangeConfigImpl {
 
-    private static final String EXCHANGE_NAME = "BTC-e";
+    private static final String EXCHANGE_NAME = "Bitstamp";
     private static final String EXCHANGE_ADAPTER = "com.gazbert.bxbot.exchanges.TestExchangeAdapter";
     private static final AuthenticationConfig AUTHENTICATION_CONFIG = new AuthenticationConfigImpl();
     private static final NetworkConfig NETWORK_CONFIG = new NetworkConfigImpl();

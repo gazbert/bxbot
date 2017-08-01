@@ -60,7 +60,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class TestExchangeConfigController extends AbstractConfigControllerTest {
 
     // Canned test data
-    private static final String EXCHANGE_NAME = "BTC-e";
+    private static final String EXCHANGE_NAME = "Bitstamp";
     private static final String EXCHANGE_ADAPTER = "com.gazbert.bxbot.exchanges.TestExchangeAdapter";
 
     private static final Integer CONNECTION_TIMEOUT = 30;

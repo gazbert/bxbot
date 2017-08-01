@@ -54,7 +54,7 @@ import static org.easymock.EasyMock.*;
 @PrepareForTest({ConfigurationManager.class})
 public class TestExchangeConfigRepository {
 
-    private static final String EXCHANGE_NAME = "BTC-e";
+    private static final String EXCHANGE_NAME = "Bitstamp";
     private static final String EXCHANGE_ADAPTER = "com.gazbert.bxbot.exchanges.TestExchangeAdapter";
 
     private static final String API_KEY_CONFIG_ITEM_KEY = "api-key";
