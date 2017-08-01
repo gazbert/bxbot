@@ -50,9 +50,11 @@ public class TestExchangeConfigurationManagement {
     private static final String MISSING_XML_CONFIG_FILENAME = "src/test/config/exchange-/missing-exchange.xml";
     private static final String XML_CONFIG_TO_SAVE_FILENAME = "src/test/config/exchange/saved-exchange.xml";
 
-    private static final String EXCHANGE_NAME = "BTC-e";
-    private static final String EXCHANGE_ADAPTER = "com.gazbert.bxbot.exchanges.BtceExchangeAdapter";
+    private static final String EXCHANGE_NAME = "Bitstamp";
+    private static final String EXCHANGE_ADAPTER = "com.gazbert.bxbot.exchanges.BitstampExchangeAdapter";
 
+    private static final String CLIENT_ID_CONFIG_ITEM_KEY = "client-id";
+    private static final String CLIENT_ID_CONFIG_ITEM_VALUE = "your-client-id";
     private static final String API_KEY_CONFIG_ITEM_KEY = "key";
     private static final String API_KEY_CONFIG_ITEM_VALUE = "your-api-key";
     private static final String SECRET_CONFIG_ITEM_KEY = "secret";
@@ -81,10 +83,12 @@ public class TestExchangeConfigurationManagement {
         assertThat(exchangeType.getName()).isEqualTo(EXCHANGE_NAME);
         assertThat(exchangeType.getAdapter()).isEqualTo(EXCHANGE_ADAPTER);
 
-        assertThat(exchangeType.getAuthenticationConfig().getConfigItems().get(0).getName()).isEqualTo(API_KEY_CONFIG_ITEM_KEY);
-        assertThat(exchangeType.getAuthenticationConfig().getConfigItems().get(0).getValue()).isEqualTo(API_KEY_CONFIG_ITEM_VALUE);
-        assertThat(exchangeType.getAuthenticationConfig().getConfigItems().get(1).getName()).isEqualTo(SECRET_CONFIG_ITEM_KEY);
-        assertThat(exchangeType.getAuthenticationConfig().getConfigItems().get(1).getValue()).isEqualTo(SECRET_CONFIG_ITEM_VALUE);
+        assertThat(exchangeType.getAuthenticationConfig().getConfigItems().get(0).getName()).isEqualTo(CLIENT_ID_CONFIG_ITEM_KEY);
+        assertThat(exchangeType.getAuthenticationConfig().getConfigItems().get(0).getValue()).isEqualTo(CLIENT_ID_CONFIG_ITEM_VALUE);
+        assertThat(exchangeType.getAuthenticationConfig().getConfigItems().get(1).getName()).isEqualTo(API_KEY_CONFIG_ITEM_KEY);
+        assertThat(exchangeType.getAuthenticationConfig().getConfigItems().get(1).getValue()).isEqualTo(API_KEY_CONFIG_ITEM_VALUE);
+        assertThat(exchangeType.getAuthenticationConfig().getConfigItems().get(2).getName()).isEqualTo(SECRET_CONFIG_ITEM_KEY);
+        assertThat(exchangeType.getAuthenticationConfig().getConfigItems().get(2).getValue()).isEqualTo(SECRET_CONFIG_ITEM_VALUE);
 
         assertThat(exchangeType.getNetworkConfig().getConnectionTimeout()).isEqualTo(CONNECTION_TIMEOUT);
         assertTrue(exchangeType.getNetworkConfig().getNonFatalErrorCodes().getCodes().containsAll(NON_FATAL_ERROR_CODES));
