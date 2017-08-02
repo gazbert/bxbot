@@ -6,7 +6,7 @@
     <groupId>com.gazbert.bxbot</groupId>
     <artifactId>bxbot-parent</artifactId>
     <packaging>pom</packaging>
-    <version>0.7.1-SNAPSHOT</version>
+    <version>0.7.2-SNAPSHOT</version>
     <name>BX-bot Parent</name>
     <description>Parent POM for building the bot</description>
     <url>https://github.com/gazbert/bxbot</url>
