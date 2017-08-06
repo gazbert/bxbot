@@ -27,7 +27,7 @@ import com.gazbert.bxbot.core.engine.TradingEngine;
 import com.gazbert.bxbot.core.mail.EmailAlerter;
 import com.gazbert.bxbot.domain.exchange.ExchangeConfig;
 import com.gazbert.bxbot.domain.exchange.NetworkConfig;
-import com.gazbert.bxbot.domain.exchange.OtherConfig;
+import com.gazbert.bxbot.domain.exchange.OptionalConfig;
 import com.gazbert.bxbot.services.ExchangeConfigService;
 import org.junit.Before;
 import org.junit.Test;
@@ -111,8 +111,8 @@ public class TestExchangeConfigController extends AbstractConfigControllerTest {
 //                .andExpect(jsonPath("$.networkConfig.nonFatalErrorHttpStatusCodes").value(Arrays.asList(502, 503, 504)))
 //                .andExpect(jsonPath("$.networkConfig.nonFatalErrorMessages").value(Arrays.asList(
 //                        "Connection refused", "Connection reset", "Remote host closed connection during handshake")))
-//                .andExpect(jsonPath("$.otherConfig.items.buy-fee").value(BUY_FEE_CONFIG_ITEM_VALUE))
-//                .andExpect(jsonPath("$.otherConfig.items.sell-fee").value(SELL_FEE_CONFIG_ITEM_VALUE)
+//                .andExpect(jsonPath("$.optionalConfig.items.buy-fee").value(BUY_FEE_CONFIG_ITEM_VALUE))
+//                .andExpect(jsonPath("$.optionalConfig.items.sell-fee").value(SELL_FEE_CONFIG_ITEM_VALUE)
                 );
     }
 
@@ -173,15 +173,15 @@ public class TestExchangeConfigController extends AbstractConfigControllerTest {
         networkConfig.setNonFatalErrorCodes(NON_FATAL_ERROR_CODES);
         networkConfig.setNonFatalErrorMessages(NON_FATAL_ERROR_MESSAGES);
 
-        final OtherConfig otherConfig = new OtherConfig();
-        otherConfig.getItems().put(BUY_FEE_CONFIG_ITEM_KEY, BUY_FEE_CONFIG_ITEM_VALUE);
-        otherConfig.getItems().put(SELL_FEE_CONFIG_ITEM_KEY, SELL_FEE_CONFIG_ITEM_VALUE);
+        final OptionalConfig optionalConfig = new OptionalConfig();
+        optionalConfig.getItems().put(BUY_FEE_CONFIG_ITEM_KEY, BUY_FEE_CONFIG_ITEM_VALUE);
+        optionalConfig.getItems().put(SELL_FEE_CONFIG_ITEM_KEY, SELL_FEE_CONFIG_ITEM_VALUE);
 
         final ExchangeConfig exchangeConfig = new ExchangeConfig();
         exchangeConfig.setExchangeName(EXCHANGE_NAME);
         exchangeConfig.setExchangeAdapter(EXCHANGE_ADAPTER);
         exchangeConfig.setNetworkConfig(networkConfig);
-        exchangeConfig.setOtherConfig(otherConfig);
+        exchangeConfig.setOptionalConfig(optionalConfig);
 
         return exchangeConfig;
     }

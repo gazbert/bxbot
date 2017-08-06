@@ -24,12 +24,12 @@
 package com.gazbert.bxbot.exchange.api;
 
 /**
- * Encapsulates any (optional) 'other' configuration for an Exchange Adapter.
+ * Encapsulates any optional configuration for an Exchange Adapter.
  *
  * @author gazbert
  * @since 1.0
  */
-public interface OtherConfig {
+public interface OptionalConfig {
 
     /**
      * Fetches a given config item by name.

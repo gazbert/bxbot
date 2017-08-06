@@ -332,7 +332,7 @@ You specify the Exchange Adapter you want BX-bot to use in the
             <message>Unexpected end of file from server</message>           
         </non-fatal-error-messages>
     </network-config>
-    <other-config>
+    <optional-config>
         <config-item>
             <name>not-needed-on-bitstamp-1</name>
             <value>here for illustration purposes only</value>
@@ -341,7 +341,7 @@ You specify the Exchange Adapter you want BX-bot to use in the
             <name>not-needed-on-bitstamp-2</name>
             <value>here for illustration purposes only</value>
         </config-item>
-    </other-config>
+    </optional-config>
 </exchange>
 ```
 
@@ -377,9 +377,9 @@ This allows the bot to recover from temporary network issues. See the sample `ex
 throw a non-fatal `ExchangeNetworkException`.
 This allows the bot to recover from temporary network issues. See the sample `exchange.xml` config files for messages to use.
 
-The `<other-config>` section is optional. It is not needed for Bitstamp, but shown above for illustration purposes.
+The `<optional-config>` section is optional. It is not needed for Bitstamp, but shown above for illustration purposes.
 If present, at least 1 `<config-item>` must be set - these are repeating key/value String pairs.
-This section is used by the inbuilt Exchange Adapters to configure any additional config, e.g. buy/sell fees.
+This section is used by the inbuilt Exchange Adapters to set any additional config, e.g. buy/sell fees.
 
 BX-bot only supports 1 Exchange Adapter for each instance of the bot; you will need to create multiple (runtime) 
 instances of the bot to run against different exchanges.

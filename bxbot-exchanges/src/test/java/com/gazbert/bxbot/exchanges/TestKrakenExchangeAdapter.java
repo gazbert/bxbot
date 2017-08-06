@@ -113,7 +113,7 @@ public class TestKrakenExchangeAdapter {
     private ExchangeConfig exchangeConfig;
     private AuthenticationConfig authenticationConfig;
     private NetworkConfig networkConfig;
-    private OtherConfig otherConfig;
+    private OptionalConfig optionalConfig;
 
 
     /*
@@ -131,14 +131,14 @@ public class TestKrakenExchangeAdapter {
         expect(networkConfig.getNonFatalErrorCodes()).andReturn(nonFatalNetworkErrorCodes);
         expect(networkConfig.getNonFatalErrorMessages()).andReturn(nonFatalNetworkErrorMessages);
 
-        otherConfig = PowerMock.createMock(OtherConfig.class);
-        expect(otherConfig.getItem("buy-fee")).andReturn("0.1");
-        expect(otherConfig.getItem("sell-fee")).andReturn("0.2");
+        optionalConfig = PowerMock.createMock(OptionalConfig.class);
+        expect(optionalConfig.getItem("buy-fee")).andReturn("0.1");
+        expect(optionalConfig.getItem("sell-fee")).andReturn("0.2");
 
         exchangeConfig = PowerMock.createMock(ExchangeConfig.class);
         expect(exchangeConfig.getAuthenticationConfig()).andReturn(authenticationConfig);
         expect(exchangeConfig.getNetworkConfig()).andReturn(networkConfig);
-        expect(exchangeConfig.getOtherConfig()).andReturn(otherConfig);
+        expect(exchangeConfig.getOptionalConfig()).andReturn(optionalConfig);
     }
 
 

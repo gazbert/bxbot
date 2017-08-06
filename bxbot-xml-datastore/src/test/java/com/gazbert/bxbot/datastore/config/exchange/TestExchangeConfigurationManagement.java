@@ -94,10 +94,10 @@ public class TestExchangeConfigurationManagement {
         assertTrue(exchangeType.getNetworkConfig().getNonFatalErrorCodes().getCodes().containsAll(NON_FATAL_ERROR_CODES));
         assertTrue(exchangeType.getNetworkConfig().getNonFatalErrorMessages().getMessages().containsAll(NON_FATAL_ERROR_MESSAGES));
 
-        assertThat(exchangeType.getOtherConfig().getConfigItems().get(0).getName()).isEqualTo(BUY_FEE_CONFIG_ITEM_KEY);
-        assertThat(exchangeType.getOtherConfig().getConfigItems().get(0).getValue()).isEqualTo(BUY_FEE_CONFIG_ITEM_VALUE);
-        assertThat(exchangeType.getOtherConfig().getConfigItems().get(1).getName()).isEqualTo(SELL_FEE_CONFIG_ITEM_KEY);
-        assertThat(exchangeType.getOtherConfig().getConfigItems().get(1).getValue()).isEqualTo(SELL_FEE_CONFIG_ITEM_VALUE);
+        assertThat(exchangeType.getOptionalConfig().getConfigItems().get(0).getName()).isEqualTo(BUY_FEE_CONFIG_ITEM_KEY);
+        assertThat(exchangeType.getOptionalConfig().getConfigItems().get(0).getValue()).isEqualTo(BUY_FEE_CONFIG_ITEM_VALUE);
+        assertThat(exchangeType.getOptionalConfig().getConfigItems().get(1).getName()).isEqualTo(SELL_FEE_CONFIG_ITEM_KEY);
+        assertThat(exchangeType.getOptionalConfig().getConfigItems().get(1).getValue()).isEqualTo(SELL_FEE_CONFIG_ITEM_VALUE);
     }
 
     @Test(expected = IllegalStateException.class)
@@ -136,16 +136,16 @@ public class TestExchangeConfigurationManagement {
         final ConfigItemType sellFee = new ConfigItemType();
         sellFee.setName(SELL_FEE_CONFIG_ITEM_KEY);
         sellFee.setValue(SELL_FEE_CONFIG_ITEM_VALUE);
-        final OtherConfigType otherConfig = new OtherConfigType();
-        otherConfig.getConfigItems().add(buyFee);
-        otherConfig.getConfigItems().add(sellFee);
+        final OptionalConfigType optionalConfig = new OptionalConfigType();
+        optionalConfig.getConfigItems().add(buyFee);
+        optionalConfig.getConfigItems().add(sellFee);
 
         final ExchangeType exchangeConfig = new ExchangeType();
         exchangeConfig.setName(EXCHANGE_NAME);
         exchangeConfig.setAdapter(EXCHANGE_ADAPTER);
         exchangeConfig.setAuthenticationConfig(authenticationConfig);
         exchangeConfig.setNetworkConfig(networkConfig);
-        exchangeConfig.setOtherConfig(otherConfig);
+        exchangeConfig.setOptionalConfig(optionalConfig);
 
         // Save it!
         ConfigurationManager.saveConfig(ExchangeType.class, exchangeConfig, XML_CONFIG_TO_SAVE_FILENAME);
@@ -166,10 +166,10 @@ public class TestExchangeConfigurationManagement {
         assertTrue(exchangeReloaded.getNetworkConfig().getNonFatalErrorCodes().getCodes().containsAll(NON_FATAL_ERROR_CODES));
         assertTrue(exchangeReloaded.getNetworkConfig().getNonFatalErrorMessages().getMessages().containsAll(NON_FATAL_ERROR_MESSAGES));
 
-        assertThat(exchangeReloaded.getOtherConfig().getConfigItems().get(0).getName()).isEqualTo(BUY_FEE_CONFIG_ITEM_KEY);
-        assertThat(exchangeReloaded.getOtherConfig().getConfigItems().get(0).getValue()).isEqualTo(BUY_FEE_CONFIG_ITEM_VALUE);
-        assertThat(exchangeReloaded.getOtherConfig().getConfigItems().get(1).getName()).isEqualTo(SELL_FEE_CONFIG_ITEM_KEY);
-        assertThat(exchangeReloaded.getOtherConfig().getConfigItems().get(1).getValue()).isEqualTo(SELL_FEE_CONFIG_ITEM_VALUE);
+        assertThat(exchangeReloaded.getOptionalConfig().getConfigItems().get(0).getName()).isEqualTo(BUY_FEE_CONFIG_ITEM_KEY);
+        assertThat(exchangeReloaded.getOptionalConfig().getConfigItems().get(0).getValue()).isEqualTo(BUY_FEE_CONFIG_ITEM_VALUE);
+        assertThat(exchangeReloaded.getOptionalConfig().getConfigItems().get(1).getName()).isEqualTo(SELL_FEE_CONFIG_ITEM_KEY);
+        assertThat(exchangeReloaded.getOptionalConfig().getConfigItems().get(1).getValue()).isEqualTo(SELL_FEE_CONFIG_ITEM_VALUE);
 
         // cleanup
         Files.delete(FileSystems.getDefault().getPath(XML_CONFIG_TO_SAVE_FILENAME));

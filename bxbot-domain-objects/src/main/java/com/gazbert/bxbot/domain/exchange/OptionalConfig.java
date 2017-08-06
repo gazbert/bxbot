@@ -29,15 +29,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Domain object representing the Exchange 'other' (misc) config.
+ * Domain object representing optional Exchange config.
  *
  * @author gazbert
  */
-public class OtherConfig {
+public class OptionalConfig {
 
     private Map<String, String> items;
 
-    public OtherConfig() {
+    public OptionalConfig() {
         items = new HashMap<>();
     }
 

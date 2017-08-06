@@ -29,14 +29,14 @@ import com.gazbert.bxbot.domain.engine.EngineConfig;
 import com.gazbert.bxbot.domain.exchange.AuthenticationConfig;
 import com.gazbert.bxbot.domain.exchange.ExchangeConfig;
 import com.gazbert.bxbot.domain.exchange.NetworkConfig;
-import com.gazbert.bxbot.domain.exchange.OtherConfig;
+import com.gazbert.bxbot.domain.exchange.OptionalConfig;
 import com.gazbert.bxbot.domain.market.MarketConfig;
 import com.gazbert.bxbot.domain.strategy.StrategyConfig;
 import com.gazbert.bxbot.exchange.api.ExchangeAdapter;
 import com.gazbert.bxbot.exchange.api.impl.AuthenticationConfigImpl;
 import com.gazbert.bxbot.exchange.api.impl.ExchangeConfigImpl;
 import com.gazbert.bxbot.exchange.api.impl.NetworkConfigImpl;
-import com.gazbert.bxbot.exchange.api.impl.OtherConfigImpl;
+import com.gazbert.bxbot.exchange.api.impl.OptionalConfigImpl;
 import com.gazbert.bxbot.repository.EngineConfigRepository;
 import com.gazbert.bxbot.repository.ExchangeConfigRepository;
 import com.gazbert.bxbot.repository.MarketConfigRepository;
@@ -511,17 +511,17 @@ public class TradingEngine {
             LOG.info(() -> "No (optional) AuthenticationConfiguration has been set for Exchange Adapter: " + exchangeAdapter.getImplName());
         }
 
-        // Fetch optional 'other' config
-        final OtherConfig otherConfig = domainExchangeConfig.getOtherConfig();
-        if (otherConfig != null) {
+        // Fetch optional config
+        final OptionalConfig optionalConfig = domainExchangeConfig.getOptionalConfig();
+        if (optionalConfig != null) {
 
-            final OtherConfigImpl adapterOtherConfig = new OtherConfigImpl();
-            adapterOtherConfig.setItems(otherConfig.getItems());
-            adapterExchangeConfig.setOtherConfig(adapterOtherConfig);
-            LOG.info(() -> "OtherConfiguration has been set: " + adapterOtherConfig);
+            final OptionalConfigImpl adapterOptionalConfig = new OptionalConfigImpl();
+            adapterOptionalConfig.setItems(optionalConfig.getItems());
+            adapterExchangeConfig.setOptionalConfig(adapterOptionalConfig);
+            LOG.info(() -> "Optional Exchange Adapter config has been set: " + adapterOptionalConfig);
 
         } else {
-            LOG.info(() -> "No (optional) OtherConfiguration has been set for Exchange Adapter: " + exchangeAdapter.getImplName());
+            LOG.info(() -> "No Optional config has been set for Exchange Adapter: " + exchangeAdapter.getImplName());
         }
 
         exchangeAdapter.init(adapterExchangeConfig);

@@ -112,7 +112,7 @@ public class TestGdaxExchangeAdapter {
     private ExchangeConfig exchangeConfig;
     private AuthenticationConfig authenticationConfig;
     private NetworkConfig networkConfig;
-    private OtherConfig otherConfig;
+    private OptionalConfig optionalConfig;
 
 
     /*
@@ -131,14 +131,14 @@ public class TestGdaxExchangeAdapter {
         expect(networkConfig.getNonFatalErrorCodes()).andReturn(nonFatalNetworkErrorCodes);
         expect(networkConfig.getNonFatalErrorMessages()).andReturn(nonFatalNetworkErrorMessages);
 
-        otherConfig = PowerMock.createMock(OtherConfig.class);
-        expect(otherConfig.getItem("buy-fee")).andReturn("0.25");
-        expect(otherConfig.getItem("sell-fee")).andReturn("0.25");
+        optionalConfig = PowerMock.createMock(OptionalConfig.class);
+        expect(optionalConfig.getItem("buy-fee")).andReturn("0.25");
+        expect(optionalConfig.getItem("sell-fee")).andReturn("0.25");
 
         exchangeConfig = PowerMock.createMock(ExchangeConfig.class);
         expect(exchangeConfig.getAuthenticationConfig()).andReturn(authenticationConfig);
         expect(exchangeConfig.getNetworkConfig()).andReturn(networkConfig);
-        expect(exchangeConfig.getOtherConfig()).andReturn(otherConfig);
+        expect(exchangeConfig.getOptionalConfig()).andReturn(optionalConfig);
     }
 
     // ------------------------------------------------------------------------------------------------
@@ -713,9 +713,9 @@ public class TestGdaxExchangeAdapter {
     @Test(expected = IllegalArgumentException.class)
     public void testExchangeAdapterThrowsExceptionIfBuyFeeIsMissing() throws Exception {
 
-        PowerMock.reset(otherConfig);
-        expect(otherConfig.getItem("buy-fee")).andReturn("");
-        expect(otherConfig.getItem("sell-fee")).andReturn("0.25");
+        PowerMock.reset(optionalConfig);
+        expect(optionalConfig.getItem("buy-fee")).andReturn("");
+        expect(optionalConfig.getItem("sell-fee")).andReturn("0.25");
         PowerMock.replayAll();
 
         final ExchangeAdapter exchangeAdapter = new GdaxExchangeAdapter();
@@ -727,9 +727,9 @@ public class TestGdaxExchangeAdapter {
     @Test(expected = IllegalArgumentException.class)
     public void testExchangeAdapterThrowsExceptionIfSellFeeIsMissing() throws Exception {
 
-        PowerMock.reset(otherConfig);
-        expect(otherConfig.getItem("buy-fee")).andReturn("0.25");
-        expect(otherConfig.getItem("sell-fee")).andReturn("");
+        PowerMock.reset(optionalConfig);
+        expect(optionalConfig.getItem("buy-fee")).andReturn("0.25");
+        expect(optionalConfig.getItem("sell-fee")).andReturn("");
 
         PowerMock.replayAll();
         final ExchangeAdapter exchangeAdapter = new GdaxExchangeAdapter();
