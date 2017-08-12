@@ -56,13 +56,13 @@ and evaluate the bot, Docker is the way to go.
 1. Fetch the BX-bot image from [Docker Hub](https://hub.docker.com/r/gazbert/bxbot/): `docker pull gazbert/bxbot:x.x.x` -
    replace `x.x.x` with the [Release](https://github.com/gazbert/bxbot/releases) version of the bot you want to run, e.g.
    `docker pull gazbert/bxbot:0.6.4`
-1. Run the Docker container: `docker container run --name bxbot-0.6.4 -it gazbert/bxbot:0.6.4 bash` - substitute 0.6.4
-   with the version you want.
+1. Run the Docker container: `docker container run --name bxbot-x.x.x -it gazbert/bxbot:x.x.x bash` - again, 
+   replace x.x.x with the version you want.
 1. Change into the bot's directory: `cd bxbot*`
 1. Configure the bot as required - see the main _[Configuration](#configuration-2)_ section.
    The bot's default configuration uses the 
-   [`ExampleScalpingStrategy`](./bxbot-strategies/src/main/java/com/gazbert/bxbot/strategies/ExampleScalpingStrategy.java).
-   The [`TestExchangeAdapter`](./bxbot-exchanges/src/main/java/com/gazbert/bxbot/exchanges/TestExchangeAdapter.java) is configured 
+   [`ExampleScalpingStrategy`](./bxbot-strategies/src/main/java/com/gazbert/bxbot/strategies/ExampleScalpingStrategy.java) and
+   the [`TestExchangeAdapter`](./bxbot-exchanges/src/main/java/com/gazbert/bxbot/exchanges/TestExchangeAdapter.java) is configured 
    by default - it makes public API calls to [Bitstamp](https://www.bitstamp.net), but stubs out the private API (order management) 
    calls; it's good for testing your initial setup without sending actual orders to the exchange.
 1. Usage: `./bxbot.sh [start|stop|status]`
@@ -445,7 +445,7 @@ You specify the Trading Strategies you wish to use in the
          taking profit from the spread. Don't forget to factor in the exchange fees!
         </description>
         <class-name>com.gazbert.bxbot.strategies.ExampleScalpingStrategy</class-name>
-        <configuration>
+        <optional-config>>
             <config-item>
                 <name>counter-currency-buy-order-amount</name>
                 <value>20</value>
@@ -454,14 +454,14 @@ You specify the Trading Strategies you wish to use in the
                 <name>minimum-percentage-gain</name>
                 <value>2</value>
             </config-item>
-        </configuration>
+        </optional-config>>
     </strategy>
     <strategy>
         <id>macd-strategy</id>
         <name>MACD Based Strat</name>
         <description>Strat uses MACD data to take long position in USD.</description>
         <class-name>com.gazbert.bxbot.strategies.YourMacdStrategy</class-name>
-        <configuration>
+        <optional-config>>
             <config-item>
                 <name>counter-currency-buy-order-amount</name>
                 <value>20</value>
@@ -474,7 +474,7 @@ You specify the Trading Strategies you wish to use in the
                 <name>longEmaInterval</name>
                 <value>26</value>
             </config-item>
-        </configuration>
+        </optional-config>>
     </strategy>
 </trading-strategies>
 ```
@@ -494,7 +494,7 @@ to display the strategy's description.
 For the `<class-name>` value, you must specify the fully qualified name of your Trading Strategy class for the
 Trading Engine to inject on startup. The class _must_ be on the runtime classpath.
 
-The `<configuration>` section is optional. It allows you to set custom key/value pair String config - this is passed
+The `<optional-config>` section is optional. It allows you to set key/value pair config items. This config is passed
 to your Trading Strategy when the bot starts up; see the 
 _[How do I write my own Trading Strategy?](#how-do-i-write-my-own-trading-strategy)_ section.
 

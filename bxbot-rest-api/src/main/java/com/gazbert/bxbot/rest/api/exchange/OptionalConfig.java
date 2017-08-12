@@ -29,7 +29,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Domain object representing other (optional) Exchange Adapter config.
+ * Domain object representing optional Exchange Adapter config.
  *
  * @author gazbert
  */
