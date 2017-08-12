@@ -268,7 +268,7 @@ You provide your Exchange Adapter details in the `exchange.xml` file - see the _
 section for full details.
 
 The `<optional-config>` section in the `exchange.xml` allows you to set key/value pair config items to pass to your
-Exchange Adapter implementation. On startup, the Trading Engine will pass the config to your Exchange Adapter's
+Exchange Adapter implementation. On startup, the Trading Engine will pass the config to your Exchange Adapter's 
 `init(ExchangeConfig config)` method. 
 
 ##### Dependencies
@@ -393,7 +393,7 @@ All elements are mandatory unless stated otherwise.
 
 * For the `<adapter>` value, you must specify the fully qualified name of the Exchange Adapter class for the Trading Engine
   to inject on startup. The class must be on the runtime classpath. See the 
-_ [How do I write my own Exchange Adapter?](#how-do-i-write-my-own-exchange-adapter)_ section for more details.
+  _[How do I write my own Exchange Adapter?](#how-do-i-write-my-own-exchange-adapter)_ section for more details.
 
 * The `<authentication-config>` section is optional. If present, at least 1 `<config-item>` must be set - these are repeating
   key/value pairs. This section is used by the inbuilt Exchange Adapters to configure their exchange trading API credentials - see
