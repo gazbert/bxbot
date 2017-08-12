@@ -541,7 +541,7 @@ You specify the Email Alerts config in the
 [`email-alerts.xml`](./config/email-alerts.xml) file.
 
 This config is used to send email alerts when the bot is forced to shutdown due to an unexpected error occurring in the 
-Trading Strategies or Exchange Adapters.
+Trading Strategies or Exchange Adapters. The email is sent to the SMTP host using TLS.
 
 ```xml
 <email-alerts>
@@ -559,12 +559,11 @@ Trading Strategies or Exchange Adapters.
 
 All elements are mandatory unless stated otherwise.
 
-If `<enabled>` is set to 'true', the bot will load the `<smtp-config>` config. If `<enabled>` is set to 'false',
-you can omit the `<smtp-config>` config.
+* If `<enabled>` is set to 'true', the bot will send email alerts to the `<to-addr>` if it needs to shutdown due to a
+  critical error. 
 
-If enabled, the bot will send email alerts to the `<to-addr>` if it needs to shutdown due to a critical error.
-
-Sample SMTP config for using a Gmail account is shown above. The email is sent using TLS.
+* The `<smtp-config>` config is optional and only required if `<enabled>` is set to 'true'. 
+  Sample SMTP config for using a Gmail account is shown above - all elements within `<smtp-config>` are mandatory. 
 
 #### Logging
 Logging for the bot is provided by [log4j](http://logging.apache.org/log4j). The log file is written to `logs/bxbot.log` 
