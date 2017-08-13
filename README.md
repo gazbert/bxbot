@@ -483,7 +483,7 @@ You specify the Trading Strategies you wish to use in the
          taking profit from the spread. Don't forget to factor in the exchange fees!
         </description>
         <class-name>com.gazbert.bxbot.strategies.ExampleScalpingStrategy</class-name>
-        <optional-config>>
+        <optional-config>
             <config-item>
                 <name>counter-currency-buy-order-amount</name>
                 <value>20</value>
@@ -492,14 +492,14 @@ You specify the Trading Strategies you wish to use in the
                 <name>minimum-percentage-gain</name>
                 <value>2</value>
             </config-item>
-        </optional-config>>
+        </optional-config>
     </strategy>
     <strategy>
         <id>macd-strategy</id>
         <name>MACD Based Strat</name>
         <description>Strat uses MACD data to take long position in USD.</description>
         <class-name>com.gazbert.bxbot.strategies.YourMacdStrategy</class-name>
-        <optional-config>>
+        <optional-config>
             <config-item>
                 <name>counter-currency-buy-order-amount</name>
                 <value>20</value>
@@ -512,7 +512,7 @@ You specify the Trading Strategies you wish to use in the
                 <name>longEmaInterval</name>
                 <value>26</value>
             </config-item>
-        </optional-config>>
+        </optional-config>
     </strategy>
 </trading-strategies>
 ```
