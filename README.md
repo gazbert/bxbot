@@ -1,5 +1,8 @@
 # BX-bot
 
+**23:15 (GMT+1) 16 August 2017** - Gemini Exchange is currently down (and has been for ~ 5 hours) - Gemini IT test 
+have been temporarily disabled until [more info](https://twitter.com/GeminiDotCom) becomes available...
+
 [![Build Status](https://travis-ci.org/gazbert/bxbot.svg?branch=master)](https://travis-ci.org/gazbert/bxbot)
 
 ## What is BX-bot?
@@ -55,7 +58,7 @@ and evaluate the bot, Docker is the way to go.
 1. Install [Docker](https://docs.docker.com/engine/installation/) on the machine you want to run the bot.
 1. Fetch the BX-bot image from [Docker Hub](https://hub.docker.com/r/gazbert/bxbot/): `docker pull gazbert/bxbot:x.x.x` -
    replace `x.x.x` with the [Release](https://github.com/gazbert/bxbot/releases) version of the bot you want to run, e.g.
-   `docker pull gazbert/bxbot:0.7.1`
+   `docker pull gazbert/bxbot:0.8.0`
 1. Run the Docker container: `docker container run --name bxbot-x.x.x -it gazbert/bxbot:x.x.x bash`
 1. Change into the bot's directory: `cd bxbot*`
 1. Configure the bot as required - see the main _[Configuration](#configuration-2)_ section.
