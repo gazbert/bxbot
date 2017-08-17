@@ -1,8 +1,5 @@
 # BX-bot
 
-**23:15 (GMT+1) 16 August 2017** - Gemini Exchange is currently down (and has been for ~ 5 hours) - Gemini IT test 
-have been temporarily disabled until [more info](https://twitter.com/GeminiDotCom) becomes available...
-
 [![Build Status](https://travis-ci.org/gazbert/bxbot.svg?branch=master)](https://travis-ci.org/gazbert/bxbot)
 
 ## What is BX-bot?
