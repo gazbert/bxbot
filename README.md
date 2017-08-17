@@ -85,9 +85,9 @@ from the head of the master branch.
 The bot runs on Linux, macOS, and Windows. The Windows [bxbot.bat](./bxbot.bat) script for starting/stopping the bot is
 elementary and needs further development.
 
-[OpenJDK 8](http://openjdk.java.net/install/) or 
-[Oracle JDK 1.8](http://www.oracle.com/technetwork/java/javase/downloads/index-jsp-138363.html) needs to be installed
-on the machine you want to run the bot.     
+[OpenJDK 8 (openjdk-8-jre)](http://openjdk.java.net/install/) or 
+[Oracle JRE 8](http://www.oracle.com/technetwork/java/javase/downloads/jre8-downloads-2133155.html) needs to be
+installed on the machine you want to run the bot.     
 
 You can use [Maven](https://maven.apache.org) or [Gradle](https://gradle.org/) to build the bot and distribution artifact.
 The instructions below are for Linux and macOS, but equivalent Windows scripts are included. 
@@ -125,8 +125,9 @@ The instructions below are for Linux and macOS, but equivalent Windows scripts a
 1. Usage: `./bxbot.sh [start|stop|status]`
    
 ## Build Guide
-BX-bot requires a Java 8 JDK ([OpenJDK 8](http://openjdk.java.net/install/) or 
-[Oracle JDK 1.8](http://www.oracle.com/technetwork/java/javase/downloads/index-jsp-138363.html)) for the development and runtime environment.
+BX-bot requires a Java 8 JDK ([OpenJDK 8 (openjdk-8-jdk)](http://openjdk.java.net/install/) or 
+[Oracle JDK 8](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)) for the development
+environment.
 
 You can use [Maven](https://maven.apache.org) or [Gradle](https://gradle.org/) to build the bot and pull down the dependencies;
 BX-bot depends on [log4j](http://logging.apache.org/log4j), [JavaMail](https://java.net/projects/javamail/pages/Home),
