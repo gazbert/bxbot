@@ -47,6 +47,7 @@ public class TestExchangeConfigurationManagement {
 
     /* Test XML config */
     private static final String VALID_XML_CONFIG_FILENAME = "src/test/config/exchange/valid-exchange.xml";
+    private static final String INVALID_XML_CONFIG_FILENAME = "src/test/config/exchange/invalid-exchange.xml";
     private static final String MISSING_XML_CONFIG_FILENAME = "src/test/config/exchange-/missing-exchange.xml";
     private static final String XML_CONFIG_TO_SAVE_FILENAME = "src/test/config/exchange/saved-exchange.xml";
 
@@ -103,6 +104,13 @@ public class TestExchangeConfigurationManagement {
     @Test(expected = IllegalStateException.class)
     public void testLoadingMissingXmlConfigFileThrowsException() {
         ConfigurationManager.loadConfig(ExchangeType.class, MISSING_XML_CONFIG_FILENAME, XML_SCHEMA_FILENAME);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testLoadingInvalidXmlConfigFileThrowsException() {
+
+        ConfigurationManager.loadConfig(ExchangeType.class,
+                INVALID_XML_CONFIG_FILENAME, XML_SCHEMA_FILENAME);
     }
 
     /*
