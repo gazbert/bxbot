@@ -43,7 +43,7 @@ dependency injection framework to achieve this; the long term goal is to convert
 [Spring Boot](http://projects.spring.io/spring-boot/) app.
 
 The bot was designed to fail hard and fast if any unexpected errors occur in the Exchange Adapters or Trading Strategies:
-it will log the error, send an email alert (if configured), and then shutdown.
+it will log the error, send an email alert (if configured), and then shut down.
 
 ## Installation Guide
 
@@ -264,7 +264,7 @@ The Trading Engine will also call your adapter directly when performing the _Eme
 `<emergency-stop-currency>` wallet balance on the exchange drops below the configured `<emergency-stop-value>` value.
 If this call to the [`TradingApi`](./bxbot-trading-api/src/main/java/com/gazbert/bxbot/trading/api/TradingApi.java)
 `getBalanceInfo()` fails and is not due to a `ExchangeNetworkException`, the Trading Engine will log the error, send an 
-Email Alert (if configured), and shutdown. If the API call failed due to an `ExchangeNetworkException`, the 
+Email Alert (if configured), and shut down. If the API call failed due to an `ExchangeNetworkException`, the 
 Trading Engine will log the error and sleep until the next trade cycle.
 
 ##### Configuration
@@ -328,7 +328,7 @@ All elements are mandatory.
 
 * The `<emergency-stop-balance>` value must be set to prevent catastrophic loss on the exchange. 
   The Trading Engine checks this value at the start of every trade cycle: if your `<emergency-stop-currency>` wallet balance on
-  the exchange drops below this value, the Trading Engine will log it, send an Email Alert (if configured) and then shutdown.
+  the exchange drops below this value, the Trading Engine will log it, send an Email Alert (if configured) and then shut down.
   If you set this value to 0, the bot will bypass the check - be careful.
 
 * The `<trade-cycle-interval>` value is the interval in _seconds_ that the Trading Engine will wait/sleep before executing
@@ -544,7 +544,7 @@ All elements are mandatory unless stated otherwise.
 You specify the Email Alerts config in the 
 [`email-alerts.xml`](./config/email-alerts.xml) file.
 
-This config is used to send email alerts when the bot is forced to shutdown due to an unexpected error occurring in the 
+This config is used to send email alerts when the bot is forced to shut down due to an unexpected error occurring in the 
 Trading Strategies or Exchange Adapters. The email is sent to the SMTP host using TLS.
 
 ```xml
@@ -563,7 +563,7 @@ Trading Strategies or Exchange Adapters. The email is sent to the SMTP host usin
 
 All elements are mandatory unless stated otherwise.
 
-* If `<enabled>` is set to 'true', the bot will send email alerts to the `<to-addr>` if it needs to shutdown due to a
+* If `<enabled>` is set to 'true', the bot will send email alerts to the `<to-addr>` if it needs to shut down due to a
   critical error. 
 
 * The `<smtp-config>` config is optional and only required if `<enabled>` is set to 'true'. 
