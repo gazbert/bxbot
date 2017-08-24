@@ -25,7 +25,7 @@ package com.gazbert.bxbot.repository;
 
 import com.gazbert.bxbot.datastore.ConfigurationManager;
 import com.gazbert.bxbot.datastore.strategy.generated.ConfigItemType;
-import com.gazbert.bxbot.datastore.strategy.generated.ConfigurationType;
+import com.gazbert.bxbot.datastore.strategy.generated.OptionalConfigType;
 import com.gazbert.bxbot.datastore.strategy.generated.StrategyType;
 import com.gazbert.bxbot.datastore.strategy.generated.TradingStrategiesType;
 import com.gazbert.bxbot.domain.strategy.StrategyConfig;
@@ -355,7 +355,7 @@ public class TestStrategyConfigRepository {
         amountToBuyConfigItem.setName(AMOUNT_TO_BUY_CONFIG_ITEM_KEY);
         amountToBuyConfigItem.setValue(AMOUNT_TO_BUY_CONFIG_ITEM_VALUE);
 
-        final ConfigurationType configurationType = new ConfigurationType();
+        final OptionalConfigType configurationType = new OptionalConfigType();
         configurationType.getConfigItem().add(buyPriceConfigItem);
         configurationType.getConfigItem().add(amountToBuyConfigItem);
 
@@ -364,14 +364,14 @@ public class TestStrategyConfigRepository {
         strategyType1.setName(STRAT_NAME_1);
         strategyType1.setDescription(STRAT_DESCRIPTION_1);
         strategyType1.setClassName(STRAT_CLASSNAME_1);
-        strategyType1.setConfiguration(configurationType);
+        strategyType1.setOptionalConfig(configurationType);
 
         final StrategyType strategyType2 = new StrategyType();
         strategyType2.setId(STRAT_ID_2);
         strategyType2.setName(STRAT_NAME_2);
         strategyType2.setDescription(STRAT_DESCRIPTION_2);
         strategyType2.setClassName(STRAT_CLASSNAME_2);
-        strategyType2.setConfiguration(configurationType);
+        strategyType2.setOptionalConfig(configurationType);
 
         final TradingStrategiesType tradingStrategiesType = new TradingStrategiesType();
         tradingStrategiesType.getStrategies().add(strategyType1);
@@ -390,7 +390,7 @@ public class TestStrategyConfigRepository {
         amountToBuyConfigItem.setName(AMOUNT_TO_BUY_CONFIG_ITEM_KEY);
         amountToBuyConfigItem.setValue(AMOUNT_TO_BUY_CONFIG_ITEM_VALUE);
 
-        final ConfigurationType configurationType = new ConfigurationType();
+        final OptionalConfigType configurationType = new OptionalConfigType();
         configurationType.getConfigItem().add(buyPriceConfigItem);
         configurationType.getConfigItem().add(amountToBuyConfigItem);
 
@@ -399,7 +399,7 @@ public class TestStrategyConfigRepository {
         newStrat.setName(STRAT_NAME_1);
         newStrat.setDescription(STRAT_DESCRIPTION_1);
         newStrat.setClassName(STRAT_CLASSNAME_1);
-        newStrat.setConfiguration(configurationType);
+        newStrat.setOptionalConfig(configurationType);
 
         final TradingStrategiesType existingStatsPlusNewOne = allTheInternalStrategiesConfig();
         existingStatsPlusNewOne.getStrategies().add(newStrat);

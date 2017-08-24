@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Gareth Jon Lynch
+ * Copyright (c) 2016 Gareth Jon Lynch
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -21,24 +21,30 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.rest.api.exchange;
+package com.gazbert.bxbot.exchange.api.impl;
 
+import com.gazbert.bxbot.exchange.api.OptionalConfig;
 import com.google.common.base.MoreObjects;
 
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Domain object representing other (optional) Exchange Adapter config.
+ * Exchange API optional config.
  *
  * @author gazbert
  */
-public class OtherConfig {
+public class OptionalConfigImpl implements OptionalConfig {
 
     private Map<String, String> items;
 
-    public OtherConfig() {
+    public OptionalConfigImpl() {
         items = new HashMap<>();
+    }
+
+    @Override
+    public String getItem(String name) {
+        return items.get(name);
     }
 
     public Map<String, String> getItems() {

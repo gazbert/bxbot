@@ -154,7 +154,7 @@ public class ExampleScalpingStrategy implements TradingStrategy {
      * @param tradingApi the Trading API. Use this to make trades and stuff.
      * @param market     the market for this strategy. This is the market the strategy is currently running on - you wire
      *                   this up in the markets.xml and strategies.xml files.
-     * @param config     optional configuration for the strategy. Contains any (optional) config you setup in the
+     * @param config     configuration for the strategy. Contains any (optional) config you set up in the
      *                   strategies.xml file.
      */
     @Override
@@ -238,14 +238,12 @@ public class ExampleScalpingStrategy implements TradingStrategy {
             }
 
         } catch (ExchangeNetworkException e) {
-
             // Your timeout handling code could go here.
             // We are just going to log it and swallow it, and wait for next trade cycle.
             LOG.error(market.getName() + " Failed to get market orders because Exchange threw network exception. " +
                     "Waiting until next trade cycle.", e);
 
         } catch (TradingApiException e) {
-
             // Your error handling code could go here...
             // We are just going to re-throw as StrategyException for engine to deal with - it will shutdown the bot.
             LOG.error(market.getName() + " Failed to get market orders because Exchange threw TradingApi exception. " +
@@ -286,7 +284,6 @@ public class ExampleScalpingStrategy implements TradingStrategy {
             lastOrder.amount = amountOfBaseCurrencyToBuy;
 
         } catch (ExchangeNetworkException e) {
-
             // Your timeout handling code could go here, e.g. you might want to check if the order actually
             // made it to the exchange? And if not, resend it...
             // We are just going to log it and swallow it, and wait for next trade cycle.
@@ -294,7 +291,6 @@ public class ExampleScalpingStrategy implements TradingStrategy {
                     "Waiting until next trade cycle.", e);
 
         } catch (TradingApiException e) {
-
             // Your error handling code could go here...
             // We are just going to re-throw as StrategyException for engine to deal with - it will shutdown the bot.
             LOG.error(market.getName() + " Initial order to BUY base currency failed because Exchange threw TradingApi exception. " +
@@ -389,7 +385,6 @@ public class ExampleScalpingStrategy implements TradingStrategy {
             }
 
         } catch (ExchangeNetworkException e) {
-
             // Your timeout handling code could go here, e.g. you might want to check if the order actually
             // made it to the exchange? And if not, resend it...
             // We are just going to log it and swallow it, and wait for next trade cycle.
@@ -397,7 +392,6 @@ public class ExampleScalpingStrategy implements TradingStrategy {
                     "Waiting until next trade cycle. Last Order: " + lastOrder, e);
 
         } catch (TradingApiException e) {
-
             // Your error handling code could go here...
             // We are just going to re-throw as StrategyException for engine to deal with - it will shutdown the bot.
             LOG.error(market.getName() + " New order to SELL base currency failed because Exchange threw TradingApi exception. " +
@@ -483,7 +477,6 @@ public class ExampleScalpingStrategy implements TradingStrategy {
                 }
             }
         } catch (ExchangeNetworkException e) {
-
             // Your timeout handling code could go here, e.g. you might want to check if the order actually
             // made it to the exchange? And if not, resend it...
             // We are just going to log it and swallow it, and wait for next trade cycle.
@@ -491,7 +484,6 @@ public class ExampleScalpingStrategy implements TradingStrategy {
                     "Waiting until next trade cycle. Last Order: " + lastOrder, e);
 
         } catch (TradingApiException e) {
-
             // Your error handling code could go here...
             // We are just going to re-throw as StrategyException for engine to deal with - it will shutdown the bot.
             LOG.error(market.getName() + " New order to BUY base currency failed because Exchange threw TradingApi exception. " +

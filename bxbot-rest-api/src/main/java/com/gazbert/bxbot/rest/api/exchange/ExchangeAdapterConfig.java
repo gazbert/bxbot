@@ -38,7 +38,7 @@ public class ExchangeAdapterConfig {
     private String name;
     private String className;
     private NetworkConfig networkConfig;
-    private OtherConfig otherConfig;
+    private OptionalConfig optionalConfig;
 
     public String getName() {
         return name;
@@ -64,12 +64,12 @@ public class ExchangeAdapterConfig {
         return networkConfig;
     }
 
-    public OtherConfig getOtherConfig() {
-        return otherConfig;
+    public OptionalConfig getOptionalConfig() {
+        return optionalConfig;
     }
 
-    public void setOtherConfig(OtherConfig otherConfig) {
-        this.otherConfig = otherConfig;
+    public void setOptionalConfig(OptionalConfig optionalConfig) {
+        this.optionalConfig = optionalConfig;
     }
 
     @Override
@@ -78,7 +78,7 @@ public class ExchangeAdapterConfig {
                 .add("name", name)
                 .add("className", className)
                 .add("networkConfig", networkConfig)
-                .add("otherConfig", otherConfig)
+                .add("optionalConfig", optionalConfig)
                 .toString();
     }
 }

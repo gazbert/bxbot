@@ -138,7 +138,7 @@ public class TestBitstampExchangeAdapter {
         exchangeConfig = PowerMock.createMock(ExchangeConfig.class);
         expect(exchangeConfig.getAuthenticationConfig()).andReturn(authenticationConfig);
         expect(exchangeConfig.getNetworkConfig()).andReturn(networkConfig);
-        // other config not needed for this adapter
+        // optional config not needed for this adapter
     }
 
     // ------------------------------------------------------------------------------------------------

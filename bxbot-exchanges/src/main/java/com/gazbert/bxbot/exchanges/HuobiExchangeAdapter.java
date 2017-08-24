@@ -26,7 +26,7 @@ package com.gazbert.bxbot.exchanges;
 import com.gazbert.bxbot.exchange.api.AuthenticationConfig;
 import com.gazbert.bxbot.exchange.api.ExchangeAdapter;
 import com.gazbert.bxbot.exchange.api.ExchangeConfig;
-import com.gazbert.bxbot.exchange.api.OtherConfig;
+import com.gazbert.bxbot.exchange.api.OptionalConfig;
 import com.gazbert.bxbot.trading.api.*;
 import com.google.common.base.MoreObjects;
 import com.google.gson.*;
@@ -251,7 +251,7 @@ public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implemen
         LOG.info(() -> "About to initialise Huobi ExchangeConfig: " + config);
         setAuthenticationConfig(config);
         setNetworkConfig(config);
-        setOtherConfig(config);
+        setOptionalConfig(config);
 
         initSecureMessageLayer();
         initGson();
@@ -1104,19 +1104,19 @@ public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implemen
         secret = getAuthenticationConfigItem(authenticationConfig, SECRET_PROPERTY_NAME);
     }
 
-    private void setOtherConfig(ExchangeConfig exchangeConfig) {
+    private void setOptionalConfig(ExchangeConfig exchangeConfig) {
 
-        final OtherConfig otherConfig = getOtherConfig(exchangeConfig);
+        final OptionalConfig optionalConfig = getOptionalConfig(exchangeConfig);
 
-        final String buyFeeInConfig = getOtherConfigItem(otherConfig, BUY_FEE_PROPERTY_NAME);
+        final String buyFeeInConfig = getOptionalConfigItem(optionalConfig, BUY_FEE_PROPERTY_NAME);
         buyFeePercentage = new BigDecimal(buyFeeInConfig).divide(new BigDecimal("100"), 8, BigDecimal.ROUND_HALF_UP);
         LOG.info(() -> "Buy fee % in BigDecimal format: " + buyFeePercentage);
 
-        final String sellFeeInConfig = getOtherConfigItem(otherConfig, SELL_FEE_PROPERTY_NAME);
+        final String sellFeeInConfig = getOptionalConfigItem(optionalConfig, SELL_FEE_PROPERTY_NAME);
         sellFeePercentage = new BigDecimal(sellFeeInConfig).divide(new BigDecimal("100"), 8, BigDecimal.ROUND_HALF_UP);
         LOG.info(() -> "Sell fee % in BigDecimal format: " + sellFeePercentage);
 
-        accountInfoMarket = getOtherConfigItem(otherConfig, ACCOUNT_INFO_MARKET_PROPERTY_NAME);
+        accountInfoMarket = getOptionalConfigItem(optionalConfig, ACCOUNT_INFO_MARKET_PROPERTY_NAME);
     }
 
     // ------------------------------------------------------------------------------------------------

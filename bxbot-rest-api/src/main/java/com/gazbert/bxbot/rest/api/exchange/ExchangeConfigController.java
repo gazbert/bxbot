@@ -105,8 +105,8 @@ class ExchangeConfigController {
         networkConfig.setNonFatalErrorHttpStatusCodes(internalConfig.getNetworkConfig().getNonFatalErrorCodes());
         networkConfig.setNonFatalErrorMessages(internalConfig.getNetworkConfig().getNonFatalErrorMessages());
 
-        final OtherConfig otherConfig = new OtherConfig();
-        otherConfig.setItems(internalConfig.getOtherConfig().getItems());
+        final OptionalConfig optionalConfig = new OptionalConfig();
+        optionalConfig.setItems(internalConfig.getOptionalConfig().getItems());
 
         final ExchangeAdapterConfig exchangeAdapterConfig = new ExchangeAdapterConfig();
         exchangeAdapterConfig.setName(internalConfig.getExchangeName());

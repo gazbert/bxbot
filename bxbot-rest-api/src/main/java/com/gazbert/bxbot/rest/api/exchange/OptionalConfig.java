@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016 Gareth Jon Lynch
+ * Copyright (c) 2017 Gareth Jon Lynch
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -21,7 +21,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.domain.exchange;
+package com.gazbert.bxbot.rest.api.exchange;
 
 import com.google.common.base.MoreObjects;
 
@@ -29,15 +29,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Domain object representing the Exchange 'other' (misc) config.
+ * Domain object representing optional Exchange Adapter config.
  *
  * @author gazbert
  */
-public class OtherConfig {
+public class OptionalConfig {
 
     private Map<String, String> items;
 
-    public OtherConfig() {
+    public OptionalConfig() {
         items = new HashMap<>();
     }
 

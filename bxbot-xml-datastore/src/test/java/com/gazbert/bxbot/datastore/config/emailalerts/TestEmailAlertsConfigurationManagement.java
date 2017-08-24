@@ -46,6 +46,7 @@ public class TestEmailAlertsConfigurationManagement {
 
     /* Test XML config */
     private static final String VALID_XML_CONFIG_FILENAME = "src/test/config/emailalerts/valid-email-alerts.xml";
+    private static final String INVALID_XML_CONFIG_FILENAME = "src/test/config/emailalerts/invalid-email-alerts.xml";
     private static final String VALID_XML_CONFIG_WITHOUT_EMAIL_ALERTS_FILENAME =
             "src/test/config/emailalerts/valid-email-alerts-without-smtp-config.xml";
     private static final String MISSING_XML_CONFIG_FILENAME = "src/test/config/emailalerts/missing-email-alerts.xml";
@@ -86,6 +87,12 @@ public class TestEmailAlertsConfigurationManagement {
     @Test(expected = IllegalStateException.class)
     public void testLoadingMissingXmlConfigThrowsException() {
         ConfigurationManager.loadConfig(EmailAlertsType.class, MISSING_XML_CONFIG_FILENAME, XML_SCHEMA_LOCATION);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testLoadingInvalidXmlConfigFileThrowsException() {
+        ConfigurationManager.loadConfig(EmailAlertsType.class,
+                INVALID_XML_CONFIG_FILENAME, XML_SCHEMA_LOCATION);
     }
 
     @Test

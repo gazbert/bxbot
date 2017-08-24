@@ -25,7 +25,7 @@ package com.gazbert.bxbot.repository.impl;
 
 import com.gazbert.bxbot.datastore.ConfigurationManager;
 import com.gazbert.bxbot.datastore.strategy.generated.ConfigItemType;
-import com.gazbert.bxbot.datastore.strategy.generated.ConfigurationType;
+import com.gazbert.bxbot.datastore.strategy.generated.OptionalConfigType;
 import com.gazbert.bxbot.datastore.strategy.generated.StrategyType;
 import com.gazbert.bxbot.datastore.strategy.generated.TradingStrategiesType;
 import com.gazbert.bxbot.domain.strategy.StrategyConfig;
@@ -192,7 +192,7 @@ public class StrategyConfigRepositoryXmlImpl implements StrategyConfigRepository
             strategyConfig.setDescription(item.getDescription());
             strategyConfig.setClassName(item.getClassName());
 
-            item.getConfiguration().getConfigItem().forEach(internalConfigItem ->
+            item.getOptionalConfig().getConfigItem().forEach(internalConfigItem ->
                     strategyConfig.getConfigItems().put(internalConfigItem.getName(), internalConfigItem.getValue()));
 
             strategyConfigItems.add(strategyConfig);
@@ -214,7 +214,7 @@ public class StrategyConfigRepositoryXmlImpl implements StrategyConfigRepository
             strategyConfig.setDescription(internalStrategyConfig.getDescription());
             strategyConfig.setClassName(internalStrategyConfig.getClassName());
 
-            internalStrategyConfig.getConfiguration().getConfigItem().forEach(internalConfigItem ->
+            internalStrategyConfig.getOptionalConfig().getConfigItem().forEach(internalConfigItem ->
                     strategyConfig.getConfigItems().put(internalConfigItem.getName(), internalConfigItem.getValue()));
         }
         return strategyConfig;
@@ -222,7 +222,7 @@ public class StrategyConfigRepositoryXmlImpl implements StrategyConfigRepository
 
     private static StrategyType adaptExternalToInternalConfig(StrategyConfig externalStrategyConfig) {
 
-        final ConfigurationType configurationType = new ConfigurationType();
+        final OptionalConfigType configurationType = new OptionalConfigType();
         externalStrategyConfig.getConfigItems().forEach((key, value) -> {
             final ConfigItemType configItem = new ConfigItemType();
             configItem.setName(key);
@@ -235,7 +235,7 @@ public class StrategyConfigRepositoryXmlImpl implements StrategyConfigRepository
         strategyType.setName(externalStrategyConfig.getName());
         strategyType.setDescription(externalStrategyConfig.getDescription());
         strategyType.setClassName(externalStrategyConfig.getClassName());
-        strategyType.setConfiguration(configurationType);
+        strategyType.setOptionalConfig(configurationType);
         return strategyType;
     }
 }

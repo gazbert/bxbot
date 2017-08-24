@@ -28,7 +28,7 @@ import com.gazbert.bxbot.datastore.exchange.generated.*;
 import com.gazbert.bxbot.domain.exchange.AuthenticationConfig;
 import com.gazbert.bxbot.domain.exchange.ExchangeConfig;
 import com.gazbert.bxbot.domain.exchange.NetworkConfig;
-import com.gazbert.bxbot.domain.exchange.OtherConfig;
+import com.gazbert.bxbot.domain.exchange.OptionalConfig;
 import com.gazbert.bxbot.repository.impl.ExchangeConfigRepositoryXmlImpl;
 import org.junit.Before;
 import org.junit.Test;
@@ -101,8 +101,8 @@ public class TestExchangeConfigRepository {
         assertThat(exchangeConfig.getNetworkConfig().getConnectionTimeout()).isEqualTo(CONNECTION_TIMEOUT);
         assertThat(exchangeConfig.getNetworkConfig().getNonFatalErrorCodes()).isEqualTo(NON_FATAL_ERROR_CODES);
         assertThat(exchangeConfig.getNetworkConfig().getNonFatalErrorMessages()).isEqualTo(NON_FATAL_ERROR_MESSAGES);
-        assertThat(exchangeConfig.getOtherConfig().getItems().get(BUY_FEE_CONFIG_ITEM_KEY)).isEqualTo(BUY_FEE_CONFIG_ITEM_VALUE);
-        assertThat(exchangeConfig.getOtherConfig().getItems().get(SELL_FEE_CONFIG_ITEM_KEY)).isEqualTo(SELL_FEE_CONFIG_ITEM_VALUE);
+        assertThat(exchangeConfig.getOptionalConfig().getItems().get(BUY_FEE_CONFIG_ITEM_KEY)).isEqualTo(BUY_FEE_CONFIG_ITEM_VALUE);
+        assertThat(exchangeConfig.getOptionalConfig().getItems().get(SELL_FEE_CONFIG_ITEM_KEY)).isEqualTo(SELL_FEE_CONFIG_ITEM_VALUE);
 
         PowerMock.verifyAll();
     }
@@ -157,16 +157,16 @@ public class TestExchangeConfigRepository {
         final ConfigItemType sellFee = new ConfigItemType();
         sellFee.setName(SELL_FEE_CONFIG_ITEM_KEY);
         sellFee.setValue(SELL_FEE_CONFIG_ITEM_VALUE);
-        final OtherConfigType otherConfig = new OtherConfigType();
-        otherConfig.getConfigItems().add(buyFee);
-        otherConfig.getConfigItems().add(sellFee);
+        final OptionalConfigType optionalConfigType = new OptionalConfigType();
+        optionalConfigType.getConfigItems().add(buyFee);
+        optionalConfigType.getConfigItems().add(sellFee);
 
         final ExchangeType exchangeConfig = new ExchangeType();
         exchangeConfig.setName(EXCHANGE_NAME);
         exchangeConfig.setAdapter(EXCHANGE_ADAPTER);
         exchangeConfig.setAuthenticationConfig(authenticationConfig);
         exchangeConfig.setNetworkConfig(networkConfig);
-        exchangeConfig.setOtherConfig(otherConfig);
+        exchangeConfig.setOptionalConfig(optionalConfigType);
         return exchangeConfig;
     }
 
@@ -183,16 +183,16 @@ public class TestExchangeConfigRepository {
         networkConfig.setNonFatalErrorCodes(NON_FATAL_ERROR_CODES);
         networkConfig.setNonFatalErrorMessages(NON_FATAL_ERROR_MESSAGES);
 
-        final OtherConfig otherConfig = new OtherConfig();
-        otherConfig.getItems().put(BUY_FEE_CONFIG_ITEM_KEY, BUY_FEE_CONFIG_ITEM_VALUE);
-        otherConfig.getItems().put(SELL_FEE_CONFIG_ITEM_KEY, SELL_FEE_CONFIG_ITEM_VALUE);
+        final OptionalConfig optionalConfig = new OptionalConfig();
+        optionalConfig.getItems().put(BUY_FEE_CONFIG_ITEM_KEY, BUY_FEE_CONFIG_ITEM_VALUE);
+        optionalConfig.getItems().put(SELL_FEE_CONFIG_ITEM_KEY, SELL_FEE_CONFIG_ITEM_VALUE);
 
         final ExchangeConfig exchangeConfig = new ExchangeConfig();
         exchangeConfig.setExchangeName(EXCHANGE_NAME);
         exchangeConfig.setExchangeAdapter(EXCHANGE_ADAPTER);
         exchangeConfig.setAuthenticationConfig(authenticationConfig);
         exchangeConfig.setNetworkConfig(networkConfig);
-        exchangeConfig.setOtherConfig(otherConfig);
+        exchangeConfig.setOptionalConfig(optionalConfig);
 
         return exchangeConfig;
     }
