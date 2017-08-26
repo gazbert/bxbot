@@ -80,7 +80,7 @@ public class StrategyConfigServiceImpl implements StrategyConfigService {
     }
 
     @Override
-    public StrategyConfig deleteStrategyById(String id) {
+    public StrategyConfig deleteStrategyConfig(String id) {
         LOG.info(() -> "About to delete Strategy config for id: " + id);
         return strategyConfigRepository.deleteStrategyById(id);
     }

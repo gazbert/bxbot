@@ -167,7 +167,7 @@ class StrategyConfigController {
 
         LOG.info("DELETE /strategy/" + strategyId + " - deleteStrategy() - caller: " + user.getUsername());
 
-        final StrategyConfig deletedConfig = strategyConfigService.deleteStrategyById(strategyId);
+        final StrategyConfig deletedConfig = strategyConfigService.deleteStrategyConfig(strategyId);
         return deletedConfig.getId() != null
                 ? new ResponseEntity<>(HttpStatus.NO_CONTENT)
                 : new ResponseEntity<>(HttpStatus.NOT_FOUND);
