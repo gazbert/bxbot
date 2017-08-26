@@ -91,7 +91,7 @@ public class TestExchangeConfigController extends AbstractConfigControllerTest {
     @Test
     public void testGetExchangeConfig() throws Exception {
 
-        given(exchangeConfigService.getConfig()).willReturn(someExchangeConfig());
+        given(exchangeConfigService.getExchangeConfig()).willReturn(someExchangeConfig());
         tradingEngine.start();
 
         mockMvc.perform(get("/api/config/exchange")

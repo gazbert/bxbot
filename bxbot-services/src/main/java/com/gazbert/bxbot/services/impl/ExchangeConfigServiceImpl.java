@@ -55,13 +55,13 @@ public class ExchangeConfigServiceImpl implements ExchangeConfigService {
     }
 
     @Override
-    public ExchangeConfig getConfig() {
+    public ExchangeConfig getExchangeConfig() {
         return exchangeConfigRepository.getConfig();
     }
 
     @Override
-    public void updateConfig(ExchangeConfig config) {
-        LOG.info(() -> "About to update: " + config);
+    public void updateExchangeConfig(ExchangeConfig config) {
+        LOG.info(() -> "About to update Exchange config: " + config);
         exchangeConfigRepository.updateConfig(config);
     }
 }

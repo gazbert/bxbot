@@ -68,9 +68,9 @@ class ExchangeConfigController {
     @RequestMapping(value = "/exchange", method = RequestMethod.GET)
     public ExchangeAdapterConfig getExchange(@AuthenticationPrincipal User user) {
 
-        LOG.info("GET /exchange - getExchange - caller: " + user.getUsername());
+        LOG.info("GET /exchange - getExchange() - caller: " + user.getUsername());
 
-        final ExchangeConfig exchangeConfig = exchangeConfigService.getConfig();
+        final ExchangeConfig exchangeConfig = exchangeConfigService.getExchangeConfig();
         final ExchangeAdapterConfig exchangeAdapterConfig = adaptInternalConfigToExternalPayload(exchangeConfig);
 
         LOG.info("Response: " + exchangeAdapterConfig);
@@ -85,10 +85,10 @@ class ExchangeConfigController {
     @RequestMapping(value = "/exchange", method = RequestMethod.PUT)
     ResponseEntity<?> updateExchange(@AuthenticationPrincipal User user, @RequestBody ExchangeConfig config) {
 
-        LOG.info("PUT /exchange - updateExchange - caller: " + user.getUsername());
+        LOG.info("PUT /exchange - updateExchange() - caller: " + user.getUsername());
         LOG.info("Request: " + config);
 
-        exchangeConfigService.updateConfig(config);
+        exchangeConfigService.updateExchangeConfig(config);
         final HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setLocation(ServletUriComponentsBuilder.fromCurrentRequest().path("/").buildAndExpand().toUri());
         return new ResponseEntity<>(null, httpHeaders, HttpStatus.NO_CONTENT);
