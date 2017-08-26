@@ -23,7 +23,6 @@
 
 package com.gazbert.bxbot.rest.api.exchange;
 
-import org.springframework.security.core.userdetails.User;
 import com.gazbert.bxbot.domain.exchange.ExchangeConfig;
 import com.gazbert.bxbot.services.ExchangeConfigService;
 import org.apache.logging.log4j.LogManager;
@@ -32,6 +31,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -100,21 +100,24 @@ class ExchangeConfigController {
 
     private ExchangeAdapterConfig adaptInternalConfigToExternalPayload(ExchangeConfig internalConfig) {
 
+        final ExchangeAdapterConfig exchangeAdapterConfig = new ExchangeAdapterConfig();
+        exchangeAdapterConfig.setName(internalConfig.getExchangeName());
+        exchangeAdapterConfig.setClassName(internalConfig.getExchangeAdapter());
+
         final NetworkConfig networkConfig = new NetworkConfig();
         networkConfig.setConnectionTimeout(internalConfig.getNetworkConfig().getConnectionTimeout());
         networkConfig.setNonFatalErrorHttpStatusCodes(internalConfig.getNetworkConfig().getNonFatalErrorCodes());
         networkConfig.setNonFatalErrorMessages(internalConfig.getNetworkConfig().getNonFatalErrorMessages());
-
-        final OptionalConfig optionalConfig = new OptionalConfig();
-        optionalConfig.setItems(internalConfig.getOptionalConfig().getItems());
-
-        final ExchangeAdapterConfig exchangeAdapterConfig = new ExchangeAdapterConfig();
-        exchangeAdapterConfig.setName(internalConfig.getExchangeName());
-        exchangeAdapterConfig.setClassName(internalConfig.getExchangeAdapter());
         exchangeAdapterConfig.setNetworkConfig(networkConfig);
 
+        final OptionalConfig optionalConfig = new OptionalConfig();
+        optionalConfig.setConfigItems(internalConfig.getOptionalConfig().getItems());
+        exchangeAdapterConfig.setOptionalConfig(optionalConfig);
+
         // TODO - Not exposing AuthenticationConfig for now - too risky?
-        // final AuthenticationConfig authenticationConfig = new AuthenticationConfig();
+//        final AuthenticationConfig authenticationConfig = new AuthenticationConfig();
+//        authenticationConfig.setItems(internalConfig.getAuthenticationConfig().getItems());
+//        exchangeAdapterConfig.setAuthenticationConfig(authenticationConfig);
 
         return exchangeAdapterConfig;
     }

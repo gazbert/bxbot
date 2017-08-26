@@ -35,24 +35,24 @@ import java.util.Map;
  */
 public class OptionalConfig {
 
-    private Map<String, String> items;
+    private Map<String, String> configItems = new HashMap<>();
 
+    // default constructor required for Jackson
     public OptionalConfig() {
-        items = new HashMap<>();
     }
 
-    public Map<String, String> getItems() {
-        return items;
+    public Map<String, String> getConfigItems() {
+        return configItems;
     }
 
-    public void setItems(Map<String, String> items) {
-        this.items = items;
+    public void setConfigItems(Map<String, String> configItems) {
+        this.configItems = configItems;
     }
 
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("items", items)
+                .add("configItems", configItems)
                 .toString();
     }
 }
