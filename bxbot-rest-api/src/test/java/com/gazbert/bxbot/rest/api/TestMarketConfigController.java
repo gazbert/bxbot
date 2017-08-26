@@ -92,7 +92,7 @@ public class TestMarketConfigController extends AbstractConfigControllerTest {
     @Test
     public void testGetAllMarketConfig() throws Exception {
 
-        given(marketConfigService.findAllMarkets()).willReturn(allMarketConfig());
+        given(marketConfigService.getAllMarketConfig()).willReturn(allMarketConfig());
         tradingEngine.start();
 
         mockMvc.perform(get("/api/config/market/")
@@ -137,7 +137,7 @@ public class TestMarketConfigController extends AbstractConfigControllerTest {
     @Test
     public void testGetMarketConfigById() throws Exception {
 
-        given(marketConfigService.findById(MARKET_1_ID)).willReturn(someMarketConfig());
+        given(marketConfigService.getMarketConfig(MARKET_1_ID)).willReturn(someMarketConfig());
 
         mockMvc.perform(get("/api/config/market/" + MARKET_1_ID)
                 .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD)))
@@ -173,7 +173,7 @@ public class TestMarketConfigController extends AbstractConfigControllerTest {
     @Test
     public void testGetMarketConfigByIdWhenNotRecognized() throws Exception {
 
-        given(marketConfigService.findById(UNKNOWN_MARKET_ID)).willReturn(emptyMarketConfig());
+        given(marketConfigService.getMarketConfig(UNKNOWN_MARKET_ID)).willReturn(emptyMarketConfig());
 
         mockMvc.perform(get("/api/config/market/" + UNKNOWN_MARKET_ID)
                 .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD))
@@ -184,7 +184,7 @@ public class TestMarketConfigController extends AbstractConfigControllerTest {
     @Test
     public void testUpdateMarketConfig() throws Exception {
 
-        given(marketConfigService.updateMarket(someMarketConfig())).willReturn(someMarketConfig());
+        given(marketConfigService.updateMarketConfig(someMarketConfig())).willReturn(someMarketConfig());
 
         mockMvc.perform(put("/api/config/market/" + MARKET_1_ID)
                 .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD))
@@ -217,7 +217,7 @@ public class TestMarketConfigController extends AbstractConfigControllerTest {
     @Test
     public void testUpdateMarketConfigWhenIdNotRecognized() throws Exception {
 
-        given(marketConfigService.updateMarket(unrecognizedMarketConfig())).willReturn(emptyMarketConfig());
+        given(marketConfigService.updateMarketConfig(unrecognizedMarketConfig())).willReturn(emptyMarketConfig());
 
         mockMvc.perform(put("/api/config/market/" + UNKNOWN_MARKET_ID)
                 .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD))
@@ -241,7 +241,7 @@ public class TestMarketConfigController extends AbstractConfigControllerTest {
     @Test
     public void testDeleteMarketConfig() throws Exception {
 
-        given(marketConfigService.deleteMarketById(MARKET_1_ID)).willReturn(someMarketConfig());
+        given(marketConfigService.deleteMarketConfig(MARKET_1_ID)).willReturn(someMarketConfig());
 
         mockMvc.perform(delete("/api/config/market/" + MARKET_1_ID)
                 .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD)))
@@ -268,7 +268,7 @@ public class TestMarketConfigController extends AbstractConfigControllerTest {
     @Test
     public void testDeleteMarketConfigWhenIdNotRecognized() throws Exception {
 
-        given(marketConfigService.deleteMarketById(UNKNOWN_MARKET_ID)).willReturn(emptyMarketConfig());
+        given(marketConfigService.deleteMarketConfig(UNKNOWN_MARKET_ID)).willReturn(emptyMarketConfig());
 
         mockMvc.perform(delete("/api/config/market/" + UNKNOWN_MARKET_ID)
                 .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD))
@@ -279,7 +279,7 @@ public class TestMarketConfigController extends AbstractConfigControllerTest {
     @Test
     public void testCreateMarketConfig() throws Exception {
 
-        given(marketConfigService.createMarket(someMarketConfig())).willReturn(someMarketConfig());
+        given(marketConfigService.createMarketConfig(someMarketConfig())).willReturn(someMarketConfig());
 
         mockMvc.perform(post("/api/config/market/" + MARKET_1_ID)
                 .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD))
@@ -312,7 +312,7 @@ public class TestMarketConfigController extends AbstractConfigControllerTest {
     @Test
     public void testCreateMarketConfigWhenIdAlreadyExists() throws Exception {
 
-        given(marketConfigService.createMarket(someMarketConfig())).willReturn(emptyMarketConfig());
+        given(marketConfigService.createMarketConfig(someMarketConfig())).willReturn(emptyMarketConfig());
 
         mockMvc.perform(post("/api/config/market/" + MARKET_1_ID)
                 .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD))

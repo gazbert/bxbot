@@ -58,30 +58,30 @@ public class MarketConfigServiceImpl implements MarketConfigService {
     }
 
     @Override
-    public List<MarketConfig> findAllMarkets() {
+    public List<MarketConfig> getAllMarketConfig() {
         return marketConfigRepository.findAllMarkets();
     }
 
     @Override
-    public MarketConfig findById(String id) {
-        LOG.info(() -> "Fetching config for Market id: " + id);
+    public MarketConfig getMarketConfig(String id) {
+        LOG.info(() -> "Fetching Market config for id: " + id);
         return marketConfigRepository.findById(id);
     }
 
     @Override
-    public MarketConfig updateMarket(MarketConfig config) {
-        LOG.info(() -> "About to update: " + config);
+    public MarketConfig updateMarketConfig(MarketConfig config) {
+        LOG.info(() -> "About to update Market config: " + config);
         return marketConfigRepository.updateMarket(config);
     }
 
     @Override
-    public MarketConfig createMarket(MarketConfig config) {
-        LOG.info(() -> "About to create: " + config);
+    public MarketConfig createMarketConfig(MarketConfig config) {
+        LOG.info(() -> "About to create Market config: " + config);
         return marketConfigRepository.createMarket(config);
     }
 
     @Override
-    public MarketConfig deleteMarketById(String id) {
+    public MarketConfig deleteMarketConfig(String id) {
         LOG.info(() -> "About to delete Market config for id: " + id);
         return marketConfigRepository.deleteMarketById(id);
     }
