@@ -21,7 +21,7 @@ buildScan {
 
 ext.versions = [
         springBootVersion:'1.5.4.RELEASE',
-        springCoreVersion:'4.3.10.RELEASE'
+        springTxVersion:'4.3.10.RELEASE'
 ]
 
 ext.libraries = [
@@ -42,8 +42,7 @@ ext.libraries = [
             exclude module: "logback-classic"
             force = true
         },
-        spring_core: dependencies.create("org.springframework:spring-core:" + ext.versions.springCoreVersion),
-        spring_tx: dependencies.create("org.springframework:spring-tx:" + ext.versions.springCoreVersion),
+        spring_tx: dependencies.create("org.springframework:spring-tx:" + ext.versions.springTxVersion),
         google_guava: dependencies.create("com.google.guava:guava:22.0"),
         google_gson: dependencies.create("com.google.code.gson:gson:2.8.1"),
         javax_mail_api: dependencies.create("javax.mail:javax.mail-api:1.6.0"),

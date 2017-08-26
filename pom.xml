@@ -44,7 +44,8 @@
         <maven>3.2.1</maven>
     </prerequisites>
     <properties>
-        <springframework.version>4.3.10.RELEASE</springframework.version>
+        <!-- spring-tx should be same version as Spring Boot's spring-core version -->
+        <spring-tx.version>4.3.10.RELEASE</spring-tx.version>
         <spring-boot-starter.version>1.5.4.RELEASE</spring-boot-starter.version>
         <powermock.version>1.7.0</powermock.version>
     </properties>
@@ -100,13 +101,8 @@
         <dependencies>
             <dependency>
                 <groupId>org.springframework</groupId>
-                <artifactId>spring-core</artifactId>
-                <version>${springframework.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework</groupId>
                 <artifactId>spring-tx</artifactId>
-                <version>${springframework.version}</version>
+                <version>${spring-tx.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.springframework.boot</groupId>
