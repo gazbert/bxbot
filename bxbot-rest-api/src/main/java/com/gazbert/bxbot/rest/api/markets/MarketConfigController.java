@@ -67,7 +67,7 @@ class MarketConfigController {
     @RequestMapping(value = "/market", method = RequestMethod.GET)
     public List<MarketConfig> getAllMarkets(@AuthenticationPrincipal User user) {
 
-        LOG.info("GET /market - getAllMarkets - caller: " + user.getUsername());
+        LOG.info("GET /market - getAllMarkets() - caller: " + user.getUsername());
 
         final List<MarketConfig> marketConfigs = marketConfigService.getAllMarketConfig();
         LOG.info("Response: " + marketConfigs);
@@ -85,7 +85,7 @@ class MarketConfigController {
     @RequestMapping(value = "/market/{marketId}", method = RequestMethod.GET)
     public ResponseEntity<?> getMarket(@AuthenticationPrincipal User user, @PathVariable String marketId) {
 
-        LOG.info("GET /market/" + marketId + " - getMarket - caller: " + user.getUsername());
+        LOG.info("GET /market/" + marketId + " - getMarket() - caller: " + user.getUsername());
 
         final MarketConfig marketConfig = marketConfigService.getMarketConfig(marketId);
         LOG.info("Response: " + marketConfig);
@@ -108,7 +108,7 @@ class MarketConfigController {
     ResponseEntity<?> updateMarket(@AuthenticationPrincipal User user, @PathVariable String marketId,
                                    @RequestBody MarketConfig config) {
 
-        LOG.info("PUT /market/" + marketId + " - updateMarket - caller: " + user.getUsername());
+        LOG.info("PUT /market/" + marketId + " - updateMarket() - caller: " + user.getUsername());
         LOG.info("Request: " + config);
 
         if (config == null || config.getId() == null || !marketId.equals(config.getId())) {
@@ -134,7 +134,7 @@ class MarketConfigController {
     ResponseEntity<?> createMarket(@AuthenticationPrincipal User user, @PathVariable String marketId,
                                    @RequestBody MarketConfig config) {
 
-        LOG.info("POST /market/" + marketId + " - createMarket - caller: " + user.getUsername());
+        LOG.info("POST /market/" + marketId + " - createMarket() - caller: " + user.getUsername());
         LOG.info("Request: " + config);
 
         if (config == null || config.getId() == null || !marketId.equals(config.getId())) {
@@ -165,7 +165,7 @@ class MarketConfigController {
     @RequestMapping(value = "/market/{marketId}", method = RequestMethod.DELETE)
     public ResponseEntity<?> deleteMarket(@AuthenticationPrincipal User user, @PathVariable String marketId) {
 
-        LOG.info("DELETE /market/" + marketId + " - deleteMarket - caller: " + user.getUsername());
+        LOG.info("DELETE /market/" + marketId + " - deleteMarket() - caller: " + user.getUsername());
 
         final MarketConfig deletedConfig = marketConfigService.deleteMarketConfig(marketId);
         return deletedConfig.getId() != null

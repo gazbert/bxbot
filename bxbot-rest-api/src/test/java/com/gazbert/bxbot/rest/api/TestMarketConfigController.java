@@ -135,7 +135,7 @@ public class TestMarketConfigController extends AbstractConfigControllerTest {
     }
 
     @Test
-    public void testGetMarketConfigById() throws Exception {
+    public void testGetMarketConfig() throws Exception {
 
         given(marketConfigService.getMarketConfig(MARKET_1_ID)).willReturn(someMarketConfig());
 
