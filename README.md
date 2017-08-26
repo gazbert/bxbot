@@ -58,12 +58,13 @@ and evaluate the bot, Docker is the way to go.
    `docker pull gazbert/bxbot:0.8.0`
 1. Run the Docker container: `docker container run --name bxbot-x.x.x -it gazbert/bxbot:x.x.x bash`
 1. Change into the bot's directory: `cd bxbot*`
-1. Configure the bot as required - see the main _[Configuration](#configuration-2)_ section.
-   The bot's default configuration uses the 
-   [`ExampleScalpingStrategy`](./bxbot-strategies/src/main/java/com/gazbert/bxbot/strategies/ExampleScalpingStrategy.java) and
-   the [`TestExchangeAdapter`](./bxbot-exchanges/src/main/java/com/gazbert/bxbot/exchanges/TestExchangeAdapter.java) -
-   it makes public API calls to [Bitstamp](https://www.bitstamp.net), but stubs out the private API (order management) 
-   calls; it's good for testing your initial setup without actually sending orders to the exchange.
+1. Configure the bot as required - see the main _[Configuration](#configuration-2)_ section. The bot's default 
+   configuration uses the 
+   [`ExampleScalpingStrategy`](./bxbot-strategies/src/main/java/com/gazbert/bxbot/strategies/ExampleScalpingStrategy.java), 
+   but you'll probably want to [code your own](#how-do-i-write-my-own-trading-strategy)! The 
+   [`TestExchangeAdapter`](./bxbot-exchanges/src/main/java/com/gazbert/bxbot/exchanges/TestExchangeAdapter.java) is 
+   configured by default - it makes public API calls to [Bitstamp](https://www.bitstamp.net), but stubs out the private 
+   API (order management) calls; it's good for testing your initial setup without actually sending orders to the exchange.
 1. Usage: `./bxbot.sh [start|stop|status]`
 1. You can detach from the container and leave the bot running using the `CTRL-p` `CTRL-q` key sequence.
 1. To re-attach to the Docker container, run `docker container ls` to get the CONTAINER ID. 
@@ -98,7 +99,7 @@ The instructions below are for Linux and macOS, but equivalent Windows scripts a
    but you'll probably want to [code your own](#how-do-i-write-my-own-trading-strategy)! The 
    [`TestExchangeAdapter`](./bxbot-exchanges/src/main/java/com/gazbert/bxbot/exchanges/TestExchangeAdapter.java) is configured 
    by default - it makes public API calls to [Bitstamp](https://www.bitstamp.net), but stubs out the private API (order management) 
-   calls; it's good for testing your initial setup.   
+   calls; it's good for testing your initial setup without actually sending orders to the exchange.   
 1. Usage: `./bxbot.sh [start|stop|status]`   
     
 #### Gradle    
@@ -114,7 +115,7 @@ The instructions below are for Linux and macOS, but equivalent Windows scripts a
    but you'll probably want to [code your own](#how-do-i-write-my-own-trading-strategy)! The 
    [`TestExchangeAdapter`](./bxbot-exchanges/src/main/java/com/gazbert/bxbot/exchanges/TestExchangeAdapter.java) is configured 
    by default - it makes public API calls to [Bitstamp](https://www.bitstamp.net), but stubs out the private API (order management) 
-   calls; it's good for testing your initial setup.
+   calls; it's good for testing your initial setup without actually sending orders to the exchange.
 1. Usage: `./bxbot.sh [start|stop|status]`
 
 **NOTE:** You only need a Java 8 JRE ([openjdk-8-jre](http://openjdk.java.net/install/) or 
