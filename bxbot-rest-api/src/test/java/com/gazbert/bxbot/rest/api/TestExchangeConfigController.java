@@ -64,9 +64,17 @@ public class TestExchangeConfigController extends AbstractConfigControllerTest {
     private static final String EXCHANGE_ADAPTER = "com.gazbert.bxbot.exchanges.TestExchangeAdapter";
 
     private static final Integer CONNECTION_TIMEOUT = 30;
-    private static final List<Integer> NON_FATAL_ERROR_CODES = Arrays.asList(502, 503, 504);
+
+    private static final int HTTP_STATUS_502 = 502;
+    private static final int HTTP_STATUS_503 = 503;
+    private static final int HTTP_STATUS_504 = 504;
+    private static final List<Integer> NON_FATAL_ERROR_CODES = Arrays.asList(HTTP_STATUS_502, HTTP_STATUS_503, HTTP_STATUS_504);
+
+    private static final String ERROR_MESSAGE_REFUSED = "Connection refused";
+    private static final String ERROR_MESSAGE_RESET = "Connection reset";
+    private static final String ERROR_MESSAGE_CLOSED = "Remote host closed connection during handshake";
     private static final List<String> NON_FATAL_ERROR_MESSAGES = Arrays.asList(
-            "Connection refused", "Connection reset", "Remote host closed connection during handshake");
+            ERROR_MESSAGE_REFUSED, ERROR_MESSAGE_RESET, ERROR_MESSAGE_CLOSED);
 
     private static final String BUY_FEE_CONFIG_ITEM_KEY = "buy-fee";
     private static final String BUY_FEE_CONFIG_ITEM_VALUE = "0.20";
@@ -91,7 +99,7 @@ public class TestExchangeConfigController extends AbstractConfigControllerTest {
     @Test
     public void testGetExchangeConfig() throws Exception {
 
-        given(exchangeConfigService.getConfig()).willReturn(someExchangeConfig());
+        given(exchangeConfigService.getExchangeConfig()).willReturn(someExchangeConfig());
         tradingEngine.start();
 
         mockMvc.perform(get("/api/config/exchange")
@@ -105,15 +113,16 @@ public class TestExchangeConfigController extends AbstractConfigControllerTest {
                 // REST API currently does not expose AuthenticationConfig - potential security risk?
                 .andExpect(jsonPath("$.authenticationConfig").doesNotExist())
 
-                .andExpect(jsonPath("$.networkConfig.connectionTimeout").value(CONNECTION_TIMEOUT)
+                .andExpect(jsonPath("$.networkConfig.connectionTimeout").value(CONNECTION_TIMEOUT))
+                .andExpect(jsonPath("$.networkConfig.nonFatalErrorHttpStatusCodes[0]").value(HTTP_STATUS_502))
+                .andExpect(jsonPath("$.networkConfig.nonFatalErrorHttpStatusCodes[1]").value(HTTP_STATUS_503))
+                .andExpect(jsonPath("$.networkConfig.nonFatalErrorHttpStatusCodes[2]").value(HTTP_STATUS_504))
+                .andExpect(jsonPath("$.networkConfig.nonFatalErrorMessages[0]").value(ERROR_MESSAGE_REFUSED))
+                .andExpect(jsonPath("$.networkConfig.nonFatalErrorMessages[1]").value(ERROR_MESSAGE_RESET))
+                .andExpect(jsonPath("$.networkConfig.nonFatalErrorMessages[2]").value(ERROR_MESSAGE_CLOSED))
 
-                // FIXME - JSON paths to data need sorting!
-//                .andExpect(jsonPath("$.networkConfig.nonFatalErrorHttpStatusCodes").value(Arrays.asList(502, 503, 504)))
-//                .andExpect(jsonPath("$.networkConfig.nonFatalErrorMessages").value(Arrays.asList(
-//                        "Connection refused", "Connection reset", "Remote host closed connection during handshake")))
-//                .andExpect(jsonPath("$.optionalConfig.items.buy-fee").value(BUY_FEE_CONFIG_ITEM_VALUE))
-//                .andExpect(jsonPath("$.optionalConfig.items.sell-fee").value(SELL_FEE_CONFIG_ITEM_VALUE)
-                );
+                .andExpect(jsonPath("$.optionalConfig.configItems.buy-fee").value(BUY_FEE_CONFIG_ITEM_VALUE))
+                .andExpect(jsonPath("$.optionalConfig.configItems.sell-fee").value(SELL_FEE_CONFIG_ITEM_VALUE));
     }
 
     @Test

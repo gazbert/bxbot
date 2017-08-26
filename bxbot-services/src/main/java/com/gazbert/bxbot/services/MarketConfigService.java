@@ -34,13 +34,13 @@ import java.util.List;
  */
 public interface MarketConfigService {
 
-    List<MarketConfig> findAllMarkets();
+    List<MarketConfig> getAllMarketConfig();
 
-    MarketConfig findById(String id);
+    MarketConfig getMarketConfig(String id);
 
-    MarketConfig createMarket(MarketConfig config);
+    MarketConfig createMarketConfig(MarketConfig config);
 
-    MarketConfig updateMarket(MarketConfig config);
+    MarketConfig updateMarketConfig(MarketConfig config);
 
-    MarketConfig deleteMarketById(String id);
+    MarketConfig deleteMarketConfig(String id);
 }

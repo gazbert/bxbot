@@ -67,9 +67,9 @@ class StrategyConfigController {
     @RequestMapping(value = "/strategy", method = RequestMethod.GET)
     public List<StrategyConfig> getAllStrategies(@AuthenticationPrincipal User user) {
 
-        LOG.info("GET /strategy - getAllStrategies - caller: " + user.getUsername());
+        LOG.info("GET /strategy - getAllStrategies() - caller: " + user.getUsername());
 
-        final List<StrategyConfig> strategyConfigs = strategyConfigService.findAllStrategies();
+        final List<StrategyConfig> strategyConfigs = strategyConfigService.getAllStrategyConfig();
 
         LOG.info("Response: " + strategyConfigs);
         return strategyConfigs;
@@ -85,9 +85,9 @@ class StrategyConfigController {
     @RequestMapping(value = "/strategy/{strategyId}", method = RequestMethod.GET)
     public ResponseEntity<?> getStrategy(@AuthenticationPrincipal User user, @PathVariable String strategyId) {
 
-        LOG.info("GET /strategy/" + strategyId + " - getStrategy - caller: " + user.getUsername());
+        LOG.info("GET /strategy/" + strategyId + " - getStrategy() - caller: " + user.getUsername());
 
-        final StrategyConfig strategyConfig = strategyConfigService.findById(strategyId);
+        final StrategyConfig strategyConfig = strategyConfigService.getStrategyConfig(strategyId);
         LOG.info("Response: " + strategyConfig);
 
         return strategyConfig.getId() != null
@@ -108,14 +108,14 @@ class StrategyConfigController {
     ResponseEntity<?> updateStrategy(@AuthenticationPrincipal User user, @PathVariable String strategyId,
                                      @RequestBody StrategyConfig config) {
 
-        LOG.info("PUT /strategy/" + strategyId + " - updateStrategy - caller: " + user.getUsername());
+        LOG.info("PUT /strategy/" + strategyId + " - updateStrategy() - caller: " + user.getUsername());
         LOG.info("Request: " + config);
 
         if (config == null || config.getId() == null || !strategyId.equals(config.getId())) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        final StrategyConfig updatedConfig = strategyConfigService.updateStrategy(config);
+        final StrategyConfig updatedConfig = strategyConfigService.updateStrategyConfig(config);
         return updatedConfig.getId() != null
                 ? new ResponseEntity<>(HttpStatus.NO_CONTENT)
                 : new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -134,14 +134,14 @@ class StrategyConfigController {
     ResponseEntity<?> createStrategy(@AuthenticationPrincipal User user, @PathVariable String strategyId,
                                      @RequestBody StrategyConfig config) {
 
-        LOG.info("POST /strategy/" + strategyId + " - createStrategy - caller: " + user.getUsername());
+        LOG.info("POST /strategy/" + strategyId + " - createStrategy() - caller: " + user.getUsername());
         LOG.info("Request: " + config);
 
         if (config == null || config.getId() == null || !strategyId.equals(config.getId())) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        final StrategyConfig createdConfig = strategyConfigService.createStrategy(config);
+        final StrategyConfig createdConfig = strategyConfigService.createStrategyConfig(config);
         if (createdConfig.getId() != null) {
             final HttpHeaders httpHeaders = new HttpHeaders();
             httpHeaders.setLocation(ServletUriComponentsBuilder
@@ -165,9 +165,9 @@ class StrategyConfigController {
     @RequestMapping(value = "/strategy/{strategyId}", method = RequestMethod.DELETE)
     public ResponseEntity<?> deleteStrategy(@AuthenticationPrincipal User user, @PathVariable String strategyId) {
 
-        LOG.info("DELETE /strategy/" + strategyId + " - strategyId - caller: " + user.getUsername());
+        LOG.info("DELETE /strategy/" + strategyId + " - deleteStrategy() - caller: " + user.getUsername());
 
-        final StrategyConfig deletedConfig = strategyConfigService.deleteStrategyById(strategyId);
+        final StrategyConfig deletedConfig = strategyConfigService.deleteStrategyConfig(strategyId);
         return deletedConfig.getId() != null
                 ? new ResponseEntity<>(HttpStatus.NO_CONTENT)
                 : new ResponseEntity<>(HttpStatus.NOT_FOUND);

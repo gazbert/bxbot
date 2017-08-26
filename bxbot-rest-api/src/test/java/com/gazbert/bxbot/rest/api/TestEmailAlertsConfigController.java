@@ -81,7 +81,7 @@ public class TestEmailAlertsConfigController extends AbstractConfigControllerTes
     @Test
     public void testGetEmailAlertsConfig() throws Exception {
 
-        given(emailAlertsConfigService.getConfig()).willReturn(someEmailAlertsConfig());
+        given(emailAlertsConfigService.getEmailAlertsConfig()).willReturn(someEmailAlertsConfig());
         tradingEngine.start();
 
         mockMvc.perform(get("/api/config/emailalerts")
@@ -95,7 +95,7 @@ public class TestEmailAlertsConfigController extends AbstractConfigControllerTes
                 .andExpect(jsonPath("$.smtpConfig.toAddress").value(TO_ADDRESS))
                 .andExpect(jsonPath("$.smtpConfig.accountUsername").value(ACCOUNT_USERNAME))
 
-                // REST API does not expose email account password - potential security risk
+                // TODO - REST API does not currently expose email account password - potential security risk?
                 .andExpect(jsonPath("$.smtpConfig.accountPassword").doesNotExist()
                 );
     }

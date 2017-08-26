@@ -1,7 +1,9 @@
 # BX-bot
 
-[![Build Status](https://travis-ci.org/gazbert/bxbot.svg?branch=master)](https://travis-ci.org/gazbert/bxbot)
-
+[![Build Status](https://travis-ci.org/gazbert/bxbot.svg?branch=bxbot-restapi)](https://travis-ci.org/gazbert/bxbot)
+		  
+**Note:** This branch is very much work in progress and not safe for production.
+ 
 ## What is BX-bot?
 
 <img src="./docs/bxbot-cropped.png" align="right" width="25%" />
