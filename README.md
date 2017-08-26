@@ -70,10 +70,6 @@ and evaluate the bot, Docker is the way to go.
    Then run: `docker container attach <CONTAINER ID>`
    
 A Docker image for each release is available on [Docker Hub](https://hub.docker.com/r/gazbert/bxbot/tags/).
-
-There is a [Dockerfile](./Dockerfile) included in the project. Developers can use this to include custom 
-Trading Strategies and Exchange Adapters in their Docker image - see _[The manual way](#the-manual-way)_ for how to
-include them in the build and distribution artifact.
   
 ### The manual way
 The [Releases](https://github.com/gazbert/bxbot/releases) page has the stable releases, or you can grab the latest code 
