@@ -46,13 +46,13 @@
     <properties>
         <!-- spring-tx should be same version as Spring Boot's spring-core version -->
         <spring-tx.version>4.3.10.RELEASE</spring-tx.version>
-        <spring-boot-starter.version>1.5.4.RELEASE</spring-boot-starter.version>
         <powermock.version>1.7.0</powermock.version>
+        <spring-boot-starter.version>1.5.6.RELEASE</spring-boot-starter.version>
     </properties>
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>1.5.4.RELEASE</version>
+        <version>1.5.6.RELEASE</version>
     </parent>
     <profiles>
         <profile>
