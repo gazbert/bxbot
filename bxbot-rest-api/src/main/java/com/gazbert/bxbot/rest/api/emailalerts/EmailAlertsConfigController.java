@@ -70,9 +70,9 @@ class EmailAlertsConfigController {
     @RequestMapping(value = "/emailalerts", method = RequestMethod.GET)
     public EmailAlertsConfig getEmailAlerts(@AuthenticationPrincipal User user) {
 
-        LOG.info("GET /emailalerts - getEmailAlerts - caller: " + user.getUsername());
+        LOG.info("GET /emailalerts - getEmailAlerts() - caller: " + user.getUsername());
 
-        final EmailAlertsConfig emailAlertsConfig = emailAlertsConfigService.getConfig();
+        final EmailAlertsConfig emailAlertsConfig = emailAlertsConfigService.getEmailAlertsConfig();
 
         // TODO - Strip out the Account password for now - too risky to expose?
         emailAlertsConfig.getSmtpConfig().setAccountPassword(null);
@@ -89,10 +89,10 @@ class EmailAlertsConfigController {
     @RequestMapping(value = "/emailalerts", method = RequestMethod.PUT)
     ResponseEntity<?> updateEmailAlerts(@AuthenticationPrincipal User user, @RequestBody EmailAlertsConfig config) {
 
-        LOG.info("PUT /emailalerts - updateEmailAlerts - caller: " + user.getUsername());
+        LOG.info("PUT /emailalerts - updateEmailAlerts() - caller: " + user.getUsername());
         LOG.info("Request: " + config);
 
-        emailAlertsConfigService.updateConfig(config);
+        emailAlertsConfigService.updateEmailAlertsConfig(config);
         final HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setLocation(ServletUriComponentsBuilder.fromCurrentRequest().path("/").buildAndExpand().toUri());
         return new ResponseEntity<>(null, httpHeaders, HttpStatus.NO_CONTENT);
