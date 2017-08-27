@@ -52,7 +52,6 @@ import static org.junit.Assert.assertTrue;
 @RunWith(PowerMockRunner.class)
 @PowerMockIgnore({"javax.crypto.*"})
 @PrepareForTest(GeminiExchangeAdapter.class)
-@Ignore("26 Aug 2017 - Gemini is down for extended maintenance: https://twitter.com/GeminiDotCom/status/901221411217387525 - Will re-enable once done.")
 public class GeminiIT {
 
     // Canned test data
