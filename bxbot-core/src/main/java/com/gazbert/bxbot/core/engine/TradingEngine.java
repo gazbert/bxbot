@@ -38,8 +38,8 @@ import com.gazbert.bxbot.exchange.api.impl.ExchangeConfigImpl;
 import com.gazbert.bxbot.exchange.api.impl.NetworkConfigImpl;
 import com.gazbert.bxbot.exchange.api.impl.OptionalConfigImpl;
 import com.gazbert.bxbot.repository.EngineConfigRepository;
-import com.gazbert.bxbot.repository.ExchangeConfigRepository;
 import com.gazbert.bxbot.repository.MarketConfigRepository;
+import com.gazbert.bxbot.services.ExchangeConfigService;
 import com.gazbert.bxbot.services.StrategyConfigService;
 import com.gazbert.bxbot.strategy.api.StrategyException;
 import com.gazbert.bxbot.strategy.api.TradingStrategy;
@@ -148,21 +148,21 @@ public class TradingEngine {
     private ExchangeAdapter exchangeAdapter;
 
     // Services
-    private final ExchangeConfigRepository exchangeConfigRepository;
+    private final ExchangeConfigService exchangeConfigService;
     private final EngineConfigRepository engineConfigRepository;
     private final StrategyConfigService strategyConfigService;
     private final MarketConfigRepository marketConfigRepository;
 
 
     @Autowired
-    public TradingEngine(ExchangeConfigRepository exchangeConfigRepository, EngineConfigRepository engineConfigRepository,
+    public TradingEngine(ExchangeConfigService exchangeConfigService, EngineConfigRepository engineConfigRepository,
                          StrategyConfigService strategyConfigService, MarketConfigRepository marketConfigRepository,
                          EmailAlerter emailAlerter) {
 
         LOG.info(() -> "Initialising Trading Engine...");
 
-        Assert.notNull(exchangeConfigRepository, "exchangeConfigRepository dependency cannot be null!");
-        this.exchangeConfigRepository = exchangeConfigRepository;
+        Assert.notNull(exchangeConfigService, "exchangeConfigService dependency cannot be null!");
+        this.exchangeConfigService = exchangeConfigService;
 
         Assert.notNull(engineConfigRepository, "engineConfigRepository dependency cannot be null!");
         this.engineConfigRepository = engineConfigRepository;
@@ -453,7 +453,7 @@ public class TradingEngine {
 
     private void loadExchangeAdapterConfig() {
 
-        final ExchangeConfig domainExchangeConfig = exchangeConfigRepository.getConfig();
+        final ExchangeConfig domainExchangeConfig = exchangeConfigService.getExchangeConfig();
         LOG.info(() -> "Fetched Exchange config from repository: " + domainExchangeConfig);
 
         exchangeAdapter = ConfigurableComponentFactory.createComponent(domainExchangeConfig.getExchangeAdapter());
