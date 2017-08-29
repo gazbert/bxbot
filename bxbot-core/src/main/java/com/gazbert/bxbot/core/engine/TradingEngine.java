@@ -37,8 +37,8 @@ import com.gazbert.bxbot.exchange.api.impl.AuthenticationConfigImpl;
 import com.gazbert.bxbot.exchange.api.impl.ExchangeConfigImpl;
 import com.gazbert.bxbot.exchange.api.impl.NetworkConfigImpl;
 import com.gazbert.bxbot.exchange.api.impl.OptionalConfigImpl;
-import com.gazbert.bxbot.repository.EngineConfigRepository;
 import com.gazbert.bxbot.repository.MarketConfigRepository;
+import com.gazbert.bxbot.services.EngineConfigService;
 import com.gazbert.bxbot.services.ExchangeConfigService;
 import com.gazbert.bxbot.services.StrategyConfigService;
 import com.gazbert.bxbot.strategy.api.StrategyException;
@@ -149,13 +149,13 @@ public class TradingEngine {
 
     // Services
     private final ExchangeConfigService exchangeConfigService;
-    private final EngineConfigRepository engineConfigRepository;
+    private final EngineConfigService engineConfigService;
     private final StrategyConfigService strategyConfigService;
     private final MarketConfigRepository marketConfigRepository;
 
 
     @Autowired
-    public TradingEngine(ExchangeConfigService exchangeConfigService, EngineConfigRepository engineConfigRepository,
+    public TradingEngine(ExchangeConfigService exchangeConfigService, EngineConfigService engineConfigService,
                          StrategyConfigService strategyConfigService, MarketConfigRepository marketConfigRepository,
                          EmailAlerter emailAlerter) {
 
@@ -164,8 +164,8 @@ public class TradingEngine {
         Assert.notNull(exchangeConfigService, "exchangeConfigService dependency cannot be null!");
         this.exchangeConfigService = exchangeConfigService;
 
-        Assert.notNull(engineConfigRepository, "engineConfigRepository dependency cannot be null!");
-        this.engineConfigRepository = engineConfigRepository;
+        Assert.notNull(engineConfigService, "engineConfigService dependency cannot be null!");
+        this.engineConfigService = engineConfigService;
 
         Assert.notNull(strategyConfigService, "strategyConfigService dependency cannot be null!");
         this.strategyConfigService = strategyConfigService;
@@ -529,7 +529,7 @@ public class TradingEngine {
 
     private void loadEngineConfig() {
 
-        final EngineConfig engineConfig = engineConfigRepository.getConfig();
+        final EngineConfig engineConfig = engineConfigService.getEngineConfig();
         LOG.info(() -> "Fetched Engine config from repository: " + engineConfig);
 
         botId = engineConfig.getBotId();
