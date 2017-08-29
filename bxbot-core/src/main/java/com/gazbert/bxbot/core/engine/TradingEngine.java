@@ -542,7 +542,7 @@ public class TradingEngine {
 
     private void loadTradingStrategyConfig() {
 
-        final List<StrategyConfig> strategies = strategyConfigRepository.findAllStrategies();
+        final List<StrategyConfig> strategies = strategyConfigRepository.findAll();
         LOG.debug(() -> "Fetched Strategy config from repository: " + strategies);
 
         for (final StrategyConfig strategy : strategies) {

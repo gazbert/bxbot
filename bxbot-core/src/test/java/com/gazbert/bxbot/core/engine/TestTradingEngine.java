@@ -543,7 +543,7 @@ public class TestTradingEngine {
     }
 
     private void setupStrategyAndMarketConfigExpectations() {
-        expect(strategyConfigRepository.findAllStrategies()).andReturn(allTheStrategiesConfig());
+        expect(strategyConfigRepository.findAll()).andReturn(allTheStrategiesConfig());
         expect(marketConfigRepository.findAllMarkets()).andReturn(allTheMarketsConfig());
         expect(ConfigurableComponentFactory.createComponent(STRATEGY_IMPL_CLASS)).andReturn(tradingStrategy);
         tradingStrategy.init(eq(exchangeAdapter), anyObject(Market.class), anyObject(com.gazbert.bxbot.strategy.api.StrategyConfig.class));
