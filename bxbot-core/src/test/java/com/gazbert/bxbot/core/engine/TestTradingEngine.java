@@ -36,7 +36,7 @@ import com.gazbert.bxbot.exchange.api.ExchangeConfig;
 import com.gazbert.bxbot.repository.EngineConfigRepository;
 import com.gazbert.bxbot.repository.ExchangeConfigRepository;
 import com.gazbert.bxbot.repository.MarketConfigRepository;
-import com.gazbert.bxbot.repository.StrategyConfigRepository;
+import com.gazbert.bxbot.services.StrategyConfigService;
 import com.gazbert.bxbot.strategy.api.StrategyException;
 import com.gazbert.bxbot.strategy.api.TradingStrategy;
 import com.gazbert.bxbot.trading.api.BalanceInfo;
@@ -117,7 +117,7 @@ public class TestTradingEngine {
     private EmailAlerter emailAlerter;
     private ExchangeConfigRepository exchangeConfigRepository;
     private EngineConfigRepository engineConfigRepository;
-    private StrategyConfigRepository strategyConfigRepository;
+    private StrategyConfigService strategyConfigService;
     private MarketConfigRepository marketConfigRepository;
 
     /*
@@ -135,7 +135,7 @@ public class TestTradingEngine {
 
         exchangeConfigRepository = PowerMock.createMock(ExchangeConfigRepository.class);
         engineConfigRepository = PowerMock.createMock(EngineConfigRepository.class);
-        strategyConfigRepository = PowerMock.createMock(StrategyConfigRepository.class);
+        strategyConfigService = PowerMock.createMock(StrategyConfigService.class);
         marketConfigRepository = PowerMock.createMock(MarketConfigRepository.class);
 
         PowerMock.mockStatic(ConfigurableComponentFactory.class);
@@ -147,7 +147,7 @@ public class TestTradingEngine {
         PowerMock.replayAll();
 
         final TradingEngine tradingEngine = new TradingEngine(exchangeConfigRepository, engineConfigRepository,
-                strategyConfigRepository, marketConfigRepository, emailAlerter);
+                strategyConfigService, marketConfigRepository, emailAlerter);
 
         assertFalse(tradingEngine.isRunning());
 
@@ -176,7 +176,7 @@ public class TestTradingEngine {
         PowerMock.replayAll();
 
         final TradingEngine tradingEngine = new TradingEngine(exchangeConfigRepository, engineConfigRepository,
-                strategyConfigRepository, marketConfigRepository, emailAlerter);
+                strategyConfigService, marketConfigRepository, emailAlerter);
         tradingEngine.start();
 
         // sleep for bit then and check if shutdown ok
@@ -200,7 +200,7 @@ public class TestTradingEngine {
         PowerMock.replayAll();
 
         final TradingEngine tradingEngine = new TradingEngine(exchangeConfigRepository, engineConfigRepository,
-                strategyConfigRepository, marketConfigRepository, emailAlerter);
+                strategyConfigService, marketConfigRepository, emailAlerter);
 
         final Executor executor = Executors.newSingleThreadExecutor();
         executor.execute(tradingEngine::start);
@@ -245,7 +245,7 @@ public class TestTradingEngine {
         PowerMock.replayAll();
 
         final TradingEngine tradingEngine = new TradingEngine(exchangeConfigRepository, engineConfigRepository,
-                strategyConfigRepository, marketConfigRepository, emailAlerter);
+                strategyConfigService, marketConfigRepository, emailAlerter);
 
         final Executor executor = Executors.newSingleThreadExecutor();
         executor.execute(tradingEngine::start);
@@ -297,7 +297,7 @@ public class TestTradingEngine {
         PowerMock.replayAll();
 
         final TradingEngine tradingEngine = new TradingEngine(exchangeConfigRepository, engineConfigRepository,
-                strategyConfigRepository, marketConfigRepository, emailAlerter);
+                strategyConfigService, marketConfigRepository, emailAlerter);
 
         tradingEngine.start();
 
@@ -341,7 +341,7 @@ public class TestTradingEngine {
         PowerMock.replayAll();
 
         final TradingEngine tradingEngine = new TradingEngine(exchangeConfigRepository, engineConfigRepository,
-                strategyConfigRepository, marketConfigRepository, emailAlerter);
+                strategyConfigService, marketConfigRepository, emailAlerter);
 
         tradingEngine.start();
 
@@ -382,7 +382,7 @@ public class TestTradingEngine {
         PowerMock.replayAll();
 
         final TradingEngine tradingEngine = new TradingEngine(exchangeConfigRepository, engineConfigRepository,
-                strategyConfigRepository, marketConfigRepository, emailAlerter);
+                strategyConfigService, marketConfigRepository, emailAlerter);
 
         tradingEngine.start();
 
@@ -423,7 +423,7 @@ public class TestTradingEngine {
         PowerMock.replayAll();
 
         final TradingEngine tradingEngine = new TradingEngine(exchangeConfigRepository, engineConfigRepository,
-                strategyConfigRepository, marketConfigRepository, emailAlerter);
+                strategyConfigService, marketConfigRepository, emailAlerter);
 
         tradingEngine.start();
 
@@ -467,7 +467,7 @@ public class TestTradingEngine {
         PowerMock.replayAll();
 
         final TradingEngine tradingEngine = new TradingEngine(exchangeConfigRepository, engineConfigRepository,
-                strategyConfigRepository, marketConfigRepository, emailAlerter);
+                strategyConfigService, marketConfigRepository, emailAlerter);
         final Executor executor = Executors.newSingleThreadExecutor();
         executor.execute(tradingEngine::start);
 
@@ -509,7 +509,7 @@ public class TestTradingEngine {
         PowerMock.replayAll();
 
         final TradingEngine tradingEngine = new TradingEngine(exchangeConfigRepository, engineConfigRepository,
-                strategyConfigRepository, marketConfigRepository, emailAlerter);
+                strategyConfigService, marketConfigRepository, emailAlerter);
         final Executor executor = Executors.newSingleThreadExecutor();
         executor.execute(tradingEngine::start);
 
@@ -543,7 +543,7 @@ public class TestTradingEngine {
     }
 
     private void setupStrategyAndMarketConfigExpectations() {
-        expect(strategyConfigRepository.findAll()).andReturn(allTheStrategiesConfig());
+        expect(strategyConfigService.getAllStrategyConfig()).andReturn(allTheStrategiesConfig());
         expect(marketConfigRepository.findAllMarkets()).andReturn(allTheMarketsConfig());
         expect(ConfigurableComponentFactory.createComponent(STRATEGY_IMPL_CLASS)).andReturn(tradingStrategy);
         tradingStrategy.init(eq(exchangeAdapter), anyObject(Market.class), anyObject(com.gazbert.bxbot.strategy.api.StrategyConfig.class));

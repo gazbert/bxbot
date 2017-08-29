@@ -40,7 +40,7 @@ import com.gazbert.bxbot.exchange.api.impl.OptionalConfigImpl;
 import com.gazbert.bxbot.repository.EngineConfigRepository;
 import com.gazbert.bxbot.repository.ExchangeConfigRepository;
 import com.gazbert.bxbot.repository.MarketConfigRepository;
-import com.gazbert.bxbot.repository.StrategyConfigRepository;
+import com.gazbert.bxbot.services.StrategyConfigService;
 import com.gazbert.bxbot.strategy.api.StrategyException;
 import com.gazbert.bxbot.strategy.api.TradingStrategy;
 import com.gazbert.bxbot.strategy.api.impl.StrategyConfigItems;
@@ -147,16 +147,16 @@ public class TradingEngine {
     private final EmailAlerter emailAlerter;
     private ExchangeAdapter exchangeAdapter;
 
-    // Repos
+    // Services
     private final ExchangeConfigRepository exchangeConfigRepository;
     private final EngineConfigRepository engineConfigRepository;
-    private final StrategyConfigRepository strategyConfigRepository;
+    private final StrategyConfigService strategyConfigService;
     private final MarketConfigRepository marketConfigRepository;
 
 
     @Autowired
     public TradingEngine(ExchangeConfigRepository exchangeConfigRepository, EngineConfigRepository engineConfigRepository,
-                         StrategyConfigRepository strategyConfigRepository, MarketConfigRepository marketConfigRepository,
+                         StrategyConfigService strategyConfigService, MarketConfigRepository marketConfigRepository,
                          EmailAlerter emailAlerter) {
 
         LOG.info(() -> "Initialising Trading Engine...");
@@ -167,8 +167,8 @@ public class TradingEngine {
         Assert.notNull(engineConfigRepository, "engineConfigRepository dependency cannot be null!");
         this.engineConfigRepository = engineConfigRepository;
 
-        Assert.notNull(strategyConfigRepository, "strategyConfigRepository dependency cannot be null!");
-        this.strategyConfigRepository = strategyConfigRepository;
+        Assert.notNull(strategyConfigService, "strategyConfigService dependency cannot be null!");
+        this.strategyConfigService = strategyConfigService;
 
         Assert.notNull(marketConfigRepository, "marketConfigRepository dependency cannot be null!");
         this.marketConfigRepository = marketConfigRepository;
@@ -343,7 +343,7 @@ public class TradingEngine {
 
         boolean isEmergencyStopLimitBreached = true;
 
-        if(emergencyStopBalance.compareTo(BigDecimal.ZERO) == 0){
+        if (emergencyStopBalance.compareTo(BigDecimal.ZERO) == 0) {
             return false;
         }
 
@@ -542,7 +542,7 @@ public class TradingEngine {
 
     private void loadTradingStrategyConfig() {
 
-        final List<StrategyConfig> strategies = strategyConfigRepository.findAll();
+        final List<StrategyConfig> strategies = strategyConfigService.getAllStrategyConfig();
         LOG.debug(() -> "Fetched Strategy config from repository: " + strategies);
 
         for (final StrategyConfig strategy : strategies) {
