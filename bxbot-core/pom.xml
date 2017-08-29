@@ -24,11 +24,6 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>bxbot-repository</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
             <artifactId>bxbot-trading-api</artifactId>
             <version>${project.version}</version>
         </dependency>
