@@ -47,6 +47,14 @@ public class StrategyConfig {
     public StrategyConfig() {
     }
 
+    public StrategyConfig(StrategyConfig other) {
+        this.id = other.id;
+        this.name = other.name;
+        this.description = other.description;
+        this.className = other.className;
+        this.configItems = other.configItems;
+    }
+
     public StrategyConfig(String id, String name, String description, String className, Map<String, String> configItems) {
         this.id = id;
         this.name = name;

@@ -46,23 +46,23 @@ public interface ExchangeConfig {
     String getExchangeAdapter();
 
     /**
-     * Returns any (optional) authentication config.
+     * Returns the authentication config.
      *
      * @return authentication config if present, null otherwise.
      */
     AuthenticationConfig getAuthenticationConfig();
 
     /**
-     * Returns any (optional) network config.
+     * Returns the network config.
      *
      * @return network config if present, null otherwise.
      */
     NetworkConfig getNetworkConfig();
 
     /**
-     * Returns any (optional) 'other' config.
+     * Returns the optional config.
      *
      * @return other config if present, null otherwise.
      */
-    OtherConfig getOtherConfig();
+    OptionalConfig getOptionalConfig();
 }

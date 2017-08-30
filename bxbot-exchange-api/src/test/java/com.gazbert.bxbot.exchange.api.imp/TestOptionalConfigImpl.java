@@ -21,44 +21,36 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.exchange.api.impl;
+package com.gazbert.bxbot.exchange.api.imp;
 
-import com.gazbert.bxbot.exchange.api.OtherConfig;
-import com.google.common.base.MoreObjects;
+import com.gazbert.bxbot.exchange.api.impl.OptionalConfigImpl;
+import org.junit.Test;
 
-import java.util.HashMap;
-import java.util.Map;
+import static org.junit.Assert.assertEquals;
 
 /**
- * Exchange API 'other' (misc) config.
+ * Tests Optional Config exchange API config object behaves as expected.
  *
  * @author gazbert
  */
-public class OtherConfigImpl implements OtherConfig {
+public class TestOptionalConfigImpl {
 
-    private Map<String, String> items;
+    private static final String BUY_FEE_CONFIG_ITEM_KEY = "buy-fee";
+    private static final String BUY_FEE_CONFIG_ITEM_VALUE = "0.20";
 
-    public OtherConfigImpl() {
-        items = new HashMap<>();
-    }
+    private static final String SELL_FEE_CONFIG_ITEM_KEY = "sell-fee";
+    private static final String SELL_FEE_CONFIG_ITEM_VALUE = "0.25";
 
-    @Override
-    public String getItem(String name) {
-        return items.get(name);
-    }
 
-    public Map<String, String> getItems() {
-        return items;
-    }
+    @Test
+    public void testAddingAndFetchingOptionalConfigItems() throws Exception {
 
-    public void setItems(Map<String, String> items) {
-        this.items = items;
-    }
+        final OptionalConfigImpl strategyConfig = new OptionalConfigImpl();
+        strategyConfig.getItems().put(BUY_FEE_CONFIG_ITEM_KEY, BUY_FEE_CONFIG_ITEM_VALUE);
+        strategyConfig.getItems().put(SELL_FEE_CONFIG_ITEM_KEY, SELL_FEE_CONFIG_ITEM_VALUE);
 
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-                .add("items", items)
-                .toString();
+        assertEquals(2, strategyConfig.getItems().size());
+        assertEquals(BUY_FEE_CONFIG_ITEM_VALUE, strategyConfig.getItems().get(BUY_FEE_CONFIG_ITEM_KEY));
+        assertEquals(SELL_FEE_CONFIG_ITEM_VALUE, strategyConfig.getItems().get(SELL_FEE_CONFIG_ITEM_KEY));
     }
 }

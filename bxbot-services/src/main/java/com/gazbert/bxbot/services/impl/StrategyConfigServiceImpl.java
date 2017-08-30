@@ -57,31 +57,31 @@ public class StrategyConfigServiceImpl implements StrategyConfigService {
     }
 
     @Override
-    public List<StrategyConfig> findAllStrategies() {
-        return strategyConfigRepository.findAllStrategies();
+    public List<StrategyConfig> getAllStrategyConfig() {
+        return strategyConfigRepository.findAll();
     }
 
     @Override
-    public StrategyConfig findById(String id) {
-        LOG.info(() -> "Fetching config for Strategy id: " + id);
+    public StrategyConfig getStrategyConfig(String id) {
+        LOG.info(() -> "Fetching Strategy config for id: " + id);
         return strategyConfigRepository.findById(id);
     }
 
     @Override
-    public StrategyConfig updateStrategy(StrategyConfig config) {
-        LOG.info(() -> "About to update: " + config);
-        return strategyConfigRepository.updateStrategy(config);
+    public StrategyConfig updateStrategyConfig(StrategyConfig config) {
+        LOG.info(() -> "About to update Strategy config: " + config);
+        return strategyConfigRepository.save(config);
     }
 
     @Override
-    public StrategyConfig createStrategy(StrategyConfig config) {
-        LOG.info(() -> "About to create: " + config);
-        return strategyConfigRepository.createStrategy(config);
+    public StrategyConfig createStrategyConfig(StrategyConfig config) {
+        LOG.info(() -> "About to create Strategy config: " + config);
+        return strategyConfigRepository.save(config);
     }
 
     @Override
-    public StrategyConfig deleteStrategyById(String id) {
+    public StrategyConfig deleteStrategyConfig(String id) {
         LOG.info(() -> "About to delete Strategy config for id: " + id);
-        return strategyConfigRepository.deleteStrategyById(id);
+        return strategyConfigRepository.delete(id);
     }
 }

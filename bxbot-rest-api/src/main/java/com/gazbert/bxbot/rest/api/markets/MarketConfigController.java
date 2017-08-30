@@ -67,9 +67,9 @@ class MarketConfigController {
     @RequestMapping(value = "/market", method = RequestMethod.GET)
     public List<MarketConfig> getAllMarkets(@AuthenticationPrincipal User user) {
 
-        LOG.info("GET /market - getAllMarkets - caller: " + user.getUsername());
+        LOG.info("GET /market - getAllMarkets() - caller: " + user.getUsername());
 
-        final List<MarketConfig> marketConfigs = marketConfigService.findAllMarkets();
+        final List<MarketConfig> marketConfigs = marketConfigService.getAllMarketConfig();
         LOG.info("Response: " + marketConfigs);
 
         return marketConfigs;
@@ -85,9 +85,9 @@ class MarketConfigController {
     @RequestMapping(value = "/market/{marketId}", method = RequestMethod.GET)
     public ResponseEntity<?> getMarket(@AuthenticationPrincipal User user, @PathVariable String marketId) {
 
-        LOG.info("GET /market/" + marketId + " - getMarket - caller: " + user.getUsername());
+        LOG.info("GET /market/" + marketId + " - getMarket() - caller: " + user.getUsername());
 
-        final MarketConfig marketConfig = marketConfigService.findById(marketId);
+        final MarketConfig marketConfig = marketConfigService.getMarketConfig(marketId);
         LOG.info("Response: " + marketConfig);
 
         return marketConfig.getId() != null
@@ -108,14 +108,14 @@ class MarketConfigController {
     ResponseEntity<?> updateMarket(@AuthenticationPrincipal User user, @PathVariable String marketId,
                                    @RequestBody MarketConfig config) {
 
-        LOG.info("PUT /market/" + marketId + " - updateMarket - caller: " + user.getUsername());
+        LOG.info("PUT /market/" + marketId + " - updateMarket() - caller: " + user.getUsername());
         LOG.info("Request: " + config);
 
         if (config == null || config.getId() == null || !marketId.equals(config.getId())) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        final MarketConfig updatedConfig = marketConfigService.updateMarket(config);
+        final MarketConfig updatedConfig = marketConfigService.updateMarketConfig(config);
         return updatedConfig.getId() != null
                 ? new ResponseEntity<>(HttpStatus.NO_CONTENT)
                 : new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -134,14 +134,14 @@ class MarketConfigController {
     ResponseEntity<?> createMarket(@AuthenticationPrincipal User user, @PathVariable String marketId,
                                    @RequestBody MarketConfig config) {
 
-        LOG.info("POST /market/" + marketId + " - createMarket - caller: " + user.getUsername());
+        LOG.info("POST /market/" + marketId + " - createMarket() - caller: " + user.getUsername());
         LOG.info("Request: " + config);
 
         if (config == null || config.getId() == null || !marketId.equals(config.getId())) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        final MarketConfig createdConfig = marketConfigService.createMarket(config);
+        final MarketConfig createdConfig = marketConfigService.createMarketConfig(config);
         if (createdConfig.getId() != null) {
             final HttpHeaders httpHeaders = new HttpHeaders();
             httpHeaders.setLocation(ServletUriComponentsBuilder
@@ -165,9 +165,9 @@ class MarketConfigController {
     @RequestMapping(value = "/market/{marketId}", method = RequestMethod.DELETE)
     public ResponseEntity<?> deleteMarket(@AuthenticationPrincipal User user, @PathVariable String marketId) {
 
-        LOG.info("DELETE /market/" + marketId + " - deleteMarket - caller: " + user.getUsername());
+        LOG.info("DELETE /market/" + marketId + " - deleteMarket() - caller: " + user.getUsername());
 
-        final MarketConfig deletedConfig = marketConfigService.deleteMarketById(marketId);
+        final MarketConfig deletedConfig = marketConfigService.deleteMarketConfig(marketId);
         return deletedConfig.getId() != null
                 ? new ResponseEntity<>(HttpStatus.NO_CONTENT)
                 : new ResponseEntity<>(HttpStatus.NOT_FOUND);

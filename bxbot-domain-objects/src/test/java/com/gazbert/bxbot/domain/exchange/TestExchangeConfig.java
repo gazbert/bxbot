@@ -38,7 +38,7 @@ public class TestExchangeConfig {
     private static final String EXCHANGE_ADAPTER = "com.gazbert.bxbot.exchanges.TestExchangeAdapter";
     private static final AuthenticationConfig AUTHENTICATION_CONFIG = new AuthenticationConfig();
     private static final NetworkConfig NETWORK_CONFIG = new NetworkConfig();
-    private static final OtherConfig OTHER_CONFIG = new OtherConfig();
+    private static final OptionalConfig OTHER_CONFIG = new OptionalConfig();
 
 
     @Test
@@ -49,7 +49,7 @@ public class TestExchangeConfig {
         assertEquals(null, exchangeConfig.getExchangeAdapter());
         assertEquals(null, exchangeConfig.getAuthenticationConfig());
         assertEquals(null, exchangeConfig.getNetworkConfig());
-        assertEquals(null, exchangeConfig.getOtherConfig());
+        assertEquals(null, exchangeConfig.getOptionalConfig());
     }
 
     @Test
@@ -69,7 +69,7 @@ public class TestExchangeConfig {
         exchangeConfig.setNetworkConfig(NETWORK_CONFIG);
         assertEquals(NETWORK_CONFIG, exchangeConfig.getNetworkConfig());
 
-        exchangeConfig.setOtherConfig(OTHER_CONFIG);
-        assertEquals(OTHER_CONFIG, exchangeConfig.getOtherConfig());
+        exchangeConfig.setOptionalConfig(OTHER_CONFIG);
+        assertEquals(OTHER_CONFIG, exchangeConfig.getOptionalConfig());
     }
 }

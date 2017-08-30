@@ -25,11 +25,11 @@ package com.gazbert.bxbot.exchange.api.imp;
 
 import com.gazbert.bxbot.exchange.api.AuthenticationConfig;
 import com.gazbert.bxbot.exchange.api.NetworkConfig;
-import com.gazbert.bxbot.exchange.api.OtherConfig;
+import com.gazbert.bxbot.exchange.api.OptionalConfig;
 import com.gazbert.bxbot.exchange.api.impl.AuthenticationConfigImpl;
 import com.gazbert.bxbot.exchange.api.impl.ExchangeConfigImpl;
 import com.gazbert.bxbot.exchange.api.impl.NetworkConfigImpl;
-import com.gazbert.bxbot.exchange.api.impl.OtherConfigImpl;
+import com.gazbert.bxbot.exchange.api.impl.OptionalConfigImpl;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -45,7 +45,7 @@ public class TestExchangeConfigImpl {
     private static final String EXCHANGE_ADAPTER = "com.gazbert.bxbot.exchanges.TestExchangeAdapter";
     private static final AuthenticationConfig AUTHENTICATION_CONFIG = new AuthenticationConfigImpl();
     private static final NetworkConfig NETWORK_CONFIG = new NetworkConfigImpl();
-    private static final OtherConfig OTHER_CONFIG = new OtherConfigImpl();
+    private static final OptionalConfig OTHER_CONFIG = new OptionalConfigImpl();
 
 
     @Test
@@ -56,7 +56,7 @@ public class TestExchangeConfigImpl {
         assertEquals(null, exchangeConfig.getExchangeAdapter());
         assertEquals(null, exchangeConfig.getAuthenticationConfig());
         assertEquals(null, exchangeConfig.getNetworkConfig());
-        assertEquals(null, exchangeConfig.getOtherConfig());
+        assertEquals(null, exchangeConfig.getOptionalConfig());
     }
 
     @Test
@@ -76,7 +76,7 @@ public class TestExchangeConfigImpl {
         exchangeConfig.setNetworkConfig(NETWORK_CONFIG);
         assertEquals(NETWORK_CONFIG, exchangeConfig.getNetworkConfig());
 
-        exchangeConfig.setOtherConfig(OTHER_CONFIG);
-        assertEquals(OTHER_CONFIG, exchangeConfig.getOtherConfig());
+        exchangeConfig.setOptionalConfig(OTHER_CONFIG);
+        assertEquals(OTHER_CONFIG, exchangeConfig.getOptionalConfig());
     }
 }

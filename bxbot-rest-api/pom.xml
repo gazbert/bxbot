@@ -11,7 +11,7 @@
     <parent>
         <groupId>com.gazbert.bxbot</groupId>
         <artifactId>bxbot-parent</artifactId>
-        <version>0.7.1-SNAPSHOT</version>
+        <version>0.8.2-SNAPSHOT</version>
     </parent>
     <dependencies>
         <!--
@@ -31,14 +31,6 @@
         <!--
         3rd party dependencies
         -->
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-tx</artifactId>
-        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>

@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016 Gareth Jon Lynch
+ * Copyright (c) 2017 Gareth Jon Lynch
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -21,7 +21,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.domain.exchange;
+package com.gazbert.bxbot.rest.api.exchange;
 
 import com.google.common.base.MoreObjects;
 
@@ -29,30 +29,30 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Domain object representing the Exchange 'other' (misc) config.
+ * Domain object representing optional Exchange Adapter config.
  *
  * @author gazbert
  */
-public class OtherConfig {
+public class OptionalConfig {
 
-    private Map<String, String> items;
+    private Map<String, String> configItems = new HashMap<>();
 
-    public OtherConfig() {
-        items = new HashMap<>();
+    // default constructor required for Jackson
+    public OptionalConfig() {
     }
 
-    public Map<String, String> getItems() {
-        return items;
+    public Map<String, String> getConfigItems() {
+        return configItems;
     }
 
-    public void setItems(Map<String, String> items) {
-        this.items = items;
+    public void setConfigItems(Map<String, String> configItems) {
+        this.configItems = configItems;
     }
 
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("items", items)
+                .add("configItems", configItems)
                 .toString();
     }
 }

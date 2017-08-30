@@ -69,9 +69,9 @@ class EngineConfigController {
     @RequestMapping(value = "/engine", method = RequestMethod.GET)
     public EngineConfig getEngine(@AuthenticationPrincipal User user) {
 
-        LOG.info("GET /engine - getEngine - caller: " + user.getUsername());
+        LOG.info("GET /engine - getEngine() - caller: " + user.getUsername());
 
-        final EngineConfig engineConfig = engineConfigService.getConfig();
+        final EngineConfig engineConfig = engineConfigService.getEngineConfig();
         LOG.info("Response: " + engineConfig);
 
         return engineConfig;
@@ -86,10 +86,10 @@ class EngineConfigController {
     @RequestMapping(value = "/engine", method = RequestMethod.PUT)
     public ResponseEntity<?> updateEngine(@AuthenticationPrincipal User user, @RequestBody EngineConfig config) {
 
-        LOG.info("PUT /engine - updateEngine - caller: " + user.getUsername());
+        LOG.info("PUT /engine - updateEngine() - caller: " + user.getUsername());
         LOG.info("Request: " + config);
 
-        engineConfigService.updateConfig(config);
+        engineConfigService.updateEngineConfig(config);
         final HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setLocation(ServletUriComponentsBuilder.fromCurrentRequest().path("/").buildAndExpand().toUri());
         return new ResponseEntity<>(null, httpHeaders, HttpStatus.NO_CONTENT);

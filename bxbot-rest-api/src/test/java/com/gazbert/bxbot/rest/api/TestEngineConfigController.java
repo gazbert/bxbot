@@ -81,7 +81,7 @@ public class TestEngineConfigController extends AbstractConfigControllerTest {
     @Test
     public void testGetEngineConfig() throws Exception {
 
-        given(engineConfigService.getConfig()).willReturn(someEngineConfig());
+        given(engineConfigService.getEngineConfig()).willReturn(someEngineConfig());
         tradingEngine.start();
 
         mockMvc.perform(get("/api/config/engine")

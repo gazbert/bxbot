@@ -25,7 +25,7 @@ package com.gazbert.bxbot.core.mail;
 
 import com.gazbert.bxbot.domain.emailalerts.EmailAlertsConfig;
 import com.gazbert.bxbot.domain.emailalerts.SmtpConfig;
-import com.gazbert.bxbot.repository.EmailAlertsConfigRepository;
+import com.gazbert.bxbot.services.EmailAlertsConfigService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,14 +53,14 @@ public class EmailAlerter {
     private Properties smtpProps;
     private boolean sendEmailAlertsEnabled;
 
-    private final EmailAlertsConfigRepository emailAlertsConfigRepository;
+    private final EmailAlertsConfigService emailAlertsConfigService;
 
 
     @Autowired
-    public EmailAlerter(EmailAlertsConfigRepository emailAlertsConfigRepository) {
+    public EmailAlerter(EmailAlertsConfigService emailAlertsConfigService) {
 
-        Assert.notNull(emailAlertsConfigRepository, "emailAlertsConfigRepository dependency cannot be null!");
-        this.emailAlertsConfigRepository = emailAlertsConfigRepository;
+        Assert.notNull(emailAlertsConfigService, "emailAlertsConfigService dependency cannot be null!");
+        this.emailAlertsConfigService = emailAlertsConfigService;
         initialise();
     }
 
@@ -100,7 +100,7 @@ public class EmailAlerter {
 
     private void initialise() {
 
-        final EmailAlertsConfig emailAlertsConfig = emailAlertsConfigRepository.getConfig();
+        final EmailAlertsConfig emailAlertsConfig = emailAlertsConfigService.getEmailAlertsConfig();
         if (emailAlertsConfig != null) {
 
             sendEmailAlertsEnabled = emailAlertsConfig.isEnabled();

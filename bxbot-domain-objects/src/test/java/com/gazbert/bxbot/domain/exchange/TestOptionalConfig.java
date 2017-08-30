@@ -21,19 +21,18 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.exchange.api.imp;
+package com.gazbert.bxbot.domain.exchange;
 
-import com.gazbert.bxbot.exchange.api.impl.OtherConfigImpl;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
 /**
- * Tests Other Config exchange API config object behaves as expected.
+ * Tests OptionalConfig domain object behaves as expected.
  *
  * @author gazbert
  */
-public class TestOtherConfigImpl {
+public class TestOptionalConfig {
 
     private static final String BUY_FEE_CONFIG_ITEM_KEY = "buy-fee";
     private static final String BUY_FEE_CONFIG_ITEM_VALUE = "0.20";
@@ -43,9 +42,9 @@ public class TestOtherConfigImpl {
 
 
     @Test
-    public void testAddingAndFetchingOtherConfigItems() throws Exception {
+    public void testAddingAndFetchingOptionalConfigItems() throws Exception {
 
-        final OtherConfigImpl strategyConfig = new OtherConfigImpl();
+        final OptionalConfig strategyConfig = new OptionalConfig();
         strategyConfig.getItems().put(BUY_FEE_CONFIG_ITEM_KEY, BUY_FEE_CONFIG_ITEM_VALUE);
         strategyConfig.getItems().put(SELL_FEE_CONFIG_ITEM_KEY, SELL_FEE_CONFIG_ITEM_VALUE);
 
