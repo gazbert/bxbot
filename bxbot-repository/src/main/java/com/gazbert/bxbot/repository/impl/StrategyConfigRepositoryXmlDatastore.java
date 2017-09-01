@@ -58,6 +58,8 @@ public class StrategyConfigRepositoryXmlDatastore implements StrategyConfigRepos
     @Override
     public List<StrategyConfig> findAll() {
 
+        LOG.info(() -> "Fetching all Strategy configs...");
+
         final TradingStrategiesType internalStrategiesConfig = ConfigurationManager.loadConfig(TradingStrategiesType.class,
                 STRATEGIES_CONFIG_XML_FILENAME, STRATEGIES_CONFIG_XSD_FILENAME);
         return adaptAllInternalToAllExternalConfig(internalStrategiesConfig);

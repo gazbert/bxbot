@@ -80,7 +80,8 @@ class ExchangeConfigController {
     /**
      * Updates Exchange configuration for the bot.
      *
-     * @return 204 'No Content' HTTP status code if exchange config was updated, some other HTTP status code otherwise.
+     * @return 200 'OK' HTTP status code with updated Exchange config in the body if exchange config was updated,
+     * some other HTTP status code otherwise.
      */
     @RequestMapping(value = "/exchange", method = RequestMethod.PUT)
     ResponseEntity<?> updateExchange(@AuthenticationPrincipal User user, @RequestBody ExchangeConfig config) {
@@ -88,10 +89,8 @@ class ExchangeConfigController {
         LOG.info("PUT /exchange - updateExchange() - caller: " + user.getUsername());
         LOG.info("Request: " + config);
 
-        exchangeConfigService.updateExchangeConfig(config);
-        final HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.setLocation(ServletUriComponentsBuilder.fromCurrentRequest().path("/").buildAndExpand().toUri());
-        return new ResponseEntity<>(null, httpHeaders, HttpStatus.NO_CONTENT);
+        final ExchangeConfig updatedConfig = exchangeConfigService.updateExchangeConfig(config);
+        return new ResponseEntity<>(updatedConfig, HttpStatus.OK);
     }
 
     // ------------------------------------------------------------------------

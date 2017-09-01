@@ -25,7 +25,6 @@ package com.gazbert.bxbot.domain.strategy;
 
 import org.junit.Test;
 
-import java.text.StringCharacterIterator;
 import java.util.HashMap;
 import java.util.Map;
 

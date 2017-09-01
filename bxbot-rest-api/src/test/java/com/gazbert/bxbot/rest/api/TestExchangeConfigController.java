@@ -149,7 +149,7 @@ public class TestExchangeConfigController extends AbstractConfigControllerTest {
                 .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD))
                 .contentType(CONTENT_TYPE)
                 .content(jsonify(someExchangeConfig())))
-                .andExpect(status().isNoContent());
+                .andExpect(status().isOk());
     }
 
     @Test

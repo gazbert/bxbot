@@ -57,6 +57,8 @@ public class MarketConfigRepositoryXmlDatastore implements MarketConfigRepositor
 
     public List<MarketConfig> findAll() {
 
+        LOG.info(() -> "Fetching all Market configs...");
+
         final MarketsType internalMarketsConfig = ConfigurationManager.loadConfig(MarketsType.class,
                 MARKETS_CONFIG_XML_FILENAME, MARKETS_CONFIG_XSD_FILENAME);
         return adaptAllInternalToAllExternalConfig(internalMarketsConfig);
@@ -81,18 +83,18 @@ public class MarketConfigRepositoryXmlDatastore implements MarketConfigRepositor
     @Override
     public MarketConfig save(MarketConfig config) {
 
+        final MarketsType internalMarketsConfig = ConfigurationManager.loadConfig(MarketsType.class,
+                MARKETS_CONFIG_XML_FILENAME, MARKETS_CONFIG_XSD_FILENAME);
+
+        final List<MarketType> marketTypes = internalMarketsConfig.getMarkets()
+                .stream()
+                .filter((item) -> item.getId().equals(config.getId()))
+                .distinct()
+                .collect(Collectors.toList());
+
         if (config.getId() == null || config.getId().isEmpty()) {
 
             LOG.info(() -> "About to create MarketConfig: " + config);
-
-            final MarketsType internalMarketsConfig = ConfigurationManager.loadConfig(MarketsType.class,
-                    MARKETS_CONFIG_XML_FILENAME, MARKETS_CONFIG_XSD_FILENAME);
-
-            final List<MarketType> marketTypes = internalMarketsConfig.getMarkets()
-                    .stream()
-                    .filter((item) -> item.getId().equals(config.getId()))
-                    .distinct()
-                    .collect(Collectors.toList());
 
             if (marketTypes.isEmpty()) {
 
@@ -121,15 +123,6 @@ public class MarketConfigRepositoryXmlDatastore implements MarketConfigRepositor
         } else {
 
             LOG.info(() -> "About to update MarketConfig: " + config);
-
-            final MarketsType internalMarketsConfig = ConfigurationManager.loadConfig(MarketsType.class,
-                    MARKETS_CONFIG_XML_FILENAME, MARKETS_CONFIG_XSD_FILENAME);
-
-            final List<MarketType> marketTypes = internalMarketsConfig.getMarkets()
-                    .stream()
-                    .filter((item) -> item.getId().equals(config.getId()))
-                    .distinct()
-                    .collect(Collectors.toList());
 
             if (!marketTypes.isEmpty()) {
 

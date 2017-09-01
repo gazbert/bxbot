@@ -101,8 +101,8 @@ class StrategyConfigController {
      * @param user       the authenticated user.
      * @param strategyId id of the Strategy config to update.
      * @param config     the updated Strategy config.
-     * @return 204 'No Content' HTTP status code if update successful, 404 'Not Found' HTTP status code if
-     * Strategy config not found.
+     * @return 200 'OK' HTTP status code and update Strategy config in the body if update successful,
+     *         404 'Not Found' HTTP status code if Strategy config not found.
      */
     @RequestMapping(value = "/strategy/{strategyId}", method = RequestMethod.PUT)
     ResponseEntity<?> updateStrategy(@AuthenticationPrincipal User user, @PathVariable String strategyId,
@@ -117,7 +117,7 @@ class StrategyConfigController {
 
         final StrategyConfig updatedConfig = strategyConfigService.updateStrategyConfig(config);
         return updatedConfig.getId() != null
-                ? new ResponseEntity<>(HttpStatus.NO_CONTENT)
+                ? new ResponseEntity<>(updatedConfig, HttpStatus.OK)
                 : new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
