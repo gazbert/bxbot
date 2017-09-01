@@ -83,4 +83,12 @@ public class TestMarketConfig {
         marketConfig.setTradingStrategyId(TRADING_STRATEGY);
         assertEquals(TRADING_STRATEGY, marketConfig.getTradingStrategyId());
     }
+
+    @Test
+    public void testCloningWorksAsExpected() {
+        final MarketConfig marketConfig = new MarketConfig(
+                ID, NAME, BASE_CURRENCY, COUNTER_CURRENCY, IS_ENABLED, TRADING_STRATEGY);
+        final MarketConfig clonedMarketConfig = new MarketConfig(marketConfig);
+        assertEquals(clonedMarketConfig, marketConfig);
+    }
 }

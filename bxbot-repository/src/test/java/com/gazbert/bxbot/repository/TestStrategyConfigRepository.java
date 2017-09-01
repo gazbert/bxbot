@@ -173,7 +173,7 @@ public class TestStrategyConfigRepository {
     }
 
     @Test
-    public void whenSaveCalledWithKnownIdThenExpectServiceToReturnUpdatedStrategyConfig() throws Exception {
+    public void whenSaveCalledWithKnownIdThenReturnUpdatedStrategyConfig() throws Exception {
 
         expect(ConfigurationManager.loadConfig(
                 eq(TradingStrategiesType.class),
@@ -260,7 +260,7 @@ public class TestStrategyConfigRepository {
 
         final StrategyConfig strategyConfig = strategyConfigRepository.save(someNewExternalStrategyConfig());
 
-        assertThat(strategyConfig.getId()).isNotEmpty();
+        assertThat(strategyConfig.getId()).isEqualTo(GENERATED_STRAT_ID);
         assertThat(strategyConfig.getName()).isEqualTo(NEW_STRAT_NAME);
         assertThat(strategyConfig.getDescription()).isEqualTo(NEW_STRAT_DESCRIPTION);
         assertThat(strategyConfig.getClassName()).isEqualTo(NEW_STRAT_CLASSNAME);
@@ -273,7 +273,7 @@ public class TestStrategyConfigRepository {
     }
 
     @Test
-    public void whenDeleteCalledWithRecognizedIdThenReturnDeletedStrategyConfig() throws Exception {
+    public void whenDeleteCalledWithKnownIdThenReturnDeletedStrategyConfig() throws Exception {
 
         expect(ConfigurationManager.loadConfig(
                 eq(TradingStrategiesType.class),

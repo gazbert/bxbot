@@ -82,25 +82,25 @@ public class StrategyConfigRepositoryXmlDatastore implements StrategyConfigRepos
     @Override
     public StrategyConfig save(StrategyConfig config) {
 
+        final TradingStrategiesType internalStrategiesConfig = ConfigurationManager.loadConfig(TradingStrategiesType.class,
+                STRATEGIES_CONFIG_XML_FILENAME, STRATEGIES_CONFIG_XSD_FILENAME);
+
+        final List<StrategyType> strategyTypes = internalStrategiesConfig.getStrategies()
+                .stream()
+                .filter((item) -> item.getId().equals(config.getId()))
+                .distinct()
+                .collect(Collectors.toList());
+
         if (config.getId() == null || config.getId().isEmpty()) {
 
             LOG.info(() -> "About to create StrategyConfig: " + config);
 
-            final TradingStrategiesType internalStrategiesConfig = ConfigurationManager.loadConfig(TradingStrategiesType.class,
-                    STRATEGIES_CONFIG_XML_FILENAME, STRATEGIES_CONFIG_XSD_FILENAME);
-
-            final List<StrategyType> strategyTypes = internalStrategiesConfig.getStrategies()
-                    .stream()
-                    .filter((item) -> item.getId().equals(config.getId()))
-                    .distinct()
-                    .collect(Collectors.toList());
-
             if (strategyTypes.isEmpty()) {
 
-                final StrategyConfig newBotConfig = new StrategyConfig(config);
-                newBotConfig.setId(generateUuid());
+                final StrategyConfig newStrategyConfig = new StrategyConfig(config);
+                newStrategyConfig.setId(generateUuid());
 
-                internalStrategiesConfig.getStrategies().add(adaptExternalToInternalConfig(newBotConfig));
+                internalStrategiesConfig.getStrategies().add(adaptExternalToInternalConfig(newStrategyConfig));
                 ConfigurationManager.saveConfig(TradingStrategiesType.class, internalStrategiesConfig,
                         STRATEGIES_CONFIG_XML_FILENAME);
 
@@ -110,7 +110,7 @@ public class StrategyConfigRepositoryXmlDatastore implements StrategyConfigRepos
                 return adaptInternalToExternalConfig(
                         updatedInternalStrategiesConfig.getStrategies()
                                 .stream()
-                                .filter((item) -> item.getId().equals(newBotConfig.getId()))
+                                .filter((item) -> item.getId().equals(newStrategyConfig.getId()))
                                 .distinct()
                                 .collect(Collectors.toList()));
             } else {
@@ -123,21 +123,11 @@ public class StrategyConfigRepositoryXmlDatastore implements StrategyConfigRepos
 
             LOG.info(() -> "About to update StrategyConfig: " + config);
 
-            final TradingStrategiesType internalStrategiesConfig = ConfigurationManager.loadConfig(TradingStrategiesType.class,
-                    STRATEGIES_CONFIG_XML_FILENAME, STRATEGIES_CONFIG_XSD_FILENAME);
-
-            final List<StrategyType> strategyTypes = internalStrategiesConfig.getStrategies()
-                    .stream()
-                    .filter((item) -> item.getId().equals(config.getId()))
-                    .distinct()
-                    .collect(Collectors.toList());
-
             if (!strategyTypes.isEmpty()) {
 
                 internalStrategiesConfig.getStrategies().remove(strategyTypes.get(0)); // will only be 1 unique strat
                 internalStrategiesConfig.getStrategies().add(adaptExternalToInternalConfig(config));
-                ConfigurationManager.saveConfig(TradingStrategiesType.class, internalStrategiesConfig,
-                        STRATEGIES_CONFIG_XML_FILENAME);
+                ConfigurationManager.saveConfig(TradingStrategiesType.class, internalStrategiesConfig, STRATEGIES_CONFIG_XML_FILENAME);
 
                 final TradingStrategiesType updatedInternalStrategiesConfig = ConfigurationManager.loadConfig(
                         TradingStrategiesType.class, STRATEGIES_CONFIG_XML_FILENAME, STRATEGIES_CONFIG_XSD_FILENAME);

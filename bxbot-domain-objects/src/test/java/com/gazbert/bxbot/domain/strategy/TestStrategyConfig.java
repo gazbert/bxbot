@@ -25,6 +25,7 @@ package com.gazbert.bxbot.domain.strategy;
 
 import org.junit.Test;
 
+import java.text.StringCharacterIterator;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -80,5 +81,12 @@ public class TestStrategyConfig {
 
         strategyConfig.setConfigItems(CONFIG_ITEMS);
         assertEquals(CONFIG_ITEMS, strategyConfig.getConfigItems());
+    }
+
+    @Test
+    public void testCloningWorksAsExpected() {
+        final StrategyConfig strategyConfig = new StrategyConfig(ID, LABEL, DESCRIPTION, CLASSNAME, CONFIG_ITEMS);
+        final StrategyConfig clonedStrategyConfig = new StrategyConfig(strategyConfig);
+        assertEquals(clonedStrategyConfig, strategyConfig);
     }
 }

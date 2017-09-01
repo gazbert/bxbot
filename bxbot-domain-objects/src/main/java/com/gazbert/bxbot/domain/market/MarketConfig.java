@@ -45,6 +45,15 @@ public class MarketConfig {
     public MarketConfig() {
     }
 
+    public MarketConfig(MarketConfig other) {
+        this.id = other.id;
+        this.name = other.name;
+        this.baseCurrency = other.baseCurrency;
+        this.counterCurrency = other.counterCurrency;
+        this.enabled = other.enabled;
+        this.tradingStrategyId = other.tradingStrategyId;
+    }
+
     public MarketConfig(String id, String name, String baseCurrency, String counterCurrency, boolean enabled, String tradingStrategyId) {
         this.id = id;
         this.name = name;

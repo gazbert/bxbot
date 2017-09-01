@@ -134,7 +134,7 @@ class MarketConfigController {
     ResponseEntity<?> createMarket(@AuthenticationPrincipal User user, @PathVariable String marketId,
                                    @RequestBody MarketConfig config) {
 
-        LOG.info("POST /market/" + marketId + " - createMarket() - caller: " + user.getUsername());
+        LOG.info("POST /market/" + marketId + " - save() - caller: " + user.getUsername());
         LOG.info("Request: " + config);
 
         if (config == null || config.getId() == null || !marketId.equals(config.getId())) {
