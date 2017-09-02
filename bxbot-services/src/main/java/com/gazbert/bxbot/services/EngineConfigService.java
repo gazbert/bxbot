@@ -33,5 +33,5 @@ public interface EngineConfigService {
 
     EngineConfig getEngineConfig();
 
-    void updateEngineConfig(EngineConfig config);
+    EngineConfig updateEngineConfig(EngineConfig config);
 }

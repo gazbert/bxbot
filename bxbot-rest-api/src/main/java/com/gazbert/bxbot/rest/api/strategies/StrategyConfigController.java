@@ -101,7 +101,7 @@ class StrategyConfigController {
      * @param user       the authenticated user.
      * @param strategyId id of the Strategy config to update.
      * @param config     the updated Strategy config.
-     * @return 200 'OK' HTTP status code and update Strategy config in the body if update successful,
+     * @return 200 'OK' HTTP status code and updated Strategy config in the body if update successful,
      *         404 'Not Found' HTTP status code if Strategy config not found.
      */
     @RequestMapping(value = "/strategy/{strategyId}", method = RequestMethod.PUT)

@@ -121,7 +121,7 @@ public class TestEngineConfigController extends AbstractConfigControllerTest {
                 .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD))
                 .contentType(CONTENT_TYPE)
                 .content(jsonify(someEngineConfig())))
-                .andExpect(status().isNoContent());
+                .andExpect(status().isOk());
     }
 
     @Test

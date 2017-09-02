@@ -39,7 +39,7 @@ import static com.gazbert.bxbot.datastore.FileLocations.EMAIL_ALERTS_CONFIG_XSD_
 
 
 /**
- * Implementation of the Email Alerts configuration repository.
+ * An XML datastore implementation of the Email Alerts configuration repository.
  *
  * @author gazbert
  */

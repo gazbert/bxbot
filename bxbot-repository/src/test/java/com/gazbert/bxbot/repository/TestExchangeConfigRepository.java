@@ -109,7 +109,7 @@ public class TestExchangeConfigRepository {
     }
 
     @Test
-    public void whenSaveCalledThenExpectSavedExchangeConfigToBeReturned() throws Exception {
+    public void whenSaveCalledThenExpectRepositoryToSaveItAndReturnSavedExchangeConfig() throws Exception {
 
         expect(ConfigurationManager.loadConfig(
                 eq(ExchangeType.class),

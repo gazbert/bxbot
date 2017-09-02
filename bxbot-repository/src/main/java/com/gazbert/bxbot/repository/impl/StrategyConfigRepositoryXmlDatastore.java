@@ -45,7 +45,7 @@ import static com.gazbert.bxbot.datastore.FileLocations.STRATEGIES_CONFIG_XML_FI
 import static com.gazbert.bxbot.datastore.FileLocations.STRATEGIES_CONFIG_XSD_FILENAME;
 
 /**
- * Implementation of the Strategy config repository.
+ * An XML datastore implementation of the Strategy config repository.
  *
  * @author gazbert
  */

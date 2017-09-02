@@ -80,8 +80,8 @@ class ExchangeConfigController {
     /**
      * Updates Exchange configuration for the bot.
      *
-     * @return 200 'OK' HTTP status code with updated Exchange config in the body if exchange config was updated,
-     * some other HTTP status code otherwise.
+     * @return 200 'OK' HTTP status code with updated Exchange config in the body if update successful, some other
+     *         HTTP status code otherwise.
      */
     @RequestMapping(value = "/exchange", method = RequestMethod.PUT)
     ResponseEntity<?> updateExchange(@AuthenticationPrincipal User user, @RequestBody ExchangeConfig config) {

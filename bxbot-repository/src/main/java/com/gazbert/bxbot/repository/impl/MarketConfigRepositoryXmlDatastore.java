@@ -43,7 +43,7 @@ import static com.gazbert.bxbot.datastore.FileLocations.MARKETS_CONFIG_XML_FILEN
 import static com.gazbert.bxbot.datastore.FileLocations.MARKETS_CONFIG_XSD_FILENAME;
 
 /**
- * Implementation of the Market config repository.
+ * An XML datastore implementation of the Market config repository.
  *
  * @author gazbert
  */

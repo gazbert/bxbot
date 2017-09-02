@@ -39,7 +39,7 @@ import static com.gazbert.bxbot.datastore.FileLocations.EXCHANGE_CONFIG_XML_FILE
 import static com.gazbert.bxbot.datastore.FileLocations.EXCHANGE_CONFIG_XSD_FILENAME;
 
 /**
- * Implementation of the Exchange config repository.
+ * An XML datastore implementation of the Exchange config repository.
  *
  * @author gazbert
  */
@@ -129,7 +129,7 @@ public class ExchangeConfigRepositoryXmlDatastore implements ExchangeConfigRepos
         exchangeConfig.setNetworkConfig(networkConfig);
         exchangeConfig.setOptionalConfig(optionalConfig);
 
-        // We don't accept AuthenticationConfig in the service - security risk
+        // TODO - Currently, we don't accept AuthenticationConfig in the service - security risk?
         // We load the existing auth config and merge it in with the updated stuff...
         final ExchangeType existingExchangeConfig = ConfigurationManager.loadConfig(ExchangeType.class,
                 EXCHANGE_CONFIG_XML_FILENAME, EXCHANGE_CONFIG_XSD_FILENAME);

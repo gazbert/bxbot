@@ -28,7 +28,6 @@ import com.gazbert.bxbot.services.EngineConfigService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -38,7 +37,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 /**
  * Controller for directing Engine config requests.
@@ -80,8 +78,8 @@ class EngineConfigController {
     /**
      * Updates Engine configuration for the bot.
      *
-     * @return 204 'No Content' HTTP status code if engine config was updated successfully, some other HTTP status
-     * code otherwise.
+     * @return 200 'OK' HTTP status code and updated Engine config in the response body if update successful, some
+     *         other HTTP status code otherwise.
      */
     @RequestMapping(value = "/engine", method = RequestMethod.PUT)
     public ResponseEntity<?> updateEngine(@AuthenticationPrincipal User user, @RequestBody EngineConfig config) {
@@ -89,10 +87,8 @@ class EngineConfigController {
         LOG.info("PUT /engine - updateEngine() - caller: " + user.getUsername());
         LOG.info("Request: " + config);
 
-        engineConfigService.updateEngineConfig(config);
-        final HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.setLocation(ServletUriComponentsBuilder.fromCurrentRequest().path("/").buildAndExpand().toUri());
-        return new ResponseEntity<>(null, httpHeaders, HttpStatus.NO_CONTENT);
+        final EngineConfig updateConfig = engineConfigService.updateEngineConfig(config);
+        return new ResponseEntity<>(updateConfig, HttpStatus.OK);
     }
 }
 
