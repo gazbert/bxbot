@@ -87,8 +87,8 @@ class EngineConfigController {
         LOG.info("PUT /engine - updateEngine() - caller: " + user.getUsername());
         LOG.info("Request: " + config);
 
-        final EngineConfig updateConfig = engineConfigService.updateEngineConfig(config);
-        return new ResponseEntity<>(updateConfig, HttpStatus.OK);
+        final EngineConfig updatedConfig = engineConfigService.updateEngineConfig(config);
+        return new ResponseEntity<>(updatedConfig, HttpStatus.OK);
     }
 }
 

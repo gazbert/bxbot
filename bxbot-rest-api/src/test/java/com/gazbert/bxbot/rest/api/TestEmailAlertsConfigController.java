@@ -68,6 +68,7 @@ public class TestEmailAlertsConfigController extends AbstractConfigControllerTes
     @MockBean
     EmailAlertsConfigService emailAlertsConfigService;
 
+    // Need this even though not used in the test directly because Spring loads it on startup...
     @MockBean
     private TradingEngine tradingEngine;
 
@@ -80,7 +81,6 @@ public class TestEmailAlertsConfigController extends AbstractConfigControllerTes
     public void testGetEmailAlertsConfig() throws Exception {
 
         given(emailAlertsConfigService.getEmailAlertsConfig()).willReturn(someEmailAlertsConfig());
-        tradingEngine.start();
 
         mockMvc.perform(get("/api/config/emailalerts")
                 .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD)))
