@@ -45,24 +45,31 @@ import static com.gazbert.bxbot.datastore.FileLocations.EMAIL_ALERTS_CONFIG_XSD_
  */
 @Repository("emailAlertsConfigRepository")
 @Transactional
-public class EmailAlertsConfigRepositoryXmlImpl implements EmailAlertsConfigRepository {
+public class EmailAlertsConfigRepositoryXmlDatastore implements EmailAlertsConfigRepository {
 
     private static final Logger LOG = LogManager.getLogger();
 
     @Override
-    public EmailAlertsConfig getConfig() {
+    public EmailAlertsConfig get() {
+
+        LOG.info(() -> "Fetching EmailAlertsConfig...");
+
         final EmailAlertsType internalEmailAlertsConfig = ConfigurationManager.loadConfig(EmailAlertsType.class,
                 EMAIL_ALERTS_CONFIG_XML_FILENAME, EMAIL_ALERTS_CONFIG_XSD_FILENAME);
         return adaptInternalToExternalConfig(internalEmailAlertsConfig);
     }
 
     @Override
-    public void updateConfig(EmailAlertsConfig config) {
+    public EmailAlertsConfig save(EmailAlertsConfig config) {
 
-        LOG.info(() -> "About to update: " + config);
+        LOG.info(() -> "About to save EmailAlertsConfig: " + config);
 
         final EmailAlertsType internalEmailAlertsConfig = adaptExternalToInternalConfig(config);
         ConfigurationManager.saveConfig(EmailAlertsType.class, internalEmailAlertsConfig, EMAIL_ALERTS_CONFIG_XML_FILENAME);
+
+        final EmailAlertsType savedEmailAlertsConfig = ConfigurationManager.loadConfig(EmailAlertsType.class,
+                EMAIL_ALERTS_CONFIG_XML_FILENAME, EMAIL_ALERTS_CONFIG_XSD_FILENAME);
+        return adaptInternalToExternalConfig(savedEmailAlertsConfig);
     }
 
     // ------------------------------------------------------------------------------------------------

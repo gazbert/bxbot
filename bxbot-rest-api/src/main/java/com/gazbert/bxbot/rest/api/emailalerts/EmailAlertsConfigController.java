@@ -84,7 +84,8 @@ class EmailAlertsConfigController {
     /**
      * Updates Email Alerts configuration for the bot.
      *
-     * @return 204 'No Content' HTTP status code if Email Alerts config was updated, some other HTTP status code otherwise.
+     * @return 200 'OK' HTTP status code and Email Alerts config in response body if config updated successfully,
+     *         some other HTTP status code otherwise.
      */
     @RequestMapping(value = "/emailalerts", method = RequestMethod.PUT)
     ResponseEntity<?> updateEmailAlerts(@AuthenticationPrincipal User user, @RequestBody EmailAlertsConfig config) {
@@ -92,10 +93,8 @@ class EmailAlertsConfigController {
         LOG.info("PUT /emailalerts - updateEmailAlerts() - caller: " + user.getUsername());
         LOG.info("Request: " + config);
 
-        emailAlertsConfigService.updateEmailAlertsConfig(config);
-        final HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.setLocation(ServletUriComponentsBuilder.fromCurrentRequest().path("/").buildAndExpand().toUri());
-        return new ResponseEntity<>(null, httpHeaders, HttpStatus.NO_CONTENT);
+        final EmailAlertsConfig updatedConfig = emailAlertsConfigService.updateEmailAlertsConfig(config);
+        return new ResponseEntity<>(updatedConfig, HttpStatus.OK);
     }
 }
 

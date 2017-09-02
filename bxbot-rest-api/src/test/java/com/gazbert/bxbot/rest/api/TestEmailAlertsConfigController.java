@@ -125,7 +125,7 @@ public class TestEmailAlertsConfigController extends AbstractConfigControllerTes
                 .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD))
                 .contentType(CONTENT_TYPE)
                 .content(configJson))
-                .andExpect(status().isNoContent());
+                .andExpect(status().isOk());
     }
 
     @Test

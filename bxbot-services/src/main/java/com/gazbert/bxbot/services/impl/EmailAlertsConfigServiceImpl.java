@@ -56,12 +56,12 @@ public class EmailAlertsConfigServiceImpl implements EmailAlertsConfigService {
 
     @Override
     public EmailAlertsConfig getEmailAlertsConfig() {
-        return emailAlertsConfigRepository.getConfig();
+        return emailAlertsConfigRepository.get();
     }
 
     @Override
-    public void updateEmailAlertsConfig(EmailAlertsConfig config) {
+    public EmailAlertsConfig updateEmailAlertsConfig(EmailAlertsConfig config) {
         LOG.info(() -> "About to update Email Alerts config: " + config);
-        emailAlertsConfigRepository.updateConfig(config);
+        return emailAlertsConfigRepository.save(config);
     }
 }

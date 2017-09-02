@@ -28,7 +28,7 @@ import com.gazbert.bxbot.datastore.emailalerts.generated.EmailAlertsType;
 import com.gazbert.bxbot.datastore.emailalerts.generated.SmtpConfigType;
 import com.gazbert.bxbot.domain.emailalerts.EmailAlertsConfig;
 import com.gazbert.bxbot.domain.emailalerts.SmtpConfig;
-import com.gazbert.bxbot.repository.impl.EmailAlertsConfigRepositoryXmlImpl;
+import com.gazbert.bxbot.repository.impl.EmailAlertsConfigRepositoryXmlDatastore;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -65,7 +65,7 @@ public class TestEmailAlertsConfigRepository {
     }
 
     @Test
-    public void whenGetConfigCalledThenExpectRepositoryToLoadIt() throws Exception {
+    public void whenGetCalledThenExpectEmailAlertsConfigToBeReturned() throws Exception {
 
         expect(ConfigurationManager.loadConfig(
                 eq(EmailAlertsType.class),
@@ -75,8 +75,8 @@ public class TestEmailAlertsConfigRepository {
 
         PowerMock.replayAll();
 
-        final EmailAlertsConfigRepository emailAlertsConfigRepository = new EmailAlertsConfigRepositoryXmlImpl();
-        final EmailAlertsConfig emailAlertsConfig = emailAlertsConfigRepository.getConfig();
+        final EmailAlertsConfigRepository emailAlertsConfigRepository = new EmailAlertsConfigRepositoryXmlDatastore();
+        final EmailAlertsConfig emailAlertsConfig = emailAlertsConfigRepository.get();
         assertThat(emailAlertsConfig.isEnabled()).isEqualTo(ENABLED);
         assertThat(emailAlertsConfig.getSmtpConfig().getHost()).isEqualTo(HOST);
         assertThat(emailAlertsConfig.getSmtpConfig().getTlsPort()).isEqualTo(TLS_PORT);
@@ -89,7 +89,7 @@ public class TestEmailAlertsConfigRepository {
     }
 
     @Test
-    public void whenUpdateConfigCalledThenExpectRepositoryToSaveIt() throws Exception {
+    public void whenSaveCalledThenExpectRepositoryToSaveItAndReturnSavedEmailAlertsConfig() throws Exception {
 
         // for loading the existing smtp config to merge with updated stuff
         expect(ConfigurationManager.loadConfig(
@@ -99,10 +99,25 @@ public class TestEmailAlertsConfigRepository {
                 andReturn(someInternalEmailAlertsConfig());
 
         ConfigurationManager.saveConfig(eq(EmailAlertsType.class), anyObject(EmailAlertsType.class), eq(EMAIL_ALERTS_CONFIG_XML_FILENAME));
+
+        expect(ConfigurationManager.loadConfig(
+                eq(EmailAlertsType.class),
+                eq(EMAIL_ALERTS_CONFIG_XML_FILENAME),
+                eq(EMAIL_ALERTS_CONFIG_XSD_FILENAME))).
+                andReturn(someInternalEmailAlertsConfig());
+
         PowerMock.replayAll();
 
-        final EmailAlertsConfigRepository emailAlertsConfigRepository = new EmailAlertsConfigRepositoryXmlImpl();
-        emailAlertsConfigRepository.updateConfig(withSomeExternalEmailAlertsConfig());
+        final EmailAlertsConfigRepository emailAlertsConfigRepository = new EmailAlertsConfigRepositoryXmlDatastore();
+        final EmailAlertsConfig saveConfig = emailAlertsConfigRepository.save(withSomeExternalEmailAlertsConfig());
+
+        assertThat(saveConfig.isEnabled()).isEqualTo(ENABLED);
+        assertThat(saveConfig.getSmtpConfig().getHost()).isEqualTo(HOST);
+        assertThat(saveConfig.getSmtpConfig().getTlsPort()).isEqualTo(TLS_PORT);
+        assertThat(saveConfig.getSmtpConfig().getFromAddress()).isEqualTo(FROM_ADDRESS);
+        assertThat(saveConfig.getSmtpConfig().getToAddress()).isEqualTo(TO_ADDRESS);
+        assertThat(saveConfig.getSmtpConfig().getAccountUsername()).isEqualTo(ACCOUNT_USERNAME);
+        assertThat(saveConfig.getSmtpConfig().getAccountPassword()).isEqualTo(ACCOUNT_PASSWORD);
 
         PowerMock.verifyAll();
     }

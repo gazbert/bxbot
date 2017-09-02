@@ -33,5 +33,5 @@ public interface EmailAlertsConfigService {
 
     EmailAlertsConfig getEmailAlertsConfig();
 
-    void updateEmailAlertsConfig(EmailAlertsConfig config);
+    EmailAlertsConfig updateEmailAlertsConfig(EmailAlertsConfig config);
 }

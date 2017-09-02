@@ -36,7 +36,7 @@ import static com.gazbert.bxbot.datastore.FileLocations.ENGINE_CONFIG_XML_FILENA
 import static com.gazbert.bxbot.datastore.FileLocations.ENGINE_CONFIG_XSD_FILENAME;
 
 /**
- * An XML datastore  implementation of the Engine config repository.
+ * An XML datastore implementation of the Engine config repository.
  *
  * @author gazbert
  */
