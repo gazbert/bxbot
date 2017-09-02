@@ -35,11 +35,13 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -76,10 +78,11 @@ public class TestMarketConfigController extends AbstractConfigControllerTest {
     @MockBean
     MarketConfigService marketConfigService;
 
-    // Need this even though not used in the test directly because Spring loads the Email Alerts config on startup...
+    // Need this even though not used in the test directly because Spring loads it on startup...
     @MockBean
     private EmailAlerter emailAlerter;
 
+    // Need this even though not used in the test directly because Spring loads it on startup...
     @MockBean
     private TradingEngine tradingEngine;
 
@@ -93,7 +96,6 @@ public class TestMarketConfigController extends AbstractConfigControllerTest {
     public void testGetAllMarketConfig() throws Exception {
 
         given(marketConfigService.getAllMarketConfig()).willReturn(allMarketConfig());
-        tradingEngine.start();
 
         mockMvc.perform(get("/api/config/market/")
                 .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD)))
@@ -186,11 +188,15 @@ public class TestMarketConfigController extends AbstractConfigControllerTest {
 
         given(marketConfigService.updateMarketConfig(someMarketConfig())).willReturn(someMarketConfig());
 
-        mockMvc.perform(put("/api/config/market/" + MARKET_1_ID)
+        final MvcResult result = mockMvc.perform(put("/api/config/market/" + MARKET_1_ID)
                 .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD))
                 .contentType(CONTENT_TYPE)
                 .content(jsonify(someMarketConfig())))
-                .andExpect(status().isNoContent());
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andReturn();
+
+        assertEquals(jsonify(someMarketConfig()), result.getResponse().getContentAsString());
     }
 
     @Test
@@ -281,11 +287,15 @@ public class TestMarketConfigController extends AbstractConfigControllerTest {
 
         given(marketConfigService.createMarketConfig(someMarketConfig())).willReturn(someMarketConfig());
 
-        mockMvc.perform(post("/api/config/market/" + MARKET_1_ID)
+        final MvcResult result = mockMvc.perform(post("/api/config/market/" + MARKET_1_ID)
                 .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD))
                 .contentType(CONTENT_TYPE)
                 .content(jsonify(someMarketConfig())))
-                .andExpect(status().isCreated());
+                .andDo(print())
+                .andExpect(status().isCreated())
+                .andReturn();
+
+        assertEquals(jsonify(someMarketConfig()), result.getResponse().getContentAsString());
     }
 
     @Test

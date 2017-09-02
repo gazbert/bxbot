@@ -95,17 +95,12 @@ public class EmailAlertsConfigRepositoryXmlDatastore implements EmailAlertsConfi
     private static EmailAlertsType adaptExternalToInternalConfig(EmailAlertsConfig externalEmailAlertsConfig) {
 
         final SmtpConfigType smtpConfig = new SmtpConfigType();
+        smtpConfig.setSmtpHost(externalEmailAlertsConfig.getSmtpConfig().getHost());
+        smtpConfig.setSmtpTlsPort(externalEmailAlertsConfig.getSmtpConfig().getTlsPort());
+        smtpConfig.setAccountUsername(externalEmailAlertsConfig.getSmtpConfig().getAccountUsername());
+        smtpConfig.setAccountPassword(externalEmailAlertsConfig.getSmtpConfig().getAccountPassword());
         smtpConfig.setFromAddr(externalEmailAlertsConfig.getSmtpConfig().getFromAddress());
         smtpConfig.setToAddr(externalEmailAlertsConfig.getSmtpConfig().getToAddress());
-
-        // We don't permit updating of: account username, password, host, port - potential security risk
-        // We load the existing config and merge it in with the updated stuff...
-        final EmailAlertsType existingEmailAlertsConfig = ConfigurationManager.loadConfig(EmailAlertsType.class,
-                EMAIL_ALERTS_CONFIG_XML_FILENAME, EMAIL_ALERTS_CONFIG_XSD_FILENAME);
-        smtpConfig.setSmtpHost(existingEmailAlertsConfig.getSmtpConfig().getSmtpHost());
-        smtpConfig.setSmtpTlsPort(existingEmailAlertsConfig.getSmtpConfig().getSmtpTlsPort());
-        smtpConfig.setAccountUsername(existingEmailAlertsConfig.getSmtpConfig().getAccountUsername());
-        smtpConfig.setAccountPassword(existingEmailAlertsConfig.getSmtpConfig().getAccountPassword());
 
         final EmailAlertsType emailAlertsConfig = new EmailAlertsType();
         emailAlertsConfig.setEnabled(externalEmailAlertsConfig.isEnabled());

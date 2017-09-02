@@ -58,6 +58,13 @@ public class TestEmailAlertsConfigRepository {
     private static final String FROM_ADDRESS = "boba.fett@Mandalore.com";
     private static final String TO_ADDRESS = "darth.vader@deathstar.com";
 
+    private static final String UPDATED_HOST = "updated.smtp.host.deathstar.com";
+    private static final int UPDATED_PORT = 588;
+    private static final String UPDATED_ACCOUNT_USERNAME = "updated-boba@google.com";
+    private static final String UPDATED_ACCOUNT_PASSWORD = "updated-b0b4InD4H0u53";
+    private static final String UPDATED_FROM_ADDRESS = "updated-boba.fett@Mandalore.com";
+    private static final String UPDATED_TO_ADDRESS = "updated-darth.vader@deathstar.com";
+
 
     @Before
     public void setup() throws Exception {
@@ -91,20 +98,13 @@ public class TestEmailAlertsConfigRepository {
     @Test
     public void whenSaveCalledThenExpectRepositoryToSaveItAndReturnSavedEmailAlertsConfig() throws Exception {
 
-        // for loading the existing smtp config to merge with updated stuff
-        expect(ConfigurationManager.loadConfig(
-                eq(EmailAlertsType.class),
-                eq(EMAIL_ALERTS_CONFIG_XML_FILENAME),
-                eq(EMAIL_ALERTS_CONFIG_XSD_FILENAME))).
-                andReturn(someInternalEmailAlertsConfig());
-
         ConfigurationManager.saveConfig(eq(EmailAlertsType.class), anyObject(EmailAlertsType.class), eq(EMAIL_ALERTS_CONFIG_XML_FILENAME));
 
         expect(ConfigurationManager.loadConfig(
                 eq(EmailAlertsType.class),
                 eq(EMAIL_ALERTS_CONFIG_XML_FILENAME),
                 eq(EMAIL_ALERTS_CONFIG_XSD_FILENAME))).
-                andReturn(someInternalEmailAlertsConfig());
+                andReturn(adaptExternalToInternalConfig(withSomeExternalEmailAlertsConfig()));
 
         PowerMock.replayAll();
 
@@ -112,12 +112,12 @@ public class TestEmailAlertsConfigRepository {
         final EmailAlertsConfig saveConfig = emailAlertsConfigRepository.save(withSomeExternalEmailAlertsConfig());
 
         assertThat(saveConfig.isEnabled()).isEqualTo(ENABLED);
-        assertThat(saveConfig.getSmtpConfig().getHost()).isEqualTo(HOST);
-        assertThat(saveConfig.getSmtpConfig().getTlsPort()).isEqualTo(TLS_PORT);
-        assertThat(saveConfig.getSmtpConfig().getFromAddress()).isEqualTo(FROM_ADDRESS);
-        assertThat(saveConfig.getSmtpConfig().getToAddress()).isEqualTo(TO_ADDRESS);
-        assertThat(saveConfig.getSmtpConfig().getAccountUsername()).isEqualTo(ACCOUNT_USERNAME);
-        assertThat(saveConfig.getSmtpConfig().getAccountPassword()).isEqualTo(ACCOUNT_PASSWORD);
+        assertThat(saveConfig.getSmtpConfig().getHost()).isEqualTo(UPDATED_HOST);
+        assertThat(saveConfig.getSmtpConfig().getTlsPort()).isEqualTo(UPDATED_PORT);
+        assertThat(saveConfig.getSmtpConfig().getFromAddress()).isEqualTo(UPDATED_FROM_ADDRESS);
+        assertThat(saveConfig.getSmtpConfig().getToAddress()).isEqualTo(UPDATED_TO_ADDRESS);
+        assertThat(saveConfig.getSmtpConfig().getAccountUsername()).isEqualTo(UPDATED_ACCOUNT_USERNAME);
+        assertThat(saveConfig.getSmtpConfig().getAccountPassword()).isEqualTo(UPDATED_ACCOUNT_PASSWORD);
 
         PowerMock.verifyAll();
     }
@@ -144,13 +144,28 @@ public class TestEmailAlertsConfigRepository {
 
     private static EmailAlertsConfig withSomeExternalEmailAlertsConfig() {
 
-        // We don't permit updating of: account username, password, host, port - potential security risk
-        // If caller sets it, we just ignore it.
-        final SmtpConfig smtpConfig = new SmtpConfig(
-                "ignoreHostUpdate", 0, "ignoreUsernameUpdate", "ignorePasswordUpdate", FROM_ADDRESS, TO_ADDRESS);
-
         final EmailAlertsConfig emailAlertsConfig = new EmailAlertsConfig();
         emailAlertsConfig.setEnabled(true);
+
+        final SmtpConfig smtpConfig = new SmtpConfig(UPDATED_HOST, UPDATED_PORT, UPDATED_ACCOUNT_USERNAME,
+                UPDATED_ACCOUNT_PASSWORD, UPDATED_FROM_ADDRESS, UPDATED_TO_ADDRESS);
+        emailAlertsConfig.setSmtpConfig(smtpConfig);
+
+        return emailAlertsConfig;
+    }
+
+    private static EmailAlertsType adaptExternalToInternalConfig(EmailAlertsConfig externalEmailAlertsConfig) {
+
+        final SmtpConfigType smtpConfig = new SmtpConfigType();
+        smtpConfig.setSmtpHost(externalEmailAlertsConfig.getSmtpConfig().getHost());
+        smtpConfig.setSmtpTlsPort(externalEmailAlertsConfig.getSmtpConfig().getTlsPort());
+        smtpConfig.setAccountUsername(externalEmailAlertsConfig.getSmtpConfig().getAccountUsername());
+        smtpConfig.setAccountPassword(externalEmailAlertsConfig.getSmtpConfig().getAccountPassword());
+        smtpConfig.setFromAddr(externalEmailAlertsConfig.getSmtpConfig().getFromAddress());
+        smtpConfig.setToAddr(externalEmailAlertsConfig.getSmtpConfig().getToAddress());
+
+        final EmailAlertsType emailAlertsConfig = new EmailAlertsType();
+        emailAlertsConfig.setEnabled(externalEmailAlertsConfig.isEnabled());
         emailAlertsConfig.setSmtpConfig(smtpConfig);
         return emailAlertsConfig;
     }

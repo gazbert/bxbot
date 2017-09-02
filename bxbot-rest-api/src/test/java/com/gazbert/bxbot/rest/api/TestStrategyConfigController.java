@@ -35,6 +35,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.ArrayList;
@@ -42,6 +43,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -79,10 +81,11 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
     @MockBean
     StrategyConfigService strategyConfigService;
 
+    // Need this even though not used in the test directly because Spring loads it on startup...
     @MockBean
     private TradingEngine tradingEngine;
 
-    // Need this even though not used in the test directly because Spring loads the Email Alerts config on startup...
+    // Need this even though not used in the test directly because Spring loads it on startup...
     @MockBean
     private EmailAlerter emailAlerter;
 
@@ -95,7 +98,6 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
     public void testGetAllStrategyConfig() throws Exception {
 
         given(strategyConfigService.getAllStrategyConfig()).willReturn(allTheStrategiesConfig());
-        tradingEngine.start();
 
         mockMvc.perform(get("/api/config/strategy/")
                 .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD)))
@@ -187,11 +189,15 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
 
         given(strategyConfigService.updateStrategyConfig(someStrategyConfig())).willReturn(someStrategyConfig());
 
-        mockMvc.perform(put("/api/config/strategy/" + STRAT_1_ID)
+        final MvcResult result = mockMvc.perform(put("/api/config/strategy/" + STRAT_1_ID)
                 .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD))
                 .contentType(CONTENT_TYPE)
                 .content(jsonify(someStrategyConfig())))
-                .andExpect(status().isOk());
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andReturn();
+
+        assertEquals(jsonify(someStrategyConfig()), result.getResponse().getContentAsString());
     }
 
     @Test
@@ -282,11 +288,15 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
 
         given(strategyConfigService.createStrategyConfig(someStrategyConfig())).willReturn(someStrategyConfig());
 
-        mockMvc.perform(post("/api/config/strategy/" + STRAT_1_ID)
+        final MvcResult result = mockMvc.perform(post("/api/config/strategy/" + STRAT_1_ID)
                 .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD))
                 .contentType(CONTENT_TYPE)
                 .content(jsonify(someStrategyConfig())))
-                .andExpect(status().isCreated());
+                .andDo(print())
+                .andExpect(status().isCreated())
+                .andReturn();
+
+        assertEquals(jsonify(someStrategyConfig()), result.getResponse().getContentAsString());
     }
 
     @Test

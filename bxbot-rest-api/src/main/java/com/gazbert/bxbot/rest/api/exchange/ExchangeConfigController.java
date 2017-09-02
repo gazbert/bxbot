@@ -27,7 +27,6 @@ import com.gazbert.bxbot.domain.exchange.ExchangeConfig;
 import com.gazbert.bxbot.services.ExchangeConfigService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -37,7 +36,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 /**
  * <p>
@@ -81,10 +79,10 @@ class ExchangeConfigController {
      * Updates Exchange configuration for the bot.
      *
      * @return 200 'OK' HTTP status code with updated Exchange config in the body if update successful, some other
-     *         HTTP status code otherwise.
+     * HTTP status code otherwise.
      */
     @RequestMapping(value = "/exchange", method = RequestMethod.PUT)
-    ResponseEntity<?> updateExchange(@AuthenticationPrincipal User user, @RequestBody ExchangeConfig config) {
+    public ResponseEntity<?> updateExchange(@AuthenticationPrincipal User user, @RequestBody ExchangeConfig config) {
 
         LOG.info("PUT /exchange - updateExchange() - caller: " + user.getUsername());
         LOG.info("Request: " + config);

@@ -35,10 +35,12 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.math.BigDecimal;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -66,10 +68,11 @@ public class TestEngineConfigController extends AbstractConfigControllerTest {
     @MockBean
     private EngineConfigService engineConfigService;
 
+    // Need this even though not used in the test directly because Spring loads it on startup...
     @MockBean
     private TradingEngine tradingEngine;
 
-    // Need this even though not used in the test directly because Spring loads the Email Alerts config on startup...
+    // Need this even though not used in the test directly because Spring loads it on startup...
     @MockBean
     private EmailAlerter emailAlerter;
 
@@ -82,7 +85,6 @@ public class TestEngineConfigController extends AbstractConfigControllerTest {
     public void testGetEngineConfig() throws Exception {
 
         given(engineConfigService.getEngineConfig()).willReturn(someEngineConfig());
-        tradingEngine.start();
 
         mockMvc.perform(get("/api/config/engine")
                 .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD)))
@@ -117,11 +119,18 @@ public class TestEngineConfigController extends AbstractConfigControllerTest {
     @Test
     public void testUpdateEngineConfig() throws Exception {
 
-        mockMvc.perform(put("/api/config/engine")
+        given(engineConfigService.updateEngineConfig(someEngineConfig())).willReturn(someEngineConfig());
+
+        final MvcResult result = mockMvc.perform(put("/api/config/engine/")
                 .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD))
                 .contentType(CONTENT_TYPE)
                 .content(jsonify(someEngineConfig())))
-                .andExpect(status().isOk());
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andReturn();
+
+        // FIXME - response body is empty?!
+//        assertEquals(jsonify(someEngineConfig()), result.getResponse().getContentAsString());
     }
 
     @Test

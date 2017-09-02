@@ -23,22 +23,20 @@
 
 package com.gazbert.bxbot.rest.api.emailalerts;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.springframework.security.core.userdetails.User;
 import com.gazbert.bxbot.domain.emailalerts.EmailAlertsConfig;
 import com.gazbert.bxbot.services.EmailAlertsConfigService;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 /**
  * <p>
@@ -74,9 +72,6 @@ class EmailAlertsConfigController {
 
         final EmailAlertsConfig emailAlertsConfig = emailAlertsConfigService.getEmailAlertsConfig();
 
-        // TODO - Strip out the Account password for now - too risky to expose?
-        emailAlertsConfig.getSmtpConfig().setAccountPassword(null);
-
         LOG.info("Response: " + emailAlertsConfig);
         return emailAlertsConfig;
     }
@@ -85,10 +80,10 @@ class EmailAlertsConfigController {
      * Updates Email Alerts configuration for the bot.
      *
      * @return 200 'OK' HTTP status code and Email Alerts config in response body if config updated successfully,
-     *         some other HTTP status code otherwise.
+     * some other HTTP status code otherwise.
      */
     @RequestMapping(value = "/emailalerts", method = RequestMethod.PUT)
-    ResponseEntity<?> updateEmailAlerts(@AuthenticationPrincipal User user, @RequestBody EmailAlertsConfig config) {
+    public ResponseEntity<?> updateEmailAlerts(@AuthenticationPrincipal User user, @RequestBody EmailAlertsConfig config) {
 
         LOG.info("PUT /emailalerts - updateEmailAlerts() - caller: " + user.getUsername());
         LOG.info("Request: " + config);

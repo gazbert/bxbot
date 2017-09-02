@@ -23,19 +23,17 @@
 
 package com.gazbert.bxbot.rest.api.strategies;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.springframework.security.core.userdetails.User;
 import com.gazbert.bxbot.domain.strategy.StrategyConfig;
 import com.gazbert.bxbot.services.StrategyConfigService;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.util.List;
 
@@ -105,7 +103,7 @@ class StrategyConfigController {
      *         404 'Not Found' HTTP status code if Strategy config not found.
      */
     @RequestMapping(value = "/strategy/{strategyId}", method = RequestMethod.PUT)
-    ResponseEntity<?> updateStrategy(@AuthenticationPrincipal User user, @PathVariable String strategyId,
+    public ResponseEntity<?> updateStrategy(@AuthenticationPrincipal User user, @PathVariable String strategyId,
                                      @RequestBody StrategyConfig config) {
 
         LOG.info("PUT /strategy/" + strategyId + " - updateStrategy() - caller: " + user.getUsername());
@@ -127,11 +125,11 @@ class StrategyConfigController {
      * @param user       the authenticated user.
      * @param strategyId id of the Strategy config to create.
      * @param config     the new Strategy config.
-     * @return 201 'Created' HTTP status code if create successful, 409 'Conflict' HTTP status code if
-     * Strategy config already exists.
+     * @return 201 'Created' HTTP status code and created Strategy config in response body if create successful,
+     *         409 'Conflict' HTTP status code if Strategy config already exists.
      */
     @RequestMapping(value = "/strategy/{strategyId}", method = RequestMethod.POST)
-    ResponseEntity<?> createStrategy(@AuthenticationPrincipal User user, @PathVariable String strategyId,
+    public ResponseEntity<?> createStrategy(@AuthenticationPrincipal User user, @PathVariable String strategyId,
                                      @RequestBody StrategyConfig config) {
 
         LOG.info("POST /strategy/" + strategyId + " - createStrategy() - caller: " + user.getUsername());
@@ -143,11 +141,7 @@ class StrategyConfigController {
 
         final StrategyConfig createdConfig = strategyConfigService.createStrategyConfig(config);
         if (createdConfig.getId() != null) {
-            final HttpHeaders httpHeaders = new HttpHeaders();
-            httpHeaders.setLocation(ServletUriComponentsBuilder
-                    .fromCurrentRequest().path("/{strategyId}")
-                    .buildAndExpand(createdConfig.getId()).toUri());
-            return new ResponseEntity<>(null, httpHeaders, HttpStatus.CREATED);
+            return new ResponseEntity<>(createdConfig, HttpStatus.CREATED);
 
         } else {
             return new ResponseEntity<>(HttpStatus.CONFLICT);
