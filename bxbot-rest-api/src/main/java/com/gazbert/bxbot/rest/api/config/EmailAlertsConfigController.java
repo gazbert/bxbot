@@ -21,10 +21,10 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.rest.api.engine;
+package com.gazbert.bxbot.rest.api.config;
 
-import com.gazbert.bxbot.domain.engine.EngineConfig;
-import com.gazbert.bxbot.services.EngineConfigService;
+import com.gazbert.bxbot.domain.emailalerts.EmailAlertsConfig;
+import com.gazbert.bxbot.services.EmailAlertsConfigService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,57 +39,58 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Controller for directing Engine config requests.
  * <p>
- * Engine config can only be fetched and updated - it cannot be deleted or created.
+ * Controller for directing Email Alerts config requests.
  * <p>
- * There is only 1 Trading Engine per bot.
+ * Email Alerts config can only be fetched and updated - it cannot be deleted or created.
+ * <p>
+ * There is only 1 Email Alerter per bot.
  *
  * @author gazbert
  * @since 1.0
  */
 @RestController
 @RequestMapping("/api/config")
-public class EngineConfigController {
+public class EmailAlertsConfigController {
 
     private static final Logger LOG = LogManager.getLogger();
-    private final EngineConfigService engineConfigService;
+    private final EmailAlertsConfigService emailAlertsConfigService;
 
     @Autowired
-    public EngineConfigController(EngineConfigService engineConfigService) {
-        Assert.notNull(engineConfigService, "engineConfigService dependency cannot be null!");
-        this.engineConfigService = engineConfigService;
+    public EmailAlertsConfigController(EmailAlertsConfigService emailAlertsConfigService) {
+        Assert.notNull(emailAlertsConfigService, "emailAlertsConfigService dependency cannot be null!");
+        this.emailAlertsConfigService = emailAlertsConfigService;
     }
 
     /**
-     * Returns the Engine configuration for the bot.
+     * Returns the Email Alerts configuration for the bot.
      *
-     * @return the Engine configuration.
+     * @return the Email Alerts configuration.
      */
-    @RequestMapping(value = "/engine", method = RequestMethod.GET)
-    public EngineConfig getEngine(@AuthenticationPrincipal User user) {
+    @RequestMapping(value = "/email-alerts", method = RequestMethod.GET)
+    public EmailAlertsConfig getEmailAlerts(@AuthenticationPrincipal User user) {
 
-        LOG.info("GET /engine - getEngine() - caller: " + user.getUsername());
+        LOG.info("GET /email-alerts - getEmailAlerts() - caller: " + user.getUsername());
 
-        final EngineConfig engineConfig = engineConfigService.getEngineConfig();
+        final EmailAlertsConfig emailAlertsConfig = emailAlertsConfigService.getEmailAlertsConfig();
 
-        LOG.info("Response: " + engineConfig);
-        return engineConfig;
+        LOG.info("Response: " + emailAlertsConfig);
+        return emailAlertsConfig;
     }
 
     /**
-     * Updates the Engine configuration for the bot.
+     * Updates the Email Alerts configuration for the bot.
      *
-     * @return 200 'OK' HTTP status code and updated Engine config in the response body if update successful,
+     * @return 200 'OK' HTTP status code and Email Alerts config in response body if update successful,
      *         some other HTTP status code otherwise.
      */
-    @RequestMapping(value = "/engine", method = RequestMethod.PUT)
-    public ResponseEntity<?> updateEngine(@AuthenticationPrincipal User user, @RequestBody EngineConfig config) {
+    @RequestMapping(value = "/email-alerts", method = RequestMethod.PUT)
+    public ResponseEntity<?> updateEmailAlerts(@AuthenticationPrincipal User user, @RequestBody EmailAlertsConfig config) {
 
-        LOG.info("PUT /engine - updateEngine() - caller: " + user.getUsername());
+        LOG.info("PUT /email-alerts - updateEmailAlerts() - caller: " + user.getUsername());
         LOG.info("Request: " + config);
 
-        final EngineConfig updatedConfig = engineConfigService.updateEngineConfig(config);
+        final EmailAlertsConfig updatedConfig = emailAlertsConfigService.updateEmailAlertsConfig(config);
         return new ResponseEntity<>(updatedConfig, HttpStatus.OK);
     }
 }

@@ -39,31 +39,31 @@ import java.nio.charset.Charset;
 import java.util.Arrays;
 
 /**
- * Base class for controller test classes.
+ * Base class for Controller test classes.
  *
  * @author gazbert
  */
-abstract class AbstractConfigControllerTest {
+public abstract class AbstractConfigControllerTest {
 
     /**
      * This must match security.user.name in the src/test/resources/application.properties file.
      */
-    static final String VALID_USER_LOGINID = "unit-test-user";
+    protected static final String VALID_USER_LOGINID = "unit-test-user";
 
     /**
      * This must match a security.user.password in the src/test/resources/application.properties file.
      */
-    static final String VALID_USER_PASSWORD = "unit-test-password";
+    protected static final String VALID_USER_PASSWORD = "unit-test-password";
 
     /**
      * Used for bad credentials tests.
      */
-    static final String INVALID_USER_PASSWORD = "not-valid-password";
+    protected static final String INVALID_USER_PASSWORD = "not-valid-password";
 
     /**
      * We'll always be sending/receiving JSON content in REST API.
      */
-    static final MediaType CONTENT_TYPE = new MediaType(MediaType.APPLICATION_JSON.getType(),
+    protected static final MediaType CONTENT_TYPE = new MediaType(MediaType.APPLICATION_JSON.getType(),
             MediaType.APPLICATION_JSON.getSubtype(), Charset.forName("utf8"));
 
     /**
@@ -77,7 +77,7 @@ abstract class AbstractConfigControllerTest {
     @Autowired
     protected FilterChainProxy springSecurityFilterChain;
 
-    MockMvc mockMvc;
+    protected MockMvc mockMvc;
 
 
     @Autowired
@@ -96,7 +96,7 @@ abstract class AbstractConfigControllerTest {
     // Shared utils
     // ------------------------------------------------------------------------------------------------
 
-    String buildAuthorizationHeaderValue(String username, String password) throws Exception {
+    protected String buildAuthorizationHeaderValue(String username, String password) throws Exception {
         return "Basic " + new String(Base64Utils.encode(
                 (username + ":" + password).getBytes("UTF-8")), Charset.forName("UTF-8"));
     }
@@ -104,7 +104,7 @@ abstract class AbstractConfigControllerTest {
     /*
      * Converts an object into its JSON string representation.
      */
-    String jsonify(Object objectToJsonify) throws IOException {
+    protected String jsonify(Object objectToJsonify) throws IOException {
         final MockHttpOutputMessage mockHttpOutputMessage = new MockHttpOutputMessage();
         mappingJackson2HttpMessageConverter.write(objectToJsonify, MediaType.APPLICATION_JSON, mockHttpOutputMessage);
         return mockHttpOutputMessage.getBodyAsString();
