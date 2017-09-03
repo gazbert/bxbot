@@ -41,14 +41,16 @@ import org.springframework.web.bind.annotation.RestController;
  * <p>
  * Controller for directing Exchange config requests.
  * <p>
- * Exchange config can only be fetched and updated - there is only 1 Exchange Adapter per bot.
+ * Exchange config can only be fetched and updated - it cannot be deleted or created.
+ * <p>
+ * There is only 1 Exchange Adapter per bot.
  *
  * @author gazbert
  * @since 1.0
  */
 @RestController
 @RequestMapping("/api/config/")
-class ExchangeConfigController {
+public class ExchangeConfigController {
 
     private static final Logger LOG = LogManager.getLogger();
     private final ExchangeConfigService exchangeConfigService;
@@ -59,7 +61,7 @@ class ExchangeConfigController {
     }
 
     /**
-     * Returns Exchange configuration for the bot.
+     * Returns the Exchange configuration for the bot.
      * <p>
      * The AuthenticationConfig is stripped out and not exposed for remote consumption.
      * The API keys/credentials should not leave the bot's local machine via the REST API.
@@ -79,7 +81,7 @@ class ExchangeConfigController {
     }
 
     /**
-     * Updates Exchange configuration for the bot.
+     * Updates the Exchange configuration for the bot.
      * <p>
      * Any AuthenticationConfig is stripped out and not updated.
      * The API keys/credentials should not enter the bot's local machine via the REST API.

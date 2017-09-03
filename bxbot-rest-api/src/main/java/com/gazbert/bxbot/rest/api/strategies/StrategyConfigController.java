@@ -45,7 +45,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/api/config")
-class StrategyConfigController {
+public class StrategyConfigController {
 
     private static final Logger LOG = LogManager.getLogger();
     private final StrategyConfigService strategyConfigService;

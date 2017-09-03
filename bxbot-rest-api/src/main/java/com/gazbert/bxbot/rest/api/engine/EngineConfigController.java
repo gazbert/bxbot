@@ -48,7 +48,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/api/config")
-class EngineConfigController {
+public class EngineConfigController {
 
     private static final Logger LOG = LogManager.getLogger();
     private final EngineConfigService engineConfigService;

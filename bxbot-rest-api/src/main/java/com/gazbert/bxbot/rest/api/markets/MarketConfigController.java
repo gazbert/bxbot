@@ -45,7 +45,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/api/config")
-class MarketConfigController {
+public class MarketConfigController {
 
     private static final Logger LOG = LogManager.getLogger();
     private final MarketConfigService marketConfigService;

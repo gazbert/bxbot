@@ -49,7 +49,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/api/config")
-class EmailAlertsConfigController {
+public class EmailAlertsConfigController {
 
     private static final Logger LOG = LogManager.getLogger();
     private final EmailAlertsConfigService emailAlertsConfigService;
