@@ -44,7 +44,7 @@ import org.springframework.web.bind.annotation.RestController;
  * <p>
  * Email Alerts config can only be fetched and updated - it cannot be deleted or created.
  * <p>
- * There is only 1 Email Alerts config per bot.
+ * There is only 1 Email Alerter per bot.
  *
  * @author gazbert
  * @since 1.0

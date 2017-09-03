@@ -43,7 +43,7 @@ import org.springframework.web.bind.annotation.RestController;
  * <p>
  * Exchange config can only be fetched and updated - it cannot be deleted or created.
  * <p>
- * There is only 1 Exchange config per bot.
+ * There is only 1 Exchange Adapter per bot.
  *
  * @author gazbert
  * @since 1.0
