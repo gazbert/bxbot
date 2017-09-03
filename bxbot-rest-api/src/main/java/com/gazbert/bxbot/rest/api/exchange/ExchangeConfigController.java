@@ -60,23 +60,29 @@ class ExchangeConfigController {
 
     /**
      * Returns Exchange configuration for the bot.
+     * <p>
+     * The AuthenticationConfig is stripped out and not exposed for remote consumption.
+     * The API keys/credentials should not leave the bot's local machine via the REST API.
      *
      * @return the Exchange configuration.
      */
     @RequestMapping(value = "/exchange", method = RequestMethod.GET)
-    public ExchangeAdapterConfig getExchange(@AuthenticationPrincipal User user) {
+    public ExchangeConfig getExchange(@AuthenticationPrincipal User user) {
 
         LOG.info("GET /exchange - getExchange() - caller: " + user.getUsername());
 
         final ExchangeConfig exchangeConfig = exchangeConfigService.getExchangeConfig();
-        final ExchangeAdapterConfig exchangeAdapterConfig = adaptInternalConfigToExternalPayload(exchangeConfig);
+        exchangeConfig.setAuthenticationConfig(null);
 
-        LOG.info("Response: " + exchangeAdapterConfig);
-        return exchangeAdapterConfig;
+        LOG.info("Response: " + exchangeConfig);
+        return exchangeConfig;
     }
 
     /**
      * Updates Exchange configuration for the bot.
+     * <p>
+     * Any AuthenticationConfig is stripped out and not updated.
+     * The API keys/credentials should not enter the bot's local machine via the REST API.
      *
      * @return 200 'OK' HTTP status code with updated Exchange config in the body if update successful, some other
      * HTTP status code otherwise.
@@ -87,7 +93,8 @@ class ExchangeConfigController {
         LOG.info("PUT /exchange - updateExchange() - caller: " + user.getUsername());
         LOG.info("Request: " + config);
 
-        final ExchangeConfig updatedConfig = exchangeConfigService.updateExchangeConfig(config);
+        final ExchangeConfig updatedConfig = exchangeConfigService.updateExchangeConfig(
+                mergeWithLocalAuthenticationConfig(config));
         return new ResponseEntity<>(updatedConfig, HttpStatus.OK);
     }
 
@@ -95,28 +102,10 @@ class ExchangeConfigController {
     // Private utils
     // ------------------------------------------------------------------------
 
-    private ExchangeAdapterConfig adaptInternalConfigToExternalPayload(ExchangeConfig internalConfig) {
-
-        final ExchangeAdapterConfig exchangeAdapterConfig = new ExchangeAdapterConfig();
-        exchangeAdapterConfig.setName(internalConfig.getExchangeName());
-        exchangeAdapterConfig.setClassName(internalConfig.getExchangeAdapter());
-
-        final NetworkConfig networkConfig = new NetworkConfig();
-        networkConfig.setConnectionTimeout(internalConfig.getNetworkConfig().getConnectionTimeout());
-        networkConfig.setNonFatalErrorHttpStatusCodes(internalConfig.getNetworkConfig().getNonFatalErrorCodes());
-        networkConfig.setNonFatalErrorMessages(internalConfig.getNetworkConfig().getNonFatalErrorMessages());
-        exchangeAdapterConfig.setNetworkConfig(networkConfig);
-
-        final OptionalConfig optionalConfig = new OptionalConfig();
-        optionalConfig.setConfigItems(internalConfig.getOptionalConfig().getItems());
-        exchangeAdapterConfig.setOptionalConfig(optionalConfig);
-
-        // TODO - Not exposing AuthenticationConfig for now - too risky?
-//        final AuthenticationConfig authenticationConfig = new AuthenticationConfig();
-//        authenticationConfig.setItems(internalConfig.getAuthenticationConfig().getItems());
-//        exchangeAdapterConfig.setAuthenticationConfig(authenticationConfig);
-
-        return exchangeAdapterConfig;
+    private ExchangeConfig mergeWithLocalAuthenticationConfig(ExchangeConfig remoteConfig) {
+        final ExchangeConfig localConfig = exchangeConfigService.getExchangeConfig();
+        remoteConfig.setAuthenticationConfig(localConfig.getAuthenticationConfig());
+        return remoteConfig;
     }
 }
 

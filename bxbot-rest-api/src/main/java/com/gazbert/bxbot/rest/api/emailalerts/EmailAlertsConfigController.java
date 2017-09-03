@@ -61,7 +61,7 @@ class EmailAlertsConfigController {
     }
 
     /**
-     * Returns Email Alerts configuration for the bot.
+     * Returns the Email Alerts configuration for the bot.
      *
      * @return the Email Alerts configuration.
      */
@@ -77,10 +77,10 @@ class EmailAlertsConfigController {
     }
 
     /**
-     * Updates Email Alerts configuration for the bot.
+     * Updates the Email Alerts configuration for the bot.
      *
      * @return 200 'OK' HTTP status code and Email Alerts config in response body if config updated successfully,
-     * some other HTTP status code otherwise.
+     *         some other HTTP status code otherwise.
      */
     @RequestMapping(value = "/emailalerts", method = RequestMethod.PUT)
     public ResponseEntity<?> updateEmailAlerts(@AuthenticationPrincipal User user, @RequestBody EmailAlertsConfig config) {

@@ -129,7 +129,7 @@ public class ExchangeConfigRepositoryXmlDatastore implements ExchangeConfigRepos
         exchangeConfig.setNetworkConfig(networkConfig);
         exchangeConfig.setOptionalConfig(optionalConfig);
 
-        // TODO - Currently, we don't accept AuthenticationConfig in the service - security risk?
+        // TODO - Currently, we don't accept AuthenticationConfig - security risk?
         // We load the existing auth config and merge it in with the updated stuff...
         final ExchangeType existingExchangeConfig = ConfigurationManager.loadConfig(ExchangeType.class,
                 EXCHANGE_CONFIG_XML_FILENAME, EXCHANGE_CONFIG_XSD_FILENAME);

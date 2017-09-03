@@ -25,6 +25,7 @@ package com.gazbert.bxbot.rest.api;
 
 import com.gazbert.bxbot.core.engine.TradingEngine;
 import com.gazbert.bxbot.core.mail.EmailAlerter;
+import com.gazbert.bxbot.domain.exchange.AuthenticationConfig;
 import com.gazbert.bxbot.domain.exchange.ExchangeConfig;
 import com.gazbert.bxbot.domain.exchange.NetworkConfig;
 import com.gazbert.bxbot.domain.exchange.OptionalConfig;
@@ -109,22 +110,22 @@ public class TestExchangeConfigController extends AbstractConfigControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
 
-                .andExpect(jsonPath("$.name").value(EXCHANGE_NAME))
-                .andExpect(jsonPath("$.className").value(EXCHANGE_ADAPTER))
+                .andExpect(jsonPath("$.exchangeName").value(EXCHANGE_NAME))
+                .andExpect(jsonPath("$.exchangeAdapter").value(EXCHANGE_ADAPTER))
 
-                // REST API currently does not expose AuthenticationConfig - potential security risk?
+                // REST API does not expose AuthenticationConfig - potential security risk.
                 .andExpect(jsonPath("$.authenticationConfig").doesNotExist())
 
                 .andExpect(jsonPath("$.networkConfig.connectionTimeout").value(CONNECTION_TIMEOUT))
-                .andExpect(jsonPath("$.networkConfig.nonFatalErrorHttpStatusCodes[0]").value(HTTP_STATUS_502))
-                .andExpect(jsonPath("$.networkConfig.nonFatalErrorHttpStatusCodes[1]").value(HTTP_STATUS_503))
-                .andExpect(jsonPath("$.networkConfig.nonFatalErrorHttpStatusCodes[2]").value(HTTP_STATUS_504))
+                .andExpect(jsonPath("$.networkConfig.nonFatalErrorCodes[0]").value(HTTP_STATUS_502))
+                .andExpect(jsonPath("$.networkConfig.nonFatalErrorCodes[1]").value(HTTP_STATUS_503))
+                .andExpect(jsonPath("$.networkConfig.nonFatalErrorCodes[2]").value(HTTP_STATUS_504))
                 .andExpect(jsonPath("$.networkConfig.nonFatalErrorMessages[0]").value(ERROR_MESSAGE_REFUSED))
                 .andExpect(jsonPath("$.networkConfig.nonFatalErrorMessages[1]").value(ERROR_MESSAGE_RESET))
                 .andExpect(jsonPath("$.networkConfig.nonFatalErrorMessages[2]").value(ERROR_MESSAGE_CLOSED))
 
-                .andExpect(jsonPath("$.optionalConfig.configItems.buy-fee").value(BUY_FEE_CONFIG_ITEM_VALUE))
-                .andExpect(jsonPath("$.optionalConfig.configItems.sell-fee").value(SELL_FEE_CONFIG_ITEM_VALUE));
+                .andExpect(jsonPath("$.optionalConfig.items.buy-fee").value(BUY_FEE_CONFIG_ITEM_VALUE))
+                .andExpect(jsonPath("$.optionalConfig.items.sell-fee").value(SELL_FEE_CONFIG_ITEM_VALUE));
     }
 
     @Test
@@ -147,6 +148,7 @@ public class TestExchangeConfigController extends AbstractConfigControllerTest {
     @Test
     public void testUpdateExchangeConfig() throws Exception {
 
+        given(exchangeConfigService.getExchangeConfig()).willReturn(someExchangeConfig());
         given(exchangeConfigService.updateExchangeConfig(someExchangeConfig())).willReturn(someExchangeConfig());
 
         final MvcResult result = mockMvc.perform(put("/api/config/exchange")
@@ -184,6 +186,7 @@ public class TestExchangeConfigController extends AbstractConfigControllerTest {
     private static ExchangeConfig someExchangeConfig() {
 
         // We don't expose AuthenticationConfig in the REST API - security risk
+        // final AuthenticationConfig authenticationConfig = new AuthenticationConfig();
 
         final NetworkConfig networkConfig = new NetworkConfig();
         networkConfig.setConnectionTimeout(CONNECTION_TIMEOUT);
