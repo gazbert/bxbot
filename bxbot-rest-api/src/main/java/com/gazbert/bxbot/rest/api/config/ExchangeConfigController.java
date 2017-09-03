@@ -21,13 +21,12 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.rest.api.exchange;
+package com.gazbert.bxbot.rest.api.config;
 
 import com.gazbert.bxbot.domain.exchange.ExchangeConfig;
 import com.gazbert.bxbot.services.ExchangeConfigService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -37,20 +36,21 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 /**
  * <p>
  * Controller for directing Exchange config requests.
  * <p>
- * Exchange config can only be fetched and updated - there is only 1 Exchange Adapter per bot.
+ * Exchange config can only be fetched and updated - it cannot be deleted or created.
+ * <p>
+ * There is only 1 Exchange Adapter per bot.
  *
  * @author gazbert
  * @since 1.0
  */
 @RestController
 @RequestMapping("/api/config/")
-class ExchangeConfigController {
+public class ExchangeConfigController {
 
     private static final Logger LOG = LogManager.getLogger();
     private final ExchangeConfigService exchangeConfigService;
@@ -61,65 +61,53 @@ class ExchangeConfigController {
     }
 
     /**
-     * Returns Exchange configuration for the bot.
+     * Returns the Exchange configuration for the bot.
+     * <p>
+     * The AuthenticationConfig is stripped out and not exposed for remote consumption.
+     * The API keys/credentials should not leave the bot's local machine via the REST API.
      *
      * @return the Exchange configuration.
      */
     @RequestMapping(value = "/exchange", method = RequestMethod.GET)
-    public ExchangeAdapterConfig getExchange(@AuthenticationPrincipal User user) {
+    public ExchangeConfig getExchange(@AuthenticationPrincipal User user) {
 
         LOG.info("GET /exchange - getExchange() - caller: " + user.getUsername());
 
         final ExchangeConfig exchangeConfig = exchangeConfigService.getExchangeConfig();
-        final ExchangeAdapterConfig exchangeAdapterConfig = adaptInternalConfigToExternalPayload(exchangeConfig);
+        exchangeConfig.setAuthenticationConfig(null);
 
-        LOG.info("Response: " + exchangeAdapterConfig);
-        return exchangeAdapterConfig;
+        LOG.info("Response: " + exchangeConfig);
+        return exchangeConfig;
     }
 
     /**
-     * Updates Exchange configuration for the bot.
+     * Updates the Exchange configuration for the bot.
+     * <p>
+     * Any AuthenticationConfig is stripped out and not updated.
+     * The API keys/credentials should not enter the bot's local machine via the REST API.
      *
-     * @return 204 'No Content' HTTP status code if exchange config was updated, some other HTTP status code otherwise.
+     * @return 200 'OK' HTTP status code with updated Exchange config in the body if update successful, some other
+     * HTTP status code otherwise.
      */
     @RequestMapping(value = "/exchange", method = RequestMethod.PUT)
-    ResponseEntity<?> updateExchange(@AuthenticationPrincipal User user, @RequestBody ExchangeConfig config) {
+    public ResponseEntity<?> updateExchange(@AuthenticationPrincipal User user, @RequestBody ExchangeConfig config) {
 
         LOG.info("PUT /exchange - updateExchange() - caller: " + user.getUsername());
         LOG.info("Request: " + config);
 
-        exchangeConfigService.updateExchangeConfig(config);
-        final HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.setLocation(ServletUriComponentsBuilder.fromCurrentRequest().path("/").buildAndExpand().toUri());
-        return new ResponseEntity<>(null, httpHeaders, HttpStatus.NO_CONTENT);
+        final ExchangeConfig updatedConfig = exchangeConfigService.updateExchangeConfig(
+                mergeWithLocalAuthenticationConfig(config));
+        return new ResponseEntity<>(updatedConfig, HttpStatus.OK);
     }
 
     // ------------------------------------------------------------------------
     // Private utils
     // ------------------------------------------------------------------------
 
-    private ExchangeAdapterConfig adaptInternalConfigToExternalPayload(ExchangeConfig internalConfig) {
-
-        final ExchangeAdapterConfig exchangeAdapterConfig = new ExchangeAdapterConfig();
-        exchangeAdapterConfig.setName(internalConfig.getExchangeName());
-        exchangeAdapterConfig.setClassName(internalConfig.getExchangeAdapter());
-
-        final NetworkConfig networkConfig = new NetworkConfig();
-        networkConfig.setConnectionTimeout(internalConfig.getNetworkConfig().getConnectionTimeout());
-        networkConfig.setNonFatalErrorHttpStatusCodes(internalConfig.getNetworkConfig().getNonFatalErrorCodes());
-        networkConfig.setNonFatalErrorMessages(internalConfig.getNetworkConfig().getNonFatalErrorMessages());
-        exchangeAdapterConfig.setNetworkConfig(networkConfig);
-
-        final OptionalConfig optionalConfig = new OptionalConfig();
-        optionalConfig.setConfigItems(internalConfig.getOptionalConfig().getItems());
-        exchangeAdapterConfig.setOptionalConfig(optionalConfig);
-
-        // TODO - Not exposing AuthenticationConfig for now - too risky?
-//        final AuthenticationConfig authenticationConfig = new AuthenticationConfig();
-//        authenticationConfig.setItems(internalConfig.getAuthenticationConfig().getItems());
-//        exchangeAdapterConfig.setAuthenticationConfig(authenticationConfig);
-
-        return exchangeAdapterConfig;
+    private ExchangeConfig mergeWithLocalAuthenticationConfig(ExchangeConfig remoteConfig) {
+        final ExchangeConfig localConfig = exchangeConfigService.getExchangeConfig();
+        remoteConfig.setAuthenticationConfig(localConfig.getAuthenticationConfig());
+        return remoteConfig;
     }
 }
 

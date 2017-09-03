@@ -31,7 +31,7 @@ import com.gazbert.bxbot.domain.engine.EngineConfig;
  */
 public interface EngineConfigRepository {
 
-    EngineConfig getConfig();
+    EngineConfig get();
 
-    void updateConfig(EngineConfig config);
+    EngineConfig save(EngineConfig config);
 }

@@ -23,7 +23,6 @@
 
 package com.gazbert.bxbot.repository.impl;
 
-
 import com.gazbert.bxbot.datastore.ConfigurationManager;
 import com.gazbert.bxbot.datastore.engine.generated.EngineType;
 import com.gazbert.bxbot.domain.engine.EngineConfig;
@@ -37,18 +36,20 @@ import static com.gazbert.bxbot.datastore.FileLocations.ENGINE_CONFIG_XML_FILENA
 import static com.gazbert.bxbot.datastore.FileLocations.ENGINE_CONFIG_XSD_FILENAME;
 
 /**
- * Implementation of the Engine config repository impl.
+ * An XML datastore implementation of the Engine config repository.
  *
  * @author gazbert
  */
 @Repository("engineConfigRepository")
 @Transactional
-public class EngineConfigRepositoryXmlImpl implements EngineConfigRepository {
+public class EngineConfigRepositoryXmlDatastore implements EngineConfigRepository {
 
     private static final Logger LOG = LogManager.getLogger();
 
     @Override
-    public EngineConfig getConfig() {
+    public EngineConfig get() {
+
+        LOG.info(() -> "Fetching EngineConfig...");
 
         final EngineType internalEngineConfig = ConfigurationManager.loadConfig(EngineType.class,
                 ENGINE_CONFIG_XML_FILENAME, ENGINE_CONFIG_XSD_FILENAME);
@@ -56,12 +57,16 @@ public class EngineConfigRepositoryXmlImpl implements EngineConfigRepository {
     }
 
     @Override
-    public void updateConfig(EngineConfig config) {
+    public EngineConfig save(EngineConfig config) {
 
-        LOG.info(() -> "About to update: " + config);
+        LOG.info(() -> "About to save EngineConfig: " + config);
 
         final EngineType internalEngineConfig = adaptExternalToInternalConfig(config);
         ConfigurationManager.saveConfig(EngineType.class, internalEngineConfig, ENGINE_CONFIG_XML_FILENAME);
+
+        final EngineType savedEngineConfig = ConfigurationManager.loadConfig(EngineType.class,
+                ENGINE_CONFIG_XML_FILENAME, ENGINE_CONFIG_XSD_FILENAME);
+        return adaptInternalToExternalConfig(savedEngineConfig);
     }
 
     // ------------------------------------------------------------------------------------------------

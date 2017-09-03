@@ -39,30 +39,38 @@ import static com.gazbert.bxbot.datastore.FileLocations.EXCHANGE_CONFIG_XML_FILE
 import static com.gazbert.bxbot.datastore.FileLocations.EXCHANGE_CONFIG_XSD_FILENAME;
 
 /**
- * Implementation of the Exchange config repository.
+ * An XML datastore implementation of the Exchange config repository.
  *
  * @author gazbert
  */
 @Repository("exchangeConfigRepository")
 @Transactional
-public class ExchangeConfigRepositoryXmlImpl implements ExchangeConfigRepository {
+public class ExchangeConfigRepositoryXmlDatastore implements ExchangeConfigRepository {
 
     private static final Logger LOG = LogManager.getLogger();
 
     @Override
-    public ExchangeConfig getConfig() {
+    public ExchangeConfig get() {
+
+        LOG.info(() -> "Fetching ExchangeConfig...");
+
         final ExchangeType internalEngineConfig = ConfigurationManager.loadConfig(ExchangeType.class,
                 EXCHANGE_CONFIG_XML_FILENAME, EXCHANGE_CONFIG_XSD_FILENAME);
         return adaptInternalToExternalConfig(internalEngineConfig);
     }
 
     @Override
-    public void updateConfig(ExchangeConfig config) {
+    public ExchangeConfig save(ExchangeConfig config) {
 
-        LOG.info(() -> "About to update: " + config);
+        LOG.info(() -> "About to save ExchangeConfig: " + config);
 
         final ExchangeType internalExchangeConfig = adaptExternalToInternalConfig(config);
         ConfigurationManager.saveConfig(ExchangeType.class, internalExchangeConfig, EXCHANGE_CONFIG_XML_FILENAME);
+
+        final ExchangeType internalEngineConfig = ConfigurationManager.loadConfig(ExchangeType.class,
+                EXCHANGE_CONFIG_XML_FILENAME, EXCHANGE_CONFIG_XSD_FILENAME);
+
+        return adaptInternalToExternalConfig(internalEngineConfig);
     }
 
     // ------------------------------------------------------------------------------------------------
@@ -121,7 +129,7 @@ public class ExchangeConfigRepositoryXmlImpl implements ExchangeConfigRepository
         exchangeConfig.setNetworkConfig(networkConfig);
         exchangeConfig.setOptionalConfig(optionalConfig);
 
-        // We don't accept AuthenticationConfig in the service - security risk
+        // TODO - Currently, we don't accept AuthenticationConfig - security risk?
         // We load the existing auth config and merge it in with the updated stuff...
         final ExchangeType existingExchangeConfig = ConfigurationManager.loadConfig(ExchangeType.class,
                 EXCHANGE_CONFIG_XML_FILENAME, EXCHANGE_CONFIG_XSD_FILENAME);

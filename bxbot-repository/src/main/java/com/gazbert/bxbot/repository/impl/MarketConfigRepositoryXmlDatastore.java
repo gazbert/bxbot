@@ -36,25 +36,28 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static com.gazbert.bxbot.datastore.FileLocations.MARKETS_CONFIG_XML_FILENAME;
 import static com.gazbert.bxbot.datastore.FileLocations.MARKETS_CONFIG_XSD_FILENAME;
 
 /**
- * Implementation of the Market config repository.
+ * An XML datastore implementation of the Market config repository.
  *
  * @author gazbert
  */
 @Repository("marketConfigRepository")
 @Transactional
-public class MarketConfigRepositoryXmlImpl implements MarketConfigRepository {
+public class MarketConfigRepositoryXmlDatastore implements MarketConfigRepository {
 
     private static final Logger LOG = LogManager.getLogger();
 
     @Override
 
-    public List<MarketConfig> findAllMarkets() {
+    public List<MarketConfig> findAll() {
+
+        LOG.info(() -> "Fetching all Market configs...");
 
         final MarketsType internalMarketsConfig = ConfigurationManager.loadConfig(MarketsType.class,
                 MARKETS_CONFIG_XML_FILENAME, MARKETS_CONFIG_XSD_FILENAME);
@@ -64,7 +67,7 @@ public class MarketConfigRepositoryXmlImpl implements MarketConfigRepository {
     @Override
     public MarketConfig findById(String id) {
 
-        LOG.info(() -> "Fetching config for market id: " + id);
+        LOG.info(() -> "Fetching Market config for id: " + id);
 
         final MarketsType internalMarketsConfig = ConfigurationManager.loadConfig(MarketsType.class,
                 MARKETS_CONFIG_XML_FILENAME, MARKETS_CONFIG_XSD_FILENAME);
@@ -78,7 +81,7 @@ public class MarketConfigRepositoryXmlImpl implements MarketConfigRepository {
     }
 
     @Override
-    public MarketConfig createMarket(MarketConfig config) {
+    public MarketConfig save(MarketConfig config) {
 
         final MarketsType internalMarketsConfig = ConfigurationManager.loadConfig(MarketsType.class,
                 MARKETS_CONFIG_XML_FILENAME, MARKETS_CONFIG_XSD_FILENAME);
@@ -89,65 +92,66 @@ public class MarketConfigRepositoryXmlImpl implements MarketConfigRepository {
                 .distinct()
                 .collect(Collectors.toList());
 
-        if (marketTypes.isEmpty()) {
+        if (config.getId() == null || config.getId().isEmpty()) {
 
-            internalMarketsConfig.getMarkets().add(adaptExternalToInternalConfig(config));
-            ConfigurationManager.saveConfig(MarketsType.class, internalMarketsConfig,
-                    MARKETS_CONFIG_XML_FILENAME);
+            LOG.info(() -> "About to create MarketConfig: " + config);
 
-            final MarketsType updatedInternalMarketsConfig = ConfigurationManager.loadConfig(
-                    MarketsType.class, MARKETS_CONFIG_XML_FILENAME, MARKETS_CONFIG_XSD_FILENAME);
+            if (marketTypes.isEmpty()) {
 
-            return adaptInternalToExternalConfig(
-                    updatedInternalMarketsConfig.getMarkets()
-                            .stream()
-                            .filter((item) -> item.getId().equals(config.getId()))
-                            .distinct()
-                            .collect(Collectors.toList()));
+                final MarketConfig newMarketConfig = new MarketConfig(config);
+                newMarketConfig.setId(generateUuid());
+
+                internalMarketsConfig.getMarkets().add(adaptExternalToInternalConfig(newMarketConfig));
+                ConfigurationManager.saveConfig(MarketsType.class, internalMarketsConfig,
+                        MARKETS_CONFIG_XML_FILENAME);
+
+                final MarketsType updatedInternalMarketsConfig = ConfigurationManager.loadConfig(
+                        MarketsType.class, MARKETS_CONFIG_XML_FILENAME, MARKETS_CONFIG_XSD_FILENAME);
+
+                return adaptInternalToExternalConfig(
+                        updatedInternalMarketsConfig.getMarkets()
+                                .stream()
+                                .filter((item) -> item.getId().equals(newMarketConfig.getId()))
+                                .distinct()
+                                .collect(Collectors.toList()));
+            } else {
+                throw new IllegalStateException("Trying to create new MarketConfig but null/empty id already exists. " +
+                        "MarketConfig: " + config + " Existing MarketConfig: "
+                        + adaptAllInternalToAllExternalConfig(internalMarketsConfig));
+            }
+
         } else {
-            // already have a matching id :-(
-            return new MarketConfig();
+
+            LOG.info(() -> "About to update MarketConfig: " + config);
+
+            if (!marketTypes.isEmpty()) {
+
+                internalMarketsConfig.getMarkets().remove(marketTypes.get(0)); // will only be 1 unique strat
+                internalMarketsConfig.getMarkets().add(adaptExternalToInternalConfig(config));
+                ConfigurationManager.saveConfig(MarketsType.class, internalMarketsConfig,
+                        MARKETS_CONFIG_XML_FILENAME);
+
+                final MarketsType updatedInternalMarketsConfig = ConfigurationManager.loadConfig(
+                        MarketsType.class, MARKETS_CONFIG_XML_FILENAME, MARKETS_CONFIG_XSD_FILENAME);
+
+                return adaptInternalToExternalConfig(
+                        updatedInternalMarketsConfig.getMarkets()
+                                .stream()
+                                .filter((item) -> item.getId().equals(config.getId()))
+                                .distinct()
+                                .collect(Collectors.toList()));
+            } else {
+                LOG.warn("Trying to update MarketConfig but id does not exist MarketConfig: " + config +
+                        " Existing MarketConfig: " + adaptAllInternalToAllExternalConfig(internalMarketsConfig));
+                return new MarketConfig();
+            }
         }
     }
 
     @Override
-    public MarketConfig updateMarket(MarketConfig config) {
+    public MarketConfig delete(String id) {
 
-        final MarketsType internalMarketsConfig = ConfigurationManager.loadConfig(MarketsType.class,
-                MARKETS_CONFIG_XML_FILENAME, MARKETS_CONFIG_XSD_FILENAME);
-
-        final List<MarketType> marketTypes = internalMarketsConfig.getMarkets()
-                .stream()
-                .filter((item) -> item.getId().equals(config.getId()))
-                .distinct()
-                .collect(Collectors.toList());
-
-        if (!marketTypes.isEmpty()) {
-
-            internalMarketsConfig.getMarkets().remove(marketTypes.get(0)); // will only be 1 unique strat
-            internalMarketsConfig.getMarkets().add(adaptExternalToInternalConfig(config));
-            ConfigurationManager.saveConfig(MarketsType.class, internalMarketsConfig,
-                    MARKETS_CONFIG_XML_FILENAME);
-
-            final MarketsType updatedInternalMarketsConfig = ConfigurationManager.loadConfig(
-                    MarketsType.class, MARKETS_CONFIG_XML_FILENAME, MARKETS_CONFIG_XSD_FILENAME);
-
-            return adaptInternalToExternalConfig(
-                    updatedInternalMarketsConfig.getMarkets()
-                            .stream()
-                            .filter((item) -> item.getId().equals(config.getId()))
-                            .distinct()
-                            .collect(Collectors.toList()));
-        } else {
-            // no matching id :-(
-            return new MarketConfig();
-        }
-    }
-
-    @Override
-    public MarketConfig deleteMarketById(String id) {
-
-        LOG.info(() -> "Deleting config for Market id: " + id);
+        LOG.info(() -> "Deleting Market config for id: " + id);
 
         final MarketsType internalMarketsConfig = ConfigurationManager.loadConfig(MarketsType.class,
                 MARKETS_CONFIG_XML_FILENAME, MARKETS_CONFIG_XSD_FILENAME);
@@ -226,5 +230,13 @@ public class MarketConfigRepositoryXmlImpl implements MarketConfigRepository {
         marketType.setCounterCurrency(externalMarketConfig.getCounterCurrency());
         marketType.setTradingStrategyId(externalMarketConfig.getTradingStrategyId());
         return marketType;
+    }
+
+    // ------------------------------------------------------------------------------------------------
+    // Util methods
+    // ------------------------------------------------------------------------------------------------
+
+    private String generateUuid() {
+        return UUID.randomUUID().toString();
     }
 }

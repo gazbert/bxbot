@@ -2,7 +2,7 @@ description = 'BX-bot Core'
 
 dependencies {
 
-    compile project(':bxbot-repository')
+    compile project(':bxbot-services')
     compile project(':bxbot-trading-api')
     compile project(':bxbot-exchange-api')
     compile project(':bxbot-strategy-api')

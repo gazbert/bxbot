@@ -21,37 +21,37 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.rest.api.emailalerts;
+package com.gazbert.bxbot.rest.api.config;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.springframework.security.core.userdetails.User;
 import com.gazbert.bxbot.domain.emailalerts.EmailAlertsConfig;
 import com.gazbert.bxbot.services.EmailAlertsConfigService;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 /**
  * <p>
  * Controller for directing Email Alerts config requests.
  * <p>
- * Email Alerts config can only be fetched and updated - there is only 1 Email Alerts configuration per bot.
+ * Email Alerts config can only be fetched and updated - it cannot be deleted or created.
+ * <p>
+ * There is only 1 Email Alerter per bot.
  *
  * @author gazbert
  * @since 1.0
  */
 @RestController
 @RequestMapping("/api/config")
-class EmailAlertsConfigController {
+public class EmailAlertsConfigController {
 
     private static final Logger LOG = LogManager.getLogger();
     private final EmailAlertsConfigService emailAlertsConfigService;
@@ -63,39 +63,35 @@ class EmailAlertsConfigController {
     }
 
     /**
-     * Returns Email Alerts configuration for the bot.
+     * Returns the Email Alerts configuration for the bot.
      *
      * @return the Email Alerts configuration.
      */
-    @RequestMapping(value = "/emailalerts", method = RequestMethod.GET)
+    @RequestMapping(value = "/email-alerts", method = RequestMethod.GET)
     public EmailAlertsConfig getEmailAlerts(@AuthenticationPrincipal User user) {
 
-        LOG.info("GET /emailalerts - getEmailAlerts() - caller: " + user.getUsername());
+        LOG.info("GET /email-alerts - getEmailAlerts() - caller: " + user.getUsername());
 
         final EmailAlertsConfig emailAlertsConfig = emailAlertsConfigService.getEmailAlertsConfig();
-
-        // TODO - Strip out the Account password for now - too risky to expose?
-        emailAlertsConfig.getSmtpConfig().setAccountPassword(null);
 
         LOG.info("Response: " + emailAlertsConfig);
         return emailAlertsConfig;
     }
 
     /**
-     * Updates Email Alerts configuration for the bot.
+     * Updates the Email Alerts configuration for the bot.
      *
-     * @return 204 'No Content' HTTP status code if Email Alerts config was updated, some other HTTP status code otherwise.
+     * @return 200 'OK' HTTP status code and Email Alerts config in response body if update successful,
+     *         some other HTTP status code otherwise.
      */
-    @RequestMapping(value = "/emailalerts", method = RequestMethod.PUT)
-    ResponseEntity<?> updateEmailAlerts(@AuthenticationPrincipal User user, @RequestBody EmailAlertsConfig config) {
+    @RequestMapping(value = "/email-alerts", method = RequestMethod.PUT)
+    public ResponseEntity<?> updateEmailAlerts(@AuthenticationPrincipal User user, @RequestBody EmailAlertsConfig config) {
 
-        LOG.info("PUT /emailalerts - updateEmailAlerts() - caller: " + user.getUsername());
+        LOG.info("PUT /email-alerts - updateEmailAlerts() - caller: " + user.getUsername());
         LOG.info("Request: " + config);
 
-        emailAlertsConfigService.updateEmailAlertsConfig(config);
-        final HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.setLocation(ServletUriComponentsBuilder.fromCurrentRequest().path("/").buildAndExpand().toUri());
-        return new ResponseEntity<>(null, httpHeaders, HttpStatus.NO_CONTENT);
+        final EmailAlertsConfig updatedConfig = emailAlertsConfigService.updateEmailAlertsConfig(config);
+        return new ResponseEntity<>(updatedConfig, HttpStatus.OK);
     }
 }
 

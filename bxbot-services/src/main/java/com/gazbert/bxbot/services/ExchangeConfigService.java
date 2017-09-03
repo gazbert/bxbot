@@ -33,5 +33,5 @@ public interface ExchangeConfigService {
 
     ExchangeConfig getExchangeConfig();
 
-    void updateExchangeConfig(ExchangeConfig config);
+    ExchangeConfig updateExchangeConfig(ExchangeConfig config);
 }

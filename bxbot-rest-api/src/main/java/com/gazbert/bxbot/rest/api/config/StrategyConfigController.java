@@ -21,21 +21,19 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.rest.api.strategies;
+package com.gazbert.bxbot.rest.api.config;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.springframework.security.core.userdetails.User;
 import com.gazbert.bxbot.domain.strategy.StrategyConfig;
 import com.gazbert.bxbot.services.StrategyConfigService;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.util.List;
 
@@ -47,7 +45,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/api/config")
-class StrategyConfigController {
+public class StrategyConfigController {
 
     private static final Logger LOG = LogManager.getLogger();
     private final StrategyConfigService strategyConfigService;
@@ -62,12 +60,12 @@ class StrategyConfigController {
      * Returns all of the Strategy configuration for the bot.
      *
      * @param user the authenticated user.
-     * @return a list of Strategy configurations.
+     * @return all the Strategy configurations.
      */
-    @RequestMapping(value = "/strategy", method = RequestMethod.GET)
+    @RequestMapping(value = "/strategies", method = RequestMethod.GET)
     public List<StrategyConfig> getAllStrategies(@AuthenticationPrincipal User user) {
 
-        LOG.info("GET /strategy - getAllStrategies() - caller: " + user.getUsername());
+        LOG.info("GET /strategies - getAllStrategies() - caller: " + user.getUsername());
 
         final List<StrategyConfig> strategyConfigs = strategyConfigService.getAllStrategyConfig();
 
@@ -82,10 +80,10 @@ class StrategyConfigController {
      * @param strategyId the id of the Strategy to fetch.
      * @return the Strategy configuration.
      */
-    @RequestMapping(value = "/strategy/{strategyId}", method = RequestMethod.GET)
+    @RequestMapping(value = "/strategies/{strategyId}", method = RequestMethod.GET)
     public ResponseEntity<?> getStrategy(@AuthenticationPrincipal User user, @PathVariable String strategyId) {
 
-        LOG.info("GET /strategy/" + strategyId + " - getStrategy() - caller: " + user.getUsername());
+        LOG.info("GET /strategies/" + strategyId + " - getStrategy() - caller: " + user.getUsername());
 
         final StrategyConfig strategyConfig = strategyConfigService.getStrategyConfig(strategyId);
         LOG.info("Response: " + strategyConfig);
@@ -101,14 +99,14 @@ class StrategyConfigController {
      * @param user       the authenticated user.
      * @param strategyId id of the Strategy config to update.
      * @param config     the updated Strategy config.
-     * @return 204 'No Content' HTTP status code if update successful, 404 'Not Found' HTTP status code if
-     * Strategy config not found.
+     * @return 200 'OK' HTTP status code and updated Strategy config in the body if update successful,
+     *         404 'Not Found' HTTP status code if Strategy config not found.
      */
-    @RequestMapping(value = "/strategy/{strategyId}", method = RequestMethod.PUT)
-    ResponseEntity<?> updateStrategy(@AuthenticationPrincipal User user, @PathVariable String strategyId,
+    @RequestMapping(value = "/strategies/{strategyId}", method = RequestMethod.PUT)
+    public ResponseEntity<?> updateStrategy(@AuthenticationPrincipal User user, @PathVariable String strategyId,
                                      @RequestBody StrategyConfig config) {
 
-        LOG.info("PUT /strategy/" + strategyId + " - updateStrategy() - caller: " + user.getUsername());
+        LOG.info("PUT /strategies/" + strategyId + " - updateStrategy() - caller: " + user.getUsername());
         LOG.info("Request: " + config);
 
         if (config == null || config.getId() == null || !strategyId.equals(config.getId())) {
@@ -117,7 +115,7 @@ class StrategyConfigController {
 
         final StrategyConfig updatedConfig = strategyConfigService.updateStrategyConfig(config);
         return updatedConfig.getId() != null
-                ? new ResponseEntity<>(HttpStatus.NO_CONTENT)
+                ? new ResponseEntity<>(updatedConfig, HttpStatus.OK)
                 : new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
@@ -127,14 +125,14 @@ class StrategyConfigController {
      * @param user       the authenticated user.
      * @param strategyId id of the Strategy config to create.
      * @param config     the new Strategy config.
-     * @return 201 'Created' HTTP status code if create successful, 409 'Conflict' HTTP status code if
-     * Strategy config already exists.
+     * @return 201 'Created' HTTP status code and created Strategy config in response body if create successful,
+     *         409 'Conflict' HTTP status code if Strategy config already exists.
      */
-    @RequestMapping(value = "/strategy/{strategyId}", method = RequestMethod.POST)
-    ResponseEntity<?> createStrategy(@AuthenticationPrincipal User user, @PathVariable String strategyId,
+    @RequestMapping(value = "/strategies/{strategyId}", method = RequestMethod.POST)
+    public ResponseEntity<?> createStrategy(@AuthenticationPrincipal User user, @PathVariable String strategyId,
                                      @RequestBody StrategyConfig config) {
 
-        LOG.info("POST /strategy/" + strategyId + " - createStrategy() - caller: " + user.getUsername());
+        LOG.info("POST /strategies/" + strategyId + " - createStrategy() - caller: " + user.getUsername());
         LOG.info("Request: " + config);
 
         if (config == null || config.getId() == null || !strategyId.equals(config.getId())) {
@@ -143,12 +141,7 @@ class StrategyConfigController {
 
         final StrategyConfig createdConfig = strategyConfigService.createStrategyConfig(config);
         if (createdConfig.getId() != null) {
-            final HttpHeaders httpHeaders = new HttpHeaders();
-            httpHeaders.setLocation(ServletUriComponentsBuilder
-                    .fromCurrentRequest().path("/{strategyId}")
-                    .buildAndExpand(createdConfig.getId()).toUri());
-            return new ResponseEntity<>(null, httpHeaders, HttpStatus.CREATED);
-
+            return new ResponseEntity<>(createdConfig, HttpStatus.CREATED);
         } else {
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
@@ -160,12 +153,12 @@ class StrategyConfigController {
      * @param user       the authenticated user.
      * @param strategyId the id of the Strategy configuration to delete.
      * @return 204 'No Content' HTTP status code if update successful, 404 'Not Found' HTTP status code if
-     * Strategy config not found.
+     *         Strategy config not found.
      */
-    @RequestMapping(value = "/strategy/{strategyId}", method = RequestMethod.DELETE)
+    @RequestMapping(value = "/strategies/{strategyId}", method = RequestMethod.DELETE)
     public ResponseEntity<?> deleteStrategy(@AuthenticationPrincipal User user, @PathVariable String strategyId) {
 
-        LOG.info("DELETE /strategy/" + strategyId + " - deleteStrategy() - caller: " + user.getUsername());
+        LOG.info("DELETE /strategies/" + strategyId + " - deleteStrategy() - caller: " + user.getUsername());
 
         final StrategyConfig deletedConfig = strategyConfigService.deleteStrategyConfig(strategyId);
         return deletedConfig.getId() != null

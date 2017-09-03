@@ -56,12 +56,12 @@ public class EngineConfigServiceImpl implements EngineConfigService {
 
     @Override
     public EngineConfig getEngineConfig() {
-        return engineConfigRepository.getConfig();
+        return engineConfigRepository.get();
     }
 
     @Override
-    public void updateEngineConfig(EngineConfig config) {
+    public EngineConfig updateEngineConfig(EngineConfig config) {
         LOG.info(() -> "About to update Engine config: " + config);
-        engineConfigRepository.updateConfig(config);
+        return engineConfigRepository.save(config);
     }
 }

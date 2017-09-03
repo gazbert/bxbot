@@ -31,7 +31,7 @@ import com.gazbert.bxbot.domain.emailalerts.EmailAlertsConfig;
  */
 public interface EmailAlertsConfigRepository {
 
-    EmailAlertsConfig getConfig();
+    EmailAlertsConfig get();
 
-    void updateConfig(EmailAlertsConfig config);
+    EmailAlertsConfig save(EmailAlertsConfig config);
 }

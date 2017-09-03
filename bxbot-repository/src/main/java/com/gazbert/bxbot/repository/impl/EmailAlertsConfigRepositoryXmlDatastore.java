@@ -39,30 +39,37 @@ import static com.gazbert.bxbot.datastore.FileLocations.EMAIL_ALERTS_CONFIG_XSD_
 
 
 /**
- * Implementation of the Email Alerts configuration repository.
+ * An XML datastore implementation of the Email Alerts configuration repository.
  *
  * @author gazbert
  */
 @Repository("emailAlertsConfigRepository")
 @Transactional
-public class EmailAlertsConfigRepositoryXmlImpl implements EmailAlertsConfigRepository {
+public class EmailAlertsConfigRepositoryXmlDatastore implements EmailAlertsConfigRepository {
 
     private static final Logger LOG = LogManager.getLogger();
 
     @Override
-    public EmailAlertsConfig getConfig() {
+    public EmailAlertsConfig get() {
+
+        LOG.info(() -> "Fetching EmailAlertsConfig...");
+
         final EmailAlertsType internalEmailAlertsConfig = ConfigurationManager.loadConfig(EmailAlertsType.class,
                 EMAIL_ALERTS_CONFIG_XML_FILENAME, EMAIL_ALERTS_CONFIG_XSD_FILENAME);
         return adaptInternalToExternalConfig(internalEmailAlertsConfig);
     }
 
     @Override
-    public void updateConfig(EmailAlertsConfig config) {
+    public EmailAlertsConfig save(EmailAlertsConfig config) {
 
-        LOG.info(() -> "About to update: " + config);
+        LOG.info(() -> "About to save EmailAlertsConfig: " + config);
 
         final EmailAlertsType internalEmailAlertsConfig = adaptExternalToInternalConfig(config);
         ConfigurationManager.saveConfig(EmailAlertsType.class, internalEmailAlertsConfig, EMAIL_ALERTS_CONFIG_XML_FILENAME);
+
+        final EmailAlertsType savedEmailAlertsConfig = ConfigurationManager.loadConfig(EmailAlertsType.class,
+                EMAIL_ALERTS_CONFIG_XML_FILENAME, EMAIL_ALERTS_CONFIG_XSD_FILENAME);
+        return adaptInternalToExternalConfig(savedEmailAlertsConfig);
     }
 
     // ------------------------------------------------------------------------------------------------
@@ -88,17 +95,12 @@ public class EmailAlertsConfigRepositoryXmlImpl implements EmailAlertsConfigRepo
     private static EmailAlertsType adaptExternalToInternalConfig(EmailAlertsConfig externalEmailAlertsConfig) {
 
         final SmtpConfigType smtpConfig = new SmtpConfigType();
+        smtpConfig.setSmtpHost(externalEmailAlertsConfig.getSmtpConfig().getHost());
+        smtpConfig.setSmtpTlsPort(externalEmailAlertsConfig.getSmtpConfig().getTlsPort());
+        smtpConfig.setAccountUsername(externalEmailAlertsConfig.getSmtpConfig().getAccountUsername());
+        smtpConfig.setAccountPassword(externalEmailAlertsConfig.getSmtpConfig().getAccountPassword());
         smtpConfig.setFromAddr(externalEmailAlertsConfig.getSmtpConfig().getFromAddress());
         smtpConfig.setToAddr(externalEmailAlertsConfig.getSmtpConfig().getToAddress());
-
-        // We don't permit updating of: account username, password, host, port - potential security risk
-        // We load the existing config and merge it in with the updated stuff...
-        final EmailAlertsType existingEmailAlertsConfig = ConfigurationManager.loadConfig(EmailAlertsType.class,
-                EMAIL_ALERTS_CONFIG_XML_FILENAME, EMAIL_ALERTS_CONFIG_XSD_FILENAME);
-        smtpConfig.setSmtpHost(existingEmailAlertsConfig.getSmtpConfig().getSmtpHost());
-        smtpConfig.setSmtpTlsPort(existingEmailAlertsConfig.getSmtpConfig().getSmtpTlsPort());
-        smtpConfig.setAccountUsername(existingEmailAlertsConfig.getSmtpConfig().getAccountUsername());
-        smtpConfig.setAccountPassword(existingEmailAlertsConfig.getSmtpConfig().getAccountPassword());
 
         final EmailAlertsType emailAlertsConfig = new EmailAlertsType();
         emailAlertsConfig.setEnabled(externalEmailAlertsConfig.isEnabled());

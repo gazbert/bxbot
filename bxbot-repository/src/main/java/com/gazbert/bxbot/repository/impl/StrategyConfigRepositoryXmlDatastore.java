@@ -38,24 +38,27 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static com.gazbert.bxbot.datastore.FileLocations.STRATEGIES_CONFIG_XML_FILENAME;
 import static com.gazbert.bxbot.datastore.FileLocations.STRATEGIES_CONFIG_XSD_FILENAME;
 
 /**
- * Implementation of the Strategy config repository.
+ * An XML datastore implementation of the Strategy config repository.
  *
  * @author gazbert
  */
 @Repository("strategyConfigRepository")
 @Transactional
-public class StrategyConfigRepositoryXmlImpl implements StrategyConfigRepository {
+public class StrategyConfigRepositoryXmlDatastore implements StrategyConfigRepository {
 
     private static final Logger LOG = LogManager.getLogger();
 
     @Override
-    public List<StrategyConfig> findAllStrategies() {
+    public List<StrategyConfig> findAll() {
+
+        LOG.info(() -> "Fetching all Strategy configs...");
 
         final TradingStrategiesType internalStrategiesConfig = ConfigurationManager.loadConfig(TradingStrategiesType.class,
                 STRATEGIES_CONFIG_XML_FILENAME, STRATEGIES_CONFIG_XSD_FILENAME);
@@ -79,9 +82,7 @@ public class StrategyConfigRepositoryXmlImpl implements StrategyConfigRepository
     }
 
     @Override
-    public StrategyConfig updateStrategy(StrategyConfig config) {
-
-        LOG.info(() -> "About to update: " + config);
+    public StrategyConfig save(StrategyConfig config) {
 
         final TradingStrategiesType internalStrategiesConfig = ConfigurationManager.loadConfig(TradingStrategiesType.class,
                 STRATEGIES_CONFIG_XML_FILENAME, STRATEGIES_CONFIG_XSD_FILENAME);
@@ -92,65 +93,65 @@ public class StrategyConfigRepositoryXmlImpl implements StrategyConfigRepository
                 .distinct()
                 .collect(Collectors.toList());
 
-        if (!strategyTypes.isEmpty()) {
+        if (config.getId() == null || config.getId().isEmpty()) {
 
-            internalStrategiesConfig.getStrategies().remove(strategyTypes.get(0)); // will only be 1 unique strat
-            internalStrategiesConfig.getStrategies().add(adaptExternalToInternalConfig(config));
-            ConfigurationManager.saveConfig(TradingStrategiesType.class, internalStrategiesConfig,
-                    STRATEGIES_CONFIG_XML_FILENAME);
+            LOG.info(() -> "About to create StrategyConfig: " + config);
 
-            final TradingStrategiesType updatedInternalStrategiesConfig = ConfigurationManager.loadConfig(
-                    TradingStrategiesType.class, STRATEGIES_CONFIG_XML_FILENAME, STRATEGIES_CONFIG_XSD_FILENAME);
+            if (strategyTypes.isEmpty()) {
 
-            return adaptInternalToExternalConfig(
-                    updatedInternalStrategiesConfig.getStrategies()
-                            .stream()
-                            .filter((item) -> item.getId().equals(config.getId()))
-                            .distinct()
-                            .collect(Collectors.toList()));
+                final StrategyConfig newStrategyConfig = new StrategyConfig(config);
+                newStrategyConfig.setId(generateUuid());
+
+                internalStrategiesConfig.getStrategies().add(adaptExternalToInternalConfig(newStrategyConfig));
+                ConfigurationManager.saveConfig(TradingStrategiesType.class, internalStrategiesConfig,
+                        STRATEGIES_CONFIG_XML_FILENAME);
+
+                final TradingStrategiesType updatedInternalStrategiesConfig = ConfigurationManager.loadConfig(
+                        TradingStrategiesType.class, STRATEGIES_CONFIG_XML_FILENAME, STRATEGIES_CONFIG_XSD_FILENAME);
+
+                return adaptInternalToExternalConfig(
+                        updatedInternalStrategiesConfig.getStrategies()
+                                .stream()
+                                .filter((item) -> item.getId().equals(newStrategyConfig.getId()))
+                                .distinct()
+                                .collect(Collectors.toList()));
+            } else {
+                throw new IllegalStateException("Trying to create new StrategyConfig but null/empty id already exists. " +
+                        "StrategyConfig: " + config + " Existing StrategyConfigs: "
+                        + adaptAllInternalToAllExternalConfig(internalStrategiesConfig));
+            }
+
         } else {
-            // no matching id :-(
-            return new StrategyConfig();
+
+            LOG.info(() -> "About to update StrategyConfig: " + config);
+
+            if (!strategyTypes.isEmpty()) {
+
+                internalStrategiesConfig.getStrategies().remove(strategyTypes.get(0)); // will only be 1 unique strat
+                internalStrategiesConfig.getStrategies().add(adaptExternalToInternalConfig(config));
+                ConfigurationManager.saveConfig(TradingStrategiesType.class, internalStrategiesConfig, STRATEGIES_CONFIG_XML_FILENAME);
+
+                final TradingStrategiesType updatedInternalStrategiesConfig = ConfigurationManager.loadConfig(
+                        TradingStrategiesType.class, STRATEGIES_CONFIG_XML_FILENAME, STRATEGIES_CONFIG_XSD_FILENAME);
+
+                return adaptInternalToExternalConfig(
+                        updatedInternalStrategiesConfig.getStrategies()
+                                .stream()
+                                .filter((item) -> item.getId().equals(config.getId()))
+                                .distinct()
+                                .collect(Collectors.toList()));
+            } else {
+                LOG.warn("Trying to update StrategyConfig but id does not exist StrategyConfig: " + config +
+                        " Existing StrategyConfig: " + adaptAllInternalToAllExternalConfig(internalStrategiesConfig));
+                return new StrategyConfig();
+            }
         }
     }
 
     @Override
-    public StrategyConfig createStrategy(StrategyConfig config) {
+    public StrategyConfig delete(String id) {
 
-        final TradingStrategiesType internalStrategiesConfig = ConfigurationManager.loadConfig(TradingStrategiesType.class,
-                STRATEGIES_CONFIG_XML_FILENAME, STRATEGIES_CONFIG_XSD_FILENAME);
-
-        final List<StrategyType> strategyTypes = internalStrategiesConfig.getStrategies()
-                .stream()
-                .filter((item) -> item.getId().equals(config.getId()))
-                .distinct()
-                .collect(Collectors.toList());
-
-        if (strategyTypes.isEmpty()) {
-
-            internalStrategiesConfig.getStrategies().add(adaptExternalToInternalConfig(config));
-            ConfigurationManager.saveConfig(TradingStrategiesType.class, internalStrategiesConfig,
-                    STRATEGIES_CONFIG_XML_FILENAME);
-
-            final TradingStrategiesType updatedInternalStrategiesConfig = ConfigurationManager.loadConfig(
-                    TradingStrategiesType.class, STRATEGIES_CONFIG_XML_FILENAME, STRATEGIES_CONFIG_XSD_FILENAME);
-
-            return adaptInternalToExternalConfig(
-                    updatedInternalStrategiesConfig.getStrategies()
-                            .stream()
-                            .filter((item) -> item.getId().equals(config.getId()))
-                            .distinct()
-                            .collect(Collectors.toList()));
-        } else {
-            // already have a matching id :-(
-            return new StrategyConfig();
-        }
-    }
-
-    @Override
-    public StrategyConfig deleteStrategyById(String id) {
-
-        LOG.info(() -> "Deleting config for Strategy id: " + id);
+        LOG.info(() -> "Deleting Strategy config for id: " + id);
 
         final TradingStrategiesType internalStrategiesConfig = ConfigurationManager.loadConfig(TradingStrategiesType.class,
                 STRATEGIES_CONFIG_XML_FILENAME, STRATEGIES_CONFIG_XSD_FILENAME);
@@ -170,7 +171,8 @@ public class StrategyConfigRepositoryXmlImpl implements StrategyConfigRepository
 
             return adaptInternalToExternalConfig(Collections.singletonList(strategyToRemove));
         } else {
-            // no matching id :-(
+            LOG.warn("Trying to delete StrategyConfig but id does not exist. StrategyConfig id: " + id
+                    + " Existing StrategyConfig: " + adaptAllInternalToAllExternalConfig(internalStrategiesConfig));
             return new StrategyConfig();
         }
     }
@@ -238,4 +240,13 @@ public class StrategyConfigRepositoryXmlImpl implements StrategyConfigRepository
         strategyType.setOptionalConfig(configurationType);
         return strategyType;
     }
+
+    // ------------------------------------------------------------------------------------------------
+    // Util methods
+    // ------------------------------------------------------------------------------------------------
+
+    private String generateUuid() {
+        return UUID.randomUUID().toString();
+    }
 }
+

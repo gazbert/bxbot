@@ -21,13 +21,15 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.rest.api;
+package com.gazbert.bxbot.rest.api.config;
 
 import com.gazbert.bxbot.core.engine.TradingEngine;
 import com.gazbert.bxbot.core.mail.EmailAlerter;
+import com.gazbert.bxbot.domain.exchange.AuthenticationConfig;
 import com.gazbert.bxbot.domain.exchange.ExchangeConfig;
 import com.gazbert.bxbot.domain.exchange.NetworkConfig;
 import com.gazbert.bxbot.domain.exchange.OptionalConfig;
+import com.gazbert.bxbot.rest.api.AbstractConfigControllerTest;
 import com.gazbert.bxbot.services.ExchangeConfigService;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,11 +39,13 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.Arrays;
 import java.util.List;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -84,10 +88,11 @@ public class TestExchangeConfigController extends AbstractConfigControllerTest {
     @MockBean
     ExchangeConfigService exchangeConfigService;
 
+    // Need this even though not used in the test directly because Spring loads it on startup...
     @MockBean
     private TradingEngine tradingEngine;
 
-    // Need this even though not used in the test directly because Spring loads the Email Alerts config on startup...
+    // Need this even though not used in the test directly because Spring loads it on startup...
     @MockBean
     private EmailAlerter emailAlerter;
 
@@ -100,29 +105,28 @@ public class TestExchangeConfigController extends AbstractConfigControllerTest {
     public void testGetExchangeConfig() throws Exception {
 
         given(exchangeConfigService.getExchangeConfig()).willReturn(someExchangeConfig());
-        tradingEngine.start();
 
         mockMvc.perform(get("/api/config/exchange")
                 .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD)))
                 .andDo(print())
                 .andExpect(status().isOk())
 
-                .andExpect(jsonPath("$.name").value(EXCHANGE_NAME))
-                .andExpect(jsonPath("$.className").value(EXCHANGE_ADAPTER))
+                .andExpect(jsonPath("$.exchangeName").value(EXCHANGE_NAME))
+                .andExpect(jsonPath("$.exchangeAdapter").value(EXCHANGE_ADAPTER))
 
-                // REST API currently does not expose AuthenticationConfig - potential security risk?
+                // REST API does not expose AuthenticationConfig - potential security risk.
                 .andExpect(jsonPath("$.authenticationConfig").doesNotExist())
 
                 .andExpect(jsonPath("$.networkConfig.connectionTimeout").value(CONNECTION_TIMEOUT))
-                .andExpect(jsonPath("$.networkConfig.nonFatalErrorHttpStatusCodes[0]").value(HTTP_STATUS_502))
-                .andExpect(jsonPath("$.networkConfig.nonFatalErrorHttpStatusCodes[1]").value(HTTP_STATUS_503))
-                .andExpect(jsonPath("$.networkConfig.nonFatalErrorHttpStatusCodes[2]").value(HTTP_STATUS_504))
+                .andExpect(jsonPath("$.networkConfig.nonFatalErrorCodes[0]").value(HTTP_STATUS_502))
+                .andExpect(jsonPath("$.networkConfig.nonFatalErrorCodes[1]").value(HTTP_STATUS_503))
+                .andExpect(jsonPath("$.networkConfig.nonFatalErrorCodes[2]").value(HTTP_STATUS_504))
                 .andExpect(jsonPath("$.networkConfig.nonFatalErrorMessages[0]").value(ERROR_MESSAGE_REFUSED))
                 .andExpect(jsonPath("$.networkConfig.nonFatalErrorMessages[1]").value(ERROR_MESSAGE_RESET))
                 .andExpect(jsonPath("$.networkConfig.nonFatalErrorMessages[2]").value(ERROR_MESSAGE_CLOSED))
 
-                .andExpect(jsonPath("$.optionalConfig.configItems.buy-fee").value(BUY_FEE_CONFIG_ITEM_VALUE))
-                .andExpect(jsonPath("$.optionalConfig.configItems.sell-fee").value(SELL_FEE_CONFIG_ITEM_VALUE));
+                .andExpect(jsonPath("$.optionalConfig.items.buy-fee").value(BUY_FEE_CONFIG_ITEM_VALUE))
+                .andExpect(jsonPath("$.optionalConfig.items.sell-fee").value(SELL_FEE_CONFIG_ITEM_VALUE));
     }
 
     @Test
@@ -145,11 +149,18 @@ public class TestExchangeConfigController extends AbstractConfigControllerTest {
     @Test
     public void testUpdateExchangeConfig() throws Exception {
 
-        mockMvc.perform(put("/api/config/exchange")
+        given(exchangeConfigService.getExchangeConfig()).willReturn(someExchangeConfig());
+        given(exchangeConfigService.updateExchangeConfig(someExchangeConfig())).willReturn(someExchangeConfig());
+
+        final MvcResult result = mockMvc.perform(put("/api/config/exchange")
                 .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD))
                 .contentType(CONTENT_TYPE)
                 .content(jsonify(someExchangeConfig())))
-                .andExpect(status().isNoContent());
+                .andExpect(status().isOk())
+                .andReturn();
+
+        // FIXME - response body is empty?!
+//        assertEquals(jsonify(someExchangeConfig()), result.getResponse().getContentAsString());
     }
 
     @Test
@@ -176,6 +187,7 @@ public class TestExchangeConfigController extends AbstractConfigControllerTest {
     private static ExchangeConfig someExchangeConfig() {
 
         // We don't expose AuthenticationConfig in the REST API - security risk
+        // final AuthenticationConfig authenticationConfig = new AuthenticationConfig();
 
         final NetworkConfig networkConfig = new NetworkConfig();
         networkConfig.setConnectionTimeout(CONNECTION_TIMEOUT);

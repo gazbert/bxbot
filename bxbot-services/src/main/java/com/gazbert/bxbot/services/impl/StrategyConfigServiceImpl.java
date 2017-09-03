@@ -58,7 +58,7 @@ public class StrategyConfigServiceImpl implements StrategyConfigService {
 
     @Override
     public List<StrategyConfig> getAllStrategyConfig() {
-        return strategyConfigRepository.findAllStrategies();
+        return strategyConfigRepository.findAll();
     }
 
     @Override
@@ -70,18 +70,18 @@ public class StrategyConfigServiceImpl implements StrategyConfigService {
     @Override
     public StrategyConfig updateStrategyConfig(StrategyConfig config) {
         LOG.info(() -> "About to update Strategy config: " + config);
-        return strategyConfigRepository.updateStrategy(config);
+        return strategyConfigRepository.save(config);
     }
 
     @Override
     public StrategyConfig createStrategyConfig(StrategyConfig config) {
         LOG.info(() -> "About to create Strategy config: " + config);
-        return strategyConfigRepository.createStrategy(config);
+        return strategyConfigRepository.save(config);
     }
 
     @Override
     public StrategyConfig deleteStrategyConfig(String id) {
         LOG.info(() -> "About to delete Strategy config for id: " + id);
-        return strategyConfigRepository.deleteStrategyById(id);
+        return strategyConfigRepository.delete(id);
     }
 }

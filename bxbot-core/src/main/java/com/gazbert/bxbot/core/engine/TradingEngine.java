@@ -37,10 +37,10 @@ import com.gazbert.bxbot.exchange.api.impl.AuthenticationConfigImpl;
 import com.gazbert.bxbot.exchange.api.impl.ExchangeConfigImpl;
 import com.gazbert.bxbot.exchange.api.impl.NetworkConfigImpl;
 import com.gazbert.bxbot.exchange.api.impl.OptionalConfigImpl;
-import com.gazbert.bxbot.repository.EngineConfigRepository;
-import com.gazbert.bxbot.repository.ExchangeConfigRepository;
-import com.gazbert.bxbot.repository.MarketConfigRepository;
-import com.gazbert.bxbot.repository.StrategyConfigRepository;
+import com.gazbert.bxbot.services.EngineConfigService;
+import com.gazbert.bxbot.services.ExchangeConfigService;
+import com.gazbert.bxbot.services.MarketConfigService;
+import com.gazbert.bxbot.services.StrategyConfigService;
 import com.gazbert.bxbot.strategy.api.StrategyException;
 import com.gazbert.bxbot.strategy.api.TradingStrategy;
 import com.gazbert.bxbot.strategy.api.impl.StrategyConfigItems;
@@ -147,31 +147,31 @@ public class TradingEngine {
     private final EmailAlerter emailAlerter;
     private ExchangeAdapter exchangeAdapter;
 
-    // Repos
-    private final ExchangeConfigRepository exchangeConfigRepository;
-    private final EngineConfigRepository engineConfigRepository;
-    private final StrategyConfigRepository strategyConfigRepository;
-    private final MarketConfigRepository marketConfigRepository;
+    // Services
+    private final ExchangeConfigService exchangeConfigService;
+    private final EngineConfigService engineConfigService;
+    private final StrategyConfigService strategyConfigService;
+    private final MarketConfigService marketConfigService;
 
 
     @Autowired
-    public TradingEngine(ExchangeConfigRepository exchangeConfigRepository, EngineConfigRepository engineConfigRepository,
-                         StrategyConfigRepository strategyConfigRepository, MarketConfigRepository marketConfigRepository,
+    public TradingEngine(ExchangeConfigService exchangeConfigService, EngineConfigService engineConfigService,
+                         StrategyConfigService strategyConfigService, MarketConfigService marketConfigService,
                          EmailAlerter emailAlerter) {
 
         LOG.info(() -> "Initialising Trading Engine...");
 
-        Assert.notNull(exchangeConfigRepository, "exchangeConfigRepository dependency cannot be null!");
-        this.exchangeConfigRepository = exchangeConfigRepository;
+        Assert.notNull(exchangeConfigService, "exchangeConfigService dependency cannot be null!");
+        this.exchangeConfigService = exchangeConfigService;
 
-        Assert.notNull(engineConfigRepository, "engineConfigRepository dependency cannot be null!");
-        this.engineConfigRepository = engineConfigRepository;
+        Assert.notNull(engineConfigService, "engineConfigService dependency cannot be null!");
+        this.engineConfigService = engineConfigService;
 
-        Assert.notNull(strategyConfigRepository, "strategyConfigRepository dependency cannot be null!");
-        this.strategyConfigRepository = strategyConfigRepository;
+        Assert.notNull(strategyConfigService, "strategyConfigService dependency cannot be null!");
+        this.strategyConfigService = strategyConfigService;
 
-        Assert.notNull(marketConfigRepository, "marketConfigRepository dependency cannot be null!");
-        this.marketConfigRepository = marketConfigRepository;
+        Assert.notNull(marketConfigService, "marketConfigService dependency cannot be null!");
+        this.marketConfigService = marketConfigService;
 
         Assert.notNull(emailAlerter, "emailAlerter dependency cannot be null!");
         this.emailAlerter = emailAlerter;
@@ -343,7 +343,7 @@ public class TradingEngine {
 
         boolean isEmergencyStopLimitBreached = true;
 
-        if(emergencyStopBalance.compareTo(BigDecimal.ZERO) == 0){
+        if (emergencyStopBalance.compareTo(BigDecimal.ZERO) == 0) {
             return false;
         }
 
@@ -453,7 +453,7 @@ public class TradingEngine {
 
     private void loadExchangeAdapterConfig() {
 
-        final ExchangeConfig domainExchangeConfig = exchangeConfigRepository.getConfig();
+        final ExchangeConfig domainExchangeConfig = exchangeConfigService.getExchangeConfig();
         LOG.info(() -> "Fetched Exchange config from repository: " + domainExchangeConfig);
 
         exchangeAdapter = ConfigurableComponentFactory.createComponent(domainExchangeConfig.getExchangeAdapter());
@@ -529,7 +529,7 @@ public class TradingEngine {
 
     private void loadEngineConfig() {
 
-        final EngineConfig engineConfig = engineConfigRepository.getConfig();
+        final EngineConfig engineConfig = engineConfigService.getEngineConfig();
         LOG.info(() -> "Fetched Engine config from repository: " + engineConfig);
 
         botId = engineConfig.getBotId();
@@ -542,7 +542,7 @@ public class TradingEngine {
 
     private void loadTradingStrategyConfig() {
 
-        final List<StrategyConfig> strategies = strategyConfigRepository.findAllStrategies();
+        final List<StrategyConfig> strategies = strategyConfigService.getAllStrategyConfig();
         LOG.debug(() -> "Fetched Strategy config from repository: " + strategies);
 
         for (final StrategyConfig strategy : strategies) {
@@ -553,7 +553,7 @@ public class TradingEngine {
 
     private void loadMarketConfigAndInitialiseTradingStrategies() {
 
-        final List<MarketConfig> markets = marketConfigRepository.findAllMarkets();
+        final List<MarketConfig> markets = marketConfigService.getAllMarketConfig();
         LOG.info(() -> "Fetched Markets config from repository: " + markets);
 
         // used only as crude mechanism for checking for duplicate Markets

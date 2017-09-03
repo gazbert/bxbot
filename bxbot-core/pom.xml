@@ -19,7 +19,7 @@
         -->
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>bxbot-repository</artifactId>
+            <artifactId>bxbot-services</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

@@ -26,7 +26,7 @@ package com.gazbert.bxbot.repository;
 import com.gazbert.bxbot.datastore.ConfigurationManager;
 import com.gazbert.bxbot.datastore.engine.generated.EngineType;
 import com.gazbert.bxbot.domain.engine.EngineConfig;
-import com.gazbert.bxbot.repository.impl.EngineConfigRepositoryXmlImpl;
+import com.gazbert.bxbot.repository.impl.EngineConfigRepositoryXmlDatastore;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,7 +39,6 @@ import java.math.BigDecimal;
 import static com.gazbert.bxbot.datastore.FileLocations.ENGINE_CONFIG_XML_FILENAME;
 import static com.gazbert.bxbot.datastore.FileLocations.ENGINE_CONFIG_XSD_FILENAME;
 import static org.assertj.core.api.Java6Assertions.assertThat;
-import static org.assertj.core.api.Java6Assertions.in;
 import static org.easymock.EasyMock.*;
 
 /**
@@ -64,7 +63,7 @@ public class TestEngineConfigRepository {
     }
 
     @Test
-    public void whenGetConfigCalledThenExpectRepositoryToLoadIt() throws Exception {
+    public void whenGetCalledThenExpectEngineConfigToBeReturned() throws Exception {
 
         expect(ConfigurationManager.loadConfig(
                 eq(EngineType.class),
@@ -74,8 +73,8 @@ public class TestEngineConfigRepository {
 
         PowerMock.replayAll();
 
-        final EngineConfigRepository engineConfigRepository = new EngineConfigRepositoryXmlImpl();
-        final EngineConfig engineConfig = engineConfigRepository.getConfig();
+        final EngineConfigRepository engineConfigRepository = new EngineConfigRepositoryXmlDatastore();
+        final EngineConfig engineConfig = engineConfigRepository.get();
         assertThat(engineConfig.getBotId()).isEqualTo(BOT_ID);
         assertThat(engineConfig.getBotName()).isEqualTo(BOT_NAME);
         assertThat(engineConfig.getEmergencyStopCurrency()).isEqualTo(ENGINE_EMERGENCY_STOP_CURRENCY);
@@ -86,13 +85,26 @@ public class TestEngineConfigRepository {
     }
 
     @Test
-    public void whenUpdateConfigCalledThenExpectRepositoryToSaveIt() throws Exception {
+    public void whenSaveCalledThenExpectRepositoryToSaveItAndReturnSavedEngineConfig() throws Exception {
 
         ConfigurationManager.saveConfig(eq(EngineType.class), anyObject(EngineType.class), eq(ENGINE_CONFIG_XML_FILENAME));
+
+        expect(ConfigurationManager.loadConfig(
+                eq(EngineType.class),
+                eq(ENGINE_CONFIG_XML_FILENAME),
+                eq(ENGINE_CONFIG_XSD_FILENAME))).
+                andReturn(someInternalEngineConfig());
+
         PowerMock.replayAll();
 
-        final EngineConfigRepository engineConfigRepository = new EngineConfigRepositoryXmlImpl();
-        engineConfigRepository.updateConfig(withSomeExternalEngineConfig());
+        final EngineConfigRepository engineConfigRepository = new EngineConfigRepositoryXmlDatastore();
+        final EngineConfig savedConfig  = engineConfigRepository.save(withSomeExternalEngineConfig());
+
+        assertThat(savedConfig.getBotId()).isEqualTo(BOT_ID);
+        assertThat(savedConfig.getBotName()).isEqualTo(BOT_NAME);
+        assertThat(savedConfig.getEmergencyStopCurrency()).isEqualTo(ENGINE_EMERGENCY_STOP_CURRENCY);
+        assertThat(savedConfig.getEmergencyStopBalance()).isEqualTo(ENGINE_EMERGENCY_STOP_BALANCE);
+        assertThat(savedConfig.getTradeCycleInterval()).isEqualTo(ENGINE_TRADE_CYCLE_INTERVAL);
 
         PowerMock.verifyAll();
     }

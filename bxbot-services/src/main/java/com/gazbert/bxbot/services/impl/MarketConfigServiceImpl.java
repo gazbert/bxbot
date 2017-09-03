@@ -59,7 +59,7 @@ public class MarketConfigServiceImpl implements MarketConfigService {
 
     @Override
     public List<MarketConfig> getAllMarketConfig() {
-        return marketConfigRepository.findAllMarkets();
+        return marketConfigRepository.findAll();
     }
 
     @Override
@@ -71,18 +71,18 @@ public class MarketConfigServiceImpl implements MarketConfigService {
     @Override
     public MarketConfig updateMarketConfig(MarketConfig config) {
         LOG.info(() -> "About to update Market config: " + config);
-        return marketConfigRepository.updateMarket(config);
+        return marketConfigRepository.save(config);
     }
 
     @Override
     public MarketConfig createMarketConfig(MarketConfig config) {
         LOG.info(() -> "About to create Market config: " + config);
-        return marketConfigRepository.createMarket(config);
+        return marketConfigRepository.save(config);
     }
 
     @Override
     public MarketConfig deleteMarketConfig(String id) {
         LOG.info(() -> "About to delete Market config for id: " + id);
-        return marketConfigRepository.deleteMarketById(id);
+        return marketConfigRepository.delete(id);
     }
 }
