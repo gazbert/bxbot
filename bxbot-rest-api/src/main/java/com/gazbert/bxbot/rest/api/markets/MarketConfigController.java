@@ -60,12 +60,12 @@ public class MarketConfigController {
      * Returns all of the Market configuration for the bot.
      *
      * @param user the authenticated user.
-     * @return a list of Market configurations.
+     * @return all the Market configurations.
      */
-    @RequestMapping(value = "/market", method = RequestMethod.GET)
+    @RequestMapping(value = "/markets", method = RequestMethod.GET)
     public List<MarketConfig> getAllMarkets(@AuthenticationPrincipal User user) {
 
-        LOG.info("GET /market - getAllMarkets() - caller: " + user.getUsername());
+        LOG.info("GET /markets - getAllMarkets() - caller: " + user.getUsername());
 
         final List<MarketConfig> marketConfigs = marketConfigService.getAllMarketConfig();
         LOG.info("Response: " + marketConfigs);
@@ -80,10 +80,10 @@ public class MarketConfigController {
      * @param marketId the id of the Market to fetch.
      * @return the Market configuration.
      */
-    @RequestMapping(value = "/market/{marketId}", method = RequestMethod.GET)
+    @RequestMapping(value = "/markets/{marketId}", method = RequestMethod.GET)
     public ResponseEntity<?> getMarket(@AuthenticationPrincipal User user, @PathVariable String marketId) {
 
-        LOG.info("GET /market/" + marketId + " - getMarket() - caller: " + user.getUsername());
+        LOG.info("GET /markets/" + marketId + " - getMarket() - caller: " + user.getUsername());
 
         final MarketConfig marketConfig = marketConfigService.getMarketConfig(marketId);
         LOG.info("Response: " + marketConfig);
@@ -100,13 +100,13 @@ public class MarketConfigController {
      * @param marketId id of the Market config to update.
      * @param config   the updated Market config.
      * @return 204 'No Content' HTTP status code if update successful, 404 'Not Found' HTTP status code if
-     * Market config not found.
+     *         Market config not found.
      */
-    @RequestMapping(value = "/market/{marketId}", method = RequestMethod.PUT)
+    @RequestMapping(value = "/markets/{marketId}", method = RequestMethod.PUT)
     public ResponseEntity<?> updateMarket(@AuthenticationPrincipal User user, @PathVariable String marketId,
-                                   @RequestBody MarketConfig config) {
+                                          @RequestBody MarketConfig config) {
 
-        LOG.info("PUT /market/" + marketId + " - updateMarket() - caller: " + user.getUsername());
+        LOG.info("PUT /markets/" + marketId + " - updateMarket() - caller: " + user.getUsername());
         LOG.info("Request: " + config);
 
         if (config == null || config.getId() == null || !marketId.equals(config.getId())) {
@@ -128,11 +128,11 @@ public class MarketConfigController {
      * @return 201 'Created' HTTP status code and created Market config in response body if create successful,
      *         409 'Conflict' HTTP status code if Market config already exists.
      */
-    @RequestMapping(value = "/market/{marketId}", method = RequestMethod.POST)
+    @RequestMapping(value = "/markets/{marketId}", method = RequestMethod.POST)
     public ResponseEntity<?> createMarket(@AuthenticationPrincipal User user, @PathVariable String marketId,
-                                   @RequestBody MarketConfig config) {
+                                          @RequestBody MarketConfig config) {
 
-        LOG.info("POST /market/" + marketId + " - save() - caller: " + user.getUsername());
+        LOG.info("POST /markets/" + marketId + " - save() - caller: " + user.getUsername());
         LOG.info("Request: " + config);
 
         if (config == null || config.getId() == null || !marketId.equals(config.getId())) {
@@ -153,12 +153,12 @@ public class MarketConfigController {
      * @param user     the authenticated user.
      * @param marketId the id of the Market configuration to delete.
      * @return 204 'No Content' HTTP status code if update successful, 404 'Not Found' HTTP status code if
-     * Market config not found.
+     *         Market config not found.
      */
-    @RequestMapping(value = "/market/{marketId}", method = RequestMethod.DELETE)
+    @RequestMapping(value = "/markets/{marketId}", method = RequestMethod.DELETE)
     public ResponseEntity<?> deleteMarket(@AuthenticationPrincipal User user, @PathVariable String marketId) {
 
-        LOG.info("DELETE /market/" + marketId + " - deleteMarket() - caller: " + user.getUsername());
+        LOG.info("DELETE /markets/" + marketId + " - deleteMarket() - caller: " + user.getUsername());
 
         final MarketConfig deletedConfig = marketConfigService.deleteMarketConfig(marketId);
         return deletedConfig.getId() != null

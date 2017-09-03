@@ -97,7 +97,7 @@ public class TestMarketConfigController extends AbstractConfigControllerTest {
 
         given(marketConfigService.getAllMarketConfig()).willReturn(allMarketConfig());
 
-        mockMvc.perform(get("/api/config/market/")
+        mockMvc.perform(get("/api/config/markets/")
                 .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD)))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -122,7 +122,7 @@ public class TestMarketConfigController extends AbstractConfigControllerTest {
     @Test
     public void testGetAllMarketConfigWhenUnauthorizedWithMissingCredentials() throws Exception {
 
-        mockMvc.perform(get("/api/config/market")
+        mockMvc.perform(get("/api/config/markets")
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isUnauthorized());
     }
@@ -130,7 +130,7 @@ public class TestMarketConfigController extends AbstractConfigControllerTest {
     @Test
     public void testGetAllMarketConfigWhenUnauthorizedWithInvalidCredentials() throws Exception {
 
-        mockMvc.perform(get("/api/config/market")
+        mockMvc.perform(get("/api/config/markets")
                 .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, INVALID_USER_PASSWORD))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isUnauthorized());
@@ -141,7 +141,7 @@ public class TestMarketConfigController extends AbstractConfigControllerTest {
 
         given(marketConfigService.getMarketConfig(MARKET_1_ID)).willReturn(someMarketConfig());
 
-        mockMvc.perform(get("/api/config/market/" + MARKET_1_ID)
+        mockMvc.perform(get("/api/config/markets/" + MARKET_1_ID)
                 .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD)))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -158,7 +158,7 @@ public class TestMarketConfigController extends AbstractConfigControllerTest {
     @Test
     public void testGetMarketConfigByIdWhenUnauthorizedWithMissingCredentials() throws Exception {
 
-        mockMvc.perform(get("/api/config/market/" + MARKET_1_ID)
+        mockMvc.perform(get("/api/config/markets/" + MARKET_1_ID)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isUnauthorized());
     }
@@ -166,7 +166,7 @@ public class TestMarketConfigController extends AbstractConfigControllerTest {
     @Test
     public void testGetMarketConfigByIdWhenUnauthorizedWithInvalidCredentials() throws Exception {
 
-        mockMvc.perform(get("/api/config/market/" + MARKET_1_ID)
+        mockMvc.perform(get("/api/config/markets/" + MARKET_1_ID)
                 .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, INVALID_USER_PASSWORD))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isUnauthorized());
@@ -177,7 +177,7 @@ public class TestMarketConfigController extends AbstractConfigControllerTest {
 
         given(marketConfigService.getMarketConfig(UNKNOWN_MARKET_ID)).willReturn(emptyMarketConfig());
 
-        mockMvc.perform(get("/api/config/market/" + UNKNOWN_MARKET_ID)
+        mockMvc.perform(get("/api/config/markets/" + UNKNOWN_MARKET_ID)
                 .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
@@ -188,7 +188,7 @@ public class TestMarketConfigController extends AbstractConfigControllerTest {
 
         given(marketConfigService.updateMarketConfig(someMarketConfig())).willReturn(someMarketConfig());
 
-        final MvcResult result = mockMvc.perform(put("/api/config/market/" + MARKET_1_ID)
+        final MvcResult result = mockMvc.perform(put("/api/config/markets/" + MARKET_1_ID)
                 .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD))
                 .contentType(CONTENT_TYPE)
                 .content(jsonify(someMarketConfig())))
@@ -202,7 +202,7 @@ public class TestMarketConfigController extends AbstractConfigControllerTest {
     @Test
     public void testUpdateMarketConfigWhenUnauthorizedWithMissingCredentials() throws Exception {
 
-        mockMvc.perform(put("/api/config/market/" + MARKET_1_ID)
+        mockMvc.perform(put("/api/config/markets/" + MARKET_1_ID)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(CONTENT_TYPE)
                 .content(jsonify(someMarketConfig())))
@@ -212,7 +212,7 @@ public class TestMarketConfigController extends AbstractConfigControllerTest {
     @Test
     public void testUpdateMarketConfigWhenUnauthorizedWithInvalidCredentials() throws Exception {
 
-        mockMvc.perform(put("/api/config/market/" + MARKET_1_ID)
+        mockMvc.perform(put("/api/config/markets/" + MARKET_1_ID)
                 .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, INVALID_USER_PASSWORD))
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(CONTENT_TYPE)
@@ -225,7 +225,7 @@ public class TestMarketConfigController extends AbstractConfigControllerTest {
 
         given(marketConfigService.updateMarketConfig(unrecognizedMarketConfig())).willReturn(emptyMarketConfig());
 
-        mockMvc.perform(put("/api/config/market/" + UNKNOWN_MARKET_ID)
+        mockMvc.perform(put("/api/config/markets/" + UNKNOWN_MARKET_ID)
                 .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD))
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(CONTENT_TYPE)
@@ -236,7 +236,7 @@ public class TestMarketConfigController extends AbstractConfigControllerTest {
     @Test
     public void testUpdateMarketConfigWhenIdIsMissing() throws Exception {
 
-        mockMvc.perform(put("/api/config/market/" + MARKET_1_ID)
+        mockMvc.perform(put("/api/config/markets/" + MARKET_1_ID)
                 .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD))
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(CONTENT_TYPE)
@@ -249,7 +249,7 @@ public class TestMarketConfigController extends AbstractConfigControllerTest {
 
         given(marketConfigService.deleteMarketConfig(MARKET_1_ID)).willReturn(someMarketConfig());
 
-        mockMvc.perform(delete("/api/config/market/" + MARKET_1_ID)
+        mockMvc.perform(delete("/api/config/markets/" + MARKET_1_ID)
                 .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD)))
                 .andExpect(status().isNoContent());
     }
@@ -257,7 +257,7 @@ public class TestMarketConfigController extends AbstractConfigControllerTest {
     @Test
     public void testDeleteMarketConfigWhenUnauthorizedWithMissingCredentials() throws Exception {
 
-        mockMvc.perform(delete("/api/config/market/" + MARKET_1_ID)
+        mockMvc.perform(delete("/api/config/markets/" + MARKET_1_ID)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isUnauthorized());
     }
@@ -265,7 +265,7 @@ public class TestMarketConfigController extends AbstractConfigControllerTest {
     @Test
     public void testDeleteMarketConfigWhenUnauthorizedWithInvalidCredentials() throws Exception {
 
-        mockMvc.perform(delete("/api/config/market/" + MARKET_1_ID)
+        mockMvc.perform(delete("/api/config/markets/" + MARKET_1_ID)
                 .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, INVALID_USER_PASSWORD))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isUnauthorized());
@@ -276,7 +276,7 @@ public class TestMarketConfigController extends AbstractConfigControllerTest {
 
         given(marketConfigService.deleteMarketConfig(UNKNOWN_MARKET_ID)).willReturn(emptyMarketConfig());
 
-        mockMvc.perform(delete("/api/config/market/" + UNKNOWN_MARKET_ID)
+        mockMvc.perform(delete("/api/config/markets/" + UNKNOWN_MARKET_ID)
                 .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
@@ -287,7 +287,7 @@ public class TestMarketConfigController extends AbstractConfigControllerTest {
 
         given(marketConfigService.createMarketConfig(someMarketConfig())).willReturn(someMarketConfig());
 
-        final MvcResult result = mockMvc.perform(post("/api/config/market/" + MARKET_1_ID)
+        final MvcResult result = mockMvc.perform(post("/api/config/markets/" + MARKET_1_ID)
                 .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD))
                 .contentType(CONTENT_TYPE)
                 .content(jsonify(someMarketConfig())))
@@ -301,7 +301,7 @@ public class TestMarketConfigController extends AbstractConfigControllerTest {
     @Test
     public void testCreateMarketConfigWhenUnauthorizedWithMissingCredentials() throws Exception {
 
-        mockMvc.perform(post("/api/config/market/" + MARKET_1_ID)
+        mockMvc.perform(post("/api/config/markets/" + MARKET_1_ID)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(CONTENT_TYPE)
                 .content(jsonify(someMarketConfig())))
@@ -311,7 +311,7 @@ public class TestMarketConfigController extends AbstractConfigControllerTest {
     @Test
     public void testCreateMarketConfigWhenUnauthorizedWithInvalidCredentials() throws Exception {
 
-        mockMvc.perform(post("/api/config/market/" + MARKET_1_ID)
+        mockMvc.perform(post("/api/config/markets/" + MARKET_1_ID)
                 .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, INVALID_USER_PASSWORD))
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(CONTENT_TYPE)
@@ -324,7 +324,7 @@ public class TestMarketConfigController extends AbstractConfigControllerTest {
 
         given(marketConfigService.createMarketConfig(someMarketConfig())).willReturn(emptyMarketConfig());
 
-        mockMvc.perform(post("/api/config/market/" + MARKET_1_ID)
+        mockMvc.perform(post("/api/config/markets/" + MARKET_1_ID)
                 .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD))
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(CONTENT_TYPE)
@@ -335,7 +335,7 @@ public class TestMarketConfigController extends AbstractConfigControllerTest {
     @Test
     public void testCreateMarketConfigWhenIdIsMissing() throws Exception {
 
-        mockMvc.perform(post("/api/config/market/" + MARKET_1_ID)
+        mockMvc.perform(post("/api/config/markets/" + MARKET_1_ID)
                 .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD))
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(CONTENT_TYPE)
