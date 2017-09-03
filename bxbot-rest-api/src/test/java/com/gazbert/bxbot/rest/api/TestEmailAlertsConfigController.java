@@ -82,7 +82,7 @@ public class TestEmailAlertsConfigController extends AbstractConfigControllerTes
 
         given(emailAlertsConfigService.getEmailAlertsConfig()).willReturn(someEmailAlertsConfig());
 
-        mockMvc.perform(get("/api/config/emailalerts")
+        mockMvc.perform(get("/api/config/email-alerts")
                 .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD)))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -98,7 +98,7 @@ public class TestEmailAlertsConfigController extends AbstractConfigControllerTes
     @Test
     public void testGetEmailAlertsConfigWhenUnauthorizedWithMissingCredentials() throws Exception {
 
-        mockMvc.perform(get("/api/config/emailalerts")
+        mockMvc.perform(get("/api/config/email-alerts")
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isUnauthorized());
     }
@@ -106,7 +106,7 @@ public class TestEmailAlertsConfigController extends AbstractConfigControllerTes
     @Test
     public void testGetEmailAlertsConfigWhenUnauthorizedWithInvalidCredentials() throws Exception {
 
-        mockMvc.perform(get("/api/config/emailalerts")
+        mockMvc.perform(get("/api/config/email-alerts")
                 .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, INVALID_USER_PASSWORD))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isUnauthorized());
@@ -117,7 +117,7 @@ public class TestEmailAlertsConfigController extends AbstractConfigControllerTes
 
         given(emailAlertsConfigService.updateEmailAlertsConfig(someEmailAlertsConfig())).willReturn(someEmailAlertsConfig());
 
-        final MvcResult result = mockMvc.perform(put("/api/config/emailalerts")
+        final MvcResult result = mockMvc.perform(put("/api/config/email-alerts")
                 .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD))
                 .contentType(CONTENT_TYPE)
                 .content(jsonify(someEmailAlertsConfig())))
@@ -132,7 +132,7 @@ public class TestEmailAlertsConfigController extends AbstractConfigControllerTes
     @Test
     public void testUpdateEmailAlertsConfigWhenUnauthorizedWithMissingCredentials() throws Exception {
 
-        mockMvc.perform(put("/api/config/emailalerts")
+        mockMvc.perform(put("/api/config/email-alerts")
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isUnauthorized());
     }
@@ -140,7 +140,7 @@ public class TestEmailAlertsConfigController extends AbstractConfigControllerTes
     @Test
     public void testUpdateEmailAlertsConfigWhenUnauthorizedWithInvalidCredentials() throws Exception {
 
-        mockMvc.perform(put("/api/config/emailalerts")
+        mockMvc.perform(put("/api/config/email-alerts")
                 .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, INVALID_USER_PASSWORD))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isUnauthorized());
@@ -152,12 +152,10 @@ public class TestEmailAlertsConfigController extends AbstractConfigControllerTes
 
     private static EmailAlertsConfig someEmailAlertsConfig() {
         final EmailAlertsConfig emailAlertsConfig = new EmailAlertsConfig();
-
         final SmtpConfig smtpConfig = new SmtpConfig(
                 HOST, TLS_PORT, ACCOUNT_USERNAME, ACCOUNT_PASSWORD, FROM_ADDRESS, TO_ADDRESS);
-
-        emailAlertsConfig.setEnabled(true);
         emailAlertsConfig.setSmtpConfig(smtpConfig);
+        emailAlertsConfig.setEnabled(true);
         return emailAlertsConfig;
     }
 }

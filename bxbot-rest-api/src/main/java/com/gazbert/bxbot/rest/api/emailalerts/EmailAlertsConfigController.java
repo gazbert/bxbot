@@ -42,7 +42,9 @@ import org.springframework.web.bind.annotation.RestController;
  * <p>
  * Controller for directing Email Alerts config requests.
  * <p>
- * Email Alerts config can only be fetched and updated - there is only 1 Email Alerts configuration per bot.
+ * Email Alerts config can only be fetched and updated - it cannot be deleted or created.
+ * <p>
+ * There is only 1 Email Alerts config per bot.
  *
  * @author gazbert
  * @since 1.0
@@ -65,10 +67,10 @@ public class EmailAlertsConfigController {
      *
      * @return the Email Alerts configuration.
      */
-    @RequestMapping(value = "/emailalerts", method = RequestMethod.GET)
+    @RequestMapping(value = "/email-alerts", method = RequestMethod.GET)
     public EmailAlertsConfig getEmailAlerts(@AuthenticationPrincipal User user) {
 
-        LOG.info("GET /emailalerts - getEmailAlerts() - caller: " + user.getUsername());
+        LOG.info("GET /email-alerts - getEmailAlerts() - caller: " + user.getUsername());
 
         final EmailAlertsConfig emailAlertsConfig = emailAlertsConfigService.getEmailAlertsConfig();
 
@@ -79,13 +81,13 @@ public class EmailAlertsConfigController {
     /**
      * Updates the Email Alerts configuration for the bot.
      *
-     * @return 200 'OK' HTTP status code and Email Alerts config in response body if config updated successfully,
+     * @return 200 'OK' HTTP status code and Email Alerts config in response body if update successful,
      *         some other HTTP status code otherwise.
      */
-    @RequestMapping(value = "/emailalerts", method = RequestMethod.PUT)
+    @RequestMapping(value = "/email-alerts", method = RequestMethod.PUT)
     public ResponseEntity<?> updateEmailAlerts(@AuthenticationPrincipal User user, @RequestBody EmailAlertsConfig config) {
 
-        LOG.info("PUT /emailalerts - updateEmailAlerts() - caller: " + user.getUsername());
+        LOG.info("PUT /email-alerts - updateEmailAlerts() - caller: " + user.getUsername());
         LOG.info("Request: " + config);
 
         final EmailAlertsConfig updatedConfig = emailAlertsConfigService.updateEmailAlertsConfig(config);
