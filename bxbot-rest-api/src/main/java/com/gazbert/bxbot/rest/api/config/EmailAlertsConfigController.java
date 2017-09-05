@@ -65,6 +65,7 @@ public class EmailAlertsConfigController {
     /**
      * Returns the Email Alerts configuration for the bot.
      *
+     * @param user the authenticated user making the request.
      * @return the Email Alerts configuration.
      */
     @RequestMapping(value = "/email-alerts", method = RequestMethod.GET)
@@ -81,6 +82,8 @@ public class EmailAlertsConfigController {
     /**
      * Updates the Email Alerts configuration for the bot.
      *
+     * @param user   the authenticated user making the request.
+     * @param config the Email Alerts config to update.
      * @return 200 'OK' HTTP status code and Email Alerts config in response body if update successful,
      *         some other HTTP status code otherwise.
      */
