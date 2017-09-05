@@ -66,6 +66,7 @@ public class ExchangeConfigController {
      * The AuthenticationConfig is stripped out and not exposed for remote consumption.
      * The API keys/credentials should not leave the bot's local machine via the REST API.
      *
+     * @param user the authenticated user making the request.
      * @return the Exchange configuration.
      */
     @RequestMapping(value = "/exchange", method = RequestMethod.GET)
@@ -86,6 +87,8 @@ public class ExchangeConfigController {
      * Any AuthenticationConfig is stripped out and not updated.
      * The API keys/credentials should not enter the bot's local machine via the REST API.
      *
+     * @param user   the authenticated user making the request.
+     * @param config the Exchange config to update.
      * @return 200 'OK' HTTP status code with updated Exchange config in the body if update successful, some other
      * HTTP status code otherwise.
      */

@@ -64,6 +64,7 @@ public class EngineConfigController {
     /**
      * Returns the Engine configuration for the bot.
      *
+     * @param user the authenticated user making the request.
      * @return the Engine configuration.
      */
     @RequestMapping(value = "/engine", method = RequestMethod.GET)
@@ -80,6 +81,8 @@ public class EngineConfigController {
     /**
      * Updates the Engine configuration for the bot.
      *
+     * @param user   the authenticated user making the request.
+     * @param config the Engine config to update.
      * @return 200 'OK' HTTP status code and updated Engine config in the response body if update successful,
      *         some other HTTP status code otherwise.
      */
