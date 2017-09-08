@@ -26,7 +26,7 @@ package com.gazbert.bxbot.exchanges;
 import com.gazbert.bxbot.exchange.api.AuthenticationConfig;
 import com.gazbert.bxbot.exchange.api.ExchangeAdapter;
 import com.gazbert.bxbot.exchange.api.ExchangeConfig;
-import com.gazbert.bxbot.exchange.api.OtherConfig;
+import com.gazbert.bxbot.exchange.api.OptionalConfig;
 import com.gazbert.bxbot.trading.api.*;
 import com.google.common.base.MoreObjects;
 import com.google.gson.Gson;
@@ -34,6 +34,7 @@ import com.google.gson.GsonBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -173,7 +174,7 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
         LOG.info(() -> "About to initialise OKCoin ExchangeConfig: " + config);
         setAuthenticationConfig(config);
         setNetworkConfig(config);
-        setOtherConfig(config);
+        setOptionalConfig(config);
 
         initSecureMessageLayer();
         initGson();
@@ -353,7 +354,7 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
 
             // For some reason, OKCoin sorts ask orders in descending order instead of ascending.
             // We need to re-order price ascending - lowest ASK price will be first in list.
-            Collections.sort(sellOrders, (thisOrder, thatOrder) -> {
+            sellOrders.sort((thisOrder, thatOrder) -> {
                 if (thisOrder.getPrice().compareTo(thatOrder.getPrice()) < 0) {
                     return -1;
                 } else if (thisOrder.getPrice().compareTo(thatOrder.getPrice()) > 0) {
@@ -715,26 +716,28 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
             params = new HashMap<>(); // no params, so empty query string
         }
 
-        // Build the query string with any given params
-        final StringBuilder queryString = new StringBuilder("?");
-        for (final String param : params.keySet()) {
-            if (queryString.length() > 1) {
-                queryString.append("&");
-            }
-            //noinspection deprecation
-            queryString.append(param).append("=").append(URLEncoder.encode(params.get(param)));
-        }
-
-        // Request headers required by Exchange
-        final Map<String, String> requestHeaders = new HashMap<>();
-        requestHeaders.put("Content-Type", "application/x-www-form-urlencoded");
-
         try {
+
+            // Build the query string with any given params
+            final StringBuilder queryString = new StringBuilder("?");
+            for (final Map.Entry<String, String> param : params.entrySet()) {
+                if (queryString.length() > 1) {
+                    queryString.append("&");
+                }
+                //noinspection deprecation
+                queryString.append(param.getKey());
+                queryString.append("=");
+                queryString.append(URLEncoder.encode(param.getValue(), "UTF-8"));
+            }
+
+            // Request headers required by Exchange
+            final Map<String, String> requestHeaders = new HashMap<>();
+            requestHeaders.put("Content-Type", "application/x-www-form-urlencoded");
 
             final URL url = new URL(PUBLIC_API_BASE_URL + apiMethod + queryString);
             return sendNetworkRequest(url, "GET", null, requestHeaders);
 
-        } catch (MalformedURLException e) {
+        } catch (MalformedURLException | UnsupportedEncodingException e) {
             final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
             LOG.error(errorMsg, e);
             throw new TradingApiException(errorMsg, e);
@@ -813,12 +816,14 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
 
             // Build the payload with all the param args in it
             final StringBuilder payload = new StringBuilder();
-            for (final String param : params.keySet()) {
+            for (final Map.Entry<String, String> param : params.entrySet()) {
                 if (payload.length() > 0) {
                     payload.append("&");
                 }
                 //noinspection deprecation
-                payload.append(param).append("=").append(URLEncoder.encode(params.get(param)));
+                payload.append(param.getKey());
+                payload.append("=");
+                payload.append(URLEncoder.encode(param.getValue(), "UTF-8"));
             }
             LOG.debug(() -> "Using following URL encoded POST payload for API call: " + payload);
 
@@ -829,7 +834,7 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
             final URL url = new URL(AUTHENTICATED_API_URL + apiMethod);
             return sendNetworkRequest(url, "POST", payload.toString(), requestHeaders);
 
-        } catch (MalformedURLException e) {
+        } catch (MalformedURLException | UnsupportedEncodingException e) {
             final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
             LOG.error(errorMsg, e);
             throw new TradingApiException(errorMsg, e);
@@ -842,7 +847,7 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
      * @param stringToHash the string to create the MD5 hash for.
      * @return the MD5 hash as an uppercase string.
      */
-    private String createMd5HashAndReturnAsUpperCaseString(String stringToHash) {
+    private String createMd5HashAndReturnAsUpperCaseString(String stringToHash) throws UnsupportedEncodingException {
 
         final char HEX_DIGITS[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
 
@@ -850,7 +855,7 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
             return "";
         }
 
-        messageDigest.update(stringToHash.getBytes());
+        messageDigest.update(stringToHash.getBytes("UTF-8"));
         final byte[] md5HashInBytes = messageDigest.digest();
 
         final StringBuilder md5HashAsUpperCaseString = new StringBuilder();
@@ -888,15 +893,15 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
         secret = getAuthenticationConfigItem(authenticationConfig, SECRET_PROPERTY_NAME);
     }
 
-    private void setOtherConfig(ExchangeConfig exchangeConfig) {
+    private void setOptionalConfig(ExchangeConfig exchangeConfig) {
 
-        final OtherConfig otherConfig = getOtherConfig(exchangeConfig);
+        final OptionalConfig optionalConfig = getOptionalConfig(exchangeConfig);
 
-        final String buyFeeInConfig = getOtherConfigItem(otherConfig, BUY_FEE_PROPERTY_NAME);
+        final String buyFeeInConfig = getOptionalConfigItem(optionalConfig, BUY_FEE_PROPERTY_NAME);
         buyFeePercentage = new BigDecimal(buyFeeInConfig).divide(new BigDecimal("100"), 8, BigDecimal.ROUND_HALF_UP);
         LOG.info(() -> "Buy fee % in BigDecimal format: " + buyFeePercentage);
 
-        final String sellFeeInConfig = getOtherConfigItem(otherConfig, SELL_FEE_PROPERTY_NAME);
+        final String sellFeeInConfig = getOptionalConfigItem(optionalConfig, SELL_FEE_PROPERTY_NAME);
         sellFeePercentage = new BigDecimal(sellFeeInConfig).divide(new BigDecimal("100"), 8, BigDecimal.ROUND_HALF_UP);
         LOG.info(() -> "Sell fee % in BigDecimal format: " + sellFeePercentage);
     }

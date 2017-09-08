@@ -26,7 +26,7 @@ package com.gazbert.bxbot.exchanges;
 import com.gazbert.bxbot.exchange.api.AuthenticationConfig;
 import com.gazbert.bxbot.exchange.api.ExchangeConfig;
 import com.gazbert.bxbot.exchange.api.NetworkConfig;
-import com.gazbert.bxbot.exchange.api.OtherConfig;
+import com.gazbert.bxbot.exchange.api.OptionalConfig;
 import com.gazbert.bxbot.trading.api.*;
 import org.junit.Before;
 import org.junit.Test;
@@ -85,7 +85,8 @@ public class TestGeminiExchangeAdapter {
     private static final String ORDER_CANCEL = "order/cancel";
 
     // Canned test data
-    private static final String MARKET_ID = "ethbtc";
+    private static final String ETH_BTC_MARKET_ID = "ethbtc";
+    private static final String BTC_USD_MARKET_ID = "btcusd";
     private static final BigDecimal BUY_ORDER_PRICE = new BigDecimal("0.00001");
     private static final BigDecimal BUY_ORDER_QUANTITY = new BigDecimal("0.001");
     private static final BigDecimal SELL_ORDER_PRICE = new BigDecimal("0.00002");
@@ -107,7 +108,7 @@ public class TestGeminiExchangeAdapter {
     private ExchangeConfig exchangeConfig;
     private AuthenticationConfig authenticationConfig;
     private NetworkConfig networkConfig;
-    private OtherConfig otherConfig;
+    private OptionalConfig optionalConfig;
 
 
     /*
@@ -125,14 +126,14 @@ public class TestGeminiExchangeAdapter {
         expect(networkConfig.getNonFatalErrorCodes()).andReturn(nonFatalNetworkErrorCodes);
         expect(networkConfig.getNonFatalErrorMessages()).andReturn(nonFatalNetworkErrorMessages);
 
-        otherConfig = PowerMock.createMock(OtherConfig.class);
-        expect(otherConfig.getItem("buy-fee")).andReturn("0.25");
-        expect(otherConfig.getItem("sell-fee")).andReturn("0.25");
+        optionalConfig = PowerMock.createMock(OptionalConfig.class);
+        expect(optionalConfig.getItem("buy-fee")).andReturn("0.25");
+        expect(optionalConfig.getItem("sell-fee")).andReturn("0.25");
 
         exchangeConfig = PowerMock.createMock(ExchangeConfig.class);
         expect(exchangeConfig.getAuthenticationConfig()).andReturn(authenticationConfig);
         expect(exchangeConfig.getNetworkConfig()).andReturn(networkConfig);
-        expect(exchangeConfig.getOtherConfig()).andReturn(otherConfig);
+        expect(exchangeConfig.getOptionalConfig()).andReturn(optionalConfig);
     }
 
     // ------------------------------------------------------------------------------------------------
@@ -150,16 +151,16 @@ public class TestGeminiExchangeAdapter {
         // Partial mock so we do not send stuff down the wire
         final GeminiExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
                 GeminiExchangeAdapter.class, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD);
-        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD, BOOK + "/" + MARKET_ID).
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD, BOOK + "/" + ETH_BTC_MARKET_ID).
                 andReturn(exchangeResponse);
 
         PowerMock.replayAll();
         exchangeAdapter.init(exchangeConfig);
 
-        final MarketOrderBook marketOrderBook = exchangeAdapter.getMarketOrders(MARKET_ID);
+        final MarketOrderBook marketOrderBook = exchangeAdapter.getMarketOrders(ETH_BTC_MARKET_ID);
 
         // assert some key stuff; we're not testing GSON here.
-        assertTrue(marketOrderBook.getMarketId().equals(MARKET_ID));
+        assertTrue(marketOrderBook.getMarketId().equals(ETH_BTC_MARKET_ID));
 
         final BigDecimal buyPrice = new BigDecimal("603.01");
         final BigDecimal buyQuantity = new BigDecimal("104.56720978");
@@ -190,7 +191,7 @@ public class TestGeminiExchangeAdapter {
         // Partial mock so we do not send stuff down the wire
         final GeminiExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
                 GeminiExchangeAdapter.class, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD);
-        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD, BOOK + "/" + MARKET_ID).
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD, BOOK + "/" + ETH_BTC_MARKET_ID).
                 andThrow(new ExchangeNetworkException("This famous linguist once said that of all the phrases in the" +
                         " English language, of all the endless combinations of words in all of history, that " +
                         "\"cellar door\" is the most beautiful."));
@@ -198,7 +199,7 @@ public class TestGeminiExchangeAdapter {
         PowerMock.replayAll();
         exchangeAdapter.init(exchangeConfig);
 
-        exchangeAdapter.getMarketOrders(MARKET_ID);
+        exchangeAdapter.getMarketOrders(ETH_BTC_MARKET_ID);
         PowerMock.verifyAll();
     }
 
@@ -208,13 +209,13 @@ public class TestGeminiExchangeAdapter {
         // Partial mock so we do not send stuff down the wire
         final GeminiExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
                 GeminiExchangeAdapter.class, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD);
-        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD, BOOK + "/" + MARKET_ID).
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD, BOOK + "/" + ETH_BTC_MARKET_ID).
                 andThrow(new IllegalArgumentException("Why are you wearing that stupid bunny suit?"));
 
         PowerMock.replayAll();
         exchangeAdapter.init(exchangeConfig);
 
-        exchangeAdapter.getMarketOrders(MARKET_ID);
+        exchangeAdapter.getMarketOrders(ETH_BTC_MARKET_ID);
         PowerMock.verifyAll();
     }
 
@@ -232,9 +233,9 @@ public class TestGeminiExchangeAdapter {
 
         // Mock out param map so we can assert the contents passed to the transport layer are what we expect.
         final Map<String, String> requestParamMap = PowerMock.createMock(Map.class);
-        expect(requestParamMap.put("symbol", MARKET_ID)).andStubReturn(null);
+        expect(requestParamMap.put("symbol", BTC_USD_MARKET_ID)).andStubReturn(null);
         expect(requestParamMap.put("amount", new DecimalFormat("#.########").format(BUY_ORDER_QUANTITY))).andStubReturn(null);
-        expect(requestParamMap.put("price", new DecimalFormat("#.########").format(BUY_ORDER_PRICE))).andStubReturn(null);
+        expect(requestParamMap.put("price", new DecimalFormat("#.##").format(BUY_ORDER_PRICE))).andStubReturn(null);
         expect(requestParamMap.put("side", "buy")).andStubReturn(null);
         expect(requestParamMap.put("type", "exchange limit")).andStubReturn(null);
 
@@ -250,7 +251,7 @@ public class TestGeminiExchangeAdapter {
         PowerMock.replayAll();
         exchangeAdapter.init(exchangeConfig);
 
-        final String orderId = exchangeAdapter.createOrder(MARKET_ID, OrderType.BUY, BUY_ORDER_QUANTITY, BUY_ORDER_PRICE);
+        final String orderId = exchangeAdapter.createOrder(BTC_USD_MARKET_ID, OrderType.BUY, BUY_ORDER_QUANTITY, BUY_ORDER_PRICE);
         assertTrue(orderId.equals("196693745"));
 
         PowerMock.verifyAll();
@@ -266,7 +267,7 @@ public class TestGeminiExchangeAdapter {
 
         // Mock out param map so we can assert the contents passed to the transport layer are what we expect.
         final Map<String, Object> requestParamMap = PowerMock.createMock(Map.class);
-        expect(requestParamMap.put("symbol", MARKET_ID)).andStubReturn(null);
+        expect(requestParamMap.put("symbol", ETH_BTC_MARKET_ID)).andStubReturn(null);
         expect(requestParamMap.put("amount", new DecimalFormat("#.########").format(SELL_ORDER_QUANTITY))).andStubReturn(null);
         expect(requestParamMap.put("price", new DecimalFormat("#.########").format(SELL_ORDER_PRICE))).andStubReturn(null);
         expect(requestParamMap.put("exchange", "bitfinex")).andStubReturn(null);
@@ -285,7 +286,7 @@ public class TestGeminiExchangeAdapter {
         PowerMock.replayAll();
         exchangeAdapter.init(exchangeConfig);
 
-        final String orderId = exchangeAdapter.createOrder(MARKET_ID, OrderType.SELL, SELL_ORDER_QUANTITY,
+        final String orderId = exchangeAdapter.createOrder(ETH_BTC_MARKET_ID, OrderType.SELL, SELL_ORDER_QUANTITY,
                 SELL_ORDER_PRICE);
         assertTrue(orderId.equals("196193745"));
 
@@ -307,7 +308,7 @@ public class TestGeminiExchangeAdapter {
         PowerMock.replayAll();
         exchangeAdapter.init(exchangeConfig);
 
-        exchangeAdapter.createOrder(MARKET_ID, OrderType.SELL, BUY_ORDER_QUANTITY, BUY_ORDER_PRICE);
+        exchangeAdapter.createOrder(ETH_BTC_MARKET_ID, OrderType.SELL, BUY_ORDER_QUANTITY, BUY_ORDER_PRICE);
         PowerMock.verifyAll();
     }
 
@@ -324,7 +325,7 @@ public class TestGeminiExchangeAdapter {
         PowerMock.replayAll();
         exchangeAdapter.init(exchangeConfig);
 
-        exchangeAdapter.createOrder(MARKET_ID, OrderType.BUY, BUY_ORDER_QUANTITY, BUY_ORDER_PRICE);
+        exchangeAdapter.createOrder(ETH_BTC_MARKET_ID, OrderType.BUY, BUY_ORDER_QUANTITY, BUY_ORDER_PRICE);
         PowerMock.verifyAll();
     }
 
@@ -486,13 +487,13 @@ public class TestGeminiExchangeAdapter {
         // Partial mock so we do not send stuff down the wire
         final GeminiExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
                 GeminiExchangeAdapter.class, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD);
-        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD, PUBTICKER + "/" + MARKET_ID).
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD, PUBTICKER + "/" + ETH_BTC_MARKET_ID).
                 andReturn(exchangeResponse);
 
         PowerMock.replayAll();
         exchangeAdapter.init(exchangeConfig);
 
-        final BigDecimal latestMarketPrice = exchangeAdapter.getLatestMarketPrice(MARKET_ID).setScale(8, BigDecimal.ROUND_HALF_UP);
+        final BigDecimal latestMarketPrice = exchangeAdapter.getLatestMarketPrice(ETH_BTC_MARKET_ID).setScale(8, BigDecimal.ROUND_HALF_UP);
         assertTrue(latestMarketPrice.compareTo(new BigDecimal("567.22")) == 0);
 
         PowerMock.verifyAll();
@@ -504,7 +505,7 @@ public class TestGeminiExchangeAdapter {
         // Partial mock so we do not send stuff down the wire
         final GeminiExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
                 GeminiExchangeAdapter.class, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD);
-        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD, PUBTICKER + "/" + MARKET_ID).
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD, PUBTICKER + "/" + ETH_BTC_MARKET_ID).
                 andThrow(new ExchangeNetworkException("He's the hero Gotham deserves, but not the one it needs right now. " +
                         "So we'll hunt him. Because he can take it. Because he's not our hero. " +
                         "He's a silent guardian, a watchful protector. A dark knight."));
@@ -512,7 +513,7 @@ public class TestGeminiExchangeAdapter {
         PowerMock.replayAll();
         exchangeAdapter.init(exchangeConfig);
 
-        exchangeAdapter.getLatestMarketPrice(MARKET_ID);
+        exchangeAdapter.getLatestMarketPrice(ETH_BTC_MARKET_ID);
         PowerMock.verifyAll();
     }
 
@@ -522,14 +523,14 @@ public class TestGeminiExchangeAdapter {
         // Partial mock so we do not send stuff down the wire
         final GeminiExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
                 GeminiExchangeAdapter.class, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD);
-        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD, PUBTICKER + "/" + MARKET_ID).
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD, PUBTICKER + "/" + ETH_BTC_MARKET_ID).
                 andThrow(new IllegalArgumentException(" In brightest day, in blackest night, no evil shall escape my sight," +
                         " Let those who worship evil's might, beware of my power, Green Lantern's light!"));
 
         PowerMock.replayAll();
         exchangeAdapter.init(exchangeConfig);
 
-        exchangeAdapter.getLatestMarketPrice(MARKET_ID);
+        exchangeAdapter.getLatestMarketPrice(ETH_BTC_MARKET_ID);
         PowerMock.verifyAll();
     }
 
@@ -554,11 +555,11 @@ public class TestGeminiExchangeAdapter {
         PowerMock.replayAll();
         exchangeAdapter.init(exchangeConfig);
 
-        final List<OpenOrder> openOrders = exchangeAdapter.getYourOpenOrders(MARKET_ID);
+        final List<OpenOrder> openOrders = exchangeAdapter.getYourOpenOrders(ETH_BTC_MARKET_ID);
 
         // assert some key stuff; we're not testing GSON here.
         assertTrue(openOrders.size() == 2);
-        assertTrue(openOrders.get(0).getMarketId().equals(MARKET_ID));
+        assertTrue(openOrders.get(0).getMarketId().equals(ETH_BTC_MARKET_ID));
         assertTrue(openOrders.get(0).getId().equals("196267999"));
         assertTrue(openOrders.get(0).getType() == OrderType.BUY);
         assertTrue(openOrders.get(0).getCreationDate().getTime() == 1470419470223L);
@@ -583,7 +584,7 @@ public class TestGeminiExchangeAdapter {
         PowerMock.replayAll();
         exchangeAdapter.init(exchangeConfig);
 
-        exchangeAdapter.getYourOpenOrders(MARKET_ID);
+        exchangeAdapter.getYourOpenOrders(ETH_BTC_MARKET_ID);
         PowerMock.verifyAll();
     }
 
@@ -601,7 +602,7 @@ public class TestGeminiExchangeAdapter {
         PowerMock.replayAll();
         exchangeAdapter.init(exchangeConfig);
 
-        exchangeAdapter.getYourOpenOrders(MARKET_ID);
+        exchangeAdapter.getYourOpenOrders(ETH_BTC_MARKET_ID);
         PowerMock.verifyAll();
     }
 
@@ -626,7 +627,7 @@ public class TestGeminiExchangeAdapter {
         final GeminiExchangeAdapter exchangeAdapter = new GeminiExchangeAdapter();
         exchangeAdapter.init(exchangeConfig);
 
-        final BigDecimal sellPercentageFee = exchangeAdapter.getPercentageOfSellOrderTakenForExchangeFee(MARKET_ID);
+        final BigDecimal sellPercentageFee = exchangeAdapter.getPercentageOfSellOrderTakenForExchangeFee(ETH_BTC_MARKET_ID);
         assertTrue(sellPercentageFee.compareTo(new BigDecimal("0.0025")) == 0);
         PowerMock.verifyAll();
     }
@@ -638,7 +639,7 @@ public class TestGeminiExchangeAdapter {
         final GeminiExchangeAdapter exchangeAdapter = new GeminiExchangeAdapter();
         exchangeAdapter.init(exchangeConfig);
 
-        final BigDecimal buyPercentageFee = exchangeAdapter.getPercentageOfBuyOrderTakenForExchangeFee(MARKET_ID);
+        final BigDecimal buyPercentageFee = exchangeAdapter.getPercentageOfBuyOrderTakenForExchangeFee(ETH_BTC_MARKET_ID);
         assertTrue(buyPercentageFee.compareTo(new BigDecimal("0.0025")) == 0);
         PowerMock.verifyAll();
     }

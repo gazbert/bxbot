@@ -117,7 +117,7 @@ public class TestHuobiExchangeAdapter {
     private ExchangeConfig exchangeConfig;
     private AuthenticationConfig authenticationConfig;
     private NetworkConfig networkConfig;
-    private OtherConfig otherConfig;
+    private OptionalConfig optionalConfig;
 
 
     /*
@@ -135,15 +135,15 @@ public class TestHuobiExchangeAdapter {
         expect(networkConfig.getNonFatalErrorCodes()).andReturn(nonFatalNetworkErrorCodes);
         expect(networkConfig.getNonFatalErrorMessages()).andReturn(nonFatalNetworkErrorMessages);
 
-        otherConfig = PowerMock.createMock(OtherConfig.class);
-        expect(otherConfig.getItem("buy-fee")).andReturn("0.2");
-        expect(otherConfig.getItem("sell-fee")).andReturn("0.2");
-        expect(otherConfig.getItem("account-info-market")).andReturn("usd");
+        optionalConfig = PowerMock.createMock(OptionalConfig.class);
+        expect(optionalConfig.getItem("buy-fee")).andReturn("0.2");
+        expect(optionalConfig.getItem("sell-fee")).andReturn("0.2");
+        expect(optionalConfig.getItem("account-info-market")).andReturn("usd");
 
         exchangeConfig = PowerMock.createMock(ExchangeConfig.class);
         expect(exchangeConfig.getAuthenticationConfig()).andReturn(authenticationConfig);
         expect(exchangeConfig.getNetworkConfig()).andReturn(networkConfig);
-        expect(exchangeConfig.getOtherConfig()).andReturn(otherConfig);
+        expect(exchangeConfig.getOptionalConfig()).andReturn(optionalConfig);
     }
 
     // ------------------------------------------------------------------------------------------------
@@ -826,10 +826,10 @@ public class TestHuobiExchangeAdapter {
     @Test(expected = IllegalArgumentException.class)
     public void testExchangeAdapterThrowsExceptionIfAccountInfoMarketConfigIsMissing() throws Exception {
 
-        PowerMock.reset(otherConfig);
-        expect(otherConfig.getItem("buy-fee")).andReturn("0.2");
-        expect(otherConfig.getItem("sell-fee")).andReturn("0.2");
-        expect(otherConfig.getItem("account-info-market")).andReturn(null);
+        PowerMock.reset(optionalConfig);
+        expect(optionalConfig.getItem("buy-fee")).andReturn("0.2");
+        expect(optionalConfig.getItem("sell-fee")).andReturn("0.2");
+        expect(optionalConfig.getItem("account-info-market")).andReturn(null);
         PowerMock.replayAll();
 
         final ExchangeAdapter exchangeAdapter = new HuobiExchangeAdapter();
@@ -840,10 +840,10 @@ public class TestHuobiExchangeAdapter {
     @Test(expected = IllegalArgumentException.class)
     public void testExchangeAdapterThrowsExceptionIfBuyFeeIsMissing() throws Exception {
 
-        PowerMock.reset(otherConfig);
-        expect(otherConfig.getItem("buy-fee")).andReturn("");
-        expect(otherConfig.getItem("sell-fee")).andReturn("0.2");
-        expect(otherConfig.getItem("account-info-market")).andReturn("usd");
+        PowerMock.reset(optionalConfig);
+        expect(optionalConfig.getItem("buy-fee")).andReturn("");
+        expect(optionalConfig.getItem("sell-fee")).andReturn("0.2");
+        expect(optionalConfig.getItem("account-info-market")).andReturn("usd");
         PowerMock.replayAll();
 
         final ExchangeAdapter exchangeAdapter = new HuobiExchangeAdapter();
@@ -854,10 +854,10 @@ public class TestHuobiExchangeAdapter {
     @Test(expected = IllegalArgumentException.class)
     public void testExchangeAdapterThrowsExceptionIfSellFeeIsMissing() throws Exception {
 
-        PowerMock.reset(otherConfig);
-        expect(otherConfig.getItem("buy-fee")).andReturn("0.2");
-        expect(otherConfig.getItem("sell-fee")).andReturn(null);
-        expect(otherConfig.getItem("account-info-market")).andReturn("usd");
+        PowerMock.reset(optionalConfig);
+        expect(optionalConfig.getItem("buy-fee")).andReturn("0.2");
+        expect(optionalConfig.getItem("sell-fee")).andReturn(null);
+        expect(optionalConfig.getItem("account-info-market")).andReturn("usd");
         PowerMock.replayAll();
 
         final ExchangeAdapter exchangeAdapter = new HuobiExchangeAdapter();

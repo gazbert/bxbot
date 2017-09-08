@@ -26,7 +26,7 @@ package com.gazbert.bxbot.core.mail;
 
 import com.gazbert.bxbot.domain.emailalerts.EmailAlertsConfig;
 import com.gazbert.bxbot.domain.emailalerts.SmtpConfig;
-import com.gazbert.bxbot.repository.EmailAlertsConfigRepository;
+import com.gazbert.bxbot.services.EmailAlertsConfigService;
 import org.easymock.EasyMock;
 import org.junit.Before;
 import org.junit.Test;
@@ -60,21 +60,21 @@ public class TestEmailAlerter {
     private static final String FROM_ADDRESS = "bxbot.alerts@gmail.com";
     private static final String TO_ADDRESS = "some-destination@gmail.com";
 
-    private EmailAlertsConfigRepository emailAlertsConfigRepository;
+    private EmailAlertsConfigService emailAlertsConfigService;
 
 
     @Before
     public void setup() throws Exception {
-        emailAlertsConfigRepository = PowerMock.createMock(EmailAlertsConfigRepository.class);
+        emailAlertsConfigService = PowerMock.createMock(EmailAlertsConfigService.class);
     }
 
     @Test
     public void testEmailAlerterInitialisedSuccessfully() throws Exception {
 
-        expect(emailAlertsConfigRepository.getConfig()).andReturn(someEmailAlertsConfigWithAlertsEnabledAndSmtpConfig());
+        expect(emailAlertsConfigService.getEmailAlertsConfig()).andReturn(someEmailAlertsConfigWithAlertsEnabledAndSmtpConfig());
         PowerMock.replayAll();
 
-        final EmailAlerter emailAlerter = new EmailAlerter(emailAlertsConfigRepository);
+        final EmailAlerter emailAlerter = new EmailAlerter(emailAlertsConfigService);
         assertNotNull(emailAlerter);
 
         PowerMock.verifyAll();
@@ -83,10 +83,10 @@ public class TestEmailAlerter {
     @Test
     public void testEmailAlerterInitialisedSuccessfullyWhenAlertsDisabledAndNoSmtpConfigSupplied() throws Exception {
 
-        expect(emailAlertsConfigRepository.getConfig()).andReturn(someEmailAlertsConfigWithAlertsDisabledAndNoSmtpConfig());
+        expect(emailAlertsConfigService.getEmailAlertsConfig()).andReturn(someEmailAlertsConfigWithAlertsDisabledAndNoSmtpConfig());
         PowerMock.replayAll();
 
-        final EmailAlerter emailAlerter = new EmailAlerter(emailAlertsConfigRepository);
+        final EmailAlerter emailAlerter = new EmailAlerter(emailAlertsConfigService);
         assertNotNull(emailAlerter);
 
         PowerMock.verifyAll();
@@ -95,10 +95,10 @@ public class TestEmailAlerter {
     @Test(expected = IllegalStateException.class)
     public void testEmailAlerterInitialisationFailsWhenAlertsEnabledButNoSmtpConfigSupplied() throws Exception {
 
-        expect(emailAlertsConfigRepository.getConfig()).andReturn(someEmailAlertsConfigWithAlertsEnabledAndNoSmtpConfig());
+        expect(emailAlertsConfigService.getEmailAlertsConfig()).andReturn(someEmailAlertsConfigWithAlertsEnabledAndNoSmtpConfig());
         PowerMock.replayAll();
 
-        final EmailAlerter emailAlerter = new EmailAlerter(emailAlertsConfigRepository);
+        final EmailAlerter emailAlerter = new EmailAlerter(emailAlertsConfigService);
         assertNotNull(emailAlerter);
 
         PowerMock.verifyAll();
@@ -112,14 +112,14 @@ public class TestEmailAlerter {
     @Test
     public void testEmailAlerterSendsMailSuccessfullyUsingMockTransport() throws Exception {
 
-        expect(emailAlertsConfigRepository.getConfig()).andReturn(someEmailAlertsConfigWithAlertsEnabledAndSmtpConfig());
+        expect(emailAlertsConfigService.getEmailAlertsConfig()).andReturn(someEmailAlertsConfigWithAlertsEnabledAndSmtpConfig());
 
         PowerMock.mockStatic(Transport.class);
         Transport.send(EasyMock.anyObject(Message.class));
 
         PowerMock.replayAll();
 
-        final EmailAlerter emailAlerter = new EmailAlerter(emailAlertsConfigRepository);
+        final EmailAlerter emailAlerter = new EmailAlerter(emailAlertsConfigService);
         emailAlerter.sendMessage(EMAIL_SUBJECT, EMAIL_MSG);
 
         PowerMock.verifyAll();
@@ -139,7 +139,7 @@ public class TestEmailAlerter {
     //@Test
     public void testEmailAlerterReallySendsMailSuccessfully() throws Exception {
 
-        final EmailAlerter emailAlerter = new EmailAlerter(emailAlertsConfigRepository);
+        final EmailAlerter emailAlerter = new EmailAlerter(emailAlertsConfigService);
         emailAlerter.sendMessage(EMAIL_SUBJECT, EMAIL_MSG);
 
         // expect to send message - check your inbox!

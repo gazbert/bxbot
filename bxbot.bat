@@ -7,7 +7,7 @@ REM Bare bones script for starting BX-bot on Windows systems.
 REM
 REM Could be made better, but will do for now...
 REM
-REM You need the Java runtime installed - Oracle JDK 1.8 is supported.
+REM You need the Java 8 JRE installed.
 REM
 REM This script expects all the jar files to live in the lib_dir.
 REM
@@ -21,7 +21,7 @@ REM log4j2 config file location
 SET log4j2_config=.\config\log4j2.xml
 
 REM The BX-bot 'fat' jar (Spring Boot app containing all the dependencies)
-SET bxbot_jar=bxbot-app-0.6.2-SNAPSHOT.jar
+SET bxbot_jar=bxbot-app-0.8.2-SNAPSHOT.jar
 
 REM PID file for checking if bot is running
 SET pid_file=.\.bxbot.pid

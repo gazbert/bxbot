@@ -28,15 +28,15 @@ import com.gazbert.bxbot.core.util.ConfigurableComponentFactory;
 import com.gazbert.bxbot.domain.engine.EngineConfig;
 import com.gazbert.bxbot.domain.exchange.AuthenticationConfig;
 import com.gazbert.bxbot.domain.exchange.NetworkConfig;
-import com.gazbert.bxbot.domain.exchange.OtherConfig;
+import com.gazbert.bxbot.domain.exchange.OptionalConfig;
 import com.gazbert.bxbot.domain.market.MarketConfig;
 import com.gazbert.bxbot.domain.strategy.StrategyConfig;
 import com.gazbert.bxbot.exchange.api.ExchangeAdapter;
 import com.gazbert.bxbot.exchange.api.ExchangeConfig;
-import com.gazbert.bxbot.repository.EngineConfigRepository;
-import com.gazbert.bxbot.repository.ExchangeConfigRepository;
-import com.gazbert.bxbot.repository.MarketConfigRepository;
-import com.gazbert.bxbot.repository.StrategyConfigRepository;
+import com.gazbert.bxbot.services.EngineConfigService;
+import com.gazbert.bxbot.services.ExchangeConfigService;
+import com.gazbert.bxbot.services.MarketConfigService;
+import com.gazbert.bxbot.services.StrategyConfigService;
 import com.gazbert.bxbot.strategy.api.StrategyException;
 import com.gazbert.bxbot.strategy.api.TradingStrategy;
 import com.gazbert.bxbot.trading.api.BalanceInfo;
@@ -78,9 +78,9 @@ public class TestTradingEngine {
     private static final String CRITICAL_EMAIL_ALERT_SUBJECT = "CRITICAL Alert message from BX-bot";
 
     // Exchange Adapter config
-    private static final String EXCHANGE_ADAPTER_IMPL_CLASS = "com.my.adapters.DummyBtceExchangeAdapter";
-    private static final String EXCHANGE_ADAPTER_NAME = "My BTC-e Adapter";
-    private static final Integer EXCHANGE_ADAPTER_NETWORK_TIMEOUT = new Integer("30");
+    private static final String EXCHANGE_ADAPTER_IMPL_CLASS = "com.my.adapters.DummyBitstampExchangeAdapter";
+    private static final String EXCHANGE_NAME = "Bitstamp";
+    private static final Integer EXCHANGE_ADAPTER_NETWORK_TIMEOUT = Integer.valueOf("30");
     private static final List<Integer> EXCHANGE_ADAPTER_NONFATAL_ERROR_CODES = Arrays.asList(502, 503, 504);
     private static final List<String> EXCHANGE_ADAPTER_NONFATAL_ERROR_MESSAGES = Arrays.asList(
             "Connection reset",
@@ -98,14 +98,14 @@ public class TestTradingEngine {
 
     // Strategies config
     private static final String STRATEGY_ID = "MyMacdStrategy_v3";
-    private static final String STRATEGY_LABEL = "MACD Shorting algo";
+    private static final String STRATEGY_NAME = "MACD Shorting algo";
     private static final String STRATEGY_DESCRIPTION = "MACD Shorting algo description";
     private static final String STRATEGY_IMPL_CLASS = "com.my.strats.MyMacdStrategy";
     private static final String STRATEGY_CONFIG_ITEM_NAME = "btc-sell-order-amount";
     private static final String STRATEGY_CONFIG_ITEM_VALUE = "0.2";
 
     // Markets config
-    private static final String MARKET_LABEL = "BTC/USD";
+    private static final String MARKET_NAME = "BTC/USD";
     private static final String MARKET_ID = "btc_usd";
     private static final String MARKET_BASE_CURRENCY = "BTC";
     private static final String MARKET_COUNTER_CURRENCY = "USD";
@@ -115,10 +115,10 @@ public class TestTradingEngine {
     private ExchangeAdapter exchangeAdapter;
     private TradingStrategy tradingStrategy;
     private EmailAlerter emailAlerter;
-    private ExchangeConfigRepository exchangeConfigRepository;
-    private EngineConfigRepository engineConfigRepository;
-    private StrategyConfigRepository strategyConfigRepository;
-    private MarketConfigRepository marketConfigRepository;
+    private ExchangeConfigService exchangeConfigService;
+    private EngineConfigService engineConfigService;
+    private StrategyConfigService strategyConfigService;
+    private MarketConfigService marketConfigService;
 
     /*
      * Mock out Config subsystem; we're not testing it here - has its own unit tests.
@@ -133,10 +133,10 @@ public class TestTradingEngine {
         tradingStrategy = PowerMock.createMock(TradingStrategy.class);
         emailAlerter = PowerMock.createMock(EmailAlerter.class);
 
-        exchangeConfigRepository = PowerMock.createMock(ExchangeConfigRepository.class);
-        engineConfigRepository = PowerMock.createMock(EngineConfigRepository.class);
-        strategyConfigRepository = PowerMock.createMock(StrategyConfigRepository.class);
-        marketConfigRepository = PowerMock.createMock(MarketConfigRepository.class);
+        exchangeConfigService = PowerMock.createMock(ExchangeConfigService.class);
+        engineConfigService = PowerMock.createMock(EngineConfigService.class);
+        strategyConfigService = PowerMock.createMock(StrategyConfigService.class);
+        marketConfigService = PowerMock.createMock(MarketConfigService.class);
 
         PowerMock.mockStatic(ConfigurableComponentFactory.class);
     }
@@ -146,8 +146,8 @@ public class TestTradingEngine {
 
         PowerMock.replayAll();
 
-        final TradingEngine tradingEngine = new TradingEngine(exchangeConfigRepository, engineConfigRepository,
-                strategyConfigRepository, marketConfigRepository, emailAlerter);
+        final TradingEngine tradingEngine = new TradingEngine(exchangeConfigService, engineConfigService,
+                strategyConfigService, marketConfigService, emailAlerter);
 
         assertFalse(tradingEngine.isRunning());
 
@@ -175,12 +175,12 @@ public class TestTradingEngine {
 
         PowerMock.replayAll();
 
-        final TradingEngine tradingEngine = new TradingEngine(exchangeConfigRepository, engineConfigRepository,
-                strategyConfigRepository, marketConfigRepository, emailAlerter);
+        final TradingEngine tradingEngine = new TradingEngine(exchangeConfigService, engineConfigService,
+                strategyConfigService, marketConfigService, emailAlerter);
         tradingEngine.start();
 
         // sleep for bit then and check if shutdown ok
-        Thread.sleep(1 * 1000);
+        Thread.sleep(1000);
         assertFalse(tradingEngine.isRunning());
 
         PowerMock.verifyAll();
@@ -192,9 +192,6 @@ public class TestTradingEngine {
         setupConfigLoadingExpectationsForNoEmergencyStopCheck();
 
         final int numberOfTradeCycles = 1;
-        final Map<String, BigDecimal> balancesAvailable = new HashMap<>();
-        // Emergency stop check disabled, i.e. ZERO
-        balancesAvailable.put(ENGINE_EMERGENCY_STOP_CURRENCY, BigDecimal.ZERO);
 
         // expect Trading Strategy to be invoked at least 1 time
         tradingStrategy.execute();
@@ -202,8 +199,8 @@ public class TestTradingEngine {
 
         PowerMock.replayAll();
 
-        final TradingEngine tradingEngine = new TradingEngine(exchangeConfigRepository, engineConfigRepository,
-                strategyConfigRepository, marketConfigRepository, emailAlerter);
+        final TradingEngine tradingEngine = new TradingEngine(exchangeConfigService, engineConfigService,
+                strategyConfigService, marketConfigService, emailAlerter);
 
         final Executor executor = Executors.newSingleThreadExecutor();
         executor.execute(tradingEngine::start);
@@ -216,7 +213,7 @@ public class TestTradingEngine {
         tradingEngine.shutdown();
 
         // sleep for 1s and check if shutdown ok
-        Thread.sleep(1 * 1000);
+        Thread.sleep(1000);
         assertFalse(tradingEngine.isRunning());
 
         PowerMock.verifyAll();
@@ -247,8 +244,8 @@ public class TestTradingEngine {
 
         PowerMock.replayAll();
 
-        final TradingEngine tradingEngine = new TradingEngine(exchangeConfigRepository, engineConfigRepository,
-                strategyConfigRepository, marketConfigRepository, emailAlerter);
+        final TradingEngine tradingEngine = new TradingEngine(exchangeConfigService, engineConfigService,
+                strategyConfigService, marketConfigService, emailAlerter);
 
         final Executor executor = Executors.newSingleThreadExecutor();
         executor.execute(tradingEngine::start);
@@ -261,7 +258,7 @@ public class TestTradingEngine {
         tradingEngine.shutdown();
 
         // sleep for 1s and check if shutdown ok
-        Thread.sleep(1 * 1000);
+        Thread.sleep(1000);
         assertFalse(tradingEngine.isRunning());
 
         PowerMock.verifyAll();
@@ -299,13 +296,13 @@ public class TestTradingEngine {
 
         PowerMock.replayAll();
 
-        final TradingEngine tradingEngine = new TradingEngine(exchangeConfigRepository, engineConfigRepository,
-                strategyConfigRepository, marketConfigRepository, emailAlerter);
+        final TradingEngine tradingEngine = new TradingEngine(exchangeConfigService, engineConfigService,
+                strategyConfigService, marketConfigService, emailAlerter);
 
         tradingEngine.start();
 
         // sleep for 1s and check if shutdown ok
-        Thread.sleep(1 * 1000);
+        Thread.sleep(1000);
         assertFalse(tradingEngine.isRunning());
 
         PowerMock.verifyAll();
@@ -343,13 +340,13 @@ public class TestTradingEngine {
 
         PowerMock.replayAll();
 
-        final TradingEngine tradingEngine = new TradingEngine(exchangeConfigRepository, engineConfigRepository,
-                strategyConfigRepository, marketConfigRepository, emailAlerter);
+        final TradingEngine tradingEngine = new TradingEngine(exchangeConfigService, engineConfigService,
+                strategyConfigService, marketConfigService, emailAlerter);
 
         tradingEngine.start();
 
         // sleep for 1s and check if shutdown ok
-        Thread.sleep(1 * 1000);
+        Thread.sleep(1000);
         assertFalse(tradingEngine.isRunning());
 
         PowerMock.verifyAll();
@@ -384,13 +381,13 @@ public class TestTradingEngine {
 
         PowerMock.replayAll();
 
-        final TradingEngine tradingEngine = new TradingEngine(exchangeConfigRepository, engineConfigRepository,
-                strategyConfigRepository, marketConfigRepository, emailAlerter);
+        final TradingEngine tradingEngine = new TradingEngine(exchangeConfigService, engineConfigService,
+                strategyConfigService, marketConfigService, emailAlerter);
 
         tradingEngine.start();
 
         // sleep for 1s and check if shutdown ok
-        Thread.sleep(1 * 1000);
+        Thread.sleep(1000);
         assertFalse(tradingEngine.isRunning());
 
         PowerMock.verifyAll();
@@ -425,13 +422,13 @@ public class TestTradingEngine {
 
         PowerMock.replayAll();
 
-        final TradingEngine tradingEngine = new TradingEngine(exchangeConfigRepository, engineConfigRepository,
-                strategyConfigRepository, marketConfigRepository, emailAlerter);
+        final TradingEngine tradingEngine = new TradingEngine(exchangeConfigService, engineConfigService,
+                strategyConfigService, marketConfigService, emailAlerter);
 
         tradingEngine.start();
 
         // sleep for 1s and check if shutdown ok
-        Thread.sleep(1 * 1000);
+        Thread.sleep(1000);
         assertFalse(tradingEngine.isRunning());
 
         PowerMock.verifyAll();
@@ -469,8 +466,8 @@ public class TestTradingEngine {
 
         PowerMock.replayAll();
 
-        final TradingEngine tradingEngine = new TradingEngine(exchangeConfigRepository, engineConfigRepository,
-                strategyConfigRepository, marketConfigRepository, emailAlerter);
+        final TradingEngine tradingEngine = new TradingEngine(exchangeConfigService, engineConfigService,
+                strategyConfigService, marketConfigService, emailAlerter);
         final Executor executor = Executors.newSingleThreadExecutor();
         executor.execute(tradingEngine::start);
 
@@ -481,7 +478,7 @@ public class TestTradingEngine {
         tradingEngine.shutdown();
 
         // sleep for 1s and check if shutdown ok
-        Thread.sleep(1 * 1000);
+        Thread.sleep(1000);
         assertFalse(tradingEngine.isRunning());
 
         PowerMock.verifyAll();
@@ -511,8 +508,8 @@ public class TestTradingEngine {
 
         PowerMock.replayAll();
 
-        final TradingEngine tradingEngine = new TradingEngine(exchangeConfigRepository, engineConfigRepository,
-                strategyConfigRepository, marketConfigRepository, emailAlerter);
+        final TradingEngine tradingEngine = new TradingEngine(exchangeConfigService, engineConfigService,
+                strategyConfigService, marketConfigService, emailAlerter);
         final Executor executor = Executors.newSingleThreadExecutor();
         executor.execute(tradingEngine::start);
 
@@ -530,35 +527,35 @@ public class TestTradingEngine {
     //  private utils
     // ------------------------------------------------------------------------------------------------
 
-    private void setupExchangeAdapterConfigExpectations() throws Exception {
-        expect(exchangeConfigRepository.getConfig()).andReturn(someExchangeConfig());
+    private void setupExchangeAdapterConfigExpectations() {
+        expect(exchangeConfigService.getExchangeConfig()).andReturn(someExchangeConfig());
         expect(ConfigurableComponentFactory.createComponent(EXCHANGE_ADAPTER_IMPL_CLASS)).andReturn(exchangeAdapter);
-        expect(exchangeAdapter.getImplName()).andReturn(EXCHANGE_ADAPTER_NAME);
+        expect(exchangeAdapter.getImplName()).andReturn(EXCHANGE_NAME);
         exchangeAdapter.init(anyObject(ExchangeConfig.class));
     }
 
-    private void setupEngineConfigExpectations() throws Exception {
-        expect(engineConfigRepository.getConfig()).andReturn(someEngineConfig());
+    private void setupEngineConfigExpectations() {
+        expect(engineConfigService.getEngineConfig()).andReturn(someEngineConfig());
     }
 
-    private void setupEngineConfigForNoEmergencyStopCheckExpectations() throws Exception {
-        expect(engineConfigRepository.getConfig()).andReturn(someEngineConfigForNoEmergencyStopCheck());
+    private void setupEngineConfigForNoEmergencyStopCheckExpectations() {
+        expect(engineConfigService.getEngineConfig()).andReturn(someEngineConfigForNoEmergencyStopCheck());
     }
 
-    private void setupStrategyAndMarketConfigExpectations() throws Exception {
-        expect(strategyConfigRepository.findAllStrategies()).andReturn(allTheStrategiesConfig());
-        expect(marketConfigRepository.findAllMarkets()).andReturn(allTheMarketsConfig());
+    private void setupStrategyAndMarketConfigExpectations() {
+        expect(strategyConfigService.getAllStrategyConfig()).andReturn(allTheStrategiesConfig());
+        expect(marketConfigService.getAllMarketConfig()).andReturn(allTheMarketsConfig());
         expect(ConfigurableComponentFactory.createComponent(STRATEGY_IMPL_CLASS)).andReturn(tradingStrategy);
         tradingStrategy.init(eq(exchangeAdapter), anyObject(Market.class), anyObject(com.gazbert.bxbot.strategy.api.StrategyConfig.class));
     }
 
-    private void setupConfigLoadingExpectations() throws Exception {
+    private void setupConfigLoadingExpectations() {
         setupExchangeAdapterConfigExpectations();
         setupEngineConfigExpectations();
         setupStrategyAndMarketConfigExpectations();
     }
 
-    private void setupConfigLoadingExpectationsForNoEmergencyStopCheck() throws Exception {
+    private void setupConfigLoadingExpectationsForNoEmergencyStopCheck() {
         setupExchangeAdapterConfigExpectations();
         setupEngineConfigForNoEmergencyStopCheckExpectations();
         setupStrategyAndMarketConfigExpectations();
@@ -575,15 +572,15 @@ public class TestTradingEngine {
         networkConfig.setNonFatalErrorCodes(EXCHANGE_ADAPTER_NONFATAL_ERROR_CODES);
         networkConfig.setNonFatalErrorMessages(EXCHANGE_ADAPTER_NONFATAL_ERROR_MESSAGES);
 
-        final OtherConfig otherConfig = new OtherConfig();
-        otherConfig.getItems().put(EXCHANGE_ADAPTER_OTHER_CONFIG_ITEM_NAME, EXCHANGE_ADAPTER_OTHER_CONFIG_ITEM_VALUE);
+        final OptionalConfig optionalConfig = new OptionalConfig();
+        optionalConfig.getItems().put(EXCHANGE_ADAPTER_OTHER_CONFIG_ITEM_NAME, EXCHANGE_ADAPTER_OTHER_CONFIG_ITEM_VALUE);
 
         final com.gazbert.bxbot.domain.exchange.ExchangeConfig exchangeConfig = new com.gazbert.bxbot.domain.exchange.ExchangeConfig();
         exchangeConfig.setAuthenticationConfig(authenticationConfig);
-        exchangeConfig.setExchangeName(EXCHANGE_ADAPTER_NAME);
+        exchangeConfig.setExchangeName(EXCHANGE_NAME);
         exchangeConfig.setExchangeAdapter(EXCHANGE_ADAPTER_IMPL_CLASS);
         exchangeConfig.setNetworkConfig(networkConfig);
-        exchangeConfig.setOtherConfig(otherConfig);
+        exchangeConfig.setOptionalConfig(optionalConfig);
 
         return exchangeConfig;
     }
@@ -610,7 +607,7 @@ public class TestTradingEngine {
         configItems.put(STRATEGY_CONFIG_ITEM_NAME, STRATEGY_CONFIG_ITEM_VALUE);
 
         final StrategyConfig strategyConfig1 = new StrategyConfig(
-                STRATEGY_ID, STRATEGY_LABEL, STRATEGY_DESCRIPTION, STRATEGY_IMPL_CLASS, configItems);
+                STRATEGY_ID, STRATEGY_NAME, STRATEGY_DESCRIPTION, STRATEGY_IMPL_CLASS, configItems);
 
         final List<StrategyConfig> allStrategies = new ArrayList<>();
         allStrategies.add(strategyConfig1);
@@ -618,7 +615,7 @@ public class TestTradingEngine {
     }
 
     private static List<MarketConfig> allTheMarketsConfig() {
-        final MarketConfig marketConfig1 = new MarketConfig(MARKET_ID, MARKET_LABEL, MARKET_BASE_CURRENCY,
+        final MarketConfig marketConfig1 = new MarketConfig(MARKET_ID, MARKET_NAME, MARKET_BASE_CURRENCY,
                 MARKET_COUNTER_CURRENCY, MARKET_IS_ENABLED, STRATEGY_ID);
         final List<MarketConfig> allMarkets = new ArrayList<>();
         allMarkets.add(marketConfig1);

@@ -7,7 +7,7 @@
 #
 # Could be made better, but will do for now...
 #
-# You need the Java runtime installed - Oracle JDK 1.8 is supported.
+# You need the Java 8 JRE installed.
 #
 # This script expects all the jar files to live in the lib_dir.
 #
@@ -21,7 +21,7 @@ lib_dir=./libs
 log4j2_config=./config/log4j2.xml
 
 # The BX-bot 'fat' jar (Spring Boot app containing all the dependencies)
-bxbot_jar=bxbot-app-0.6.2-SNAPSHOT.jar
+bxbot_jar=bxbot-app-0.8.2-SNAPSHOT.jar
 
 # PID file for checking if bot is running
 pid_file=./.bxbot.pid

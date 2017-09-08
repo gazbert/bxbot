@@ -11,7 +11,7 @@
     <parent>
         <groupId>com.gazbert.bxbot</groupId>
         <artifactId>bxbot-parent</artifactId>
-        <version>0.6.2-SNAPSHOT</version>
+        <version>0.8.2-SNAPSHOT</version>
     </parent>
     <dependencies>
         <!--
@@ -19,7 +19,7 @@
         -->
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>bxbot-repository</artifactId>
+            <artifactId>bxbot-services</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

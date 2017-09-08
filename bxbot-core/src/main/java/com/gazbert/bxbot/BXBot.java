@@ -38,7 +38,7 @@ import org.springframework.util.Assert;
 @SpringBootApplication
 public class BXBot implements CommandLineRunner {
 
-    private TradingEngine tradingEngine;
+    private final TradingEngine tradingEngine;
 
     @Autowired
     public BXBot(TradingEngine tradingEngine) {

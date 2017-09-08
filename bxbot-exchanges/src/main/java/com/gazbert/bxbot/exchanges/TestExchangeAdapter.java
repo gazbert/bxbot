@@ -23,32 +23,26 @@
 
 package com.gazbert.bxbot.exchanges;
 
-import com.gazbert.bxbot.exchange.api.AuthenticationConfig;
 import com.gazbert.bxbot.exchange.api.ExchangeAdapter;
 import com.gazbert.bxbot.exchange.api.ExchangeConfig;
 import com.gazbert.bxbot.trading.api.*;
 import com.google.common.base.MoreObjects;
 import com.google.gson.*;
-import com.google.gson.annotations.SerializedName;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
-import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.Map.Entry;
 
 /**
  * Dummy Exchange adapter used to keep the bot up and running for engine and strategy testing.
  * <p>
- * Makes public calls to the BTC-e exchange. It does not trade. All private (authenticated) requests are stubbed.
+ * Makes public calls to the Bitstamp exchange. It does not trade. All private (authenticated) requests are stubbed.
  * <p>
  * Might be handy for 'dry' testing your algos.
  *
@@ -62,17 +56,12 @@ public final class TestExchangeAdapter extends AbstractExchangeAdapter implement
     /**
      * The Authenticated API URI.
      */
-    private static final String AUTHENTICATED_API_URL = "https://btc-e.com/tapi";
-
-    /**
-     * The Public API URI.
-     */
-    private static final String PUBLIC_API_BASE_URL = "https://btc-e.com/api/3/";
+    private static final String API_BASE_URL = "https://www.bitstamp.net/api/v2/";
 
     /**
      * Used for reporting unexpected errors.
      */
-    private static final String UNEXPECTED_ERROR_MSG = "Unexpected error has occurred in BTC-e Exchange Adapter. ";
+    private static final String UNEXPECTED_ERROR_MSG = "Unexpected error has occurred in Bitstamp Exchange Adapter. ";
 
     /**
      * Unexpected IO error message for logging.
@@ -80,43 +69,7 @@ public final class TestExchangeAdapter extends AbstractExchangeAdapter implement
     private static final String UNEXPECTED_IO_ERROR_MSG = "Failed to connect to Exchange due to unexpected IO error.";
 
     /**
-     * Name of public key property in config file.
-     */
-    private static final String KEY_PROPERTY_NAME = "key";
-
-    /**
-     * Name of secret property in config file.
-     */
-    private static final String SECRET_PROPERTY_NAME = "secret";
-
-    /**
-     * Nonce used for sending authenticated messages to the exchange.
-     */
-    private static long nonce = 0;
-
-    /**
-     * Used to indicate if we have initialised the MAC authentication protocol
-     */
-    private boolean initializedMACAuthentication = false;
-
-    /**
-     * The public key used in MAC authentication.
-     */
-    private String key = "";
-
-    /**
-     * The secret used in MAC authentication.
-     */
-    private String secret = "";
-
-    /**
-     * Provides the "Message Authentication Code" (MAC) algorithm used for the secure messaging layer.
-     * Used to encrypt the hash of the entire message with the private key to ensure message integrity.
-     */
-    private Mac mac;
-
-    /**
-     * GSON engine used for parsing JSON in BTC-e API call responses.
+     * GSON engine used for parsing JSON in Bitstamp API call responses.
      */
     private Gson gson;
 
@@ -124,33 +77,28 @@ public final class TestExchangeAdapter extends AbstractExchangeAdapter implement
     @Override
     public void init(ExchangeConfig config) {
 
-        LOG.info(() -> "About to initialise BTC-e ExchangeConfig: " + config);
-        setAuthenticationConfig(config);
+        LOG.info(() -> "About to initialise Bitstamp ExchangeConfig: " + config);
         setNetworkConfig(config);
-
-        nonce = System.currentTimeMillis() / 1000; // set the initial nonce used in the secure messaging.
-        initSecureMessageLayer();
         initGson();
     }
 
     // ------------------------------------------------------------------------------------------------
-    // BTC-e API Calls adapted to the Trading API.
-    // See https://btc-e.com/api/documentation and https://btc-e.com/page/2
+    // Bitstamp API Calls adapted to the Trading API.
+    // See https://www.bitstamp.net/api/
     // ------------------------------------------------------------------------------------------------
 
     @Override
     public MarketOrderBook getMarketOrders(String marketId) throws TradingApiException, ExchangeNetworkException {
 
         try {
-            final ExchangeHttpResponse response = sendPublicRequestToExchange("depth", marketId);
+            final ExchangeHttpResponse response = sendPublicRequestToExchange("order_book/" + marketId);
             LOG.debug(() -> "Market Orders response: " + response);
 
-            final BtceMarketOrderBookWrapper marketOrderWrapper = gson.fromJson(response.getPayload(),
-                    BtceMarketOrderBookWrapper.class);
+            final BitstampOrderBook bitstampOrderBook = gson.fromJson(response.getPayload(), BitstampOrderBook.class);
 
             final List<MarketOrder> buyOrders = new ArrayList<>();
-            final List<List<BigDecimal>> btceBuyOrders = marketOrderWrapper.orderBook.bids;
-            for (final List<BigDecimal> order : btceBuyOrders) {
+            final List<List<BigDecimal>> bitstampBuyOrders = bitstampOrderBook.bids;
+            for (final List<BigDecimal> order : bitstampBuyOrders) {
                 final MarketOrder buyOrder = new MarketOrder(
                         OrderType.BUY,
                         order.get(0), // price
@@ -160,8 +108,8 @@ public final class TestExchangeAdapter extends AbstractExchangeAdapter implement
             }
 
             final List<MarketOrder> sellOrders = new ArrayList<>();
-            final List<List<BigDecimal>> btceSellOrders = marketOrderWrapper.orderBook.asks;
-            for (final List<BigDecimal> order : btceSellOrders) {
+            final List<List<BigDecimal>> bitstampSellOrders = bitstampOrderBook.asks;
+            for (final List<BigDecimal> order : bitstampSellOrders) {
                 final MarketOrder sellOrder = new MarketOrder(
                         OrderType.SELL,
                         order.get(0), // price
@@ -203,11 +151,11 @@ public final class TestExchangeAdapter extends AbstractExchangeAdapter implement
     public BigDecimal getLatestMarketPrice(String marketId) throws TradingApiException, ExchangeNetworkException {
 
         try {
-            final ExchangeHttpResponse response = sendPublicRequestToExchange("ticker", marketId);
+            final ExchangeHttpResponse response = sendPublicRequestToExchange("ticker/" + marketId);
             LOG.debug(() -> "Latest Market Price response: " + response);
 
-            final BtceTickerWrapper btceTicker = gson.fromJson(response.getPayload(), BtceTickerWrapper.class);
-            return btceTicker.ticker.last;
+            final BitstampTicker bitstampTicker = gson.fromJson(response.getPayload(), BitstampTicker.class);
+            return bitstampTicker.last;
 
         } catch (ExchangeNetworkException | TradingApiException e) {
             throw e;
@@ -220,177 +168,72 @@ public final class TestExchangeAdapter extends AbstractExchangeAdapter implement
     @Override
     public BalanceInfo getBalanceInfo() throws TradingApiException, ExchangeNetworkException {
 
-        final HashMap<String, BigDecimal> balancesAvailable = new HashMap<>();
-        balancesAvailable.put("BTC", new BigDecimal("1.0"));
-        final BalanceInfo balanceInfo = new BalanceInfo(balancesAvailable, null);
-        return balanceInfo;
+        final Map<String, BigDecimal> balancesAvailable = new HashMap<>();
+        balancesAvailable.put("BTC", new BigDecimal("2.0"));
+        balancesAvailable.put("USD", new BigDecimal("100.0"));
+        balancesAvailable.put("EUR", new BigDecimal("100.0"));
+        balancesAvailable.put("LTC", new BigDecimal("100.0"));
+        balancesAvailable.put("XRP", new BigDecimal("100.0"));
+
+        final Map<String, BigDecimal> balancesOnOrder = new HashMap<>();
+        balancesOnOrder.put("BTC", new BigDecimal("2.0"));
+        balancesOnOrder.put("USD", new BigDecimal("100.0"));
+        balancesOnOrder.put("EUR", new BigDecimal("100.0"));
+        balancesOnOrder.put("LTC", new BigDecimal("100.0"));
+        balancesOnOrder.put("XRP", new BigDecimal("100.0"));
+
+        return new BalanceInfo(balancesAvailable, balancesOnOrder);
     }
 
     @Override
     public BigDecimal getPercentageOfBuyOrderTakenForExchangeFee(String marketId) throws TradingApiException,
             ExchangeNetworkException {
-
-        try {
-            final ExchangeHttpResponse response = sendPublicRequestToExchange("fee", marketId);
-            LOG.debug(() -> "Buy Fee response: " + response);
-
-            final BtceFees fees = gson.fromJson(response.getPayload(), BtceFees.class);
-
-            // adapt the % into BigDecimal format
-            return fees.get(marketId).divide(new BigDecimal("100"), 8, BigDecimal.ROUND_HALF_UP);
-
-        } catch (ExchangeNetworkException | TradingApiException e) {
-            throw e;
-        } catch (Exception e) {
-            LOG.error(UNEXPECTED_ERROR_MSG, e);
-            throw new TradingApiException(UNEXPECTED_ERROR_MSG, e);
-        }
+        return new BigDecimal("0.025"); // 0.25%
     }
 
     @Override
     public BigDecimal getPercentageOfSellOrderTakenForExchangeFee(String marketId) throws TradingApiException,
             ExchangeNetworkException {
-
-        try {
-            final ExchangeHttpResponse response = sendPublicRequestToExchange("fee", marketId);
-            LOG.debug(() -> "Sell Fee response: " + response);
-
-            final BtceFees fees = gson.fromJson(response.getPayload(), BtceFees.class);
-
-            // adapt the % into BigDecimal format
-            return fees.get(marketId).divide(new BigDecimal("100"), 8, BigDecimal.ROUND_HALF_UP);
-
-        } catch (ExchangeNetworkException | TradingApiException e) {
-            throw e;
-        } catch (Exception e) {
-            LOG.error(UNEXPECTED_ERROR_MSG, e);
-            throw new TradingApiException(UNEXPECTED_ERROR_MSG, e);
-        }
+        return new BigDecimal("0.025"); // 0.25%
     }
 
     @Override
     public String getImplName() {
-        return "Dummy Test Adapter - based on BTC-e API v1";
+        return "Dummy Test Adapter - based on Bitstamp HTTP API v2";
     }
 
     // ------------------------------------------------------------------------------------------------
     //  GSON classes for JSON responses.
-    //  See https://btc-e.com/api/documentation and  https://btc-e.com/page/2
+    //  See https://www.bitstamp.net/api/
     // ------------------------------------------------------------------------------------------------
 
     /**
-     * GSON base class for API call requests and responses.
-     */
-    private static class BtceMessageBase {
-        // field names map to the JSON arg names
-        public int success;
-        public String error;
-
-        BtceMessageBase() {
-            error = "";
-        }
-
-        @Override
-        public String toString() {
-            return MoreObjects.toStringHelper(this)
-                    .add("success", success)
-                    .add("error", error)
-                    .toString();
-        }
-    }
-
-    /**
-     * GSON class for wrapping BTC-e Info response from getInfo() API call.
-     */
-    private static class BtceInfoWrapper extends BtceMessageBase {
-        @SerializedName("return")
-        public BtceInfo info;
-
-        @Override
-        public String toString() {
-            return MoreObjects.toStringHelper(this)
-                    .add("info", info)
-                    .toString();
-        }
-    }
-
-    /**
-     * GSON class for holding BTC-e info response from getInfo() API call.
-     */
-    private static class BtceInfo {
-
-        // field names map to the JSON arg names
-        public BtceFunds funds;
-        public BtceRights rights;
-        public int transaction_count;
-        public int open_orders;
-        public String server_time;
-
-        @Override
-        public String toString() {
-            return MoreObjects.toStringHelper(this)
-                    .add("funds", funds)
-                    .add("rights", rights)
-                    .add("transaction_count", transaction_count)
-                    .add("open_orders", open_orders)
-                    .add("server_time", server_time)
-                    .toString();
-        }
-    }
-
-    /**
-     * GSON class for holding fund balances - basically a GSON enabled map.
-     * Keys into map are 'usd' and 'btc' for the bits we're interested in.
-     * Values are BigDec's.
-     */
-    private static class BtceFunds extends HashMap<String, BigDecimal> {
-        private static final long serialVersionUID = 5516523641453401953L;
-    }
-
-    /**
-     * GSON class for holding access rights - basically a GSON enabled map.
-     * Keys are 'info' and 'trade'. We expect both to be set to 1 (i.e. true).
-     */
-    private static class BtceRights extends HashMap<String, BigDecimal> {
-        private static final long serialVersionUID = 5353335214767688903L;
-    }
-
-    /**
-     * GSON class for the Order Book wrapper.
-     */
-    private static class BtceMarketOrderBookWrapper extends BtceMessageBase {
-        // field names map to the JSON arg names)
-        @SerializedName("btc_usd")
-        BtceOrderBook orderBook;
-
-        @Override
-        public String toString() {
-            return MoreObjects.toStringHelper(this)
-                    .add("orderBook", orderBook)
-                    .toString();
-        }
-    }
-
-    /**
-     * GSON class for holding BTC-e Order Book response from depth API call.
+     * <p>
+     * GSON class for holding Bitstamp Order Book response from order_book API call.
+     * </p>
+     * <p>
      * <p>
      * JSON looks like:
      * <pre>
-     *   {
-     *     "asks":[[567.711,1.97874609],[568.226,0.018],[569,1.192759],[569.234,0.04312865],[576.418,28.68]],
-     *     "bids":[[567.37,0.03607374],[566.678,0.04321508],[566.615,0.5],[566.502,0.02489897],[557.8,0.363]]
-     *   }
+     * {
+     *   "timestamp": "1400943488",
+     *   "bids": [["521.86", "0.00017398"], ["519.58", "0.25100000"], ["0.01", "38820.00000000"]],
+     *   "asks": [["521.88", "10.00000000"], ["522.00", "310.24504478"], ["522.13", "0.02852084"]]
+     * }
      * </pre>
+     * </p>
      * Each is a list of open orders and each order is represented as a list of price and amount.
      */
-    private static class BtceOrderBook {
-        // field names map to the JSON arg names
+    private static class BitstampOrderBook {
+
+        public long timestamp; //unix timestamp date and time
         public List<List<BigDecimal>> bids;
         public List<List<BigDecimal>> asks;
 
         @Override
         public String toString() {
             return MoreObjects.toStringHelper(this)
+                    .add("timestamp", timestamp)
                     .add("bids", bids)
                     .add("asks", asks)
                     .toString();
@@ -398,242 +241,61 @@ public final class TestExchangeAdapter extends AbstractExchangeAdapter implement
     }
 
     /**
-     * GSON class for holding BTC-e create order response wrapper from Trade API call.
+     * GSON class for a Bitstamp ticker response.
      */
-    private static class BtceCreateOrderResponseWrapper extends BtceMessageBase {
-        @SerializedName("return")
-        BtceCreateOrderResponse orderResponse;
-
-        @Override
-        public String toString() {
-            return MoreObjects.toStringHelper(this)
-                    .add("orderResponse", orderResponse)
-                    .toString();
-        }
-    }
-
-    /**
-     * GSON class for holding BTC-e create order response details from Trade API call.
-     */
-    private static class BtceCreateOrderResponse extends BtceCreateOrderResponseWrapper {
-
-        public BigDecimal received;
-        public BigDecimal remains;
-        public long order_id;
-        public BtceFunds funds;
-
-        @Override
-        public String toString() {
-            return MoreObjects.toStringHelper(this)
-                    .add("received", received)
-                    .add("remains", remains)
-                    .add("order_id", order_id)
-                    .add("funds", funds)
-                    .toString();
-        }
-    }
-
-    /**
-     * <p>
-     * GSON class for holding BTC-e open order response wrapper from ActiveOrders API call.
-     * </p>
-     * <p>
-     * <p>
-     * JSON response when we don't have open orders is:
-     * <pre>
-     * {"success":0,"error":"no orders"}
-     * </pre>
-     * Error? WTF?!
-     * </p>
-     * <p>
-     * <p>
-     * JSON response when we have open orders is:
-     * <pre>
-     * {
-     *   "success":1,
-     *   "return":{
-     *     "253356918":{
-     *       "pair":"btc_usd","type":"sell","amount":0.01000000,"rate":641.00000000,
-     *       "timestamp_created":1401653697,"status":0
-     *     }
-     *   }
-     * }
-     * </pre>
-     * </p>
-     */
-    private static class BtceOpenOrderResponseWrapper extends BtceMessageBase {
-
-        @SerializedName("return")
-        public BtceOpenOrders openOrders;
-
-        @Override
-        public String toString() {
-            return MoreObjects.toStringHelper(this)
-                    .add("openOrders", openOrders)
-                    .toString();
-        }
-    }
-
-    /**
-     * GSON class for holding open orders - basically a GSON enabled map.
-     * Keys into map is the orderId.
-     */
-    private static class BtceOpenOrders extends HashMap<Long, BtceOpenOrder> {
-        private static final long serialVersionUID = 2298531396505507808L;
-    }
-
-    /**
-     * GSON class for holding BTC-e open order response details from ActiveOrders API call.
-     */
-    private static class BtceOpenOrder {
-
-        public String pair; // market id
-        public String type; // buy|sell
-        public BigDecimal amount;
-        public BigDecimal rate; // price
-        public Long timestamp_created;
-        public int status; // ??
-
-        @Override
-        public String toString() {
-            return MoreObjects.toStringHelper(this)
-                    .add("pair", pair)
-                    .add("type", type)
-                    .add("amount", amount)
-                    .add("rate", rate)
-                    .add("timestamp_created", timestamp_created)
-                    .add("status", status)
-                    .toString();
-        }
-    }
-
-    /**
-     * <p>
-     * GSON class for holding BTC-e cancel order response.
-     * <pre>
-     * {
-     *   "success":1,
-     *   "return":{
-     *     "order_id":343154,
-     *     "funds":{
-     *       "usd":325,
-     *       "btc":24.998,
-     *       "sc":121.998,
-     *       "ltc":0,
-     *       "ruc":0,
-     *       "nmc":0
-     *     }
-     *   }
-     * }
-     * </pre>
-     * </p>
-     * Unusual API - why the frak do I want to know about funds when I cancel an order?
-     */
-    private static class BtceCancelledOrderWrapper extends BtceMessageBase {
-
-        @SerializedName("return")
-        BtceCancelledOrder cancelledOrder;
-
-        @Override
-        public String toString() {
-            return MoreObjects.toStringHelper(this)
-                    .add("cancelledOrder", cancelledOrder)
-                    .toString();
-        }
-    }
-
-    /**
-     * GSON class for cancelled order response.
-     */
-    private static class BtceCancelledOrder {
-
-        public long order_id;
-        public BtceFunds funds;
-
-        @Override
-        public String toString() {
-            return MoreObjects.toStringHelper(this)
-                    .add("order_id", order_id)
-                    .add("funds", funds)
-                    .toString();
-        }
-    }
-
-    /**
-     * GSON class for a BTC-e ticker response wrapper.
-     */
-    private static class BtceTickerWrapper {
-        // TODO fix this - can GSON take wildcard types or will I have to code my own deserializer?
-        @SerializedName("btc_usd")
-        public BtceTicker ticker;
-
-        @Override
-        public String toString() {
-            return MoreObjects.toStringHelper(this)
-                    .add("ticker", ticker)
-                    .toString();
-        }
-    }
-
-    /**
-     * GSON class for a BTC-e ticker response.
-     */
-    private static class BtceTicker {
+    private static class BitstampTicker {
 
         public BigDecimal high;
-        public BigDecimal low;
-        public BigDecimal avg;
-        public BigDecimal vol;
-        public BigDecimal vol_cur;
         public BigDecimal last;
-        public BigDecimal buy;
-        public BigDecimal sell;
-        public long updated;
+        public long timestamp;
+        public BigDecimal bid;
+        public BigDecimal vwap;
+        public BigDecimal volume;
+        public BigDecimal low;
+        public BigDecimal ask;
 
         @Override
         public String toString() {
             return MoreObjects.toStringHelper(this)
                     .add("high", high)
-                    .add("low", low)
-                    .add("avg", avg)
-                    .add("vol", vol)
-                    .add("vol_cur", vol_cur)
                     .add("last", last)
-                    .add("buy", buy)
-                    .add("sell", sell)
-                    .add("updated", updated)
+                    .add("timestamp", timestamp)
+                    .add("bid", bid)
+                    .add("vwap", vwap)
+                    .add("volume", volume)
+                    .add("low", low)
+                    .add("ask", ask)
                     .toString();
         }
     }
 
     /**
-     * GSON class for holding fee response.
-     * <p>
-     * Basically a GSON enabled map.
-     * Keys into map is the market id.
-     * Values are BigDec's.
+     * Deserializer needed because stamp Date format is different in open_order response and causes default GSON parsing to barf:
+     * <pre>
+     * [main] 2014-05-25 20:51:31,074 ERROR BitstampExchangeAdapter  - Failed to parse a Bitstamp date
+     * java.text.ParseException: Unparseable date: "2014-05-25 19:50:32"
+     * at java.text.DateFormat.parse(DateFormat.java:357)
+     * at com.gazbert.bxbot.adapter.BitstampExchangeAdapter$DateDeserializer.deserialize(BitstampExchangeAdapter.java:596)
+     * at com.gazbert.bxbot.adapter.BitstampExchangeAdapter$DateDeserializer.deserialize(BitstampExchangeAdapter.java:1)
+     * at com.google.gson.TreeTypeAdapter.read(TreeTypeAdapter.java:58)
+     * </pre>
      */
-    private static class BtceFees extends HashMap<String, BigDecimal> {
-        private static final long serialVersionUID = 5516523641423401953L;
-    }
+    private static class BitstampDateDeserializer implements JsonDeserializer<Date> {
+        private final SimpleDateFormat bitstampDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-    /**
-     * Deserializer needed for BTC-e open orders API call response:
-     */
-    private class OpenOrdersDeserializer implements JsonDeserializer<BtceOpenOrders> {
-        public BtceOpenOrders deserialize(JsonElement json, Type type, JsonDeserializationContext context)
+        public Date deserialize(JsonElement json, Type type, JsonDeserializationContext context)
                 throws JsonParseException {
-            final BtceOpenOrders openOrders = new BtceOpenOrders();
-
-            if (json.isJsonObject()) {
-                final JsonObject jsonObject = json.getAsJsonObject();
-                for (Entry<String, JsonElement> jsonOrder : jsonObject.entrySet()) {
-                    final Long orderId = new Long(jsonOrder.getKey()); // will barf hard n fast if NaN
-                    final BtceOpenOrder openOrder = context.deserialize(jsonOrder.getValue(), BtceOpenOrder.class);
-                    openOrders.put(orderId, openOrder);
+            Date dateFromBitstamp = null;
+            if (json.isJsonPrimitive()) {
+                try {
+                    dateFromBitstamp = bitstampDateFormat.parse(json.getAsString());
+                } catch (ParseException e) {
+                    final String errorMsg = "DateDeserializer failed to parse a Bitstamp date!";
+                    LOG.error(errorMsg, e);
+                    throw new JsonParseException(errorMsg, e);
                 }
             }
-            return openOrders;
+            return dateFromBitstamp;
         }
     }
 
@@ -642,16 +304,14 @@ public final class TestExchangeAdapter extends AbstractExchangeAdapter implement
     // ------------------------------------------------------------------------------------------------
 
     /**
-     * Makes a public API call to the BTC-e exchange.
+     * Makes a public API call to Bitstamp exchange.
      *
      * @param apiMethod the API method to call.
-     * @param resource  to use in the API call.
      * @return the response from the exchange.
      * @throws ExchangeNetworkException if there is a network issue connecting to exchange.
      * @throws TradingApiException      if anything unexpected happens.
      */
-    private ExchangeHttpResponse sendPublicRequestToExchange(String apiMethod, String resource) throws TradingApiException,
-            ExchangeNetworkException {
+    private ExchangeHttpResponse sendPublicRequestToExchange(String apiMethod) throws ExchangeNetworkException, TradingApiException {
 
         // Request headers required by Exchange
         final Map<String, String> requestHeaders = new HashMap<>();
@@ -659,7 +319,8 @@ public final class TestExchangeAdapter extends AbstractExchangeAdapter implement
 
         try {
 
-            final URL url = new URL(PUBLIC_API_BASE_URL + apiMethod + "/" + resource);
+            // MUST have the trailing slash even if no params... else exchange barfs!
+            final URL url = new URL(API_BASE_URL + apiMethod + "/");
             return sendNetworkRequest(url, "GET", null, requestHeaders);
 
         } catch (MalformedURLException e) {
@@ -667,41 +328,6 @@ public final class TestExchangeAdapter extends AbstractExchangeAdapter implement
             LOG.error(errorMsg, e);
             throw new TradingApiException(errorMsg, e);
         }
-    }
-
-    /**
-     * Initialises the secure messaging layer
-     * Sets up the MAC to safeguard the data we send to the exchange.
-     * We fail hard n fast if any of this stuff blows.
-     */
-    private void initSecureMessageLayer() {
-
-        // Setup the MAC
-        try {
-            final SecretKeySpec keyspec = new SecretKeySpec(secret.getBytes("UTF-8"), "HmacSHA512");
-            mac = Mac.getInstance("HmacSHA512");
-            mac.init(keyspec);
-            initializedMACAuthentication = true;
-        } catch (UnsupportedEncodingException | NoSuchAlgorithmException e) {
-            final String errorMsg = "Failed to setup MAC security. HINT: Is HMAC-SHA512 installed?";
-            LOG.error(errorMsg, e);
-            throw new IllegalStateException(errorMsg, e);
-        } catch (InvalidKeyException e) {
-            final String errorMsg = "Failed to setup MAC security. Secret key seems invalid!";
-            LOG.error(errorMsg, e);
-            throw new IllegalArgumentException(errorMsg, e);
-        }
-    }
-
-    // ------------------------------------------------------------------------------------------------
-    //  Config methods
-    // ------------------------------------------------------------------------------------------------
-
-    private void setAuthenticationConfig(ExchangeConfig exchangeConfig) {
-
-        final AuthenticationConfig authenticationConfig = getAuthenticationConfig(exchangeConfig);
-        key = getAuthenticationConfigItem(authenticationConfig, KEY_PROPERTY_NAME);
-        secret = getAuthenticationConfigItem(authenticationConfig, SECRET_PROPERTY_NAME);
     }
 
     // ------------------------------------------------------------------------------------------------
@@ -713,14 +339,7 @@ public final class TestExchangeAdapter extends AbstractExchangeAdapter implement
      */
     private void initGson() {
         final GsonBuilder gsonBuilder = new GsonBuilder();
-        gsonBuilder.registerTypeAdapter(BtceOpenOrders.class, new OpenOrdersDeserializer());
+        gsonBuilder.registerTypeAdapter(Date.class, new BitstampDateDeserializer());
         gson = gsonBuilder.create();
-    }
-
-    /*
-     * Hack for unit-testing map params passed to transport layer.
-     */
-    private Map<String, String> getRequestParamMap() {
-        return new HashMap<>();
     }
 }

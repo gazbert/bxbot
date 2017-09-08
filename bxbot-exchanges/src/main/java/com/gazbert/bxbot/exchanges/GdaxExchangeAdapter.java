@@ -26,7 +26,7 @@ package com.gazbert.bxbot.exchanges;
 import com.gazbert.bxbot.exchange.api.AuthenticationConfig;
 import com.gazbert.bxbot.exchange.api.ExchangeAdapter;
 import com.gazbert.bxbot.exchange.api.ExchangeConfig;
-import com.gazbert.bxbot.exchange.api.OtherConfig;
+import com.gazbert.bxbot.exchange.api.OptionalConfig;
 import com.gazbert.bxbot.trading.api.*;
 import com.google.common.base.MoreObjects;
 import com.google.gson.Gson;
@@ -37,6 +37,7 @@ import org.apache.logging.log4j.Logger;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import javax.xml.bind.DatatypeConverter;
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.net.*;
 import java.security.InvalidKeyException;
@@ -187,7 +188,7 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
         LOG.info(() -> "About to initialise GDAX ExchangeConfig: " + config);
         setAuthenticationConfig(config);
         setNetworkConfig(config);
-        setOtherConfig(config);
+        setOptionalConfig(config);
 
         initSecureMessageLayer();
         initGson();
@@ -280,7 +281,7 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
                     return true;
                 } else {
                     final String errorMsg = "Failed to cancel order on exchange due to Order Id mismatch. " +
-                            "OrderId sent: " + orderId + " ResponseOrderId: " + cancelledOrderId + " Response: " + response;
+                            "OrderId sent: " + orderId + " ResponseOrderId: " + cancelledOrderId[0] + " Response: " + response;
                     LOG.error(errorMsg);
                     return false;
                 }
@@ -314,6 +315,11 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
 
                 final List<OpenOrder> ordersToReturn = new ArrayList<>();
                 for (final GdaxOrder openOrder : gdaxOpenOrders) {
+
+                    if (!marketId.equalsIgnoreCase(openOrder.product_id)) {
+                        continue;
+                    }
+
                     OrderType orderType;
                     switch (openOrder.side) {
                         case "buy":
@@ -629,26 +635,28 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
             params = new HashMap<>(); // no params, so empty query string
         }
 
-        // Build the query string with any given params
-        final StringBuilder queryString = new StringBuilder("?");
-        for (final String param : params.keySet()) {
-            if (queryString.length() > 1) {
-                queryString.append("&");
-            }
-            //noinspection deprecation
-            queryString.append(param).append("=").append(URLEncoder.encode(params.get(param)));
-        }
-
-        // Request headers required by Exchange
-        final Map<String, String> requestHeaders = new HashMap<>();
-        requestHeaders.put("Content-Type", "application/x-www-form-urlencoded");
-
         try {
+
+            // Build the query string with any given params
+            final StringBuilder queryString = new StringBuilder("?");
+            for (final Map.Entry<String, String> param : params.entrySet()) {
+                if (queryString.length() > 1) {
+                    queryString.append("&");
+                }
+                //noinspection deprecation
+                queryString.append(param.getKey());
+                queryString.append("=");
+                queryString.append(URLEncoder.encode(param.getValue(), "UTF-8"));
+            }
+
+            // Request headers required by Exchange
+            final Map<String, String> requestHeaders = new HashMap<>();
+            requestHeaders.put("Content-Type", "application/x-www-form-urlencoded");
 
             final URL url = new URL(PUBLIC_API_BASE_URL + apiMethod + queryString);
             return sendNetworkRequest(url, "GET", null, requestHeaders);
 
-        } catch (MalformedURLException e) {
+        } catch (MalformedURLException | UnsupportedEncodingException e) {
             final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
             LOG.error(errorMsg, e);
             throw new TradingApiException(errorMsg, e);
@@ -730,11 +738,13 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
                     LOG.debug(() -> "Building secure GET request...");
                     // Build (optional) query param string
                     final StringBuilder queryParamBuilder = new StringBuilder();
-                    for (final String param : params.keySet()) {
+                    for (final Map.Entry<String, String> param : params.entrySet()) {
                         if (queryParamBuilder.length() > 0) {
                             queryParamBuilder.append("&");
                         }
-                        queryParamBuilder.append(param).append("=").append(params.get(param));
+                        queryParamBuilder.append(param.getKey());
+                        queryParamBuilder.append("=");
+                        queryParamBuilder.append(param.getValue());
                     }
 
                     final String queryParams = queryParamBuilder.toString();
@@ -763,12 +773,14 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
             }
 
             // Build the signature string
-            final StringBuilder signatureBuilder = new StringBuilder(timestamp);
-            signatureBuilder.append(httpMethod.toUpperCase()).append("/").append(apiMethod).append(requestBody);
+            final String signatureBuilder = timestamp + httpMethod.toUpperCase() +
+                    "/" +
+                    apiMethod +
+                    requestBody;
 
             // Sign the signature string and Base64 encode it
             mac.reset();
-            mac.update(signatureBuilder.toString().getBytes());
+            mac.update(signatureBuilder.getBytes("UTF-8"));
             final String signature = DatatypeConverter.printBase64Binary(mac.doFinal());
 
             // Request headers required by Exchange
@@ -782,7 +794,7 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
             final URL url = new URL(invocationUrl);
             return sendNetworkRequest(url, httpMethod, requestBody, requestHeaders);
 
-        } catch (MalformedURLException e) {
+        } catch (MalformedURLException | UnsupportedEncodingException e) {
             final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
             LOG.error(errorMsg, e);
             throw new TradingApiException(errorMsg, e);
@@ -829,15 +841,15 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
         secret = getAuthenticationConfigItem(authenticationConfig, SECRET_PROPERTY_NAME);
     }
 
-    private void setOtherConfig(ExchangeConfig exchangeConfig) {
+    private void setOptionalConfig(ExchangeConfig exchangeConfig) {
 
-        final OtherConfig otherConfig = getOtherConfig(exchangeConfig);
+        final OptionalConfig optionalConfig = getOptionalConfig(exchangeConfig);
 
-        final String buyFeeInConfig = getOtherConfigItem(otherConfig, BUY_FEE_PROPERTY_NAME);
+        final String buyFeeInConfig = getOptionalConfigItem(optionalConfig, BUY_FEE_PROPERTY_NAME);
         buyFeePercentage = new BigDecimal(buyFeeInConfig).divide(new BigDecimal("100"), 8, BigDecimal.ROUND_HALF_UP);
         LOG.info(() -> "Buy fee % in BigDecimal format: " + buyFeePercentage);
 
-        final String sellFeeInConfig = getOtherConfigItem(otherConfig, SELL_FEE_PROPERTY_NAME);
+        final String sellFeeInConfig = getOptionalConfigItem(optionalConfig, SELL_FEE_PROPERTY_NAME);
         sellFeePercentage = new BigDecimal(sellFeeInConfig).divide(new BigDecimal("100"), 8, BigDecimal.ROUND_HALF_UP);
         LOG.info(() -> "Sell fee % in BigDecimal format: " + sellFeePercentage);
     }

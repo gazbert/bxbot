@@ -20,12 +20,11 @@ public final class FileLocations {
     /*
      * XSD schema files for validating the XML config - their location in the main/resources folder.
      */
-    public static final String EMAIL_ALERTS_CONFIG_XSD_FILENAME = "com/gazbert/bxbot/core/config/emailalerts/email-alerts.xsd";
-    public static final String ENGINE_CONFIG_XSD_FILENAME = "com/gazbert/bxbot/core/config/engine/engine.xsd";
-    public static final String EXCHANGE_CONFIG_XSD_FILENAME = "com/gazbert/bxbot/core/config/exchange/exchange.xsd";
-    public static final String MARKETS_CONFIG_XSD_FILENAME = "com/gazbert/bxbot/core/config/market/markets.xsd";
-    public static final String STRATEGIES_CONFIG_XSD_FILENAME = "com/gazbert/bxbot/core/config/strategy/strategies.xsd";
-
+    public static final String EMAIL_ALERTS_CONFIG_XSD_FILENAME = "com/gazbert/bxbot/datastore/config/email-alerts.xsd";
+    public static final String ENGINE_CONFIG_XSD_FILENAME = "com/gazbert/bxbot/datastore/config/engine.xsd";
+    public static final String EXCHANGE_CONFIG_XSD_FILENAME = "com/gazbert/bxbot/datastore/config/exchange.xsd";
+    public static final String MARKETS_CONFIG_XSD_FILENAME = "com/gazbert/bxbot/datastore/config/markets.xsd";
+    public static final String STRATEGIES_CONFIG_XSD_FILENAME = "com/gazbert/bxbot/datastore/config/strategies.xsd";
 
     private FileLocations() {
     }

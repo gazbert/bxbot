@@ -26,8 +26,6 @@ package com.gazbert.bxbot.exchanges;
 import com.gazbert.bxbot.exchange.api.*;
 import com.gazbert.bxbot.trading.api.BalanceInfo;
 import com.gazbert.bxbot.trading.api.MarketOrderBook;
-import com.gazbert.bxbot.trading.api.OpenOrder;
-import com.gazbert.bxbot.trading.api.OrderType;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -58,7 +56,7 @@ public class GeminiIT {
 
     // Canned test data
     private static final String MARKET_ID = "ethbtc";
-    private static final BigDecimal SELL_ORDER_PRICE = new BigDecimal("10000.176");
+    private static final BigDecimal SELL_ORDER_PRICE = new BigDecimal("10000.12345");
     private static final BigDecimal SELL_ORDER_QUANTITY = new BigDecimal("0.001");
 
     // Exchange Adapter config for the tests
@@ -71,7 +69,7 @@ public class GeminiIT {
     private ExchangeConfig exchangeConfig;
     private AuthenticationConfig authenticationConfig;
     private NetworkConfig networkConfig;
-    private OtherConfig otherConfig;
+    private OptionalConfig optionalConfig;
 
     /*
      * Create some exchange config - the TradingEngine would normally do this.
@@ -88,14 +86,14 @@ public class GeminiIT {
         expect(networkConfig.getNonFatalErrorCodes()).andReturn(nonFatalNetworkErrorCodes);
         expect(networkConfig.getNonFatalErrorMessages()).andReturn(nonFatalNetworkErrorMessages);
 
-        otherConfig = PowerMock.createMock(OtherConfig.class);
-        expect(otherConfig.getItem("buy-fee")).andReturn("0.25");
-        expect(otherConfig.getItem("sell-fee")).andReturn("0.25");
+        optionalConfig = PowerMock.createMock(OptionalConfig.class);
+        expect(optionalConfig.getItem("buy-fee")).andReturn("0.25");
+        expect(optionalConfig.getItem("sell-fee")).andReturn("0.25");
 
         exchangeConfig = PowerMock.createMock(ExchangeConfig.class);
         expect(exchangeConfig.getAuthenticationConfig()).andReturn(authenticationConfig);
         expect(exchangeConfig.getNetworkConfig()).andReturn(networkConfig);
-        expect(exchangeConfig.getOtherConfig()).andReturn(otherConfig);
+        expect(exchangeConfig.getOptionalConfig()).andReturn(optionalConfig);
     }
 
     @Test

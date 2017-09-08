@@ -31,7 +31,7 @@ import com.gazbert.bxbot.domain.exchange.ExchangeConfig;
  */
 public interface ExchangeConfigService {
 
-    ExchangeConfig getConfig();
+    ExchangeConfig getExchangeConfig();
 
-    void updateConfig(ExchangeConfig config);
+    ExchangeConfig updateExchangeConfig(ExchangeConfig config);
 }

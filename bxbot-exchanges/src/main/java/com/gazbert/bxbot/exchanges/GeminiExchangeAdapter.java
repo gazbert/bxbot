@@ -26,7 +26,7 @@ package com.gazbert.bxbot.exchanges;
 import com.gazbert.bxbot.exchange.api.AuthenticationConfig;
 import com.gazbert.bxbot.exchange.api.ExchangeAdapter;
 import com.gazbert.bxbot.exchange.api.ExchangeConfig;
-import com.gazbert.bxbot.exchange.api.OtherConfig;
+import com.gazbert.bxbot.exchange.api.OptionalConfig;
 import com.gazbert.bxbot.trading.api.*;
 import com.google.common.base.MoreObjects;
 import com.google.gson.Gson;
@@ -75,6 +75,13 @@ import java.util.*;
  * Exchange fees are loaded from the exchange.xml file on startup; they are not fetched from the exchange
  * at runtime as the Gemini REST API does not support this. The fees are used across all markets. Make sure you keep
  * an eye on the <a href="https://gemini.com/fee-schedule/">exchange fees</a> and update the config accordingly.
+ * </p>
+ * <p>
+ * NOTE: Gemini requires "btcusd" and "ethusd" market price currency (USD) values to be limited to 2 decimal places when creating
+ * orders - the adapter truncates any prices with more than 2 decimal places and rounds using
+ * {@link java.math.RoundingMode#HALF_EVEN}, E.g. 250.176 would be sent to the exchange as 250.18.
+ * For the "ethbtc" market, price currency (BTC) values are limited to 5 decimal places - the adapter will truncate and
+ * round accordingly.
  * </p>
  * <p>
  * The Exchange Adapter is <em>not</em> thread safe. It expects to be called using a single thread in order to
@@ -141,7 +148,26 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter impleme
     /**
      * Nonce used for sending authenticated messages to the exchange.
      */
-    private static long nonce = 0;
+    private long nonce = 0;
+
+    /**
+     * Markets on the exchange. Used for determining order price truncation/rounding policy.
+     * See: https://docs.gemini.com/rest-api/#symbols-and-minimums
+     */
+    private enum MarketId {
+
+        BTC_USD("btcusd"), ETH_USD("ethusd"), ETH_BTC("ethbtc");
+
+        private final String market;
+
+        MarketId(String market) {
+            this.market = market;
+        }
+
+        public String getStringValue() {
+            return market;
+        }
+    }
 
     /**
      * Exchange buy fees in % in {@link BigDecimal} format.
@@ -186,7 +212,7 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter impleme
         LOG.info(() -> "About to initialise Gemini ExchangeConfig: " + config);
         setAuthenticationConfig(config);
         setNetworkConfig(config);
-        setOtherConfig(config);
+        setOptionalConfig(config);
 
         nonce = System.currentTimeMillis() / 1000; // set the initial nonce used in the secure messaging.
         initSecureMessageLayer();
@@ -210,7 +236,21 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter impleme
 
             // note we need to limit amount and price to 6 decimal places else exchange will barf with 400 response
             params.put("amount", new DecimalFormat("#.######").format(quantity));
-            params.put("price", new DecimalFormat("#.######").format(price));
+
+            // Decimal precision of price varies with market price currency
+            if (marketId.equals(MarketId.BTC_USD.getStringValue()) || marketId.equals(MarketId.ETH_USD.getStringValue())) {
+                params.put("price", new DecimalFormat("#.##").format(price));
+            } else if (marketId.equals(MarketId.ETH_BTC.getStringValue())) {
+                params.put("price", new DecimalFormat("#.#####").format(price));
+            } else {
+                final String errorMsg = "Invalid market id: " + marketId
+                        + " - Can only be "
+                        + MarketId.BTC_USD.getStringValue() + " or "
+                        + MarketId.ETH_USD.getStringValue() + " or "
+                        + MarketId.ETH_BTC.getStringValue();
+                LOG.error(errorMsg);
+                throw new IllegalArgumentException(errorMsg);
+            }
 
             if (orderType == OrderType.BUY) {
                 params.put("side", "buy");
@@ -293,6 +333,11 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter impleme
 
             final List<OpenOrder> ordersToReturn = new ArrayList<>();
             for (final GeminiOpenOrder geminiOpenOrder : geminiOpenOrders) {
+
+                if (!marketId.equalsIgnoreCase(geminiOpenOrder.symbol)) {
+                    continue;
+                }
+
                 OrderType orderType;
                 switch (geminiOpenOrder.side) {
                     case "buy":
@@ -718,11 +763,11 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter impleme
             final String paramsInJson = gson.toJson(params);
 
             // Need to base64 encode payload as per API
-            final String base64payload = DatatypeConverter.printBase64Binary(paramsInJson.getBytes());
+            final String base64payload = DatatypeConverter.printBase64Binary(paramsInJson.getBytes("UTF-8"));
 
             // Create the signature
             mac.reset(); // force reset
-            mac.update(base64payload.getBytes());
+            mac.update(base64payload.getBytes("UTF-8"));
             final String signature = toHex(mac.doFinal()).toLowerCase();
 
             // Request headers required by Exchange
@@ -750,9 +795,8 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter impleme
      *
      * @param byteArrayToConvert byte array to convert.
      * @return the string representation of the given byte array.
-     * @throws UnsupportedEncodingException if the byte array encoding is not recognised.
      */
-    private String toHex(byte[] byteArrayToConvert) throws UnsupportedEncodingException {
+    private String toHex(byte[] byteArrayToConvert) {
 
         final StringBuilder hexString = new StringBuilder();
 
@@ -796,15 +840,15 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter impleme
         secret = getAuthenticationConfigItem(authenticationConfig, SECRET_PROPERTY_NAME);
     }
 
-    private void setOtherConfig(ExchangeConfig exchangeConfig) {
+    private void setOptionalConfig(ExchangeConfig exchangeConfig) {
 
-        final OtherConfig otherConfig = getOtherConfig(exchangeConfig);
+        final OptionalConfig optionalConfig = getOptionalConfig(exchangeConfig);
 
-        final String buyFeeInConfig = getOtherConfigItem(otherConfig, BUY_FEE_PROPERTY_NAME);
+        final String buyFeeInConfig = getOptionalConfigItem(optionalConfig, BUY_FEE_PROPERTY_NAME);
         buyFeePercentage = new BigDecimal(buyFeeInConfig).divide(new BigDecimal("100"), 8, BigDecimal.ROUND_HALF_UP);
         LOG.info(() -> "Buy fee % in BigDecimal format: " + buyFeePercentage);
 
-        final String sellFeeInConfig = getOtherConfigItem(otherConfig, SELL_FEE_PROPERTY_NAME);
+        final String sellFeeInConfig = getOptionalConfigItem(optionalConfig, SELL_FEE_PROPERTY_NAME);
         sellFeePercentage = new BigDecimal(sellFeeInConfig).divide(new BigDecimal("100"), 8, BigDecimal.ROUND_HALF_UP);
         LOG.info(() -> "Sell fee % in BigDecimal format: " + sellFeePercentage);
     }

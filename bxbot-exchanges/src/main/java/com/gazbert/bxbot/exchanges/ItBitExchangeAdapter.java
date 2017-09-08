@@ -26,7 +26,7 @@ package com.gazbert.bxbot.exchanges;
 import com.gazbert.bxbot.exchange.api.AuthenticationConfig;
 import com.gazbert.bxbot.exchange.api.ExchangeAdapter;
 import com.gazbert.bxbot.exchange.api.ExchangeConfig;
-import com.gazbert.bxbot.exchange.api.OtherConfig;
+import com.gazbert.bxbot.exchange.api.OptionalConfig;
 import com.gazbert.bxbot.trading.api.*;
 import com.google.common.base.MoreObjects;
 import com.google.gson.Gson;
@@ -158,7 +158,7 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
     /**
      * Nonce used for sending authenticated messages to the exchange.
      */
-    private static long nonce = 0;
+    private long nonce = 0;
 
     /**
      * The UUID of the wallet in use on the exchange.
@@ -213,7 +213,7 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
         LOG.info(() -> "About to initialise itBit ExchangeConfig: " + config);
         setAuthenticationConfig(config);
         setNetworkConfig(config);
-        setOtherConfig(config);
+        setOptionalConfig(config);
 
         nonce = System.currentTimeMillis() / 1000; // set the initial nonce used in the secure messaging.
         initSecureMessageLayer();
@@ -366,6 +366,11 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
                 // adapt
                 final List<OpenOrder> ordersToReturn = new ArrayList<>();
                 for (final ItBitYourOrder itBitOpenOrder : itBitOpenOrders) {
+
+                    if (!marketId.equalsIgnoreCase(itBitOpenOrder.instrument)) {
+                        continue;
+                    }
+
                     OrderType orderType;
                     switch (itBitOpenOrder.side) {
                         case "buy":
@@ -523,8 +528,10 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
                 // adapt
                 final Map<String, BigDecimal> balancesAvailable = new HashMap<>();
                 final List<ItBitBalance> balances = exchangeWallet.balances;
-                for (final ItBitBalance balance : balances) {
-                    balancesAvailable.put(balance.currency, balance.availableBalance);
+                if (balances != null) {
+                    for (final ItBitBalance balance : balances) {
+                        balancesAvailable.put(balance.currency, balance.availableBalance);
+                    }
                 }
 
                 // 2nd arg of BalanceInfo constructor for reserved/on-hold balances is not provided by exchange.
@@ -849,14 +856,15 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
 
                     // Build (optional) query param string
                     final StringBuilder queryParamBuilder = new StringBuilder();
-                    for (final String param : params.keySet()) {
+                    for (final Map.Entry<String, String> param : params.entrySet()) {
                         if (queryParamBuilder.length() > 0) {
                             queryParamBuilder.append("&");
                         }
-                        //noinspection deprecation
                         // Don't URL encode as it messed up the UUID params, e.g. wallet id
                         //queryParams += param + "=" + URLEncoder.encode(params.get(param));
-                        queryParamBuilder.append(param).append("=").append(params.get(param));
+                        queryParamBuilder.append(param.getKey());
+                        queryParamBuilder.append("=");
+                        queryParamBuilder.append(param.getValue());
                     }
 
                     final String queryParams = queryParamBuilder.toString();
@@ -914,13 +922,13 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
 
             // Construct the SHA-256 hash of the noncePrependedToJson. Call this the message hash.
             final MessageDigest md = MessageDigest.getInstance("SHA-256");
-            md.update(noncePrependedToJson.getBytes());
+            md.update(noncePrependedToJson.getBytes("UTF-8"));
             final byte[] messageHash = md.digest();
 
             // Prepend the UTF-8 encoded request URL to the message hash.
             // Generate the SHA-512 HMAC of the prependRequestUrlToMsgHash using your API secret as the key.
             mac.reset(); // force reset
-            mac.update(invocationUrl.getBytes());
+            mac.update(invocationUrl.getBytes("UTF-8"));
             mac.update(messageHash);
 
             final String signature = DatatypeConverter.printBase64Binary(mac.doFinal());
@@ -940,7 +948,7 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
             final URL url = new URL(invocationUrl);
             return sendNetworkRequest(url, httpMethod, requestBody, requestHeaders);
 
-        } catch (MalformedURLException e) {
+        } catch (MalformedURLException | UnsupportedEncodingException e) {
             final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
             LOG.error(errorMsg, e);
             throw new TradingApiException(errorMsg, e);
@@ -987,15 +995,15 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
         secret = getAuthenticationConfigItem(authenticationConfig, SECRET_PROPERTY_NAME);
     }
 
-    private void setOtherConfig(ExchangeConfig exchangeConfig) {
+    private void setOptionalConfig(ExchangeConfig exchangeConfig) {
 
-        final OtherConfig otherConfig = getOtherConfig(exchangeConfig);
+        final OptionalConfig optionalConfig = getOptionalConfig(exchangeConfig);
 
-        final String buyFeeInConfig = getOtherConfigItem(otherConfig, BUY_FEE_PROPERTY_NAME);
+        final String buyFeeInConfig = getOptionalConfigItem(optionalConfig, BUY_FEE_PROPERTY_NAME);
         buyFeePercentage = new BigDecimal(buyFeeInConfig).divide(new BigDecimal("100"), 8, BigDecimal.ROUND_HALF_UP);
         LOG.info(() -> "Buy fee % in BigDecimal format: " + buyFeePercentage);
 
-        final String sellFeeInConfig = getOtherConfigItem(otherConfig, SELL_FEE_PROPERTY_NAME);
+        final String sellFeeInConfig = getOptionalConfigItem(optionalConfig, SELL_FEE_PROPERTY_NAME);
         sellFeePercentage = new BigDecimal(sellFeeInConfig).divide(new BigDecimal("100"), 8, BigDecimal.ROUND_HALF_UP);
         LOG.info(() -> "Sell fee % in BigDecimal format: " + sellFeePercentage);
     }

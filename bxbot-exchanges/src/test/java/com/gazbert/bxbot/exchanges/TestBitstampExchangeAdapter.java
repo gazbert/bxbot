@@ -80,16 +80,16 @@ public class TestBitstampExchangeAdapter {
     private static final String CANCEL_ORDER_JSON_RESPONSE = "./src/test/exchange-data/bitstamp/cancel_order.json";
 
     // Exchange API calls
-    private static final String ORDER_BOOK = "order_book";
-    private static final String OPEN_ORDERS = "open_orders";
+    private static final String ORDER_BOOK = "order_book/";
+    private static final String OPEN_ORDERS = "open_orders/";
     private static final String BALANCE = "balance";
-    private static final String TICKER = "ticker";
-    private static final String BUY = "buy";
-    private static final String SELL = "sell";
+    private static final String TICKER = "ticker/";
+    private static final String BUY = "buy/";
+    private static final String SELL = "sell/";
     private static final String CANCEL_ORDER = "cancel_order";
 
     // Canned test data
-    private static final String MARKET_ID = "BTC_USD"; // can be anything for Bitstamp; not used as exchange only has 1 market.
+    private static final String MARKET_ID = "btcusd";
     private static final BigDecimal BUY_ORDER_PRICE = new BigDecimal("200.18");
     private static final BigDecimal BUY_ORDER_QUANTITY = new BigDecimal("0.03");
     private static final BigDecimal SELL_ORDER_PRICE = new BigDecimal("300.176");
@@ -101,11 +101,6 @@ public class TestBitstampExchangeAdapter {
     private static final String MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD = "sendAuthenticatedRequestToExchange";
     private static final String MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD = "sendPublicRequestToExchange";
 
-    /**
-     * Bitstamp exchange Date format: 2015-01-09 21:14:50
-     */
-    private static final SimpleDateFormat EXCHANGE_DATE_FORMAT = new SimpleDateFormat("y-M-d H:m:s");
-
     // Exchange Adapter config for the tests
     private static final String CLIENT_ID = "clientId123";
     private static final String KEY = "key123";
@@ -113,6 +108,11 @@ public class TestBitstampExchangeAdapter {
     private static final List<Integer> nonFatalNetworkErrorCodes = Arrays.asList(502, 503, 504);
     private static final List<String> nonFatalNetworkErrorMessages = Arrays.asList(
             "Connection refused", "Connection reset", "Remote host closed connection during handshake");
+
+    /**
+     * Bitstamp exchange Date format: 2015-01-09 21:14:50
+     */
+    private final SimpleDateFormat bitstampExchangeDateFormat = new SimpleDateFormat("y-M-d H:m:s");
 
     private ExchangeConfig exchangeConfig;
     private AuthenticationConfig authenticationConfig;
@@ -138,7 +138,7 @@ public class TestBitstampExchangeAdapter {
         exchangeConfig = PowerMock.createMock(ExchangeConfig.class);
         expect(exchangeConfig.getAuthenticationConfig()).andReturn(authenticationConfig);
         expect(exchangeConfig.getNetworkConfig()).andReturn(networkConfig);
-        // other config not needed for this adapter
+        // optional config not needed for this adapter
     }
 
     // ------------------------------------------------------------------------------------------------
@@ -238,7 +238,8 @@ public class TestBitstampExchangeAdapter {
                 MOCKED_GET_REQUEST_PARAM_MAP_METHOD);
 
         PowerMock.expectPrivate(exchangeAdapter, MOCKED_GET_REQUEST_PARAM_MAP_METHOD).andReturn(requestParamMap);
-        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(BUY),
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD,
+                eq(BUY + MARKET_ID),
                 eq(requestParamMap)).andReturn(exchangeResponse);
 
         PowerMock.replayAll();
@@ -270,7 +271,8 @@ public class TestBitstampExchangeAdapter {
                 MOCKED_GET_REQUEST_PARAM_MAP_METHOD);
 
         PowerMock.expectPrivate(exchangeAdapter, MOCKED_GET_REQUEST_PARAM_MAP_METHOD).andReturn(requestParamMap);
-        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(SELL),
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD,
+                eq(SELL + MARKET_ID),
                 eq(requestParamMap)).andReturn(exchangeResponse);
 
         PowerMock.replayAll();
@@ -288,7 +290,8 @@ public class TestBitstampExchangeAdapter {
         // Partial mock so we do not send stuff down the wire
         final BitstampExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
                 BitstampExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
-        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(SELL), anyObject(Map.class)).
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD,
+                eq(SELL + MARKET_ID), anyObject(Map.class)).
                 andThrow(new ExchangeNetworkException("Aaaaaaaaaaaaaaaarrrgh!"));
 
         PowerMock.replayAll();
@@ -304,7 +307,8 @@ public class TestBitstampExchangeAdapter {
         // Partial mock so we do not send stuff down the wire
         final BitstampExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
                 BitstampExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
-        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(BUY), anyObject(Map.class)).
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD,
+                eq(BUY + MARKET_ID), anyObject(Map.class)).
                 andThrow(new IllegalArgumentException("That's 'cause droids don't pull people's arms out of their " +
                         "sockets when they lose. Wookiees are known to do that."));
 
@@ -330,7 +334,8 @@ public class TestBitstampExchangeAdapter {
         // Partial mock so we do not send stuff down the wire
         final BitstampExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
                 BitstampExchangeAdapter.class, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD);
-        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD, eq(ORDER_BOOK)).
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD,
+                eq(ORDER_BOOK + MARKET_ID)).
                 andReturn(exchangeResponse);
 
         PowerMock.replayAll();
@@ -370,7 +375,8 @@ public class TestBitstampExchangeAdapter {
         // Partial mock so we do not send stuff down the wire
         final BitstampExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
                 BitstampExchangeAdapter.class, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD);
-        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD, eq(ORDER_BOOK)).
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD,
+                eq(ORDER_BOOK + MARKET_ID)).
                 andThrow(new ExchangeNetworkException("Traveling through hyperspace ain’t like dusting crops, farm boy."));
 
         PowerMock.replayAll();
@@ -386,7 +392,8 @@ public class TestBitstampExchangeAdapter {
         // Partial mock so we do not send stuff down the wire
         final BitstampExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
                 BitstampExchangeAdapter.class, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD);
-        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD, eq(ORDER_BOOK)).
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD,
+                eq(ORDER_BOOK + MARKET_ID)).
                 andThrow(new IllegalArgumentException("Uh, we had a slight weapons malfunction, but uh... " +
                         "everything's perfectly all right now. We're fine. We're all fine here now, thank you. How are you?"));
 
@@ -412,7 +419,8 @@ public class TestBitstampExchangeAdapter {
         // Partial mock so we do not send stuff down the wire
         final BitstampExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
                 BitstampExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
-        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(OPEN_ORDERS),
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD,
+                eq(OPEN_ORDERS + MARKET_ID),
                 eq(null)).andReturn(exchangeResponse);
 
         PowerMock.replayAll();
@@ -425,7 +433,7 @@ public class TestBitstampExchangeAdapter {
         assertTrue(openOrders.get(0).getMarketId().equals(MARKET_ID));
         assertTrue(openOrders.get(0).getId().equals("52603560"));
         assertTrue(openOrders.get(0).getType() == OrderType.SELL);
-        assertTrue(openOrders.get(0).getCreationDate().getTime() == EXCHANGE_DATE_FORMAT.parse("2015-01-09 21:14:50").getTime());
+        assertTrue(openOrders.get(0).getCreationDate().getTime() == bitstampExchangeDateFormat.parse("2015-01-09 21:14:50").getTime());
         assertTrue(openOrders.get(0).getPrice().compareTo(new BigDecimal("350.00")) == 0);
         assertTrue(openOrders.get(0).getQuantity().compareTo(new BigDecimal("0.20000000")) == 0);
         assertTrue(openOrders.get(0).getTotal().compareTo(openOrders.get(0).getPrice().multiply(openOrders.get(0).getQuantity())) == 0);
@@ -442,7 +450,8 @@ public class TestBitstampExchangeAdapter {
         // Partial mock so we do not send stuff down the wire
         final BitstampExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
                 BitstampExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
-        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(OPEN_ORDERS), eq(null)).
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD,
+                eq(OPEN_ORDERS + MARKET_ID), eq(null)).
                 andThrow(new ExchangeNetworkException("The board is green!"));
 
         PowerMock.replayAll();
@@ -458,7 +467,8 @@ public class TestBitstampExchangeAdapter {
         // Partial mock so we do not send stuff down the wire
         final BitstampExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
                 BitstampExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
-        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(OPEN_ORDERS), eq(null)).
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD,
+                eq(OPEN_ORDERS + MARKET_ID), eq(null)).
                 andThrow(new IllegalStateException("You may dispense with the pleasantries, Commander. I am here to put you back on schedule."));
 
         PowerMock.replayAll();
@@ -483,7 +493,8 @@ public class TestBitstampExchangeAdapter {
         // Partial mock so we do not send stuff down the wire
         final BitstampExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
                 BitstampExchangeAdapter.class, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD);
-        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD, eq(TICKER)).
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD,
+                eq(TICKER + MARKET_ID)).
                 andReturn(exchangeResponse);
 
         PowerMock.replayAll();
@@ -501,7 +512,8 @@ public class TestBitstampExchangeAdapter {
         // Partial mock so we do not send stuff down the wire
         final BitstampExchangeAdapter exchangeAdapter = PowerMock.createPartialMock(BitstampExchangeAdapter.class,
                 MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD);
-        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD, eq(TICKER)).
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD,
+                eq(TICKER + MARKET_ID)).
                 andThrow(new ExchangeNetworkException("Jumping in 5... 4... 3... 2... 1... Jump!"));
 
         PowerMock.replayAll();
@@ -515,7 +527,8 @@ public class TestBitstampExchangeAdapter {
         // Partial mock so we do not send stuff down the wire
         final BitstampExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
                 BitstampExchangeAdapter.class, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD);
-        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD, eq(TICKER)).
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD,
+                eq(TICKER + MARKET_ID)).
                 andThrow(new IllegalArgumentException("Sir, the possibility of successfully navigating an asteroid field" +
                         " is approximately 3,720 to 1."));
 
@@ -549,12 +562,17 @@ public class TestBitstampExchangeAdapter {
 
         final BalanceInfo balanceInfo = exchangeAdapter.getBalanceInfo();
 
-        // assert some key stuff; we're not testing GSON here.
-        assertTrue(balanceInfo.getBalancesAvailable().get("BTC").compareTo(new BigDecimal("0.28994223")) == 0);
-        assertTrue(balanceInfo.getBalancesAvailable().get("USD").compareTo(new BigDecimal("0")) == 0);
+        assertTrue(balanceInfo.getBalancesAvailable().get("BTC").compareTo(new BigDecimal("0.00760854")) == 0);
+        assertTrue(balanceInfo.getBalancesAvailable().get("USD").compareTo(new BigDecimal("57.03")) == 0);
+        assertTrue(balanceInfo.getBalancesAvailable().get("EUR").compareTo(new BigDecimal("16.01")) == 0);
+        assertTrue(balanceInfo.getBalancesAvailable().get("LTC").compareTo(new BigDecimal("50.01")) == 0);
+        assertTrue(balanceInfo.getBalancesAvailable().get("XRP").compareTo(new BigDecimal("10.01")) == 0);
 
-        assertTrue(balanceInfo.getBalancesOnHold().get("BTC").compareTo(new BigDecimal("0.21655294")) == 0);
-        assertTrue(balanceInfo.getBalancesOnHold().get("USD").compareTo(new BigDecimal("0")) == 0);
+        assertTrue(balanceInfo.getBalancesOnHold().get("BTC").compareTo(new BigDecimal("0.01918917")) == 0);
+        assertTrue(balanceInfo.getBalancesOnHold().get("USD").compareTo(new BigDecimal("62.23")) == 0);
+        assertTrue(balanceInfo.getBalancesOnHold().get("EUR").compareTo(new BigDecimal("12.01")) == 0);
+        assertTrue(balanceInfo.getBalancesOnHold().get("LTC").compareTo(new BigDecimal("40.01")) == 0);
+        assertTrue(balanceInfo.getBalancesOnHold().get("XRP").compareTo(new BigDecimal("5.01")) == 0);
 
         PowerMock.verifyAll();
     }
@@ -722,7 +740,7 @@ public class TestBitstampExchangeAdapter {
         PowerMock.replayAll();
         final BitstampExchangeAdapter exchangeAdapter = new BitstampExchangeAdapter();
         exchangeAdapter.init(exchangeConfig);
-        assertTrue(exchangeAdapter.getImplName().equals("Bitstamp HTTP API v1"));
+        assertTrue(exchangeAdapter.getImplName().equals("Bitstamp HTTP API v2"));
         PowerMock.verifyAll();
     }
 

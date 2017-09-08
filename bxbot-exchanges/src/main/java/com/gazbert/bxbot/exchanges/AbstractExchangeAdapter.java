@@ -25,7 +25,7 @@ package com.gazbert.bxbot.exchanges;
 import com.gazbert.bxbot.exchange.api.AuthenticationConfig;
 import com.gazbert.bxbot.exchange.api.ExchangeConfig;
 import com.gazbert.bxbot.exchange.api.NetworkConfig;
-import com.gazbert.bxbot.exchange.api.OtherConfig;
+import com.gazbert.bxbot.exchange.api.OptionalConfig;
 import com.gazbert.bxbot.trading.api.ExchangeNetworkException;
 import com.gazbert.bxbot.trading.api.TradingApiException;
 import com.google.common.base.MoreObjects;
@@ -42,7 +42,7 @@ import java.util.*;
  * @author gazbert
  * @since 1.0
  */
-public abstract class AbstractExchangeAdapter {
+abstract class AbstractExchangeAdapter {
 
     private static final Logger LOG = LogManager.getLogger();
 
@@ -72,9 +72,9 @@ public abstract class AbstractExchangeAdapter {
     private static final String NETWORK_CONFIG_MISSING = "NetworkConfig is missing for adapter in exchange.xml file.";
 
     /**
-     * Fatal error message for when OtherConfig is missing in the exchange.xml config file.
+     * Fatal error message for when OptionalConfig is missing in the exchange.xml config file.
      */
-    private static final String OTHER_CONFIG_MISSING = "OtherConfig is missing for adapter in exchange.xml file.";
+    private static final String OTHER_CONFIG_MISSING = "OptionalConfig is missing for adapter in exchange.xml file.";
 
     /**
      * Used for building error messages for missing config.
@@ -110,19 +110,19 @@ public abstract class AbstractExchangeAdapter {
      * HTTP status codes for non-fatal network connection failures.
      * Used to decide to throw {@link ExchangeNetworkException}.
      */
-    private Set<Integer> nonFatalNetworkErrorCodes;
+    private final Set<Integer> nonFatalNetworkErrorCodes;
 
     /**
      * java.io exception messages for non-fatal network connection failures.
      * Used to decide to throw {@link ExchangeNetworkException}.
      */
-    private Set<String> nonFatalNetworkErrorMessages;
+    private final Set<String> nonFatalNetworkErrorMessages;
 
 
     /**
      * Constructor set some sensible defaults for the network config.
      */
-    protected AbstractExchangeAdapter() {
+    AbstractExchangeAdapter() {
         connectionTimeout = 30;
         nonFatalNetworkErrorCodes = new HashSet<>();
         nonFatalNetworkErrorMessages = new HashSet<>();
@@ -156,9 +156,9 @@ public abstract class AbstractExchangeAdapter {
             exchangeConnection.setDoOutput(true);
             exchangeConnection.setRequestMethod(httpMethod); // GET|POST|DELETE
 
-            // Er, perhaps, I need to be a bit more stealth here...
+            // Er, perhaps, I need to be a bit more stealth here... this was needed for some exchanges back in the day!
             exchangeConnection.setRequestProperty("User-Agent",
-                    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.106 Safari/537.36");
+                    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.78 Safari/537.36");
 
             if (requestHeaders != null) {
                 for (final Map.Entry<String, String> requestHeader : requestHeaders.entrySet()) {
@@ -174,14 +174,14 @@ public abstract class AbstractExchangeAdapter {
 
             if (httpMethod.equalsIgnoreCase("POST") && postData != null) {
                 LOG.debug(() -> "Doing POST with request body: " + postData);
-                final OutputStreamWriter outputPostStream = new OutputStreamWriter(exchangeConnection.getOutputStream());
+                final OutputStreamWriter outputPostStream = new OutputStreamWriter(exchangeConnection.getOutputStream(), "UTF-8");
                 outputPostStream.write(postData);
                 outputPostStream.close();
             }
 
             // Grab the response - we just block here as per Connection API
             final BufferedReader responseInputStream = new BufferedReader(new InputStreamReader(
-                    exchangeConnection.getInputStream()));
+                    exchangeConnection.getInputStream(), "UTF-8"));
 
             // Read the JSON response lines into our response buffer
             String responseLine;
@@ -215,15 +215,13 @@ public abstract class AbstractExchangeAdapter {
             // Check if this is a non-fatal network error
             try {
 
-                if (nonFatalNetworkErrorMessages != null && e.getMessage() != null &&
-                        nonFatalNetworkErrorMessages.contains(e.getMessage())) {
+                if (e.getMessage() != null && nonFatalNetworkErrorMessages.contains(e.getMessage())) {
 
                     final String errorMsg = "Failed to connect to Exchange. SSL Connection was refused or reset by the server.";
                     LOG.error(errorMsg, e);
                     throw new ExchangeNetworkException(errorMsg, e);
 
-                } else if (nonFatalNetworkErrorCodes != null && exchangeConnection != null &&
-                        nonFatalNetworkErrorCodes.contains(exchangeConnection.getResponseCode())) {
+                } else if (exchangeConnection != null && nonFatalNetworkErrorCodes.contains(exchangeConnection.getResponseCode())) {
 
                     final String errorMsg = IO_5XX_TIMEOUT_ERROR_MSG;
                     LOG.error(errorMsg, e);
@@ -236,7 +234,7 @@ public abstract class AbstractExchangeAdapter {
                     if (exchangeConnection != null) {
                         final InputStream rawErrorStream = exchangeConnection.getErrorStream();
                         if (rawErrorStream != null) {
-                            final BufferedReader errorInputStream = new BufferedReader(new InputStreamReader(rawErrorStream));
+                            final BufferedReader errorInputStream = new BufferedReader(new InputStreamReader(rawErrorStream, "UTF-8"));
                             final StringBuilder errorResponse = new StringBuilder();
                             String errorLine;
                             while ((errorLine = errorInputStream.readLine()) != null) {
@@ -317,21 +315,21 @@ public abstract class AbstractExchangeAdapter {
     }
 
     /**
-     * Fetches the 'other' misc config for the exchange adapter.
+     * Fetches the optional config for the exchange adapter.
      *
      * @param exchangeConfig the exchange adapter config.
-     * @return the 'other' misc config for the adapter.
-     * @throws IllegalArgumentException if 'other' misc config is not set.
+     * @return the optional config for the adapter.
+     * @throws IllegalArgumentException if optional config is not set.
      */
-    OtherConfig getOtherConfig(ExchangeConfig exchangeConfig) {
+    OptionalConfig getOptionalConfig(ExchangeConfig exchangeConfig) {
 
-        final OtherConfig otherConfig = exchangeConfig.getOtherConfig();
-        if (otherConfig == null) {
+        final OptionalConfig optionalConfig = exchangeConfig.getOptionalConfig();
+        if (optionalConfig == null) {
             final String errorMsg = OTHER_CONFIG_MISSING + exchangeConfig;
             LOG.error(errorMsg);
             throw new IllegalArgumentException(errorMsg);
         }
-        return otherConfig;
+        return optionalConfig;
     }
 
     /**
@@ -351,16 +349,16 @@ public abstract class AbstractExchangeAdapter {
     }
 
     /**
-     * Fetches an 'other' misc config item value from the adapter config.
+     * Fetches an optional config item value from the adapter config.
      *
-     * @param otherConfig the 'other' misc config for the adapter.
+     * @param optionalConfig the optional config for the adapter.
      * @param itemName    the config item name, e.g. buy-fee, sell-fee
      * @return the config item value.
      * @throws IllegalArgumentException if authentication item is not set.
      */
-    String getOtherConfigItem(OtherConfig otherConfig, String itemName) {
+    String getOptionalConfigItem(OptionalConfig optionalConfig, String itemName) {
 
-        final String itemValue = otherConfig.getItem(itemName);
+        final String itemValue = optionalConfig.getItem(itemName);
         LOG.info(() -> itemName + ": " + itemValue);
         return assertItemExists(itemName, itemValue);
     }
@@ -381,8 +379,9 @@ public abstract class AbstractExchangeAdapter {
             if (sortedQueryString.length() > 0) {
                 sortedQueryString.append("&");
             }
-            //noinspection deprecation
-            sortedQueryString.append(param).append("=").append(params.get(param));
+            sortedQueryString.append(param);
+            sortedQueryString.append("=");
+            sortedQueryString.append(params.get(param));
         }
         return sortedQueryString.toString();
     }
@@ -392,9 +391,9 @@ public abstract class AbstractExchangeAdapter {
      */
     static class ExchangeHttpResponse {
 
-        private int statusCode;
-        private String reasonPhrase;
-        private String payload;
+        private final int statusCode;
+        private final String reasonPhrase;
+        private final String payload;
 
         ExchangeHttpResponse(int statusCode, String reasonPhrase, String payload) {
             this.statusCode = statusCode;

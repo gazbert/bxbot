@@ -25,7 +25,7 @@ package com.gazbert.bxbot.datastore.config.strategy;
 
 import com.gazbert.bxbot.datastore.ConfigurationManager;
 import com.gazbert.bxbot.datastore.strategy.generated.ConfigItemType;
-import com.gazbert.bxbot.datastore.strategy.generated.ConfigurationType;
+import com.gazbert.bxbot.datastore.strategy.generated.OptionalConfigType;
 import com.gazbert.bxbot.datastore.strategy.generated.StrategyType;
 import com.gazbert.bxbot.datastore.strategy.generated.TradingStrategiesType;
 import org.junit.Test;
@@ -44,20 +44,21 @@ import static org.junit.Assert.*;
 public class TestStrategyConfigurationManagement {
 
     /* Production XSD */
-    private static final String XML_SCHEMA_FILENAME = "com/gazbert/bxbot/core/config/strategy/strategies.xsd";
+    private static final String XML_SCHEMA_FILENAME = "com/gazbert/bxbot/datastore/config/strategies.xsd";
 
     /* Test XML config */
     private static final String VALID_XML_CONFIG_FILENAME = "src/test/config/strategies/valid-strategies.xml";
+    private static final String INVALID_XML_CONFIG_FILENAME = "src/test/config/strategies/invalid-strategies.xml";
     private static final String MISSING_XML_CONFIG_FILENAME = "src/test/config/strategies/missing-strategies.xml";
     private static final String XML_CONFIG_TO_SAVE_FILENAME = "src/test/config/strategies/saved-strategies.xml";
 
     private static final String STRAT_ID_1 = "macd-long-position";
-    private static final String STRAT_LABEL_1 = "MACD Long Position Algo";
+    private static final String STRAT_NAME_1 = "MACD Long Position Algo";
     private static final String STRAT_DESCRIPTION_1 = "Uses MACD as indicator and takes long position in base currency.";
     private static final String STRAT_CLASSNAME_1 = "com.gazbert.nova.algos.MacdLongBase";
 
     private static final String STRAT_ID_2 = "long-scalper";
-    private static final String STRAT_LABEL_2 = "Long Position Scalper Algo";
+    private static final String STRAT_NAME_2 = "Long Position Scalper Algo";
     private static final String STRAT_DESCRIPTION_2 = "Scalps and goes long...";
     private static final String STRAT_CLASSNAME_2 = "com.gazbert.nova.algos.LongScalper";
 
@@ -79,50 +80,50 @@ public class TestStrategyConfigurationManagement {
          * Strat 1
          */
         assertEquals("scalping-strategy", tradingStrategiesType.getStrategies().get(0).getId());
-        assertEquals("Basic Scalping Strat", tradingStrategiesType.getStrategies().get(0).getLabel());
+        assertEquals("Basic Scalping Strat", tradingStrategiesType.getStrategies().get(0).getName());
         assertTrue(tradingStrategiesType.getStrategies().get(0).getDescription().trim().equals(
                 "A simple trend following scalper that buys at the current BID price, holds until current market " +
                 "price has reached a configurable minimum percentage gain, and then sells at current ASK price, thereby " +
                 "taking profit from the spread. Don't forget to factor in the exchange fees!"));
         assertEquals("com.gazbert.bxbot.strategies.ExampleScalpingStrategy", tradingStrategiesType.getStrategies().get(0).getClassName());
 
-        assertTrue(2 == tradingStrategiesType.getStrategies().get(0).getConfiguration().getConfigItem().size());
-        assertEquals("counter-currency-buy-order-amount", tradingStrategiesType.getStrategies().get(0).getConfiguration().getConfigItem().get(0).getName());
-        assertEquals("20", tradingStrategiesType.getStrategies().get(0).getConfiguration().getConfigItem().get(0).getValue());
-        assertEquals("minimum-percentage-gain", tradingStrategiesType.getStrategies().get(0).getConfiguration().getConfigItem().get(1).getName());
-        assertEquals("1", tradingStrategiesType.getStrategies().get(0).getConfiguration().getConfigItem().get(1).getValue());
+        assertTrue(2 == tradingStrategiesType.getStrategies().get(0).getOptionalConfig().getConfigItem().size());
+        assertEquals("counter-currency-buy-order-amount", tradingStrategiesType.getStrategies().get(0).getOptionalConfig().getConfigItem().get(0).getName());
+        assertEquals("20", tradingStrategiesType.getStrategies().get(0).getOptionalConfig().getConfigItem().get(0).getValue());
+        assertEquals("minimum-percentage-gain", tradingStrategiesType.getStrategies().get(0).getOptionalConfig().getConfigItem().get(1).getName());
+        assertEquals("1", tradingStrategiesType.getStrategies().get(0).getOptionalConfig().getConfigItem().get(1).getValue());
 
         /*
          * Strat 2
          */
         assertEquals("ema-shorting-strategy", tradingStrategiesType.getStrategies().get(1).getId());
-        assertEquals("EMA Based Shorting Strat", tradingStrategiesType.getStrategies().get(1).getLabel());
+        assertEquals("EMA Based Shorting Strat", tradingStrategiesType.getStrategies().get(1).getName());
         assertNull(tradingStrategiesType.getStrategies().get(1).getDescription()); // optional element check
         assertEquals("com.gazbert.bxbot.strategies.YourEmaShortingStrategy", tradingStrategiesType.getStrategies().get(1).getClassName());
 
-        assertTrue(4 == tradingStrategiesType.getStrategies().get(1).getConfiguration().getConfigItem().size());
+        assertTrue(4 == tradingStrategiesType.getStrategies().get(1).getOptionalConfig().getConfigItem().size());
 
-        assertEquals("btc-sell-order-amount", tradingStrategiesType.getStrategies().get(1).getConfiguration().getConfigItem().get(0).getName());
-        assertEquals("0.5", tradingStrategiesType.getStrategies().get(1).getConfiguration().getConfigItem().get(0).getValue());
+        assertEquals("btc-sell-order-amount", tradingStrategiesType.getStrategies().get(1).getOptionalConfig().getConfigItem().get(0).getName());
+        assertEquals("0.5", tradingStrategiesType.getStrategies().get(1).getOptionalConfig().getConfigItem().get(0).getValue());
 
-        assertEquals("shortEmaInterval", tradingStrategiesType.getStrategies().get(1).getConfiguration().getConfigItem().get(1).getName());
-        assertEquals("5", tradingStrategiesType.getStrategies().get(1).getConfiguration().getConfigItem().get(1).getValue());
+        assertEquals("shortEmaInterval", tradingStrategiesType.getStrategies().get(1).getOptionalConfig().getConfigItem().get(1).getName());
+        assertEquals("5", tradingStrategiesType.getStrategies().get(1).getOptionalConfig().getConfigItem().get(1).getValue());
 
-        assertEquals("mediumEmaInterval", tradingStrategiesType.getStrategies().get(1).getConfiguration().getConfigItem().get(2).getName());
-        assertEquals("10", tradingStrategiesType.getStrategies().get(1).getConfiguration().getConfigItem().get(2).getValue());
+        assertEquals("mediumEmaInterval", tradingStrategiesType.getStrategies().get(1).getOptionalConfig().getConfigItem().get(2).getName());
+        assertEquals("10", tradingStrategiesType.getStrategies().get(1).getOptionalConfig().getConfigItem().get(2).getValue());
 
-        assertEquals("longEmaInterval", tradingStrategiesType.getStrategies().get(1).getConfiguration().getConfigItem().get(3).getName());
-        assertEquals("20", tradingStrategiesType.getStrategies().get(1).getConfiguration().getConfigItem().get(3).getValue());
+        assertEquals("longEmaInterval", tradingStrategiesType.getStrategies().get(1).getOptionalConfig().getConfigItem().get(3).getName());
+        assertEquals("20", tradingStrategiesType.getStrategies().get(1).getOptionalConfig().getConfigItem().get(3).getValue());
 
         /*
          * Strat 3
          */
         assertEquals("macd-strategy", tradingStrategiesType.getStrategies().get(2).getId());
-        assertEquals("MACD Based Strat", tradingStrategiesType.getStrategies().get(2).getLabel());
+        assertEquals("MACD Based Strat", tradingStrategiesType.getStrategies().get(2).getName());
         assertTrue(tradingStrategiesType.getStrategies().get(2).getDescription().trim().equals(
                 "Strat uses MACD data to take long position in USD."));
         assertEquals("com.gazbert.bxbot.strategies.YourMacdStrategy", tradingStrategiesType.getStrategies().get(2).getClassName());
-        assertNull(tradingStrategiesType.getStrategies().get(2).getConfiguration()); // optional element check
+        assertNull(tradingStrategiesType.getStrategies().get(2).getOptionalConfig()); // optional element check
     }
 
     @Test(expected = IllegalStateException.class)
@@ -131,6 +132,13 @@ public class TestStrategyConfigurationManagement {
         ConfigurationManager.loadConfig(TradingStrategiesType.class,
                 MISSING_XML_CONFIG_FILENAME, XML_SCHEMA_FILENAME);
     }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testLoadingInvalidXmlConfigFileThrowsException() {
+
+        ConfigurationManager.loadConfig(TradingStrategiesType.class,
+                INVALID_XML_CONFIG_FILENAME, XML_SCHEMA_FILENAME);
+    }    
 
     @Test
     public void testSavingConfigToXmlIsSuccessful() throws Exception {
@@ -144,28 +152,28 @@ public class TestStrategyConfigurationManagement {
         configItem2.setValue(AMOUNT_TO_BUY_CONFIG_ITEM_VALUE);
 
         // Strat 1
-        final ConfigurationType strat1Config = new ConfigurationType();
+        final OptionalConfigType strat1Config = new OptionalConfigType();
         strat1Config.getConfigItem().add(configItem1);
         strat1Config.getConfigItem().add(configItem2);
 
         final StrategyType strategy1 = new StrategyType();
         strategy1.setId(STRAT_ID_1);
-        strategy1.setLabel(STRAT_LABEL_1);
+        strategy1.setName(STRAT_NAME_1);
         strategy1.setDescription(STRAT_DESCRIPTION_1);
         strategy1.setClassName(STRAT_CLASSNAME_1);
-        strategy1.setConfiguration(strat1Config);
+        strategy1.setOptionalConfig(strat1Config);
 
         // Strat 2
-        final ConfigurationType strat2Config = new ConfigurationType();
+        final OptionalConfigType strat2Config = new OptionalConfigType();
         strat2Config.getConfigItem().add(configItem1);
         strat2Config.getConfigItem().add(configItem2);
 
         final StrategyType strategy2 = new StrategyType();
         strategy2.setId(STRAT_ID_2);
-        strategy2.setLabel(STRAT_LABEL_2);
+        strategy2.setName(STRAT_NAME_2);
         strategy2.setDescription(STRAT_DESCRIPTION_2);
         strategy2.setClassName(STRAT_CLASSNAME_2);
-        strategy2.setConfiguration(strat2Config);
+        strategy2.setOptionalConfig(strat2Config);
 
         final TradingStrategiesType strategiesConfig = new TradingStrategiesType();
         strategiesConfig.getStrategies().add(strategy1);
@@ -179,32 +187,32 @@ public class TestStrategyConfigurationManagement {
 
         // Strat 1
         assertThat(strategiesReloaded.getStrategies().get(0).getId()).isEqualTo(STRAT_ID_1);
-        assertThat(strategiesReloaded.getStrategies().get(0).getLabel()).isEqualTo(STRAT_LABEL_1);
+        assertThat(strategiesReloaded.getStrategies().get(0).getName()).isEqualTo(STRAT_NAME_1);
         assertThat(strategiesReloaded.getStrategies().get(0).getDescription()).isEqualTo(STRAT_DESCRIPTION_1);
         assertThat(strategiesReloaded.getStrategies().get(0).getClassName()).isEqualTo(STRAT_CLASSNAME_1);
 
-        assertThat(strategiesReloaded.getStrategies().get(0).getConfiguration().getConfigItem().get(0).getName())
+        assertThat(strategiesReloaded.getStrategies().get(0).getOptionalConfig().getConfigItem().get(0).getName())
                 .isEqualTo(BUY_PRICE_CONFIG_ITEM_KEY);
-        assertThat(strategiesReloaded.getStrategies().get(0).getConfiguration().getConfigItem().get(0).getValue())
+        assertThat(strategiesReloaded.getStrategies().get(0).getOptionalConfig().getConfigItem().get(0).getValue())
                 .isEqualTo(BUY_PRICE_CONFIG_ITEM_VALUE);
-        assertThat(strategiesReloaded.getStrategies().get(0).getConfiguration().getConfigItem().get(1).getName())
+        assertThat(strategiesReloaded.getStrategies().get(0).getOptionalConfig().getConfigItem().get(1).getName())
                 .isEqualTo(AMOUNT_TO_BUY_CONFIG_ITEM_KEY);
-        assertThat(strategiesReloaded.getStrategies().get(0).getConfiguration().getConfigItem().get(1).getValue())
+        assertThat(strategiesReloaded.getStrategies().get(0).getOptionalConfig().getConfigItem().get(1).getValue())
                 .isEqualTo(AMOUNT_TO_BUY_CONFIG_ITEM_VALUE);
 
         // Strat 2
         assertThat(strategiesReloaded.getStrategies().get(1).getId()).isEqualTo(STRAT_ID_2);
-        assertThat(strategiesReloaded.getStrategies().get(1).getLabel()).isEqualTo(STRAT_LABEL_2);
+        assertThat(strategiesReloaded.getStrategies().get(1).getName()).isEqualTo(STRAT_NAME_2);
         assertThat(strategiesReloaded.getStrategies().get(1).getDescription()).isEqualTo(STRAT_DESCRIPTION_2);
         assertThat(strategiesReloaded.getStrategies().get(1).getClassName()).isEqualTo(STRAT_CLASSNAME_2);
 
-        assertThat(strategiesReloaded.getStrategies().get(1).getConfiguration().getConfigItem().get(0).getName())
+        assertThat(strategiesReloaded.getStrategies().get(1).getOptionalConfig().getConfigItem().get(0).getName())
                 .isEqualTo(BUY_PRICE_CONFIG_ITEM_KEY);
-        assertThat(strategiesReloaded.getStrategies().get(1).getConfiguration().getConfigItem().get(0).getValue())
+        assertThat(strategiesReloaded.getStrategies().get(1).getOptionalConfig().getConfigItem().get(0).getValue())
                 .isEqualTo(BUY_PRICE_CONFIG_ITEM_VALUE);
-        assertThat(strategiesReloaded.getStrategies().get(1).getConfiguration().getConfigItem().get(1).getName())
+        assertThat(strategiesReloaded.getStrategies().get(1).getOptionalConfig().getConfigItem().get(1).getName())
                 .isEqualTo(AMOUNT_TO_BUY_CONFIG_ITEM_KEY);
-        assertThat(strategiesReloaded.getStrategies().get(1).getConfiguration().getConfigItem().get(1).getValue())
+        assertThat(strategiesReloaded.getStrategies().get(1).getOptionalConfig().getConfigItem().get(1).getValue())
                 .isEqualTo(AMOUNT_TO_BUY_CONFIG_ITEM_VALUE);
 
         // cleanup

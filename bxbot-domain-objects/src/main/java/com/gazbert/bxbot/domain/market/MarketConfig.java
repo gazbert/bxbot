@@ -33,33 +33,34 @@ import com.google.common.base.Objects;
  */
 public class MarketConfig {
 
-    private String label;
     private String id;
+    private String name;
     private String baseCurrency;
     private String counterCurrency;
     private boolean enabled;
-    private String tradingStrategy; // TODO might change this to ref to StrategyConfig ...
+    private String tradingStrategyId; // TODO might change this to ref to StrategyConfig ...
 
 
     // required for Jackson
     public MarketConfig() {
     }
 
-    public MarketConfig(String label, String id, String baseCurrency, String counterCurrency, boolean enabled, String tradingStrategy) {
-        this.label = label;
+    public MarketConfig(MarketConfig other) {
+        this.id = other.id;
+        this.name = other.name;
+        this.baseCurrency = other.baseCurrency;
+        this.counterCurrency = other.counterCurrency;
+        this.enabled = other.enabled;
+        this.tradingStrategyId = other.tradingStrategyId;
+    }
+
+    public MarketConfig(String id, String name, String baseCurrency, String counterCurrency, boolean enabled, String tradingStrategyId) {
         this.id = id;
+        this.name = name;
         this.baseCurrency = baseCurrency;
         this.counterCurrency = counterCurrency;
         this.enabled = enabled;
-        this.tradingStrategy = tradingStrategy;
-    }
-
-    public String getLabel() {
-        return label;
-    }
-
-    public void setLabel(String label) {
-        this.label = label;
+        this.tradingStrategyId = tradingStrategyId;
     }
 
     public String getId() {
@@ -68,6 +69,14 @@ public class MarketConfig {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getBaseCurrency() {
@@ -94,12 +103,12 @@ public class MarketConfig {
         this.enabled = enabled;
     }
 
-    public String getTradingStrategy() {
-        return tradingStrategy;
+    public String getTradingStrategyId() {
+        return tradingStrategyId;
     }
 
-    public void setTradingStrategy(String tradingStrategy) {
-        this.tradingStrategy = tradingStrategy;
+    public void setTradingStrategyId(String tradingStrategyId) {
+        this.tradingStrategyId = tradingStrategyId;
     }
 
     @Override
@@ -118,12 +127,12 @@ public class MarketConfig {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("label", label)
                 .add("id", id)
+                .add("name", name)
                 .add("baseCurrency", baseCurrency)
                 .add("counterCurrency", counterCurrency)
                 .add("enabled", enabled)
-                .add("tradingStrategy", tradingStrategy)
+                .add("tradingStrategyId", tradingStrategyId)
                 .toString();
     }
 }

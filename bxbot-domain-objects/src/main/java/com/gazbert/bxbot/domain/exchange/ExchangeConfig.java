@@ -37,7 +37,7 @@ public class ExchangeConfig {
     private AuthenticationConfig authenticationConfig;
 
     private NetworkConfig networkConfig;
-    private OtherConfig otherConfig;
+    private OptionalConfig optionalConfig;
 
 
     public String getExchangeName() {
@@ -72,12 +72,12 @@ public class ExchangeConfig {
         return networkConfig;
     }
 
-    public OtherConfig getOtherConfig() {
-        return otherConfig;
+    public OptionalConfig getOptionalConfig() {
+        return optionalConfig;
     }
 
-    public void setOtherConfig(OtherConfig otherConfig) {
-        this.otherConfig = otherConfig;
+    public void setOptionalConfig(OptionalConfig optionalConfig) {
+        this.optionalConfig = optionalConfig;
     }
 
     @Override
@@ -88,7 +88,7 @@ public class ExchangeConfig {
                 // WARNING - careful showing this!
                 //.add("authenticationConfig", authenticationConfig)
                 .add("networkConfig", networkConfig)
-                .add("otherConfig", otherConfig)
+                .add("optionalConfig", optionalConfig)
                 .toString();
     }
 }
