@@ -57,7 +57,6 @@ public class EngineConfigController {
 
     @Autowired
     public EngineConfigController(EngineConfigService engineConfigService) {
-        Assert.notNull(engineConfigService, "engineConfigService dependency cannot be null!");
         this.engineConfigService = engineConfigService;
     }
 

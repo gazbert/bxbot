@@ -56,7 +56,6 @@ public class ExchangeConfigController {
     private final ExchangeConfigService exchangeConfigService;
 
     public ExchangeConfigController(ExchangeConfigService exchangeConfigService) {
-        Assert.notNull(exchangeConfigService, "exchangeConfigService dependency cannot be null!");
         this.exchangeConfigService = exchangeConfigService;
     }
 

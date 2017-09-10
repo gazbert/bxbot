@@ -52,7 +52,6 @@ public class MarketConfigController {
 
     @Autowired
     public MarketConfigController(MarketConfigService marketConfigService) {
-        Assert.notNull(marketConfigService, "marketConfigService dependency cannot be null!");
         this.marketConfigService = marketConfigService;
     }
 

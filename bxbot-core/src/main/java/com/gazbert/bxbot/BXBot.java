@@ -42,7 +42,6 @@ public class BXBot implements CommandLineRunner {
 
     @Autowired
     public BXBot(TradingEngine tradingEngine) {
-        Assert.notNull(tradingEngine, "tradingEngine dependency cannot be null!");
         this.tradingEngine = tradingEngine;
     }
 
