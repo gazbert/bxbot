@@ -48,9 +48,6 @@
         <spring-tx.version>4.3.10.RELEASE</spring-tx.version>
         <powermock.version>1.7.0</powermock.version>
         <spring-boot-starter.version>1.5.6.RELEASE</spring-boot-starter.version>
-
-        <jacoco.version>0.7.9</jacoco.version>
-        <findbugs-maven-plugin.version>3.0.4</findbugs-maven-plugin.version>
     </properties>
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -85,77 +82,6 @@
                 <skip.unit.tests>false</skip.unit.tests>
             </properties>
         </profile>
-        <profile>
-            <id>findbugs</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>findbugs-maven-plugin</artifactId>
-                        <version>${findbugs-maven-plugin.version}</version>
-                        <configuration>
-                            <excludeFilterFile>${basedir}/etc/findbugs-exclude-filter.xml</excludeFilterFile>
-                            <xmlOutput>true</xmlOutput>
-                            <!-- Optional directory to put findbugs xdoc xml report -->
-                            <xmlOutputDirectory>target/site</xmlOutputDirectory>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <phase>compile</phase>
-                                <goals>
-                                    <goal>check</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <profile>
-            <id>jacoco</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.jacoco</groupId>
-                        <artifactId>jacoco-maven-plugin</artifactId>
-                        <version>${jacoco.version}</version>
-                        <executions>
-                            <execution>
-                                <id>prepare-agent</id>
-                                <goals>
-                                    <goal>prepare-agent</goal>
-                                </goals>
-                            </execution>
-                            <execution>
-                                <id>report</id>
-                                <phase>prepare-package</phase>
-                                <goals>
-                                    <goal>report</goal>
-                                </goals>
-                            </execution>
-                            <execution>
-                                <id>post-unit-test</id>
-                                <phase>test</phase>
-                                <goals>
-                                    <goal>report</goal>
-                                </goals>
-                                <configuration>
-                                    <!-- Sets the path to the file which contains the execution data. -->
-
-                                    <dataFile>target/jacoco.exec</dataFile>
-                                    <!-- Sets the output directory for the code coverage report. -->
-                                    <outputDirectory>target/jacoco-ut</outputDirectory>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-
     </profiles>
     <modules>
         <module>bxbot-trading-api</module>
@@ -381,13 +307,4 @@
             </plugins>
         </pluginManagement>
     </build>
-    <reporting>
-        <plugins>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>findbugs-maven-plugin</artifactId>
-                <version>3.0.5</version>
-            </plugin>
-        </plugins>
-    </reporting>
 </project>
