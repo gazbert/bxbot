@@ -82,6 +82,35 @@
                 <skip.unit.tests>false</skip.unit.tests>
             </properties>
         </profile>
+        <profile>
+            <id>findbugs</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>findbugs-maven-plugin</artifactId>
+                        <version>3.0.4</version>
+                        <configuration>
+                            <excludeFilterFile>etc/findbugs-exclude-filter.xml</excludeFilterFile>
+                            <xmlOutput>true</xmlOutput>
+                            <!-- Optional directory to put findbugs xdoc xml report -->
+                            <xmlOutputDirectory>target/site</xmlOutputDirectory>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <phase>compile</phase>
+                                <goals>
+                                    <goal>check</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
     </profiles>
     <modules>
         <module>bxbot-trading-api</module>
@@ -307,4 +336,13 @@
             </plugins>
         </pluginManagement>
     </build>
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>findbugs-maven-plugin</artifactId>
+                <version>3.0.5</version>
+            </plugin>
+        </plugins>
+    </reporting>
 </project>
