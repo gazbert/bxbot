@@ -53,7 +53,7 @@ public interface TradingStrategy {
      * Called by the Trading Engine during each trade cycle.
      * </p>
      * <p>
-     * Here, you can make some trades, cancel some, go for a beer... do whatever you want.
+     * Here, you can create some orders, cancel some, buy some beer... do whatever you want.
      * </p>
      *
      * @throws StrategyException if something goes bad. Trading Strategy implementations should throw this exception
