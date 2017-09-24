@@ -58,7 +58,6 @@ public class EmailAlertsConfigController {
 
     @Autowired
     public EmailAlertsConfigController(EmailAlertsConfigService emailAlertsConfigService) {
-        Assert.notNull(emailAlertsConfigService, "emailAlertsConfigService dependency cannot be null!");
         this.emailAlertsConfigService = emailAlertsConfigService;
     }
 

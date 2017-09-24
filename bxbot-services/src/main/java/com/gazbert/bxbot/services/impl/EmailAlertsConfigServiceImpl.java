@@ -50,7 +50,6 @@ public class EmailAlertsConfigServiceImpl implements EmailAlertsConfigService {
 
     @Autowired
     public EmailAlertsConfigServiceImpl(EmailAlertsConfigRepository emailAlertsConfigRepository) {
-        Assert.notNull(emailAlertsConfigRepository, "emailAlertsConfigRepository dependency cannot be null!");
         this.emailAlertsConfigRepository = emailAlertsConfigRepository;
     }
 

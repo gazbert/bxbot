@@ -53,7 +53,6 @@ public class MarketConfigServiceImpl implements MarketConfigService {
 
     @Autowired
     public MarketConfigServiceImpl(MarketConfigRepository marketConfigRepository) {
-        Assert.notNull(marketConfigRepository, "marketConfigRepository dependency cannot be null!");
         this.marketConfigRepository = marketConfigRepository;
     }
 
