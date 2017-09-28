@@ -1,6 +1,7 @@
 # BX-bot
 
-[![Build Status](https://travis-ci.org/gazbert/bxbot.svg?branch=master)](https://travis-ci.org/gazbert/bxbot)		 	 
+[![Build Status](https://travis-ci.org/gazbert/bxbot.svg?branch=master)](https://travis-ci.org/gazbert/bxbot)
+[![Join the chat at https://gitter.im/BX-bot/Lobby](https://badges.gitter.im/BX-bot/Lobby.svg)](https://gitter.im/BX-bot/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)		 	 
  
 ## What is BX-bot?
 
@@ -156,6 +157,8 @@ Issues and new features are managed using the project [Issue Tracker](https://gi
 submit bugs here.
  
 You are welcome to take on new features or fix bugs! See [here](CONTRIBUTING.md) for how to get involved. 
+
+There's also a channel on [Gitter](https://gitter.im/BX-bot/Lobby) for all things BX-bot :-) 
 
 ## Testing
 The bot has undergone basic unit testing on a _best-effort_ basis. 
