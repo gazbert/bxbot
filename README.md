@@ -11,7 +11,8 @@ BX-bot (_Bex_) is a simple [Bitcoin](https://bitcoin.org) trading bot written in
 [exchanges](https://bitcoinwisdom.com/).
 
 The project contains the basic infrastructure to trade on a [cryptocurrency](http://coinmarketcap.com/) exchange...
-except for the trading strategies - you'll need to write those yourself! A simple [example]((./bxbot-strategies/src/main/java/com/gazbert/bxbot/strategies/ExampleScalpingStrategy.java))
+except for the trading strategies - you'll need to write those yourself! A simple 
+[example](./bxbot-strategies/src/main/java/com/gazbert/bxbot/strategies/ExampleScalpingStrategy.java) of a 
 [scalping](http://www.investopedia.com/articles/trading/02/081902.asp) strategy is included to get you started with the
 Trading API - take a look [here](http://www.investopedia.com/articles/active-trading/101014/basics-algorithmic-trading-concepts-and-examples.asp)
 for more ideas.
