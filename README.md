@@ -179,6 +179,7 @@ The best place to start is with the
 [`ExampleScalpingStrategy`](./bxbot-strategies/src/main/java/com/gazbert/bxbot/strategies/ExampleScalpingStrategy.java) -
 more ideas can be found
 [here](http://www.investopedia.com/articles/active-trading/101014/basics-algorithmic-trading-concepts-and-examples.asp).
+There is also a Trading Strategy specific channel on [Gitter](https://gitter.im/BX-bot/trading-strategies).
 
 Your strategy must implement the [`TradingStrategy`](./bxbot-strategy-api/src/main/java/com/gazbert/bxbot/strategy/api/TradingStrategy.java)
 interface. This allows the Trading Engine to:
@@ -231,7 +232,7 @@ _"I was seldom able to see an opportunity until it had ceased to be one."_ - Mar
 
 The best place to start is with one of the inbuilt Exchange Adapters - see the latest 
 [`BitstampExchangeAdapter`](./bxbot-exchanges/src/main/java/com/gazbert/bxbot/exchanges/BitstampExchangeAdapter.java)
-for example.
+for example. There is also an Exchange Adapter specific channel on [Gitter](https://gitter.im/BX-bot/exchange-adapters).
 
 Your adapter must implement the [`TradingApi`](./bxbot-trading-api/src/main/java/com/gazbert/bxbot/trading/api/TradingApi.java)
 and the [`ExchangeAdapter`](./bxbot-exchange-api/src/main/java/com/gazbert/bxbot/exchange/api/ExchangeAdapter.java)
