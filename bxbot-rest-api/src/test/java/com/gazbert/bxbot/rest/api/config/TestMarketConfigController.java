@@ -52,6 +52,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /**
  * Tests the Market config controller behaviour.
  *
+ * * TODO - verify mocks called
+ *
  * @author gazbert
  */
 @RunWith(SpringRunner.class)

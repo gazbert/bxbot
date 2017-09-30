@@ -121,6 +121,8 @@ public class StrategyConfigController {
     /**
      * Creates a new Strategy configuration.
      *
+     * TODO - get rid of strategyId param - this will be generated in the repository!
+     *
      * @param user       the authenticated user.
      * @param strategyId id of the Strategy config to create.
      * @param config     the new Strategy config.
@@ -151,7 +153,7 @@ public class StrategyConfigController {
      *
      * @param user       the authenticated user.
      * @param strategyId the id of the Strategy configuration to delete.
-     * @return 204 'No Content' HTTP status code if update successful, 404 'Not Found' HTTP status code if
+     * @return 204 'No Content' HTTP status code if delete successful, 404 'Not Found' HTTP status code if
      *         Strategy config not found.
      */
     @RequestMapping(value = "/strategies/{strategyId}", method = RequestMethod.DELETE)

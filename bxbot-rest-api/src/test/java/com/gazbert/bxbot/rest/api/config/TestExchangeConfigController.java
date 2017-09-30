@@ -56,6 +56,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /**
  * Tests the Exchange config controller behaviour.
  *
+ * TODO - verify mocks called
+ *
  * @author gazbert
  */
 @RunWith(SpringRunner.class)

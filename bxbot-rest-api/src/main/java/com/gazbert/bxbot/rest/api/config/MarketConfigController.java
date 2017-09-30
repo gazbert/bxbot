@@ -121,6 +121,8 @@ public class MarketConfigController {
     /**
      * Creates a new Market configuration.
      *
+     * * TODO - get rid of marketId param - this will be generated in the repository!
+     *
      * @param user     the authenticated user.
      * @param marketId id of the Market config to create.
      * @param config   the new Market config.
