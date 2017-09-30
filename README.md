@@ -160,7 +160,7 @@ submit bugs here.
  
 You are welcome to take on new features or fix bugs! See [here](CONTRIBUTING.md) for how to get involved. 
 
-There's also a channel on [Gitter](https://gitter.im/BX-bot/Lobby) for all things BX-bot :-) 
+For help and general questions about BX-bot, check out the [Gitter](https://gitter.im/BX-bot/Lobby) channel.
 
 ## Testing
 The bot has undergone basic unit testing on a _best-effort_ basis. 
