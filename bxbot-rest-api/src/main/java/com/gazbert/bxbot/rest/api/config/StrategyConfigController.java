@@ -32,7 +32,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
-import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -45,7 +44,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/api/config")
-public class StrategyConfigController {
+public class StrategyConfigController extends AbstractController {
 
     private static final Logger LOG = LogManager.getLogger();
     private final StrategyConfigService strategyConfigService;
@@ -85,11 +84,9 @@ public class StrategyConfigController {
         LOG.info("GET /strategies/" + strategyId + " - getStrategy() - caller: " + user.getUsername());
 
         final StrategyConfig strategyConfig = strategyConfigService.getStrategyConfig(strategyId);
-        LOG.info("Response: " + strategyConfig);
-
-        return strategyConfig.getId() != null
-                ? new ResponseEntity<>(strategyConfig, null, HttpStatus.OK)
-                : new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        return strategyConfig == null
+                ? new ResponseEntity<>(HttpStatus.NOT_FOUND)
+                : buildResponseEntity(strategyConfig, HttpStatus.OK);
     }
 
     /**
@@ -99,53 +96,43 @@ public class StrategyConfigController {
      * @param strategyId id of the Strategy config to update.
      * @param config     the updated Strategy config.
      * @return 200 'OK' HTTP status code and updated Strategy config in the body if update successful,
-     *         404 'Not Found' HTTP status code if Strategy config not found.
+     * 404 'Not Found' HTTP status code if Strategy config not found.
      */
     @RequestMapping(value = "/strategies/{strategyId}", method = RequestMethod.PUT)
     public ResponseEntity<?> updateStrategy(@AuthenticationPrincipal User user, @PathVariable String strategyId,
-                                     @RequestBody StrategyConfig config) {
+                                            @RequestBody StrategyConfig config) {
 
         LOG.info("PUT /strategies/" + strategyId + " - updateStrategy() - caller: " + user.getUsername());
         LOG.info("Request: " + config);
 
-        if (config == null || config.getId() == null || !strategyId.equals(config.getId())) {
+        if (config.getId() == null || !strategyId.equals(config.getId())) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
         final StrategyConfig updatedConfig = strategyConfigService.updateStrategyConfig(config);
-        return updatedConfig.getId() != null
-                ? new ResponseEntity<>(updatedConfig, HttpStatus.OK)
-                : new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        return updatedConfig == null
+                ? new ResponseEntity<>(HttpStatus.NOT_FOUND)
+                : buildResponseEntity(updatedConfig, HttpStatus.OK);
     }
 
     /**
      * Creates a new Strategy configuration.
      *
-     * TODO - get rid of strategyId param - this will be generated in the repository!
-     *
-     * @param user       the authenticated user.
-     * @param strategyId id of the Strategy config to create.
-     * @param config     the new Strategy config.
+     * @param user   the authenticated user.
+     * @param config the new Strategy config.
      * @return 201 'Created' HTTP status code and created Strategy config in response body if create successful,
-     *         409 'Conflict' HTTP status code if Strategy config already exists.
+     * some other status code otherwise.
      */
-    @RequestMapping(value = "/strategies/{strategyId}", method = RequestMethod.POST)
-    public ResponseEntity<?> createStrategy(@AuthenticationPrincipal User user, @PathVariable String strategyId,
-                                     @RequestBody StrategyConfig config) {
+    @RequestMapping(value = "/strategies", method = RequestMethod.POST)
+    public ResponseEntity<?> createStrategy(@AuthenticationPrincipal User user, @RequestBody StrategyConfig config) {
 
-        LOG.info("POST /strategies/" + strategyId + " - createStrategy() - caller: " + user.getUsername());
+        LOG.info("POST /strategies - createStrategy() - caller: " + user.getUsername());
         LOG.info("Request: " + config);
 
-        if (config == null || config.getId() == null || !strategyId.equals(config.getId())) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-
         final StrategyConfig createdConfig = strategyConfigService.createStrategyConfig(config);
-        if (createdConfig.getId() != null) {
-            return new ResponseEntity<>(createdConfig, HttpStatus.CREATED);
-        } else {
-            return new ResponseEntity<>(HttpStatus.CONFLICT);
-        }
+        return createdConfig == null
+                ? new ResponseEntity<>(HttpStatus.BAD_REQUEST)
+                : buildResponseEntity(createdConfig, HttpStatus.CREATED);
     }
 
     /**
@@ -154,7 +141,7 @@ public class StrategyConfigController {
      * @param user       the authenticated user.
      * @param strategyId the id of the Strategy configuration to delete.
      * @return 204 'No Content' HTTP status code if delete successful, 404 'Not Found' HTTP status code if
-     *         Strategy config not found.
+     * Strategy config not found.
      */
     @RequestMapping(value = "/strategies/{strategyId}", method = RequestMethod.DELETE)
     public ResponseEntity<?> deleteStrategy(@AuthenticationPrincipal User user, @PathVariable String strategyId) {
@@ -162,9 +149,9 @@ public class StrategyConfigController {
         LOG.info("DELETE /strategies/" + strategyId + " - deleteStrategy() - caller: " + user.getUsername());
 
         final StrategyConfig deletedConfig = strategyConfigService.deleteStrategyConfig(strategyId);
-        return deletedConfig.getId() != null
-                ? new ResponseEntity<>(HttpStatus.NO_CONTENT)
-                : new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        return deletedConfig == null
+                ? new ResponseEntity<>(HttpStatus.NOT_FOUND)
+                : new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
 

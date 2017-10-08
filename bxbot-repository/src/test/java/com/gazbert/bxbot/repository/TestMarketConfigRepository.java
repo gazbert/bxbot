@@ -141,7 +141,7 @@ public class TestMarketConfigRepository {
     }
 
     @Test
-    public void whenFindByIdCalledWithUnknownIdThenReturnEmptyMarketConfig() throws Exception {
+    public void whenFindByIdCalledWithUnknownIdThenReturnNullMarketConfig() throws Exception {
 
         expect(ConfigurationManager.loadConfig(
                 eq(MarketsType.class),
@@ -154,13 +154,7 @@ public class TestMarketConfigRepository {
         final MarketConfigRepository marketConfigRepository = new MarketConfigRepositoryXmlDatastore();
         final MarketConfig marketConfig = marketConfigRepository.findById(UNKNOWN_MARKET_ID);
 
-        assertThat(marketConfig.getId()).isNull();
-        assertThat(marketConfig.getName()).isNull();
-        assertThat(marketConfig.isEnabled()).isFalse();
-        assertThat(marketConfig.getBaseCurrency()).isNull();
-        assertThat(marketConfig.getCounterCurrency()).isNull();
-        assertThat(marketConfig.getTradingStrategyId()).isNull();
-
+        assertThat(marketConfig).isNull();
         PowerMock.verifyAll();
     }
 
@@ -213,13 +207,7 @@ public class TestMarketConfigRepository {
         final MarketConfigRepository marketConfigRepository = new MarketConfigRepositoryXmlDatastore();
         final MarketConfig marketConfig = marketConfigRepository.save(someExternalMarketConfigWithUnknownId());
 
-        assertThat(marketConfig.getId()).isEqualTo(null);
-        assertThat(marketConfig.getName()).isEqualTo(null);
-        assertThat(marketConfig.getBaseCurrency()).isEqualTo(null);
-        assertThat(marketConfig.getCounterCurrency()).isEqualTo(null);
-        assertThat(marketConfig.getTradingStrategyId()).isEqualTo(null);
-        assertThat(marketConfig.isEnabled()).isFalse();
-
+        assertThat(marketConfig).isEqualTo(null);
         PowerMock.verifyAll();
     }
 
@@ -304,13 +292,7 @@ public class TestMarketConfigRepository {
         final MarketConfigRepository marketConfigRepository = new MarketConfigRepositoryXmlDatastore();
         final MarketConfig marketConfig = marketConfigRepository.delete(UNKNOWN_MARKET_ID);
 
-        assertThat(marketConfig.getId()).isNull();
-        assertThat(marketConfig.getName()).isNull();
-        assertThat(marketConfig.isEnabled()).isFalse();
-        assertThat(marketConfig.getBaseCurrency()).isNull();
-        assertThat(marketConfig.getCounterCurrency()).isNull();
-        assertThat(marketConfig.getTradingStrategyId()).isNull();
-
+        assertThat(marketConfig).isNull();
         PowerMock.verifyAll();
     }
 

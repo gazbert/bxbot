@@ -25,7 +25,6 @@ package com.gazbert.bxbot.rest.api.config;
 
 import com.gazbert.bxbot.core.engine.TradingEngine;
 import com.gazbert.bxbot.core.mail.EmailAlerter;
-import com.gazbert.bxbot.domain.exchange.AuthenticationConfig;
 import com.gazbert.bxbot.domain.exchange.ExchangeConfig;
 import com.gazbert.bxbot.domain.exchange.NetworkConfig;
 import com.gazbert.bxbot.domain.exchange.OptionalConfig;
@@ -45,8 +44,10 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -56,7 +57,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /**
  * Tests the Exchange config controller behaviour.
  *
- * TODO - verify mocks called
+ * TODO - fix update test
  *
  * @author gazbert
  */
@@ -65,7 +66,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebAppConfiguration
 public class TestExchangeConfigController extends AbstractConfigControllerTest {
 
-    // Canned test data
     private static final String EXCHANGE_NAME = "Bitstamp";
     private static final String EXCHANGE_ADAPTER = "com.gazbert.bxbot.exchanges.TestExchangeAdapter";
 
@@ -129,6 +129,8 @@ public class TestExchangeConfigController extends AbstractConfigControllerTest {
 
                 .andExpect(jsonPath("$.optionalConfig.items.buy-fee").value(BUY_FEE_CONFIG_ITEM_VALUE))
                 .andExpect(jsonPath("$.optionalConfig.items.sell-fee").value(SELL_FEE_CONFIG_ITEM_VALUE));
+
+        verify(exchangeConfigService, times(1)).getExchangeConfig();
     }
 
     @Test
@@ -163,6 +165,9 @@ public class TestExchangeConfigController extends AbstractConfigControllerTest {
 
         // FIXME - response body is empty?!
 //        assertEquals(jsonify(someExchangeConfig()), result.getResponse().getContentAsString());
+
+        verify(exchangeConfigService, times(1)).getExchangeConfig();
+        verify(exchangeConfigService, times(1)).updateExchangeConfig(any());
     }
 
     @Test

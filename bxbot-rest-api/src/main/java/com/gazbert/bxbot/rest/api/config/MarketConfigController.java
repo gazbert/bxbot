@@ -32,7 +32,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
-import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -45,7 +44,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/api/config")
-public class MarketConfigController {
+public class MarketConfigController extends AbstractController {
 
     private static final Logger LOG = LogManager.getLogger();
     private final MarketConfigService marketConfigService;
@@ -68,7 +67,6 @@ public class MarketConfigController {
 
         final List<MarketConfig> marketConfigs = marketConfigService.getAllMarketConfig();
         LOG.info("Response: " + marketConfigs);
-
         return marketConfigs;
     }
 
@@ -85,11 +83,9 @@ public class MarketConfigController {
         LOG.info("GET /markets/" + marketId + " - getMarket() - caller: " + user.getUsername());
 
         final MarketConfig marketConfig = marketConfigService.getMarketConfig(marketId);
-        LOG.info("Response: " + marketConfig);
-
-        return marketConfig.getId() != null
-                ? new ResponseEntity<>(marketConfig, null, HttpStatus.OK)
-                : new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        return marketConfig == null
+                ? new ResponseEntity<>(HttpStatus.NOT_FOUND)
+                : buildResponseEntity(marketConfig, HttpStatus.OK);
     }
 
     /**
@@ -99,7 +95,7 @@ public class MarketConfigController {
      * @param marketId id of the Market config to update.
      * @param config   the updated Market config.
      * @return 204 'No Content' HTTP status code if update successful, 404 'Not Found' HTTP status code if
-     *         Market config not found.
+     * Market config not found.
      */
     @RequestMapping(value = "/markets/{marketId}", method = RequestMethod.PUT)
     public ResponseEntity<?> updateMarket(@AuthenticationPrincipal User user, @PathVariable String marketId,
@@ -108,44 +104,34 @@ public class MarketConfigController {
         LOG.info("PUT /markets/" + marketId + " - updateMarket() - caller: " + user.getUsername());
         LOG.info("Request: " + config);
 
-        if (config == null || config.getId() == null || !marketId.equals(config.getId())) {
+        if (config.getId() == null || !marketId.equals(config.getId())) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
         final MarketConfig updatedConfig = marketConfigService.updateMarketConfig(config);
-        return updatedConfig.getId() != null
-                ? new ResponseEntity<>(updatedConfig, HttpStatus.OK)
-                : new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        return updatedConfig == null
+                ? new ResponseEntity<>(HttpStatus.NOT_FOUND)
+                : buildResponseEntity(updatedConfig, HttpStatus.OK);
     }
 
     /**
      * Creates a new Market configuration.
      *
-     * * TODO - get rid of marketId param - this will be generated in the repository!
-     *
-     * @param user     the authenticated user.
-     * @param marketId id of the Market config to create.
-     * @param config   the new Market config.
+     * @param user   the authenticated user.
+     * @param config the new Market config.
      * @return 201 'Created' HTTP status code and created Market config in response body if create successful,
-     *         409 'Conflict' HTTP status code if Market config already exists.
+     * some other HTTP status code otherwise.
      */
     @RequestMapping(value = "/markets/{marketId}", method = RequestMethod.POST)
-    public ResponseEntity<?> createMarket(@AuthenticationPrincipal User user, @PathVariable String marketId,
-                                          @RequestBody MarketConfig config) {
+    public ResponseEntity<?> createMarket(@AuthenticationPrincipal User user, @RequestBody MarketConfig config) {
 
-        LOG.info("POST /markets/" + marketId + " - save() - caller: " + user.getUsername());
+        LOG.info("POST /markets - createMarket() - caller: " + user.getUsername());
         LOG.info("Request: " + config);
 
-        if (config == null || config.getId() == null || !marketId.equals(config.getId())) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-
         final MarketConfig createdConfig = marketConfigService.createMarketConfig(config);
-        if (createdConfig.getId() != null) {
-            return new ResponseEntity<>(createdConfig, HttpStatus.CREATED);
-        } else {
-            return new ResponseEntity<>(HttpStatus.CONFLICT);
-        }
+        return createdConfig == null
+                ? new ResponseEntity<>(HttpStatus.BAD_REQUEST)
+                : buildResponseEntity(createdConfig, HttpStatus.CREATED);
     }
 
     /**
@@ -153,8 +139,8 @@ public class MarketConfigController {
      *
      * @param user     the authenticated user.
      * @param marketId the id of the Market configuration to delete.
-     * @return 204 'No Content' HTTP status code if update successful, 404 'Not Found' HTTP status code if
-     *         Market config not found.
+     * @return 204 'No Content' HTTP status code if delete successful, 404 'Not Found' HTTP status code if
+     * Market config not found.
      */
     @RequestMapping(value = "/markets/{marketId}", method = RequestMethod.DELETE)
     public ResponseEntity<?> deleteMarket(@AuthenticationPrincipal User user, @PathVariable String marketId) {
@@ -162,9 +148,9 @@ public class MarketConfigController {
         LOG.info("DELETE /markets/" + marketId + " - deleteMarket() - caller: " + user.getUsername());
 
         final MarketConfig deletedConfig = marketConfigService.deleteMarketConfig(marketId);
-        return deletedConfig.getId() != null
-                ? new ResponseEntity<>(HttpStatus.NO_CONTENT)
-                : new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        return deletedConfig == null
+                ? new ResponseEntity<>(HttpStatus.NOT_FOUND)
+                : new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
 

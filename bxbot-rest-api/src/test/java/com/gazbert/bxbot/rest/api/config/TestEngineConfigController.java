@@ -41,8 +41,10 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.math.BigDecimal;
 
-import static org.junit.Assert.assertEquals;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -52,7 +54,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /**
  * Tests the Engine config controller behaviour.
  *
- *  * TODO - verify mocks called
+ * TODO - fix update test
  *
  * @author gazbert
  */
@@ -97,8 +99,9 @@ public class TestEngineConfigController extends AbstractConfigControllerTest {
                 .andExpect(jsonPath("$.botName").value(BOT_NAME))
                 .andExpect(jsonPath("$.emergencyStopCurrency").value(ENGINE_EMERGENCY_STOP_CURRENCY))
                 .andExpect(jsonPath("$.emergencyStopBalance").value(ENGINE_EMERGENCY_STOP_BALANCE.doubleValue()))
-                .andExpect(jsonPath("$.tradeCycleInterval").value(ENGINE_TRADE_CYCLE_INTERVAL)
-                );
+                .andExpect(jsonPath("$.tradeCycleInterval").value(ENGINE_TRADE_CYCLE_INTERVAL));
+
+        verify(engineConfigService, times(1)).getEngineConfig();
     }
 
     @Test
@@ -134,6 +137,8 @@ public class TestEngineConfigController extends AbstractConfigControllerTest {
 
         // FIXME - response body is empty?!
 //        assertEquals(jsonify(someEngineConfig()), result.getResponse().getContentAsString());
+
+        verify(engineConfigService, times(1)).updateEngineConfig(any());
     }
 
     @Test

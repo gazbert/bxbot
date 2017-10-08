@@ -143,7 +143,7 @@ public class MarketConfigRepositoryXmlDatastore implements MarketConfigRepositor
             } else {
                 LOG.warn("Trying to update MarketConfig but id does not exist MarketConfig: " + config +
                         " Existing MarketConfig: " + adaptAllInternalToAllExternalConfig(internalMarketsConfig));
-                return new MarketConfig();
+                return null;
             }
         }
     }
@@ -171,10 +171,10 @@ public class MarketConfigRepositoryXmlDatastore implements MarketConfigRepositor
 
             return adaptInternalToExternalConfig(Collections.singletonList(marketToRemove));
         } else {
-            // no matching id :-(
-            return new MarketConfig();
+            LOG.warn("Trying to delete MarketConfig but id does not exist. MarketConfig id: " + id
+                    + " Existing MarketConfig: " + adaptAllInternalToAllExternalConfig(internalMarketsConfig));
+            return null;
         }
-
     }
 
     // ------------------------------------------------------------------------------------------------
@@ -204,9 +204,9 @@ public class MarketConfigRepositoryXmlDatastore implements MarketConfigRepositor
 
     private static MarketConfig adaptInternalToExternalConfig(List<MarketType> internalMarketConfigItems) {
 
-        final MarketConfig marketConfig = new MarketConfig();
-
         if (!internalMarketConfigItems.isEmpty()) {
+
+            final MarketConfig marketConfig = new MarketConfig();
 
             // Should only ever be 1 unique Market id
             final MarketType internalMarketConfig = internalMarketConfigItems.get(0);
@@ -216,8 +216,10 @@ public class MarketConfigRepositoryXmlDatastore implements MarketConfigRepositor
             marketConfig.setBaseCurrency(internalMarketConfig.getBaseCurrency());
             marketConfig.setCounterCurrency(internalMarketConfig.getCounterCurrency());
             marketConfig.setTradingStrategyId(internalMarketConfig.getTradingStrategyId());
+
+            return marketConfig;
         }
-        return marketConfig;
+        return null;
     }
 
     private static MarketType adaptExternalToInternalConfig(MarketConfig externalMarketConfig) {

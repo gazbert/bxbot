@@ -51,7 +51,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/api/config")
-public class EmailAlertsConfigController {
+public class EmailAlertsConfigController extends AbstractController {
 
     private static final Logger LOG = LogManager.getLogger();
     private final EmailAlertsConfigService emailAlertsConfigService;
@@ -93,7 +93,7 @@ public class EmailAlertsConfigController {
         LOG.info("Request: " + config);
 
         final EmailAlertsConfig updatedConfig = emailAlertsConfigService.updateEmailAlertsConfig(config);
-        return new ResponseEntity<>(updatedConfig, HttpStatus.OK);
+        return buildResponseEntity(updatedConfig, HttpStatus.OK);
     }
 }
 

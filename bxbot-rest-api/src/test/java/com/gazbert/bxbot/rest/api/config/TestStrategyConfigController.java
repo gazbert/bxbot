@@ -46,6 +46,7 @@ import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -56,8 +57,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /**
  * Tests the Strategy config controller behaviour.
  *
- * TODO - verify all mocks called
- *
  * @author gazbert
  */
 @RunWith(SpringRunner.class)
@@ -65,7 +64,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebAppConfiguration
 public class TestStrategyConfigController extends AbstractConfigControllerTest {
 
-    // Canned data
     private static final String UNKNOWN_STRAT_ID = "unknown-id";
 
     private static final String STRAT_1_ID = "macd-long-position";
@@ -121,8 +119,7 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
                 .andExpect(jsonPath("$.[1].description").value(STRAT_2_DESCRIPTION))
                 .andExpect(jsonPath("$.[1].className").value(STRAT_2_CLASSNAME))
                 .andExpect(jsonPath("$.[1].configItems.buy-price").value(BUY_PRICE_CONFIG_ITEM_VALUE))
-                .andExpect(jsonPath("$.[1].configItems.buy-amount").value(AMOUNT_TO_BUY_CONFIG_ITEM_VALUE)
-                );
+                .andExpect(jsonPath("$.[1].configItems.buy-amount").value(AMOUNT_TO_BUY_CONFIG_ITEM_VALUE));
 
         verify(strategyConfigService, times(1)).getAllStrategyConfig();
     }
@@ -159,8 +156,9 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
                 .andExpect(jsonPath("$.description").value(STRAT_1_DESCRIPTION))
                 .andExpect(jsonPath("$.className").value(STRAT_1_CLASSNAME))
                 .andExpect(jsonPath("$.configItems.buy-price").value(BUY_PRICE_CONFIG_ITEM_VALUE))
-                .andExpect(jsonPath("$.configItems.buy-amount").value(AMOUNT_TO_BUY_CONFIG_ITEM_VALUE)
-                );
+                .andExpect(jsonPath("$.configItems.buy-amount").value(AMOUNT_TO_BUY_CONFIG_ITEM_VALUE));
+
+        verify(strategyConfigService, times(1)).getStrategyConfig(STRAT_1_ID);
     }
 
     @Test
@@ -183,7 +181,7 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
     @Test
     public void testGetStrategyConfigByIdWhenNotRecognized() throws Exception {
 
-        given(strategyConfigService.getStrategyConfig(UNKNOWN_STRAT_ID)).willReturn(emptyStrategyConfig());
+        given(strategyConfigService.getStrategyConfig(UNKNOWN_STRAT_ID)).willReturn(null);
 
         mockMvc.perform(get("/api/config/strategies/" + UNKNOWN_STRAT_ID)
                 .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD))
@@ -205,6 +203,7 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
                 .andReturn();
 
         assertEquals(jsonify(someStrategyConfig()), result.getResponse().getContentAsString());
+        verify(strategyConfigService, times(1)).updateStrategyConfig(any());
     }
 
     @Test
@@ -231,7 +230,7 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
     @Test
     public void testUpdateStrategyConfigWhenIdNotRecognized() throws Exception {
 
-        given(strategyConfigService.updateStrategyConfig(unrecognizedStrategyConfig())).willReturn(emptyStrategyConfig());
+        given(strategyConfigService.updateStrategyConfig(unrecognizedStrategyConfig())).willReturn(null);
 
         mockMvc.perform(put("/api/config/strategies/" + UNKNOWN_STRAT_ID)
                 .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD))
@@ -260,6 +259,8 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
         mockMvc.perform(delete("/api/config/strategies/" + STRAT_1_ID)
                 .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD)))
                 .andExpect(status().isNoContent());
+
+        verify(strategyConfigService, times(1)).deleteStrategyConfig(STRAT_1_ID);
     }
 
     @Test
@@ -282,7 +283,7 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
     @Test
     public void testDeleteStrategyConfigWhenIdNotRecognized() throws Exception {
 
-        given(strategyConfigService.deleteStrategyConfig(UNKNOWN_STRAT_ID)).willReturn(emptyStrategyConfig());
+        given(strategyConfigService.deleteStrategyConfig(UNKNOWN_STRAT_ID)).willReturn(null);
 
         mockMvc.perform(delete("/api/config/strategies/" + UNKNOWN_STRAT_ID)
                 .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD))
@@ -295,7 +296,7 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
 
         given(strategyConfigService.createStrategyConfig(someStrategyConfig())).willReturn(someStrategyConfig());
 
-        final MvcResult result = mockMvc.perform(post("/api/config/strategies/" + STRAT_1_ID)
+        final MvcResult result = mockMvc.perform(post("/api/config/strategies")
                 .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD))
                 .contentType(CONTENT_TYPE)
                 .content(jsonify(someStrategyConfig())))
@@ -304,6 +305,7 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
                 .andReturn();
 
         assertEquals(jsonify(someStrategyConfig()), result.getResponse().getContentAsString());
+        verify(strategyConfigService, times(1)).createStrategyConfig(any());
     }
 
     @Test
@@ -325,30 +327,6 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
                 .contentType(CONTENT_TYPE)
                 .content(jsonify(someStrategyConfig())))
                 .andExpect(status().isUnauthorized());
-    }
-
-    @Test
-    public void testCreateStrategyConfigWhenIdAlreadyExists() throws Exception {
-
-        given(strategyConfigService.createStrategyConfig(someStrategyConfig())).willReturn(emptyStrategyConfig());
-
-        mockMvc.perform(post("/api/config/strategies/" + STRAT_1_ID)
-                .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD))
-                .accept(MediaType.APPLICATION_JSON)
-                .contentType(CONTENT_TYPE)
-                .content(jsonify(someStrategyConfig())))
-                .andExpect(status().isConflict());
-    }
-
-    @Test
-    public void testCreateStrategyConfigWhenIdIsMissing() throws Exception {
-
-        mockMvc.perform(post("/api/config/strategies/" + STRAT_1_ID)
-                .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD))
-                .accept(MediaType.APPLICATION_JSON)
-                .contentType(CONTENT_TYPE)
-                .content(jsonify(someStrategyConfigWithMissingId())))
-                .andExpect(status().isBadRequest());
     }
 
     // ------------------------------------------------------------------------------------------------
@@ -393,9 +371,5 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
         configItems.put(BUY_PRICE_CONFIG_ITEM_KEY, BUY_PRICE_CONFIG_ITEM_VALUE);
         configItems.put(AMOUNT_TO_BUY_CONFIG_ITEM_KEY, AMOUNT_TO_BUY_CONFIG_ITEM_VALUE);
         return new StrategyConfig(UNKNOWN_STRAT_ID, STRAT_1_NAME, STRAT_1_DESCRIPTION, STRAT_1_CLASSNAME, configItems);
-    }
-
-    private static StrategyConfig emptyStrategyConfig() {
-        return new StrategyConfig();
     }
 }
