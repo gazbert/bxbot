@@ -38,7 +38,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.Arrays;
@@ -56,8 +55,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 /**
  * Tests the Exchange config controller behaviour.
- *
- * TODO - fix update test
  *
  * @author gazbert
  */
@@ -154,17 +151,30 @@ public class TestExchangeConfigController extends AbstractConfigControllerTest {
     public void testUpdateExchangeConfig() throws Exception {
 
         given(exchangeConfigService.getExchangeConfig()).willReturn(someExchangeConfig());
-        given(exchangeConfigService.updateExchangeConfig(someExchangeConfig())).willReturn(someExchangeConfig());
+        given(exchangeConfigService.updateExchangeConfig(any())).willReturn(someExchangeConfig());
 
-        final MvcResult result = mockMvc.perform(put("/api/config/exchange")
+        mockMvc.perform(put("/api/config/exchange")
                 .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD))
                 .contentType(CONTENT_TYPE)
                 .content(jsonify(someExchangeConfig())))
                 .andExpect(status().isOk())
-                .andReturn();
 
-        // FIXME - response body is empty?!
-//        assertEquals(jsonify(someExchangeConfig()), result.getResponse().getContentAsString());
+                .andExpect(jsonPath("$.exchangeName").value(EXCHANGE_NAME))
+                .andExpect(jsonPath("$.exchangeAdapter").value(EXCHANGE_ADAPTER))
+
+                // REST API does not expose AuthenticationConfig - potential security risk.
+                .andExpect(jsonPath("$.authenticationConfig").doesNotExist())
+
+                .andExpect(jsonPath("$.networkConfig.connectionTimeout").value(CONNECTION_TIMEOUT))
+                .andExpect(jsonPath("$.networkConfig.nonFatalErrorCodes[0]").value(HTTP_STATUS_502))
+                .andExpect(jsonPath("$.networkConfig.nonFatalErrorCodes[1]").value(HTTP_STATUS_503))
+                .andExpect(jsonPath("$.networkConfig.nonFatalErrorCodes[2]").value(HTTP_STATUS_504))
+                .andExpect(jsonPath("$.networkConfig.nonFatalErrorMessages[0]").value(ERROR_MESSAGE_REFUSED))
+                .andExpect(jsonPath("$.networkConfig.nonFatalErrorMessages[1]").value(ERROR_MESSAGE_RESET))
+                .andExpect(jsonPath("$.networkConfig.nonFatalErrorMessages[2]").value(ERROR_MESSAGE_CLOSED))
+
+                .andExpect(jsonPath("$.optionalConfig.items.buy-fee").value(BUY_FEE_CONFIG_ITEM_VALUE))
+                .andExpect(jsonPath("$.optionalConfig.items.sell-fee").value(SELL_FEE_CONFIG_ITEM_VALUE));
 
         verify(exchangeConfigService, times(1)).getExchangeConfig();
         verify(exchangeConfigService, times(1)).updateExchangeConfig(any());

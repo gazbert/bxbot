@@ -36,7 +36,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static org.mockito.BDDMockito.given;
@@ -51,8 +50,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 /**
  * Tests the Email Alerts config controller behaviour.
- *
- * TODO - Fix broken update test
  *
  * @author gazbert
  */
@@ -121,23 +118,22 @@ public class TestEmailAlertsConfigController extends AbstractConfigControllerTes
     @Test
     public void testUpdateEmailAlertsConfig() throws Exception {
 
-        given(emailAlertsConfigService.updateEmailAlertsConfig(someEmailAlertsConfig())).willReturn(someEmailAlertsConfig());
+        given(emailAlertsConfigService.updateEmailAlertsConfig(any())).willReturn(someEmailAlertsConfig());
 
         mockMvc.perform(put("/api/config/email-alerts")
                 .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD))
                 .contentType(CONTENT_TYPE)
                 .content(jsonify(someEmailAlertsConfig())))
                 .andDo(print())
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
 
-                // FIXME - response is broken?
-//                .andExpect(jsonPath("$.smtpConfig.host").value(HOST))
-//                .andExpect(jsonPath("$.smtpConfig.tlsPort").value(TLS_PORT))
-//                .andExpect(jsonPath("$.enabled").value(ENABLED))
-//                .andExpect(jsonPath("$.smtpConfig.fromAddress").value(FROM_ADDRESS))
-//                .andExpect(jsonPath("$.smtpConfig.toAddress").value(TO_ADDRESS))
-//                .andExpect(jsonPath("$.smtpConfig.accountUsername").value(ACCOUNT_USERNAME))
-//                .andExpect(jsonPath("$.smtpConfig.accountPassword").value(ACCOUNT_PASSWORD));
+                .andExpect(jsonPath("$.smtpConfig.host").value(HOST))
+                .andExpect(jsonPath("$.smtpConfig.tlsPort").value(TLS_PORT))
+                .andExpect(jsonPath("$.enabled").value(ENABLED))
+                .andExpect(jsonPath("$.smtpConfig.fromAddress").value(FROM_ADDRESS))
+                .andExpect(jsonPath("$.smtpConfig.toAddress").value(TO_ADDRESS))
+                .andExpect(jsonPath("$.smtpConfig.accountUsername").value(ACCOUNT_USERNAME))
+                .andExpect(jsonPath("$.smtpConfig.accountPassword").value(ACCOUNT_PASSWORD));
 
         verify(emailAlertsConfigService, times(1)).updateEmailAlertsConfig(any());
     }
