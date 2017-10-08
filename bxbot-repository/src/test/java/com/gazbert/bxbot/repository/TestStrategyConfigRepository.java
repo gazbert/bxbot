@@ -150,7 +150,7 @@ public class TestStrategyConfigRepository {
     }
 
     @Test
-    public void whenFindByIdCalledWithUnknownIdThenReturnEmptyStrategyConfig() throws Exception {
+    public void whenFindByIdCalledWithUnknownIdThenReturnNullStrategyConfig() throws Exception {
 
         expect(ConfigurationManager.loadConfig(
                 eq(TradingStrategiesType.class),
@@ -163,12 +163,7 @@ public class TestStrategyConfigRepository {
         final StrategyConfigRepository strategyConfigRepository = new StrategyConfigRepositoryXmlDatastore();
         final StrategyConfig strategyConfig = strategyConfigRepository.findById(UNKNOWN_STRAT_ID);
 
-        assertThat(strategyConfig.getId()).isEqualTo(null);
-        assertThat(strategyConfig.getName()).isEqualTo(null);
-        assertThat(strategyConfig.getDescription()).isEqualTo(null);
-        assertThat(strategyConfig.getClassName()).isEqualTo(null);
-        assertThat(strategyConfig.getConfigItems().isEmpty());
-
+        assertThat(strategyConfig).isEqualTo(null);
         PowerMock.verifyAll();
     }
 
@@ -223,12 +218,7 @@ public class TestStrategyConfigRepository {
         final StrategyConfigRepository strategyConfigRepository = new StrategyConfigRepositoryXmlDatastore();
         final StrategyConfig strategyConfig = strategyConfigRepository.save(someExternalStrategyConfigWithUnknownId());
 
-        assertThat(strategyConfig.getId()).isEqualTo(null);
-        assertThat(strategyConfig.getName()).isEqualTo(null);
-        assertThat(strategyConfig.getDescription()).isEqualTo(null);
-        assertThat(strategyConfig.getClassName()).isEqualTo(null);
-        assertThat(strategyConfig.getConfigItems().isEmpty());
-
+        assertThat(strategyConfig).isEqualTo(null);
         PowerMock.verifyAll();
     }
 
@@ -317,12 +307,7 @@ public class TestStrategyConfigRepository {
         final StrategyConfigRepository strategyConfigRepository = new StrategyConfigRepositoryXmlDatastore();
         final StrategyConfig strategyConfig = strategyConfigRepository.delete(UNKNOWN_STRAT_ID);
 
-        assertThat(strategyConfig.getId()).isEqualTo(null);
-        assertThat(strategyConfig.getName()).isEqualTo(null);
-        assertThat(strategyConfig.getDescription()).isEqualTo(null);
-        assertThat(strategyConfig.getClassName()).isEqualTo(null);
-        assertThat(strategyConfig.getConfigItems().isEmpty());
-
+        assertThat(strategyConfig).isEqualTo(null);
         PowerMock.verifyAll();
     }
 

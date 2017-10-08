@@ -143,7 +143,7 @@ public class StrategyConfigRepositoryXmlDatastore implements StrategyConfigRepos
             } else {
                 LOG.warn("Trying to update StrategyConfig but id does not exist StrategyConfig: " + config +
                         " Existing StrategyConfig: " + adaptAllInternalToAllExternalConfig(internalStrategiesConfig));
-                return new StrategyConfig();
+                return null;
             }
         }
     }
@@ -173,7 +173,7 @@ public class StrategyConfigRepositoryXmlDatastore implements StrategyConfigRepos
         } else {
             LOG.warn("Trying to delete StrategyConfig but id does not exist. StrategyConfig id: " + id
                     + " Existing StrategyConfig: " + adaptAllInternalToAllExternalConfig(internalStrategiesConfig));
-            return new StrategyConfig();
+            return null;
         }
     }
 
@@ -205,9 +205,9 @@ public class StrategyConfigRepositoryXmlDatastore implements StrategyConfigRepos
 
     private static StrategyConfig adaptInternalToExternalConfig(List<StrategyType> internalStrategyConfigItems) {
 
-        final StrategyConfig strategyConfig = new StrategyConfig();
-
         if (!internalStrategyConfigItems.isEmpty()) {
+
+            final StrategyConfig strategyConfig = new StrategyConfig();
 
             // Should only ever be 1 unique Strategy id
             final StrategyType internalStrategyConfig = internalStrategyConfigItems.get(0);
@@ -218,8 +218,10 @@ public class StrategyConfigRepositoryXmlDatastore implements StrategyConfigRepos
 
             internalStrategyConfig.getOptionalConfig().getConfigItem().forEach(internalConfigItem ->
                     strategyConfig.getConfigItems().put(internalConfigItem.getName(), internalConfigItem.getValue()));
+
+            return strategyConfig;
         }
-        return strategyConfig;
+        return null;
     }
 
     private static StrategyType adaptExternalToInternalConfig(StrategyConfig externalStrategyConfig) {

@@ -50,7 +50,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/api/config/")
-public class ExchangeConfigController {
+public class ExchangeConfigController extends AbstractController {
 
     private static final Logger LOG = LogManager.getLogger();
     private final ExchangeConfigService exchangeConfigService;
@@ -99,7 +99,7 @@ public class ExchangeConfigController {
 
         final ExchangeConfig updatedConfig = exchangeConfigService.updateExchangeConfig(
                 mergeWithLocalAuthenticationConfig(config));
-        return new ResponseEntity<>(updatedConfig, HttpStatus.OK);
+        return buildResponseEntity(updatedConfig, HttpStatus.OK);
     }
 
     // ------------------------------------------------------------------------
