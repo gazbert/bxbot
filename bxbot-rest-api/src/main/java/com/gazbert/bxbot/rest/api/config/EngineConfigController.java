@@ -50,7 +50,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/api/config")
-public class EngineConfigController {
+public class EngineConfigController extends AbstractController {
 
     private static final Logger LOG = LogManager.getLogger();
     private final EngineConfigService engineConfigService;
@@ -92,7 +92,7 @@ public class EngineConfigController {
         LOG.info("Request: " + config);
 
         final EngineConfig updatedConfig = engineConfigService.updateEngineConfig(config);
-        return new ResponseEntity<>(updatedConfig, HttpStatus.OK);
+        return buildResponseEntity(updatedConfig, HttpStatus.OK);
     }
 }
 

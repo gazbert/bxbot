@@ -36,11 +36,12 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import static org.junit.Assert.assertEquals;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -57,7 +58,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebAppConfiguration
 public class TestEmailAlertsConfigController extends AbstractConfigControllerTest {
 
-    // Canned data
     private static final boolean ENABLED = true;
     private static final String HOST = "smtp.host.deathstar.com";
     private static final int TLS_PORT = 573;
@@ -94,6 +94,8 @@ public class TestEmailAlertsConfigController extends AbstractConfigControllerTes
                 .andExpect(jsonPath("$.smtpConfig.toAddress").value(TO_ADDRESS))
                 .andExpect(jsonPath("$.smtpConfig.accountUsername").value(ACCOUNT_USERNAME))
                 .andExpect(jsonPath("$.smtpConfig.accountPassword").value(ACCOUNT_PASSWORD));
+
+        verify(emailAlertsConfigService, times(1)).getEmailAlertsConfig();
     }
 
     @Test
@@ -116,18 +118,24 @@ public class TestEmailAlertsConfigController extends AbstractConfigControllerTes
     @Test
     public void testUpdateEmailAlertsConfig() throws Exception {
 
-        given(emailAlertsConfigService.updateEmailAlertsConfig(someEmailAlertsConfig())).willReturn(someEmailAlertsConfig());
+        given(emailAlertsConfigService.updateEmailAlertsConfig(any())).willReturn(someEmailAlertsConfig());
 
-        final MvcResult result = mockMvc.perform(put("/api/config/email-alerts")
+        mockMvc.perform(put("/api/config/email-alerts")
                 .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD))
                 .contentType(CONTENT_TYPE)
                 .content(jsonify(someEmailAlertsConfig())))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andReturn();
 
-        // FIXME - response body is empty?!
-//        assertEquals(jsonify(someEmailAlertsConfig()), result.getResponse().getContentAsString());
+                .andExpect(jsonPath("$.smtpConfig.host").value(HOST))
+                .andExpect(jsonPath("$.smtpConfig.tlsPort").value(TLS_PORT))
+                .andExpect(jsonPath("$.enabled").value(ENABLED))
+                .andExpect(jsonPath("$.smtpConfig.fromAddress").value(FROM_ADDRESS))
+                .andExpect(jsonPath("$.smtpConfig.toAddress").value(TO_ADDRESS))
+                .andExpect(jsonPath("$.smtpConfig.accountUsername").value(ACCOUNT_USERNAME))
+                .andExpect(jsonPath("$.smtpConfig.accountPassword").value(ACCOUNT_PASSWORD));
+
+        verify(emailAlertsConfigService, times(1)).updateEmailAlertsConfig(any());
     }
 
     @Test

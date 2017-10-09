@@ -36,13 +36,14 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.math.BigDecimal;
 
-import static org.junit.Assert.assertEquals;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -59,7 +60,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebAppConfiguration
 public class TestEngineConfigController extends AbstractConfigControllerTest {
 
-    // Canned test data
     private static final String BOT_ID = "avro-707_1";
     private static final String BOT_NAME = "Avro 707";
     private static final String ENGINE_EMERGENCY_STOP_CURRENCY = "BTC";
@@ -95,8 +95,9 @@ public class TestEngineConfigController extends AbstractConfigControllerTest {
                 .andExpect(jsonPath("$.botName").value(BOT_NAME))
                 .andExpect(jsonPath("$.emergencyStopCurrency").value(ENGINE_EMERGENCY_STOP_CURRENCY))
                 .andExpect(jsonPath("$.emergencyStopBalance").value(ENGINE_EMERGENCY_STOP_BALANCE.doubleValue()))
-                .andExpect(jsonPath("$.tradeCycleInterval").value(ENGINE_TRADE_CYCLE_INTERVAL)
-                );
+                .andExpect(jsonPath("$.tradeCycleInterval").value(ENGINE_TRADE_CYCLE_INTERVAL));
+
+        verify(engineConfigService, times(1)).getEngineConfig();
     }
 
     @Test
@@ -120,18 +121,21 @@ public class TestEngineConfigController extends AbstractConfigControllerTest {
     @Test
     public void testUpdateEngineConfig() throws Exception {
 
-        given(engineConfigService.updateEngineConfig(someEngineConfig())).willReturn(someEngineConfig());
+        given(engineConfigService.updateEngineConfig(any())).willReturn(someEngineConfig());
 
-        final MvcResult result = mockMvc.perform(put("/api/config/engine/")
+        mockMvc.perform(put("/api/config/engine/")
                 .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD))
                 .contentType(CONTENT_TYPE)
                 .content(jsonify(someEngineConfig())))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andReturn();
+                .andExpect(jsonPath("$.botId").value(BOT_ID))
+                .andExpect(jsonPath("$.botName").value(BOT_NAME))
+                .andExpect(jsonPath("$.emergencyStopCurrency").value(ENGINE_EMERGENCY_STOP_CURRENCY))
+                .andExpect(jsonPath("$.emergencyStopBalance").value(ENGINE_EMERGENCY_STOP_BALANCE.doubleValue()))
+                .andExpect(jsonPath("$.tradeCycleInterval").value(ENGINE_TRADE_CYCLE_INTERVAL));
 
-        // FIXME - response body is empty?!
-//        assertEquals(jsonify(someEngineConfig()), result.getResponse().getContentAsString());
+        verify(engineConfigService, times(1)).updateEngineConfig(any());
     }
 
     @Test
