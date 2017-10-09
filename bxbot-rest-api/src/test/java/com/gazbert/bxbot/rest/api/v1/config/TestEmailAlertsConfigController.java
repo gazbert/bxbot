@@ -57,7 +57,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebAppConfiguration
 public class TestEmailAlertsConfigController extends AbstractConfigControllerTest {
 
-    private static final String EMAIL_ALERTS_ENDPOINT_URI = "/api/v1/config/email-alerts";
+    private static final String EMAIL_ALERTS_CONFIG_ENDPOINT_URI = "/api/v1/config/email-alerts";
 
     private static final boolean ENABLED = true;
     private static final String HOST = "smtp.host.deathstar.com";
@@ -84,7 +84,7 @@ public class TestEmailAlertsConfigController extends AbstractConfigControllerTes
 
         given(emailAlertsConfigService.getEmailAlertsConfig()).willReturn(someEmailAlertsConfig());
 
-        mockMvc.perform(get(EMAIL_ALERTS_ENDPOINT_URI)
+        mockMvc.perform(get(EMAIL_ALERTS_CONFIG_ENDPOINT_URI)
                 .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD)))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -102,7 +102,7 @@ public class TestEmailAlertsConfigController extends AbstractConfigControllerTes
     @Test
     public void testGetEmailAlertsConfigWhenUnauthorizedWithMissingCredentials() throws Exception {
 
-        mockMvc.perform(get(EMAIL_ALERTS_ENDPOINT_URI)
+        mockMvc.perform(get(EMAIL_ALERTS_CONFIG_ENDPOINT_URI)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isUnauthorized());
     }
@@ -110,7 +110,7 @@ public class TestEmailAlertsConfigController extends AbstractConfigControllerTes
     @Test
     public void testGetEmailAlertsConfigWhenUnauthorizedWithInvalidCredentials() throws Exception {
 
-        mockMvc.perform(get(EMAIL_ALERTS_ENDPOINT_URI)
+        mockMvc.perform(get(EMAIL_ALERTS_CONFIG_ENDPOINT_URI)
                 .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, INVALID_USER_PASSWORD))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isUnauthorized());
@@ -121,7 +121,7 @@ public class TestEmailAlertsConfigController extends AbstractConfigControllerTes
 
         given(emailAlertsConfigService.updateEmailAlertsConfig(any())).willReturn(someEmailAlertsConfig());
 
-        mockMvc.perform(put(EMAIL_ALERTS_ENDPOINT_URI)
+        mockMvc.perform(put(EMAIL_ALERTS_CONFIG_ENDPOINT_URI)
                 .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD))
                 .contentType(CONTENT_TYPE)
                 .content(jsonify(someEmailAlertsConfig())))
@@ -142,7 +142,7 @@ public class TestEmailAlertsConfigController extends AbstractConfigControllerTes
     @Test
     public void testUpdateEmailAlertsConfigWhenUnauthorizedWithMissingCredentials() throws Exception {
 
-        mockMvc.perform(put(EMAIL_ALERTS_ENDPOINT_URI)
+        mockMvc.perform(put(EMAIL_ALERTS_CONFIG_ENDPOINT_URI)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isUnauthorized());
     }
@@ -150,7 +150,7 @@ public class TestEmailAlertsConfigController extends AbstractConfigControllerTes
     @Test
     public void testUpdateEmailAlertsConfigWhenUnauthorizedWithInvalidCredentials() throws Exception {
 
-        mockMvc.perform(put(EMAIL_ALERTS_ENDPOINT_URI)
+        mockMvc.perform(put(EMAIL_ALERTS_CONFIG_ENDPOINT_URI)
                 .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, INVALID_USER_PASSWORD))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isUnauthorized());

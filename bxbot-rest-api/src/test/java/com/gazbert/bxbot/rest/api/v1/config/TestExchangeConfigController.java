@@ -62,7 +62,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebAppConfiguration
 public class TestExchangeConfigController extends AbstractConfigControllerTest {
 
-    private static final String EXCHANGE_ENDPOINT_URI = "/api/v1/config/exchange";
+    private static final String EXCHANGE_CONFIG_ENDPOINT_URI = "/api/v1/config/exchange";
     
     private static final String EXCHANGE_NAME = "Bitstamp";
     private static final String EXCHANGE_ADAPTER = "com.gazbert.bxbot.exchanges.TestExchangeAdapter";
@@ -106,7 +106,7 @@ public class TestExchangeConfigController extends AbstractConfigControllerTest {
 
         given(exchangeConfigService.getExchangeConfig()).willReturn(someExchangeConfig());
 
-        mockMvc.perform(get(EXCHANGE_ENDPOINT_URI)
+        mockMvc.perform(get(EXCHANGE_CONFIG_ENDPOINT_URI)
                 .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD)))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -134,7 +134,7 @@ public class TestExchangeConfigController extends AbstractConfigControllerTest {
     @Test
     public void testGetExchangeConfigWhenUnauthorizedWithMissingCredentials() throws Exception {
 
-        mockMvc.perform(get(EXCHANGE_ENDPOINT_URI)
+        mockMvc.perform(get(EXCHANGE_CONFIG_ENDPOINT_URI)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isUnauthorized());
     }
@@ -142,7 +142,7 @@ public class TestExchangeConfigController extends AbstractConfigControllerTest {
     @Test
     public void testGetExchangeConfigWhenUnauthorizedWithInvalidCredentials() throws Exception {
 
-        mockMvc.perform(get(EXCHANGE_ENDPOINT_URI)
+        mockMvc.perform(get(EXCHANGE_CONFIG_ENDPOINT_URI)
                 .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, INVALID_USER_PASSWORD))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isUnauthorized());
@@ -154,7 +154,7 @@ public class TestExchangeConfigController extends AbstractConfigControllerTest {
         given(exchangeConfigService.getExchangeConfig()).willReturn(someExchangeConfig());
         given(exchangeConfigService.updateExchangeConfig(any())).willReturn(someExchangeConfig());
 
-        mockMvc.perform(put(EXCHANGE_ENDPOINT_URI)
+        mockMvc.perform(put(EXCHANGE_CONFIG_ENDPOINT_URI)
                 .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD))
                 .contentType(CONTENT_TYPE)
                 .content(jsonify(someExchangeConfig())))
@@ -184,7 +184,7 @@ public class TestExchangeConfigController extends AbstractConfigControllerTest {
     @Test
     public void testUpdateExchangeConfigWhenUnauthorizedWithMissingCredentials() throws Exception {
 
-        mockMvc.perform(put(EXCHANGE_ENDPOINT_URI)
+        mockMvc.perform(put(EXCHANGE_CONFIG_ENDPOINT_URI)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isUnauthorized());
     }
@@ -192,7 +192,7 @@ public class TestExchangeConfigController extends AbstractConfigControllerTest {
     @Test
     public void testUpdateExchangeConfigWhenUnauthorizedWithInvalidCredentials() throws Exception {
 
-        mockMvc.perform(put(EXCHANGE_ENDPOINT_URI)
+        mockMvc.perform(put(EXCHANGE_CONFIG_ENDPOINT_URI)
                 .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, INVALID_USER_PASSWORD))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isUnauthorized());
