@@ -21,7 +21,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.rest.api.config;
+package com.gazbert.bxbot.rest.api.v1.config;
 
 import com.gazbert.bxbot.domain.market.MarketConfig;
 import com.gazbert.bxbot.services.MarketConfigService;
@@ -43,14 +43,14 @@ import java.util.List;
  * @since 1.0
  */
 @RestController
-@RequestMapping("/api/config")
-public class MarketConfigController extends AbstractController {
+@RequestMapping("/api/v1/config")
+public class MarketsConfigController extends AbstractController {
 
     private static final Logger LOG = LogManager.getLogger();
     private final MarketConfigService marketConfigService;
 
     @Autowired
-    public MarketConfigController(MarketConfigService marketConfigService) {
+    public MarketsConfigController(MarketConfigService marketConfigService) {
         this.marketConfigService = marketConfigService;
     }
 

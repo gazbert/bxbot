@@ -21,7 +21,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.rest.api.config;
+package com.gazbert.bxbot.rest.api.v1.config;
 
 import com.gazbert.bxbot.domain.strategy.StrategyConfig;
 import com.gazbert.bxbot.services.StrategyConfigService;
@@ -43,14 +43,14 @@ import java.util.List;
  * @since 1.0
  */
 @RestController
-@RequestMapping("/api/config")
-public class StrategyConfigController extends AbstractController {
+@RequestMapping("/api/v1/config")
+public class StrategiesConfigController extends AbstractController {
 
     private static final Logger LOG = LogManager.getLogger();
     private final StrategyConfigService strategyConfigService;
 
     @Autowired
-    public StrategyConfigController(StrategyConfigService strategyConfigService) {
+    public StrategiesConfigController(StrategyConfigService strategyConfigService) {
         this.strategyConfigService = strategyConfigService;
     }
 
