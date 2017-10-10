@@ -21,7 +21,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.rest.api;
+package com.gazbert.bxbot.rest.api.v1.config;
 
 import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,22 +48,22 @@ public abstract class AbstractConfigControllerTest {
     /**
      * This must match security.user.name in the src/test/resources/application.properties file.
      */
-    protected static final String VALID_USER_LOGINID = "unit-test-user";
+    static final String VALID_USER_LOGINID = "unit-test-user";
 
     /**
      * This must match a security.user.password in the src/test/resources/application.properties file.
      */
-    protected static final String VALID_USER_PASSWORD = "unit-test-password";
+    static final String VALID_USER_PASSWORD = "unit-test-password";
 
     /**
      * Used for bad credentials tests.
      */
-    protected static final String INVALID_USER_PASSWORD = "not-valid-password";
+    static final String INVALID_USER_PASSWORD = "not-valid-password";
 
     /**
      * We'll always be sending/receiving JSON content in REST API.
      */
-    protected static final MediaType CONTENT_TYPE = new MediaType(MediaType.APPLICATION_JSON.getType(),
+    static final MediaType CONTENT_TYPE = new MediaType(MediaType.APPLICATION_JSON.getType(),
             MediaType.APPLICATION_JSON.getSubtype(), Charset.forName("utf8"));
 
     /**
@@ -77,7 +77,7 @@ public abstract class AbstractConfigControllerTest {
     @Autowired
     protected FilterChainProxy springSecurityFilterChain;
 
-    protected MockMvc mockMvc;
+    MockMvc mockMvc;
 
 
     @Autowired
@@ -96,7 +96,7 @@ public abstract class AbstractConfigControllerTest {
     // Shared utils
     // ------------------------------------------------------------------------------------------------
 
-    protected String buildAuthorizationHeaderValue(String username, String password) throws Exception {
+    String buildAuthorizationHeaderValue(String username, String password) throws Exception {
         return "Basic " + new String(Base64Utils.encode(
                 (username + ":" + password).getBytes("UTF-8")), Charset.forName("UTF-8"));
     }
@@ -104,7 +104,7 @@ public abstract class AbstractConfigControllerTest {
     /*
      * Converts an object into its JSON string representation.
      */
-    protected String jsonify(Object objectToJsonify) throws IOException {
+    String jsonify(Object objectToJsonify) throws IOException {
         final MockHttpOutputMessage mockHttpOutputMessage = new MockHttpOutputMessage();
         mappingJackson2HttpMessageConverter.write(objectToJsonify, MediaType.APPLICATION_JSON, mockHttpOutputMessage);
         return mockHttpOutputMessage.getBodyAsString();

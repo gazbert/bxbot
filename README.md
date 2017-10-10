@@ -574,7 +574,7 @@ All elements are mandatory unless stated otherwise.
 * The `<smtp-config>` config is optional and only required if `<enabled>` is set to 'true'. 
   Sample SMTP config for using a Gmail account is shown above - all elements within `<smtp-config>` are mandatory. 
 
-#### Logging
+### Logging
 Logging for the bot is provided by [log4j](http://logging.apache.org/log4j). The log file is written to `logs/bxbot.log` 
 uses a rolling policy. It will create up to 7 archives on the same day (1-7) that are stored in a directory based on 
 the current year and month, and will compress each archive using gzip. Once a file reaches 100 MB or a new day is started,

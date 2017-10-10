@@ -21,12 +21,11 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.rest.api.config;
+package com.gazbert.bxbot.rest.api.v1.config;
 
 import com.gazbert.bxbot.core.engine.TradingEngine;
 import com.gazbert.bxbot.domain.emailalerts.EmailAlertsConfig;
 import com.gazbert.bxbot.domain.emailalerts.SmtpConfig;
-import com.gazbert.bxbot.rest.api.AbstractConfigControllerTest;
 import com.gazbert.bxbot.services.EmailAlertsConfigService;
 import org.junit.Before;
 import org.junit.Test;
@@ -58,6 +57,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebAppConfiguration
 public class TestEmailAlertsConfigController extends AbstractConfigControllerTest {
 
+    private static final String EMAIL_ALERTS_CONFIG_ENDPOINT_URI = "/api/v1/config/email-alerts";
+
     private static final boolean ENABLED = true;
     private static final String HOST = "smtp.host.deathstar.com";
     private static final int TLS_PORT = 573;
@@ -83,7 +84,7 @@ public class TestEmailAlertsConfigController extends AbstractConfigControllerTes
 
         given(emailAlertsConfigService.getEmailAlertsConfig()).willReturn(someEmailAlertsConfig());
 
-        mockMvc.perform(get("/api/config/email-alerts")
+        mockMvc.perform(get(EMAIL_ALERTS_CONFIG_ENDPOINT_URI)
                 .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD)))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -101,7 +102,7 @@ public class TestEmailAlertsConfigController extends AbstractConfigControllerTes
     @Test
     public void testGetEmailAlertsConfigWhenUnauthorizedWithMissingCredentials() throws Exception {
 
-        mockMvc.perform(get("/api/config/email-alerts")
+        mockMvc.perform(get(EMAIL_ALERTS_CONFIG_ENDPOINT_URI)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isUnauthorized());
     }
@@ -109,7 +110,7 @@ public class TestEmailAlertsConfigController extends AbstractConfigControllerTes
     @Test
     public void testGetEmailAlertsConfigWhenUnauthorizedWithInvalidCredentials() throws Exception {
 
-        mockMvc.perform(get("/api/config/email-alerts")
+        mockMvc.perform(get(EMAIL_ALERTS_CONFIG_ENDPOINT_URI)
                 .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, INVALID_USER_PASSWORD))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isUnauthorized());
@@ -120,7 +121,7 @@ public class TestEmailAlertsConfigController extends AbstractConfigControllerTes
 
         given(emailAlertsConfigService.updateEmailAlertsConfig(any())).willReturn(someEmailAlertsConfig());
 
-        mockMvc.perform(put("/api/config/email-alerts")
+        mockMvc.perform(put(EMAIL_ALERTS_CONFIG_ENDPOINT_URI)
                 .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD))
                 .contentType(CONTENT_TYPE)
                 .content(jsonify(someEmailAlertsConfig())))
@@ -141,7 +142,7 @@ public class TestEmailAlertsConfigController extends AbstractConfigControllerTes
     @Test
     public void testUpdateEmailAlertsConfigWhenUnauthorizedWithMissingCredentials() throws Exception {
 
-        mockMvc.perform(put("/api/config/email-alerts")
+        mockMvc.perform(put(EMAIL_ALERTS_CONFIG_ENDPOINT_URI)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isUnauthorized());
     }
@@ -149,7 +150,7 @@ public class TestEmailAlertsConfigController extends AbstractConfigControllerTes
     @Test
     public void testUpdateEmailAlertsConfigWhenUnauthorizedWithInvalidCredentials() throws Exception {
 
-        mockMvc.perform(put("/api/config/email-alerts")
+        mockMvc.perform(put(EMAIL_ALERTS_CONFIG_ENDPOINT_URI)
                 .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, INVALID_USER_PASSWORD))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isUnauthorized());

@@ -21,12 +21,11 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.rest.api.config;
+package com.gazbert.bxbot.rest.api.v1.config;
 
 import com.gazbert.bxbot.core.engine.TradingEngine;
 import com.gazbert.bxbot.core.mail.EmailAlerter;
 import com.gazbert.bxbot.domain.engine.EngineConfig;
-import com.gazbert.bxbot.rest.api.AbstractConfigControllerTest;
 import com.gazbert.bxbot.services.EngineConfigService;
 import org.junit.Before;
 import org.junit.Test;
@@ -60,6 +59,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebAppConfiguration
 public class TestEngineConfigController extends AbstractConfigControllerTest {
 
+    private static final String ENGINE_CONFIG_ENDPOINT_URI = "/api/v1/config/engine";
+    
     private static final String BOT_ID = "avro-707_1";
     private static final String BOT_NAME = "Avro 707";
     private static final String ENGINE_EMERGENCY_STOP_CURRENCY = "BTC";
@@ -87,7 +88,7 @@ public class TestEngineConfigController extends AbstractConfigControllerTest {
 
         given(engineConfigService.getEngineConfig()).willReturn(someEngineConfig());
 
-        mockMvc.perform(get("/api/config/engine")
+        mockMvc.perform(get(ENGINE_CONFIG_ENDPOINT_URI)
                 .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD)))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -103,7 +104,7 @@ public class TestEngineConfigController extends AbstractConfigControllerTest {
     @Test
     public void testGetEngineConfigWhenUnauthorizedWithBadCredentials() throws Exception {
 
-        mockMvc.perform(get("/api/config/engine")
+        mockMvc.perform(get(ENGINE_CONFIG_ENDPOINT_URI)
                 .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, INVALID_USER_PASSWORD))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isUnauthorized());
@@ -112,7 +113,7 @@ public class TestEngineConfigController extends AbstractConfigControllerTest {
     @Test
     public void testGetEngineConfigWhenUnauthorizedWithMissingCredentials() throws Exception {
 
-        mockMvc.perform(get("/api/config/engine")
+        mockMvc.perform(get(ENGINE_CONFIG_ENDPOINT_URI)
                 .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, INVALID_USER_PASSWORD))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isUnauthorized());
@@ -123,7 +124,7 @@ public class TestEngineConfigController extends AbstractConfigControllerTest {
 
         given(engineConfigService.updateEngineConfig(any())).willReturn(someEngineConfig());
 
-        mockMvc.perform(put("/api/config/engine/")
+        mockMvc.perform(put(ENGINE_CONFIG_ENDPOINT_URI)
                 .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD))
                 .contentType(CONTENT_TYPE)
                 .content(jsonify(someEngineConfig())))
@@ -141,7 +142,7 @@ public class TestEngineConfigController extends AbstractConfigControllerTest {
     @Test
     public void testUpdateEngineConfigWhenUnauthorizedWithMissingCredentials() throws Exception {
 
-        mockMvc.perform(put("/api/config/engine")
+        mockMvc.perform(put(ENGINE_CONFIG_ENDPOINT_URI)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isUnauthorized());
     }
@@ -149,7 +150,7 @@ public class TestEngineConfigController extends AbstractConfigControllerTest {
     @Test
     public void testUpdateEngineConfigWhenUnauthorizedWithInvalidCredentials() throws Exception {
 
-        mockMvc.perform(put("/api/config/engine")
+        mockMvc.perform(put(ENGINE_CONFIG_ENDPOINT_URI)
                 .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, INVALID_USER_PASSWORD))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isUnauthorized());

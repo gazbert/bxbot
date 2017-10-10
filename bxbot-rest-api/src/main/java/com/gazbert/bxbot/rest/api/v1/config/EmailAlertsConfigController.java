@@ -21,7 +21,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.rest.api.config;
+package com.gazbert.bxbot.rest.api.v1.config;
 
 import com.gazbert.bxbot.domain.emailalerts.EmailAlertsConfig;
 import com.gazbert.bxbot.services.EmailAlertsConfigService;
@@ -32,7 +32,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
-import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -50,7 +49,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @since 1.0
  */
 @RestController
-@RequestMapping("/api/config")
+@RequestMapping("/api/v1/config")
 public class EmailAlertsConfigController extends AbstractController {
 
     private static final Logger LOG = LogManager.getLogger();
