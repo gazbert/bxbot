@@ -44,13 +44,13 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/api/v1/config")
-public class MarketsConfigController extends AbstractController {
+public class MarketConfigController extends AbstractController {
 
     private static final Logger LOG = LogManager.getLogger();
     private final MarketConfigService marketConfigService;
 
     @Autowired
-    public MarketsConfigController(MarketConfigService marketConfigService) {
+    public MarketConfigController(MarketConfigService marketConfigService) {
         this.marketConfigService = marketConfigService;
     }
 

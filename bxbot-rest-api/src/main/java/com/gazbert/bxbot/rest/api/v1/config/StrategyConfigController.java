@@ -44,13 +44,13 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/api/v1/config")
-public class StrategiesConfigController extends AbstractController {
+public class StrategyConfigController extends AbstractController {
 
     private static final Logger LOG = LogManager.getLogger();
     private final StrategyConfigService strategyConfigService;
 
     @Autowired
-    public StrategiesConfigController(StrategyConfigService strategyConfigService) {
+    public StrategyConfigController(StrategyConfigService strategyConfigService) {
         this.strategyConfigService = strategyConfigService;
     }
 

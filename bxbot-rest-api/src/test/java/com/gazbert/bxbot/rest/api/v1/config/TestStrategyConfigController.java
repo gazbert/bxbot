@@ -61,7 +61,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @WebAppConfiguration
-public class TestStrategiesConfigController extends AbstractConfigControllerTest {
+public class TestStrategyConfigController extends AbstractConfigControllerTest {
 
     private static final String STRATEGIES_CONFIG_ENDPOINT_URI = "/api/v1/config/strategies/";
     

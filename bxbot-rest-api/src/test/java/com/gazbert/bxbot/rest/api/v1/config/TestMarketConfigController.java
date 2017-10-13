@@ -59,7 +59,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @WebAppConfiguration
-public class TestMarketsConfigController extends AbstractConfigControllerTest {
+public class TestMarketConfigController extends AbstractConfigControllerTest {
 
     private static final String MARKETS_CONFIG_ENDPOINT_URI = "/api/v1/config/markets/";
     
