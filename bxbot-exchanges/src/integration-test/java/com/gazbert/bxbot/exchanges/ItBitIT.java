@@ -92,6 +92,7 @@ public class ItBitIT {
         optionalConfig = PowerMock.createMock(OptionalConfig.class);
         expect(optionalConfig.getItem("buy-fee")).andReturn("0.25");
         expect(optionalConfig.getItem("sell-fee")).andReturn("0.25");
+        expect(optionalConfig.getItem("keep-alive-during-maintenance")).andReturn("false");
 
         exchangeConfig = PowerMock.createMock(ExchangeConfig.class);
         expect(exchangeConfig.getAuthenticationConfig()).andReturn(authenticationConfig);
