@@ -172,7 +172,7 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
     /**
      * Text in response indicating exchange is undergoing maintenance.
      */
-    private static final String ITBIT_UNDERGOING_MAINTENANCE_RESPONSE = "The itBit API is currently undergoing maintenance";
+    private static final String EXCHANGE_UNDERGOING_MAINTENANCE_RESPONSE = "The itBit API is currently undergoing maintenance";
 
     /**
      * Nonce used for sending authenticated messages to the exchange.
@@ -1096,7 +1096,7 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
     private static boolean isExchangeUndergoingMaintenance(ExchangeHttpResponse response) {
         if (response != null) {
             final String payload = response.getPayload();
-            if (payload != null && payload.contains(ITBIT_UNDERGOING_MAINTENANCE_RESPONSE)) {
+            if (payload != null && payload.contains(EXCHANGE_UNDERGOING_MAINTENANCE_RESPONSE)) {
                 return true;
             }
         }
