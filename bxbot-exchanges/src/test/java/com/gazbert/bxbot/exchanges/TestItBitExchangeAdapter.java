@@ -29,7 +29,6 @@ import com.gazbert.bxbot.exchange.api.NetworkConfig;
 import com.gazbert.bxbot.exchange.api.OptionalConfig;
 import com.gazbert.bxbot.trading.api.*;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.api.easymock.PowerMock;
@@ -244,7 +243,6 @@ public class TestItBitExchangeAdapter {
         PowerMock.verifyAll();
     }
 
-    @Ignore("14 Oct 2017 - tmp disable of test")
     @Test(expected = TradingApiException.class)
     public void testCreateOrderHandlesUnexpectedException() throws Exception {
 
@@ -312,7 +310,6 @@ public class TestItBitExchangeAdapter {
         PowerMock.verifyAll();
     }
 
-    @Ignore("14 Oct 2017 - tmp disable of test")
     @Test(expected = TradingApiException.class)
     public void testCancelOrderHandlesUnexpectedException() throws Exception {
 
@@ -404,7 +401,6 @@ public class TestItBitExchangeAdapter {
         PowerMock.verifyAll();
     }
 
-    @Ignore("14 Oct 2017 - tmp disable of test")
     @Test(expected = TradingApiException.class)
     public void testGettingYourOpenOrdersHandlesUnexpectedException() throws Exception {
 
@@ -487,7 +483,6 @@ public class TestItBitExchangeAdapter {
         PowerMock.verifyAll();
     }
 
-    @Ignore("14 Oct 2017 - tmp disable of test")
     @Test(expected = TradingApiException.class)
     public void testGettingMarketOrdersHandlesUnexpectedException() throws Exception {
 
@@ -550,7 +545,6 @@ public class TestItBitExchangeAdapter {
         PowerMock.verifyAll();
     }
 
-    @Ignore("14 Oct 2017 - tmp disable of test")
     @Test(expected = TradingApiException.class)
     public void testGettingLatestMarketPriceHandlesUnexpectedException() throws Exception {
 
@@ -621,7 +615,6 @@ public class TestItBitExchangeAdapter {
         PowerMock.verifyAll();
     }
 
-    @Ignore("14 Oct 2017 - tmp disable of test")
     @Test(expected = TradingApiException.class)
     public void testGettingBalanceInfoHandlesUnexpectedException() throws Exception {
 
