@@ -327,6 +327,12 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
                     return new MarketOrderBook(marketId, sellOrders, buyOrders);
 
                 } else {
+
+                    if (isExchangeUndergoingMaintenance(response) && keepAliveDuringMaintenance) {
+                        LOG.warn(() -> UNDER_MAINTENANCE_WARNING_MESSAGE);
+                        throw new ExchangeNetworkException(UNDER_MAINTENANCE_WARNING_MESSAGE);
+                    }
+
                     final String errorMsg = FAILED_TO_GET_MARKET_ORDERS + response;
                     LOG.error(errorMsg);
                     throw new TradingApiException(errorMsg);
@@ -341,12 +347,6 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
         } catch (ExchangeNetworkException | TradingApiException e) {
             throw e;
         } catch (Exception e) {
-
-            if (isExchangeUndergoingMaintenance(response) && keepAliveDuringMaintenance) {
-                LOG.warn(() -> UNDER_MAINTENANCE_WARNING_MESSAGE);
-                throw new ExchangeNetworkException(UNDER_MAINTENANCE_WARNING_MESSAGE);
-            }
-
             LOG.error(UNEXPECTED_ERROR_MSG, e);
             throw new TradingApiException(UNEXPECTED_ERROR_MSG, e);
         }
@@ -423,6 +423,12 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
                     return openOrders;
 
                 } else {
+
+                    if (isExchangeUndergoingMaintenance(response) && keepAliveDuringMaintenance) {
+                        LOG.warn(() -> UNDER_MAINTENANCE_WARNING_MESSAGE);
+                        throw new ExchangeNetworkException(UNDER_MAINTENANCE_WARNING_MESSAGE);
+                    }
+
                     final String errorMsg = FAILED_TO_GET_OPEN_ORDERS + response;
                     LOG.error(errorMsg);
                     throw new TradingApiException(errorMsg);
@@ -437,12 +443,6 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
         } catch (ExchangeNetworkException | TradingApiException e) {
             throw e;
         } catch (Exception e) {
-
-            if (isExchangeUndergoingMaintenance(response) && keepAliveDuringMaintenance) {
-                LOG.warn(() -> UNDER_MAINTENANCE_WARNING_MESSAGE);
-                throw new ExchangeNetworkException(UNDER_MAINTENANCE_WARNING_MESSAGE);
-            }
-
             LOG.error(UNEXPECTED_ERROR_MSG, e);
             throw new TradingApiException(UNEXPECTED_ERROR_MSG, e);
         }
@@ -498,6 +498,12 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
                     return krakenAddOrderResult.txid.get(0);
 
                 } else {
+
+                    if (isExchangeUndergoingMaintenance(response) && keepAliveDuringMaintenance) {
+                        LOG.warn(() -> UNDER_MAINTENANCE_WARNING_MESSAGE);
+                        throw new ExchangeNetworkException(UNDER_MAINTENANCE_WARNING_MESSAGE);
+                    }
+
                     final String errorMsg = FAILED_TO_ADD_ORDER + response;
                     LOG.error(errorMsg);
                     throw new TradingApiException(errorMsg);
@@ -512,12 +518,6 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
         } catch (ExchangeNetworkException | TradingApiException e) {
             throw e;
         } catch (Exception e) {
-
-            if (isExchangeUndergoingMaintenance(response) && keepAliveDuringMaintenance) {
-                LOG.warn(() -> UNDER_MAINTENANCE_WARNING_MESSAGE);
-                throw new ExchangeNetworkException(UNDER_MAINTENANCE_WARNING_MESSAGE);
-            }
-
             LOG.error(UNEXPECTED_ERROR_MSG, e);
             throw new TradingApiException(UNEXPECTED_ERROR_MSG, e);
         }
@@ -564,6 +564,12 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
                     }
 
                 } else {
+
+                    if (isExchangeUndergoingMaintenance(response) && keepAliveDuringMaintenance) {
+                        LOG.warn(() -> UNDER_MAINTENANCE_WARNING_MESSAGE);
+                        throw new ExchangeNetworkException(UNDER_MAINTENANCE_WARNING_MESSAGE);
+                    }
+
                     final String errorMsg = FAILED_TO_CANCEL_ORDER + response;
                     LOG.error(errorMsg);
                     throw new TradingApiException(errorMsg);
@@ -578,12 +584,6 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
         } catch (ExchangeNetworkException | TradingApiException e) {
             throw e;
         } catch (Exception e) {
-
-            if (isExchangeUndergoingMaintenance(response) && keepAliveDuringMaintenance) {
-                LOG.warn(() -> UNDER_MAINTENANCE_WARNING_MESSAGE);
-                throw new ExchangeNetworkException(UNDER_MAINTENANCE_WARNING_MESSAGE);
-            }
-
             LOG.error(UNEXPECTED_ERROR_MSG, e);
             throw new TradingApiException(UNEXPECTED_ERROR_MSG, e);
         }
@@ -624,6 +624,12 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
                     return new BigDecimal(tickerParams.get("c").get(0));
 
                 } else {
+
+                    if (isExchangeUndergoingMaintenance(response) && keepAliveDuringMaintenance) {
+                        LOG.warn(() -> UNDER_MAINTENANCE_WARNING_MESSAGE);
+                        throw new ExchangeNetworkException(UNDER_MAINTENANCE_WARNING_MESSAGE);
+                    }
+
                     final String errorMsg = FAILED_TO_GET_TICKER + response;
                     LOG.error(errorMsg);
                     throw new TradingApiException(errorMsg);
@@ -638,12 +644,6 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
         } catch (ExchangeNetworkException | TradingApiException e) {
             throw e;
         } catch (Exception e) {
-
-            if (isExchangeUndergoingMaintenance(response) && keepAliveDuringMaintenance) {
-                LOG.warn(() -> UNDER_MAINTENANCE_WARNING_MESSAGE);
-                throw new ExchangeNetworkException(UNDER_MAINTENANCE_WARNING_MESSAGE);
-            }
-
             LOG.error(UNEXPECTED_ERROR_MSG, e);
             throw new TradingApiException(UNEXPECTED_ERROR_MSG, e);
         }
@@ -685,6 +685,12 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
                         return new BalanceInfo(balancesAvailable, new HashMap<>());
 
                     } else {
+
+                        if (isExchangeUndergoingMaintenance(response) && keepAliveDuringMaintenance) {
+                            LOG.warn(() -> UNDER_MAINTENANCE_WARNING_MESSAGE);
+                            throw new ExchangeNetworkException(UNDER_MAINTENANCE_WARNING_MESSAGE);
+                        }
+
                         final String errorMsg = FAILED_TO_GET_BALANCE + response;
                         LOG.error(errorMsg);
                         throw new TradingApiException(errorMsg);
@@ -704,12 +710,6 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
         } catch (ExchangeNetworkException | TradingApiException e) {
             throw e;
         } catch (Exception e) {
-
-            if (isExchangeUndergoingMaintenance(response) && keepAliveDuringMaintenance) {
-                LOG.warn(() -> UNDER_MAINTENANCE_WARNING_MESSAGE);
-                throw new ExchangeNetworkException(UNDER_MAINTENANCE_WARNING_MESSAGE);
-            }
-
             LOG.error(UNEXPECTED_ERROR_MSG, e);
             throw new TradingApiException(UNEXPECTED_ERROR_MSG, e);
         }
