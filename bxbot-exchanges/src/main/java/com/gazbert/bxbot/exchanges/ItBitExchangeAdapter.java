@@ -88,6 +88,10 @@ import java.util.*;
  * the order amount, but to 4 decimal places.
  * </p>
  * <p>
+ * The exchange regularly goes down for maintenance. If the keep-alive-during-maintenance config-item is set to true
+ * in the exchange.xml config file, the bot will stay alive and wait until the next trade cycle.
+ * </p>
+ * <p>
  * The Exchange Adapter is <em>not</em> thread safe. It expects to be called using a single thread in order to
  * preserve trade execution order. The {@link URLConnection} achieves this by blocking/waiting on the input stream
  * (response) for each API call.
@@ -131,6 +135,11 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
     private static final String UNEXPECTED_IO_ERROR_MSG = "Failed to connect to Exchange due to unexpected IO error.";
 
     /**
+     * Exchange under maintenance warning message for logging.
+     */
+    private static final String UNDER_MAINTENANCE_WARNING_MESSAGE = "Exchange is undergoing maintenance - keep alive is true.";
+
+    /**
      * Name of user id property in config file.
      */
     private static final String USER_ID_PROPERTY_NAME = "userId";
@@ -156,6 +165,16 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
     private static final String SELL_FEE_PROPERTY_NAME = "sell-fee";
 
     /**
+     * Name of Keep Alive During Maintenance property in config file.
+     */
+    private static final String KEEP_ALIVE_DURING_MAINTENANCE_PROPERTY_NAME = "keep-alive-during-maintenance";
+
+    /**
+     * Text in response indicating exchange is undergoing maintenance.
+     */
+    private static final String EXCHANGE_UNDERGOING_MAINTENANCE_RESPONSE = "The itBit API is currently undergoing maintenance";
+
+    /**
      * Nonce used for sending authenticated messages to the exchange.
      */
     private long nonce = 0;
@@ -174,6 +193,11 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
      * Exchange sell fees in % in {@link BigDecimal} format.
      */
     private BigDecimal sellFeePercentage;
+
+    /**
+     * Indicates if bot should stay alive when exchange is undergoing maintenance.
+     */
+    private boolean keepAliveDuringMaintenance;
 
     /**
      * Used to indicate if we have initialised the MAC authentication protocol.
@@ -293,6 +317,12 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
         } catch (ExchangeNetworkException | TradingApiException e) {
             throw e;
         } catch (Exception e) {
+
+            if (isExchangeUndergoingMaintenance(response) && keepAliveDuringMaintenance) {
+                LOG.warn(() -> UNDER_MAINTENANCE_WARNING_MESSAGE);
+                throw new ExchangeNetworkException(UNDER_MAINTENANCE_WARNING_MESSAGE);
+            }
+
             final String unexpectedErrorMsg = UNEXPECTED_ERROR_MSG + (response == null ? "NULL RESPONSE" : response);
             LOG.error(unexpectedErrorMsg, e);
             throw new TradingApiException(unexpectedErrorMsg, e);
@@ -332,6 +362,13 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
         } catch (ExchangeNetworkException | TradingApiException e) {
             throw e;
         } catch (Exception e) {
+
+            if (isExchangeUndergoingMaintenance(response) && keepAliveDuringMaintenance) {
+                final String underMaintenanceMsg = "Exchange is undergoing maintenance - keep alive is true.";
+                LOG.warn(() -> underMaintenanceMsg);
+                throw new ExchangeNetworkException(underMaintenanceMsg);
+            }
+
             final String unexpectedErrorMsg = UNEXPECTED_ERROR_MSG + (response == null ? "NULL RESPONSE" : response);
             LOG.error(unexpectedErrorMsg, e);
             throw new TradingApiException(unexpectedErrorMsg, e);
@@ -406,6 +443,12 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
         } catch (ExchangeNetworkException | TradingApiException e) {
             throw e;
         } catch (Exception e) {
+
+            if (isExchangeUndergoingMaintenance(response) && keepAliveDuringMaintenance) {
+                LOG.warn(() -> UNDER_MAINTENANCE_WARNING_MESSAGE);
+                throw new ExchangeNetworkException(UNDER_MAINTENANCE_WARNING_MESSAGE);
+            }
+
             final String unexpectedErrorMsg = UNEXPECTED_ERROR_MSG + (response == null ? "NULL RESPONSE" : response);
             LOG.error(unexpectedErrorMsg, e);
             throw new TradingApiException(unexpectedErrorMsg, e);
@@ -457,6 +500,12 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
         } catch (ExchangeNetworkException | TradingApiException e) {
             throw e;
         } catch (Exception e) {
+
+            if (isExchangeUndergoingMaintenance(response) && keepAliveDuringMaintenance) {
+                LOG.warn(() -> UNDER_MAINTENANCE_WARNING_MESSAGE);
+                throw new ExchangeNetworkException(UNDER_MAINTENANCE_WARNING_MESSAGE);
+            }
+
             final String unexpectedErrorMsg = UNEXPECTED_ERROR_MSG + (response == null ? "NULL RESPONSE" : response);
             LOG.error(unexpectedErrorMsg, e);
             throw new TradingApiException(unexpectedErrorMsg, e);
@@ -472,7 +521,7 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
 
             response = sendPublicRequestToExchange("markets/" + marketId + "/ticker");
             if (LOG.isDebugEnabled()) {
-                LOG.debug( "Latest Market Price response: " + response);
+                LOG.debug("Latest Market Price response: " + response);
             }
 
             if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
@@ -488,6 +537,12 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
         } catch (ExchangeNetworkException | TradingApiException e) {
             throw e;
         } catch (Exception e) {
+
+            if (isExchangeUndergoingMaintenance(response) && keepAliveDuringMaintenance) {
+                LOG.warn(() -> UNDER_MAINTENANCE_WARNING_MESSAGE);
+                throw new ExchangeNetworkException(UNDER_MAINTENANCE_WARNING_MESSAGE);
+            }
+
             final String unexpectedErrorMsg = UNEXPECTED_ERROR_MSG + (response == null ? "NULL RESPONSE" : response);
             LOG.error(unexpectedErrorMsg, e);
             throw new TradingApiException(unexpectedErrorMsg, e);
@@ -545,8 +600,14 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
         } catch (ExchangeNetworkException | TradingApiException e) {
             throw e;
         } catch (Exception e) {
+
+            if (isExchangeUndergoingMaintenance(response) && keepAliveDuringMaintenance) {
+                LOG.warn(() -> UNDER_MAINTENANCE_WARNING_MESSAGE);
+                throw new ExchangeNetworkException(UNDER_MAINTENANCE_WARNING_MESSAGE);
+            }
+
             final String unexpectedErrorMsg = UNEXPECTED_ERROR_MSG + (response == null ? "NULL RESPONSE" : response);
-            LOG.error(unexpectedErrorMsg , e);
+            LOG.error(unexpectedErrorMsg, e);
             throw new TradingApiException(unexpectedErrorMsg, e);
         }
     }
@@ -1006,6 +1067,15 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
         final String sellFeeInConfig = getOptionalConfigItem(optionalConfig, SELL_FEE_PROPERTY_NAME);
         sellFeePercentage = new BigDecimal(sellFeeInConfig).divide(new BigDecimal("100"), 8, BigDecimal.ROUND_HALF_UP);
         LOG.info(() -> "Sell fee % in BigDecimal format: " + sellFeePercentage);
+
+        final String keepAliveDuringMaintenanceConfig = getOptionalConfigItem(optionalConfig,
+                KEEP_ALIVE_DURING_MAINTENANCE_PROPERTY_NAME);
+        if (keepAliveDuringMaintenanceConfig != null && !keepAliveDuringMaintenanceConfig.isEmpty()) {
+            keepAliveDuringMaintenance = Boolean.valueOf(keepAliveDuringMaintenanceConfig);
+            LOG.info(() -> "Keep Alive During Maintenance: " + keepAliveDuringMaintenance);
+        } else {
+            LOG.info(() -> KEEP_ALIVE_DURING_MAINTENANCE_PROPERTY_NAME + " is not set in exchange.xml");
+        }
     }
 
     // ------------------------------------------------------------------------------------------------
@@ -1021,6 +1091,16 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
         // https://api.itbit.com/v1/wallets?userId=56DA621F --> https://api.itbit.com/v1/wallets?userId\u003d56DA621F
         final GsonBuilder gsonBuilder = new GsonBuilder().disableHtmlEscaping();
         gson = gsonBuilder.create();
+    }
+
+    private static boolean isExchangeUndergoingMaintenance(ExchangeHttpResponse response) {
+        if (response != null) {
+            final String payload = response.getPayload();
+            if (payload != null && payload.contains(EXCHANGE_UNDERGOING_MAINTENANCE_RESPONSE)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /*
