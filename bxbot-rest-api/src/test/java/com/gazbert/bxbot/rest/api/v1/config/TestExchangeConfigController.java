@@ -62,7 +62,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebAppConfiguration
 public class TestExchangeConfigController extends AbstractConfigControllerTest {
 
-    private static final String EXCHANGE_CONFIG_ENDPOINT_URI = "/api/v1/config/exchange";
+    private static final String EXCHANGE_CONFIG_ENDPOINT_URI = CONFIG_ENDPOINT_BASE_URI + "exchange";
     
     private static final String EXCHANGE_NAME = "Bitstamp";
     private static final String EXCHANGE_ADAPTER = "com.gazbert.bxbot.exchanges.TestExchangeAdapter";

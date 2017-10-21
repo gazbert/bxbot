@@ -45,6 +45,8 @@ import java.util.Arrays;
  */
 public abstract class AbstractConfigControllerTest {
 
+    static final String CONFIG_ENDPOINT_BASE_URI = "/api/v1/config/";
+
     /**
      * This must match security.user.name in the src/test/resources/application.properties file.
      */

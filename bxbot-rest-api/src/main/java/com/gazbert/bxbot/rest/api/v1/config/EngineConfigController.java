@@ -37,6 +37,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import static com.gazbert.bxbot.rest.api.v1.config.AbstractController.CONFIG_ENDPOINT_BASE_URI;
+
 /**
  * Controller for directing Engine config requests.
  * <p>
@@ -48,10 +50,11 @@ import org.springframework.web.bind.annotation.RestController;
  * @since 1.0
  */
 @RestController
-@RequestMapping("/api/v1/config")
+@RequestMapping(CONFIG_ENDPOINT_BASE_URI)
 public class EngineConfigController extends AbstractController {
 
     private static final Logger LOG = LogManager.getLogger();
+    private static final String ENGINE_RESOURCE_PATH = "/engine";
     private final EngineConfigService engineConfigService;
 
     @Autowired
@@ -65,10 +68,10 @@ public class EngineConfigController extends AbstractController {
      * @param user the authenticated user making the request.
      * @return the Engine configuration.
      */
-    @RequestMapping(value = "/engine", method = RequestMethod.GET)
+    @RequestMapping(value = ENGINE_RESOURCE_PATH, method = RequestMethod.GET)
     public EngineConfig getEngine(@AuthenticationPrincipal User user) {
 
-        LOG.info("GET /engine - getEngine() - caller: " + user.getUsername());
+        LOG.info("GET " + ENGINE_RESOURCE_PATH + " - getEngine() - caller: " + user.getUsername());
 
         final EngineConfig engineConfig = engineConfigService.getEngineConfig();
 
@@ -82,12 +85,12 @@ public class EngineConfigController extends AbstractController {
      * @param user   the authenticated user making the request.
      * @param config the Engine config to update.
      * @return 200 'OK' HTTP status code and updated Engine config in the response body if update successful,
-     *         some other HTTP status code otherwise.
+     * some other HTTP status code otherwise.
      */
-    @RequestMapping(value = "/engine", method = RequestMethod.PUT)
+    @RequestMapping(value = ENGINE_RESOURCE_PATH, method = RequestMethod.PUT)
     public ResponseEntity<?> updateEngine(@AuthenticationPrincipal User user, @RequestBody EngineConfig config) {
 
-        LOG.info("PUT /engine - updateEngine() - caller: " + user.getUsername());
+        LOG.info("PUT " + ENGINE_RESOURCE_PATH + " - updateEngine() - caller: " + user.getUsername());
         LOG.info("Request: " + config);
 
         final EngineConfig updatedConfig = engineConfigService.updateEngineConfig(config);

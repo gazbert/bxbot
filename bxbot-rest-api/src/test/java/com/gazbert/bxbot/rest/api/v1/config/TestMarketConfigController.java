@@ -61,7 +61,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebAppConfiguration
 public class TestMarketConfigController extends AbstractConfigControllerTest {
 
-    private static final String MARKETS_CONFIG_ENDPOINT_URI = "/api/v1/config/markets/";
+    private static final String MARKETS_CONFIG_ENDPOINT_URI = CONFIG_ENDPOINT_BASE_URI + "markets/";
     
     private static final String UNKNOWN_MARKET_ID = "unknown-id";
 
@@ -295,7 +295,7 @@ public class TestMarketConfigController extends AbstractConfigControllerTest {
 
         given(marketConfigService.createMarketConfig(someMarketConfig())).willReturn(someMarketConfig());
 
-        final MvcResult result = mockMvc.perform(post(MARKETS_CONFIG_ENDPOINT_URI + MARKET_1_ID)
+        final MvcResult result = mockMvc.perform(post(MARKETS_CONFIG_ENDPOINT_URI)
                 .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD))
                 .contentType(CONTENT_TYPE)
                 .content(jsonify(someMarketConfig())))
@@ -310,7 +310,7 @@ public class TestMarketConfigController extends AbstractConfigControllerTest {
     @Test
     public void testCreateMarketConfigWhenUnauthorizedWithMissingCredentials() throws Exception {
 
-        mockMvc.perform(post(MARKETS_CONFIG_ENDPOINT_URI + MARKET_1_ID)
+        mockMvc.perform(post(MARKETS_CONFIG_ENDPOINT_URI)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(CONTENT_TYPE)
                 .content(jsonify(someMarketConfig())))
@@ -320,7 +320,7 @@ public class TestMarketConfigController extends AbstractConfigControllerTest {
     @Test
     public void testCreateMarketConfigWhenUnauthorizedWithInvalidCredentials() throws Exception {
 
-        mockMvc.perform(post(MARKETS_CONFIG_ENDPOINT_URI + MARKET_1_ID)
+        mockMvc.perform(post(MARKETS_CONFIG_ENDPOINT_URI)
                 .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, INVALID_USER_PASSWORD))
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(CONTENT_TYPE)
@@ -331,7 +331,7 @@ public class TestMarketConfigController extends AbstractConfigControllerTest {
     @Test
     public void testCreateMarketConfigWhenMarketIdIsMissing() throws Exception {
 
-        mockMvc.perform(post(MARKETS_CONFIG_ENDPOINT_URI + MARKET_1_ID)
+        mockMvc.perform(post(MARKETS_CONFIG_ENDPOINT_URI)
                 .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD))
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(CONTENT_TYPE)
@@ -344,7 +344,7 @@ public class TestMarketConfigController extends AbstractConfigControllerTest {
 
         given(marketConfigService.createMarketConfig(someMarketConfig())).willReturn(null);
 
-        mockMvc.perform(post(MARKETS_CONFIG_ENDPOINT_URI + MARKET_1_ID)
+        mockMvc.perform(post(MARKETS_CONFIG_ENDPOINT_URI)
                 .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD))
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(CONTENT_TYPE)

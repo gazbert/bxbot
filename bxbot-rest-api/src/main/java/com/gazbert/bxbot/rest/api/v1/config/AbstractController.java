@@ -36,6 +36,7 @@ import org.springframework.http.ResponseEntity;
 public abstract class AbstractController {
 
     private static final Logger LOG = LogManager.getLogger();
+    static final String CONFIG_ENDPOINT_BASE_URI = "/api/v1/config/";
 
     ResponseEntity<?> buildResponseEntity(Object entity, HttpStatus httpStatus) {
         LOG.info("Response: " + entity);

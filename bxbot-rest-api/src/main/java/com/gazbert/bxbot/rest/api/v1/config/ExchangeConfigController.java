@@ -36,6 +36,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import static com.gazbert.bxbot.rest.api.v1.config.AbstractController.CONFIG_ENDPOINT_BASE_URI;
+
 /**
  * <p>
  * Controller for directing Exchange config requests.
@@ -48,10 +50,11 @@ import org.springframework.web.bind.annotation.RestController;
  * @since 1.0
  */
 @RestController
-@RequestMapping("/api/v1/config/")
+@RequestMapping(CONFIG_ENDPOINT_BASE_URI)
 public class ExchangeConfigController extends AbstractController {
 
     private static final Logger LOG = LogManager.getLogger();
+    private static final String EXCHANGE_RESOURCE_PATH = "/exchange";
     private final ExchangeConfigService exchangeConfigService;
 
     public ExchangeConfigController(ExchangeConfigService exchangeConfigService) {
@@ -67,10 +70,10 @@ public class ExchangeConfigController extends AbstractController {
      * @param user the authenticated user making the request.
      * @return the Exchange configuration.
      */
-    @RequestMapping(value = "/exchange", method = RequestMethod.GET)
+    @RequestMapping(value = EXCHANGE_RESOURCE_PATH, method = RequestMethod.GET)
     public ExchangeConfig getExchange(@AuthenticationPrincipal User user) {
 
-        LOG.info("GET /exchange - getExchange() - caller: " + user.getUsername());
+        LOG.info("GET " + EXCHANGE_RESOURCE_PATH + " - getExchange() - caller: " + user.getUsername());
 
         final ExchangeConfig exchangeConfig = exchangeConfigService.getExchangeConfig();
         exchangeConfig.setAuthenticationConfig(null);
@@ -90,10 +93,10 @@ public class ExchangeConfigController extends AbstractController {
      * @return 200 'OK' HTTP status code with updated Exchange config in the body if update successful, some other
      * HTTP status code otherwise.
      */
-    @RequestMapping(value = "/exchange", method = RequestMethod.PUT)
+    @RequestMapping(value = EXCHANGE_RESOURCE_PATH, method = RequestMethod.PUT)
     public ResponseEntity<?> updateExchange(@AuthenticationPrincipal User user, @RequestBody ExchangeConfig config) {
 
-        LOG.info("PUT /exchange - updateExchange() - caller: " + user.getUsername());
+        LOG.info("PUT " + EXCHANGE_RESOURCE_PATH + " - updateExchange() - caller: " + user.getUsername());
         LOG.info("Request: " + config);
 
         final ExchangeConfig updatedConfig = exchangeConfigService.updateExchangeConfig(

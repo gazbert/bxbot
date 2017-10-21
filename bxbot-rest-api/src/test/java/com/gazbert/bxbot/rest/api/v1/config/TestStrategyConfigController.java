@@ -63,7 +63,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebAppConfiguration
 public class TestStrategyConfigController extends AbstractConfigControllerTest {
 
-    private static final String STRATEGIES_CONFIG_ENDPOINT_URI = "/api/v1/config/strategies/";
+    private static final String STRATEGIES_CONFIG_ENDPOINT_URI = CONFIG_ENDPOINT_BASE_URI + "strategies/";
     
     private static final String UNKNOWN_STRAT_ID = "unknown-id";
 
@@ -312,7 +312,7 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
     @Test
     public void testCreateStrategyConfigWhenUnauthorizedWithMissingCredentials() throws Exception {
 
-        mockMvc.perform(post(STRATEGIES_CONFIG_ENDPOINT_URI + STRAT_1_ID)
+        mockMvc.perform(post(STRATEGIES_CONFIG_ENDPOINT_URI)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(CONTENT_TYPE)
                 .content(jsonify(someStrategyConfig())))
@@ -322,7 +322,7 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
     @Test
     public void testCreateStrategyConfigWhenUnauthorizedWithInvalidCredentials() throws Exception {
 
-        mockMvc.perform(post(STRATEGIES_CONFIG_ENDPOINT_URI + STRAT_1_ID)
+        mockMvc.perform(post(STRATEGIES_CONFIG_ENDPOINT_URI)
                 .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, INVALID_USER_PASSWORD))
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(CONTENT_TYPE)
