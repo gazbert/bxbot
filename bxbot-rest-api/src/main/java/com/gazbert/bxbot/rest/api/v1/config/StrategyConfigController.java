@@ -36,7 +36,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import static com.gazbert.bxbot.rest.api.v1.config.AbstractController.CONFIG_ENDPOINT_BASE_URI;
+import static com.gazbert.bxbot.rest.api.v1.config.AbstractConfigController.CONFIG_ENDPOINT_BASE_URI;
 
 /**
  * Controller for directing Strategy config requests.
@@ -46,7 +46,7 @@ import static com.gazbert.bxbot.rest.api.v1.config.AbstractController.CONFIG_END
  */
 @RestController
 @RequestMapping(CONFIG_ENDPOINT_BASE_URI)
-public class StrategyConfigController extends AbstractController {
+public class StrategyConfigController extends AbstractConfigController {
 
     private static final Logger LOG = LogManager.getLogger();
     private static final String STRATEGIES_RESOURCE_PATH = "/strategies";

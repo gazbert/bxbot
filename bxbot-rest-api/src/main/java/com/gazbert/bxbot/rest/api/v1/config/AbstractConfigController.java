@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016 Gareth Jon Lynch
+ * Copyright (c) 2017 Gareth Jon Lynch
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -23,14 +23,15 @@
 
 package com.gazbert.bxbot.rest.api.v1.config;
 
-import com.gazbert.bxbot.rest.api.v1.AbstractControllerTest;
+import com.gazbert.bxbot.rest.api.v1.AbstractController;
 
 /**
- * Base class for config Controller test classes.
+ * Base class for all config controllers.
  *
  * @author gazbert
+ * @since 1.0
  */
-abstract class AbstractConfigControllerTest extends AbstractControllerTest {
+abstract class AbstractConfigController extends AbstractController {
 
     static final String CONFIG_ENDPOINT_BASE_URI = API_ENDPOINT_BASE_URI + "config/";
 }

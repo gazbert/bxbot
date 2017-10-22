@@ -21,80 +21,63 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.rest.api.v1.config;
+package com.gazbert.bxbot.rest.api.v1.runtime;
 
+import com.gazbert.bxbot.domain.bot.BotStatus;
 import com.gazbert.bxbot.domain.engine.EngineConfig;
 import com.gazbert.bxbot.services.EngineConfigService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import static com.gazbert.bxbot.rest.api.v1.config.AbstractConfigController.CONFIG_ENDPOINT_BASE_URI;
+import static com.gazbert.bxbot.rest.api.v1.runtime.AbstractRuntimeController.RUNTIME_ENDPOINT_BASE_URI;
 
 /**
- * Controller for directing Engine config requests.
- * <p>
- * Engine config can only be fetched and updated - it cannot be deleted or created.
- * <p>
- * There is only 1 Trading Engine per bot.
+ * Controller for directing Bot process requests.
  *
  * @author gazbert
  * @since 1.0
  */
 @RestController
-@RequestMapping(CONFIG_ENDPOINT_BASE_URI)
-public class EngineConfigController extends AbstractConfigController {
+@RequestMapping(RUNTIME_ENDPOINT_BASE_URI)
+public class BotProcessController extends AbstractRuntimeController {
 
     private static final Logger LOG = LogManager.getLogger();
-    private static final String ENGINE_RESOURCE_PATH = "/engine";
+    private static final String PROCESS_RESOURCE_PATH = "/process";
+    private static final String STATUS_RESOURCE_PATH = "/status";
     private final EngineConfigService engineConfigService;
 
     @Autowired
-    public EngineConfigController(EngineConfigService engineConfigService) {
+    public BotProcessController(EngineConfigService engineConfigService) {
         this.engineConfigService = engineConfigService;
     }
 
     /**
-     * Returns the Engine configuration for the bot.
+     * Returns the process status for the bot.
      *
      * @param user the authenticated user making the request.
-     * @return the Engine configuration.
+     * @return the process status.
      */
-    @RequestMapping(value = ENGINE_RESOURCE_PATH, method = RequestMethod.GET)
-    public EngineConfig getEngine(@AuthenticationPrincipal User user) {
+    @RequestMapping(value = PROCESS_RESOURCE_PATH + STATUS_RESOURCE_PATH, method = RequestMethod.GET)
+    public BotStatus getStatus(@AuthenticationPrincipal User user) {
 
-        LOG.info("GET " + ENGINE_RESOURCE_PATH + " - getEngine() - caller: " + user.getUsername());
+        LOG.info("GET " + PROCESS_RESOURCE_PATH + STATUS_RESOURCE_PATH + " - getStatus() - caller: " + user.getUsername());
 
         final EngineConfig engineConfig = engineConfigService.getEngineConfig();
 
-        LOG.info("Response: " + engineConfig);
-        return engineConfig;
-    }
+        // TODO - hacked up for now until work properly starts on runtime features...
+        final BotStatus botStatus = new BotStatus();
+        botStatus.setBotId(engineConfig.getBotId());
+        botStatus.setDisplayName(engineConfig.getBotName());
+        botStatus.setStatus("running");
 
-    /**
-     * Updates the Engine configuration for the bot.
-     *
-     * @param user   the authenticated user making the request.
-     * @param config the Engine config to update.
-     * @return 200 'OK' HTTP status code and updated Engine config in the response body if update successful,
-     * some other HTTP status code otherwise.
-     */
-    @RequestMapping(value = ENGINE_RESOURCE_PATH, method = RequestMethod.PUT)
-    public ResponseEntity<?> updateEngine(@AuthenticationPrincipal User user, @RequestBody EngineConfig config) {
-
-        LOG.info("PUT " + ENGINE_RESOURCE_PATH + " - updateEngine() - caller: " + user.getUsername());
-        LOG.info("Request: " + config);
-
-        final EngineConfig updatedConfig = engineConfigService.updateEngineConfig(config);
-        return buildResponseEntity(updatedConfig, HttpStatus.OK);
+        LOG.info("Response: " + botStatus);
+        return botStatus;
     }
 }
 

@@ -36,7 +36,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import static com.gazbert.bxbot.rest.api.v1.config.AbstractController.CONFIG_ENDPOINT_BASE_URI;
+import static com.gazbert.bxbot.rest.api.v1.config.AbstractConfigController.CONFIG_ENDPOINT_BASE_URI;
 
 /**
  * <p>
@@ -51,7 +51,7 @@ import static com.gazbert.bxbot.rest.api.v1.config.AbstractController.CONFIG_END
  */
 @RestController
 @RequestMapping(CONFIG_ENDPOINT_BASE_URI)
-public class ExchangeConfigController extends AbstractController {
+public class ExchangeConfigController extends AbstractConfigController {
 
     private static final Logger LOG = LogManager.getLogger();
     private static final String EXCHANGE_RESOURCE_PATH = "/exchange";

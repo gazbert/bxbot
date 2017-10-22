@@ -21,16 +21,62 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.rest.api.v1.config;
+package com.gazbert.bxbot.domain.bot;
 
-import com.gazbert.bxbot.rest.api.v1.AbstractControllerTest;
+import com.google.common.base.MoreObjects;
 
 /**
- * Base class for config Controller test classes.
+ * Domain object representing the Bot's status.
  *
  * @author gazbert
  */
-abstract class AbstractConfigControllerTest extends AbstractControllerTest {
+public class BotStatus {
 
-    static final String CONFIG_ENDPOINT_BASE_URI = API_ENDPOINT_BASE_URI + "config/";
+    private String botId;
+    private String displayName;
+    private String status;
+
+    // required for jackson
+    public BotStatus() {
+    }
+
+    public BotStatus(String botId, String displayName, String status) {
+
+        this.botId = botId;
+        this.displayName = displayName;
+        this.status = status;
+    }
+
+    public String getBotId() {
+        return botId;
+    }
+
+    public void setBotId(String botId) {
+        this.botId = botId;
+    }
+
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("botId", botId)
+                .add("displayName", displayName)
+                .add("status", status)
+                .toString();
+    }
 }

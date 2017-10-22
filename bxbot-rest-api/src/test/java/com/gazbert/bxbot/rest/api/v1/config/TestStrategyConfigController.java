@@ -351,7 +351,6 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
     }
 
     private static StrategyConfig someStrategyConfig() {
-
         final Map<String, String> configItems = new HashMap<>();
         configItems.put(BUY_PRICE_CONFIG_ITEM_KEY, BUY_PRICE_CONFIG_ITEM_VALUE);
         configItems.put(AMOUNT_TO_BUY_CONFIG_ITEM_KEY, AMOUNT_TO_BUY_CONFIG_ITEM_VALUE);
@@ -359,7 +358,6 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
     }
 
     private static StrategyConfig someStrategyConfigWithMissingId() {
-
         final Map<String, String> configItems = new HashMap<>();
         configItems.put(BUY_PRICE_CONFIG_ITEM_KEY, BUY_PRICE_CONFIG_ITEM_VALUE);
         configItems.put(AMOUNT_TO_BUY_CONFIG_ITEM_KEY, AMOUNT_TO_BUY_CONFIG_ITEM_VALUE);
@@ -367,7 +365,6 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
     }
 
     private static StrategyConfig unrecognizedStrategyConfig() {
-
         final Map<String, String> configItems = new HashMap<>();
         configItems.put(BUY_PRICE_CONFIG_ITEM_KEY, BUY_PRICE_CONFIG_ITEM_VALUE);
         configItems.put(AMOUNT_TO_BUY_CONFIG_ITEM_KEY, AMOUNT_TO_BUY_CONFIG_ITEM_VALUE);

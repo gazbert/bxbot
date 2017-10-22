@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016 Gareth Jon Lynch
+ * Copyright (c) 2017 Gareth Jon Lynch
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -21,16 +21,27 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.rest.api.v1.config;
+package com.gazbert.bxbot.rest.api.v1;
 
-import com.gazbert.bxbot.rest.api.v1.AbstractControllerTest;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 /**
- * Base class for config Controller test classes.
+ * Base class for all controllers.
  *
  * @author gazbert
+ * @since 1.0
  */
-abstract class AbstractConfigControllerTest extends AbstractControllerTest {
+public abstract class AbstractController {
 
-    static final String CONFIG_ENDPOINT_BASE_URI = API_ENDPOINT_BASE_URI + "config/";
+    private static final Logger LOG = LogManager.getLogger();
+    protected static final String API_ENDPOINT_BASE_URI = "/api/v1";
+
+    protected ResponseEntity<?> buildResponseEntity(Object entity, HttpStatus httpStatus) {
+        LOG.info("Response: " + entity);
+        return new ResponseEntity<>(entity, null, httpStatus);
+    }
 }
+
