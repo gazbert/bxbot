@@ -57,7 +57,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebAppConfiguration
 public class TestEmailAlertsConfigController extends AbstractConfigControllerTest {
 
-    private static final String EMAIL_ALERTS_CONFIG_ENDPOINT_URI = CONFIG_ENDPOINT_BASE_URI + "email-alerts";
+    private static final String EMAIL_ALERTS_CONFIG_ENDPOINT_URI = CONFIG_ENDPOINT_BASE_URI + "/email-alerts";
 
     private static final boolean ENABLED = true;
     private static final String HOST = "smtp.host.deathstar.com";

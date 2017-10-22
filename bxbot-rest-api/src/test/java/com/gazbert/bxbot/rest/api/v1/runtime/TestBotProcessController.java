@@ -57,7 +57,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebAppConfiguration
 public class TestBotProcessController extends AbstractRuntimeControllerTest {
 
-    private static final String STATUS_ENDPOINT_URI = RUNTIME_ENDPOINT_BASE_URI + "process/status";
+    private static final String STATUS_ENDPOINT_URI = RUNTIME_ENDPOINT_BASE_URI + "/process/status";
 
     private static final String BOT_ID = "avro-707_1";
     private static final String BOT_NAME = "Avro 707";

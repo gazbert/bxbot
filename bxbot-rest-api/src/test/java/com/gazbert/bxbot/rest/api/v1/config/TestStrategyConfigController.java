@@ -63,7 +63,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebAppConfiguration
 public class TestStrategyConfigController extends AbstractConfigControllerTest {
 
-    private static final String STRATEGIES_CONFIG_ENDPOINT_URI = CONFIG_ENDPOINT_BASE_URI + "strategies/";
+    private static final String STRATEGIES_CONFIG_ENDPOINT_URI = CONFIG_ENDPOINT_BASE_URI + "/strategies/";
     
     private static final String UNKNOWN_STRAT_ID = "unknown-id";
 

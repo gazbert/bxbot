@@ -61,7 +61,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebAppConfiguration
 public class TestMarketConfigController extends AbstractConfigControllerTest {
 
-    private static final String MARKETS_CONFIG_ENDPOINT_URI = CONFIG_ENDPOINT_BASE_URI + "markets/";
+    private static final String MARKETS_CONFIG_ENDPOINT_URI = CONFIG_ENDPOINT_BASE_URI + "/markets/";
     
     private static final String UNKNOWN_MARKET_ID = "unknown-id";
 
