@@ -48,8 +48,7 @@ import static com.gazbert.bxbot.rest.api.v1.runtime.AbstractRuntimeController.RU
 public class BotProcessController extends AbstractRuntimeController {
 
     private static final Logger LOG = LogManager.getLogger();
-    private static final String PROCESS_RESOURCE_PATH = "/process";
-    private static final String STATUS_RESOURCE_PATH = "/status";
+    private static final String PROCESS_STATUS_RESOURCE_PATH = "/process/status";
     private final EngineConfigService engineConfigService;
 
     @Autowired
@@ -63,18 +62,18 @@ public class BotProcessController extends AbstractRuntimeController {
      * @param user the authenticated user making the request.
      * @return the process status.
      */
-    @RequestMapping(value = PROCESS_RESOURCE_PATH + STATUS_RESOURCE_PATH, method = RequestMethod.GET)
+    @RequestMapping(value = PROCESS_STATUS_RESOURCE_PATH, method = RequestMethod.GET)
     public BotStatus getStatus(@AuthenticationPrincipal User user) {
 
-        LOG.info("GET " + PROCESS_RESOURCE_PATH + STATUS_RESOURCE_PATH + " - getStatus() - caller: " + user.getUsername());
+        LOG.info("GET " + PROCESS_STATUS_RESOURCE_PATH + " - getStatus() - caller: " + user.getUsername());
 
         final EngineConfig engineConfig = engineConfigService.getEngineConfig();
 
-        // TODO - hacked up for now until work properly starts on runtime features...
+        // TODO - hacked up for now until work properly starts on runtime features ;-)
         final BotStatus botStatus = new BotStatus();
         botStatus.setBotId(engineConfig.getBotId());
         botStatus.setDisplayName(engineConfig.getBotName());
-        botStatus.setStatus("running");
+        botStatus.setStatus("running"); // use enum for defining states at some point
 
         LOG.info("Response: " + botStatus);
         return botStatus;
