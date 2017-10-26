@@ -108,7 +108,8 @@ The instructions below are for Linux and macOS, but equivalent Windows scripts a
 #### Gradle    
 1. If you plan on using your own Trading Strategies/Exchange Adapters packaged in separate jar files, you'll need to add
    the dependency in the [bxbot-app/build.gradle](bxbot-app/build.gradle) - see the commented out dependency examples inside it.
-1. From the project root, run `./gradlew buildTarGzipDist` or `./gradlew buildZipDist` to build the distribution 
+1. From the project root, run `./gradlew clean build` to build the bot.   
+1. Then run `./gradlew buildTarGzipDist` or `./gradlew buildZipDist` to build the distribution 
    artifact: either `bxbot-app-<version>.tar.gz` or `bxbot-app-<version>.zip` respectively. 
    It will be placed in the `./build/distributions` folder.
 1. Copy the artifact onto the machine you want to run the bot and unzip it someplace.
