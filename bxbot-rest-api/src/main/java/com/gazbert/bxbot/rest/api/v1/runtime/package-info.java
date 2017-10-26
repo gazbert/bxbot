@@ -6,4 +6,4 @@
  * @author gazbert
  * @since 1.0
  */
-package com.gazbert.bxbot.rest.api.runtime;
+package com.gazbert.bxbot.rest.api.v1.runtime;

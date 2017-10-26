@@ -21,25 +21,17 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.rest.api.config;
+package com.gazbert.bxbot.rest.api.v1.runtime;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import com.gazbert.bxbot.rest.api.v1.AbstractController;
 
 /**
- * Base class for controllers.
+ * Base class for all runtime controllers.
  *
  * @author gazbert
+ * @since 1.0
  */
-public abstract class AbstractController {
+abstract class AbstractRuntimeController extends AbstractController {
 
-    private static final Logger LOG = LogManager.getLogger();
-
-    ResponseEntity<?> buildResponseEntity(Object entity, HttpStatus httpStatus) {
-        LOG.info("Response: " + entity);
-        return new ResponseEntity<>(entity, null, httpStatus);
-    }
+    static final String RUNTIME_ENDPOINT_BASE_URI = API_ENDPOINT_BASE_URI + "/runtime";
 }
-

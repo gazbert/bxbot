@@ -21,7 +21,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.rest.api.config;
+package com.gazbert.bxbot.rest.api.v1.config;
 
 import com.gazbert.bxbot.domain.market.MarketConfig;
 import com.gazbert.bxbot.services.MarketConfigService;
@@ -36,6 +36,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import static com.gazbert.bxbot.rest.api.v1.config.AbstractConfigController.CONFIG_ENDPOINT_BASE_URI;
+
 /**
  * Controller for directing Market config requests.
  *
@@ -43,10 +45,11 @@ import java.util.List;
  * @since 1.0
  */
 @RestController
-@RequestMapping("/api/config")
-public class MarketConfigController extends AbstractController {
+@RequestMapping(CONFIG_ENDPOINT_BASE_URI)
+public class MarketConfigController extends AbstractConfigController {
 
     private static final Logger LOG = LogManager.getLogger();
+    private static final String MARKETS_RESOURCE_PATH = "/markets";
     private final MarketConfigService marketConfigService;
 
     @Autowired
@@ -60,10 +63,10 @@ public class MarketConfigController extends AbstractController {
      * @param user the authenticated user.
      * @return all the Market configurations.
      */
-    @RequestMapping(value = "/markets", method = RequestMethod.GET)
+    @RequestMapping(value = MARKETS_RESOURCE_PATH, method = RequestMethod.GET)
     public List<MarketConfig> getAllMarkets(@AuthenticationPrincipal User user) {
 
-        LOG.info("GET /markets - getAllMarkets() - caller: " + user.getUsername());
+        LOG.info("GET " + MARKETS_RESOURCE_PATH + " - getAllMarkets() - caller: " + user.getUsername());
 
         final List<MarketConfig> marketConfigs = marketConfigService.getAllMarketConfig();
         LOG.info("Response: " + marketConfigs);
@@ -77,10 +80,10 @@ public class MarketConfigController extends AbstractController {
      * @param marketId the id of the Market to fetch.
      * @return the Market configuration.
      */
-    @RequestMapping(value = "/markets/{marketId}", method = RequestMethod.GET)
+    @RequestMapping(value = MARKETS_RESOURCE_PATH + "/{marketId}", method = RequestMethod.GET)
     public ResponseEntity<?> getMarket(@AuthenticationPrincipal User user, @PathVariable String marketId) {
 
-        LOG.info("GET /markets/" + marketId + " - getMarket() - caller: " + user.getUsername());
+        LOG.info("GET " + MARKETS_RESOURCE_PATH + "/" + marketId + " - getMarket() - caller: " + user.getUsername());
 
         final MarketConfig marketConfig = marketConfigService.getMarketConfig(marketId);
         return marketConfig == null
@@ -97,11 +100,11 @@ public class MarketConfigController extends AbstractController {
      * @return 204 'No Content' HTTP status code if update successful, 404 'Not Found' HTTP status code if
      * Market config not found.
      */
-    @RequestMapping(value = "/markets/{marketId}", method = RequestMethod.PUT)
+    @RequestMapping(value = MARKETS_RESOURCE_PATH + "/{marketId}", method = RequestMethod.PUT)
     public ResponseEntity<?> updateMarket(@AuthenticationPrincipal User user, @PathVariable String marketId,
                                           @RequestBody MarketConfig config) {
 
-        LOG.info("PUT /markets/" + marketId + " - updateMarket() - caller: " + user.getUsername());
+        LOG.info("PUT " + MARKETS_RESOURCE_PATH + "/" + marketId + " - updateMarket() - caller: " + user.getUsername());
         LOG.info("Request: " + config);
 
         if (config.getId() == null || !marketId.equals(config.getId())) {
@@ -122,10 +125,10 @@ public class MarketConfigController extends AbstractController {
      * @return 201 'Created' HTTP status code and created Market config in response body if create successful,
      * some other HTTP status code otherwise.
      */
-    @RequestMapping(value = "/markets/{marketId}", method = RequestMethod.POST)
+    @RequestMapping(value = MARKETS_RESOURCE_PATH, method = RequestMethod.POST)
     public ResponseEntity<?> createMarket(@AuthenticationPrincipal User user, @RequestBody MarketConfig config) {
 
-        LOG.info("POST /markets - createMarket() - caller: " + user.getUsername());
+        LOG.info("POST " + MARKETS_RESOURCE_PATH + " - createMarket() - caller: " + user.getUsername());
         LOG.info("Request: " + config);
 
         final MarketConfig createdConfig = marketConfigService.createMarketConfig(config);
@@ -142,10 +145,10 @@ public class MarketConfigController extends AbstractController {
      * @return 204 'No Content' HTTP status code if delete successful, 404 'Not Found' HTTP status code if
      * Market config not found.
      */
-    @RequestMapping(value = "/markets/{marketId}", method = RequestMethod.DELETE)
+    @RequestMapping(value = MARKETS_RESOURCE_PATH + "/{marketId}", method = RequestMethod.DELETE)
     public ResponseEntity<?> deleteMarket(@AuthenticationPrincipal User user, @PathVariable String marketId) {
 
-        LOG.info("DELETE /markets/" + marketId + " - deleteMarket() - caller: " + user.getUsername());
+        LOG.info("DELETE " + MARKETS_RESOURCE_PATH + "/" + marketId + " - deleteMarket() - caller: " + user.getUsername());
 
         final MarketConfig deletedConfig = marketConfigService.deleteMarketConfig(marketId);
         return deletedConfig == null

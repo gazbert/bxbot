@@ -21,7 +21,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.rest.api;
+package com.gazbert.bxbot.rest.api.v1;
 
 import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,11 +39,13 @@ import java.nio.charset.Charset;
 import java.util.Arrays;
 
 /**
- * Base class for Controller test classes.
+ * Base class for all Controller test classes.
  *
  * @author gazbert
  */
-public abstract class AbstractConfigControllerTest {
+public abstract class AbstractControllerTest {
+
+    protected static final String API_ENDPOINT_BASE_URI = "/api/v1";
 
     /**
      * This must match security.user.name in the src/test/resources/application.properties file.
@@ -81,7 +83,7 @@ public abstract class AbstractConfigControllerTest {
 
 
     @Autowired
-    void setConverters(HttpMessageConverter<?>[] converters) {
+    protected void setConverters(HttpMessageConverter<?>[] converters) {
         mappingJackson2HttpMessageConverter =
                 Arrays.stream(converters)
                         .filter(converter -> converter instanceof MappingJackson2HttpMessageConverter)

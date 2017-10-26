@@ -1,7 +1,9 @@
 # BX-bot
 
-[![Build Status](https://travis-ci.org/gazbert/bxbot.svg?branch=master)](https://travis-ci.org/gazbert/bxbot)
+[![Build Status](https://travis-ci.org/gazbert/bxbot.svg?branch=bxbot-restapi)](https://travis-ci.org/gazbert/bxbot)
 [![Join the chat at https://gitter.im/BX-bot/Lobby](https://badges.gitter.im/BX-bot/Lobby.svg)](https://gitter.im/BX-bot/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)		 	 
+
+**Note:** This branch is very much work in progress and not safe for production.
  
 ## What is BX-bot?
 
@@ -573,7 +575,7 @@ All elements are mandatory unless stated otherwise.
 * The `<smtp-config>` config is optional and only required if `<enabled>` is set to 'true'. 
   Sample SMTP config for using a Gmail account is shown above - all elements within `<smtp-config>` are mandatory. 
 
-#### Logging
+### Logging
 Logging for the bot is provided by [log4j](http://logging.apache.org/log4j). The log file is written to `logs/bxbot.log` 
 uses a rolling policy. It will create up to 7 archives on the same day (1-7) that are stored in a directory based on 
 the current year and month, and will compress each archive using gzip. Once a file reaches 100 MB or a new day is started,
