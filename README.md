@@ -92,6 +92,7 @@ You can use [Maven](https://maven.apache.org) or [Gradle](https://gradle.org/) t
 The instructions below are for Linux and macOS, but equivalent Windows scripts are included. 
 
 #### Maven
+1. Download the latest [release](https://github.com/gazbert/bxbot/releases). Unzip the bot.
 1. If you plan on using your own Trading Strategies/Exchange Adapters packaged in separate jar files, you'll need to add
    the dependency in the [bxbot-app/pom.xml](./bxbot-app/pom.xml) - see the commented out dependency examples inside it.
 1. From the project root, run `./mvnw clean assembly:assembly` to produce the distribution 
@@ -108,6 +109,7 @@ The instructions below are for Linux and macOS, but equivalent Windows scripts a
 1. Usage: `./bxbot.sh [start|stop|status]`   
     
 #### Gradle    
+1. Download the latest [release](https://github.com/gazbert/bxbot/releases). Unzip the bot.
 1. If you plan on using your own Trading Strategies/Exchange Adapters packaged in separate jar files, you'll need to add
    the dependency in the [bxbot-app/build.gradle](bxbot-app/build.gradle) - see the commented out dependency examples inside it.
 1. From the project root, run `./gradlew clean build` to build the bot.   
