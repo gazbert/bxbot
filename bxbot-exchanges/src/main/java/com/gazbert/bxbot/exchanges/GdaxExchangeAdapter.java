@@ -275,20 +275,8 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
             LOG.debug(() -> "Cancel Order response: " + response);
 
             if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
-
-                // TODO - gazbert PATCH - 1 Nov 2017 - looks like GDAX API response change - no longer returns cancelled orderId in array payload; it returns [null]... needs verifying/x-checking with GDAX REST API docs...
+                // 1 Nov 2017 - GDAX API no longer returns cancelled orderId in array payload; it returns [null]...
                 return true;
-
-//                // response payload is now a JSON array with 1 String entry: the orderId :-)
-//                final String[] cancelledOrderId = gson.fromJson(response.getPayload(), String[].class);
-//                if (cancelledOrderId[0].equals(orderId)) {
-//                    return true;
-//                } else {
-//                    final String errorMsg = "Failed to cancel order on exchange due to Order Id mismatch. " +
-//                            "OrderId sent: " + orderId + " ResponseOrderId: " + cancelledOrderId[0] + " Response: " + response;
-//                    LOG.error(errorMsg);
-//                    return false;
-//                }
             } else {
                 final String errorMsg = "Failed to cancel order on exchange. Details: " + response;
                 LOG.error(errorMsg);
