@@ -579,9 +579,9 @@ see the _[Installation Guide](#the-manual-way)_ for how to do this.
 
 ### Logging
 Logging for the bot is provided by [log4j](http://logging.apache.org/log4j). The log file is written to `logs/bxbot.log` 
-uses a rolling policy. It will create up to 7 archives on the same day (1-7) that are stored in a directory based on 
-the current year and month, and will compress each archive using gzip. Once a file reaches 100 MB or a new day is started,
-it is archived and a new log file is created. Only the last 90 archives are kept. The logging level is set at `info`. 
+using a rolling policy. When a log file size reaches 100 MB or a new day is started, it is archived and a new log file 
+is created. BX-bot will create up to 7 archives on the same day; these are stored in a directory based on the current 
+year and month. Only the last 90 archives are kept. Each archive is compressed using gzip. The logging level is set at `info`. 
 You can change this default logging configuration in the [`config/log4j2.xml`](./config/log4j2.xml) file.
 
 I recommend running at `info` level, as `debug` level logging will produce a *lot* of
