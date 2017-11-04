@@ -48,16 +48,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
- * Tests the Bot process controller behaviour.
+ * Tests the Bot Status controller behaviour.
  *
  * @author gazbert
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @WebAppConfiguration
-public class TestBotProcessController extends AbstractRuntimeControllerTest {
+public class TestBotStatusController extends AbstractRuntimeControllerTest {
 
-    private static final String STATUS_ENDPOINT_URI = RUNTIME_ENDPOINT_BASE_URI + "/process/status";
+    private static final String STATUS_ENDPOINT_URI = RUNTIME_ENDPOINT_BASE_URI + "/status";
 
     private static final String BOT_ID = "avro-707_1";
     private static final String BOT_NAME = "Avro 707";
