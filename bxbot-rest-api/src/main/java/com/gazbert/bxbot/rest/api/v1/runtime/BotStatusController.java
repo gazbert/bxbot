@@ -38,21 +38,21 @@ import org.springframework.web.bind.annotation.RestController;
 import static com.gazbert.bxbot.rest.api.v1.runtime.AbstractRuntimeController.RUNTIME_ENDPOINT_BASE_URI;
 
 /**
- * Controller for directing Bot process requests.
+ * Controller for directing Bot Status requests.
  *
  * @author gazbert
  * @since 1.0
  */
 @RestController
 @RequestMapping(RUNTIME_ENDPOINT_BASE_URI)
-public class BotProcessController extends AbstractRuntimeController {
+public class BotStatusController extends AbstractRuntimeController {
 
     private static final Logger LOG = LogManager.getLogger();
-    private static final String PROCESS_STATUS_RESOURCE_PATH = "/process/status";
+    private static final String STATUS_RESOURCE_PATH = "/status";
     private final EngineConfigService engineConfigService;
 
     @Autowired
-    public BotProcessController(EngineConfigService engineConfigService) {
+    public BotStatusController(EngineConfigService engineConfigService) {
         this.engineConfigService = engineConfigService;
     }
 
@@ -62,10 +62,10 @@ public class BotProcessController extends AbstractRuntimeController {
      * @param user the authenticated user making the request.
      * @return the process status.
      */
-    @RequestMapping(value = PROCESS_STATUS_RESOURCE_PATH, method = RequestMethod.GET)
+    @RequestMapping(value = STATUS_RESOURCE_PATH, method = RequestMethod.GET)
     public BotStatus getStatus(@AuthenticationPrincipal User user) {
 
-        LOG.info("GET " + PROCESS_STATUS_RESOURCE_PATH + " - getStatus() - caller: " + user.getUsername());
+        LOG.info("GET " + STATUS_RESOURCE_PATH + " - getStatus() - caller: " + user.getUsername());
 
         final EngineConfig engineConfig = engineConfigService.getEngineConfig();
 
