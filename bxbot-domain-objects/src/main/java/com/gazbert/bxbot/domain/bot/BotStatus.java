@@ -32,7 +32,7 @@ import com.google.common.base.MoreObjects;
  */
 public class BotStatus {
 
-    private String botId;
+    private String id;
     private String displayName;
     private String status;
 
@@ -40,19 +40,19 @@ public class BotStatus {
     public BotStatus() {
     }
 
-    public BotStatus(String botId, String displayName, String status) {
+    public BotStatus(String id, String displayName, String status) {
 
-        this.botId = botId;
+        this.id = id;
         this.displayName = displayName;
         this.status = status;
     }
 
-    public String getBotId() {
-        return botId;
+    public String getId() {
+        return id;
     }
 
-    public void setBotId(String botId) {
-        this.botId = botId;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getDisplayName() {
@@ -74,7 +74,7 @@ public class BotStatus {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("botId", botId)
+                .add("id", id)
                 .add("displayName", displayName)
                 .add("status", status)
                 .toString();

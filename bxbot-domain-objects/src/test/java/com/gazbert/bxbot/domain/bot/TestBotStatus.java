@@ -43,7 +43,7 @@ public class TestBotStatus {
 
         final BotStatus botStatus = new BotStatus(BOT_ID, DISPLAY_NAME, STATUS);
 
-        assertEquals(BOT_ID, botStatus.getBotId());
+        assertEquals(BOT_ID, botStatus.getId());
         assertEquals(DISPLAY_NAME, botStatus.getDisplayName());
         assertEquals(STATUS, botStatus.getStatus());
     }
@@ -52,12 +52,12 @@ public class TestBotStatus {
     public void testSettersWorkAsExpected() {
 
         final BotStatus botStatus = new BotStatus();
-        assertEquals(null, botStatus.getBotId());
+        assertEquals(null, botStatus.getId());
         assertEquals(null, botStatus.getDisplayName());
         assertEquals(null, botStatus.getStatus());
 
-        botStatus.setBotId(BOT_ID);
-        assertEquals(BOT_ID, botStatus.getBotId());
+        botStatus.setId(BOT_ID);
+        assertEquals(BOT_ID, botStatus.getId());
 
         botStatus.setDisplayName(DISPLAY_NAME);
         assertEquals(DISPLAY_NAME, botStatus.getDisplayName());

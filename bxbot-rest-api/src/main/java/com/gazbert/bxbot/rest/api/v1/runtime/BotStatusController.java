@@ -71,7 +71,7 @@ public class BotStatusController extends AbstractRuntimeController {
 
         // TODO - hacked up for now until work properly starts on runtime features ;-)
         final BotStatus botStatus = new BotStatus();
-        botStatus.setBotId(engineConfig.getBotId());
+        botStatus.setId(engineConfig.getBotId());
         botStatus.setDisplayName(engineConfig.getBotName());
         botStatus.setStatus("running"); // use enum for defining states at some point
 

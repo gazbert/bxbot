@@ -92,7 +92,7 @@ public class TestBotStatusController extends AbstractRuntimeControllerTest {
                 .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD)))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.botId").value(BOT_ID))
+                .andExpect(jsonPath("$.id").value(BOT_ID))
                 .andExpect(jsonPath("$.displayName").value(BOT_NAME))
                 .andExpect(jsonPath("$.status").value(BOT_STATUS));
 
