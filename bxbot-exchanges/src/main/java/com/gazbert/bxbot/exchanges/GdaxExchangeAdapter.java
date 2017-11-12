@@ -43,6 +43,7 @@ import java.net.*;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.time.Instant;
 import java.util.*;
 
@@ -181,6 +182,10 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
      */
     private Gson gson;
 
+    /**
+     * Enforce specific format setting of decimal numbers
+     */
+    private DecimalFormatSymbols decimalFormatSymbols;
 
     @Override
     public void init(ExchangeConfig config) {
@@ -192,6 +197,7 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
 
         initSecureMessageLayer();
         initGson();
+        initNumberFormatting();
     }
 
     // ------------------------------------------------------------------------------------------------
@@ -231,10 +237,10 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
             params.put("product_id", marketId);
 
             // note we need to limit price to 2 decimal places else exchange will barf
-            params.put("price", new DecimalFormat("#.##").format(price));
+            params.put("price", new DecimalFormat("#.##", decimalFormatSymbols).format(price));
 
             // note we need to limit size to 8 decimal places else exchange will barf
-            params.put("size", new DecimalFormat("#.########").format(quantity));
+            params.put("size", new DecimalFormat("#.########", decimalFormatSymbols).format(quantity));
 
             final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("POST", "orders", params);
             LOG.debug(() -> "Create Order response: " + response);
@@ -856,6 +862,11 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
     private void initGson() {
         final GsonBuilder gsonBuilder = new GsonBuilder();
         gson = gsonBuilder.create();
+    }
+
+    private void initNumberFormatting() {
+        decimalFormatSymbols = new DecimalFormatSymbols(Locale.getDefault());
+        decimalFormatSymbols.setDecimalSeparator('.');
     }
 
     /*
