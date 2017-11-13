@@ -266,14 +266,14 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
             params.put("type", "limit");
 
             // note we need to limit amount to 4 decimal places else exchange will barf
-            params.put("amount", new DecimalFormat("#.####").format(quantity));
+            params.put("amount", new DecimalFormat("#.####", getDecimalFormatSymbols()).format(quantity));
 
             // Display param seems to be optional as per the itBit sample code:
             // https://github.com/itbit/itbit-restapi-python/blob/master/itbit_api.py - def create_order
-            // params.put("display", new DecimalFormat("#.####").format(quantity)); // use the same as amount
+            // params.put("display", new DecimalFormat("#.####", getDecimalFormatSymbols()).format(quantity)); // use the same as amount
 
             // note we need to limit price to 2 decimal places else exchange will barf
-            params.put("price", new DecimalFormat("#.##").format(price));
+            params.put("price", new DecimalFormat("#.##", getDecimalFormatSymbols()).format(price));
 
             params.put("instrument", marketId);
 

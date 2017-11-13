@@ -207,10 +207,10 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
                 throw new IllegalArgumentException(errorMsg);
             }
 
-            params.put("price", new DecimalFormat("#.########").format(price));
+            params.put("price", new DecimalFormat("#.########", getDecimalFormatSymbols()).format(price));
 
             // note we need to limit amount to 8 decimal places else exchange will barf
-            params.put("amount", new DecimalFormat("#.########").format(quantity));
+            params.put("amount", new DecimalFormat("#.########", getDecimalFormatSymbols()).format(quantity));
 
             final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("trade.do", params);
             LOG.debug(() -> "Create Order response: " + response);

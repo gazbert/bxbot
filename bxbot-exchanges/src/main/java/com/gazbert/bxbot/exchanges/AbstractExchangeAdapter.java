@@ -34,6 +34,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.*;
 import java.net.*;
+import java.text.DecimalFormatSymbols;
 import java.util.*;
 
 /**
@@ -118,14 +119,24 @@ abstract class AbstractExchangeAdapter {
      */
     private final Set<String> nonFatalNetworkErrorMessages;
 
+    /**
+     * Enforce specific format setting of decimal numbers.
+     */
+    private DecimalFormatSymbols decimalFormatSymbols;
+
 
     /**
-     * Constructor set some sensible defaults for the network config.
+     * Constructor sets some sensible defaults for the network config
+     * and specifies decimal point symbol.
      */
     AbstractExchangeAdapter() {
         connectionTimeout = 30;
         nonFatalNetworkErrorCodes = new HashSet<>();
         nonFatalNetworkErrorMessages = new HashSet<>();
+
+        // Some locales (e.g. Czech Republic) default to ',' instead of '.' for decimal point. Exchanges always require a '.'
+        decimalFormatSymbols = new DecimalFormatSymbols(Locale.getDefault());
+        decimalFormatSymbols.setDecimalSeparator('.');
     }
 
     /**
@@ -384,6 +395,16 @@ abstract class AbstractExchangeAdapter {
             sortedQueryString.append(params.get(param));
         }
         return sortedQueryString.toString();
+    }
+
+    /**
+     * Returns the decimal format symbols for using with BigDecimals with the exchanges. Specifically, the decimal
+     * point symbol is set to a '.'
+     *
+     * @return the decimal format symbols.
+     */
+    DecimalFormatSymbols getDecimalFormatSymbols() {
+        return decimalFormatSymbols;
     }
 
     /**

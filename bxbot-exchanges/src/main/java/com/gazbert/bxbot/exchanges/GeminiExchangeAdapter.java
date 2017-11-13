@@ -235,13 +235,13 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter impleme
             params.put("symbol", marketId);
 
             // note we need to limit amount and price to 6 decimal places else exchange will barf with 400 response
-            params.put("amount", new DecimalFormat("#.######").format(quantity));
+            params.put("amount", new DecimalFormat("#.######", getDecimalFormatSymbols()).format(quantity));
 
             // Decimal precision of price varies with market price currency
             if (marketId.equals(MarketId.BTC_USD.getStringValue()) || marketId.equals(MarketId.ETH_USD.getStringValue())) {
-                params.put("price", new DecimalFormat("#.##").format(price));
+                params.put("price", new DecimalFormat("#.##", getDecimalFormatSymbols()).format(price));
             } else if (marketId.equals(MarketId.ETH_BTC.getStringValue())) {
-                params.put("price", new DecimalFormat("#.#####").format(price));
+                params.put("price", new DecimalFormat("#.#####", getDecimalFormatSymbols()).format(price));
             } else {
                 final String errorMsg = "Invalid market id: " + marketId
                         + " - Can only be "

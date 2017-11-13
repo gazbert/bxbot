@@ -269,10 +269,10 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
             final Map<String, String> params = getRequestParamMap();
 
             // note we need to limit price to 2 decimal places else exchange will barf
-            params.put("price", new DecimalFormat("#.##").format(price));
+            params.put("price", new DecimalFormat("#.##", getDecimalFormatSymbols()).format(price));
 
             // note we need to limit amount to 8 decimal places else exchange will barf
-            params.put("amount", new DecimalFormat("#.########").format(quantity));
+            params.put("amount", new DecimalFormat("#.########", getDecimalFormatSymbols()).format(quantity));
 
             final ExchangeHttpResponse response;
             if (orderType == OrderType.BUY) {
