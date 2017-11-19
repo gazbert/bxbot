@@ -273,8 +273,8 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter imple
             params.put("symbol", marketId);
 
             // note we need to limit amount and price to 8 decimal places else exchange will barf
-            params.put("amount", new DecimalFormat("#.########").format(quantity));
-            params.put("price", new DecimalFormat("#.########").format(price));
+            params.put("amount", new DecimalFormat("#.########", getDecimalFormatSymbols()).format(quantity));
+            params.put("price", new DecimalFormat("#.########", getDecimalFormatSymbols()).format(price));
 
             params.put("exchange", "bitfinex");
 

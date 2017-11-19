@@ -21,7 +21,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.rest.api.config;
+package com.gazbert.bxbot.rest.api.v1.config;
 
 import com.gazbert.bxbot.domain.exchange.ExchangeConfig;
 import com.gazbert.bxbot.services.ExchangeConfigService;
@@ -31,11 +31,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
-import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+
+import static com.gazbert.bxbot.rest.api.v1.config.AbstractConfigController.CONFIG_ENDPOINT_BASE_URI;
 
 /**
  * <p>
@@ -49,14 +50,14 @@ import org.springframework.web.bind.annotation.RestController;
  * @since 1.0
  */
 @RestController
-@RequestMapping("/api/config/")
-public class ExchangeConfigController {
+@RequestMapping(CONFIG_ENDPOINT_BASE_URI)
+public class ExchangeConfigController extends AbstractConfigController {
 
     private static final Logger LOG = LogManager.getLogger();
+    private static final String EXCHANGE_RESOURCE_PATH = "/exchange";
     private final ExchangeConfigService exchangeConfigService;
 
     public ExchangeConfigController(ExchangeConfigService exchangeConfigService) {
-        Assert.notNull(exchangeConfigService, "exchangeConfigService dependency cannot be null!");
         this.exchangeConfigService = exchangeConfigService;
     }
 
@@ -66,12 +67,13 @@ public class ExchangeConfigController {
      * The AuthenticationConfig is stripped out and not exposed for remote consumption.
      * The API keys/credentials should not leave the bot's local machine via the REST API.
      *
+     * @param user the authenticated user making the request.
      * @return the Exchange configuration.
      */
-    @RequestMapping(value = "/exchange", method = RequestMethod.GET)
+    @RequestMapping(value = EXCHANGE_RESOURCE_PATH, method = RequestMethod.GET)
     public ExchangeConfig getExchange(@AuthenticationPrincipal User user) {
 
-        LOG.info("GET /exchange - getExchange() - caller: " + user.getUsername());
+        LOG.info("GET " + EXCHANGE_RESOURCE_PATH + " - getExchange() - caller: " + user.getUsername());
 
         final ExchangeConfig exchangeConfig = exchangeConfigService.getExchangeConfig();
         exchangeConfig.setAuthenticationConfig(null);
@@ -86,18 +88,20 @@ public class ExchangeConfigController {
      * Any AuthenticationConfig is stripped out and not updated.
      * The API keys/credentials should not enter the bot's local machine via the REST API.
      *
+     * @param user   the authenticated user making the request.
+     * @param config the Exchange config to update.
      * @return 200 'OK' HTTP status code with updated Exchange config in the body if update successful, some other
      * HTTP status code otherwise.
      */
-    @RequestMapping(value = "/exchange", method = RequestMethod.PUT)
+    @RequestMapping(value = EXCHANGE_RESOURCE_PATH, method = RequestMethod.PUT)
     public ResponseEntity<?> updateExchange(@AuthenticationPrincipal User user, @RequestBody ExchangeConfig config) {
 
-        LOG.info("PUT /exchange - updateExchange() - caller: " + user.getUsername());
+        LOG.info("PUT " + EXCHANGE_RESOURCE_PATH + " - updateExchange() - caller: " + user.getUsername());
         LOG.info("Request: " + config);
 
         final ExchangeConfig updatedConfig = exchangeConfigService.updateExchangeConfig(
                 mergeWithLocalAuthenticationConfig(config));
-        return new ResponseEntity<>(updatedConfig, HttpStatus.OK);
+        return buildResponseEntity(updatedConfig, HttpStatus.OK);
     }
 
     // ------------------------------------------------------------------------

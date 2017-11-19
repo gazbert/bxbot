@@ -161,19 +161,10 @@ public class TradingEngine {
 
         LOG.info(() -> "Initialising Trading Engine...");
 
-        Assert.notNull(exchangeConfigService, "exchangeConfigService dependency cannot be null!");
         this.exchangeConfigService = exchangeConfigService;
-
-        Assert.notNull(engineConfigService, "engineConfigService dependency cannot be null!");
         this.engineConfigService = engineConfigService;
-
-        Assert.notNull(strategyConfigService, "strategyConfigService dependency cannot be null!");
         this.strategyConfigService = strategyConfigService;
-
-        Assert.notNull(marketConfigService, "marketConfigService dependency cannot be null!");
         this.marketConfigService = marketConfigService;
-
-        Assert.notNull(emailAlerter, "emailAlerter dependency cannot be null!");
         this.emailAlerter = emailAlerter;
     }
 

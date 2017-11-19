@@ -50,7 +50,6 @@ public class ExchangeConfigServiceImpl implements ExchangeConfigService {
 
     @Autowired
     public ExchangeConfigServiceImpl(ExchangeConfigRepository exchangeConfigRepository) {
-        Assert.notNull(exchangeConfigRepository, "exchangeConfigRepository dependency cannot be null!");
         this.exchangeConfigRepository = exchangeConfigRepository;
     }
 

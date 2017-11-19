@@ -8,11 +8,5 @@ dependencies {
     compile libraries.spring_boot_starter_log4j2
     compile libraries.google_guava
 
-    testCompile libraries.junit
-    testCompile libraries.powermock_junit
-    testCompile libraries.powermock_api_easymock
-    testCompile libraries.easymock
-    testCompile libraries.objenesis
-    testCompile libraries.cglib_nodep
     testCompile libraries.spring_boot_starter_test
 }

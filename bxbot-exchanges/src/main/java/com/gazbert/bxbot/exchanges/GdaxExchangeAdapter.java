@@ -181,7 +181,6 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
      */
     private Gson gson;
 
-
     @Override
     public void init(ExchangeConfig config) {
 
@@ -231,10 +230,10 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
             params.put("product_id", marketId);
 
             // note we need to limit price to 2 decimal places else exchange will barf
-            params.put("price", new DecimalFormat("#.##").format(price));
+            params.put("price", new DecimalFormat("#.##", getDecimalFormatSymbols()).format(price));
 
             // note we need to limit size to 8 decimal places else exchange will barf
-            params.put("size", new DecimalFormat("#.########").format(quantity));
+            params.put("size", new DecimalFormat("#.########", getDecimalFormatSymbols()).format(quantity));
 
             final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("POST", "orders", params);
             LOG.debug(() -> "Create Order response: " + response);
@@ -275,16 +274,8 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
             LOG.debug(() -> "Cancel Order response: " + response);
 
             if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
-                // response payload is now a JSON array with 1 String entry: the orderId :-)
-                final String[] cancelledOrderId = gson.fromJson(response.getPayload(), String[].class);
-                if (cancelledOrderId[0].equals(orderId)) {
-                    return true;
-                } else {
-                    final String errorMsg = "Failed to cancel order on exchange due to Order Id mismatch. " +
-                            "OrderId sent: " + orderId + " ResponseOrderId: " + cancelledOrderId[0] + " Response: " + response;
-                    LOG.error(errorMsg);
-                    return false;
-                }
+                // 1 Nov 2017 - GDAX API no longer returns cancelled orderId in array payload; it returns [null]...
+                return true;
             } else {
                 final String errorMsg = "Failed to cancel order on exchange. Details: " + response;
                 LOG.error(errorMsg);

@@ -84,6 +84,10 @@ import java.util.*;
  * and we need to be able to filter only the orders for the given market id.
  * </p>
  * <p>
+ * The exchange regularly goes down for maintenance. If the keep-alive-during-maintenance config-item is set to true
+ * in the exchange.xml config file, the bot will stay alive and wait until the next trade cycle.
+ * </p>
+ * <p>
  * The Exchange Adapter is <em>not</em> thread safe. It expects to be called using a single thread in order to
  * preserve trade execution order. The {@link URLConnection} achieves this by blocking/waiting on the input stream
  * (response) for each API call.
@@ -141,6 +145,11 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
     private static final String UNEXPECTED_IO_ERROR_MSG = "Failed to connect to Exchange due to unexpected IO error.";
 
     /**
+     * Exchange under maintenance warning message for logging.
+     */
+    private static final String UNDER_MAINTENANCE_WARNING_MESSAGE = "Exchange is undergoing maintenance - keep alive is true.";
+
+    /**
      * Error message for when API call to get Market Orders fails.
      */
     private static final String FAILED_TO_GET_MARKET_ORDERS = "Failed to get Market Order Book from exchange. Details: ";
@@ -191,6 +200,16 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
     private static final String SELL_FEE_PROPERTY_NAME = "sell-fee";
 
     /**
+     * Name of Keep Alive During Maintenance property in config file.
+     */
+    private static final String KEEP_ALIVE_DURING_MAINTENANCE_PROPERTY_NAME = "keep-alive-during-maintenance";
+
+    /**
+     * Text in response indicating exchange is undergoing maintenance.
+     */
+    private static final String EXCHANGE_UNDERGOING_MAINTENANCE_RESPONSE = "EService:Unavailable";
+
+    /**
      * Nonce used for sending authenticated messages to the exchange.
      */
     private long nonce = 0;
@@ -204,6 +223,11 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
      * Exchange sell fees in % in {@link BigDecimal} format.
      */
     private BigDecimal sellFeePercentage;
+
+    /**
+     * Indicates if bot should stay alive when exchange is undergoing maintenance.
+     */
+    private boolean keepAliveDuringMaintenance;
 
     /**
      * Used to indicate if we have initialised the MAC authentication protocol.
@@ -253,13 +277,18 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
     @Override
     public MarketOrderBook getMarketOrders(String marketId) throws TradingApiException, ExchangeNetworkException {
 
+        ExchangeHttpResponse response = null;
+
         try {
 
             final Map<String, String> params = getRequestParamMap();
             params.put("pair", marketId);
 
-            final ExchangeHttpResponse response = sendPublicRequestToExchange("Depth", params);
-            LOG.debug(() -> "Market Orders response: " + response);
+            response = sendPublicRequestToExchange("Depth", params);
+
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Market Orders response: " + response);
+            }
 
             if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
 
@@ -298,6 +327,12 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
                     return new MarketOrderBook(marketId, sellOrders, buyOrders);
 
                 } else {
+
+                    if (isExchangeUndergoingMaintenance(response) && keepAliveDuringMaintenance) {
+                        LOG.warn(() -> UNDER_MAINTENANCE_WARNING_MESSAGE);
+                        throw new ExchangeNetworkException(UNDER_MAINTENANCE_WARNING_MESSAGE);
+                    }
+
                     final String errorMsg = FAILED_TO_GET_MARKET_ORDERS + response;
                     LOG.error(errorMsg);
                     throw new TradingApiException(errorMsg);
@@ -320,10 +355,15 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
     @Override
     public List<OpenOrder> getYourOpenOrders(String marketId) throws TradingApiException, ExchangeNetworkException {
 
+        ExchangeHttpResponse response = null;
+
         try {
 
-            final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("OpenOrders", null);
-            LOG.debug(() -> "Open Orders response: " + response);
+            response = sendAuthenticatedRequestToExchange("OpenOrders", null);
+
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Open Orders response: " + response);
+            }
 
             if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
 
@@ -383,6 +423,12 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
                     return openOrders;
 
                 } else {
+
+                    if (isExchangeUndergoingMaintenance(response) && keepAliveDuringMaintenance) {
+                        LOG.warn(() -> UNDER_MAINTENANCE_WARNING_MESSAGE);
+                        throw new ExchangeNetworkException(UNDER_MAINTENANCE_WARNING_MESSAGE);
+                    }
+
                     final String errorMsg = FAILED_TO_GET_OPEN_ORDERS + response;
                     LOG.error(errorMsg);
                     throw new TradingApiException(errorMsg);
@@ -406,6 +452,8 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
     public String createOrder(String marketId, OrderType orderType, BigDecimal quantity, BigDecimal price) throws
             TradingApiException, ExchangeNetworkException {
 
+        ExchangeHttpResponse response = null;
+
         try {
 
             final Map<String, String> params = getRequestParamMap();
@@ -425,11 +473,14 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
             }
 
             params.put("ordertype", "limit"); // this exchange adapter only supports limit orders
-            params.put("price", new DecimalFormat("#.########").format(price));
-            params.put("volume", new DecimalFormat("#.########").format(quantity));
+            params.put("price", new DecimalFormat("#.########", getDecimalFormatSymbols()).format(price));
+            params.put("volume", new DecimalFormat("#.########", getDecimalFormatSymbols()).format(quantity));
 
-            final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("AddOrder", params);
-            LOG.debug(() -> "Create Order response: " + response);
+            response = sendAuthenticatedRequestToExchange("AddOrder", params);
+
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Create Order response: " + response);
+            }
 
             if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
 
@@ -447,6 +498,12 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
                     return krakenAddOrderResult.txid.get(0);
 
                 } else {
+
+                    if (isExchangeUndergoingMaintenance(response) && keepAliveDuringMaintenance) {
+                        LOG.warn(() -> UNDER_MAINTENANCE_WARNING_MESSAGE);
+                        throw new ExchangeNetworkException(UNDER_MAINTENANCE_WARNING_MESSAGE);
+                    }
+
                     final String errorMsg = FAILED_TO_ADD_ORDER + response;
                     LOG.error(errorMsg);
                     throw new TradingApiException(errorMsg);
@@ -469,12 +526,17 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
     @Override
     public boolean cancelOrder(String orderId, String marketIdNotNeeded) throws TradingApiException, ExchangeNetworkException {
 
+        ExchangeHttpResponse response = null;
+
         try {
             final Map<String, String> params = getRequestParamMap();
             params.put("txid", orderId);
 
-            final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("CancelOrder", params);
-            LOG.debug(() -> "Cancel Order response: " + response);
+            response = sendAuthenticatedRequestToExchange("CancelOrder", params);
+
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Cancel Order response: " + response);
+            }
 
             if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
 
@@ -502,6 +564,12 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
                     }
 
                 } else {
+
+                    if (isExchangeUndergoingMaintenance(response) && keepAliveDuringMaintenance) {
+                        LOG.warn(() -> UNDER_MAINTENANCE_WARNING_MESSAGE);
+                        throw new ExchangeNetworkException(UNDER_MAINTENANCE_WARNING_MESSAGE);
+                    }
+
                     final String errorMsg = FAILED_TO_CANCEL_ORDER + response;
                     LOG.error(errorMsg);
                     throw new TradingApiException(errorMsg);
@@ -524,13 +592,18 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
     @Override
     public BigDecimal getLatestMarketPrice(String marketId) throws TradingApiException, ExchangeNetworkException {
 
+        ExchangeHttpResponse response = null;
+
         try {
 
             final Map<String, String> params = getRequestParamMap();
             params.put("pair", marketId);
 
-            final ExchangeHttpResponse response = sendPublicRequestToExchange("Ticker", params);
-            LOG.debug(() -> "Latest Market Price response: " + response);
+            response = sendPublicRequestToExchange("Ticker", params);
+
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Latest Market Price response: " + response);
+            }
 
             if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
 
@@ -551,6 +624,12 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
                     return new BigDecimal(tickerParams.get("c").get(0));
 
                 } else {
+
+                    if (isExchangeUndergoingMaintenance(response) && keepAliveDuringMaintenance) {
+                        LOG.warn(() -> UNDER_MAINTENANCE_WARNING_MESSAGE);
+                        throw new ExchangeNetworkException(UNDER_MAINTENANCE_WARNING_MESSAGE);
+                    }
+
                     final String errorMsg = FAILED_TO_GET_TICKER + response;
                     LOG.error(errorMsg);
                     throw new TradingApiException(errorMsg);
@@ -573,10 +652,15 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
     @Override
     public BalanceInfo getBalanceInfo() throws TradingApiException, ExchangeNetworkException {
 
+        ExchangeHttpResponse response = null;
+
         try {
 
-            final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("Balance", null);
-            LOG.debug(() -> "Balance Info response: " + response);
+            response = sendAuthenticatedRequestToExchange("Balance", null);
+
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Balance Info response: " + response);
+            }
 
             if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
 
@@ -601,6 +685,12 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
                         return new BalanceInfo(balancesAvailable, new HashMap<>());
 
                     } else {
+
+                        if (isExchangeUndergoingMaintenance(response) && keepAliveDuringMaintenance) {
+                            LOG.warn(() -> UNDER_MAINTENANCE_WARNING_MESSAGE);
+                            throw new ExchangeNetworkException(UNDER_MAINTENANCE_WARNING_MESSAGE);
+                        }
+
                         final String errorMsg = FAILED_TO_GET_BALANCE + response;
                         LOG.error(errorMsg);
                         throw new TradingApiException(errorMsg);
@@ -1090,6 +1180,15 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
         final String sellFeeInConfig = getOptionalConfigItem(optionalConfig, SELL_FEE_PROPERTY_NAME);
         sellFeePercentage = new BigDecimal(sellFeeInConfig).divide(new BigDecimal("100"), 8, BigDecimal.ROUND_HALF_UP);
         LOG.info(() -> "Sell fee % in BigDecimal format: " + sellFeePercentage);
+
+        final String keepAliveDuringMaintenanceConfig = getOptionalConfigItem(optionalConfig,
+                KEEP_ALIVE_DURING_MAINTENANCE_PROPERTY_NAME);
+        if (keepAliveDuringMaintenanceConfig != null && !keepAliveDuringMaintenanceConfig.isEmpty()) {
+            keepAliveDuringMaintenance = Boolean.valueOf(keepAliveDuringMaintenanceConfig);
+            LOG.info(() -> "Keep Alive During Maintenance: " + keepAliveDuringMaintenance);
+        } else {
+            LOG.info(() -> KEEP_ALIVE_DURING_MAINTENANCE_PROPERTY_NAME + " is not set in exchange.xml");
+        }
     }
 
     // ------------------------------------------------------------------------------------------------
@@ -1103,6 +1202,16 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
         final GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.registerTypeAdapter(KrakenTickerResult.class, new KrakenTickerResultDeserializer());
         gson = gsonBuilder.create();
+    }
+
+    private static boolean isExchangeUndergoingMaintenance(ExchangeHttpResponse response) {
+        if (response != null) {
+            final String payload = response.getPayload();
+            if (payload != null && payload.contains(EXCHANGE_UNDERGOING_MAINTENANCE_RESPONSE)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /*

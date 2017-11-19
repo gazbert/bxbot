@@ -50,7 +50,6 @@ public class EngineConfigServiceImpl implements EngineConfigService {
 
     @Autowired
     public EngineConfigServiceImpl(EngineConfigRepository engineConfigRepository) {
-        Assert.notNull(engineConfigRepository, "engineConfigRepository dependency cannot be null!");
         this.engineConfigRepository = engineConfigRepository;
     }
 

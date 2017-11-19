@@ -21,15 +21,13 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.rest.api.config;
+package com.gazbert.bxbot.rest.api.v1.config;
 
 import com.gazbert.bxbot.core.engine.TradingEngine;
 import com.gazbert.bxbot.core.mail.EmailAlerter;
-import com.gazbert.bxbot.domain.exchange.AuthenticationConfig;
 import com.gazbert.bxbot.domain.exchange.ExchangeConfig;
 import com.gazbert.bxbot.domain.exchange.NetworkConfig;
 import com.gazbert.bxbot.domain.exchange.OptionalConfig;
-import com.gazbert.bxbot.rest.api.AbstractConfigControllerTest;
 import com.gazbert.bxbot.services.ExchangeConfigService;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,14 +37,15 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -63,7 +62,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebAppConfiguration
 public class TestExchangeConfigController extends AbstractConfigControllerTest {
 
-    // Canned test data
+    private static final String EXCHANGE_CONFIG_ENDPOINT_URI = CONFIG_ENDPOINT_BASE_URI + "/exchange";
+    
     private static final String EXCHANGE_NAME = "Bitstamp";
     private static final String EXCHANGE_ADAPTER = "com.gazbert.bxbot.exchanges.TestExchangeAdapter";
 
@@ -106,7 +106,7 @@ public class TestExchangeConfigController extends AbstractConfigControllerTest {
 
         given(exchangeConfigService.getExchangeConfig()).willReturn(someExchangeConfig());
 
-        mockMvc.perform(get("/api/config/exchange")
+        mockMvc.perform(get(EXCHANGE_CONFIG_ENDPOINT_URI)
                 .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD)))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -127,12 +127,14 @@ public class TestExchangeConfigController extends AbstractConfigControllerTest {
 
                 .andExpect(jsonPath("$.optionalConfig.items.buy-fee").value(BUY_FEE_CONFIG_ITEM_VALUE))
                 .andExpect(jsonPath("$.optionalConfig.items.sell-fee").value(SELL_FEE_CONFIG_ITEM_VALUE));
+
+        verify(exchangeConfigService, times(1)).getExchangeConfig();
     }
 
     @Test
     public void testGetExchangeConfigWhenUnauthorizedWithMissingCredentials() throws Exception {
 
-        mockMvc.perform(get("/api/config/exchange")
+        mockMvc.perform(get(EXCHANGE_CONFIG_ENDPOINT_URI)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isUnauthorized());
     }
@@ -140,7 +142,7 @@ public class TestExchangeConfigController extends AbstractConfigControllerTest {
     @Test
     public void testGetExchangeConfigWhenUnauthorizedWithInvalidCredentials() throws Exception {
 
-        mockMvc.perform(get("/api/config/exchange")
+        mockMvc.perform(get(EXCHANGE_CONFIG_ENDPOINT_URI)
                 .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, INVALID_USER_PASSWORD))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isUnauthorized());
@@ -150,23 +152,39 @@ public class TestExchangeConfigController extends AbstractConfigControllerTest {
     public void testUpdateExchangeConfig() throws Exception {
 
         given(exchangeConfigService.getExchangeConfig()).willReturn(someExchangeConfig());
-        given(exchangeConfigService.updateExchangeConfig(someExchangeConfig())).willReturn(someExchangeConfig());
+        given(exchangeConfigService.updateExchangeConfig(any())).willReturn(someExchangeConfig());
 
-        final MvcResult result = mockMvc.perform(put("/api/config/exchange")
+        mockMvc.perform(put(EXCHANGE_CONFIG_ENDPOINT_URI)
                 .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD))
                 .contentType(CONTENT_TYPE)
                 .content(jsonify(someExchangeConfig())))
                 .andExpect(status().isOk())
-                .andReturn();
 
-        // FIXME - response body is empty?!
-//        assertEquals(jsonify(someExchangeConfig()), result.getResponse().getContentAsString());
+                .andExpect(jsonPath("$.exchangeName").value(EXCHANGE_NAME))
+                .andExpect(jsonPath("$.exchangeAdapter").value(EXCHANGE_ADAPTER))
+
+                // REST API does not expose AuthenticationConfig - potential security risk.
+                .andExpect(jsonPath("$.authenticationConfig").doesNotExist())
+
+                .andExpect(jsonPath("$.networkConfig.connectionTimeout").value(CONNECTION_TIMEOUT))
+                .andExpect(jsonPath("$.networkConfig.nonFatalErrorCodes[0]").value(HTTP_STATUS_502))
+                .andExpect(jsonPath("$.networkConfig.nonFatalErrorCodes[1]").value(HTTP_STATUS_503))
+                .andExpect(jsonPath("$.networkConfig.nonFatalErrorCodes[2]").value(HTTP_STATUS_504))
+                .andExpect(jsonPath("$.networkConfig.nonFatalErrorMessages[0]").value(ERROR_MESSAGE_REFUSED))
+                .andExpect(jsonPath("$.networkConfig.nonFatalErrorMessages[1]").value(ERROR_MESSAGE_RESET))
+                .andExpect(jsonPath("$.networkConfig.nonFatalErrorMessages[2]").value(ERROR_MESSAGE_CLOSED))
+
+                .andExpect(jsonPath("$.optionalConfig.items.buy-fee").value(BUY_FEE_CONFIG_ITEM_VALUE))
+                .andExpect(jsonPath("$.optionalConfig.items.sell-fee").value(SELL_FEE_CONFIG_ITEM_VALUE));
+
+        verify(exchangeConfigService, times(1)).getExchangeConfig();
+        verify(exchangeConfigService, times(1)).updateExchangeConfig(any());
     }
 
     @Test
     public void testUpdateExchangeConfigWhenUnauthorizedWithMissingCredentials() throws Exception {
 
-        mockMvc.perform(put("/api/config/exchange")
+        mockMvc.perform(put(EXCHANGE_CONFIG_ENDPOINT_URI)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isUnauthorized());
     }
@@ -174,7 +192,7 @@ public class TestExchangeConfigController extends AbstractConfigControllerTest {
     @Test
     public void testUpdateExchangeConfigWhenUnauthorizedWithInvalidCredentials() throws Exception {
 
-        mockMvc.perform(put("/api/config/exchange")
+        mockMvc.perform(put(EXCHANGE_CONFIG_ENDPOINT_URI)
                 .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, INVALID_USER_PASSWORD))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isUnauthorized());

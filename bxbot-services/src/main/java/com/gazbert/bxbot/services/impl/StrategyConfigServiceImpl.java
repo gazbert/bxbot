@@ -52,7 +52,6 @@ public class StrategyConfigServiceImpl implements StrategyConfigService {
 
     @Autowired
     public StrategyConfigServiceImpl(StrategyConfigRepository strategyConfigRepository) {
-        Assert.notNull(strategyConfigRepository, "strategyConfigRepository dependency cannot be null!");
         this.strategyConfigRepository = strategyConfigRepository;
     }
 

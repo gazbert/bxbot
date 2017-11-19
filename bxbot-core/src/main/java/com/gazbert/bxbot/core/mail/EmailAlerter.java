@@ -58,8 +58,6 @@ public class EmailAlerter {
 
     @Autowired
     public EmailAlerter(EmailAlertsConfigService emailAlertsConfigService) {
-
-        Assert.notNull(emailAlertsConfigService, "emailAlertsConfigService dependency cannot be null!");
         this.emailAlertsConfigService = emailAlertsConfigService;
         initialise();
     }

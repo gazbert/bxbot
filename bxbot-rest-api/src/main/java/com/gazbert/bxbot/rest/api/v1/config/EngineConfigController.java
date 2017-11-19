@@ -21,7 +21,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.rest.api.config;
+package com.gazbert.bxbot.rest.api.v1.config;
 
 import com.gazbert.bxbot.domain.engine.EngineConfig;
 import com.gazbert.bxbot.services.EngineConfigService;
@@ -32,11 +32,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
-import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+
+import static com.gazbert.bxbot.rest.api.v1.config.AbstractConfigController.CONFIG_ENDPOINT_BASE_URI;
 
 /**
  * Controller for directing Engine config requests.
@@ -49,27 +50,28 @@ import org.springframework.web.bind.annotation.RestController;
  * @since 1.0
  */
 @RestController
-@RequestMapping("/api/config")
-public class EngineConfigController {
+@RequestMapping(CONFIG_ENDPOINT_BASE_URI)
+public class EngineConfigController extends AbstractConfigController {
 
     private static final Logger LOG = LogManager.getLogger();
+    private static final String ENGINE_RESOURCE_PATH = "/engine";
     private final EngineConfigService engineConfigService;
 
     @Autowired
     public EngineConfigController(EngineConfigService engineConfigService) {
-        Assert.notNull(engineConfigService, "engineConfigService dependency cannot be null!");
         this.engineConfigService = engineConfigService;
     }
 
     /**
      * Returns the Engine configuration for the bot.
      *
+     * @param user the authenticated user making the request.
      * @return the Engine configuration.
      */
-    @RequestMapping(value = "/engine", method = RequestMethod.GET)
+    @RequestMapping(value = ENGINE_RESOURCE_PATH, method = RequestMethod.GET)
     public EngineConfig getEngine(@AuthenticationPrincipal User user) {
 
-        LOG.info("GET /engine - getEngine() - caller: " + user.getUsername());
+        LOG.info("GET " + ENGINE_RESOURCE_PATH + " - getEngine() - caller: " + user.getUsername());
 
         final EngineConfig engineConfig = engineConfigService.getEngineConfig();
 
@@ -80,17 +82,19 @@ public class EngineConfigController {
     /**
      * Updates the Engine configuration for the bot.
      *
+     * @param user   the authenticated user making the request.
+     * @param config the Engine config to update.
      * @return 200 'OK' HTTP status code and updated Engine config in the response body if update successful,
-     *         some other HTTP status code otherwise.
+     * some other HTTP status code otherwise.
      */
-    @RequestMapping(value = "/engine", method = RequestMethod.PUT)
+    @RequestMapping(value = ENGINE_RESOURCE_PATH, method = RequestMethod.PUT)
     public ResponseEntity<?> updateEngine(@AuthenticationPrincipal User user, @RequestBody EngineConfig config) {
 
-        LOG.info("PUT /engine - updateEngine() - caller: " + user.getUsername());
+        LOG.info("PUT " + ENGINE_RESOURCE_PATH + " - updateEngine() - caller: " + user.getUsername());
         LOG.info("Request: " + config);
 
         final EngineConfig updatedConfig = engineConfigService.updateEngineConfig(config);
-        return new ResponseEntity<>(updatedConfig, HttpStatus.OK);
+        return buildResponseEntity(updatedConfig, HttpStatus.OK);
     }
 }
 
