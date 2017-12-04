@@ -48,6 +48,7 @@
         <spring-tx.version>4.3.12.RELEASE</spring-tx.version>
         <powermock.version>1.7.3</powermock.version>
         <spring-boot-starter.version>1.5.8.RELEASE</spring-boot-starter.version>
+        <jaxb-api.version>2.2.7</jaxb-api.version>
     </properties>
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -186,6 +187,21 @@
                 <artifactId>javax.mail</artifactId>
                 <version>1.6.0</version>
                 <scope>compile</scope>
+            </dependency>
+            <dependency>
+                <groupId>javax.xml.bind</groupId>
+                <artifactId>jaxb-api</artifactId>
+                <version>${jaxb-api.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sun.xml.bind</groupId>
+                <artifactId>jaxb-impl</artifactId>
+                <version>${jaxb-api.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sun.xml.bind</groupId>
+                <artifactId>jaxb-core</artifactId>
+                <version>${jaxb-api.version}</version>
             </dependency>
 
             <!--
