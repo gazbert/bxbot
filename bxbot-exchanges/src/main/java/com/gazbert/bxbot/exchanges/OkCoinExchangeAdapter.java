@@ -27,6 +27,7 @@ import com.gazbert.bxbot.exchange.api.AuthenticationConfig;
 import com.gazbert.bxbot.exchange.api.ExchangeAdapter;
 import com.gazbert.bxbot.exchange.api.ExchangeConfig;
 import com.gazbert.bxbot.exchange.api.OptionalConfig;
+import com.gazbert.bxbot.exchanges.trading.api.impl.BalanceInfoImpl;
 import com.gazbert.bxbot.exchanges.trading.api.impl.MarketOrderBookImpl;
 import com.gazbert.bxbot.exchanges.trading.api.impl.MarketOrderImpl;
 import com.gazbert.bxbot.exchanges.trading.api.impl.OpenOrderImpl;
@@ -418,7 +419,7 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
                     balancesOnOrder.put(balance.getKey().toUpperCase(), balance.getValue());
                 }
 
-                return new BalanceInfo(balancesAvailable, balancesOnOrder);
+                return new BalanceInfoImpl(balancesAvailable, balancesOnOrder);
 
             } else {
                 final String errorMsg = "Failed to get Balance Info from exchange. Error response: " + response;

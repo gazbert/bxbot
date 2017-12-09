@@ -27,6 +27,7 @@ import com.gazbert.bxbot.exchange.api.AuthenticationConfig;
 import com.gazbert.bxbot.exchange.api.ExchangeAdapter;
 import com.gazbert.bxbot.exchange.api.ExchangeConfig;
 import com.gazbert.bxbot.exchange.api.OptionalConfig;
+import com.gazbert.bxbot.exchanges.trading.api.impl.BalanceInfoImpl;
 import com.gazbert.bxbot.exchanges.trading.api.impl.MarketOrderBookImpl;
 import com.gazbert.bxbot.exchanges.trading.api.impl.MarketOrderImpl;
 import com.gazbert.bxbot.exchanges.trading.api.impl.OpenOrderImpl;
@@ -593,7 +594,7 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
                 }
 
                 // 2nd arg of BalanceInfo constructor for reserved/on-hold balances is not provided by exchange.
-                return new BalanceInfo(balancesAvailable, new HashMap<>());
+                return new BalanceInfoImpl(balancesAvailable, new HashMap<>());
             } else {
                 final String errorMsg = "Failed to get your wallet balance info from exchange. Details: " + response;
                 LOG.error(errorMsg);

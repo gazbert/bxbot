@@ -25,6 +25,7 @@ package com.gazbert.bxbot.exchanges;
 
 import com.gazbert.bxbot.exchange.api.ExchangeAdapter;
 import com.gazbert.bxbot.exchange.api.ExchangeConfig;
+import com.gazbert.bxbot.exchanges.trading.api.impl.BalanceInfoImpl;
 import com.gazbert.bxbot.exchanges.trading.api.impl.MarketOrderBookImpl;
 import com.gazbert.bxbot.exchanges.trading.api.impl.MarketOrderImpl;
 import com.gazbert.bxbot.trading.api.*;
@@ -184,7 +185,7 @@ public final class TestExchangeAdapter extends AbstractExchangeAdapter implement
         balancesOnOrder.put("LTC", new BigDecimal("100.0"));
         balancesOnOrder.put("XRP", new BigDecimal("100.0"));
 
-        return new BalanceInfo(balancesAvailable, balancesOnOrder);
+        return new BalanceInfoImpl(balancesAvailable, balancesOnOrder);
     }
 
     @Override

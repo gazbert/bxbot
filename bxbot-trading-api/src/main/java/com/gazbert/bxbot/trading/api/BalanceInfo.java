@@ -23,8 +23,6 @@
 
 package com.gazbert.bxbot.trading.api;
 
-import com.google.common.base.MoreObjects;
-
 import java.math.BigDecimal;
 import java.util.Map;
 
@@ -34,83 +32,28 @@ import java.util.Map;
  * @author gazbert
  * @since 1.0
  */
-public final class BalanceInfo {
-
-    /**
-     * <p>
-     * Map of wallet balances <em>available</em> to trade.
-     * </p>
-     * <p>
-     * Key is currency id in UPPERCASE, e.g. LTC, BTC, USD
-     * </p>
-     */
-    private Map<String, BigDecimal> balancesAvailable;
-
-    /**
-     * <p>
-     * Map of wallet balances currently <em>on hold</em> for open orders.
-     * </p>
-     * <p>
-     * Key is currency id in UPPERCASE, e.g. LTC, BTC, USD
-     * </p>
-     */
-    private Map<String, BigDecimal> balancesOnHold;
-
-
-    /**
-     * Constructor creates balance info.
-     *
-     * @param balancesAvailable map of available balances.
-     * @param balancesOnHold    map of balances on hold.
-     */
-    public BalanceInfo(Map<String, BigDecimal> balancesAvailable, Map<String, BigDecimal> balancesOnHold) {
-        this.balancesAvailable = balancesAvailable;
-        this.balancesOnHold = balancesOnHold;
-    }
+public interface BalanceInfo {
 
     /**
      * Returns map of available balances.
+     * <p>
+     * The key is the currency id in UPPERCASE, e.g. LTC, BTC, USD
+     * </p>
      *
      * @return map of available balances.
      */
-    public Map<String, BigDecimal> getBalancesAvailable() {
-        return balancesAvailable;
-    }
+    Map<String, BigDecimal> getBalancesAvailable();
 
     /**
-     * Sets map of available balances.
-     *
-     * @param balancesAvailable the map of available balances.
-     */
-    public void setBalancesAvailable(Map<String, BigDecimal> balancesAvailable) {
-        this.balancesAvailable = balancesAvailable;
-    }
-
-    /**
-     * Returns map of balances on hold. Some exchanges do not provide this information and the returned map will be
-     * empty.
+     * Returns map of balances on hold.
+     * <p>
+     * Some exchanges do not provide this information and the returned map will be empty.
+     * <p>
+     * The key is the currency id in UPPERCASE, e.g. LTC, BTC, USD
+     * </p>
      *
      * @return map of balances on hold.
      */
-    public Map<String, BigDecimal> getBalancesOnHold() {
-        return balancesOnHold;
-    }
-
-    /**
-     * Sets map of balances on hold.
-     *
-     * @param balancesOnHold a map of balances on hold.
-     */
-    public void setBalancesOnHold(Map<String, BigDecimal> balancesOnHold) {
-        this.balancesOnHold = balancesOnHold;
-    }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-                .add("balancesAvailable", balancesAvailable)
-                .add("balancesOnHold", balancesOnHold)
-                .toString();
-    }
+    Map<String, BigDecimal> getBalancesOnHold();
 }
 

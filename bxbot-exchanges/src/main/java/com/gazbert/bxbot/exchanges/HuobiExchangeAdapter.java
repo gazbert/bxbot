@@ -27,6 +27,7 @@ import com.gazbert.bxbot.exchange.api.AuthenticationConfig;
 import com.gazbert.bxbot.exchange.api.ExchangeAdapter;
 import com.gazbert.bxbot.exchange.api.ExchangeConfig;
 import com.gazbert.bxbot.exchange.api.OptionalConfig;
+import com.gazbert.bxbot.exchanges.trading.api.impl.BalanceInfoImpl;
 import com.gazbert.bxbot.exchanges.trading.api.impl.MarketOrderBookImpl;
 import com.gazbert.bxbot.exchanges.trading.api.impl.MarketOrderImpl;
 import com.gazbert.bxbot.exchanges.trading.api.impl.OpenOrderImpl;
@@ -490,7 +491,7 @@ public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implemen
                 balancesOnOrder.put("CNY", huobiAccountInfo.frozen_cny_display);
                 balancesOnOrder.put("USD", huobiAccountInfo.frozen_usd_display);
 
-                return new BalanceInfo(balancesAvailable, balancesOnOrder);
+                return new BalanceInfoImpl(balancesAvailable, balancesOnOrder);
 
             } else if (huobiAccountInfo.code == 1) {
                 final String errorMsg = "Failed to get Balance Info from exchange  - server busy. Error response: "
