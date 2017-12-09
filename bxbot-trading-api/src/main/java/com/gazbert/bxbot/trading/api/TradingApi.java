@@ -34,12 +34,12 @@ import java.util.List;
  * This is what Trading Strategies use to trade.
  * </p>
  * <p>
- * Exchange Adapters provide their own implementation of the API for the exchange they wish to trade on.
+ * Exchange Adapters provide their own implementation of the API for the exchange they wish to integrate with.
  * </p>
  * <p>
  * This version of the Trading API only supports <a href="http://www.investopedia.com/terms/l/limitorder.asp">limit orders</a>
  * traded at the <a href="http://www.investopedia.com/terms/s/spotprice.asp">spot price</a>.
- * It does not support futures trading or margin trading yet.
+ * It does not support futures or margin trading.
  * </p>
  *
  * @author gazbert

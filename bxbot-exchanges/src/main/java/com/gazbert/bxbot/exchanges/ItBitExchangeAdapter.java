@@ -29,6 +29,7 @@ import com.gazbert.bxbot.exchange.api.ExchangeConfig;
 import com.gazbert.bxbot.exchange.api.OptionalConfig;
 import com.gazbert.bxbot.exchanges.trading.api.impl.MarketOrderBookImpl;
 import com.gazbert.bxbot.exchanges.trading.api.impl.MarketOrderImpl;
+import com.gazbert.bxbot.exchanges.trading.api.impl.OpenOrderImpl;
 import com.gazbert.bxbot.trading.api.*;
 import com.google.common.base.MoreObjects;
 import com.google.gson.Gson;
@@ -423,7 +424,7 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
                                     "Unrecognised order type received in getYourOpenOrders(). Value: " + itBitOpenOrder.side);
                     }
 
-                    final OpenOrder order = new OpenOrder(
+                    final OpenOrder order = new OpenOrderImpl(
                             itBitOpenOrder.id,
                             Date.from(Instant.parse(itBitOpenOrder.createdTime)), // format: 2015-10-01T18:10:39.3930000Z
                             marketId,

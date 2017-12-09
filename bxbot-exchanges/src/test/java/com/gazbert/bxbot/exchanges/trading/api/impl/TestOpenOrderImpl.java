@@ -21,8 +21,9 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.trading.api;
+package com.gazbert.bxbot.exchanges.trading.api.impl;
 
+import com.gazbert.bxbot.trading.api.OrderType;
 import org.junit.Test;
 
 import java.math.BigDecimal;
@@ -31,11 +32,11 @@ import java.util.Date;
 import static org.junit.Assert.assertEquals;
 
 /**
- * Tests Open Order behaves as expected.
+ * Tests the Open Order impl behaves as expected.
  *
  * @author gazbert
  */
-public class TestOpenOrder {
+public class TestOpenOrderImpl {
 
     private static final String ID = "abc_123_def_456_ghi_789";
     private static final Date CREATION_DATE = new Date();
@@ -49,8 +50,8 @@ public class TestOpenOrder {
     @Test
     public void testOpenOrderIsInitialisedAsExpected() {
 
-        final OpenOrder openOrder = new OpenOrder(ID, CREATION_DATE, MARKET_ID, OrderType.SELL, PRICE, QUANTITY,
-                ORIGINAL_QUANTITY,TOTAL);
+        final OpenOrderImpl openOrder = new OpenOrderImpl(ID, CREATION_DATE, MARKET_ID, OrderType.SELL, PRICE, QUANTITY,
+                ORIGINAL_QUANTITY, TOTAL);
 
         assertEquals(ID, openOrder.getId());
         assertEquals(CREATION_DATE, openOrder.getCreationDate());
@@ -65,7 +66,7 @@ public class TestOpenOrder {
     @Test
     public void testSettersWorkAsExpected() {
 
-        final OpenOrder openOrder = new OpenOrder(null, null, null, null, null, null, null, null);
+        final OpenOrderImpl openOrder = new OpenOrderImpl(null, null, null, null, null, null, null, null);
         assertEquals(null, openOrder.getId());
         assertEquals(null, openOrder.getCreationDate());
         assertEquals(null, openOrder.getMarketId());

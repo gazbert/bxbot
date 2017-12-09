@@ -29,6 +29,7 @@ import com.gazbert.bxbot.exchange.api.ExchangeConfig;
 import com.gazbert.bxbot.exchange.api.OptionalConfig;
 import com.gazbert.bxbot.exchanges.trading.api.impl.MarketOrderBookImpl;
 import com.gazbert.bxbot.exchanges.trading.api.impl.MarketOrderImpl;
+import com.gazbert.bxbot.exchanges.trading.api.impl.OpenOrderImpl;
 import com.gazbert.bxbot.trading.api.*;
 import com.google.common.base.MoreObjects;
 import com.google.gson.Gson;
@@ -326,7 +327,7 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
                                     "Unrecognised order type received in getYourOpenOrders(). Value: " + openOrder.side);
                     }
 
-                    final OpenOrder order = new OpenOrder(
+                    final OpenOrder order = new OpenOrderImpl(
                             openOrder.id,
                             Date.from(Instant.parse(openOrder.created_at)),
                             marketId,

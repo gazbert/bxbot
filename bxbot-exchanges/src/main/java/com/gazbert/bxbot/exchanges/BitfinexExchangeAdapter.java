@@ -28,6 +28,7 @@ import com.gazbert.bxbot.exchange.api.ExchangeAdapter;
 import com.gazbert.bxbot.exchange.api.ExchangeConfig;
 import com.gazbert.bxbot.exchanges.trading.api.impl.MarketOrderBookImpl;
 import com.gazbert.bxbot.exchanges.trading.api.impl.MarketOrderImpl;
+import com.gazbert.bxbot.exchanges.trading.api.impl.OpenOrderImpl;
 import com.gazbert.bxbot.trading.api.*;
 import com.google.common.base.MoreObjects;
 import com.google.gson.Gson;
@@ -241,7 +242,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter imple
                                 "Unrecognised order type received in getYourOpenOrders(). Value: " + bitfinexOpenOrder.type);
                 }
 
-                final OpenOrder order = new OpenOrder(
+                final OpenOrder order = new OpenOrderImpl(
                         Long.toString(bitfinexOpenOrder.id),
                         // for some reason 'finex adds decimal point to long date value, e.g. "1442073766.0"  - grrrr!
                         Date.from(Instant.ofEpochMilli(Integer.parseInt(bitfinexOpenOrder.timestamp.split("\\.")[0]))),

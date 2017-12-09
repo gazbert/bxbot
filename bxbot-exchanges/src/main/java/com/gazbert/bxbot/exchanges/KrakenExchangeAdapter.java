@@ -29,6 +29,7 @@ import com.gazbert.bxbot.exchange.api.ExchangeConfig;
 import com.gazbert.bxbot.exchange.api.OptionalConfig;
 import com.gazbert.bxbot.exchanges.trading.api.impl.MarketOrderBookImpl;
 import com.gazbert.bxbot.exchanges.trading.api.impl.MarketOrderImpl;
+import com.gazbert.bxbot.exchanges.trading.api.impl.OpenOrderImpl;
 import com.gazbert.bxbot.trading.api.*;
 import com.google.common.base.MoreObjects;
 import com.google.gson.*;
@@ -406,7 +407,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
                                                     openOrder.getValue().descr.ordertype);
                             }
 
-                            final OpenOrder order = new OpenOrder(
+                            final OpenOrder order = new OpenOrderImpl(
                                     openOrder.getKey(),
                                     new Date((long) krakenOpenOrder.opentm), // opentm == creationDate
                                     marketId,
