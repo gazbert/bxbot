@@ -588,7 +588,7 @@ output from the Exchange Adapters; it's very handy for debugging, but not so goo
 ## Coming Soon
 The following features are in the pipeline:
 
-- Java 9 support - the migration work being done on the [bxbot-java9](https://github.com/gazbert/bxbot/tree/bxbpot-java9) branch.
+- Java 9 support - the migration work is being done on the [bxbot-java9](https://github.com/gazbert/bxbot/tree/bxbpot-java9) branch.
 - Add Ticker operation to the Trading API and Exchange Adapters - ticket [#77](https://github.com/gazbert/bxbot/issues/77).
 - A REST API for administering the bot. It's being developed on the [bxbot-restapi](https://github.com/gazbert/bxbot/tree/bxbot-restapi) branch.
 - An [admin server](https://github.com/gazbert/bxbot-ui-server) for proxying commands and config updates to BX-bots in the cloud. 
