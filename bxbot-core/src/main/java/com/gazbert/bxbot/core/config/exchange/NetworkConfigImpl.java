@@ -21,45 +21,63 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.exchange.api.impl;
+package com.gazbert.bxbot.core.config.exchange;
 
-import com.gazbert.bxbot.exchange.api.AuthenticationConfig;
+import com.gazbert.bxbot.exchange.api.NetworkConfig;
 import com.google.common.base.MoreObjects;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Exchange API Authentication config.
+ * Exchange API Network config.
  *
  * @author gazbert
  */
-public class AuthenticationConfigImpl implements AuthenticationConfig {
+public class NetworkConfigImpl implements NetworkConfig {
 
-    private Map<String, String> items;
+    private Integer connectionTimeout;
+    private List<Integer> nonFatalErrorCodes;
+    private List<String> nonFatalErrorMessages;
 
-    public AuthenticationConfigImpl() {
-        items = new HashMap<>();
+    public NetworkConfigImpl() {
+        nonFatalErrorCodes = new ArrayList<>();
+        nonFatalErrorMessages = new ArrayList<>();
     }
 
     @Override
-    public String getItem(String name) {
-        return items.get(name);
+    public Integer getConnectionTimeout() {
+        return connectionTimeout;
     }
 
-    public Map<String, String> getItems() {
-        return items;
+    public void setConnectionTimeout(Integer connectionTimeout) {
+        this.connectionTimeout = connectionTimeout;
     }
 
-    public void setItems(Map<String, String> items) {
-        this.items = items;
+    @Override
+    public List<Integer> getNonFatalErrorCodes() {
+        return nonFatalErrorCodes;
+    }
+
+    public void setNonFatalErrorCodes(List<Integer> nonFatalErrorCodes) {
+        this.nonFatalErrorCodes = nonFatalErrorCodes;
+    }
+
+    @Override
+    public List<String> getNonFatalErrorMessages() {
+        return nonFatalErrorMessages;
+    }
+
+    public void setNonFatalErrorMessages(List<String> nonFatalErrorMessages) {
+        this.nonFatalErrorMessages = nonFatalErrorMessages;
     }
 
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                // WARNING - careful showing this!
-                // .add("items", items)
+                .add("connectionTimeout", connectionTimeout)
+                .add("nonFatalErrorCodes", nonFatalErrorCodes)
+                .add("nonFatalErrorMessages", nonFatalErrorMessages)
                 .toString();
     }
 }

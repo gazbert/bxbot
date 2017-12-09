@@ -21,36 +21,35 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.exchange.api.imp;
+package com.gazbert.bxbot.core.config.exchange;
 
-import com.gazbert.bxbot.exchange.api.impl.AuthenticationConfigImpl;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
 /**
- * Tests Authentication Config exchange API config object behaves as expected.
+ * Tests Optional Config exchange API config object behaves as expected.
  *
  * @author gazbert
  */
-public class TestAuthenticationConfigImpl {
+public class TestOptionalConfigImpl {
 
-    private static final String API_KEY_CONFIG_ITEM_KEY = "api-key";
-    private static final String API_KEY_CONFIG_ITEM_VALUE = "apiKey--123";
+    private static final String BUY_FEE_CONFIG_ITEM_KEY = "buy-fee";
+    private static final String BUY_FEE_CONFIG_ITEM_VALUE = "0.20";
 
-    private static final String SECRET_CONFIG_ITEM_KEY = "secret";
-    private static final String SECRET_FEE_CONFIG_ITEM_VALUE = "secret-key";
+    private static final String SELL_FEE_CONFIG_ITEM_KEY = "sell-fee";
+    private static final String SELL_FEE_CONFIG_ITEM_VALUE = "0.25";
 
 
     @Test
-    public void testAddingAndFetchingAuthenticationConfig() throws Exception {
+    public void testAddingAndFetchingOptionalConfigItems() throws Exception {
 
-        final AuthenticationConfigImpl authenticationConfig = new AuthenticationConfigImpl();
-        authenticationConfig.getItems().put(API_KEY_CONFIG_ITEM_KEY, API_KEY_CONFIG_ITEM_VALUE);
-        authenticationConfig.getItems().put(SECRET_CONFIG_ITEM_KEY, SECRET_FEE_CONFIG_ITEM_VALUE);
+        final OptionalConfigImpl strategyConfig = new OptionalConfigImpl();
+        strategyConfig.getItems().put(BUY_FEE_CONFIG_ITEM_KEY, BUY_FEE_CONFIG_ITEM_VALUE);
+        strategyConfig.getItems().put(SELL_FEE_CONFIG_ITEM_KEY, SELL_FEE_CONFIG_ITEM_VALUE);
 
-        assertEquals(2, authenticationConfig.getItems().size());
-        assertEquals(API_KEY_CONFIG_ITEM_VALUE, authenticationConfig.getItems().get(API_KEY_CONFIG_ITEM_KEY));
-        assertEquals(SECRET_FEE_CONFIG_ITEM_VALUE, authenticationConfig.getItems().get(SECRET_CONFIG_ITEM_KEY));
+        assertEquals(2, strategyConfig.getItems().size());
+        assertEquals(BUY_FEE_CONFIG_ITEM_VALUE, strategyConfig.getItems().get(BUY_FEE_CONFIG_ITEM_KEY));
+        assertEquals(SELL_FEE_CONFIG_ITEM_VALUE, strategyConfig.getItems().get(SELL_FEE_CONFIG_ITEM_KEY));
     }
 }

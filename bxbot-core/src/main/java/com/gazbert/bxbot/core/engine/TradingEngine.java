@@ -23,6 +23,10 @@
 
 package com.gazbert.bxbot.core.engine;
 
+import com.gazbert.bxbot.core.config.exchange.AuthenticationConfigImpl;
+import com.gazbert.bxbot.core.config.exchange.ExchangeConfigImpl;
+import com.gazbert.bxbot.core.config.exchange.NetworkConfigImpl;
+import com.gazbert.bxbot.core.config.exchange.OptionalConfigImpl;
 import com.gazbert.bxbot.core.config.strategy.StrategyConfigItems;
 import com.gazbert.bxbot.core.mail.EmailAlerter;
 import com.gazbert.bxbot.core.util.ConfigurableComponentFactory;
@@ -34,10 +38,6 @@ import com.gazbert.bxbot.domain.exchange.OptionalConfig;
 import com.gazbert.bxbot.domain.market.MarketConfig;
 import com.gazbert.bxbot.domain.strategy.StrategyConfig;
 import com.gazbert.bxbot.exchange.api.ExchangeAdapter;
-import com.gazbert.bxbot.exchange.api.impl.AuthenticationConfigImpl;
-import com.gazbert.bxbot.exchange.api.impl.ExchangeConfigImpl;
-import com.gazbert.bxbot.exchange.api.impl.NetworkConfigImpl;
-import com.gazbert.bxbot.exchange.api.impl.OptionalConfigImpl;
 import com.gazbert.bxbot.services.EngineConfigService;
 import com.gazbert.bxbot.services.ExchangeConfigService;
 import com.gazbert.bxbot.services.MarketConfigService;
