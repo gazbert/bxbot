@@ -273,10 +273,10 @@ public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implemen
             params.put("coin_type", "1"); // "1" = BTC
 
             // we need to limit amount to 2 decimal places else exchange will barf
-            params.put("price", new DecimalFormat("#.##").format(price));
+            params.put("price", new DecimalFormat("#.##", getDecimalFormatSymbols()).format(price));
 
             // we need to limit amount to 4 decimal places else exchange will barf
-            params.put("amount", new DecimalFormat("#.####").format(quantity));
+            params.put("amount", new DecimalFormat("#.####", getDecimalFormatSymbols()).format(quantity));
 
             String apiCall;
             if (orderType == OrderType.BUY) {
