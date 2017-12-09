@@ -27,6 +27,7 @@ import com.gazbert.bxbot.core.config.exchange.AuthenticationConfigImpl;
 import com.gazbert.bxbot.core.config.exchange.ExchangeConfigImpl;
 import com.gazbert.bxbot.core.config.exchange.NetworkConfigImpl;
 import com.gazbert.bxbot.core.config.exchange.OptionalConfigImpl;
+import com.gazbert.bxbot.core.config.market.MarketImpl;
 import com.gazbert.bxbot.core.config.strategy.StrategyConfigItems;
 import com.gazbert.bxbot.core.mail.EmailAlerter;
 import com.gazbert.bxbot.core.util.ConfigurableComponentFactory;
@@ -558,7 +559,7 @@ public class TradingEngine {
                 continue;
             }
 
-            final Market tradingMarket = new Market(marketName, market.getId(), market.getBaseCurrency(), market.getCounterCurrency());
+            final Market tradingMarket = new MarketImpl(marketName, market.getId(), market.getBaseCurrency(), market.getCounterCurrency());
             final boolean wasAdded = loadedMarkets.add(tradingMarket);
             if (!wasAdded) {
                 final String errorMsg = "Found duplicate Market! Market details: " + market;

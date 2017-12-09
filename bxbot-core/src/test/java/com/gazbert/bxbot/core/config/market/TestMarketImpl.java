@@ -21,17 +21,18 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.trading.api;
+package com.gazbert.bxbot.core.config.market;
 
-import static org.junit.Assert.*;
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
+
 /**
- * Tests Market behaves as expected.
+ * Tests Market impl behaves as expected.
  *
  * @author gazbert
  */
-public class TestMarket {
+public class TestMarketImpl {
 
     private static final String MARKET_NAME = "LTC_BTC";
     private static final String MARKET_ID = "3";
@@ -42,7 +43,7 @@ public class TestMarket {
     @Test
     public void testMarketIsInitialisedAsExpected() {
 
-        final Market market = new Market(MARKET_NAME, MARKET_ID, BASE_CURRENCY, COUNTER_CURRENCY);
+        final MarketImpl market = new MarketImpl(MARKET_NAME, MARKET_ID, BASE_CURRENCY, COUNTER_CURRENCY);
         assertEquals(MARKET_NAME, market.getName());
         assertEquals(MARKET_ID, market.getId());
         assertEquals(BASE_CURRENCY, market.getBaseCurrency());
@@ -52,7 +53,7 @@ public class TestMarket {
     @Test
     public void testSettersWorkAsExpected() {
 
-        final Market market = new Market(null, null, null, null);
+        final MarketImpl market = new MarketImpl(null, null, null, null);
         assertEquals(null, market.getName());
         assertEquals(null, market.getId());
         assertEquals(null, market.getBaseCurrency());
