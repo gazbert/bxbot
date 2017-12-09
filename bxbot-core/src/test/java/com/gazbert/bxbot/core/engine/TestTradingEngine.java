@@ -76,10 +76,10 @@ public class TestTradingEngine {
 
     // Might need to tweak these for diff chips/OS/architectures
     private static final int STATE_CHANGE_WAIT_INTERVAL_IN_SECS = 1;
-    private static final int NUMBER_OF_ITERATIONS_TO_WAIT_FOR_STATE_CHANGE = 5;
+    private static final int NUMBER_OF_TRADE_CYCLES = 5;
 
     private enum EngineState {
-        STARTED,
+        RUNNING,
         SHUTDOWN
     }
 
@@ -187,7 +187,7 @@ public class TestTradingEngine {
                 strategyConfigService, marketConfigService, emailAlerter);
         tradingEngine.start();
 
-        waitForEngineStateChange(tradingEngine, EngineState.SHUTDOWN);
+        waitForEngineStateChange(tradingEngine, EngineState.SHUTDOWN, NUMBER_OF_TRADE_CYCLES);
         assertFalse(tradingEngine.isRunning());
 
         PowerMock.verifyAll();
@@ -210,12 +210,12 @@ public class TestTradingEngine {
         final Executor executor = Executors.newSingleThreadExecutor();
         executor.execute(tradingEngine::start);
 
-        waitForEngineStateChange(tradingEngine, EngineState.STARTED);
+        waitForEngineStateChange(tradingEngine, EngineState.RUNNING, NUMBER_OF_TRADE_CYCLES);
         assertTrue(tradingEngine.isRunning());
 
         tradingEngine.shutdown();
 
-        waitForEngineStateChange(tradingEngine, EngineState.SHUTDOWN);
+        waitForEngineStateChange(tradingEngine, EngineState.SHUTDOWN, NUMBER_OF_TRADE_CYCLES);
         assertFalse(tradingEngine.isRunning());
 
         PowerMock.verifyAll();
@@ -251,12 +251,12 @@ public class TestTradingEngine {
         final Executor executor = Executors.newSingleThreadExecutor();
         executor.execute(tradingEngine::start);
 
-        waitForEngineStateChange(tradingEngine, EngineState.STARTED);
+        waitForEngineStateChange(tradingEngine, EngineState.RUNNING, NUMBER_OF_TRADE_CYCLES);
         assertTrue(tradingEngine.isRunning());
 
         tradingEngine.shutdown();
 
-        waitForEngineStateChange(tradingEngine, EngineState.SHUTDOWN);
+        waitForEngineStateChange(tradingEngine, EngineState.SHUTDOWN, NUMBER_OF_TRADE_CYCLES);
         assertFalse(tradingEngine.isRunning());
 
         PowerMock.verifyAll();
@@ -299,7 +299,7 @@ public class TestTradingEngine {
 
         tradingEngine.start();
 
-        waitForEngineStateChange(tradingEngine, EngineState.SHUTDOWN);
+        waitForEngineStateChange(tradingEngine, EngineState.SHUTDOWN, NUMBER_OF_TRADE_CYCLES);
         assertFalse(tradingEngine.isRunning());
 
         PowerMock.verifyAll();
@@ -342,7 +342,7 @@ public class TestTradingEngine {
 
         tradingEngine.start();
 
-        waitForEngineStateChange(tradingEngine, EngineState.SHUTDOWN);
+        waitForEngineStateChange(tradingEngine, EngineState.SHUTDOWN, NUMBER_OF_TRADE_CYCLES);
         assertFalse(tradingEngine.isRunning());
 
         PowerMock.verifyAll();
@@ -382,7 +382,7 @@ public class TestTradingEngine {
 
         tradingEngine.start();
 
-        waitForEngineStateChange(tradingEngine, EngineState.SHUTDOWN);
+        waitForEngineStateChange(tradingEngine, EngineState.SHUTDOWN, NUMBER_OF_TRADE_CYCLES);
         assertFalse(tradingEngine.isRunning());
 
         PowerMock.verifyAll();
@@ -422,7 +422,7 @@ public class TestTradingEngine {
 
         tradingEngine.start();
 
-        waitForEngineStateChange(tradingEngine, EngineState.SHUTDOWN);
+        waitForEngineStateChange(tradingEngine, EngineState.SHUTDOWN, NUMBER_OF_TRADE_CYCLES);
         assertFalse(tradingEngine.isRunning());
 
         PowerMock.verifyAll();
@@ -431,7 +431,7 @@ public class TestTradingEngine {
     /*
      * Tests the engine continues to execute next trade cycle if it receives a ExchangeNetworkException.
      * Scenario is 1 successful trade cycle, 2nd cycle Exchange Adapter throws ExchangeNetworkException, engine stays alive and
-     * successfully executes 3rd trade cycle.
+     * successfully executes subsequent trade cycles.
      */
     @Test
     public void testEngineExecutesNextTradeCyclesAfterReceivingExchangeNetworkException() throws Exception {
@@ -453,10 +453,11 @@ public class TestTradingEngine {
         // expect BalanceInfo fetch to fail with ExchangeNetworkException on 2nd cycle
         expect(exchangeAdapter.getBalanceInfo()).andThrow(new ExchangeNetworkException(exceptionErrorMsg));
 
-        // expect 3rd trade cycle to be successful
-        expect(exchangeAdapter.getBalanceInfo()).andReturn(balanceInfo);
-        expect(balanceInfo.getBalancesAvailable()).andReturn(balancesAvailable);
+        // expect 3rd (any subsequent) trade cycle to be successful - there may be more than 1 here depending on timings... ;-)
+        expect(exchangeAdapter.getBalanceInfo()).andReturn(balanceInfo).atLeastOnce();
+        expect(balanceInfo.getBalancesAvailable()).andReturn(balancesAvailable).atLeastOnce();
         tradingStrategy.execute();
+        expectLastCall().atLeastOnce();
 
         PowerMock.replayAll();
 
@@ -465,14 +466,13 @@ public class TestTradingEngine {
         final Executor executor = Executors.newSingleThreadExecutor();
         executor.execute(tradingEngine::start);
 
-        // TODO - still hacky here - needs proper fix!
-        // sleep for 3s to let 3 trade cycles occur
-        Thread.sleep(numberOfTradeCycles * 1000);
+        Thread.sleep(numberOfTradeCycles * STATE_CHANGE_WAIT_INTERVAL_IN_SECS * 1000);
+        waitForEngineStateChange(tradingEngine, EngineState.RUNNING, NUMBER_OF_TRADE_CYCLES);
         assertTrue(tradingEngine.isRunning());
 
         tradingEngine.shutdown();
 
-        waitForEngineStateChange(tradingEngine, EngineState.SHUTDOWN);
+        waitForEngineStateChange(tradingEngine, EngineState.SHUTDOWN, NUMBER_OF_TRADE_CYCLES);
         assertFalse(tradingEngine.isRunning());
 
         PowerMock.verifyAll();
@@ -506,7 +506,7 @@ public class TestTradingEngine {
         final Executor executor = Executors.newSingleThreadExecutor();
         executor.execute(tradingEngine::start);
 
-        waitForEngineStateChange(tradingEngine, EngineState.STARTED);
+        waitForEngineStateChange(tradingEngine, EngineState.RUNNING, NUMBER_OF_TRADE_CYCLES);
         assertTrue(tradingEngine.isRunning());
 
         // try start the engine again
@@ -614,15 +614,15 @@ public class TestTradingEngine {
         return allMarkets;
     }
 
-    private static void waitForEngineStateChange(TradingEngine engine, EngineState engineState) {
-        for (int i = 0; i < NUMBER_OF_ITERATIONS_TO_WAIT_FOR_STATE_CHANGE; i++) {
+    private static void waitForEngineStateChange(TradingEngine engine, EngineState engineState, int numberOfTradeCycles) {
+        for (int i = 0; i < numberOfTradeCycles; i++) {
             try {
                 Thread.sleep(STATE_CHANGE_WAIT_INTERVAL_IN_SECS * 1000);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }
 
-            if (engineState == EngineState.STARTED && engine.isRunning()) {
+            if (engineState == EngineState.RUNNING && engine.isRunning()) {
                 break;
             }
 
