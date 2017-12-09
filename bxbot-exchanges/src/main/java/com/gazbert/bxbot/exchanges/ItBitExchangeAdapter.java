@@ -27,6 +27,8 @@ import com.gazbert.bxbot.exchange.api.AuthenticationConfig;
 import com.gazbert.bxbot.exchange.api.ExchangeAdapter;
 import com.gazbert.bxbot.exchange.api.ExchangeConfig;
 import com.gazbert.bxbot.exchange.api.OptionalConfig;
+import com.gazbert.bxbot.exchanges.trading.api.impl.MarketOrderBookImpl;
+import com.gazbert.bxbot.exchanges.trading.api.impl.MarketOrderImpl;
 import com.gazbert.bxbot.trading.api.*;
 import com.google.common.base.MoreObjects;
 import com.google.gson.Gson;
@@ -472,7 +474,7 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
 
                 final List<MarketOrder> buyOrders = new ArrayList<>();
                 for (ItBitMarketOrder itBitBuyOrder : orderBook.bids) {
-                    final MarketOrder buyOrder = new MarketOrder(
+                    final MarketOrder buyOrder = new MarketOrderImpl(
                             OrderType.BUY,
                             itBitBuyOrder.get(0),
                             itBitBuyOrder.get(1),
@@ -482,7 +484,7 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
 
                 final List<MarketOrder> sellOrders = new ArrayList<>();
                 for (ItBitMarketOrder itBitSellOrder : orderBook.asks) {
-                    final MarketOrder sellOrder = new MarketOrder(
+                    final MarketOrder sellOrder = new MarketOrderImpl(
                             OrderType.SELL,
                             itBitSellOrder.get(0),
                             itBitSellOrder.get(1),
@@ -490,7 +492,7 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
                     sellOrders.add(sellOrder);
                 }
 
-                return new MarketOrderBook(marketId, sellOrders, buyOrders);
+                return new MarketOrderBookImpl(marketId, sellOrders, buyOrders);
             } else {
                 final String errorMsg = "Failed to get market order book from exchange. Details: " + response;
                 LOG.error(errorMsg);

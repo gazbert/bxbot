@@ -26,6 +26,8 @@ package com.gazbert.bxbot.exchanges;
 import com.gazbert.bxbot.exchange.api.AuthenticationConfig;
 import com.gazbert.bxbot.exchange.api.ExchangeAdapter;
 import com.gazbert.bxbot.exchange.api.ExchangeConfig;
+import com.gazbert.bxbot.exchanges.trading.api.impl.MarketOrderBookImpl;
+import com.gazbert.bxbot.exchanges.trading.api.impl.MarketOrderImpl;
 import com.gazbert.bxbot.trading.api.*;
 import com.google.common.base.MoreObjects;
 import com.google.gson.*;
@@ -187,7 +189,7 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
             final List<MarketOrder> buyOrders = new ArrayList<>();
             final List<List<BigDecimal>> bitstampBuyOrders = bitstampOrderBook.bids;
             for (final List<BigDecimal> order : bitstampBuyOrders) {
-                final MarketOrder buyOrder = new MarketOrder(
+                final MarketOrder buyOrder = new MarketOrderImpl(
                         OrderType.BUY,
                         order.get(0), // price
                         order.get(1), // quantity
@@ -198,7 +200,7 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
             final List<MarketOrder> sellOrders = new ArrayList<>();
             final List<List<BigDecimal>> bitstampSellOrders = bitstampOrderBook.asks;
             for (final List<BigDecimal> order : bitstampSellOrders) {
-                final MarketOrder sellOrder = new MarketOrder(
+                final MarketOrder sellOrder = new MarketOrderImpl(
                         OrderType.SELL,
                         order.get(0), // price
                         order.get(1), // quantity
@@ -206,7 +208,7 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
                 sellOrders.add(sellOrder);
             }
 
-            return new MarketOrderBook(marketId, sellOrders, buyOrders);
+            return new MarketOrderBookImpl(marketId, sellOrders, buyOrders);
 
         } catch (ExchangeNetworkException | TradingApiException e) {
             throw e;
@@ -404,7 +406,7 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
             // Ouch!
             final Class<?> clazz = balances.getClass();
             final Field[] fields = clazz.getDeclaredFields();
-            for (final Field field: fields) {
+            for (final Field field : fields) {
                 if (field.getName().startsWith(marketId)) {
                     final BigDecimal fee = (BigDecimal) field.get(balances);
                     // adapt the % into BigDecimal format
@@ -438,7 +440,7 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
             // Ouch!
             final Class<?> clazz = balances.getClass();
             final Field[] fields = clazz.getDeclaredFields();
-            for (final Field field: fields) {
+            for (final Field field : fields) {
                 if (field.getName().startsWith(marketId)) {
                     final BigDecimal fee = (BigDecimal) field.get(balances);
                     // adapt the % into BigDecimal format

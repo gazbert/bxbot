@@ -27,6 +27,8 @@ import com.gazbert.bxbot.exchange.api.AuthenticationConfig;
 import com.gazbert.bxbot.exchange.api.ExchangeAdapter;
 import com.gazbert.bxbot.exchange.api.ExchangeConfig;
 import com.gazbert.bxbot.exchange.api.OptionalConfig;
+import com.gazbert.bxbot.exchanges.trading.api.impl.MarketOrderBookImpl;
+import com.gazbert.bxbot.exchanges.trading.api.impl.MarketOrderImpl;
 import com.gazbert.bxbot.trading.api.*;
 import com.google.common.base.MoreObjects;
 import com.google.gson.Gson;
@@ -386,7 +388,7 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter impleme
 
             final List<MarketOrder> buyOrders = new ArrayList<>();
             for (GeminiMarketOrder geminiBuyOrder : orderBook.bids) {
-                final MarketOrder buyOrder = new MarketOrder(
+                final MarketOrder buyOrder = new MarketOrderImpl(
                         OrderType.BUY,
                         geminiBuyOrder.price,
                         geminiBuyOrder.amount,
@@ -396,7 +398,7 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter impleme
 
             final List<MarketOrder> sellOrders = new ArrayList<>();
             for (GeminiMarketOrder geminiSellOrder : orderBook.asks) {
-                final MarketOrder sellOrder = new MarketOrder(
+                final MarketOrder sellOrder = new MarketOrderImpl(
                         OrderType.SELL,
                         geminiSellOrder.price,
                         geminiSellOrder.amount,
@@ -404,7 +406,7 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter impleme
                 sellOrders.add(sellOrder);
             }
 
-            return new MarketOrderBook(marketId, sellOrders, buyOrders);
+            return new MarketOrderBookImpl(marketId, sellOrders, buyOrders);
 
         } catch (ExchangeNetworkException | TradingApiException e) {
             throw e;

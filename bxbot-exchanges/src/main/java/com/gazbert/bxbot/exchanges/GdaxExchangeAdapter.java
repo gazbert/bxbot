@@ -27,6 +27,8 @@ import com.gazbert.bxbot.exchange.api.AuthenticationConfig;
 import com.gazbert.bxbot.exchange.api.ExchangeAdapter;
 import com.gazbert.bxbot.exchange.api.ExchangeConfig;
 import com.gazbert.bxbot.exchange.api.OptionalConfig;
+import com.gazbert.bxbot.exchanges.trading.api.impl.MarketOrderBookImpl;
+import com.gazbert.bxbot.exchanges.trading.api.impl.MarketOrderImpl;
 import com.gazbert.bxbot.trading.api.*;
 import com.google.common.base.MoreObjects;
 import com.google.gson.Gson;
@@ -369,7 +371,7 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
 
                 final List<MarketOrder> buyOrders = new ArrayList<>();
                 for (GdaxMarketOrder gdaxBuyOrder : orderBook.bids) {
-                    final MarketOrder buyOrder = new MarketOrder(
+                    final MarketOrder buyOrder = new MarketOrderImpl(
                             OrderType.BUY,
                             gdaxBuyOrder.get(0),
                             gdaxBuyOrder.get(1),
@@ -379,7 +381,7 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
 
                 final List<MarketOrder> sellOrders = new ArrayList<>();
                 for (GdaxMarketOrder gdaxSellOrder : orderBook.asks) {
-                    final MarketOrder sellOrder = new MarketOrder(
+                    final MarketOrder sellOrder = new MarketOrderImpl(
                             OrderType.SELL,
                             gdaxSellOrder.get(0),
                             gdaxSellOrder.get(1),
@@ -387,7 +389,7 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
                     sellOrders.add(sellOrder);
                 }
 
-                return new MarketOrderBook(marketId, sellOrders, buyOrders);
+                return new MarketOrderBookImpl(marketId, sellOrders, buyOrders);
 
             } else {
                 final String errorMsg = "Failed to get market order book from exchange. Details: " + response;

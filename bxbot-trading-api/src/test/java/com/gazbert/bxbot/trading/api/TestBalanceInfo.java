@@ -23,13 +23,14 @@
 
 package com.gazbert.bxbot.trading.api;
 
-import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * Test Balance Info behaves as expected.
