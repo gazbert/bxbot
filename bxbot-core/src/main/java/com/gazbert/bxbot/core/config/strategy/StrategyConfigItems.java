@@ -21,7 +21,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.strategy.api.impl;
+package com.gazbert.bxbot.core.config.strategy;
 
 import com.gazbert.bxbot.strategy.api.StrategyConfig;
 import com.google.common.base.MoreObjects;

@@ -21,9 +21,8 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.strategy.api;
+package com.gazbert.bxbot.core.config.strategy;
 
-import com.gazbert.bxbot.strategy.api.impl.StrategyConfigItems;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
