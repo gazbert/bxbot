@@ -626,26 +626,31 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
             params = new HashMap<>(); // no params, so empty query string
         }
 
+        // Request headers required by Exchange
+        final Map<String, String> requestHeaders = new HashMap<>();
+
         try {
 
-            // Build the query string with any given params
-            final StringBuilder queryString = new StringBuilder("?");
-            for (final Map.Entry<String, String> param : params.entrySet()) {
-                if (queryString.length() > 1) {
-                    queryString.append("&");
+            final StringBuilder queryString = new StringBuilder();
+            if (params.size() > 0) {
+
+                queryString.append("?");
+
+                for (final Map.Entry<String, String> param : params.entrySet()) {
+                    if (queryString.length() > 1) {
+                        queryString.append("&");
+                    }
+                    //noinspection deprecation
+                    queryString.append(param.getKey());
+                    queryString.append("=");
+                    queryString.append(URLEncoder.encode(param.getValue(), "UTF-8"));
                 }
-                //noinspection deprecation
-                queryString.append(param.getKey());
-                queryString.append("=");
-                queryString.append(URLEncoder.encode(param.getValue(), "UTF-8"));
+
+                requestHeaders.put("Content-Type", "application/x-www-form-urlencoded");
             }
 
-            // Request headers required by Exchange
-            final Map<String, String> requestHeaders = new HashMap<>();
-            requestHeaders.put("Content-Type", "application/x-www-form-urlencoded");
-
             final URL url = new URL(PUBLIC_API_BASE_URL + apiMethod + queryString);
-            return sendNetworkRequest(url, "GET", null, requestHeaders);
+            return makeNetworkRequest(url, "GET", null, requestHeaders);
 
         } catch (MalformedURLException | UnsupportedEncodingException e) {
             final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
@@ -775,7 +780,7 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
             final String signature = DatatypeConverter.printBase64Binary(mac.doFinal());
 
             // Request headers required by Exchange
-            final Map<String, String> requestHeaders = new HashMap<>();
+            final Map<String, String> requestHeaders = getHeaderParamMap();
             requestHeaders.put("Content-Type", "application/json");
             requestHeaders.put("CB-ACCESS-KEY", key);
             requestHeaders.put("CB-ACCESS-SIGN", signature);
@@ -783,7 +788,7 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
             requestHeaders.put("CB-ACCESS-PASSPHRASE", passphrase);
 
             final URL url = new URL(invocationUrl);
-            return sendNetworkRequest(url, httpMethod, requestBody, requestHeaders);
+            return makeNetworkRequest(url, httpMethod, requestBody, requestHeaders);
 
         } catch (MalformedURLException | UnsupportedEncodingException e) {
             final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
@@ -858,9 +863,24 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
     }
 
     /*
-     * Hack for unit-testing map params passed to transport layer.
+     * Hack for unit-testing request params passed to transport layer.
      */
     private Map<String, String> getRequestParamMap() {
         return new HashMap<>();
+    }
+
+    /*
+     * Hack for unit-testing header params passed to transport layer.
+     */
+    private Map<String, String> getHeaderParamMap() {
+        return new HashMap<>();
+    }
+
+    /*
+     * Hack for unit-testing transport layer.
+     */
+    private ExchangeHttpResponse makeNetworkRequest(URL url, String httpMethod, String postData, Map<String, String> requestHeaders)
+            throws TradingApiException, ExchangeNetworkException {
+        return super.sendNetworkRequest(url, httpMethod, postData, requestHeaders);
     }
 }
