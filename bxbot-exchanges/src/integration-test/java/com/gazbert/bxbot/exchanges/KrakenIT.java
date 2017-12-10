@@ -29,7 +29,6 @@ import com.gazbert.bxbot.trading.api.MarketOrderBook;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.powermock.api.easymock.PowerMock;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -70,21 +69,21 @@ public class KrakenIT {
     @Before
     public void setupForEachTest() throws Exception {
 
-        authenticationConfig = PowerMock.createMock(AuthenticationConfig.class);
+        authenticationConfig = createMock(AuthenticationConfig.class);
         expect(authenticationConfig.getItem("key")).andReturn(KEY);
         expect(authenticationConfig.getItem("secret")).andReturn(SECRET);
 
-        networkConfig = PowerMock.createMock(NetworkConfig.class);
+        networkConfig = createMock(NetworkConfig.class);
         expect(networkConfig.getConnectionTimeout()).andReturn(30);
         expect(networkConfig.getNonFatalErrorCodes()).andReturn(nonFatalNetworkErrorCodes);
         expect(networkConfig.getNonFatalErrorMessages()).andReturn(nonFatalNetworkErrorMessages);
 
-        optionalConfig = PowerMock.createMock(OptionalConfig.class);
+        optionalConfig = createMock(OptionalConfig.class);
         expect(optionalConfig.getItem("buy-fee")).andReturn("0.25");
         expect(optionalConfig.getItem("sell-fee")).andReturn("0.25");
         expect(optionalConfig.getItem("keep-alive-during-maintenance")).andReturn("false");
 
-        exchangeConfig = PowerMock.createMock(ExchangeConfig.class);
+        exchangeConfig = createMock(ExchangeConfig.class);
         expect(exchangeConfig.getAuthenticationConfig()).andReturn(authenticationConfig);
         expect(exchangeConfig.getNetworkConfig()).andReturn(networkConfig);
         expect(exchangeConfig.getOptionalConfig()).andReturn(optionalConfig);

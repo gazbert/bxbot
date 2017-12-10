@@ -32,7 +32,6 @@ import com.gazbert.bxbot.trading.api.MarketOrderBook;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.powermock.api.easymock.PowerMock;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -72,16 +71,16 @@ public class BitfinexIT {
     @Before
     public void setupForEachTest() throws Exception {
 
-        authenticationConfig = PowerMock.createMock(AuthenticationConfig.class);
+        authenticationConfig = createMock(AuthenticationConfig.class);
         expect(authenticationConfig.getItem("key")).andReturn(KEY);
         expect(authenticationConfig.getItem("secret")).andReturn(SECRET);
 
-        networkConfig = PowerMock.createMock(NetworkConfig.class);
+        networkConfig = createMock(NetworkConfig.class);
         expect(networkConfig.getConnectionTimeout()).andReturn(30);
         expect(networkConfig.getNonFatalErrorCodes()).andReturn(nonFatalNetworkErrorCodes);
         expect(networkConfig.getNonFatalErrorMessages()).andReturn(nonFatalNetworkErrorMessages);
 
-        exchangeConfig = PowerMock.createMock(ExchangeConfig.class);
+        exchangeConfig = createMock(ExchangeConfig.class);
         expect(exchangeConfig.getAuthenticationConfig()).andReturn(authenticationConfig);
         expect(exchangeConfig.getNetworkConfig()).andReturn(networkConfig);
         // no optional config for this adapter
