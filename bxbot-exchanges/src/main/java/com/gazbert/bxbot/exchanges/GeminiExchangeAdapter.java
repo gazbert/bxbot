@@ -27,6 +27,10 @@ import com.gazbert.bxbot.exchange.api.AuthenticationConfig;
 import com.gazbert.bxbot.exchange.api.ExchangeAdapter;
 import com.gazbert.bxbot.exchange.api.ExchangeConfig;
 import com.gazbert.bxbot.exchange.api.OptionalConfig;
+import com.gazbert.bxbot.exchanges.trading.api.impl.BalanceInfoImpl;
+import com.gazbert.bxbot.exchanges.trading.api.impl.MarketOrderBookImpl;
+import com.gazbert.bxbot.exchanges.trading.api.impl.MarketOrderImpl;
+import com.gazbert.bxbot.exchanges.trading.api.impl.OpenOrderImpl;
 import com.gazbert.bxbot.trading.api.*;
 import com.google.common.base.MoreObjects;
 import com.google.gson.Gson;
@@ -351,7 +355,7 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter impleme
                                 "Unrecognised order type received in getYourOpenOrders(). Value: " + geminiOpenOrder.type);
                 }
 
-                final OpenOrder order = new OpenOrder(
+                final OpenOrder order = new OpenOrderImpl(
                         Long.toString(geminiOpenOrder.order_id),
                         Date.from(Instant.ofEpochMilli(geminiOpenOrder.timestampms)),
                         marketId,
@@ -386,7 +390,7 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter impleme
 
             final List<MarketOrder> buyOrders = new ArrayList<>();
             for (GeminiMarketOrder geminiBuyOrder : orderBook.bids) {
-                final MarketOrder buyOrder = new MarketOrder(
+                final MarketOrder buyOrder = new MarketOrderImpl(
                         OrderType.BUY,
                         geminiBuyOrder.price,
                         geminiBuyOrder.amount,
@@ -396,7 +400,7 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter impleme
 
             final List<MarketOrder> sellOrders = new ArrayList<>();
             for (GeminiMarketOrder geminiSellOrder : orderBook.asks) {
-                final MarketOrder sellOrder = new MarketOrder(
+                final MarketOrder sellOrder = new MarketOrderImpl(
                         OrderType.SELL,
                         geminiSellOrder.price,
                         geminiSellOrder.amount,
@@ -404,7 +408,7 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter impleme
                 sellOrders.add(sellOrder);
             }
 
-            return new MarketOrderBook(marketId, sellOrders, buyOrders);
+            return new MarketOrderBookImpl(marketId, sellOrders, buyOrders);
 
         } catch (ExchangeNetworkException | TradingApiException e) {
             throw e;
@@ -451,7 +455,7 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter impleme
                     .forEach(accountBalance -> balancesAvailable.put(accountBalance.currency, accountBalance.available));
 
             // 2nd arg of BalanceInfo constructor for reserved/on-hold balances is not provided by exchange.
-            return new BalanceInfo(balancesAvailable, new HashMap<>());
+            return new BalanceInfoImpl(balancesAvailable, new HashMap<>());
 
         } catch (ExchangeNetworkException | TradingApiException e) {
             throw e;

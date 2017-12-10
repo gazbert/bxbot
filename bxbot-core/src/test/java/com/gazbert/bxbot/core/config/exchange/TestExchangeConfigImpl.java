@@ -21,15 +21,11 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.exchange.api.imp;
+package com.gazbert.bxbot.core.config.exchange;
 
 import com.gazbert.bxbot.exchange.api.AuthenticationConfig;
 import com.gazbert.bxbot.exchange.api.NetworkConfig;
 import com.gazbert.bxbot.exchange.api.OptionalConfig;
-import com.gazbert.bxbot.exchange.api.impl.AuthenticationConfigImpl;
-import com.gazbert.bxbot.exchange.api.impl.ExchangeConfigImpl;
-import com.gazbert.bxbot.exchange.api.impl.NetworkConfigImpl;
-import com.gazbert.bxbot.exchange.api.impl.OptionalConfigImpl;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;

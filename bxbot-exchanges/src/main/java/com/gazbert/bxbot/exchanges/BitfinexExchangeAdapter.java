@@ -26,6 +26,10 @@ package com.gazbert.bxbot.exchanges;
 import com.gazbert.bxbot.exchange.api.AuthenticationConfig;
 import com.gazbert.bxbot.exchange.api.ExchangeAdapter;
 import com.gazbert.bxbot.exchange.api.ExchangeConfig;
+import com.gazbert.bxbot.exchanges.trading.api.impl.BalanceInfoImpl;
+import com.gazbert.bxbot.exchanges.trading.api.impl.MarketOrderBookImpl;
+import com.gazbert.bxbot.exchanges.trading.api.impl.MarketOrderImpl;
+import com.gazbert.bxbot.exchanges.trading.api.impl.OpenOrderImpl;
 import com.gazbert.bxbot.trading.api.*;
 import com.google.common.base.MoreObjects;
 import com.google.gson.Gson;
@@ -182,7 +186,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter imple
 
             final List<MarketOrder> buyOrders = new ArrayList<>();
             for (BitfinexMarketOrder bitfinexBuyOrder : orderBook.bids) {
-                final MarketOrder buyOrder = new MarketOrder(
+                final MarketOrder buyOrder = new MarketOrderImpl(
                         OrderType.BUY,
                         bitfinexBuyOrder.price,
                         bitfinexBuyOrder.amount,
@@ -192,7 +196,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter imple
 
             final List<MarketOrder> sellOrders = new ArrayList<>();
             for (BitfinexMarketOrder bitfinexSellOrder : orderBook.asks) {
-                final MarketOrder sellOrder = new MarketOrder(
+                final MarketOrder sellOrder = new MarketOrderImpl(
                         OrderType.SELL,
                         bitfinexSellOrder.price,
                         bitfinexSellOrder.amount,
@@ -200,7 +204,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter imple
                 sellOrders.add(sellOrder);
             }
 
-            return new MarketOrderBook(marketId, sellOrders, buyOrders);
+            return new MarketOrderBookImpl(marketId, sellOrders, buyOrders);
 
         } catch (ExchangeNetworkException | TradingApiException e) {
             throw e;
@@ -239,7 +243,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter imple
                                 "Unrecognised order type received in getYourOpenOrders(). Value: " + bitfinexOpenOrder.type);
                 }
 
-                final OpenOrder order = new OpenOrder(
+                final OpenOrder order = new OpenOrderImpl(
                         Long.toString(bitfinexOpenOrder.id),
                         // for some reason 'finex adds decimal point to long date value, e.g. "1442073766.0"  - grrrr!
                         Date.from(Instant.ofEpochMilli(Integer.parseInt(bitfinexOpenOrder.timestamp.split("\\.")[0]))),
@@ -401,7 +405,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter imple
             }
 
             // 2nd arg of BalanceInfo constructor for reserved/on-hold balances is not provided by exchange.
-            return new BalanceInfo(balancesAvailable, new HashMap<>());
+            return new BalanceInfoImpl(balancesAvailable, new HashMap<>());
 
         } catch (ExchangeNetworkException | TradingApiException e) {
             throw e;
@@ -823,14 +827,9 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter imple
      */
     private ExchangeHttpResponse sendPublicRequestToExchange(String apiMethod) throws ExchangeNetworkException, TradingApiException {
 
-        // Request headers required by Exchange
-        final Map<String, String> requestHeaders = new HashMap<>();
-        requestHeaders.put("Content-Type", "application/x-www-form-urlencoded");
-
         try {
-
             final URL url = new URL(PUBLIC_API_BASE_URL + apiMethod);
-            return sendNetworkRequest(url, "GET", null, requestHeaders);
+            return makeNetworkRequest(url, "GET", null, new HashMap<>());
 
         } catch (MalformedURLException e) {
             final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
@@ -906,11 +905,8 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter imple
             final String base64payload = DatatypeConverter.printBase64Binary(paramsInJson.getBytes("UTF-8"));
 
             // Request headers required by Exchange
-            final Map<String, String> requestHeaders = new HashMap<>();
-            // Add the public key
+            final Map<String, String> requestHeaders = getHeaderParamMap();
             requestHeaders.put("X-BFX-APIKEY", key);
-
-            // Add Base64 encoded JSON payload
             requestHeaders.put("X-BFX-PAYLOAD", base64payload);
 
             // Add the signature
@@ -928,7 +924,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter imple
             requestHeaders.put("Content-Type", "application/json");
 
             final URL url = new URL(AUTHENTICATED_API_URL + apiMethod);
-            return sendNetworkRequest(url, "POST", paramsInJson, requestHeaders);
+            return makeNetworkRequest(url, "POST", paramsInJson, requestHeaders);
 
         } catch (MalformedURLException | UnsupportedEncodingException e) {
 
@@ -1006,5 +1002,20 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter imple
      */
     private Map<String, Object> getRequestParamMap() {
         return new HashMap<>();
+    }
+
+    /*
+     * Hack for unit-testing header params passed to transport layer.
+     */
+    private Map<String, String> getHeaderParamMap() {
+        return new HashMap<>();
+    }
+
+    /*
+     * Hack for unit-testing transport layer.
+     */
+    private ExchangeHttpResponse makeNetworkRequest(URL url, String httpMethod, String postData, Map<String, String> requestHeaders)
+            throws TradingApiException, ExchangeNetworkException {
+        return super.sendNetworkRequest(url, httpMethod, postData, requestHeaders);
     }
 }

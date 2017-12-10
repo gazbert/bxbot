@@ -27,6 +27,10 @@ import com.gazbert.bxbot.exchange.api.AuthenticationConfig;
 import com.gazbert.bxbot.exchange.api.ExchangeAdapter;
 import com.gazbert.bxbot.exchange.api.ExchangeConfig;
 import com.gazbert.bxbot.exchange.api.OptionalConfig;
+import com.gazbert.bxbot.exchanges.trading.api.impl.BalanceInfoImpl;
+import com.gazbert.bxbot.exchanges.trading.api.impl.MarketOrderBookImpl;
+import com.gazbert.bxbot.exchanges.trading.api.impl.MarketOrderImpl;
+import com.gazbert.bxbot.exchanges.trading.api.impl.OpenOrderImpl;
 import com.gazbert.bxbot.trading.api.*;
 import com.google.common.base.MoreObjects;
 import com.google.gson.Gson;
@@ -324,7 +328,7 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
                                     "Unrecognised order type received in getYourOpenOrders(). Value: " + openOrder.side);
                     }
 
-                    final OpenOrder order = new OpenOrder(
+                    final OpenOrder order = new OpenOrderImpl(
                             openOrder.id,
                             Date.from(Instant.parse(openOrder.created_at)),
                             marketId,
@@ -369,7 +373,7 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
 
                 final List<MarketOrder> buyOrders = new ArrayList<>();
                 for (GdaxMarketOrder gdaxBuyOrder : orderBook.bids) {
-                    final MarketOrder buyOrder = new MarketOrder(
+                    final MarketOrder buyOrder = new MarketOrderImpl(
                             OrderType.BUY,
                             gdaxBuyOrder.get(0),
                             gdaxBuyOrder.get(1),
@@ -379,7 +383,7 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
 
                 final List<MarketOrder> sellOrders = new ArrayList<>();
                 for (GdaxMarketOrder gdaxSellOrder : orderBook.asks) {
-                    final MarketOrder sellOrder = new MarketOrder(
+                    final MarketOrder sellOrder = new MarketOrderImpl(
                             OrderType.SELL,
                             gdaxSellOrder.get(0),
                             gdaxSellOrder.get(1),
@@ -387,7 +391,7 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
                     sellOrders.add(sellOrder);
                 }
 
-                return new MarketOrderBook(marketId, sellOrders, buyOrders);
+                return new MarketOrderBookImpl(marketId, sellOrders, buyOrders);
 
             } else {
                 final String errorMsg = "Failed to get market order book from exchange. Details: " + response;
@@ -421,7 +425,7 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
                     balancesAvailable.put(gdaxAccount.currency, gdaxAccount.available);
                     balancesOnHold.put(gdaxAccount.currency, gdaxAccount.hold);
                 }
-                return new BalanceInfo(balancesAvailable, balancesOnHold);
+                return new BalanceInfoImpl(balancesAvailable, balancesOnHold);
 
             } else {
                 final String errorMsg = "Failed to get your wallet balance info from exchange. Details: " + response;
@@ -626,26 +630,31 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
             params = new HashMap<>(); // no params, so empty query string
         }
 
+        // Request headers required by Exchange
+        final Map<String, String> requestHeaders = new HashMap<>();
+
         try {
 
-            // Build the query string with any given params
-            final StringBuilder queryString = new StringBuilder("?");
-            for (final Map.Entry<String, String> param : params.entrySet()) {
-                if (queryString.length() > 1) {
-                    queryString.append("&");
+            final StringBuilder queryString = new StringBuilder();
+            if (params.size() > 0) {
+
+                queryString.append("?");
+
+                for (final Map.Entry<String, String> param : params.entrySet()) {
+                    if (queryString.length() > 1) {
+                        queryString.append("&");
+                    }
+                    //noinspection deprecation
+                    queryString.append(param.getKey());
+                    queryString.append("=");
+                    queryString.append(URLEncoder.encode(param.getValue(), "UTF-8"));
                 }
-                //noinspection deprecation
-                queryString.append(param.getKey());
-                queryString.append("=");
-                queryString.append(URLEncoder.encode(param.getValue(), "UTF-8"));
+
+                requestHeaders.put("Content-Type", "application/x-www-form-urlencoded");
             }
 
-            // Request headers required by Exchange
-            final Map<String, String> requestHeaders = new HashMap<>();
-            requestHeaders.put("Content-Type", "application/x-www-form-urlencoded");
-
             final URL url = new URL(PUBLIC_API_BASE_URL + apiMethod + queryString);
-            return sendNetworkRequest(url, "GET", null, requestHeaders);
+            return makeNetworkRequest(url, "GET", null, requestHeaders);
 
         } catch (MalformedURLException | UnsupportedEncodingException e) {
             final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
@@ -775,7 +784,7 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
             final String signature = DatatypeConverter.printBase64Binary(mac.doFinal());
 
             // Request headers required by Exchange
-            final Map<String, String> requestHeaders = new HashMap<>();
+            final Map<String, String> requestHeaders = getHeaderParamMap();
             requestHeaders.put("Content-Type", "application/json");
             requestHeaders.put("CB-ACCESS-KEY", key);
             requestHeaders.put("CB-ACCESS-SIGN", signature);
@@ -783,7 +792,7 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
             requestHeaders.put("CB-ACCESS-PASSPHRASE", passphrase);
 
             final URL url = new URL(invocationUrl);
-            return sendNetworkRequest(url, httpMethod, requestBody, requestHeaders);
+            return makeNetworkRequest(url, httpMethod, requestBody, requestHeaders);
 
         } catch (MalformedURLException | UnsupportedEncodingException e) {
             final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
@@ -858,9 +867,24 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
     }
 
     /*
-     * Hack for unit-testing map params passed to transport layer.
+     * Hack for unit-testing request params passed to transport layer.
      */
     private Map<String, String> getRequestParamMap() {
         return new HashMap<>();
+    }
+
+    /*
+     * Hack for unit-testing header params passed to transport layer.
+     */
+    private Map<String, String> getHeaderParamMap() {
+        return new HashMap<>();
+    }
+
+    /*
+     * Hack for unit-testing transport layer.
+     */
+    private ExchangeHttpResponse makeNetworkRequest(URL url, String httpMethod, String postData, Map<String, String> requestHeaders)
+            throws TradingApiException, ExchangeNetworkException {
+        return super.sendNetworkRequest(url, httpMethod, postData, requestHeaders);
     }
 }

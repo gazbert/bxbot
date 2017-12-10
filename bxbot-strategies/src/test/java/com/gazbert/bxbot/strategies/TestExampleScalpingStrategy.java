@@ -28,10 +28,6 @@ import com.gazbert.bxbot.strategy.api.StrategyException;
 import com.gazbert.bxbot.trading.api.*;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.powermock.api.easymock.PowerMock;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.reflect.Whitebox;
 
 import java.math.BigDecimal;
@@ -39,7 +35,7 @@ import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.*;
 
 /**
  * <p>
@@ -51,8 +47,6 @@ import static org.easymock.EasyMock.expect;
  *
  * @author gazbert
  */
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({Market.class, MarketOrderBook.class, MarketOrder.class, OpenOrder.class})
 public class TestExampleScalpingStrategy {
 
     // canned data
@@ -60,10 +54,15 @@ public class TestExampleScalpingStrategy {
     private final static String BASE_CURRENCY = "BTC";
     private final static String COUNTER_CURRENCY = "USD";
 
-    // Strategy init() arguments
+    // Mocked Strategy init() arguments
     private TradingApi tradingApi;
     private Market market;
     private StrategyConfig config;
+
+    // Mocked order book and orders
+    private MarketOrderBook marketOrderBook;
+    private MarketOrder marketBuyOrder;
+    private MarketOrder marketSellOrder;
 
     // Order book data
     private List<MarketOrder> marketBuyOrders;
@@ -80,17 +79,17 @@ public class TestExampleScalpingStrategy {
         final String CONFIG_ITEM_MINIMUM_PERCENTAGE_GAIN = "2";
         final String MARKET_NAME = "BTC_USD";
 
-        tradingApi = PowerMock.createMock(TradingApi.class);
-        market = PowerMock.createMock(Market.class);
-        config = PowerMock.createMock(StrategyConfig.class);
+        tradingApi = createMock(TradingApi.class);
+        market = createMock(Market.class);
+        config = createMock(StrategyConfig.class);
 
         // setup market order book
-        final MarketOrderBook marketOrderBook = PowerMock.createMock(MarketOrderBook.class);
-        final MarketOrder marketBuyOrder = PowerMock.createMock(MarketOrder.class);
+        marketOrderBook = createMock(MarketOrderBook.class);
+        marketBuyOrder = createMock(MarketOrder.class);
         marketBuyOrders = new ArrayList<>();
         marketBuyOrders.add(marketBuyOrder);
         marketSellOrders = new ArrayList<>();
-        final MarketOrder marketSellOrder = PowerMock.createMock(MarketOrder.class);
+        marketSellOrder = createMock(MarketOrder.class);
         marketSellOrders.add(marketSellOrder);
 
         // expect config to be loaded
@@ -136,13 +135,13 @@ public class TestExampleScalpingStrategy {
         expect(market.getBaseCurrency()).andReturn(BASE_CURRENCY).atLeastOnce();
         expect(tradingApi.createOrder(MARKET_ID, OrderType.BUY, amountOfUnitsToBuy, bidSpotPrice)).andReturn(orderId);
 
-        PowerMock.replayAll();
+        replay(tradingApi, market, config, marketOrderBook, marketBuyOrder, marketSellOrder);
 
         final ExampleScalpingStrategy strategy = new ExampleScalpingStrategy();
         strategy.init(tradingApi, market, config);
         strategy.execute();
 
-        PowerMock.verifyAll();
+        verify(tradingApi, market, config, marketOrderBook, marketBuyOrder, marketSellOrder);
     }
 
     /*
@@ -165,7 +164,7 @@ public class TestExampleScalpingStrategy {
         final BigDecimal lastOrderAmount = new BigDecimal("35");
         final BigDecimal lastOrderPrice = new BigDecimal("1454.018");
         final Class orderStateClass = Whitebox.getInnerClassType(ExampleScalpingStrategy.class, "OrderState");
-        final Object orderState = PowerMock.createMock(orderStateClass);
+        final Object orderState = createMock(orderStateClass);
         Whitebox.setInternalState(orderState, "id", "45345346");
         Whitebox.setInternalState(orderState, "type", OrderType.BUY);
         Whitebox.setInternalState(orderState, "price", lastOrderPrice);
@@ -182,7 +181,7 @@ public class TestExampleScalpingStrategy {
         expect(market.getId()).andReturn(MARKET_ID).atLeastOnce();
         expect(tradingApi.createOrder(MARKET_ID, OrderType.SELL, lastOrderAmount, newAskPrice)).andReturn(orderId);
 
-        PowerMock.replayAll();
+        replay(tradingApi, market, config, marketOrderBook, marketBuyOrder, marketSellOrder, orderState);
 
         final ExampleScalpingStrategy strategy = new ExampleScalpingStrategy();
 
@@ -193,7 +192,7 @@ public class TestExampleScalpingStrategy {
         strategy.init(tradingApi, market, config);
         strategy.execute();
 
-        PowerMock.verifyAll();
+        verify(tradingApi, market, config, marketOrderBook, marketBuyOrder, marketSellOrder, orderState);
     }
 
     /*
@@ -216,7 +215,7 @@ public class TestExampleScalpingStrategy {
         final BigDecimal lastOrderAmount = new BigDecimal("35");
         final BigDecimal lastOrderPrice = new BigDecimal("1454.018");
         final Class orderStateClass = Whitebox.getInnerClassType(ExampleScalpingStrategy.class, "OrderState");
-        final Object orderState = PowerMock.createMock(orderStateClass);
+        final Object orderState = createMock(orderStateClass);
         Whitebox.setInternalState(orderState, "id", "45345346");
         Whitebox.setInternalState(orderState, "type", OrderType.BUY);
         Whitebox.setInternalState(orderState, "price", lastOrderPrice);
@@ -224,7 +223,7 @@ public class TestExampleScalpingStrategy {
 
         // expect to check if the buy order has filled
         expect(market.getId()).andReturn(MARKET_ID);
-        final OpenOrder unfilledOrder = PowerMock.createMock(OpenOrder.class);
+        final OpenOrder unfilledOrder = createMock(OpenOrder.class);
         final List<OpenOrder> openOrders = new ArrayList<>();
         openOrders.add(unfilledOrder); // still have open order
         expect(tradingApi.getYourOpenOrders(MARKET_ID)).andReturn(openOrders);
@@ -232,7 +231,7 @@ public class TestExampleScalpingStrategy {
         // expect strategy to find existing open order and hold current position
         expect(openOrders.get(0).getId()).andReturn("45345346");
 
-        PowerMock.replayAll();
+        replay(tradingApi, market, config, marketOrderBook, marketBuyOrder, marketSellOrder, orderState, unfilledOrder);
 
         final ExampleScalpingStrategy strategy = new ExampleScalpingStrategy();
 
@@ -243,7 +242,7 @@ public class TestExampleScalpingStrategy {
         strategy.init(tradingApi, market, config);
         strategy.execute();
 
-        PowerMock.verifyAll();
+        verify(tradingApi, market, config, marketOrderBook, marketBuyOrder, marketSellOrder, orderState, unfilledOrder);
     }
 
     /*
@@ -266,7 +265,7 @@ public class TestExampleScalpingStrategy {
         final BigDecimal lastOrderAmount = new BigDecimal("35");
         final BigDecimal lastOrderPrice = new BigDecimal("1454.018");
         final Class orderStateClass = Whitebox.getInnerClassType(ExampleScalpingStrategy.class, "OrderState");
-        final Object orderState = PowerMock.createMock(orderStateClass);
+        final Object orderState = createMock(orderStateClass);
         Whitebox.setInternalState(orderState, "id", "45345346");
         Whitebox.setInternalState(orderState, "type", OrderType.SELL);
         Whitebox.setInternalState(orderState, "price", lastOrderPrice);
@@ -289,7 +288,7 @@ public class TestExampleScalpingStrategy {
         expect(market.getBaseCurrency()).andReturn(BASE_CURRENCY).atLeastOnce();
         expect(tradingApi.createOrder(MARKET_ID, OrderType.BUY, amountOfUnitsToBuy, bidSpotPrice)).andReturn(orderId);
 
-        PowerMock.replayAll();
+        replay(tradingApi, market, config, marketOrderBook, marketBuyOrder, marketSellOrder, orderState);
 
         final ExampleScalpingStrategy strategy = new ExampleScalpingStrategy();
 
@@ -300,7 +299,7 @@ public class TestExampleScalpingStrategy {
         strategy.init(tradingApi, market, config);
         strategy.execute();
 
-        PowerMock.verifyAll();
+        verify(tradingApi, market, config, marketOrderBook, marketBuyOrder, marketSellOrder, orderState);
     }
 
     /*
@@ -323,7 +322,7 @@ public class TestExampleScalpingStrategy {
         final BigDecimal lastOrderAmount = new BigDecimal("35");
         final BigDecimal lastOrderPrice = new BigDecimal("1454.018");
         final Class orderStateClass = Whitebox.getInnerClassType(ExampleScalpingStrategy.class, "OrderState");
-        final Object orderState = PowerMock.createMock(orderStateClass);
+        final Object orderState = createMock(orderStateClass);
         Whitebox.setInternalState(orderState, "id", "45345346");
         Whitebox.setInternalState(orderState, "type", OrderType.SELL);
         Whitebox.setInternalState(orderState, "price", lastOrderPrice);
@@ -331,7 +330,7 @@ public class TestExampleScalpingStrategy {
 
         // expect to check if the sell order has filled
         expect(market.getId()).andReturn(MARKET_ID);
-        final OpenOrder unfilledOrder = PowerMock.createMock(OpenOrder.class);
+        final OpenOrder unfilledOrder = createMock(OpenOrder.class);
         final List<OpenOrder> openOrders = new ArrayList<>();
         openOrders.add(unfilledOrder); // still have open order
         expect(tradingApi.getYourOpenOrders(MARKET_ID)).andReturn(openOrders);
@@ -339,7 +338,7 @@ public class TestExampleScalpingStrategy {
         // expect strategy to find existing open order and hold current position
         expect(openOrders.get(0).getId()).andReturn("45345346");
 
-        PowerMock.replayAll();
+        replay(tradingApi, market, config, marketOrderBook, marketBuyOrder, marketSellOrder, orderState, unfilledOrder);
 
         final ExampleScalpingStrategy strategy = new ExampleScalpingStrategy();
 
@@ -350,7 +349,7 @@ public class TestExampleScalpingStrategy {
         strategy.init(tradingApi, market, config);
         strategy.execute();
 
-        PowerMock.verifyAll();
+        verify(tradingApi, market, config, marketOrderBook, marketBuyOrder, marketSellOrder, orderState, unfilledOrder);
     }
 
     // ------------------------------------------------------------------------
@@ -387,13 +386,13 @@ public class TestExampleScalpingStrategy {
         expect(tradingApi.createOrder(MARKET_ID, OrderType.BUY, amountOfUnitsToBuy, bidSpotPrice)).andThrow(
                 new ExchangeNetworkException("Timeout waiting for exchange!"));
 
-        PowerMock.replayAll();
+        replay(tradingApi, market, config, marketOrderBook, marketBuyOrder, marketSellOrder);
 
         final ExampleScalpingStrategy strategy = new ExampleScalpingStrategy();
         strategy.init(tradingApi, market, config);
         strategy.execute();
 
-        PowerMock.verifyAll();
+        verify(tradingApi, market, config, marketOrderBook, marketBuyOrder, marketSellOrder);
     }
 
     /*
@@ -417,7 +416,7 @@ public class TestExampleScalpingStrategy {
         final BigDecimal lastOrderAmount = new BigDecimal("35");
         final BigDecimal lastOrderPrice = new BigDecimal("1454.018");
         final Class orderStateClass = Whitebox.getInnerClassType(ExampleScalpingStrategy.class, "OrderState");
-        final Object orderState = PowerMock.createMock(orderStateClass);
+        final Object orderState = createMock(orderStateClass);
         Whitebox.setInternalState(orderState, "id", "45345346");
         Whitebox.setInternalState(orderState, "type", OrderType.SELL);
         Whitebox.setInternalState(orderState, "price", lastOrderPrice);
@@ -440,7 +439,7 @@ public class TestExampleScalpingStrategy {
         expect(tradingApi.createOrder(MARKET_ID, OrderType.BUY, amountOfUnitsToBuy, bidSpotPrice)).andThrow(
                 new ExchangeNetworkException("Timeout waiting for exchange!"));
 
-        PowerMock.replayAll();
+        replay(tradingApi, market, config, marketOrderBook, marketBuyOrder, marketSellOrder, orderState);
 
         final ExampleScalpingStrategy strategy = new ExampleScalpingStrategy();
 
@@ -451,7 +450,7 @@ public class TestExampleScalpingStrategy {
         strategy.init(tradingApi, market, config);
         strategy.execute();
 
-        PowerMock.verifyAll();
+        verify(tradingApi, market, config, marketOrderBook, marketBuyOrder, marketSellOrder, orderState);
     }
 
     /*
@@ -475,7 +474,7 @@ public class TestExampleScalpingStrategy {
         final BigDecimal lastOrderAmount = new BigDecimal("35");
         final BigDecimal lastOrderPrice = new BigDecimal("1454.018");
         final Class orderStateClass = Whitebox.getInnerClassType(ExampleScalpingStrategy.class, "OrderState");
-        final Object orderState = PowerMock.createMock(orderStateClass);
+        final Object orderState = createMock(orderStateClass);
         Whitebox.setInternalState(orderState, "id", "45345346");
         Whitebox.setInternalState(orderState, "type", OrderType.BUY);
         Whitebox.setInternalState(orderState, "price", lastOrderPrice);
@@ -492,7 +491,7 @@ public class TestExampleScalpingStrategy {
         expect(tradingApi.createOrder(MARKET_ID, OrderType.SELL, lastOrderAmount, newAskPrice)).andThrow(
                 new ExchangeNetworkException("Timeout waiting for exchange!"));
 
-        PowerMock.replayAll();
+        replay(tradingApi, market, config, marketOrderBook, marketBuyOrder, marketSellOrder, orderState);
 
         final ExampleScalpingStrategy strategy = new ExampleScalpingStrategy();
 
@@ -503,7 +502,7 @@ public class TestExampleScalpingStrategy {
         strategy.init(tradingApi, market, config);
         strategy.execute();
 
-        PowerMock.verifyAll();
+        verify(tradingApi, market, config, marketOrderBook, marketBuyOrder, marketSellOrder, orderState);
     }
 
     // ------------------------------------------------------------------------
@@ -540,13 +539,13 @@ public class TestExampleScalpingStrategy {
         expect(tradingApi.createOrder(MARKET_ID, OrderType.BUY, amountOfUnitsToBuy, bidSpotPrice)).andThrow(
                 new TradingApiException("Exchange returned a 500 status code!"));
 
-        PowerMock.replayAll();
+        replay(tradingApi, market, config, marketOrderBook, marketBuyOrder, marketSellOrder);
 
         final ExampleScalpingStrategy strategy = new ExampleScalpingStrategy();
         strategy.init(tradingApi, market, config);
         strategy.execute();
 
-        PowerMock.verifyAll();
+        verify(tradingApi, market, config, marketOrderBook, marketBuyOrder, marketSellOrder);
     }
 
     /*
@@ -570,7 +569,7 @@ public class TestExampleScalpingStrategy {
         final BigDecimal lastOrderAmount = new BigDecimal("35");
         final BigDecimal lastOrderPrice = new BigDecimal("1454.018");
         final Class orderStateClass = Whitebox.getInnerClassType(ExampleScalpingStrategy.class, "OrderState");
-        final Object orderState = PowerMock.createMock(orderStateClass);
+        final Object orderState = createMock(orderStateClass);
         Whitebox.setInternalState(orderState, "id", "45345346");
         Whitebox.setInternalState(orderState, "type", OrderType.SELL);
         Whitebox.setInternalState(orderState, "price", lastOrderPrice);
@@ -593,7 +592,7 @@ public class TestExampleScalpingStrategy {
         expect(tradingApi.createOrder(MARKET_ID, OrderType.BUY, amountOfUnitsToBuy, bidSpotPrice)).andThrow(
                 new TradingApiException("Exchange returned a 500 status code!"));
 
-        PowerMock.replayAll();
+        replay(tradingApi, market, config, marketOrderBook, marketBuyOrder, marketSellOrder, orderState);
 
         final ExampleScalpingStrategy strategy = new ExampleScalpingStrategy();
 
@@ -604,7 +603,7 @@ public class TestExampleScalpingStrategy {
         strategy.init(tradingApi, market, config);
         strategy.execute();
 
-        PowerMock.verifyAll();
+        verify(tradingApi, market, config, marketOrderBook, marketBuyOrder, marketSellOrder, orderState);
     }
 
     /*
@@ -628,7 +627,7 @@ public class TestExampleScalpingStrategy {
         final BigDecimal lastOrderAmount = new BigDecimal("35");
         final BigDecimal lastOrderPrice = new BigDecimal("1454.018");
         final Class orderStateClass = Whitebox.getInnerClassType(ExampleScalpingStrategy.class, "OrderState");
-        final Object orderState = PowerMock.createMock(orderStateClass);
+        final Object orderState = createMock(orderStateClass);
         Whitebox.setInternalState(orderState, "id", "45345346");
         Whitebox.setInternalState(orderState, "type", OrderType.BUY);
         Whitebox.setInternalState(orderState, "price", lastOrderPrice);
@@ -645,7 +644,7 @@ public class TestExampleScalpingStrategy {
         expect(tradingApi.createOrder(MARKET_ID, OrderType.SELL, lastOrderAmount, newAskPrice)).andThrow(
                 new TradingApiException("Exchange returned a 500 status code!"));
 
-        PowerMock.replayAll();
+        replay(tradingApi, market, config, marketOrderBook, marketBuyOrder, marketSellOrder, orderState);
 
         final ExampleScalpingStrategy strategy = new ExampleScalpingStrategy();
 
@@ -656,6 +655,6 @@ public class TestExampleScalpingStrategy {
         strategy.init(tradingApi, market, config);
         strategy.execute();
 
-        PowerMock.verifyAll();
+        verify(tradingApi, market, config, marketOrderBook, marketBuyOrder, marketSellOrder, orderState);
     }
 }

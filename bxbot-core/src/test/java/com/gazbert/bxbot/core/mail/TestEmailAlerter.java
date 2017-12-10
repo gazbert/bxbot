@@ -32,6 +32,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.api.easymock.PowerMock;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
@@ -48,6 +49,7 @@ import static org.easymock.EasyMock.expect;
  */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({Transport.class})
+@PowerMockIgnore({"javax.management.*"})
 public class TestEmailAlerter {
 
     private static final String EMAIL_SUBJECT = "CRITICAL Alert message from BX-bot";

@@ -26,20 +26,17 @@ package com.gazbert.bxbot.exchanges;
 import com.gazbert.bxbot.exchange.api.*;
 import com.gazbert.bxbot.trading.api.BalanceInfo;
 import com.gazbert.bxbot.trading.api.MarketOrderBook;
+import com.gazbert.bxbot.trading.api.OpenOrder;
+import com.gazbert.bxbot.trading.api.OrderType;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.powermock.api.easymock.PowerMock;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.*;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -49,9 +46,6 @@ import static org.junit.Assert.assertTrue;
  *
  * @author gazbert
  */
-@RunWith(PowerMockRunner.class)
-@PowerMockIgnore({"javax.crypto.*"})
-@PrepareForTest(GdaxExchangeAdapter.class)
 public class GdaxIT {
 
     // Canned test data
@@ -79,21 +73,21 @@ public class GdaxIT {
     @Before
     public void setupForEachTest() throws Exception {
 
-        authenticationConfig = PowerMock.createMock(AuthenticationConfig.class);
+        authenticationConfig = createMock(AuthenticationConfig.class);
         expect(authenticationConfig.getItem("passphrase")).andReturn(PASSPHRASE);
         expect(authenticationConfig.getItem("key")).andReturn(KEY);
         expect(authenticationConfig.getItem("secret")).andReturn(SECRET);
 
-        networkConfig = PowerMock.createMock(NetworkConfig.class);
+        networkConfig = createMock(NetworkConfig.class);
         expect(networkConfig.getConnectionTimeout()).andReturn(30);
         expect(networkConfig.getNonFatalErrorCodes()).andReturn(nonFatalNetworkErrorCodes);
         expect(networkConfig.getNonFatalErrorMessages()).andReturn(nonFatalNetworkErrorMessages);
 
-        optionalConfig = PowerMock.createMock(OptionalConfig.class);
+        optionalConfig = createMock(OptionalConfig.class);
         expect(optionalConfig.getItem("buy-fee")).andReturn("0.25");
         expect(optionalConfig.getItem("sell-fee")).andReturn("0.25");
 
-        exchangeConfig = PowerMock.createMock(ExchangeConfig.class);
+        exchangeConfig = createMock(ExchangeConfig.class);
         expect(exchangeConfig.getAuthenticationConfig()).andReturn(authenticationConfig);
         expect(exchangeConfig.getNetworkConfig()).andReturn(networkConfig);
         expect(exchangeConfig.getOptionalConfig()).andReturn(optionalConfig);
@@ -102,7 +96,8 @@ public class GdaxIT {
     @Test
     public void testPublicApiCalls() throws Exception {
 
-        PowerMock.replayAll();
+        replay(authenticationConfig, networkConfig, optionalConfig, exchangeConfig);
+
         final ExchangeAdapter exchangeAdapter = new GdaxExchangeAdapter();
         exchangeAdapter.init(exchangeConfig);
 
@@ -112,7 +107,7 @@ public class GdaxIT {
         assertFalse(orderBook.getBuyOrders().isEmpty());
         assertFalse(orderBook.getSellOrders().isEmpty());
 
-        PowerMock.verifyAll();
+        verify(authenticationConfig, networkConfig, optionalConfig, exchangeConfig);
     }
 
     /*
@@ -122,19 +117,20 @@ public class GdaxIT {
     @Test
     public void testAuthenticatedApiCalls() throws Exception {
 
-        PowerMock.replayAll();
+        replay(authenticationConfig, networkConfig, optionalConfig, exchangeConfig);
+
         final ExchangeAdapter exchangeAdapter = new GdaxExchangeAdapter();
         exchangeAdapter.init(exchangeConfig);
 
         final BalanceInfo balanceInfo = exchangeAdapter.getBalanceInfo();
         assertNotNull(balanceInfo.getBalancesAvailable().get("BTC"));
 
-//      // Careful here - make sure the SELL_ORDER_PRICE is sensible!
+        // Careful here - make sure the SELL_ORDER_PRICE is sensible!
 //        final String orderId = exchangeAdapter.createOrder(MARKET_ID, OrderType.BUY, BUY_ORDER_QUANTITY, BUY_ORDER_PRICE);
 //        final List<OpenOrder> openOrders = exchangeAdapter.getYourOpenOrders(MARKET_ID);
 //        assertTrue(openOrders.stream().anyMatch(o -> o.getId().equals(orderId)));
 //        assertTrue(exchangeAdapter.cancelOrder(orderId, MARKET_ID));
 
-        PowerMock.verifyAll();
+        verify(authenticationConfig, networkConfig, optionalConfig, exchangeConfig);
     }
 }

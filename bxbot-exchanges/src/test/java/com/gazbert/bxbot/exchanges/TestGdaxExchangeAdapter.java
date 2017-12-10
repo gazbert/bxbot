@@ -25,6 +25,7 @@ package com.gazbert.bxbot.exchanges;
 
 import com.gazbert.bxbot.exchange.api.*;
 import com.gazbert.bxbot.trading.api.*;
+import com.google.gson.GsonBuilder;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,39 +35,25 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.math.BigDecimal;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.DecimalFormat;
 import java.time.Instant;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.easymock.EasyMock.*;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 /**
- * <p>
  * Tests the behaviour of the GDAX Exchange Adapter.
- * </p>
- * <p>
- * <p>
- * Coverage could be better: it does not include calling the
- * {@link GdaxExchangeAdapter#sendPublicRequestToExchange(String, Map)} and
- * {@link GdaxExchangeAdapter#sendAuthenticatedRequestToExchange(String, String, Map)} methods;
- * the code in these methods is a bloody nightmare to test!
- * </p>
- * <p>
- * TODO Unit test {@link GdaxExchangeAdapter#sendPublicRequestToExchange(String, Map)} method.
- * TODO Unit test {@link GdaxExchangeAdapter#sendAuthenticatedRequestToExchange(String, String, Map)} method.
  *
  * @author gazbert
  */
 @RunWith(PowerMockRunner.class)
-@PowerMockIgnore({"javax.crypto.*"})
+@PowerMockIgnore({"javax.crypto.*", "javax.management.*"})
 @PrepareForTest(GdaxExchangeAdapter.class)
 public class TestGdaxExchangeAdapter {
 
@@ -100,6 +87,8 @@ public class TestGdaxExchangeAdapter {
     private static final String MOCKED_GET_REQUEST_PARAM_MAP_METHOD = "getRequestParamMap";
     private static final String MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD = "sendAuthenticatedRequestToExchange";
     private static final String MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD = "sendPublicRequestToExchange";
+    private static final String MOCKED_GET_REQUEST_HEADER_MAP_METHOD = "getHeaderParamMap";
+    private static final String MOCKED_MAKE_NETWORK_REQUEST_METHOD = "makeNetworkRequest";
 
     // Exchange Adapter config for the tests
     private static final String PASSPHRASE = "lePassPhrase";
@@ -108,6 +97,9 @@ public class TestGdaxExchangeAdapter {
     private static final List<Integer> nonFatalNetworkErrorCodes = Arrays.asList(502, 503, 504);
     private static final List<String> nonFatalNetworkErrorMessages = Arrays.asList(
             "Connection refused", "Connection reset", "Remote host closed connection during handshake");
+
+    private static final String PUBLIC_API_BASE_URL = "https://api.gdax.com/";
+    private static final String AUTHENTICATED_API_URL = PUBLIC_API_BASE_URL;
 
     private ExchangeConfig exchangeConfig;
     private AuthenticationConfig authenticationConfig;
@@ -146,6 +138,7 @@ public class TestGdaxExchangeAdapter {
     // ------------------------------------------------------------------------------------------------
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testCreateOrderToBuyIsSuccessful() throws Exception {
 
         // Load the canned response from the exchange
@@ -179,6 +172,7 @@ public class TestGdaxExchangeAdapter {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testCreateOrderToSellIsSuccessful() throws Exception {
 
         // Load the canned response from the exchange
@@ -390,6 +384,7 @@ public class TestGdaxExchangeAdapter {
     // ------------------------------------------------------------------------------------------------
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testGettingMarketOrders() throws Exception {
 
         // Load the canned response from the exchange
@@ -747,6 +742,202 @@ public class TestGdaxExchangeAdapter {
 
         final ExchangeAdapter exchangeAdapter = new GdaxExchangeAdapter();
         exchangeAdapter.init(exchangeConfig);
+
+        PowerMock.verifyAll();
+    }
+
+    // ------------------------------------------------------------------------------------------------
+    //  Request sending tests
+    //
+    //  "The rabbit-hole went straight on like a tunnel for some way, and then dipped suddenly down,
+    //   so suddenly that Alice had not a moment to think about stopping herself before she found herself
+    //   falling down what seemed to be a very deep well..."
+    // ------------------------------------------------------------------------------------------------
+
+    @Test
+    public void testSendingPublicRequestToExchangeSuccessfully() throws Exception {
+
+        final byte[] encoded = Files.readAllBytes(Paths.get(TICKER_JSON_RESPONSE));
+        final AbstractExchangeAdapter.ExchangeHttpResponse exchangeResponse =
+                new AbstractExchangeAdapter.ExchangeHttpResponse(200, "OK", new String(encoded, StandardCharsets.UTF_8));
+
+        final GdaxExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
+                GdaxExchangeAdapter.class, MOCKED_MAKE_NETWORK_REQUEST_METHOD);
+
+        final URL url = new URL(PUBLIC_API_BASE_URL + TICKER);
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_MAKE_NETWORK_REQUEST_METHOD,
+                eq(url),
+                eq("GET"),
+                eq(null),
+                eq(new HashMap<>()))
+                .andReturn(exchangeResponse);
+
+        PowerMock.replayAll();
+        exchangeAdapter.init(exchangeConfig);
+
+        final BigDecimal lastMarketPrice = exchangeAdapter.getLatestMarketPrice(MARKET_ID);
+        assertTrue(lastMarketPrice.compareTo(new BigDecimal("165.36")) == 0);
+
+        PowerMock.verifyAll();
+    }
+
+    @Test(expected = ExchangeNetworkException.class)
+    public void testSendingPublicRequestToExchangeHandlesExchangeNetworkException() throws Exception {
+
+        final GdaxExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
+                GdaxExchangeAdapter.class, MOCKED_MAKE_NETWORK_REQUEST_METHOD);
+
+        final URL url = new URL(PUBLIC_API_BASE_URL + TICKER);
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_MAKE_NETWORK_REQUEST_METHOD,
+                eq(url),
+                eq("GET"),
+                eq(null),
+                eq(new HashMap<>()))
+                .andThrow(new ExchangeNetworkException("One wrong note eventually ruins the entire symphony."));
+
+        PowerMock.replayAll();
+        exchangeAdapter.init(exchangeConfig);
+
+        exchangeAdapter.getLatestMarketPrice(MARKET_ID);
+
+        PowerMock.verifyAll();
+    }
+
+    @Test(expected = TradingApiException.class)
+    public void testSendingPublicRequestToExchangeHandlesTradingApiException() throws Exception {
+
+        final GdaxExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
+                GdaxExchangeAdapter.class, MOCKED_MAKE_NETWORK_REQUEST_METHOD);
+
+        final URL url = new URL(PUBLIC_API_BASE_URL + TICKER);
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_MAKE_NETWORK_REQUEST_METHOD,
+                eq(url),
+                eq("GET"),
+                eq(null),
+                eq(new HashMap<>()))
+                .andThrow(new TradingApiException("Look on my works, ye Mighty, and despair."));
+
+        PowerMock.replayAll();
+        exchangeAdapter.init(exchangeConfig);
+
+        exchangeAdapter.getLatestMarketPrice(MARKET_ID);
+
+        PowerMock.verifyAll();
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void testSendingAuthenticatedRequestToExchangeSuccessfully() throws Exception {
+
+        final byte[] encoded = Files.readAllBytes(Paths.get(NEW_SELL_ORDER_JSON_RESPONSE));
+        final AbstractExchangeAdapter.ExchangeHttpResponse exchangeResponse =
+                new AbstractExchangeAdapter.ExchangeHttpResponse(200, "OK", new String(encoded, StandardCharsets.UTF_8));
+
+        final Map<String, String> requestParamMap = new HashMap<>();
+        requestParamMap.put("size", new DecimalFormat("#.########").format(SELL_ORDER_QUANTITY));
+        requestParamMap.put("price", new DecimalFormat("#.##").format(SELL_ORDER_PRICE));
+        requestParamMap.put("side", "sell");
+        requestParamMap.put("product_id", MARKET_ID);
+
+        final Map<String, String> requestHeaderMap = PowerMock.createPartialMock(HashMap.class, "put");
+        expect(requestHeaderMap.put("Content-Type", "application/json")).andStubReturn(null);
+        expect(requestHeaderMap.put(eq("CB-ACCESS-KEY"), eq(KEY))).andStubReturn(null);
+        expect(requestHeaderMap.put(eq("CB-ACCESS-SIGN"), anyString())).andStubReturn(null);
+        expect(requestHeaderMap.put(eq("CB-ACCESS-TIMESTAMP"), anyString())).andStubReturn(null);
+        expect(requestHeaderMap.put(eq("CB-ACCESS-PASSPHRASE"), eq(PASSPHRASE))).andStubReturn(null);
+
+        final GdaxExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
+                GdaxExchangeAdapter.class, MOCKED_MAKE_NETWORK_REQUEST_METHOD, MOCKED_GET_REQUEST_HEADER_MAP_METHOD);
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_GET_REQUEST_HEADER_MAP_METHOD).andReturn(requestHeaderMap);
+
+        final URL url = new URL(AUTHENTICATED_API_URL + NEW_ORDER);
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_MAKE_NETWORK_REQUEST_METHOD,
+                eq(url),
+                eq("POST"),
+                eq(new GsonBuilder().create().toJson(requestParamMap)),
+                eq(requestHeaderMap))
+                .andReturn(exchangeResponse);
+
+        PowerMock.replayAll();
+        exchangeAdapter.init(exchangeConfig);
+
+        final String orderId = exchangeAdapter.createOrder(MARKET_ID, OrderType.SELL, SELL_ORDER_QUANTITY, SELL_ORDER_PRICE);
+        assertTrue(orderId.equals("693d7ad9-e671-4d66-9911-7f75f6380134"));
+
+        PowerMock.verifyAll();
+    }
+
+    @Test(expected = ExchangeNetworkException.class)
+    @SuppressWarnings("unchecked")
+    public void testSendingAuthenticatedRequestToExchangeHandlesExchangeNetworkException() throws Exception {
+
+        final Map<String, String> requestParamMap = new HashMap<>();
+        requestParamMap.put("size", new DecimalFormat("#.########").format(SELL_ORDER_QUANTITY));
+        requestParamMap.put("price", new DecimalFormat("#.##").format(SELL_ORDER_PRICE));
+        requestParamMap.put("side", "sell");
+        requestParamMap.put("product_id", MARKET_ID);
+
+        final Map<String, String> requestHeaderMap = PowerMock.createPartialMock(HashMap.class, "put");
+        expect(requestHeaderMap.put("Content-Type", "application/json")).andStubReturn(null);
+        expect(requestHeaderMap.put(eq("CB-ACCESS-KEY"), eq(KEY))).andStubReturn(null);
+        expect(requestHeaderMap.put(eq("CB-ACCESS-SIGN"), anyString())).andStubReturn(null);
+        expect(requestHeaderMap.put(eq("CB-ACCESS-TIMESTAMP"), anyString())).andStubReturn(null);
+        expect(requestHeaderMap.put(eq("CB-ACCESS-PASSPHRASE"), eq(PASSPHRASE))).andStubReturn(null);
+
+        final GdaxExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
+                GdaxExchangeAdapter.class, MOCKED_MAKE_NETWORK_REQUEST_METHOD, MOCKED_GET_REQUEST_HEADER_MAP_METHOD);
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_GET_REQUEST_HEADER_MAP_METHOD).andReturn(requestHeaderMap);
+
+        final URL url = new URL(AUTHENTICATED_API_URL + NEW_ORDER);
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_MAKE_NETWORK_REQUEST_METHOD,
+                eq(url),
+                eq("POST"),
+                eq(new GsonBuilder().create().toJson(requestParamMap)),
+                eq(requestHeaderMap))
+                .andThrow(new ExchangeNetworkException("Allow me then a moment to consider. You seek your creator. " +
+                        "I am looking at mine. I will serve you, yet you're human. You will die, I will not."));
+
+        PowerMock.replayAll();
+        exchangeAdapter.init(exchangeConfig);
+
+        exchangeAdapter.createOrder(MARKET_ID, OrderType.SELL, SELL_ORDER_QUANTITY, SELL_ORDER_PRICE);
+
+        PowerMock.verifyAll();
+    }
+
+    @Test(expected = TradingApiException.class)
+    @SuppressWarnings("unchecked")
+    public void testSendingAuthenticatedRequestToExchangeHandlesTradingApiException() throws Exception {
+
+        final Map<String, String> requestParamMap = new HashMap<>();
+        requestParamMap.put("size", new DecimalFormat("#.########").format(SELL_ORDER_QUANTITY));
+        requestParamMap.put("price", new DecimalFormat("#.##").format(SELL_ORDER_PRICE));
+        requestParamMap.put("side", "sell");
+        requestParamMap.put("product_id", MARKET_ID);
+
+        final Map<String, String> requestHeaderMap = PowerMock.createPartialMock(HashMap.class, "put");
+        expect(requestHeaderMap.put("Content-Type", "application/json")).andStubReturn(null);
+        expect(requestHeaderMap.put(eq("CB-ACCESS-KEY"), eq(KEY))).andStubReturn(null);
+        expect(requestHeaderMap.put(eq("CB-ACCESS-SIGN"), anyString())).andStubReturn(null);
+        expect(requestHeaderMap.put(eq("CB-ACCESS-TIMESTAMP"), anyString())).andStubReturn(null);
+        expect(requestHeaderMap.put(eq("CB-ACCESS-PASSPHRASE"), eq(PASSPHRASE))).andStubReturn(null);
+
+        final GdaxExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
+                GdaxExchangeAdapter.class, MOCKED_MAKE_NETWORK_REQUEST_METHOD, MOCKED_GET_REQUEST_HEADER_MAP_METHOD);
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_GET_REQUEST_HEADER_MAP_METHOD).andReturn(requestHeaderMap);
+
+        final URL url = new URL(AUTHENTICATED_API_URL + NEW_ORDER);
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_MAKE_NETWORK_REQUEST_METHOD,
+                eq(url),
+                eq("POST"),
+                eq(new GsonBuilder().create().toJson(requestParamMap)),
+                eq(requestHeaderMap))
+                .andThrow(new TradingApiException("When you close your eyes do you dream of me?"));
+
+        PowerMock.replayAll();
+        exchangeAdapter.init(exchangeConfig);
+
+        exchangeAdapter.createOrder(MARKET_ID, OrderType.SELL, SELL_ORDER_QUANTITY, SELL_ORDER_PRICE);
 
         PowerMock.verifyAll();
     }

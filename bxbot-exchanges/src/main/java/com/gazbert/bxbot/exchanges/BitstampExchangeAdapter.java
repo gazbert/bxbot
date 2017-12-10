@@ -26,6 +26,10 @@ package com.gazbert.bxbot.exchanges;
 import com.gazbert.bxbot.exchange.api.AuthenticationConfig;
 import com.gazbert.bxbot.exchange.api.ExchangeAdapter;
 import com.gazbert.bxbot.exchange.api.ExchangeConfig;
+import com.gazbert.bxbot.exchanges.trading.api.impl.BalanceInfoImpl;
+import com.gazbert.bxbot.exchanges.trading.api.impl.MarketOrderBookImpl;
+import com.gazbert.bxbot.exchanges.trading.api.impl.MarketOrderImpl;
+import com.gazbert.bxbot.exchanges.trading.api.impl.OpenOrderImpl;
 import com.gazbert.bxbot.trading.api.*;
 import com.google.common.base.MoreObjects;
 import com.google.gson.*;
@@ -187,7 +191,7 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
             final List<MarketOrder> buyOrders = new ArrayList<>();
             final List<List<BigDecimal>> bitstampBuyOrders = bitstampOrderBook.bids;
             for (final List<BigDecimal> order : bitstampBuyOrders) {
-                final MarketOrder buyOrder = new MarketOrder(
+                final MarketOrder buyOrder = new MarketOrderImpl(
                         OrderType.BUY,
                         order.get(0), // price
                         order.get(1), // quantity
@@ -198,7 +202,7 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
             final List<MarketOrder> sellOrders = new ArrayList<>();
             final List<List<BigDecimal>> bitstampSellOrders = bitstampOrderBook.asks;
             for (final List<BigDecimal> order : bitstampSellOrders) {
-                final MarketOrder sellOrder = new MarketOrder(
+                final MarketOrder sellOrder = new MarketOrderImpl(
                         OrderType.SELL,
                         order.get(0), // price
                         order.get(1), // quantity
@@ -206,7 +210,7 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
                 sellOrders.add(sellOrder);
             }
 
-            return new MarketOrderBook(marketId, sellOrders, buyOrders);
+            return new MarketOrderBookImpl(marketId, sellOrders, buyOrders);
 
         } catch (ExchangeNetworkException | TradingApiException e) {
             throw e;
@@ -238,7 +242,7 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
                             "Unrecognised order type received in getYourOpenOrders(). Value: " + openOrder.type);
                 }
 
-                final OpenOrder order = new OpenOrder(
+                final OpenOrder order = new OpenOrderImpl(
                         Long.toString(openOrder.id),
                         openOrder.datetime,
                         marketId,
@@ -381,7 +385,7 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
             balancesOnOrder.put("LTC", balances.ltc_reserved);
             balancesOnOrder.put("XRP", balances.xrp_reserved);
 
-            return new BalanceInfo(balancesAvailable, balancesOnOrder);
+            return new BalanceInfoImpl(balancesAvailable, balancesOnOrder);
 
         } catch (ExchangeNetworkException | TradingApiException e) {
             throw e;
@@ -404,7 +408,7 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
             // Ouch!
             final Class<?> clazz = balances.getClass();
             final Field[] fields = clazz.getDeclaredFields();
-            for (final Field field: fields) {
+            for (final Field field : fields) {
                 if (field.getName().startsWith(marketId)) {
                     final BigDecimal fee = (BigDecimal) field.get(balances);
                     // adapt the % into BigDecimal format
@@ -438,7 +442,7 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
             // Ouch!
             final Class<?> clazz = balances.getClass();
             final Field[] fields = clazz.getDeclaredFields();
-            for (final Field field: fields) {
+            for (final Field field : fields) {
                 if (field.getName().startsWith(marketId)) {
                     final BigDecimal fee = (BigDecimal) field.get(balances);
                     // adapt the % into BigDecimal format
@@ -687,15 +691,9 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
      */
     private ExchangeHttpResponse sendPublicRequestToExchange(String apiMethod) throws ExchangeNetworkException, TradingApiException {
 
-        // Request headers required by Exchange
-        final Map<String, String> requestHeaders = new HashMap<>();
-        requestHeaders.put("Content-Type", "application/x-www-form-urlencoded");
-
         try {
-
-            // MUST have the trailing slash even if no params... else exchange barfs!
-            final URL url = new URL(API_BASE_URL + apiMethod + "/");
-            return sendNetworkRequest(url, "GET", null, requestHeaders);
+            final URL url = new URL(API_BASE_URL + apiMethod);
+            return makeNetworkRequest(url, "GET", null, new HashMap<>());
 
         } catch (MalformedURLException e) {
             final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
@@ -764,11 +762,11 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
             }
 
             // Request headers required by Exchange
-            final Map<String, String> requestHeaders = new HashMap<>();
+            final Map<String, String> requestHeaders = getHeaderParamMap();
             requestHeaders.put("Content-Type", "application/x-www-form-urlencoded");
 
             final URL url = new URL(API_BASE_URL + apiMethod + "/"); // MUST have the trailing slash else exchange barfs...
-            return sendNetworkRequest(url, "POST", postData.toString(), requestHeaders);
+            return makeNetworkRequest(url, "POST", postData.toString(), requestHeaders);
 
         } catch (MalformedURLException | UnsupportedEncodingException e) {
             final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
@@ -846,5 +844,20 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
      */
     private Map<String, String> getRequestParamMap() {
         return new HashMap<>();
+    }
+
+    /*
+     * Hack for unit-testing header params passed to transport layer.
+     */
+    private Map<String, String> getHeaderParamMap() {
+        return new HashMap<>();
+    }
+
+    /*
+     * Hack for unit-testing transport layer.
+     */
+    private ExchangeHttpResponse makeNetworkRequest(URL url, String httpMethod, String postData, Map<String, String> requestHeaders)
+            throws TradingApiException, ExchangeNetworkException {
+        return super.sendNetworkRequest(url, httpMethod, postData, requestHeaders);
     }
 }

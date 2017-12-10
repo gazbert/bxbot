@@ -27,6 +27,10 @@ import com.gazbert.bxbot.exchange.api.AuthenticationConfig;
 import com.gazbert.bxbot.exchange.api.ExchangeAdapter;
 import com.gazbert.bxbot.exchange.api.ExchangeConfig;
 import com.gazbert.bxbot.exchange.api.OptionalConfig;
+import com.gazbert.bxbot.exchanges.trading.api.impl.BalanceInfoImpl;
+import com.gazbert.bxbot.exchanges.trading.api.impl.MarketOrderBookImpl;
+import com.gazbert.bxbot.exchanges.trading.api.impl.MarketOrderImpl;
+import com.gazbert.bxbot.exchanges.trading.api.impl.OpenOrderImpl;
 import com.gazbert.bxbot.trading.api.*;
 import com.google.common.base.MoreObjects;
 import com.google.gson.*;
@@ -375,7 +379,7 @@ public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implemen
                                     "Unrecognised order type received in getYourOpenOrders(). Value: " + openOrder.type);
                     }
 
-                    final OpenOrder order = new OpenOrder(
+                    final OpenOrder order = new OpenOrderImpl(
                             Long.toString(openOrder.id),
                             new Date(openOrder.order_time),
                             marketId,
@@ -436,7 +440,7 @@ public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implemen
             // adapt BUYs
             final List<MarketOrder> buyOrders = new ArrayList<>();
             for (HuobiMarketOrder okCoinBuyOrder : orderBook.buys) {
-                final MarketOrder buyOrder = new MarketOrder(
+                final MarketOrder buyOrder = new MarketOrderImpl(
                         OrderType.BUY,
                         okCoinBuyOrder.price,
                         okCoinBuyOrder.amount,
@@ -447,7 +451,7 @@ public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implemen
             // adapt SELLs
             final List<MarketOrder> sellOrders = new ArrayList<>();
             for (HuobiMarketOrder okCoinSellOrder : orderBook.sells) {
-                final MarketOrder sellOrder = new MarketOrder(
+                final MarketOrder sellOrder = new MarketOrderImpl(
                         OrderType.SELL,
                         okCoinSellOrder.price,
                         okCoinSellOrder.amount,
@@ -455,7 +459,7 @@ public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implemen
                 sellOrders.add(sellOrder);
             }
 
-            return new MarketOrderBook(marketId, sellOrders, buyOrders);
+            return new MarketOrderBookImpl(marketId, sellOrders, buyOrders);
 
         } catch (ExchangeNetworkException | TradingApiException e) {
             throw e;
@@ -487,7 +491,7 @@ public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implemen
                 balancesOnOrder.put("CNY", huobiAccountInfo.frozen_cny_display);
                 balancesOnOrder.put("USD", huobiAccountInfo.frozen_usd_display);
 
-                return new BalanceInfo(balancesAvailable, balancesOnOrder);
+                return new BalanceInfoImpl(balancesAvailable, balancesOnOrder);
 
             } else if (huobiAccountInfo.code == 1) {
                 final String errorMsg = "Failed to get Balance Info from exchange  - server busy. Error response: "
