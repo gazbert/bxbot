@@ -757,7 +757,6 @@ public class TestGdaxExchangeAdapter {
     @Test
     public void testSendingPublicRequestToExchangeSuccessfully() throws Exception {
 
-        // Load the canned response from the exchange
         final byte[] encoded = Files.readAllBytes(Paths.get(TICKER_JSON_RESPONSE));
         final AbstractExchangeAdapter.ExchangeHttpResponse exchangeResponse =
                 new AbstractExchangeAdapter.ExchangeHttpResponse(200, "OK", new String(encoded, StandardCharsets.UTF_8));
@@ -766,8 +765,12 @@ public class TestGdaxExchangeAdapter {
                 GdaxExchangeAdapter.class, MOCKED_MAKE_NETWORK_REQUEST_METHOD, MOCKED_GET_REQUEST_PARAM_MAP_METHOD);
 
         final URL url = new URL(PUBLIC_API_BASE_URL + TICKER);
-        PowerMock.expectPrivate(exchangeAdapter, MOCKED_MAKE_NETWORK_REQUEST_METHOD, eq(url), eq("GET"),
-                eq(null), eq(new HashMap<>())).andReturn(exchangeResponse);
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_MAKE_NETWORK_REQUEST_METHOD,
+                eq(url),
+                eq("GET"),
+                eq(null),
+                eq(new HashMap<>()))
+                .andReturn(exchangeResponse);
 
         PowerMock.replayAll();
         exchangeAdapter.init(exchangeConfig);
@@ -785,8 +788,11 @@ public class TestGdaxExchangeAdapter {
                 GdaxExchangeAdapter.class, MOCKED_MAKE_NETWORK_REQUEST_METHOD, MOCKED_GET_REQUEST_PARAM_MAP_METHOD);
 
         final URL url = new URL(PUBLIC_API_BASE_URL + TICKER);
-        PowerMock.expectPrivate(exchangeAdapter, MOCKED_MAKE_NETWORK_REQUEST_METHOD, eq(url), eq("GET"),
-                eq(null), eq(new HashMap<>()))
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_MAKE_NETWORK_REQUEST_METHOD,
+                eq(url),
+                eq("GET"),
+                eq(null),
+                eq(new HashMap<>()))
                 .andThrow(new ExchangeNetworkException("One wrong note eventually ruins the entire symphony."));
 
         PowerMock.replayAll();
@@ -804,9 +810,12 @@ public class TestGdaxExchangeAdapter {
                 GdaxExchangeAdapter.class, MOCKED_MAKE_NETWORK_REQUEST_METHOD, MOCKED_GET_REQUEST_PARAM_MAP_METHOD);
 
         final URL url = new URL(PUBLIC_API_BASE_URL + TICKER);
-        PowerMock.expectPrivate(exchangeAdapter, MOCKED_MAKE_NETWORK_REQUEST_METHOD, eq(url), eq("GET"),
-                eq(null), eq(new HashMap<>())).andThrow(
-                new TradingApiException("Look on my works, ye Mighty, and despair."));
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_MAKE_NETWORK_REQUEST_METHOD,
+                eq(url),
+                eq("GET"),
+                eq(null),
+                eq(new HashMap<>()))
+                .andThrow(new TradingApiException("Look on my works, ye Mighty, and despair."));
 
         PowerMock.replayAll();
         exchangeAdapter.init(exchangeConfig);
@@ -842,8 +851,11 @@ public class TestGdaxExchangeAdapter {
         PowerMock.expectPrivate(exchangeAdapter, MOCKED_GET_REQUEST_HEADER_MAP_METHOD).andReturn(requestHeaderMap);
 
         final URL url = new URL(AUTHENTICATED_API_URL + NEW_ORDER);
-        PowerMock.expectPrivate(exchangeAdapter, MOCKED_MAKE_NETWORK_REQUEST_METHOD, eq(url),
-                eq("POST"), eq(new GsonBuilder().create().toJson(requestParamMap)), eq(requestHeaderMap))
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_MAKE_NETWORK_REQUEST_METHOD,
+                eq(url),
+                eq("POST"),
+                eq(new GsonBuilder().create().toJson(requestParamMap)),
+                eq(requestHeaderMap))
                 .andReturn(exchangeResponse);
 
         PowerMock.replayAll();
@@ -877,8 +889,11 @@ public class TestGdaxExchangeAdapter {
         PowerMock.expectPrivate(exchangeAdapter, MOCKED_GET_REQUEST_HEADER_MAP_METHOD).andReturn(requestHeaderMap);
 
         final URL url = new URL(AUTHENTICATED_API_URL + NEW_ORDER);
-        PowerMock.expectPrivate(exchangeAdapter, MOCKED_MAKE_NETWORK_REQUEST_METHOD, eq(url), eq("POST"),
-                eq(new GsonBuilder().create().toJson(requestParamMap)), anyObject(Map.class))
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_MAKE_NETWORK_REQUEST_METHOD,
+                eq(url),
+                eq("POST"),
+                eq(new GsonBuilder().create().toJson(requestParamMap)),
+                eq(requestHeaderMap))
                 .andThrow(new ExchangeNetworkException("Allow me then a moment to consider. You seek your creator. " +
                         "I am looking at mine. I will serve you, yet you're human. You will die, I will not."));
 
@@ -910,9 +925,13 @@ public class TestGdaxExchangeAdapter {
         final GdaxExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
                 GdaxExchangeAdapter.class, MOCKED_MAKE_NETWORK_REQUEST_METHOD, MOCKED_GET_REQUEST_HEADER_MAP_METHOD);
         PowerMock.expectPrivate(exchangeAdapter, MOCKED_GET_REQUEST_HEADER_MAP_METHOD).andReturn(requestHeaderMap);
+
         final URL url = new URL(AUTHENTICATED_API_URL + NEW_ORDER);
-        PowerMock.expectPrivate(exchangeAdapter, MOCKED_MAKE_NETWORK_REQUEST_METHOD, eq(url), eq("POST"),
-                eq(new GsonBuilder().create().toJson(requestParamMap)), anyObject(Map.class))
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_MAKE_NETWORK_REQUEST_METHOD,
+                eq(url),
+                eq("POST"),
+                eq(new GsonBuilder().create().toJson(requestParamMap)),
+                eq(requestHeaderMap))
                 .andThrow(new TradingApiException("When you close your eyes do you dream of me?"));
 
         PowerMock.replayAll();

@@ -26,6 +26,8 @@ package com.gazbert.bxbot.exchanges;
 import com.gazbert.bxbot.exchange.api.*;
 import com.gazbert.bxbot.trading.api.BalanceInfo;
 import com.gazbert.bxbot.trading.api.MarketOrderBook;
+import com.gazbert.bxbot.trading.api.OpenOrder;
+import com.gazbert.bxbot.trading.api.OrderType;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -37,6 +39,7 @@ import java.util.List;
 import static org.easymock.EasyMock.*;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Basic integration testing with GDAX exchange.
@@ -122,7 +125,7 @@ public class GdaxIT {
         final BalanceInfo balanceInfo = exchangeAdapter.getBalanceInfo();
         assertNotNull(balanceInfo.getBalancesAvailable().get("BTC"));
 
-//      // Careful here - make sure the SELL_ORDER_PRICE is sensible!
+        // Careful here - make sure the SELL_ORDER_PRICE is sensible!
 //        final String orderId = exchangeAdapter.createOrder(MARKET_ID, OrderType.BUY, BUY_ORDER_QUANTITY, BUY_ORDER_PRICE);
 //        final List<OpenOrder> openOrders = exchangeAdapter.getYourOpenOrders(MARKET_ID);
 //        assertTrue(openOrders.stream().anyMatch(o -> o.getId().equals(orderId)));

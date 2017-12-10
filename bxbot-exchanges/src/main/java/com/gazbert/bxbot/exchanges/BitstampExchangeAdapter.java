@@ -691,15 +691,9 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
      */
     private ExchangeHttpResponse sendPublicRequestToExchange(String apiMethod) throws ExchangeNetworkException, TradingApiException {
 
-        // Request headers required by Exchange
-        final Map<String, String> requestHeaders = new HashMap<>();
-        requestHeaders.put("Content-Type", "application/x-www-form-urlencoded");
-
         try {
-
-            // MUST have the trailing slash even if no params... else exchange barfs!
-            final URL url = new URL(API_BASE_URL + apiMethod + "/");
-            return sendNetworkRequest(url, "GET", null, requestHeaders);
+            final URL url = new URL(API_BASE_URL + apiMethod);
+            return makeNetworkRequest(url, "GET", null, new HashMap<>());
 
         } catch (MalformedURLException e) {
             final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
@@ -768,11 +762,11 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
             }
 
             // Request headers required by Exchange
-            final Map<String, String> requestHeaders = new HashMap<>();
+            final Map<String, String> requestHeaders = getHeaderParamMap();
             requestHeaders.put("Content-Type", "application/x-www-form-urlencoded");
 
             final URL url = new URL(API_BASE_URL + apiMethod + "/"); // MUST have the trailing slash else exchange barfs...
-            return sendNetworkRequest(url, "POST", postData.toString(), requestHeaders);
+            return makeNetworkRequest(url, "POST", postData.toString(), requestHeaders);
 
         } catch (MalformedURLException | UnsupportedEncodingException e) {
             final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
@@ -850,5 +844,20 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
      */
     private Map<String, String> getRequestParamMap() {
         return new HashMap<>();
+    }
+
+    /*
+ * Hack for unit-testing header params passed to transport layer.
+ */
+    private Map<String, String> getHeaderParamMap() {
+        return new HashMap<>();
+    }
+
+    /*
+     * Hack for unit-testing transport layer.
+     */
+    private ExchangeHttpResponse makeNetworkRequest(URL url, String httpMethod, String postData, Map<String, String> requestHeaders)
+            throws TradingApiException, ExchangeNetworkException {
+        return super.sendNetworkRequest(url, httpMethod, postData, requestHeaders);
     }
 }
