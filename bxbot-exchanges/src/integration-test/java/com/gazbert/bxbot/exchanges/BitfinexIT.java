@@ -29,32 +29,24 @@ import com.gazbert.bxbot.exchange.api.ExchangeConfig;
 import com.gazbert.bxbot.exchange.api.NetworkConfig;
 import com.gazbert.bxbot.trading.api.BalanceInfo;
 import com.gazbert.bxbot.trading.api.MarketOrderBook;
-import com.gazbert.bxbot.trading.api.OpenOrder;
-import com.gazbert.bxbot.trading.api.OrderType;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.powermock.api.easymock.PowerMock;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.easymock.EasyMock.expect;
-import static org.junit.Assert.*;
+import static org.easymock.EasyMock.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * Basic integration testing with Bitfinex exchange.
  *
  * @author gazbert
  */
-@RunWith(PowerMockRunner.class)
-@PowerMockIgnore({"javax.crypto.*"})
-@PrepareForTest(BitfinexExchangeAdapter.class)
 public class BitfinexIT {
 
     // Canned test data
@@ -98,7 +90,8 @@ public class BitfinexIT {
     @Test
     public void testPublicApiCalls() throws Exception {
 
-        PowerMock.replayAll();
+        replay(authenticationConfig, networkConfig, exchangeConfig);
+
         final ExchangeAdapter exchangeAdapter = new BitfinexExchangeAdapter();
         exchangeAdapter.init(exchangeConfig);
 
@@ -109,7 +102,7 @@ public class BitfinexIT {
         assertFalse(orderBook.getBuyOrders().isEmpty());
         assertFalse(orderBook.getSellOrders().isEmpty());
 
-        PowerMock.verifyAll();
+        verify(authenticationConfig, networkConfig, exchangeConfig);
     }
 
     /*
@@ -119,7 +112,8 @@ public class BitfinexIT {
     @Test
     public void testAuthenticatedApiCalls() throws Exception {
 
-        PowerMock.replayAll();
+        replay(authenticationConfig, networkConfig, exchangeConfig);
+
         final ExchangeAdapter exchangeAdapter = new BitfinexExchangeAdapter();
         exchangeAdapter.init(exchangeConfig);
 
@@ -135,6 +129,6 @@ public class BitfinexIT {
 //        assertTrue(openOrders.stream().anyMatch(o -> o.getId().equals(orderId)));
 //        assertTrue(exchangeAdapter.cancelOrder(orderId, MARKET_ID));
 
-        PowerMock.verifyAll();
+        verify(authenticationConfig, networkConfig, exchangeConfig);
     }
 }

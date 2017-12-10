@@ -29,20 +29,15 @@ import com.gazbert.bxbot.trading.api.MarketOrderBook;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.powermock.api.easymock.PowerMock;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.*;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 /**
  * Basic integration testing with Huobi exchange.
@@ -50,9 +45,6 @@ import static org.junit.Assert.assertTrue;
  * @author gazbert
  */
 @Ignore("@gazbert - 14 Sep 2017 - tmp disable of tests as Huobi API is down? http://api.huobi.com/usdmarket/ticker_btc_json.js returns 404...")
-@RunWith(PowerMockRunner.class)
-@PowerMockIgnore({"javax.crypto.*"})
-@PrepareForTest(HuobiExchangeAdapter.class)
 public class HuobiIT {
 
     // Canned test data
@@ -101,7 +93,8 @@ public class HuobiIT {
     @Test
     public void testPublicApiCalls() throws Exception {
 
-        PowerMock.replayAll();
+        replay(authenticationConfig, networkConfig, optionalConfig, exchangeConfig);
+
         final ExchangeAdapter exchangeAdapter = new HuobiExchangeAdapter();
         exchangeAdapter.init(exchangeConfig);
 
@@ -111,7 +104,7 @@ public class HuobiIT {
         assertFalse(orderBook.getBuyOrders().isEmpty());
         assertFalse(orderBook.getSellOrders().isEmpty());
 
-        PowerMock.verifyAll();
+        verify(authenticationConfig, networkConfig, optionalConfig, exchangeConfig);
     }
 
     /*
@@ -121,7 +114,8 @@ public class HuobiIT {
     @Test
     public void testAuthenticatedApiCalls() throws Exception {
 
-        PowerMock.replayAll();
+        replay(authenticationConfig, networkConfig, optionalConfig, exchangeConfig);
+
         final ExchangeAdapter exchangeAdapter = new HuobiExchangeAdapter();
         exchangeAdapter.init(exchangeConfig);
 
@@ -134,6 +128,6 @@ public class HuobiIT {
 //        assertTrue(openOrders.stream().anyMatch(o -> o.getId().equals(orderId)));
 //        assertTrue(exchangeAdapter.cancelOrder(orderId, MARKET_ID));
 
-        PowerMock.verifyAll();
+        verify(authenticationConfig, networkConfig, optionalConfig, exchangeConfig);
     }
 }

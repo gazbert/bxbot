@@ -29,34 +29,23 @@ import com.gazbert.bxbot.exchange.api.ExchangeConfig;
 import com.gazbert.bxbot.exchange.api.NetworkConfig;
 import com.gazbert.bxbot.trading.api.BalanceInfo;
 import com.gazbert.bxbot.trading.api.MarketOrderBook;
-import com.gazbert.bxbot.trading.api.OpenOrder;
-import com.gazbert.bxbot.trading.api.OrderType;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.powermock.api.easymock.PowerMock;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.*;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 /**
  * Basic integration testing with Bitstamp exchange.
  *
  * @author gazbert
  */
-@RunWith(PowerMockRunner.class)
-@PowerMockIgnore({"javax.crypto.*"})
-@PrepareForTest(BitstampExchangeAdapter.class)
 public class BitstampIT {
 
     // Canned test data
@@ -83,17 +72,17 @@ public class BitstampIT {
     @Before
     public void setupForEachTest() throws Exception {
 
-        authenticationConfig = PowerMock.createMock(AuthenticationConfig.class);
+        authenticationConfig = createMock(AuthenticationConfig.class);
         expect(authenticationConfig.getItem("client-id")).andReturn(CLIENT_ID);
         expect(authenticationConfig.getItem("key")).andReturn(KEY);
         expect(authenticationConfig.getItem("secret")).andReturn(SECRET);
 
-        networkConfig = PowerMock.createMock(NetworkConfig.class);
+        networkConfig = createMock(NetworkConfig.class);
         expect(networkConfig.getConnectionTimeout()).andReturn(30);
         expect(networkConfig.getNonFatalErrorCodes()).andReturn(nonFatalNetworkErrorCodes);
         expect(networkConfig.getNonFatalErrorMessages()).andReturn(nonFatalNetworkErrorMessages);
 
-        exchangeConfig = PowerMock.createMock(ExchangeConfig.class);
+        exchangeConfig = createMock(ExchangeConfig.class);
         expect(exchangeConfig.getAuthenticationConfig()).andReturn(authenticationConfig);
         expect(exchangeConfig.getNetworkConfig()).andReturn(networkConfig);
         // no optional config for this adapter
@@ -102,7 +91,8 @@ public class BitstampIT {
     @Test
     public void testPublicApiCalls() throws Exception {
 
-        PowerMock.replayAll();
+        replay(authenticationConfig, networkConfig, exchangeConfig);
+
         final ExchangeAdapter exchangeAdapter = new BitstampExchangeAdapter();
         exchangeAdapter.init(exchangeConfig);
 
@@ -112,7 +102,7 @@ public class BitstampIT {
         assertFalse(orderBook.getBuyOrders().isEmpty());
         assertFalse(orderBook.getSellOrders().isEmpty());
 
-        PowerMock.verifyAll();
+        verify(authenticationConfig, networkConfig, exchangeConfig);
     }
 
     /*
@@ -122,7 +112,8 @@ public class BitstampIT {
     @Test
     public void testAuthenticatedApiCalls() throws Exception {
 
-        PowerMock.replayAll();
+        replay(authenticationConfig, networkConfig, exchangeConfig);
+
         final ExchangeAdapter exchangeAdapter = new BitstampExchangeAdapter();
         exchangeAdapter.init(exchangeConfig);
 
@@ -138,6 +129,6 @@ public class BitstampIT {
 //        assertTrue(openOrders.stream().anyMatch(o -> o.getId().equals(orderId)));
 //        assertTrue(exchangeAdapter.cancelOrder(orderId, MARKET_ID));
 
-        PowerMock.verifyAll();
+        verify(authenticationConfig, networkConfig, exchangeConfig);
     }
 }
