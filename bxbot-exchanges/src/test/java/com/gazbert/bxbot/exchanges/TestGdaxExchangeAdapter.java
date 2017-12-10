@@ -53,7 +53,7 @@ import static org.junit.Assert.assertTrue;
  * @author gazbert
  */
 @RunWith(PowerMockRunner.class)
-@PowerMockIgnore({"javax.crypto.*"})
+@PowerMockIgnore({"javax.crypto.*", "javax.management.*"})
 @PrepareForTest(GdaxExchangeAdapter.class)
 public class TestGdaxExchangeAdapter {
 

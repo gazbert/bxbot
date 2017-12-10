@@ -63,7 +63,7 @@ import static org.junit.Assert.*;
  * @author gazbert
  */
 @RunWith(PowerMockRunner.class)
-@PowerMockIgnore({"javax.crypto.*"})
+@PowerMockIgnore({"javax.crypto.*", "javax.management.*"})
 @PrepareForTest(GeminiExchangeAdapter.class)
 public class TestGeminiExchangeAdapter {
 
