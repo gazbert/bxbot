@@ -27,6 +27,10 @@ import com.gazbert.bxbot.exchange.api.AuthenticationConfig;
 import com.gazbert.bxbot.exchange.api.ExchangeAdapter;
 import com.gazbert.bxbot.exchange.api.ExchangeConfig;
 import com.gazbert.bxbot.exchange.api.OptionalConfig;
+import com.gazbert.bxbot.exchanges.trading.api.impl.BalanceInfoImpl;
+import com.gazbert.bxbot.exchanges.trading.api.impl.MarketOrderBookImpl;
+import com.gazbert.bxbot.exchanges.trading.api.impl.MarketOrderImpl;
+import com.gazbert.bxbot.exchanges.trading.api.impl.OpenOrderImpl;
 import com.gazbert.bxbot.trading.api.*;
 import com.google.common.base.MoreObjects;
 import com.google.gson.Gson;
@@ -290,7 +294,7 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
                                     "Unrecognised order type received in getYourOpenOrders(). Value: " + openOrder.type);
                     }
 
-                    final OpenOrder order = new OpenOrder(
+                    final OpenOrder order = new OpenOrderImpl(
                             Long.toString(openOrder.order_id),
                             new Date(openOrder.create_date),
                             marketId,
@@ -334,7 +338,7 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
 
             final List<MarketOrder> buyOrders = new ArrayList<>();
             for (OKCoinMarketOrder okCoinBuyOrder : orderBook.bids) {
-                final MarketOrder buyOrder = new MarketOrder(
+                final MarketOrder buyOrder = new MarketOrderImpl(
                         OrderType.BUY,
                         okCoinBuyOrder.get(0),
                         okCoinBuyOrder.get(1),
@@ -344,7 +348,7 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
 
             final List<MarketOrder> sellOrders = new ArrayList<>();
             for (OKCoinMarketOrder okCoinSellOrder : orderBook.asks) {
-                final MarketOrder sellOrder = new MarketOrder(
+                final MarketOrder sellOrder = new MarketOrderImpl(
                         OrderType.SELL,
                         okCoinSellOrder.get(0),
                         okCoinSellOrder.get(1),
@@ -364,7 +368,7 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
                 }
             });
 
-            return new MarketOrderBook(marketId, sellOrders, buyOrders);
+            return new MarketOrderBookImpl(marketId, sellOrders, buyOrders);
 
         } catch (ExchangeNetworkException | TradingApiException e) {
             throw e;
@@ -415,7 +419,7 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
                     balancesOnOrder.put(balance.getKey().toUpperCase(), balance.getValue());
                 }
 
-                return new BalanceInfo(balancesAvailable, balancesOnOrder);
+                return new BalanceInfoImpl(balancesAvailable, balancesOnOrder);
 
             } else {
                 final String errorMsg = "Failed to get Balance Info from exchange. Error response: " + response;

@@ -21,8 +21,9 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.trading.api;
+package com.gazbert.bxbot.exchanges.trading.api.impl;
 
+import com.gazbert.bxbot.trading.api.OrderType;
 import org.junit.Test;
 
 import java.math.BigDecimal;
@@ -30,11 +31,11 @@ import java.math.BigDecimal;
 import static org.junit.Assert.assertEquals;
 
 /**
- * Tests a Market Order behaves as expected.
+ * Tests the Market Order impl behaves as expected.
  *
  * @author gazbert
  */
-public class TestMarketOrder {
+public class TestMarketOrderImpl {
 
     private static final BigDecimal PRICE = new BigDecimal("671.91");
     private static final BigDecimal QUANTITY = new BigDecimal("0.01345453");
@@ -44,7 +45,7 @@ public class TestMarketOrder {
     @Test
     public void testMarketOrderIsInitialisedAsExpected() {
 
-        final MarketOrder marketOrder = new MarketOrder(OrderType.BUY, PRICE, QUANTITY, TOTAL);
+        final MarketOrderImpl marketOrder = new MarketOrderImpl(OrderType.BUY, PRICE, QUANTITY, TOTAL);
 
         assertEquals(OrderType.BUY, marketOrder.getType());
         assertEquals(PRICE, marketOrder.getPrice());
@@ -55,7 +56,7 @@ public class TestMarketOrder {
     @Test
     public void testSettersWorkAsExpected() {
 
-        final MarketOrder marketOrder = new MarketOrder(null, null, null, null);
+        final MarketOrderImpl marketOrder = new MarketOrderImpl(null, null, null, null);
         assertEquals(null, marketOrder.getType());
         assertEquals(null, marketOrder.getPrice());
         assertEquals(null, marketOrder.getQuantity());

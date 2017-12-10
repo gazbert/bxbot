@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016 Gareth Jon Lynch
+ * Copyright (c) 2015 Gareth Jon Lynch
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -12,7 +12,7 @@
  *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- *
+ * 
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
  * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
@@ -21,82 +21,70 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.strategy.api.impl;
+package com.gazbert.bxbot.core.config.market;
 
+import com.gazbert.bxbot.trading.api.Market;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
- * Encapsulates Strategy configuration.
+ * Holds information for an Exchange market.
  *
  * @author gazbert
  */
-public class StrategyConfigImpl {
+public final class MarketImpl implements Market {
 
+    private String name;
     private String id;
-    private String label;
-    private String description;
-    private String className;
-    private Map<String, String> configItems = new HashMap<>();
+    private String baseCurrency;
+    private String counterCurrency;
 
 
-    public StrategyConfigImpl(String id, String label, String description, String className, Map<String, String> configItems) {
+    public MarketImpl(String name, String id, String baseCurrency, String counterCurrency) {
         this.id = id;
-        this.label = label;
-        this.description = description;
-        this.className = className;
-        this.configItems = configItems;
+        this.name = name;
+        this.baseCurrency = baseCurrency;
+        this.counterCurrency = counterCurrency;
     }
 
-    public String getId() {
-        return id;
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public void setId(String id) {
         this.id = id;
     }
 
-    public String getLabel() {
-        return label;
+    public String getId() {
+        return id;
     }
 
-    public void setLabel(String label) {
-        this.label = label;
+    public void setBaseCurrency(String baseCurrency) {
+        this.baseCurrency = baseCurrency;
     }
 
-    public String getDescription() {
-        return description;
+    public String getBaseCurrency() {
+        return baseCurrency;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setCounterCurrency(String counterCurrency) {
+        this.counterCurrency = counterCurrency;
     }
 
-    public String getClassName() {
-        return className;
-    }
-
-    public void setClassName(String className) {
-        this.className = className;
-    }
-
-    public Map<String, String> getConfigItems() {
-        return configItems;
-    }
-
-    public void setConfigItems(Map<String, String> configItems) {
-        this.configItems = configItems;
+    public String getCounterCurrency() {
+        return counterCurrency;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        StrategyConfigImpl that = (StrategyConfigImpl) o;
-        return Objects.equal(id, that.id);
+        MarketImpl market = (MarketImpl) o;
+        return Objects.equal(id, market.id);
     }
 
     @Override
@@ -107,11 +95,10 @@ public class StrategyConfigImpl {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
+                .add("name", name)
                 .add("id", id)
-                .add("label", label)
-                .add("description", description)
-                .add("className", className)
-                .add("configItems", configItems)
+                .add("baseCurrency", baseCurrency)
+                .add("counterCurrency", counterCurrency)
                 .toString();
     }
 }

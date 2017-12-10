@@ -21,7 +21,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.exchange.api.impl;
+package com.gazbert.bxbot.core.config.exchange;
 
 import com.gazbert.bxbot.exchange.api.NetworkConfig;
 import com.google.common.base.MoreObjects;

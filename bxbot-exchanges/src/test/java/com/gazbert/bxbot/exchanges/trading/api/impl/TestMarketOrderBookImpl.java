@@ -21,8 +21,10 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.trading.api;
+package com.gazbert.bxbot.exchanges.trading.api.impl;
 
+import com.gazbert.bxbot.trading.api.MarketOrder;
+import com.gazbert.bxbot.trading.api.OrderType;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -34,11 +36,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 /**
- * Tests a Market Order Book behaves as expected.
+ * Tests the Market Order Book impl behaves as expected.
  *
  * @author gazbert
  */
-public class TestMarketOrderBook {
+public class TestMarketOrderBookImpl {
 
     private static final String MARKET_ID = "BTC_USD";
 
@@ -69,18 +71,18 @@ public class TestMarketOrderBook {
     @Before
     public void setupOrdersBeforeEachTest() {
 
-        sellOrder1 = new MarketOrder(OrderType.SELL, ORDER_1_PRICE, ORDER_1_QUANTITY, ORDER_1_TOTAL);
-        sellOrder2 = new MarketOrder(OrderType.SELL, ORDER_2_PRICE, ORDER_2_QUANTITY, ORDER_2_TOTAL);
-        sellOrder3 = new MarketOrder(OrderType.SELL, ORDER_3_PRICE, ORDER_3_QUANTITY, ORDER_3_TOTAL);
+        sellOrder1 = new MarketOrderImpl(OrderType.SELL, ORDER_1_PRICE, ORDER_1_QUANTITY, ORDER_1_TOTAL);
+        sellOrder2 = new MarketOrderImpl(OrderType.SELL, ORDER_2_PRICE, ORDER_2_QUANTITY, ORDER_2_TOTAL);
+        sellOrder3 = new MarketOrderImpl(OrderType.SELL, ORDER_3_PRICE, ORDER_3_QUANTITY, ORDER_3_TOTAL);
 
         sellOrders = new ArrayList<>();
         sellOrders.add(sellOrder1);
         sellOrders.add(sellOrder2);
         sellOrders.add(sellOrder3);
 
-        buyOrder1 = new MarketOrder(OrderType.BUY, ORDER_1_PRICE, ORDER_1_QUANTITY, ORDER_1_TOTAL);
-        buyOrder2 = new MarketOrder(OrderType.BUY, ORDER_2_PRICE, ORDER_2_QUANTITY, ORDER_2_TOTAL);
-        buyOrder3 = new MarketOrder(OrderType.BUY, ORDER_3_PRICE, ORDER_3_QUANTITY, ORDER_3_TOTAL);
+        buyOrder1 = new MarketOrderImpl(OrderType.BUY, ORDER_1_PRICE, ORDER_1_QUANTITY, ORDER_1_TOTAL);
+        buyOrder2 = new MarketOrderImpl(OrderType.BUY, ORDER_2_PRICE, ORDER_2_QUANTITY, ORDER_2_TOTAL);
+        buyOrder3 = new MarketOrderImpl(OrderType.BUY, ORDER_3_PRICE, ORDER_3_QUANTITY, ORDER_3_TOTAL);
 
         buyOrders = new ArrayList<>();
         buyOrders.add(buyOrder1);
@@ -91,7 +93,7 @@ public class TestMarketOrderBook {
     @Test
     public void testMarketOrderBookIsInitialisedAsExpected() {
 
-        final MarketOrderBook marketOrderBook = new MarketOrderBook(MARKET_ID, sellOrders, buyOrders);
+        final MarketOrderBookImpl marketOrderBook = new MarketOrderBookImpl(MARKET_ID, sellOrders, buyOrders);
         assertEquals(MARKET_ID, marketOrderBook.getMarketId());
 
         assertEquals(sellOrders, marketOrderBook.getSellOrders());
@@ -110,7 +112,7 @@ public class TestMarketOrderBook {
     @Test
     public void testSettersWorkAsExpected() {
 
-        final MarketOrderBook marketOrderBook = new MarketOrderBook(null, null, null);
+        final MarketOrderBookImpl marketOrderBook = new MarketOrderBookImpl(null, null, null);
         assertEquals(null, marketOrderBook.getMarketId());
         assertEquals(null, marketOrderBook.getSellOrders());
         assertEquals(null, marketOrderBook.getSellOrders());
