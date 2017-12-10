@@ -826,7 +826,7 @@ public class TestBitstampExchangeAdapter {
                 new AbstractExchangeAdapter.ExchangeHttpResponse(200, "OK", new String(encoded, StandardCharsets.UTF_8));
 
         final BitstampExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
-                BitstampExchangeAdapter.class, MOCKED_MAKE_NETWORK_REQUEST_METHOD, MOCKED_GET_REQUEST_PARAM_MAP_METHOD);
+                BitstampExchangeAdapter.class, MOCKED_MAKE_NETWORK_REQUEST_METHOD);
 
         final URL url = new URL(API_BASE_URL + TICKER + MARKET_ID);
         PowerMock.expectPrivate(exchangeAdapter, MOCKED_MAKE_NETWORK_REQUEST_METHOD,
@@ -849,7 +849,7 @@ public class TestBitstampExchangeAdapter {
     public void testSendingPublicRequestToExchangeHandlesExchangeNetworkException() throws Exception {
 
         final BitstampExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
-                BitstampExchangeAdapter.class, MOCKED_MAKE_NETWORK_REQUEST_METHOD, MOCKED_GET_REQUEST_PARAM_MAP_METHOD);
+                BitstampExchangeAdapter.class, MOCKED_MAKE_NETWORK_REQUEST_METHOD);
 
         final URL url = new URL(API_BASE_URL + TICKER + MARKET_ID);
         PowerMock.expectPrivate(exchangeAdapter, MOCKED_MAKE_NETWORK_REQUEST_METHOD,
@@ -871,7 +871,7 @@ public class TestBitstampExchangeAdapter {
     public void testSendingPublicRequestToExchangeHandlesTradingApiException() throws Exception {
 
         final BitstampExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
-                BitstampExchangeAdapter.class, MOCKED_MAKE_NETWORK_REQUEST_METHOD, MOCKED_GET_REQUEST_PARAM_MAP_METHOD);
+                BitstampExchangeAdapter.class, MOCKED_MAKE_NETWORK_REQUEST_METHOD);
 
         final URL url = new URL(API_BASE_URL + TICKER + MARKET_ID);
         PowerMock.expectPrivate(exchangeAdapter, MOCKED_MAKE_NETWORK_REQUEST_METHOD,
@@ -897,17 +897,22 @@ public class TestBitstampExchangeAdapter {
         final AbstractExchangeAdapter.ExchangeHttpResponse exchangeResponse =
                 new AbstractExchangeAdapter.ExchangeHttpResponse(200, "OK", new String(encoded, StandardCharsets.UTF_8));
 
-        final Map<String, String> requestParamMap = PowerMock.createMock(Map.class);
+        final Map<String, String> requestParamMap = PowerMock.createPartialMock(HashMap.class, "put");
         expect(requestParamMap.put("price", new DecimalFormat("#.##").format(SELL_ORDER_PRICE))).andStubReturn(null);
         expect(requestParamMap.put("amount", new DecimalFormat("#.########").format(SELL_ORDER_QUANTITY))).andStubReturn(null);
         expect(requestParamMap.put("type", "sell")).andStubReturn(null);
+        expect(requestParamMap.put("key", "key123")).andStubReturn(null);
+        expect(requestParamMap.put(eq("nonce"), anyString())).andStubReturn(null);
+        expect(requestParamMap.put(eq("signature"), anyString())).andStubReturn(null);
 
         final Map<String, String> requestHeaderMap = PowerMock.createPartialMock(HashMap.class, "put");
         expect(requestHeaderMap.put("Content-Type", "application/x-www-form-urlencoded")).andStubReturn(null);
 
         final BitstampExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
-                BitstampExchangeAdapter.class, MOCKED_MAKE_NETWORK_REQUEST_METHOD, MOCKED_GET_REQUEST_HEADER_MAP_METHOD);
+                BitstampExchangeAdapter.class, MOCKED_MAKE_NETWORK_REQUEST_METHOD, MOCKED_GET_REQUEST_HEADER_MAP_METHOD,
+                MOCKED_GET_REQUEST_PARAM_MAP_METHOD);
         PowerMock.expectPrivate(exchangeAdapter, MOCKED_GET_REQUEST_HEADER_MAP_METHOD).andReturn(requestHeaderMap);
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_GET_REQUEST_PARAM_MAP_METHOD).andReturn(requestParamMap);
 
         final URL url = new URL(API_BASE_URL + SELL + MARKET_ID + "/");
         PowerMock.expectPrivate(exchangeAdapter, MOCKED_MAKE_NETWORK_REQUEST_METHOD,
@@ -930,17 +935,22 @@ public class TestBitstampExchangeAdapter {
     @SuppressWarnings("unchecked")
     public void testSendingAuthenticatedRequestToExchangeHandlesExchangeNetworkException() throws Exception {
 
-        final Map<String, String> requestParamMap = PowerMock.createMock(Map.class);
+        final Map<String, String> requestParamMap = PowerMock.createPartialMock(HashMap.class, "put");
         expect(requestParamMap.put("price", new DecimalFormat("#.##").format(SELL_ORDER_PRICE))).andStubReturn(null);
         expect(requestParamMap.put("amount", new DecimalFormat("#.########").format(SELL_ORDER_QUANTITY))).andStubReturn(null);
         expect(requestParamMap.put("type", "sell")).andStubReturn(null);
+        expect(requestParamMap.put("key", "key123")).andStubReturn(null);
+        expect(requestParamMap.put(eq("nonce"), anyString())).andStubReturn(null);
+        expect(requestParamMap.put(eq("signature"), anyString())).andStubReturn(null);
 
         final Map<String, String> requestHeaderMap = PowerMock.createPartialMock(HashMap.class, "put");
         expect(requestHeaderMap.put("Content-Type", "application/x-www-form-urlencoded")).andStubReturn(null);
 
         final BitstampExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
-                BitstampExchangeAdapter.class, MOCKED_MAKE_NETWORK_REQUEST_METHOD, MOCKED_GET_REQUEST_HEADER_MAP_METHOD);
+                BitstampExchangeAdapter.class, MOCKED_MAKE_NETWORK_REQUEST_METHOD, MOCKED_GET_REQUEST_HEADER_MAP_METHOD,
+                MOCKED_GET_REQUEST_PARAM_MAP_METHOD);
         PowerMock.expectPrivate(exchangeAdapter, MOCKED_GET_REQUEST_HEADER_MAP_METHOD).andReturn(requestHeaderMap);
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_GET_REQUEST_PARAM_MAP_METHOD).andReturn(requestParamMap);
 
         final URL url = new URL(API_BASE_URL + SELL + MARKET_ID + "/");
         PowerMock.expectPrivate(exchangeAdapter, MOCKED_MAKE_NETWORK_REQUEST_METHOD,
@@ -962,17 +972,22 @@ public class TestBitstampExchangeAdapter {
     @SuppressWarnings("unchecked")
     public void testSendingAuthenticatedRequestToExchangeHandlesTradingApiException() throws Exception {
 
-        final Map<String, String> requestParamMap = PowerMock.createMock(Map.class);
+        final Map<String, String> requestParamMap = PowerMock.createPartialMock(HashMap.class, "put");
         expect(requestParamMap.put("price", new DecimalFormat("#.##").format(SELL_ORDER_PRICE))).andStubReturn(null);
         expect(requestParamMap.put("amount", new DecimalFormat("#.########").format(SELL_ORDER_QUANTITY))).andStubReturn(null);
         expect(requestParamMap.put("type", "sell")).andStubReturn(null);
+        expect(requestParamMap.put("key", "key123")).andStubReturn(null);
+        expect(requestParamMap.put(eq("nonce"), anyString())).andStubReturn(null);
+        expect(requestParamMap.put(eq("signature"), anyString())).andStubReturn(null);
 
         final Map<String, String> requestHeaderMap = PowerMock.createPartialMock(HashMap.class, "put");
         expect(requestHeaderMap.put("Content-Type", "application/x-www-form-urlencoded")).andStubReturn(null);
 
         final BitstampExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
-                BitstampExchangeAdapter.class, MOCKED_MAKE_NETWORK_REQUEST_METHOD, MOCKED_GET_REQUEST_HEADER_MAP_METHOD);
+                BitstampExchangeAdapter.class, MOCKED_MAKE_NETWORK_REQUEST_METHOD, MOCKED_GET_REQUEST_HEADER_MAP_METHOD,
+                MOCKED_GET_REQUEST_PARAM_MAP_METHOD);
         PowerMock.expectPrivate(exchangeAdapter, MOCKED_GET_REQUEST_HEADER_MAP_METHOD).andReturn(requestHeaderMap);
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_GET_REQUEST_PARAM_MAP_METHOD).andReturn(requestParamMap);
 
         final URL url = new URL(API_BASE_URL + SELL + MARKET_ID + "/");
         PowerMock.expectPrivate(exchangeAdapter, MOCKED_MAKE_NETWORK_REQUEST_METHOD,

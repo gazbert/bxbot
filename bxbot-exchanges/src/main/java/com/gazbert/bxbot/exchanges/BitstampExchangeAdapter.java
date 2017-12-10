@@ -847,8 +847,8 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
     }
 
     /*
- * Hack for unit-testing header params passed to transport layer.
- */
+     * Hack for unit-testing header params passed to transport layer.
+     */
     private Map<String, String> getHeaderParamMap() {
         return new HashMap<>();
     }

@@ -762,7 +762,7 @@ public class TestGdaxExchangeAdapter {
                 new AbstractExchangeAdapter.ExchangeHttpResponse(200, "OK", new String(encoded, StandardCharsets.UTF_8));
 
         final GdaxExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
-                GdaxExchangeAdapter.class, MOCKED_MAKE_NETWORK_REQUEST_METHOD, MOCKED_GET_REQUEST_PARAM_MAP_METHOD);
+                GdaxExchangeAdapter.class, MOCKED_MAKE_NETWORK_REQUEST_METHOD);
 
         final URL url = new URL(PUBLIC_API_BASE_URL + TICKER);
         PowerMock.expectPrivate(exchangeAdapter, MOCKED_MAKE_NETWORK_REQUEST_METHOD,
@@ -785,7 +785,7 @@ public class TestGdaxExchangeAdapter {
     public void testSendingPublicRequestToExchangeHandlesExchangeNetworkException() throws Exception {
 
         final GdaxExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
-                GdaxExchangeAdapter.class, MOCKED_MAKE_NETWORK_REQUEST_METHOD, MOCKED_GET_REQUEST_PARAM_MAP_METHOD);
+                GdaxExchangeAdapter.class, MOCKED_MAKE_NETWORK_REQUEST_METHOD);
 
         final URL url = new URL(PUBLIC_API_BASE_URL + TICKER);
         PowerMock.expectPrivate(exchangeAdapter, MOCKED_MAKE_NETWORK_REQUEST_METHOD,
@@ -807,7 +807,7 @@ public class TestGdaxExchangeAdapter {
     public void testSendingPublicRequestToExchangeHandlesTradingApiException() throws Exception {
 
         final GdaxExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
-                GdaxExchangeAdapter.class, MOCKED_MAKE_NETWORK_REQUEST_METHOD, MOCKED_GET_REQUEST_PARAM_MAP_METHOD);
+                GdaxExchangeAdapter.class, MOCKED_MAKE_NETWORK_REQUEST_METHOD);
 
         final URL url = new URL(PUBLIC_API_BASE_URL + TICKER);
         PowerMock.expectPrivate(exchangeAdapter, MOCKED_MAKE_NETWORK_REQUEST_METHOD,
@@ -841,10 +841,10 @@ public class TestGdaxExchangeAdapter {
 
         final Map<String, String> requestHeaderMap = PowerMock.createPartialMock(HashMap.class, "put");
         expect(requestHeaderMap.put("Content-Type", "application/json")).andStubReturn(null);
-        expect(requestHeaderMap.put(eq("CB-ACCESS-KEY"), anyString())).andStubReturn(null);
+        expect(requestHeaderMap.put(eq("CB-ACCESS-KEY"), eq(KEY))).andStubReturn(null);
         expect(requestHeaderMap.put(eq("CB-ACCESS-SIGN"), anyString())).andStubReturn(null);
         expect(requestHeaderMap.put(eq("CB-ACCESS-TIMESTAMP"), anyString())).andStubReturn(null);
-        expect(requestHeaderMap.put(eq("CB-ACCESS-PASSPHRASE"), anyString())).andStubReturn(null);
+        expect(requestHeaderMap.put(eq("CB-ACCESS-PASSPHRASE"), eq(PASSPHRASE))).andStubReturn(null);
 
         final GdaxExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
                 GdaxExchangeAdapter.class, MOCKED_MAKE_NETWORK_REQUEST_METHOD, MOCKED_GET_REQUEST_HEADER_MAP_METHOD);
@@ -879,10 +879,10 @@ public class TestGdaxExchangeAdapter {
 
         final Map<String, String> requestHeaderMap = PowerMock.createPartialMock(HashMap.class, "put");
         expect(requestHeaderMap.put("Content-Type", "application/json")).andStubReturn(null);
-        expect(requestHeaderMap.put(eq("CB-ACCESS-KEY"), anyString())).andStubReturn(null);
+        expect(requestHeaderMap.put(eq("CB-ACCESS-KEY"), eq(KEY))).andStubReturn(null);
         expect(requestHeaderMap.put(eq("CB-ACCESS-SIGN"), anyString())).andStubReturn(null);
         expect(requestHeaderMap.put(eq("CB-ACCESS-TIMESTAMP"), anyString())).andStubReturn(null);
-        expect(requestHeaderMap.put(eq("CB-ACCESS-PASSPHRASE"), anyString())).andStubReturn(null);
+        expect(requestHeaderMap.put(eq("CB-ACCESS-PASSPHRASE"), eq(PASSPHRASE))).andStubReturn(null);
 
         final GdaxExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
                 GdaxExchangeAdapter.class, MOCKED_MAKE_NETWORK_REQUEST_METHOD, MOCKED_GET_REQUEST_HEADER_MAP_METHOD);
@@ -917,10 +917,10 @@ public class TestGdaxExchangeAdapter {
 
         final Map<String, String> requestHeaderMap = PowerMock.createPartialMock(HashMap.class, "put");
         expect(requestHeaderMap.put("Content-Type", "application/json")).andStubReturn(null);
-        expect(requestHeaderMap.put(eq("CB-ACCESS-KEY"), anyString())).andStubReturn(null);
+        expect(requestHeaderMap.put(eq("CB-ACCESS-KEY"), eq(KEY))).andStubReturn(null);
         expect(requestHeaderMap.put(eq("CB-ACCESS-SIGN"), anyString())).andStubReturn(null);
         expect(requestHeaderMap.put(eq("CB-ACCESS-TIMESTAMP"), anyString())).andStubReturn(null);
-        expect(requestHeaderMap.put(eq("CB-ACCESS-PASSPHRASE"), anyString())).andStubReturn(null);
+        expect(requestHeaderMap.put(eq("CB-ACCESS-PASSPHRASE"), eq(PASSPHRASE))).andStubReturn(null);
 
         final GdaxExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
                 GdaxExchangeAdapter.class, MOCKED_MAKE_NETWORK_REQUEST_METHOD, MOCKED_GET_REQUEST_HEADER_MAP_METHOD);
