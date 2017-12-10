@@ -85,6 +85,7 @@ public class BitstampIT {
         exchangeConfig = createMock(ExchangeConfig.class);
         expect(exchangeConfig.getAuthenticationConfig()).andReturn(authenticationConfig);
         expect(exchangeConfig.getNetworkConfig()).andReturn(networkConfig);
+
         // no optional config for this adapter
     }
 

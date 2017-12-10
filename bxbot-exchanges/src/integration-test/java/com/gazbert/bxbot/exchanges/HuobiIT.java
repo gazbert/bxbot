@@ -43,7 +43,7 @@ import static org.junit.Assert.assertNotNull;
  *
  * @author gazbert
  */
-@Ignore("@gazbert - 14 Sep 2017 - tmp disable of tests as Huobi API is down? http://api.huobi.com/usdmarket/ticker_btc_json.js returns 404...")
+@Ignore("@gazbert - 10 Dec 2017 - Disabled tests as Huobi API is still down: http://api.huobi.com/usdmarket/ticker_btc_json.js returns 404...")
 public class HuobiIT {
 
     // Canned test data

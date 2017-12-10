@@ -77,14 +77,14 @@ public class GeminiIT {
         expect(networkConfig.getNonFatalErrorCodes()).andReturn(nonFatalNetworkErrorCodes);
         expect(networkConfig.getNonFatalErrorMessages()).andReturn(nonFatalNetworkErrorMessages);
 
-        optionalConfig = createMock(OptionalConfig.class);
-        expect(optionalConfig.getItem("buy-fee")).andReturn("0.25");
-        expect(optionalConfig.getItem("sell-fee")).andReturn("0.25");
-
         exchangeConfig = createMock(ExchangeConfig.class);
         expect(exchangeConfig.getAuthenticationConfig()).andReturn(authenticationConfig);
         expect(exchangeConfig.getNetworkConfig()).andReturn(networkConfig);
         expect(exchangeConfig.getOptionalConfig()).andReturn(optionalConfig);
+
+        optionalConfig = createMock(OptionalConfig.class);
+        expect(optionalConfig.getItem("buy-fee")).andReturn("0.25");
+        expect(optionalConfig.getItem("sell-fee")).andReturn("0.25");
     }
 
     @Test
