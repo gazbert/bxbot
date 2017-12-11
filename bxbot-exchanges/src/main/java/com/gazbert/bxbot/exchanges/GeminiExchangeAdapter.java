@@ -770,7 +770,7 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter impleme
             final String signature = toHex(mac.doFinal()).toLowerCase();
 
             // Request headers required by Exchange
-            final Map<String, String> requestHeaders = new HashMap<>();
+            final Map<String, String> requestHeaders = getHeaderParamMap();
             requestHeaders.put("X-GEMINI-APIKEY", key);
             requestHeaders.put("X-GEMINI-PAYLOAD", base64payload);
             requestHeaders.put("X-GEMINI-SIGNATURE", signature);
