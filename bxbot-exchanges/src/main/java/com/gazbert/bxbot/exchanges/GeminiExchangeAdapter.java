@@ -670,14 +670,9 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter impleme
      */
     private ExchangeHttpResponse sendPublicRequestToExchange(String apiMethod) throws ExchangeNetworkException, TradingApiException {
 
-        // Request headers required by Exchange
-        final Map<String, String> requestHeaders = new HashMap<>();
-        requestHeaders.put("Content-Type", "application/x-www-form-urlencoded");
-
         try {
-
             final URL url = new URL(PUBLIC_API_BASE_URL + apiMethod);
-            return sendNetworkRequest(url, "GET", null, requestHeaders);
+            return makeNetworkRequest(url, "GET", null, new HashMap<>());
 
         } catch (MalformedURLException e) {
             final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
@@ -784,7 +779,7 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter impleme
             requestHeaders.put("Content-Type", "application/json");
 
             final URL url = new URL(AUTHENTICATED_API_URL + apiMethod);
-            return sendNetworkRequest(url, "POST", paramsInJson, requestHeaders);
+            return makeNetworkRequest(url, "POST", paramsInJson, requestHeaders);
 
         } catch (MalformedURLException | UnsupportedEncodingException e) {
 
@@ -874,5 +869,20 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter impleme
      */
     private Map<String, String> getRequestParamMap() {
         return new HashMap<>();
+    }
+
+    /*
+     * Hack for unit-testing header params passed to transport layer.
+     */
+    private Map<String, String> getHeaderParamMap() {
+        return new HashMap<>();
+    }
+
+    /*
+     * Hack for unit-testing transport layer.
+     */
+    private ExchangeHttpResponse makeNetworkRequest(URL url, String httpMethod, String postData, Map<String, String> requestHeaders)
+            throws TradingApiException, ExchangeNetworkException {
+        return super.sendNetworkRequest(url, httpMethod, postData, requestHeaders);
     }
 }

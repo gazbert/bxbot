@@ -37,11 +37,13 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.math.BigDecimal;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.DecimalFormat;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -49,16 +51,8 @@ import static org.easymock.EasyMock.*;
 import static org.junit.Assert.*;
 
 /**
- * <p>
+ *
  * Tests the behaviour of the Gemini Exchange Adapter.
- * </p>
- * <p>
- * Coverage could be better: it does not include calling the {@link GeminiExchangeAdapter#sendPublicRequestToExchange(String)}
- * and {@link GeminiExchangeAdapter#sendAuthenticatedRequestToExchange(String, Map)} methods; the code in these methods
- * is a bloody nightmare to test!
- * </p>
- * TODO Unit test {@link GeminiExchangeAdapter#sendPublicRequestToExchange(String)} method.
- * TODO Unit test {@link GeminiExchangeAdapter#sendAuthenticatedRequestToExchange(String, Map)} method.
  *
  * @author gazbert
  */
@@ -97,6 +91,8 @@ public class TestGeminiExchangeAdapter {
     private static final String MOCKED_GET_REQUEST_PARAM_MAP_METHOD = "getRequestParamMap";
     private static final String MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD = "sendAuthenticatedRequestToExchange";
     private static final String MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD = "sendPublicRequestToExchange";
+    private static final String MOCKED_GET_REQUEST_HEADER_MAP_METHOD = "getHeaderParamMap";
+    private static final String MOCKED_MAKE_NETWORK_REQUEST_METHOD = "makeNetworkRequest";
 
     // Exchange Adapter config for the tests
     private static final String KEY = "key123";
@@ -104,6 +100,10 @@ public class TestGeminiExchangeAdapter {
     private static final List<Integer> nonFatalNetworkErrorCodes = Arrays.asList(502, 503, 504);
     private static final List<String> nonFatalNetworkErrorMessages = Arrays.asList(
             "Connection refused", "Connection reset", "Remote host closed connection during handshake");
+
+    private static final String GEMINI_API_VERSION = "v1";
+    private static final String PUBLIC_API_BASE_URL = "https://api.gemini.com/" + GEMINI_API_VERSION + "/";
+    private static final String AUTHENTICATED_API_URL = PUBLIC_API_BASE_URL;
 
     private ExchangeConfig exchangeConfig;
     private AuthenticationConfig authenticationConfig;
@@ -690,6 +690,83 @@ public class TestGeminiExchangeAdapter {
         PowerMock.replayAll();
 
         new GeminiExchangeAdapter().init(exchangeConfig);
+        PowerMock.verifyAll();
+    }
+
+    // ------------------------------------------------------------------------------------------------
+    //  Request sending tests
+    // ------------------------------------------------------------------------------------------------
+
+    @Test
+    public void testSendingPublicRequestToExchangeSuccessfully() throws Exception {
+
+        final byte[] encoded = Files.readAllBytes(Paths.get(PUBTICKER_JSON_RESPONSE));
+        final AbstractExchangeAdapter.ExchangeHttpResponse exchangeResponse =
+                new AbstractExchangeAdapter.ExchangeHttpResponse(200, "OK", new String(encoded, StandardCharsets.UTF_8));
+
+        final GeminiExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
+                GeminiExchangeAdapter.class, MOCKED_MAKE_NETWORK_REQUEST_METHOD, MOCKED_GET_REQUEST_PARAM_MAP_METHOD);
+
+        final URL url = new URL(PUBLIC_API_BASE_URL + PUBTICKER + "/" + ETH_BTC_MARKET_ID);
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_MAKE_NETWORK_REQUEST_METHOD,
+                eq(url),
+                eq("GET"),
+                eq(null),
+                eq(new HashMap<>()))
+                .andReturn(exchangeResponse);
+
+        PowerMock.replayAll();
+        exchangeAdapter.init(exchangeConfig);
+
+        final BigDecimal lastMarketPrice = exchangeAdapter.getLatestMarketPrice(ETH_BTC_MARKET_ID);
+        assertTrue(lastMarketPrice.compareTo(new BigDecimal("567.22")) == 0);
+
+        PowerMock.verifyAll();
+    }
+
+    @Test(expected = ExchangeNetworkException.class)
+    public void testSendingPublicRequestToExchangeHandlesExchangeNetworkException() throws Exception {
+
+        final GeminiExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
+                GeminiExchangeAdapter.class, MOCKED_MAKE_NETWORK_REQUEST_METHOD, MOCKED_GET_REQUEST_PARAM_MAP_METHOD);
+
+        final URL url = new URL(PUBLIC_API_BASE_URL + PUBTICKER + "/" + ETH_BTC_MARKET_ID);
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_MAKE_NETWORK_REQUEST_METHOD,
+                eq(url),
+                eq("GET"),
+                eq(null),
+                eq(new HashMap<>()))
+                .andThrow(new ExchangeNetworkException("Well, because he thought it was good sport. " +
+                        "Because some men aren't looking for anything logical, like money. They can't be bought," +
+                        " bullied, reasoned, or negotiated with. Some men just want to watch the world burn"));
+
+        PowerMock.replayAll();
+        exchangeAdapter.init(exchangeConfig);
+
+        exchangeAdapter.getLatestMarketPrice(ETH_BTC_MARKET_ID);
+
+        PowerMock.verifyAll();
+    }
+
+    @Test(expected = TradingApiException.class)
+    public void testSendingPublicRequestToExchangeHandlesTradingApiException() throws Exception {
+
+        final GeminiExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
+                GeminiExchangeAdapter.class, MOCKED_MAKE_NETWORK_REQUEST_METHOD, MOCKED_GET_REQUEST_PARAM_MAP_METHOD);
+
+        final URL url = new URL(PUBLIC_API_BASE_URL + PUBTICKER + "/" + ETH_BTC_MARKET_ID);
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_MAKE_NETWORK_REQUEST_METHOD,
+                eq(url),
+                eq("GET"),
+                eq(null),
+                eq(new HashMap<>()))
+                .andThrow(new TradingApiException("How about a magic trick?"));
+
+        PowerMock.replayAll();
+        exchangeAdapter.init(exchangeConfig);
+
+        exchangeAdapter.getLatestMarketPrice(ETH_BTC_MARKET_ID);
+
         PowerMock.verifyAll();
     }
 }
