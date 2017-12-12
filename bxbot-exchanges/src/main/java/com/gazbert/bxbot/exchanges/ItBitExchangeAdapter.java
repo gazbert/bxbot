@@ -994,7 +994,7 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
             final String signature = DatatypeConverter.printBase64Binary(mac.doFinal());
 
             // Request headers required by Exchange
-            final Map<String, String> requestHeaders = new HashMap<>();
+            final Map<String, String> requestHeaders = getHeaderParamMap();
             requestHeaders.put("Content-Type", "application/json");
 
             // Add Authorization header

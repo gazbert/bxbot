@@ -739,7 +739,7 @@ public class TestGeminiExchangeAdapter {
                 eq(new HashMap<>()))
                 .andThrow(new ExchangeNetworkException("Well, because he thought it was good sport. " +
                         "Because some men aren't looking for anything logical, like money. They can't be bought," +
-                        " bullied, reasoned, or negotiated with. Some men just want to watch the world burn"));
+                        " bullied, reasoned, or negotiated with. Some men just want to watch the world burn."));
 
         PowerMock.replayAll();
         exchangeAdapter.init(exchangeConfig);
@@ -893,7 +893,7 @@ public class TestGeminiExchangeAdapter {
                 eq("POST"),
                 anyString(),
                 eq(requestHeaderMap))
-                .andThrow(new TradingApiException("?You cannot pass! I am a servant of the Secret Fire, " +
+                .andThrow(new TradingApiException("You cannot pass! I am a servant of the Secret Fire, " +
                         "wielder of the Flame of Anor. The dark fire will not avail you, Flame of Udun! " +
                         "Go back to the shadow. You shall not pass!"));
 
