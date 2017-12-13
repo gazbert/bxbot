@@ -1124,7 +1124,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
             final String signature = Base64.getEncoder().encodeToString(mac.doFinal());
 
             // Request headers required by Exchange
-            final Map<String, String> requestHeaders = new HashMap<>();
+            final Map<String, String> requestHeaders = getHeaderParamMap();
             requestHeaders.put("Content-Type", "application/x-www-form-urlencoded");
             requestHeaders.put("API-Key", key);
             requestHeaders.put("API-Sign", signature);
