@@ -494,8 +494,8 @@ public class TestTradingEngine {
 
         // expect BalanceInfo to be fetched using Trading API
         final BalanceInfo balanceInfo = PowerMock.createMock(BalanceInfo.class);
-        expect(exchangeAdapter.getBalanceInfo()).andReturn(balanceInfo);
-        expect(balanceInfo.getBalancesAvailable()).andReturn(balancesAvailable);
+        expect(exchangeAdapter.getBalanceInfo()).andReturn(balanceInfo).atLeastOnce();
+        expect(balanceInfo.getBalancesAvailable()).andReturn(balancesAvailable).atLeastOnce();
 
         // expect Trading Strategy to be invoked 1 time
         tradingStrategy.execute();
