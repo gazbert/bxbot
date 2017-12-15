@@ -8,7 +8,7 @@
 <img src="./docs/bxbot-cropped.png" align="right" width="25%" />
 
 BX-bot (_Bex_) is a simple [Bitcoin](https://bitcoin.org) trading bot written in Java for trading on cryptocurrency 
-[exchanges](https://bitcoinwisdom.com/).
+[exchanges](https://bitcoin.org/en/exchanges).
 
 The project contains the basic infrastructure to trade on a [cryptocurrency](http://coinmarketcap.com/) exchange...
 except for the trading strategies - you'll need to write those yourself! A simple 
