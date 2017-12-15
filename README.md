@@ -14,8 +14,7 @@ The project contains the basic infrastructure to trade on a [cryptocurrency](htt
 except for the trading strategies - you'll need to write those yourself! A simple 
 [example](./bxbot-strategies/src/main/java/com/gazbert/bxbot/strategies/ExampleScalpingStrategy.java) of a 
 [scalping](http://www.investopedia.com/articles/trading/02/081902.asp) strategy is included to get you started with the
-Trading API - take a look [here](http://www.investopedia.com/articles/active-trading/101014/basics-algorithmic-trading-concepts-and-examples.asp)
-for more ideas.
+Trading API - take a look [here](https://github.com/ta4j/ta4j) for more ideas.
 
 Exchange Adapters for using [Bitstamp](https://www.bitstamp.net), [Bitfinex](https://www.bitfinex.com),
 [OKCoin](https://www.okcoin.com/), [GDAX](https://www.gdax.com/), [itBit](https://www.itbit.com/),
@@ -462,8 +461,7 @@ _"Battle not with monsters, lest ye become a monster, and if you gaze into the a
 
 The best place to start is with the
 [`ExampleScalpingStrategy`](./bxbot-strategies/src/main/java/com/gazbert/bxbot/strategies/ExampleScalpingStrategy.java) -
-more ideas can be found
-[here](http://www.investopedia.com/articles/active-trading/101014/basics-algorithmic-trading-concepts-and-examples.asp).
+more ideas can be found in the excellent [ta4j](https://github.com/ta4j/ta4j) project.
 There is also a Trading Strategy specific channel on [Gitter](https://gitter.im/BX-bot/trading-strategies).
 
 Your strategy must implement the [`TradingStrategy`](./bxbot-strategy-api/src/main/java/com/gazbert/bxbot/strategy/api/TradingStrategy.java)
