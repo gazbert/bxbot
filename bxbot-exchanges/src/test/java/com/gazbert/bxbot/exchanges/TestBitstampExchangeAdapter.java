@@ -907,6 +907,7 @@ public class TestBitstampExchangeAdapter {
 
         final Map<String, String> requestHeaderMap = PowerMock.createPartialMock(HashMap.class, "put");
         expect(requestHeaderMap.put("Content-Type", "application/x-www-form-urlencoded")).andStubReturn(null);
+        PowerMock.replay(requestHeaderMap); // map needs to be in play early
 
         final BitstampExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
                 BitstampExchangeAdapter.class, MOCKED_MAKE_NETWORK_REQUEST_METHOD, MOCKED_GET_REQUEST_HEADER_MAP_METHOD,
@@ -945,6 +946,7 @@ public class TestBitstampExchangeAdapter {
 
         final Map<String, String> requestHeaderMap = PowerMock.createPartialMock(HashMap.class, "put");
         expect(requestHeaderMap.put("Content-Type", "application/x-www-form-urlencoded")).andStubReturn(null);
+        PowerMock.replay(requestHeaderMap); // map needs to be in play early
 
         final BitstampExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
                 BitstampExchangeAdapter.class, MOCKED_MAKE_NETWORK_REQUEST_METHOD, MOCKED_GET_REQUEST_HEADER_MAP_METHOD,
@@ -981,7 +983,8 @@ public class TestBitstampExchangeAdapter {
         expect(requestParamMap.put(eq("signature"), anyString())).andStubReturn(null);
 
         final Map<String, String> requestHeaderMap = PowerMock.createPartialMock(HashMap.class, "put");
-        expect(requestHeaderMap.put("Content-Type", "application/x-www-form-urlencoded")).andStubReturn(null);
+        expect(requestHeaderMap.put(eq("Content-Type"), eq("application/x-www-form-urlencoded"))).andStubReturn(null);
+        PowerMock.replay(requestHeaderMap); // map needs to be in play early
 
         final BitstampExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
                 BitstampExchangeAdapter.class, MOCKED_MAKE_NETWORK_REQUEST_METHOD, MOCKED_GET_REQUEST_HEADER_MAP_METHOD,

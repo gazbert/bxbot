@@ -717,29 +717,31 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
             ExchangeNetworkException, TradingApiException {
 
         if (params == null) {
-            params = new HashMap<>(); // no params, so empty query string
+            params = getRequestParamMap(); // no params, so empty query string
         }
+
+        final Map<String, String> requestHeaders = getHeaderParamMap();
 
         try {
 
-            // Build the query string with any given params
-            final StringBuilder queryString = new StringBuilder("?");
-            for (final Map.Entry<String, String> param : params.entrySet()) {
-                if (queryString.length() > 1) {
-                    queryString.append("&");
+            final StringBuilder queryString = new StringBuilder();
+            if (!params.isEmpty()) {
+                queryString.append("?");
+                for (final Map.Entry<String, String> param : params.entrySet()) {
+                    if (queryString.length() > 1) {
+                        queryString.append("&");
+                    }
+                    //noinspection deprecation
+                    queryString.append(param.getKey());
+                    queryString.append("=");
+                    queryString.append(URLEncoder.encode(param.getValue(), "UTF-8"));
                 }
-                //noinspection deprecation
-                queryString.append(param.getKey());
-                queryString.append("=");
-                queryString.append(URLEncoder.encode(param.getValue(), "UTF-8"));
+
+                requestHeaders.put("Content-Type", "application/x-www-form-urlencoded");
             }
 
-            // Request headers required by Exchange
-            final Map<String, String> requestHeaders = new HashMap<>();
-            requestHeaders.put("Content-Type", "application/x-www-form-urlencoded");
-
             final URL url = new URL(PUBLIC_API_BASE_URL + apiMethod + queryString);
-            return sendNetworkRequest(url, "GET", null, requestHeaders);
+            return makeNetworkRequest(url, "GET", null, requestHeaders);
 
         } catch (MalformedURLException | UnsupportedEncodingException e) {
             final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
@@ -836,7 +838,7 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
             requestHeaders.put("Content-Type", "application/x-www-form-urlencoded");
 
             final URL url = new URL(AUTHENTICATED_API_URL + apiMethod);
-            return sendNetworkRequest(url, "POST", payload.toString(), requestHeaders);
+            return makeNetworkRequest(url, "POST", payload.toString(), requestHeaders);
 
         } catch (MalformedURLException | UnsupportedEncodingException e) {
             final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
@@ -927,5 +929,20 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
      */
     private Map<String, String> getRequestParamMap() {
         return new HashMap<>();
+    }
+
+    /*
+     * Hack for unit-testing header params passed to transport layer.
+     */
+    private Map<String, String> getHeaderParamMap() {
+        return new HashMap<>();
+    }
+
+    /*
+     * Hack for unit-testing transport layer.
+     */
+    private ExchangeHttpResponse makeNetworkRequest(URL url, String httpMethod, String postData, Map<String, String> requestHeaders)
+            throws TradingApiException, ExchangeNetworkException {
+        return super.sendNetworkRequest(url, httpMethod, postData, requestHeaders);
     }
 }
