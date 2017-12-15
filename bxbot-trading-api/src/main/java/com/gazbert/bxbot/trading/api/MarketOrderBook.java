@@ -23,8 +23,6 @@
 
 package com.gazbert.bxbot.trading.api;
 
-import com.google.common.base.MoreObjects;
-
 import java.util.List;
 
 /**
@@ -41,56 +39,14 @@ import java.util.List;
  * @author gazbert
  * @since 1.0
  */
-public final class MarketOrderBook {
-
-    /**
-     * The market id for this Market Order Book.
-     */
-    private String marketId;
-
-    /**
-     * Current SELL orders for the market.
-     * Ordered price ascending - <em>lowest</em> ASK price is first in list.
-     */
-    private List<MarketOrder> sellOrders;
-
-    /**
-     * Current BUY orders for the market.
-     * Ordered price descending - <em>highest</em> BID price is first in list.
-     */
-    private List<MarketOrder> buyOrders;
-
-
-    /**
-     * Constructor builds a Market Order Book.
-     *
-     * @param marketId   The market id for this Order Book.
-     * @param sellOrders Current SELL orders for the market.
-     * @param buyOrders  Current BUY orders for the market.
-     */
-    public MarketOrderBook(String marketId, List<MarketOrder> sellOrders, List<MarketOrder> buyOrders) {
-        this.marketId = marketId;
-        this.sellOrders = sellOrders;
-        this.buyOrders = buyOrders;
-    }
+public interface MarketOrderBook {
 
     /**
      * Returns the market id for this Market Order Book.
      *
      * @return The market id.
      */
-    public String getMarketId() {
-        return marketId;
-    }
-
-    /**
-     * Sets The market id for this Market Order Book.
-     *
-     * @param marketId the Market ID.
-     */
-    public void setMarketId(String marketId) {
-        this.marketId = marketId;
-    }
+    String getMarketId();
 
     /**
      * Returns current SELL orders for the market.
@@ -98,18 +54,7 @@ public final class MarketOrderBook {
      *
      * @return current SELL orders for the market.
      */
-    public List<MarketOrder> getSellOrders() {
-        return sellOrders;
-    }
-
-    /**
-     * Sets the current SELL orders for the market.
-     *
-     * @param sellOrders the current SELL orders for the Market.
-     */
-    public void setSellOrders(List<MarketOrder> sellOrders) {
-        this.sellOrders = sellOrders;
-    }
+    List<MarketOrder> getSellOrders();
 
     /**
      * Return the current BUY orders for the market.
@@ -117,25 +62,5 @@ public final class MarketOrderBook {
      *
      * @return current BUY orders for the market.
      */
-    public List<MarketOrder> getBuyOrders() {
-        return buyOrders;
-    }
-
-    /**
-     * Sets the Current BUY orders for the market.
-     *
-     * @param buyOrders the current BUY orders for the Market.
-     */
-    public void setBuyOrders(List<MarketOrder> buyOrders) {
-        this.buyOrders = buyOrders;
-    }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-                .add("marketId", marketId)
-                .add("sellOrders", sellOrders)
-                .add("buyOrders", buyOrders)
-                .toString();
-    }
+    List<MarketOrder> getBuyOrders();
 }

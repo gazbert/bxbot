@@ -21,9 +21,8 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.trading.api;
+package com.gazbert.bxbot.exchanges.trading.api.impl;
 
-import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -31,12 +30,14 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.junit.Assert.assertEquals;
+
 /**
- * Test Balance Info behaves as expected.
+ * Test the Balance Info impl behaves as expected.
  *
  * @author gazbert
  */
-public class TestBalanceInfo {
+public class TestBalanceInfoImpl {
 
     private static final String BTC_CURRENCY_ID = "BTC";
     private static final BigDecimal BTC_BALANCE_AVAILABLE = new BigDecimal("1000.24546282");
@@ -74,7 +75,7 @@ public class TestBalanceInfo {
     @Test
     public void testBalanceInfoIsInitialisedAsExpected() {
 
-        final BalanceInfo balanceInfo = new BalanceInfo(balancesAvailable, balancesOnHold);
+        final BalanceInfoImpl balanceInfo = new BalanceInfoImpl(balancesAvailable, balancesOnHold);
 
         assertEquals(balancesAvailable, balanceInfo.getBalancesAvailable());
         assertEquals(BTC_BALANCE_AVAILABLE, balancesAvailable.get(BTC_CURRENCY_ID));
@@ -88,7 +89,7 @@ public class TestBalanceInfo {
     @Test
     public void testSettersWorkAsExpected() {
 
-        final BalanceInfo balanceInfo = new BalanceInfo(null, null);
+        final BalanceInfoImpl balanceInfo = new BalanceInfoImpl(null, null);
         assertEquals(null, balanceInfo.getBalancesAvailable());
         assertEquals(null, balanceInfo.getBalancesOnHold());
 

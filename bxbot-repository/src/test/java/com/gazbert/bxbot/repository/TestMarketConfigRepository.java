@@ -32,6 +32,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.api.easymock.PowerMock;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
@@ -49,6 +50,7 @@ import static org.easymock.EasyMock.*;
  */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ConfigurationManager.class, MarketConfigRepositoryXmlDatastore.class})
+@PowerMockIgnore({"javax.management.*"})
 public class TestMarketConfigRepository {
 
     // Mocked out methods

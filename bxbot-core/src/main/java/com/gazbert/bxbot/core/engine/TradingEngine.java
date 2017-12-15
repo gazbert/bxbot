@@ -23,6 +23,12 @@
 
 package com.gazbert.bxbot.core.engine;
 
+import com.gazbert.bxbot.core.config.exchange.AuthenticationConfigImpl;
+import com.gazbert.bxbot.core.config.exchange.ExchangeConfigImpl;
+import com.gazbert.bxbot.core.config.exchange.NetworkConfigImpl;
+import com.gazbert.bxbot.core.config.exchange.OptionalConfigImpl;
+import com.gazbert.bxbot.core.config.market.MarketImpl;
+import com.gazbert.bxbot.core.config.strategy.StrategyConfigItems;
 import com.gazbert.bxbot.core.mail.EmailAlerter;
 import com.gazbert.bxbot.core.util.ConfigurableComponentFactory;
 import com.gazbert.bxbot.domain.engine.EngineConfig;
@@ -33,17 +39,12 @@ import com.gazbert.bxbot.domain.exchange.OptionalConfig;
 import com.gazbert.bxbot.domain.market.MarketConfig;
 import com.gazbert.bxbot.domain.strategy.StrategyConfig;
 import com.gazbert.bxbot.exchange.api.ExchangeAdapter;
-import com.gazbert.bxbot.exchange.api.impl.AuthenticationConfigImpl;
-import com.gazbert.bxbot.exchange.api.impl.ExchangeConfigImpl;
-import com.gazbert.bxbot.exchange.api.impl.NetworkConfigImpl;
-import com.gazbert.bxbot.exchange.api.impl.OptionalConfigImpl;
 import com.gazbert.bxbot.services.EngineConfigService;
 import com.gazbert.bxbot.services.ExchangeConfigService;
 import com.gazbert.bxbot.services.MarketConfigService;
 import com.gazbert.bxbot.services.StrategyConfigService;
 import com.gazbert.bxbot.strategy.api.StrategyException;
 import com.gazbert.bxbot.strategy.api.TradingStrategy;
-import com.gazbert.bxbot.strategy.api.impl.StrategyConfigItems;
 import com.gazbert.bxbot.trading.api.BalanceInfo;
 import com.gazbert.bxbot.trading.api.ExchangeNetworkException;
 import com.gazbert.bxbot.trading.api.Market;
@@ -53,7 +54,6 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Component;
-import org.springframework.util.Assert;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -559,7 +559,7 @@ public class TradingEngine {
                 continue;
             }
 
-            final Market tradingMarket = new Market(marketName, market.getId(), market.getBaseCurrency(), market.getCounterCurrency());
+            final Market tradingMarket = new MarketImpl(marketName, market.getId(), market.getBaseCurrency(), market.getCounterCurrency());
             final boolean wasAdded = loadedMarkets.add(tradingMarket);
             if (!wasAdded) {
                 final String errorMsg = "Found duplicate Market! Market details: " + market;

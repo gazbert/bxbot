@@ -34,27 +34,21 @@ import com.gazbert.bxbot.trading.api.OrderType;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.powermock.api.easymock.PowerMock;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.easymock.EasyMock.expect;
-import static org.junit.Assert.*;
+import static org.easymock.EasyMock.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Basic integration testing with Bitfinex exchange.
  *
  * @author gazbert
  */
-@RunWith(PowerMockRunner.class)
-@PowerMockIgnore({"javax.crypto.*"})
-@PrepareForTest(BitfinexExchangeAdapter.class)
 public class BitfinexIT {
 
     // Canned test data
@@ -80,25 +74,27 @@ public class BitfinexIT {
     @Before
     public void setupForEachTest() throws Exception {
 
-        authenticationConfig = PowerMock.createMock(AuthenticationConfig.class);
+        authenticationConfig = createMock(AuthenticationConfig.class);
         expect(authenticationConfig.getItem("key")).andReturn(KEY);
         expect(authenticationConfig.getItem("secret")).andReturn(SECRET);
 
-        networkConfig = PowerMock.createMock(NetworkConfig.class);
+        networkConfig = createMock(NetworkConfig.class);
         expect(networkConfig.getConnectionTimeout()).andReturn(30);
         expect(networkConfig.getNonFatalErrorCodes()).andReturn(nonFatalNetworkErrorCodes);
         expect(networkConfig.getNonFatalErrorMessages()).andReturn(nonFatalNetworkErrorMessages);
 
-        exchangeConfig = PowerMock.createMock(ExchangeConfig.class);
+        exchangeConfig = createMock(ExchangeConfig.class);
         expect(exchangeConfig.getAuthenticationConfig()).andReturn(authenticationConfig);
         expect(exchangeConfig.getNetworkConfig()).andReturn(networkConfig);
+
         // no optional config for this adapter
     }
 
     @Test
     public void testPublicApiCalls() throws Exception {
 
-        PowerMock.replayAll();
+        replay(authenticationConfig, networkConfig, exchangeConfig);
+
         final ExchangeAdapter exchangeAdapter = new BitfinexExchangeAdapter();
         exchangeAdapter.init(exchangeConfig);
 
@@ -109,7 +105,7 @@ public class BitfinexIT {
         assertFalse(orderBook.getBuyOrders().isEmpty());
         assertFalse(orderBook.getSellOrders().isEmpty());
 
-        PowerMock.verifyAll();
+        verify(authenticationConfig, networkConfig, exchangeConfig);
     }
 
     /*
@@ -119,7 +115,8 @@ public class BitfinexIT {
     @Test
     public void testAuthenticatedApiCalls() throws Exception {
 
-        PowerMock.replayAll();
+        replay(authenticationConfig, networkConfig, exchangeConfig);
+
         final ExchangeAdapter exchangeAdapter = new BitfinexExchangeAdapter();
         exchangeAdapter.init(exchangeConfig);
 
@@ -129,12 +126,12 @@ public class BitfinexIT {
         final BalanceInfo balanceInfo = exchangeAdapter.getBalanceInfo();
         assertNotNull(balanceInfo.getBalancesAvailable().get("BTC"));
 
-//      // Careful here - make sure the SELL_ORDER_PRICE is sensible!
+        // Careful here - make sure the SELL_ORDER_PRICE is sensible!
 //        final String orderId = exchangeAdapter.createOrder(MARKET_ID, OrderType.SELL, SELL_ORDER_QUANTITY, SELL_ORDER_PRICE);
 //        final List<OpenOrder> openOrders = exchangeAdapter.getYourOpenOrders(MARKET_ID);
 //        assertTrue(openOrders.stream().anyMatch(o -> o.getId().equals(orderId)));
 //        assertTrue(exchangeAdapter.cancelOrder(orderId, MARKET_ID));
 
-        PowerMock.verifyAll();
+        verify(authenticationConfig, networkConfig, exchangeConfig);
     }
 }

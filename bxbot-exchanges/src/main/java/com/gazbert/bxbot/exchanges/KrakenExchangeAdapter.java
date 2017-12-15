@@ -27,6 +27,10 @@ import com.gazbert.bxbot.exchange.api.AuthenticationConfig;
 import com.gazbert.bxbot.exchange.api.ExchangeAdapter;
 import com.gazbert.bxbot.exchange.api.ExchangeConfig;
 import com.gazbert.bxbot.exchange.api.OptionalConfig;
+import com.gazbert.bxbot.exchanges.trading.api.impl.BalanceInfoImpl;
+import com.gazbert.bxbot.exchanges.trading.api.impl.MarketOrderBookImpl;
+import com.gazbert.bxbot.exchanges.trading.api.impl.MarketOrderImpl;
+import com.gazbert.bxbot.exchanges.trading.api.impl.OpenOrderImpl;
 import com.gazbert.bxbot.trading.api.*;
 import com.google.common.base.MoreObjects;
 import com.google.gson.*;
@@ -306,7 +310,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
 
                     final List<MarketOrder> buyOrders = new ArrayList<>();
                     for (KrakenMarketOrder krakenBuyOrder : krakenOrderBook.bids) {
-                        final MarketOrder buyOrder = new MarketOrder(
+                        final MarketOrder buyOrder = new MarketOrderImpl(
                                 OrderType.BUY,
                                 krakenBuyOrder.get(0),
                                 krakenBuyOrder.get(1),
@@ -316,7 +320,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
 
                     final List<MarketOrder> sellOrders = new ArrayList<>();
                     for (KrakenMarketOrder krakenSellOrder : krakenOrderBook.asks) {
-                        final MarketOrder sellOrder = new MarketOrder(
+                        final MarketOrder sellOrder = new MarketOrderImpl(
                                 OrderType.SELL,
                                 krakenSellOrder.get(0),
                                 krakenSellOrder.get(1),
@@ -324,7 +328,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
                         sellOrders.add(sellOrder);
                     }
 
-                    return new MarketOrderBook(marketId, sellOrders, buyOrders);
+                    return new MarketOrderBookImpl(marketId, sellOrders, buyOrders);
 
                 } else {
 
@@ -404,7 +408,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
                                                     openOrder.getValue().descr.ordertype);
                             }
 
-                            final OpenOrder order = new OpenOrder(
+                            final OpenOrder order = new OpenOrderImpl(
                                     openOrder.getKey(),
                                     new Date((long) krakenOpenOrder.opentm), // opentm == creationDate
                                     marketId,
@@ -682,7 +686,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
                         }
 
                         // 2nd arg of BalanceInfo constructor for reserved/on-hold balances is not provided by exchange.
-                        return new BalanceInfo(balancesAvailable, new HashMap<>());
+                        return new BalanceInfoImpl(balancesAvailable, new HashMap<>());
 
                     } else {
 

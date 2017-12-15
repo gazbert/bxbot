@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016 Gareth Jon Lynch
+ * Copyright (c) 2015 Gareth Jon Lynch
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -21,36 +21,35 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.exchange.api.imp;
+package com.gazbert.bxbot.core.config.strategy;
 
-import com.gazbert.bxbot.exchange.api.impl.AuthenticationConfigImpl;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
 /**
- * Tests Authentication Config exchange API config object behaves as expected.
+ * Test the StrategyConfigItems behaves as expected.
  *
  * @author gazbert
  */
-public class TestAuthenticationConfigImpl {
+public class TestStrategyConfigItems {
 
-    private static final String API_KEY_CONFIG_ITEM_KEY = "api-key";
-    private static final String API_KEY_CONFIG_ITEM_VALUE = "apiKey--123";
+    private static final String BUY_PRICE_CONFIG_ITEM_KEY = "buyPrice";
+    private static final String BUY_PRICE_CONFIG_ITEM_VALUE = "671.15";
 
-    private static final String SECRET_CONFIG_ITEM_KEY = "secret";
-    private static final String SECRET_FEE_CONFIG_ITEM_VALUE = "secret-key";
+    private static final String AMOUNT_TO_BUY_CONFIG_ITEM_KEY = "amountToBuy";
+    private static final String AMOUNT_TO_BUY_CONFIG_ITEM_VALUE = "0.5";
 
 
     @Test
-    public void testAddingAndFetchingAuthenticationConfig() throws Exception {
+    public void testAddingAndFetchingConfigItems() throws Exception {
 
-        final AuthenticationConfigImpl authenticationConfig = new AuthenticationConfigImpl();
-        authenticationConfig.getItems().put(API_KEY_CONFIG_ITEM_KEY, API_KEY_CONFIG_ITEM_VALUE);
-        authenticationConfig.getItems().put(SECRET_CONFIG_ITEM_KEY, SECRET_FEE_CONFIG_ITEM_VALUE);
+        final StrategyConfigItems strategyConfig = new StrategyConfigItems();
+        strategyConfig.getItems().put(BUY_PRICE_CONFIG_ITEM_KEY, BUY_PRICE_CONFIG_ITEM_VALUE);
+        strategyConfig.getItems().put(AMOUNT_TO_BUY_CONFIG_ITEM_KEY, AMOUNT_TO_BUY_CONFIG_ITEM_VALUE);
 
-        assertEquals(2, authenticationConfig.getItems().size());
-        assertEquals(API_KEY_CONFIG_ITEM_VALUE, authenticationConfig.getItems().get(API_KEY_CONFIG_ITEM_KEY));
-        assertEquals(SECRET_FEE_CONFIG_ITEM_VALUE, authenticationConfig.getItems().get(SECRET_CONFIG_ITEM_KEY));
+        assertEquals(2, strategyConfig.getItems().size());
+        assertEquals(BUY_PRICE_CONFIG_ITEM_VALUE, strategyConfig.getItems().get(BUY_PRICE_CONFIG_ITEM_KEY));
+        assertEquals(AMOUNT_TO_BUY_CONFIG_ITEM_VALUE, strategyConfig.getItems().get(AMOUNT_TO_BUY_CONFIG_ITEM_KEY));
     }
 }

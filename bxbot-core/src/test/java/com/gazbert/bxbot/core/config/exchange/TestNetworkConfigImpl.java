@@ -21,9 +21,8 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.exchange.api.imp;
+package com.gazbert.bxbot.core.config.exchange;
 
-import com.gazbert.bxbot.exchange.api.impl.NetworkConfigImpl;
 import org.junit.Test;
 
 import java.util.Arrays;
