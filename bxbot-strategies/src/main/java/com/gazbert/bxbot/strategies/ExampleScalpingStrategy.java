@@ -107,7 +107,7 @@ import java.util.List;
  * </p>
  * <p>
  * This <a href="http://www.investopedia.com/articles/active-trading/101014/basics-algorithmic-trading-concepts-and-examples.asp">
- * site</a> might give you a few ideas.
+ * site</a> might give you a few ideas. Also, check out the excellent [ta4j](https://github.com/ta4j/ta4j) project...
  * </p>
  * <p>
  * Good luck!
