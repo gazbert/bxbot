@@ -803,7 +803,7 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
         try {
 
             if (params == null) {
-                params = new HashMap<>();
+                params = getRequestParamMap();
             }
 
             // we always need the API key
@@ -833,8 +833,7 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
             }
             LOG.debug(() -> "Using following URL encoded POST payload for API call: " + payload);
 
-            // Request headers required by Exchange
-            final Map<String, String> requestHeaders = new HashMap<>();
+            final Map<String, String> requestHeaders = getHeaderParamMap();
             requestHeaders.put("Content-Type", "application/x-www-form-urlencoded");
 
             final URL url = new URL(AUTHENTICATED_API_URL + apiMethod);
