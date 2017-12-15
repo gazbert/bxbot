@@ -2,6 +2,7 @@ buildscript {
 
     repositories {
         jcenter()
+        mavenLocal()
     }
 
     dependencies {
@@ -47,6 +48,9 @@ ext.libraries = [
         google_gson: dependencies.create("com.google.code.gson:gson:2.8.2"),
         javax_mail_api: dependencies.create("javax.mail:javax.mail-api:1.6.0"),
         javax_mail_sun: dependencies.create("com.sun.mail:javax.mail:1.6.0"),
+        javax_xml_api: dependencies.create("javax.xml.bind:jaxb-api:2.2.7"),
+        javax_xml_impl: dependencies.create("com.sun.xml.bind:jaxb-impl:2.2.7"),
+        javax_xml_core: dependencies.create("com.sun.xml.bind:jaxb-core:2.2.7"),
 
         junit: dependencies.create("junit:junit:4.12"),
         powermock_junit: dependencies.create("org.powermock:powermock-module-junit4:1.7.3"),
