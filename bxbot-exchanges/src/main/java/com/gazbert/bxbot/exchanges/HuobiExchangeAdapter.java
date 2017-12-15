@@ -66,6 +66,13 @@ import java.util.*;
  * </strong>
  * </p>
  * <p>
+ * <strong>
+ * NOTE: This adapter is now deprecated - due to regulatory requirements from Chinese authorities Huobi ceased trading
+ * activity on October 31 2017. The exchange has been superseded by <a href="https://www.huobipro.com">Huobi.pro</a>
+ * and a new Huobi adapter needs building.
+ * </strong>
+ * </p>
+ * <p>
  * This adapter only supports trading BTC, i.e. BTC-CNY and BTC-USD markets. It does not support trading of LTC-CNY.
  * </p>
  * <p>
@@ -117,6 +124,7 @@ import java.util.*;
  * @author gazbert
  * @since 1.0
  */
+@Deprecated()
 public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implements ExchangeAdapter {
 
     private static final Logger LOG = LogManager.getLogger();
@@ -992,7 +1000,7 @@ public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implemen
         try {
 
             if (params == null) {
-                params = new HashMap<>();
+                params = getRequestParamMap();
             }
 
             final Map<String, String> signatureParams = new HashMap<>(params);
@@ -1036,8 +1044,7 @@ public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implemen
                         URLEncoder.encode(queryParam.getValue(), "UTF-8"));
             }
 
-            // Request headers required by Exchange
-            final Map<String, String> requestHeaders = new HashMap<>();
+            final Map<String, String> requestHeaders = getHeaderParamMap();
             requestHeaders.put("Content-Type", "application/x-www-form-urlencoded");
 
             final URL url = new URL(AUTHENTICATED_API_URL);
