@@ -50,12 +50,16 @@ import static org.junit.Assert.*;
 
 /**
  * Tests the behaviour of the Huobi Exchange Adapter.
+ * <p>
+ * Deprecated.
+ * Due to regulatory requirements from Chinese authorities Huobi ceased trading activity on October 31 2017.
  *
  * @author gazbert
  */
 @RunWith(PowerMockRunner.class)
 @PowerMockIgnore({"javax.crypto.*", "javax.management.*"})
 @PrepareForTest(HuobiExchangeAdapter.class)
+@Deprecated
 public class TestHuobiExchangeAdapter {
 
     // Canned JSON responses from exchange - expected to reside on filesystem relative to project root
