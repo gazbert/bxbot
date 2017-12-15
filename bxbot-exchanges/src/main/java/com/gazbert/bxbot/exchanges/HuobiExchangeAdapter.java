@@ -935,14 +935,9 @@ public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implemen
     private AbstractExchangeAdapter.ExchangeHttpResponse sendPublicRequestToExchange(String apiMethod)
             throws ExchangeNetworkException, TradingApiException {
 
-        // Request headers required by Exchange
-        final Map<String, String> requestHeaders = new HashMap<>();
-        requestHeaders.put("Content-Type", "application/x-www-form-urlencoded");
-
         try {
-
             final URL url = new URL(PUBLIC_API_BASE_URL + apiMethod);
-            return sendNetworkRequest(url, "GET", null, requestHeaders);
+            return makeNetworkRequest(url, "GET", null, new HashMap<>());
 
         } catch (MalformedURLException e) {
             final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
@@ -1046,7 +1041,7 @@ public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implemen
             requestHeaders.put("Content-Type", "application/x-www-form-urlencoded");
 
             final URL url = new URL(AUTHENTICATED_API_URL);
-            return sendNetworkRequest(url, "POST", payloadBuilder.toString(), requestHeaders);
+            return makeNetworkRequest(url, "POST", payloadBuilder.toString(), requestHeaders);
 
         } catch (MalformedURLException | UnsupportedEncodingException e) {
 
@@ -1177,5 +1172,20 @@ public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implemen
      */
     private Map<String, String> getRequestParamMap() {
         return new HashMap<>();
+    }
+
+    /*
+     * Hack for unit-testing header params passed to transport layer.
+     */
+    private Map<String, String> getHeaderParamMap() {
+        return new HashMap<>();
+    }
+
+    /*
+     * Hack for unit-testing transport layer.
+     */
+    private ExchangeHttpResponse makeNetworkRequest(URL url, String httpMethod, String postData, Map<String, String> requestHeaders)
+            throws TradingApiException, ExchangeNetworkException {
+        return super.sendNetworkRequest(url, httpMethod, postData, requestHeaders);
     }
 }
