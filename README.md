@@ -18,8 +18,8 @@ Trading API - take a look [here](http://www.investopedia.com/articles/active-tra
 for more ideas.
 
 Exchange Adapters for using [Bitstamp](https://www.bitstamp.net), [Bitfinex](https://www.bitfinex.com),
-[OKCoin](https://www.okcoin.com/), [Huobi](https://www.huobi.com/), [GDAX](https://www.gdax.com/),
-[itBit](https://www.itbit.com/), [Kraken](https://www.kraken.com), and [Gemini](https://gemini.com/) are included.
+[OKCoin](https://www.okcoin.com/), [GDAX](https://www.gdax.com/), [itBit](https://www.itbit.com/),
+[Kraken](https://www.kraken.com), and [Gemini](https://gemini.com/) are included.
 Feel free to improve these or contribute new adapters to the project; that would be 
 [shiny!](https://en.wikipedia.org/wiki/Firefly_(TV_series))
 
