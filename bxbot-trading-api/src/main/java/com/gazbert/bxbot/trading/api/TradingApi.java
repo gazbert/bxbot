@@ -43,7 +43,7 @@ import java.util.List;
  * </p>
  *
  * @author gazbert
- * @since 1.1
+ * @since 1.0
  */
 public interface TradingApi {
 
