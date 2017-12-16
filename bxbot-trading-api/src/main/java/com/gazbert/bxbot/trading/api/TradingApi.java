@@ -50,6 +50,7 @@ public interface TradingApi {
     /**
      * Returns the current version of the API.
      *
+     * @since 1.0
      * @return the API version.
      */
     default String getVersion() {
@@ -59,6 +60,7 @@ public interface TradingApi {
     /**
      * Returns the API implementation name.
      *
+     * @since 1.0
      * @return the API implementation name.
      */
     String getImplName();
@@ -66,6 +68,7 @@ public interface TradingApi {
     /**
      * Fetches latest <em>market</em> orders for a given market.
      *
+     * @since 1.0
      * @param marketId the id of the market.
      * @return the market order book.
      * @throws ExchangeNetworkException if a network error occurred trying to connect to the exchange. This is
@@ -82,6 +85,7 @@ public interface TradingApi {
     /**
      * Fetches <em>your</em> current open orders, i.e. the orders placed by the bot.
      *
+     * @since 1.0
      * @param marketId the id of the market.
      * @return your current open orders.
      * @throws ExchangeNetworkException if a network error occurred trying to connect to the exchange. This is
@@ -98,6 +102,7 @@ public interface TradingApi {
     /**
      * Places an order on the exchange.
      *
+     * @since 1.0
      * @param marketId  the id of the market.
      * @param orderType Value must be {@link OrderType#BUY} or {@link OrderType#SELL}.
      * @param quantity  amount of units you are buying/selling in this order.
@@ -118,6 +123,7 @@ public interface TradingApi {
     /**
      * Cancels your existing order on the exchange.
      *
+     * @since 1.0
      * @param orderId  your order Id.
      * @param marketId the id of the market the order was placed on, e.g. btc_usd
      * @return true if order cancelled ok, false otherwise.
@@ -136,6 +142,7 @@ public interface TradingApi {
      * Fetches the latest price for a given market.
      * This is usually in BTC for altcoin markets and USD for BTC/USD markets - see the Exchange Adapter documentation.
      *
+     * @since 1.0
      * @param marketId the id of the market.
      * @return the latest market price.
      * @throws ExchangeNetworkException if a network error occurred trying to connect to the exchange. This is
@@ -152,6 +159,7 @@ public interface TradingApi {
     /**
      * Fetches the balance of your wallets on the exchange.
      *
+     * @since 1.0
      * @return your wallet balance info.
      * @throws ExchangeNetworkException if a network error occurred trying to connect to the exchange. This is
      *                                  implementation specific for each Exchange Adapter - see the documentation for the
@@ -170,6 +178,7 @@ public interface TradingApi {
      * a {@link BigDecimal}. If the fee is 0.33%, then the {@link BigDecimal} value returned is
      * 0.0033.
      *
+     * @since 1.0
      * @param marketId the id of the market.
      * @return the % of the BUY order that the exchange uses to calculate its fee as a {@link BigDecimal}.
      * @throws ExchangeNetworkException if a network error occurred trying to connect to the exchange. This is
@@ -189,6 +198,7 @@ public interface TradingApi {
      * {@link BigDecimal}. If the fee is 0.33%, then the {@link BigDecimal} value returned is
      * 0.0033.
      *
+     * @since 1.0
      * @param marketId the id of the market.
      * @return the % of the SELL order that the exchange uses to calculate its fee as a {@link BigDecimal}.
      * @throws ExchangeNetworkException if a network error occurred trying to connect to the exchange. This is
@@ -201,4 +211,72 @@ public interface TradingApi {
      *                                  to prevent unexpected losses.
      */
     BigDecimal getPercentageOfSellOrderTakenForExchangeFee(String marketId) throws TradingApiException, ExchangeNetworkException;
+
+    /**
+     * Returns the exchange Ticker a given market id.
+     * <p>
+     * Not all exchanges provide information returned in these operations - check the Exchange Adapter JavaDoc and
+     * Exchange API documentation. If the exchange does not provide the information, a null value is returned.
+     *
+     * @since 1.1
+     * @param marketId the id of the market.
+     * @return the exchange Ticker for a given market.
+     * @throws ExchangeNetworkException if a network error occurred trying to connect to the exchange. This is
+     *                                  implementation specific for each Exchange Adapter - see the documentation for the
+     *                                  adapter you are using. You could retry the API call, or exit from your Trading Strategy
+     *                                  and let the Trading Engine execute your Trading Strategy at the next trade cycle.
+     * @throws TradingApiException      if the API call failed for any reason other than a network error. This means something
+     *                                  bad as happened; you would probably want to wrap this exception in a
+     *                                  StrategyException and let the Trading Engine shutdown the bot immediately
+     *                                  to prevent unexpected losses.
+     */
+    default Ticker getTicker(String marketId) throws TradingApiException, ExchangeNetworkException {
+
+        return new Ticker() {
+            @Override
+            public BigDecimal getLast() {
+                return null;
+            }
+
+            @Override
+            public BigDecimal getBid() {
+                return null;
+            }
+
+            @Override
+            public BigDecimal getAsk() {
+                return null;
+            }
+
+            @Override
+            public BigDecimal getLow() {
+                return null;
+            }
+
+            @Override
+            public BigDecimal getHigh() {
+                return null;
+            }
+
+            @Override
+            public BigDecimal getOpen() {
+                return null;
+            }
+
+            @Override
+            public BigDecimal getVolume() {
+                return null;
+            }
+
+            @Override
+            public BigDecimal getVwap() {
+                return null;
+            }
+
+            @Override
+            public Long getTimestamp() {
+                return null;
+            }
+        };
+    }
 }

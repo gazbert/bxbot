@@ -29,8 +29,7 @@ import com.gazbert.bxbot.exchange.api.ExchangeConfig;
 import com.gazbert.bxbot.exchange.api.NetworkConfig;
 import com.gazbert.bxbot.trading.api.BalanceInfo;
 import com.gazbert.bxbot.trading.api.MarketOrderBook;
-import com.gazbert.bxbot.trading.api.OpenOrder;
-import com.gazbert.bxbot.trading.api.OrderType;
+import com.gazbert.bxbot.trading.api.Ticker;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -40,9 +39,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.easymock.EasyMock.*;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * Basic integration testing with Bitstamp exchange.
@@ -105,6 +102,17 @@ public class BitstampIT {
         final MarketOrderBook orderBook = exchangeAdapter.getMarketOrders(MARKET_ID);
         assertFalse(orderBook.getBuyOrders().isEmpty());
         assertFalse(orderBook.getSellOrders().isEmpty());
+
+        final Ticker ticker = exchangeAdapter.getTicker(MARKET_ID);
+        assertTrue(ticker.getLast() != null);
+        assertTrue(ticker.getAsk() != null);
+        assertTrue(ticker.getBid() != null);
+        assertTrue(ticker.getHigh() != null);
+        assertTrue(ticker.getLow() != null);
+        assertTrue(ticker.getOpen() != null);
+        assertTrue(ticker.getVolume() != null);
+        assertTrue(ticker.getVwap() != null);
+        assertTrue(ticker.getTimestamp() != null);
 
         verify(authenticationConfig, networkConfig, exchangeConfig);
     }
