@@ -43,15 +43,15 @@ import java.util.List;
  * </p>
  *
  * @author gazbert
- * @since 1.0
+ * @since 1.1
  */
 public interface TradingApi {
 
     /**
      * Returns the current version of the API.
      *
-     * @since 1.0
      * @return the API version.
+     * @since 1.0
      */
     default String getVersion() {
         return "1.0";
@@ -60,15 +60,14 @@ public interface TradingApi {
     /**
      * Returns the API implementation name.
      *
-     * @since 1.0
      * @return the API implementation name.
+     * @since 1.0
      */
     String getImplName();
 
     /**
      * Fetches latest <em>market</em> orders for a given market.
      *
-     * @since 1.0
      * @param marketId the id of the market.
      * @return the market order book.
      * @throws ExchangeNetworkException if a network error occurred trying to connect to the exchange. This is
@@ -79,13 +78,13 @@ public interface TradingApi {
      *                                  bad as happened; you would probably want to wrap this exception in a
      *                                  StrategyException and let the Trading Engine shutdown the bot immediately
      *                                  to prevent unexpected losses.
+     * @since 1.0
      */
     MarketOrderBook getMarketOrders(String marketId) throws ExchangeNetworkException, TradingApiException;
 
     /**
      * Fetches <em>your</em> current open orders, i.e. the orders placed by the bot.
      *
-     * @since 1.0
      * @param marketId the id of the market.
      * @return your current open orders.
      * @throws ExchangeNetworkException if a network error occurred trying to connect to the exchange. This is
@@ -96,13 +95,13 @@ public interface TradingApi {
      *                                  bad as happened; you would probably want to wrap this exception in a
      *                                  StrategyException and let the Trading Engine shutdown the bot immediately
      *                                  to prevent unexpected losses.
+     * @since 1.0
      */
     List<OpenOrder> getYourOpenOrders(String marketId) throws ExchangeNetworkException, TradingApiException;
 
     /**
      * Places an order on the exchange.
      *
-     * @since 1.0
      * @param marketId  the id of the market.
      * @param orderType Value must be {@link OrderType#BUY} or {@link OrderType#SELL}.
      * @param quantity  amount of units you are buying/selling in this order.
@@ -116,6 +115,7 @@ public interface TradingApi {
      *                                  bad as happened; you would probably want to wrap this exception in a
      *                                  StrategyException and let the Trading Engine shutdown the bot immediately
      *                                  to prevent unexpected losses.
+     * @since 1.0
      */
     String createOrder(String marketId, OrderType orderType, BigDecimal quantity, BigDecimal price)
             throws ExchangeNetworkException, TradingApiException;
@@ -123,7 +123,6 @@ public interface TradingApi {
     /**
      * Cancels your existing order on the exchange.
      *
-     * @since 1.0
      * @param orderId  your order Id.
      * @param marketId the id of the market the order was placed on, e.g. btc_usd
      * @return true if order cancelled ok, false otherwise.
@@ -135,6 +134,7 @@ public interface TradingApi {
      *                                  bad as happened; you would probably want to wrap this exception in a
      *                                  StrategyException and let the Trading Engine shutdown the bot immediately
      *                                  to prevent unexpected losses.
+     * @since 1.0
      */
     boolean cancelOrder(String orderId, String marketId) throws ExchangeNetworkException, TradingApiException;
 
@@ -142,7 +142,6 @@ public interface TradingApi {
      * Fetches the latest price for a given market.
      * This is usually in BTC for altcoin markets and USD for BTC/USD markets - see the Exchange Adapter documentation.
      *
-     * @since 1.0
      * @param marketId the id of the market.
      * @return the latest market price.
      * @throws ExchangeNetworkException if a network error occurred trying to connect to the exchange. This is
@@ -153,13 +152,13 @@ public interface TradingApi {
      *                                  bad as happened; you would probably want to wrap this exception in a
      *                                  StrategyException and let the Trading Engine shutdown the bot immediately
      *                                  to prevent unexpected losses.
+     * @since 1.0
      */
     BigDecimal getLatestMarketPrice(String marketId) throws ExchangeNetworkException, TradingApiException;
 
     /**
      * Fetches the balance of your wallets on the exchange.
      *
-     * @since 1.0
      * @return your wallet balance info.
      * @throws ExchangeNetworkException if a network error occurred trying to connect to the exchange. This is
      *                                  implementation specific for each Exchange Adapter - see the documentation for the
@@ -169,6 +168,7 @@ public interface TradingApi {
      *                                  bad as happened; you would probably want to wrap this exception in a
      *                                  StrategyException and let the Trading Engine shutdown the bot immediately
      *                                  to prevent unexpected losses.
+     * @since 1.0
      */
     BalanceInfo getBalanceInfo() throws ExchangeNetworkException, TradingApiException;
 
@@ -178,7 +178,6 @@ public interface TradingApi {
      * a {@link BigDecimal}. If the fee is 0.33%, then the {@link BigDecimal} value returned is
      * 0.0033.
      *
-     * @since 1.0
      * @param marketId the id of the market.
      * @return the % of the BUY order that the exchange uses to calculate its fee as a {@link BigDecimal}.
      * @throws ExchangeNetworkException if a network error occurred trying to connect to the exchange. This is
@@ -189,6 +188,7 @@ public interface TradingApi {
      *                                  bad as happened; you would probably want to wrap this exception in a
      *                                  StrategyException and let the Trading Engine shutdown the bot immediately
      *                                  to prevent unexpected losses.
+     * @since 1.0
      */
     BigDecimal getPercentageOfBuyOrderTakenForExchangeFee(String marketId) throws TradingApiException, ExchangeNetworkException;
 
@@ -198,7 +198,6 @@ public interface TradingApi {
      * {@link BigDecimal}. If the fee is 0.33%, then the {@link BigDecimal} value returned is
      * 0.0033.
      *
-     * @since 1.0
      * @param marketId the id of the market.
      * @return the % of the SELL order that the exchange uses to calculate its fee as a {@link BigDecimal}.
      * @throws ExchangeNetworkException if a network error occurred trying to connect to the exchange. This is
@@ -209,16 +208,18 @@ public interface TradingApi {
      *                                  bad as happened; you would probably want to wrap this exception in a
      *                                  StrategyException and let the Trading Engine shutdown the bot immediately
      *                                  to prevent unexpected losses.
+     * @since 1.0
      */
     BigDecimal getPercentageOfSellOrderTakenForExchangeFee(String marketId) throws TradingApiException, ExchangeNetworkException;
 
     /**
      * Returns the exchange Ticker a given market id.
      * <p>
-     * Not all exchanges provide information returned in these operations - check the Exchange Adapter JavaDoc and
-     * Exchange API documentation. If the exchange does not provide the information, a null value is returned.
+     * Not all exchanges provide the information returned in the Ticker methods - you'll need to check the relevant
+     * Exchange Adapter code/Javadoc and online Exchange API documentation.
+     * <p>
+     * If the exchange does not provide the information, a null value is returned.
      *
-     * @since 1.1
      * @param marketId the id of the market.
      * @return the exchange Ticker for a given market.
      * @throws ExchangeNetworkException if a network error occurred trying to connect to the exchange. This is
@@ -229,6 +230,7 @@ public interface TradingApi {
      *                                  bad as happened; you would probably want to wrap this exception in a
      *                                  StrategyException and let the Trading Engine shutdown the bot immediately
      *                                  to prevent unexpected losses.
+     * @since 1.1
      */
     default Ticker getTicker(String marketId) throws TradingApiException, ExchangeNetworkException {
 
