@@ -27,10 +27,7 @@ import com.gazbert.bxbot.exchange.api.AuthenticationConfig;
 import com.gazbert.bxbot.exchange.api.ExchangeAdapter;
 import com.gazbert.bxbot.exchange.api.ExchangeConfig;
 import com.gazbert.bxbot.exchange.api.OptionalConfig;
-import com.gazbert.bxbot.exchanges.trading.api.impl.BalanceInfoImpl;
-import com.gazbert.bxbot.exchanges.trading.api.impl.MarketOrderBookImpl;
-import com.gazbert.bxbot.exchanges.trading.api.impl.MarketOrderImpl;
-import com.gazbert.bxbot.exchanges.trading.api.impl.OpenOrderImpl;
+import com.gazbert.bxbot.exchanges.trading.api.impl.*;
 import com.gazbert.bxbot.trading.api.*;
 import com.google.common.base.MoreObjects;
 import com.google.gson.Gson;
@@ -639,6 +636,53 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
         return "itBit REST API v1";
     }
 
+
+    @Override
+    public Ticker getTicker(String marketId) throws TradingApiException, ExchangeNetworkException {
+
+        ExchangeHttpResponse response = null;
+
+        try {
+
+            response = sendPublicRequestToExchange("markets/" + marketId + "/ticker");
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Ticker response: " + response);
+            }
+
+            if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
+
+                final ItBitTicker itBitTicker = gson.fromJson(response.getPayload(), ItBitTicker.class);
+                return new TickerImpl(
+                        itBitTicker.lastPrice,
+                        itBitTicker.bid,
+                        itBitTicker.ask,
+                        itBitTicker.low24h,
+                        itBitTicker.high24h,
+                        itBitTicker.openToday,
+                        itBitTicker.volume24h,
+                        itBitTicker.vwap24h,
+                        Date.from(Instant.parse(itBitTicker.serverTimeUTC)).getTime());
+            } else {
+                final String errorMsg = "Failed to get market ticker from exchange. Details: " + response;
+                LOG.error(errorMsg);
+                throw new TradingApiException(errorMsg);
+            }
+
+        } catch (ExchangeNetworkException | TradingApiException e) {
+            throw e;
+        } catch (Exception e) {
+
+            if (isExchangeUndergoingMaintenance(response) && keepAliveDuringMaintenance) {
+                LOG.warn(() -> UNDER_MAINTENANCE_WARNING_MESSAGE);
+                throw new ExchangeNetworkException(UNDER_MAINTENANCE_WARNING_MESSAGE);
+            }
+
+            final String unexpectedErrorMsg = UNEXPECTED_ERROR_MSG + (response == null ? "NULL RESPONSE" : response);
+            LOG.error(unexpectedErrorMsg, e);
+            throw new TradingApiException(unexpectedErrorMsg, e);
+        }
+    }
+
     // ------------------------------------------------------------------------------------------------
     //  GSON classes for JSON responses.
     //  See https://api.itbit.com/docs
@@ -755,9 +799,9 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
         public BigDecimal bidAmt;
         public BigDecimal ask;
         public BigDecimal askAmt;
-        public BigDecimal lastPrice; // we only wants this precious
+        public BigDecimal lastPrice;
         public BigDecimal lastAmt;
-        public BigDecimal lastvolume24hAmt;
+        public BigDecimal volume24h;
         public BigDecimal volumeToday;
         public BigDecimal high24h;
         public BigDecimal low24h;
@@ -778,7 +822,7 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
                     .add("askAmt", askAmt)
                     .add("lastPrice", lastPrice)
                     .add("lastAmt", lastAmt)
-                    .add("lastvolume24hAmt", lastvolume24hAmt)
+                    .add("volume24h", volume24h)
                     .add("volumeToday", volumeToday)
                     .add("high24h", high24h)
                     .add("low24h", low24h)
