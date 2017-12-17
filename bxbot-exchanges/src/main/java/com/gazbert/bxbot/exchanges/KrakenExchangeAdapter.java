@@ -285,7 +285,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
 
         try {
 
-            final Map<String, String> params = getRequestParamMap();
+            final Map<String, String> params = createRequestParamMap();
             params.put("pair", marketId);
 
             response = sendPublicRequestToExchange("Depth", params);
@@ -460,7 +460,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
 
         try {
 
-            final Map<String, String> params = getRequestParamMap();
+            final Map<String, String> params = createRequestParamMap();
             params.put("pair", marketId);
 
             if (orderType == OrderType.BUY) {
@@ -533,7 +533,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
         ExchangeHttpResponse response = null;
 
         try {
-            final Map<String, String> params = getRequestParamMap();
+            final Map<String, String> params = createRequestParamMap();
             params.put("txid", orderId);
 
             response = sendAuthenticatedRequestToExchange("CancelOrder", params);
@@ -600,7 +600,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
 
         try {
 
-            final Map<String, String> params = getRequestParamMap();
+            final Map<String, String> params = createRequestParamMap();
             params.put("pair", marketId);
 
             response = sendPublicRequestToExchange("Ticker", params);
@@ -1010,11 +1010,11 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
             throws ExchangeNetworkException, TradingApiException {
 
         if (params == null) {
-            params = getRequestParamMap(); // no params, so empty query string
+            params = createRequestParamMap(); // no params, so empty query string
         }
 
         // Request headers required by Exchange
-        final Map<String, String> requestHeaders = new HashMap<>();
+        final Map<String, String> requestHeaders = createHeaderParamMap();
 
         try {
 
@@ -1083,7 +1083,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
 
             if (params == null) {
                 // create empty map for non param API calls, e.g. "trades"
-                params = new HashMap<>();
+                params = createRequestParamMap();
             }
 
             // The nonce is required by Kraken in every request.
@@ -1124,7 +1124,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
             final String signature = Base64.getEncoder().encodeToString(mac.doFinal());
 
             // Request headers required by Exchange
-            final Map<String, String> requestHeaders = getHeaderParamMap();
+            final Map<String, String> requestHeaders = createHeaderParamMap();
             requestHeaders.put("Content-Type", "application/x-www-form-urlencoded");
             requestHeaders.put("API-Key", key);
             requestHeaders.put("API-Sign", signature);
@@ -1224,14 +1224,14 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
     /*
      * Hack for unit-testing map params passed to transport layer.
      */
-    private Map<String, String> getRequestParamMap() {
+    private Map<String, String> createRequestParamMap() {
         return new HashMap<>();
     }
 
     /*
      * Hack for unit-testing header params passed to transport layer.
      */
-    private Map<String, String> getHeaderParamMap() {
+    private Map<String, String> createHeaderParamMap() {
         return new HashMap<>();
     }
 

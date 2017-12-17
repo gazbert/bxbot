@@ -234,7 +234,7 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter impleme
 
         try {
 
-            final Map<String, String> params = getRequestParamMap();
+            final Map<String, String> params = createRequestParamMap();
 
             params.put("symbol", marketId);
 
@@ -301,7 +301,7 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter impleme
 
         try {
 
-            final Map<String, String> params = getRequestParamMap();
+            final Map<String, String> params = createRequestParamMap();
             params.put("order_id", orderId);
 
             final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("order/cancel", params);
@@ -672,7 +672,7 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter impleme
 
         try {
             final URL url = new URL(PUBLIC_API_BASE_URL + apiMethod);
-            return makeNetworkRequest(url, "GET", null, new HashMap<>());
+            return makeNetworkRequest(url, "GET", null, createRequestParamMap());
 
         } catch (MalformedURLException e) {
             final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
@@ -748,7 +748,7 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter impleme
 
             if (params == null) {
                 // create empty map for non param API calls, e.g. "balances"
-                params = new HashMap<>();
+                params = createRequestParamMap();
             }
 
             // Add the API call method
@@ -770,7 +770,7 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter impleme
             final String signature = toHex(mac.doFinal()).toLowerCase();
 
             // Request headers required by Exchange
-            final Map<String, String> requestHeaders = getHeaderParamMap();
+            final Map<String, String> requestHeaders = createHeaderParamMap();
             requestHeaders.put("X-GEMINI-APIKEY", key);
             requestHeaders.put("X-GEMINI-PAYLOAD", base64payload);
             requestHeaders.put("X-GEMINI-SIGNATURE", signature);
@@ -867,14 +867,14 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter impleme
     /*
      * Hack for unit-testing map params passed to transport layer.
      */
-    private Map<String, String> getRequestParamMap() {
+    private Map<String, String> createRequestParamMap() {
         return new HashMap<>();
     }
 
     /*
      * Hack for unit-testing header params passed to transport layer.
      */
-    private Map<String, String> getHeaderParamMap() {
+    private Map<String, String> createHeaderParamMap() {
         return new HashMap<>();
     }
 

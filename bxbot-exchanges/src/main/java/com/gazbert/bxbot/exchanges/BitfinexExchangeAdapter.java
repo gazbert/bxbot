@@ -272,7 +272,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter imple
             TradingApiException, ExchangeNetworkException {
 
         try {
-            final Map<String, Object> params = getRequestParamMap();
+            final Map<String, Object> params = createRequestParamMap();
 
             params.put("symbol", marketId);
 
@@ -335,7 +335,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter imple
     public boolean cancelOrder(String orderId, String marketIdNotNeeded) throws TradingApiException, ExchangeNetworkException {
 
         try {
-            final Map<String, Object> params = getRequestParamMap();
+            final Map<String, Object> params = createRequestParamMap();
             params.put("order_id", Long.parseLong(orderId));
 
             final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("order/cancel", params);
@@ -829,7 +829,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter imple
 
         try {
             final URL url = new URL(PUBLIC_API_BASE_URL + apiMethod);
-            return makeNetworkRequest(url, "GET", null, new HashMap<>());
+            return makeNetworkRequest(url, "GET", null, createHeaderParamMap());
 
         } catch (MalformedURLException e) {
             final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
@@ -888,7 +888,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter imple
 
             if (params == null) {
                 // create empty map for non param API calls, e.g. "balances"
-                params = new HashMap<>();
+                params = createRequestParamMap();
             }
 
             // nonce is required by Bitfinex in every request
@@ -905,7 +905,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter imple
             final String base64payload = DatatypeConverter.printBase64Binary(paramsInJson.getBytes("UTF-8"));
 
             // Request headers required by Exchange
-            final Map<String, String> requestHeaders = getHeaderParamMap();
+            final Map<String, String> requestHeaders = createHeaderParamMap();
             requestHeaders.put("X-BFX-APIKEY", key);
             requestHeaders.put("X-BFX-PAYLOAD", base64payload);
 
@@ -1000,14 +1000,14 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter imple
     /*
      * Hack for unit-testing map params passed to transport layer.
      */
-    private Map<String, Object> getRequestParamMap() {
+    private Map<String, Object> createRequestParamMap() {
         return new HashMap<>();
     }
 
     /*
      * Hack for unit-testing header params passed to transport layer.
      */
-    private Map<String, String> getHeaderParamMap() {
+    private Map<String, String> createHeaderParamMap() {
         return new HashMap<>();
     }
 

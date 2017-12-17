@@ -263,7 +263,7 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
                 getBalanceInfo();
             }
 
-            final Map<String, String> params = getRequestParamMap();
+            final Map<String, String> params = createRequestParamMap();
             params.put("type", "limit");
 
             // note we need to limit amount to 4 decimal places else exchange will barf
@@ -388,7 +388,7 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
                 getBalanceInfo();
             }
 
-            final Map<String, String> params = getRequestParamMap();
+            final Map<String, String> params = createRequestParamMap();
             params.put("status", "open"); // we only want open orders
 
             response = sendAuthenticatedRequestToExchange(
@@ -557,7 +557,7 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
 
         try {
 
-            final Map<String, String> params = getRequestParamMap();
+            final Map<String, String> params = createRequestParamMap();
             params.put("userId", userId);
 
             response = sendAuthenticatedRequestToExchange("GET", "wallets", params);
@@ -893,7 +893,7 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
 
         try {
             final URL url = new URL(PUBLIC_API_BASE_URL + apiMethod);
-            return makeNetworkRequest(url, "GET", null, new HashMap<>());
+            return makeNetworkRequest(url, "GET", null, createHeaderParamMap());
 
         } catch (MalformedURLException e) {
             final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
@@ -938,7 +938,7 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
 
             if (params == null) {
                 // create empty map for non-param API calls
-                params = new HashMap<>();
+                params = createRequestParamMap();
             }
 
             /*
@@ -1038,7 +1038,7 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
             final String signature = DatatypeConverter.printBase64Binary(mac.doFinal());
 
             // Request headers required by Exchange
-            final Map<String, String> requestHeaders = getHeaderParamMap();
+            final Map<String, String> requestHeaders = createHeaderParamMap();
             requestHeaders.put("Content-Type", "application/json");
 
             // Add Authorization header
@@ -1149,14 +1149,14 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
     /*
      * Hack for unit-testing map params passed to transport layer.
      */
-    private Map<String, String> getRequestParamMap() {
+    private Map<String, String> createRequestParamMap() {
         return new HashMap<>();
     }
 
     /*
      * Hack for unit-testing header params passed to transport layer.
      */
-    private Map<String, String> getHeaderParamMap() {
+    private Map<String, String> createHeaderParamMap() {
         return new HashMap<>();
     }
 

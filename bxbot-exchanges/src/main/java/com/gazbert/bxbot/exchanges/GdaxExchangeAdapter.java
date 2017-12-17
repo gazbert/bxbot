@@ -213,7 +213,7 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
              * time_in_force param optional - defaults to 'GTC' Good til Cancel
              * client_oid param is optional - thia adapter does not use it.
              */
-            final Map<String, String> params = getRequestParamMap();
+            final Map<String, String> params = createRequestParamMap();
 
             if (orderType == OrderType.BUY) {
                 params.put("side", "buy");
@@ -358,7 +358,7 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
 
         try {
 
-            final Map<String, String> params = getRequestParamMap();
+            final Map<String, String> params = createRequestParamMap();
             params.put("level", "2"); //  "2" = Top 50 bids and asks (aggregated)
 
             final ExchangeHttpResponse response = sendPublicRequestToExchange("products/" + marketId + "/book", params);
@@ -708,7 +708,7 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
             throws ExchangeNetworkException, TradingApiException {
 
         if (params == null) {
-            params = new HashMap<>(); // no params, so empty query string
+            params = createRequestParamMap(); // no params, so empty query string
         }
 
         // Request headers required by Exchange
@@ -803,7 +803,7 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
 
             if (params == null) {
                 // create empty map for non-param API calls
-                params = new HashMap<>();
+                params = createRequestParamMap();
             }
 
             // Get UNIX time in secs
@@ -865,7 +865,7 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
             final String signature = DatatypeConverter.printBase64Binary(mac.doFinal());
 
             // Request headers required by Exchange
-            final Map<String, String> requestHeaders = getHeaderParamMap();
+            final Map<String, String> requestHeaders = createHeaderParamMap();
             requestHeaders.put("Content-Type", "application/json");
             requestHeaders.put("CB-ACCESS-KEY", key);
             requestHeaders.put("CB-ACCESS-SIGN", signature);
@@ -950,14 +950,14 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
     /*
      * Hack for unit-testing request params passed to transport layer.
      */
-    private Map<String, String> getRequestParamMap() {
+    private Map<String, String> createRequestParamMap() {
         return new HashMap<>();
     }
 
     /*
      * Hack for unit-testing header params passed to transport layer.
      */
-    private Map<String, String> getHeaderParamMap() {
+    private Map<String, String> createHeaderParamMap() {
         return new HashMap<>();
     }
 

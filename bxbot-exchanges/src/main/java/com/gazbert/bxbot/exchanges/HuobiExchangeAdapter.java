@@ -281,7 +281,7 @@ public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implemen
         try {
             final String marketIdForAuthenticatedRequest = getAuthenticatedMarketIdForGivenPublicMarketId(marketId);
 
-            final Map<String, String> params = getRequestParamMap();
+            final Map<String, String> params = createRequestParamMap();
             params.put("coin_type", "1"); // "1" = BTC
 
             // we need to limit amount to 2 decimal places else exchange will barf
@@ -328,7 +328,7 @@ public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implemen
         try {
             final String marketIdForAuthenticatedRequest = getAuthenticatedMarketIdForGivenPublicMarketId(marketId);
 
-            final Map<String, String> params = getRequestParamMap();
+            final Map<String, String> params = createRequestParamMap();
             params.put("coin_type", "1"); // "1" = BTC
             params.put("id", orderId);
 
@@ -359,7 +359,7 @@ public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implemen
         try {
             final String marketIdForAuthenticatedRequest = getAuthenticatedMarketIdForGivenPublicMarketId(marketId);
 
-            final Map<String, String> params = getRequestParamMap();
+            final Map<String, String> params = createRequestParamMap();
             params.put("coin_type", "1"); // "1" = BTC
 
             final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("get_orders",
@@ -945,7 +945,7 @@ public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implemen
 
         try {
             final URL url = new URL(PUBLIC_API_BASE_URL + apiMethod);
-            return makeNetworkRequest(url, "GET", null, new HashMap<>());
+            return makeNetworkRequest(url, "GET", null, createHeaderParamMap());
 
         } catch (MalformedURLException e) {
             final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
@@ -1000,7 +1000,7 @@ public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implemen
         try {
 
             if (params == null) {
-                params = getRequestParamMap();
+                params = createRequestParamMap();
             }
 
             final Map<String, String> signatureParams = new HashMap<>(params);
@@ -1044,7 +1044,7 @@ public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implemen
                         URLEncoder.encode(queryParam.getValue(), "UTF-8"));
             }
 
-            final Map<String, String> requestHeaders = getHeaderParamMap();
+            final Map<String, String> requestHeaders = createHeaderParamMap();
             requestHeaders.put("Content-Type", "application/x-www-form-urlencoded");
 
             final URL url = new URL(AUTHENTICATED_API_URL);
@@ -1177,14 +1177,14 @@ public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implemen
     /*
      * Hack for unit-testing map params passed to transport layer.
      */
-    private Map<String, String> getRequestParamMap() {
+    private Map<String, String> createRequestParamMap() {
         return new HashMap<>();
     }
 
     /*
      * Hack for unit-testing header params passed to transport layer.
      */
-    private Map<String, String> getHeaderParamMap() {
+    private Map<String, String> createHeaderParamMap() {
         return new HashMap<>();
     }
 
