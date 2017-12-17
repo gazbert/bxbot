@@ -999,8 +999,7 @@ public class TestKrakenExchangeAdapter {
     public void testSendingPublicRequestToExchangeHandlesExchangeNetworkException() throws Exception {
 
         final KrakenExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
-                KrakenExchangeAdapter.class, MOCKED_MAKE_NETWORK_REQUEST_METHOD, MOCKED_CREATE_REQUEST_PARAM_MAP_METHOD,
-                MOCKED_CREATE_REQUEST_PARAM_MAP_METHOD);
+                KrakenExchangeAdapter.class, MOCKED_MAKE_NETWORK_REQUEST_METHOD, MOCKED_CREATE_REQUEST_PARAM_MAP_METHOD);
 
         final Map<String, String> requestParamMap = PowerMock.createPartialMock(HashMap.class, "put");
         expect(requestParamMap.put("pair", MARKET_ID)).andStubReturn(null);
