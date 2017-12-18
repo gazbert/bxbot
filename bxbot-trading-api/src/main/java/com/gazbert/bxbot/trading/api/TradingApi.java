@@ -54,7 +54,7 @@ public interface TradingApi {
      * @since 1.0
      */
     default String getVersion() {
-        return "1.0";
+        return "1.1";
     }
 
     /**
