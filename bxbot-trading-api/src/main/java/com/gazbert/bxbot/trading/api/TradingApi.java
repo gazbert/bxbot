@@ -51,6 +51,7 @@ public interface TradingApi {
      * Returns the current version of the API.
      *
      * @return the API version.
+     * @since 1.0
      */
     default String getVersion() {
         return "1.0";
@@ -60,6 +61,7 @@ public interface TradingApi {
      * Returns the API implementation name.
      *
      * @return the API implementation name.
+     * @since 1.0
      */
     String getImplName();
 
@@ -76,6 +78,7 @@ public interface TradingApi {
      *                                  bad as happened; you would probably want to wrap this exception in a
      *                                  StrategyException and let the Trading Engine shutdown the bot immediately
      *                                  to prevent unexpected losses.
+     * @since 1.0
      */
     MarketOrderBook getMarketOrders(String marketId) throws ExchangeNetworkException, TradingApiException;
 
@@ -92,6 +95,7 @@ public interface TradingApi {
      *                                  bad as happened; you would probably want to wrap this exception in a
      *                                  StrategyException and let the Trading Engine shutdown the bot immediately
      *                                  to prevent unexpected losses.
+     * @since 1.0
      */
     List<OpenOrder> getYourOpenOrders(String marketId) throws ExchangeNetworkException, TradingApiException;
 
@@ -111,6 +115,7 @@ public interface TradingApi {
      *                                  bad as happened; you would probably want to wrap this exception in a
      *                                  StrategyException and let the Trading Engine shutdown the bot immediately
      *                                  to prevent unexpected losses.
+     * @since 1.0
      */
     String createOrder(String marketId, OrderType orderType, BigDecimal quantity, BigDecimal price)
             throws ExchangeNetworkException, TradingApiException;
@@ -129,6 +134,7 @@ public interface TradingApi {
      *                                  bad as happened; you would probably want to wrap this exception in a
      *                                  StrategyException and let the Trading Engine shutdown the bot immediately
      *                                  to prevent unexpected losses.
+     * @since 1.0
      */
     boolean cancelOrder(String orderId, String marketId) throws ExchangeNetworkException, TradingApiException;
 
@@ -146,6 +152,7 @@ public interface TradingApi {
      *                                  bad as happened; you would probably want to wrap this exception in a
      *                                  StrategyException and let the Trading Engine shutdown the bot immediately
      *                                  to prevent unexpected losses.
+     * @since 1.0
      */
     BigDecimal getLatestMarketPrice(String marketId) throws ExchangeNetworkException, TradingApiException;
 
@@ -161,6 +168,7 @@ public interface TradingApi {
      *                                  bad as happened; you would probably want to wrap this exception in a
      *                                  StrategyException and let the Trading Engine shutdown the bot immediately
      *                                  to prevent unexpected losses.
+     * @since 1.0
      */
     BalanceInfo getBalanceInfo() throws ExchangeNetworkException, TradingApiException;
 
@@ -180,6 +188,7 @@ public interface TradingApi {
      *                                  bad as happened; you would probably want to wrap this exception in a
      *                                  StrategyException and let the Trading Engine shutdown the bot immediately
      *                                  to prevent unexpected losses.
+     * @since 1.0
      */
     BigDecimal getPercentageOfBuyOrderTakenForExchangeFee(String marketId) throws TradingApiException, ExchangeNetworkException;
 
@@ -199,6 +208,77 @@ public interface TradingApi {
      *                                  bad as happened; you would probably want to wrap this exception in a
      *                                  StrategyException and let the Trading Engine shutdown the bot immediately
      *                                  to prevent unexpected losses.
+     * @since 1.0
      */
     BigDecimal getPercentageOfSellOrderTakenForExchangeFee(String marketId) throws TradingApiException, ExchangeNetworkException;
+
+    /**
+     * Returns the exchange Ticker a given market id.
+     * <p>
+     * Not all exchanges provide the information returned in the Ticker methods - you'll need to check the relevant
+     * Exchange Adapter code/Javadoc and online Exchange API documentation.
+     * <p>
+     * If the exchange does not provide the information, a null value is returned.
+     *
+     * @param marketId the id of the market.
+     * @return the exchange Ticker for a given market.
+     * @throws ExchangeNetworkException if a network error occurred trying to connect to the exchange. This is
+     *                                  implementation specific for each Exchange Adapter - see the documentation for the
+     *                                  adapter you are using. You could retry the API call, or exit from your Trading Strategy
+     *                                  and let the Trading Engine execute your Trading Strategy at the next trade cycle.
+     * @throws TradingApiException      if the API call failed for any reason other than a network error. This means something
+     *                                  bad as happened; you would probably want to wrap this exception in a
+     *                                  StrategyException and let the Trading Engine shutdown the bot immediately
+     *                                  to prevent unexpected losses.
+     * @since 1.1
+     */
+    default Ticker getTicker(String marketId) throws TradingApiException, ExchangeNetworkException {
+
+        return new Ticker() {
+            @Override
+            public BigDecimal getLast() {
+                return null;
+            }
+
+            @Override
+            public BigDecimal getBid() {
+                return null;
+            }
+
+            @Override
+            public BigDecimal getAsk() {
+                return null;
+            }
+
+            @Override
+            public BigDecimal getLow() {
+                return null;
+            }
+
+            @Override
+            public BigDecimal getHigh() {
+                return null;
+            }
+
+            @Override
+            public BigDecimal getOpen() {
+                return null;
+            }
+
+            @Override
+            public BigDecimal getVolume() {
+                return null;
+            }
+
+            @Override
+            public BigDecimal getVwap() {
+                return null;
+            }
+
+            @Override
+            public Long getTimestamp() {
+                return null;
+            }
+        };
+    }
 }

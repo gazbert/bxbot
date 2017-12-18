@@ -28,6 +28,7 @@ import com.gazbert.bxbot.exchange.api.ExchangeConfig;
 import com.gazbert.bxbot.exchanges.trading.api.impl.BalanceInfoImpl;
 import com.gazbert.bxbot.exchanges.trading.api.impl.MarketOrderBookImpl;
 import com.gazbert.bxbot.exchanges.trading.api.impl.MarketOrderImpl;
+import com.gazbert.bxbot.exchanges.trading.api.impl.TickerImpl;
 import com.gazbert.bxbot.trading.api.*;
 import com.google.common.base.MoreObjects;
 import com.google.gson.*;
@@ -205,6 +206,33 @@ public final class TestExchangeAdapter extends AbstractExchangeAdapter implement
         return "Dummy Test Adapter - based on Bitstamp HTTP API v2";
     }
 
+    @Override
+    public Ticker getTicker(String marketId) throws TradingApiException, ExchangeNetworkException {
+
+        try {
+            final ExchangeHttpResponse response = sendPublicRequestToExchange("ticker/" + marketId);
+            LOG.debug(() -> "Ticker response: " + response);
+
+            final BitstampTicker bitstampTicker = gson.fromJson(response.getPayload(), BitstampTicker.class);
+            return new TickerImpl(
+                    bitstampTicker.last,
+                    bitstampTicker.bid,
+                    bitstampTicker.ask,
+                    bitstampTicker.low,
+                    bitstampTicker.high,
+                    bitstampTicker.open,
+                    bitstampTicker.volume,
+                    bitstampTicker.vwap,
+                    bitstampTicker.timestamp);
+
+        } catch (ExchangeNetworkException | TradingApiException e) {
+            throw e;
+        } catch (Exception e) {
+            LOG.error(UNEXPECTED_ERROR_MSG, e);
+            throw new TradingApiException(UNEXPECTED_ERROR_MSG, e);
+        }
+    }
+
     // ------------------------------------------------------------------------------------------------
     //  GSON classes for JSON responses.
     //  See https://www.bitstamp.net/api/
@@ -250,12 +278,13 @@ public final class TestExchangeAdapter extends AbstractExchangeAdapter implement
 
         public BigDecimal high;
         public BigDecimal last;
-        public long timestamp;
+        public Long timestamp;
         public BigDecimal bid;
         public BigDecimal vwap;
         public BigDecimal volume;
         public BigDecimal low;
         public BigDecimal ask;
+        public BigDecimal open;
 
         @Override
         public String toString() {
@@ -268,6 +297,7 @@ public final class TestExchangeAdapter extends AbstractExchangeAdapter implement
                     .add("volume", volume)
                     .add("low", low)
                     .add("ask", ask)
+                    .add("open", open)
                     .toString();
         }
     }

@@ -27,10 +27,7 @@ import com.gazbert.bxbot.exchange.api.AuthenticationConfig;
 import com.gazbert.bxbot.exchange.api.ExchangeAdapter;
 import com.gazbert.bxbot.exchange.api.ExchangeConfig;
 import com.gazbert.bxbot.exchange.api.OptionalConfig;
-import com.gazbert.bxbot.exchanges.trading.api.impl.BalanceInfoImpl;
-import com.gazbert.bxbot.exchanges.trading.api.impl.MarketOrderBookImpl;
-import com.gazbert.bxbot.exchanges.trading.api.impl.MarketOrderImpl;
-import com.gazbert.bxbot.exchanges.trading.api.impl.OpenOrderImpl;
+import com.gazbert.bxbot.exchanges.trading.api.impl.*;
 import com.gazbert.bxbot.trading.api.*;
 import com.google.common.base.MoreObjects;
 import com.google.gson.Gson;
@@ -216,7 +213,7 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
              * time_in_force param optional - defaults to 'GTC' Good til Cancel
              * client_oid param is optional - thia adapter does not use it.
              */
-            final Map<String, String> params = getRequestParamMap();
+            final Map<String, String> params = createRequestParamMap();
 
             if (orderType == OrderType.BUY) {
                 params.put("side", "buy");
@@ -361,7 +358,7 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
 
         try {
 
-            final Map<String, String> params = getRequestParamMap();
+            final Map<String, String> params = createRequestParamMap();
             params.put("level", "2"); //  "2" = Top 50 bids and asks (aggregated)
 
             final ExchangeHttpResponse response = sendPublicRequestToExchange("products/" + marketId + "/book", params);
@@ -489,6 +486,59 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
         return "GDAX REST API v1";
     }
 
+    @Override
+    public Ticker getTicker(String marketId) throws ExchangeNetworkException, TradingApiException {
+
+        try {
+
+            final ExchangeHttpResponse tickerResponse = sendPublicRequestToExchange("products/" + marketId + "/ticker", null);
+            LOG.debug(() -> "Ticker response: " + tickerResponse);
+
+            if (tickerResponse.getStatusCode() == HttpURLConnection.HTTP_OK) {
+                final GdaxTicker gdaxTicker = gson.fromJson(tickerResponse.getPayload(), GdaxTicker.class);
+
+                final TickerImpl ticker = new TickerImpl(
+                        gdaxTicker.price,
+                        gdaxTicker.bid,
+                        gdaxTicker.ask,
+                        null, // low,
+                        null, // high,
+                        null, // open,
+                        gdaxTicker.volume,
+                        null, // vwap - not supplied by GDAX
+                        Date.from(Instant.parse(gdaxTicker.time)).getTime());
+
+                // Now we need to call the stats operation to get the 24hr indicators
+                final ExchangeHttpResponse statsResponse = sendPublicRequestToExchange("products/" + marketId + "/stats", null);
+                LOG.debug(() -> "Stats response: " + statsResponse);
+
+                if (statsResponse.getStatusCode() == HttpURLConnection.HTTP_OK) {
+                    final GdaxStats gdaxStats = gson.fromJson(statsResponse.getPayload(), GdaxStats.class);
+                    ticker.setLow(gdaxStats.low);
+                    ticker.setHigh(gdaxStats.high);
+                    ticker.setOpen(gdaxStats.open);
+                } else {
+                    final String errorMsg = "Failed to get stats from exchange. Details: " + statsResponse;
+                    LOG.error(errorMsg);
+                    throw new TradingApiException(errorMsg);
+                }
+
+                return ticker;
+
+            } else {
+                final String errorMsg = "Failed to get market ticker from exchange. Details: " + tickerResponse;
+                LOG.error(errorMsg);
+                throw new TradingApiException(errorMsg);
+            }
+
+        } catch (ExchangeNetworkException | TradingApiException e) {
+            throw e;
+        } catch (Exception e) {
+            LOG.error(UNEXPECTED_ERROR_MSG, e);
+            throw new TradingApiException(UNEXPECTED_ERROR_MSG, e);
+        }
+    }
+
     // ------------------------------------------------------------------------------------------------
     //  GSON classes for JSON responses.
     //  See https://docs.gdax.com/#api
@@ -572,6 +622,9 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
         public long trade_id;
         public BigDecimal price;
         public BigDecimal size;
+        public BigDecimal bid;
+        public BigDecimal ask;
+        public BigDecimal volume;
         public String time; // e.g. "2015-10-14T19:19:36.604735Z"
 
         @Override
@@ -580,7 +633,35 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
                     .add("trade_id", trade_id)
                     .add("price", price)
                     .add("size", size)
+                    .add("bid", bid)
+                    .add("ask", ask)
+                    .add("volume", volume)
                     .add("time", time)
+                    .toString();
+        }
+    }
+
+    /**
+     * GSON class for GDAX '/products/<product-id>/stats' API call response.
+     */
+    private static class GdaxStats {
+
+        public BigDecimal open;
+        public BigDecimal high;
+        public BigDecimal low;
+        public BigDecimal volume;
+        public BigDecimal last;
+        public String volume_30day;
+
+        @Override
+        public String toString() {
+            return MoreObjects.toStringHelper(this)
+                    .add("open", open)
+                    .add("high", high)
+                    .add("low", low)
+                    .add("volume", volume)
+                    .add("last", last)
+                    .add("volume_30day", volume_30day)
                     .toString();
         }
     }
@@ -627,7 +708,7 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
             throws ExchangeNetworkException, TradingApiException {
 
         if (params == null) {
-            params = new HashMap<>(); // no params, so empty query string
+            params = createRequestParamMap(); // no params, so empty query string
         }
 
         // Request headers required by Exchange
@@ -722,7 +803,7 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
 
             if (params == null) {
                 // create empty map for non-param API calls
-                params = new HashMap<>();
+                params = createRequestParamMap();
             }
 
             // Get UNIX time in secs
@@ -784,7 +865,7 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
             final String signature = DatatypeConverter.printBase64Binary(mac.doFinal());
 
             // Request headers required by Exchange
-            final Map<String, String> requestHeaders = getHeaderParamMap();
+            final Map<String, String> requestHeaders = createHeaderParamMap();
             requestHeaders.put("Content-Type", "application/json");
             requestHeaders.put("CB-ACCESS-KEY", key);
             requestHeaders.put("CB-ACCESS-SIGN", signature);
@@ -869,14 +950,14 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
     /*
      * Hack for unit-testing request params passed to transport layer.
      */
-    private Map<String, String> getRequestParamMap() {
+    private Map<String, String> createRequestParamMap() {
         return new HashMap<>();
     }
 
     /*
      * Hack for unit-testing header params passed to transport layer.
      */
-    private Map<String, String> getHeaderParamMap() {
+    private Map<String, String> createHeaderParamMap() {
         return new HashMap<>();
     }
 

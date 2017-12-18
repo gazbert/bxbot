@@ -27,10 +27,7 @@ import com.gazbert.bxbot.exchange.api.AuthenticationConfig;
 import com.gazbert.bxbot.exchange.api.ExchangeAdapter;
 import com.gazbert.bxbot.exchange.api.ExchangeConfig;
 import com.gazbert.bxbot.exchange.api.OptionalConfig;
-import com.gazbert.bxbot.exchanges.trading.api.impl.BalanceInfoImpl;
-import com.gazbert.bxbot.exchanges.trading.api.impl.MarketOrderBookImpl;
-import com.gazbert.bxbot.exchanges.trading.api.impl.MarketOrderImpl;
-import com.gazbert.bxbot.exchanges.trading.api.impl.OpenOrderImpl;
+import com.gazbert.bxbot.exchanges.trading.api.impl.*;
 import com.gazbert.bxbot.trading.api.*;
 import com.google.common.base.MoreObjects;
 import com.google.gson.Gson;
@@ -266,7 +263,7 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
                 getBalanceInfo();
             }
 
-            final Map<String, String> params = getRequestParamMap();
+            final Map<String, String> params = createRequestParamMap();
             params.put("type", "limit");
 
             // note we need to limit amount to 4 decimal places else exchange will barf
@@ -391,7 +388,7 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
                 getBalanceInfo();
             }
 
-            final Map<String, String> params = getRequestParamMap();
+            final Map<String, String> params = createRequestParamMap();
             params.put("status", "open"); // we only want open orders
 
             response = sendAuthenticatedRequestToExchange(
@@ -560,7 +557,7 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
 
         try {
 
-            final Map<String, String> params = getRequestParamMap();
+            final Map<String, String> params = createRequestParamMap();
             params.put("userId", userId);
 
             response = sendAuthenticatedRequestToExchange("GET", "wallets", params);
@@ -637,6 +634,53 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
     @Override
     public String getImplName() {
         return "itBit REST API v1";
+    }
+
+
+    @Override
+    public Ticker getTicker(String marketId) throws TradingApiException, ExchangeNetworkException {
+
+        ExchangeHttpResponse response = null;
+
+        try {
+
+            response = sendPublicRequestToExchange("markets/" + marketId + "/ticker");
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Ticker response: " + response);
+            }
+
+            if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
+
+                final ItBitTicker itBitTicker = gson.fromJson(response.getPayload(), ItBitTicker.class);
+                return new TickerImpl(
+                        itBitTicker.lastPrice,
+                        itBitTicker.bid,
+                        itBitTicker.ask,
+                        itBitTicker.low24h,
+                        itBitTicker.high24h,
+                        itBitTicker.openToday,
+                        itBitTicker.volume24h,
+                        itBitTicker.vwap24h,
+                        Date.from(Instant.parse(itBitTicker.serverTimeUTC)).getTime());
+            } else {
+                final String errorMsg = "Failed to get market ticker from exchange. Details: " + response;
+                LOG.error(errorMsg);
+                throw new TradingApiException(errorMsg);
+            }
+
+        } catch (ExchangeNetworkException | TradingApiException e) {
+            throw e;
+        } catch (Exception e) {
+
+            if (isExchangeUndergoingMaintenance(response) && keepAliveDuringMaintenance) {
+                LOG.warn(() -> UNDER_MAINTENANCE_WARNING_MESSAGE);
+                throw new ExchangeNetworkException(UNDER_MAINTENANCE_WARNING_MESSAGE);
+            }
+
+            final String unexpectedErrorMsg = UNEXPECTED_ERROR_MSG + (response == null ? "NULL RESPONSE" : response);
+            LOG.error(unexpectedErrorMsg, e);
+            throw new TradingApiException(unexpectedErrorMsg, e);
+        }
     }
 
     // ------------------------------------------------------------------------------------------------
@@ -755,9 +799,9 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
         public BigDecimal bidAmt;
         public BigDecimal ask;
         public BigDecimal askAmt;
-        public BigDecimal lastPrice; // we only wants this precious
+        public BigDecimal lastPrice;
         public BigDecimal lastAmt;
-        public BigDecimal lastvolume24hAmt;
+        public BigDecimal volume24h;
         public BigDecimal volumeToday;
         public BigDecimal high24h;
         public BigDecimal low24h;
@@ -778,7 +822,7 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
                     .add("askAmt", askAmt)
                     .add("lastPrice", lastPrice)
                     .add("lastAmt", lastAmt)
-                    .add("lastvolume24hAmt", lastvolume24hAmt)
+                    .add("volume24h", volume24h)
                     .add("volumeToday", volumeToday)
                     .add("high24h", high24h)
                     .add("low24h", low24h)
@@ -849,7 +893,7 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
 
         try {
             final URL url = new URL(PUBLIC_API_BASE_URL + apiMethod);
-            return makeNetworkRequest(url, "GET", null, new HashMap<>());
+            return makeNetworkRequest(url, "GET", null, createHeaderParamMap());
 
         } catch (MalformedURLException e) {
             final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
@@ -894,7 +938,7 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
 
             if (params == null) {
                 // create empty map for non-param API calls
-                params = new HashMap<>();
+                params = createRequestParamMap();
             }
 
             /*
@@ -994,7 +1038,7 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
             final String signature = DatatypeConverter.printBase64Binary(mac.doFinal());
 
             // Request headers required by Exchange
-            final Map<String, String> requestHeaders = getHeaderParamMap();
+            final Map<String, String> requestHeaders = createHeaderParamMap();
             requestHeaders.put("Content-Type", "application/json");
 
             // Add Authorization header
@@ -1105,14 +1149,14 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
     /*
      * Hack for unit-testing map params passed to transport layer.
      */
-    private Map<String, String> getRequestParamMap() {
+    private Map<String, String> createRequestParamMap() {
         return new HashMap<>();
     }
 
     /*
      * Hack for unit-testing header params passed to transport layer.
      */
-    private Map<String, String> getHeaderParamMap() {
+    private Map<String, String> createHeaderParamMap() {
         return new HashMap<>();
     }
 

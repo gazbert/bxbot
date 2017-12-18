@@ -27,10 +27,7 @@ import com.gazbert.bxbot.exchange.api.AuthenticationConfig;
 import com.gazbert.bxbot.exchange.api.ExchangeAdapter;
 import com.gazbert.bxbot.exchange.api.ExchangeConfig;
 import com.gazbert.bxbot.exchange.api.OptionalConfig;
-import com.gazbert.bxbot.exchanges.trading.api.impl.BalanceInfoImpl;
-import com.gazbert.bxbot.exchanges.trading.api.impl.MarketOrderBookImpl;
-import com.gazbert.bxbot.exchanges.trading.api.impl.MarketOrderImpl;
-import com.gazbert.bxbot.exchanges.trading.api.impl.OpenOrderImpl;
+import com.gazbert.bxbot.exchanges.trading.api.impl.*;
 import com.gazbert.bxbot.trading.api.*;
 import com.google.common.base.MoreObjects;
 import com.google.gson.*;
@@ -281,11 +278,11 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
     @Override
     public MarketOrderBook getMarketOrders(String marketId) throws TradingApiException, ExchangeNetworkException {
 
-        ExchangeHttpResponse response = null;
+        ExchangeHttpResponse response;
 
         try {
 
-            final Map<String, String> params = getRequestParamMap();
+            final Map<String, String> params = createRequestParamMap();
             params.put("pair", marketId);
 
             response = sendPublicRequestToExchange("Depth", params);
@@ -460,7 +457,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
 
         try {
 
-            final Map<String, String> params = getRequestParamMap();
+            final Map<String, String> params = createRequestParamMap();
             params.put("pair", marketId);
 
             if (orderType == OrderType.BUY) {
@@ -533,7 +530,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
         ExchangeHttpResponse response = null;
 
         try {
-            final Map<String, String> params = getRequestParamMap();
+            final Map<String, String> params = createRequestParamMap();
             params.put("txid", orderId);
 
             response = sendAuthenticatedRequestToExchange("CancelOrder", params);
@@ -600,7 +597,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
 
         try {
 
-            final Map<String, String> params = getRequestParamMap();
+            final Map<String, String> params = createRequestParamMap();
             params.put("pair", marketId);
 
             response = sendPublicRequestToExchange("Ticker", params);
@@ -621,11 +618,8 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
                     // Assume we'll always get something here if errors array is empty; else blow fast wih NPE
                     final KrakenTickerResult tickerResult = (KrakenTickerResult) krakenResponse.result;
 
-                    // We'll always get something here - else we'd have barfed in KrakenTickerResultDeserializer
-                    final Map<String, List<String>> tickerParams = tickerResult.entrySet().stream().findFirst().get().getValue();
-
                     // 'c' key into map is the last market price: last trade closed array(<price>, <lot volume>)
-                    return new BigDecimal(tickerParams.get("c").get(0));
+                    return new BigDecimal(tickerResult.get("c"));
 
                 } else {
 
@@ -740,6 +734,71 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
         return "Kraken API v1";
     }
 
+    @Override
+    public Ticker getTicker(String marketId) throws TradingApiException, ExchangeNetworkException {
+
+        ExchangeHttpResponse response;
+
+        try {
+
+            final Map<String, String> params = createRequestParamMap();
+            params.put("pair", marketId);
+
+            response = sendPublicRequestToExchange("Ticker", params);
+
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Ticker response: " + response);
+            }
+
+            if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
+
+                final Type resultType = new TypeToken<KrakenResponse<KrakenTickerResult>>() {
+                }.getType();
+                final KrakenResponse krakenResponse = gson.fromJson(response.getPayload(), resultType);
+
+                final List<String> errors = krakenResponse.error;
+                if (errors == null || errors.isEmpty()) {
+
+                    // Assume we'll always get something here if errors array is empty; else blow fast wih NPE
+                    final KrakenTickerResult tickerResult = (KrakenTickerResult) krakenResponse.result;
+
+                    // ouch!
+                    return new TickerImpl(
+                            new BigDecimal(tickerResult.get("c")), // last trade
+                            new BigDecimal(tickerResult.get("b")), // bid
+                            new BigDecimal(tickerResult.get("a")), // ask
+                            new BigDecimal(tickerResult.get("l")), // low 24h
+                            new BigDecimal(tickerResult.get("h")), // high 24hr
+                            new BigDecimal(tickerResult.get("o")), // open
+                            new BigDecimal(tickerResult.get("v")), // volume 24hr
+                            new BigDecimal(tickerResult.get("p")), // vwap 24hr
+                            null);                                 // timestamp not supplied by Kraken
+                } else {
+
+                    if (isExchangeUndergoingMaintenance(response) && keepAliveDuringMaintenance) {
+                        LOG.warn(() -> UNDER_MAINTENANCE_WARNING_MESSAGE);
+                        throw new ExchangeNetworkException(UNDER_MAINTENANCE_WARNING_MESSAGE);
+                    }
+
+                    final String errorMsg = FAILED_TO_GET_TICKER + response;
+                    LOG.error(errorMsg);
+                    throw new TradingApiException(errorMsg);
+                }
+
+            } else {
+                final String errorMsg = FAILED_TO_GET_TICKER + response;
+                LOG.error(errorMsg);
+                throw new TradingApiException(errorMsg);
+            }
+
+        } catch (ExchangeNetworkException | TradingApiException e) {
+            throw e;
+        } catch (Exception e) {
+            LOG.error(UNEXPECTED_ERROR_MSG, e);
+            throw new TradingApiException(UNEXPECTED_ERROR_MSG, e);
+        }
+    }
+
     // ------------------------------------------------------------------------------------------------
     //  GSON classes for JSON responses.
     //  See https://www.kraken.com/en-gb/help/api
@@ -793,7 +852,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
     /**
      * GSON class that wraps a Ticker API call result.
      */
-    private static class KrakenTickerResult extends HashMap<String, Map<String, List<String>>> {
+    private static class KrakenTickerResult extends HashMap<String, String> {
     }
 
     /**
@@ -968,28 +1027,59 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
                 final JsonObject jsonObject = json.getAsJsonObject();
 
                 // assume 1 (KV) entry as per API spec - the K is the market id, the V is a Map of ticker params
-                final String marketId = jsonObject.entrySet().iterator().next().getKey();
                 final JsonElement tickerParams = jsonObject.entrySet().iterator().next().getValue();
 
                 final JsonObject tickerMap = tickerParams.getAsJsonObject();
                 for (Map.Entry<String, JsonElement> jsonTickerParam : tickerMap.entrySet()) {
 
                     final String key = jsonTickerParam.getKey();
-                    if (key.equals("c")) {
-                        final List<String> lastTradeDetails = context.deserialize(jsonTickerParam.getValue(), List.class);
-                        final Map<String, List<String>> lastTradeMap = new HashMap<>();
-                        lastTradeMap.put("c", lastTradeDetails);
-                        krakenTickerResult.put(marketId, lastTradeMap);
+                    switch (key) {
+                        case "c":
+                            final List<String> lastTradeDetails = context.deserialize(jsonTickerParam.getValue(), List.class);
+                            krakenTickerResult.put("c", lastTradeDetails.get(0));
+                            break;
 
-                        // got what we want
-                        return krakenTickerResult;
+                        case "b":
+                            final List<String> bidDetails = context.deserialize(jsonTickerParam.getValue(), List.class);
+                            krakenTickerResult.put("b", bidDetails.get(0));
+                            break;
+
+                        case "a":
+                            final List<String> askDetails = context.deserialize(jsonTickerParam.getValue(), List.class);
+                            krakenTickerResult.put("a", askDetails.get(0));
+                            break;
+
+                        case "l":
+                            final List<String> lowDetails = context.deserialize(jsonTickerParam.getValue(), List.class);
+                            krakenTickerResult.put("l", lowDetails.get(1));
+                            break;
+
+                        case "h":
+                            final List<String> highDetails = context.deserialize(jsonTickerParam.getValue(), List.class);
+                            krakenTickerResult.put("h", highDetails.get(1));
+                            break;
+
+                        case "o":
+                            final String openDetails = context.deserialize(jsonTickerParam.getValue(), String.class);
+                            krakenTickerResult.put("o", openDetails);
+                            break;
+
+                        case "v":
+                            final List<String> volumeDetails = context.deserialize(jsonTickerParam.getValue(), List.class);
+                            krakenTickerResult.put("v", volumeDetails.get(1));
+                            break;
+
+                        case "p":
+                            final List<String> vWapDetails = context.deserialize(jsonTickerParam.getValue(), List.class);
+                            krakenTickerResult.put("p", vWapDetails.get(1));
+                            break;
+
+                        default:
+                            LOG.warn("Received unexpected Ticker param - ignoring: " + key);
                     }
                 }
             }
-
-            // bad news if we get here!
-            throw new IllegalArgumentException("KrakenTickerResultDeserializer failed to extract Last Market Price from" +
-                    " KrakenTickerResult. The 'c' parameter was missing in Ticker result map. ");
+            return krakenTickerResult;
         }
     }
 
@@ -1010,11 +1100,11 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
             throws ExchangeNetworkException, TradingApiException {
 
         if (params == null) {
-            params = getRequestParamMap(); // no params, so empty query string
+            params = createRequestParamMap(); // no params, so empty query string
         }
 
         // Request headers required by Exchange
-        final Map<String, String> requestHeaders = new HashMap<>();
+        final Map<String, String> requestHeaders = createHeaderParamMap();
 
         try {
 
@@ -1083,7 +1173,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
 
             if (params == null) {
                 // create empty map for non param API calls, e.g. "trades"
-                params = new HashMap<>();
+                params = createRequestParamMap();
             }
 
             // The nonce is required by Kraken in every request.
@@ -1124,7 +1214,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
             final String signature = Base64.getEncoder().encodeToString(mac.doFinal());
 
             // Request headers required by Exchange
-            final Map<String, String> requestHeaders = getHeaderParamMap();
+            final Map<String, String> requestHeaders = createHeaderParamMap();
             requestHeaders.put("Content-Type", "application/x-www-form-urlencoded");
             requestHeaders.put("API-Key", key);
             requestHeaders.put("API-Sign", signature);
@@ -1224,14 +1314,14 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
     /*
      * Hack for unit-testing map params passed to transport layer.
      */
-    private Map<String, String> getRequestParamMap() {
+    private Map<String, String> createRequestParamMap() {
         return new HashMap<>();
     }
 
     /*
      * Hack for unit-testing header params passed to transport layer.
      */
-    private Map<String, String> getHeaderParamMap() {
+    private Map<String, String> createHeaderParamMap() {
         return new HashMap<>();
     }
 

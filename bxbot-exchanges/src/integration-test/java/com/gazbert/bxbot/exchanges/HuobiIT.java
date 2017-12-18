@@ -44,9 +44,13 @@ import static org.junit.Assert.assertTrue;
 /**
  * Basic integration testing with Huobi exchange.
  *
+ * Deprecated.
+ * Due to regulatory requirements from Chinese authorities Huobi ceased trading activity on October 31 2017.
+ *
  * @author gazbert
  */
-@Ignore("@gazbert - 10 Dec 2017 - Disabled tests as Huobi API is still down: http://api.huobi.com/usdmarket/ticker_btc_json.js returns 404...")
+@Deprecated
+@Ignore("@gazbert - 10 Dec 2017 - Disabled tests as Huobi API is permanently down: http://api.huobi.com/usdmarket/ticker_btc_json.js returns 404...")
 public class HuobiIT {
 
     // Canned test data
