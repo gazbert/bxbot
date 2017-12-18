@@ -744,6 +744,76 @@ public class TestBitfinexExchangeAdapter {
     }
 
     // ------------------------------------------------------------------------------------------------
+    //  Get Ticker tests
+    // ------------------------------------------------------------------------------------------------
+
+    @Test
+    public void testGettingTickerSuccessfully() throws Exception {
+
+        // Load the canned response from the exchange
+        final byte[] encoded = Files.readAllBytes(Paths.get(PUB_TICKER_JSON_RESPONSE));
+        final AbstractExchangeAdapter.ExchangeHttpResponse exchangeResponse =
+                new AbstractExchangeAdapter.ExchangeHttpResponse(200, "OK", new String(encoded, StandardCharsets.UTF_8));
+
+        // Partial mock so we do not send stuff down the wire
+        final BitfinexExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
+                BitfinexExchangeAdapter.class, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD);
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD, PUB_TICKER + "/" + MARKET_ID).
+                andReturn(exchangeResponse);
+
+        PowerMock.replayAll();
+        exchangeAdapter.init(exchangeConfig);
+
+        final Ticker ticker = exchangeAdapter.getTicker(MARKET_ID);
+        assertTrue(ticker.getLast().compareTo(new BigDecimal("236.07")) == 0);
+        assertTrue(ticker.getAsk().compareTo(new BigDecimal("236.3")) == 0);
+        assertTrue(ticker.getBid().compareTo(new BigDecimal("236.1")) == 0);
+        assertTrue(ticker.getHigh().compareTo(new BigDecimal("241.59")) == 0);
+        assertTrue(ticker.getLow().compareTo(new BigDecimal("235.51")) == 0);
+        assertNull(ticker.getOpen()); // vwap not supplied by finex
+        assertTrue(ticker.getVolume().compareTo(new BigDecimal("8002.20183869")) == 0);
+        assertNull(ticker.getVwap()); // vwap not supplied by finex
+        assertTrue(ticker.getTimestamp() == 1442080762L);
+
+        PowerMock.verifyAll();
+    }
+
+    @Test(expected = ExchangeNetworkException.class)
+    public void testGettingTickerHandlesExchangeNetworkException() throws Exception {
+
+        // Partial mock so we do not send stuff down the wire
+        final BitfinexExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
+                BitfinexExchangeAdapter.class, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD);
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD, PUB_TICKER + "/" + MARKET_ID).
+                andThrow(new ExchangeNetworkException(" You're born, you live and you die. There are no due overs," +
+                        " no second chances to make things right if you frak them up the first time, " +
+                        "not in this life anyway."));
+
+        PowerMock.replayAll();
+        exchangeAdapter.init(exchangeConfig);
+
+        exchangeAdapter.getTicker(MARKET_ID);
+        PowerMock.verifyAll();
+    }
+
+    @Test(expected = TradingApiException.class)
+    public void testGettingTickerHandlesUnexpectedException() throws Exception {
+
+        // Partial mock so we do not send stuff down the wire
+        final BitfinexExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
+                BitfinexExchangeAdapter.class, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD);
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD, PUB_TICKER + "/" + MARKET_ID).
+                andThrow(new IllegalArgumentException("Like I said, you make your choices and you live with them " +
+                        "and in the end you are those choices."));
+
+        PowerMock.replayAll();
+        exchangeAdapter.init(exchangeConfig);
+
+        exchangeAdapter.getLatestMarketPrice(MARKET_ID);
+        PowerMock.verifyAll();
+    }
+
+    // ------------------------------------------------------------------------------------------------
     //  Non Exchange visiting tests
     // ------------------------------------------------------------------------------------------------
 

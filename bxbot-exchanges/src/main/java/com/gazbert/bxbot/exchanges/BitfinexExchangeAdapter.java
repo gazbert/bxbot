@@ -26,10 +26,7 @@ package com.gazbert.bxbot.exchanges;
 import com.gazbert.bxbot.exchange.api.AuthenticationConfig;
 import com.gazbert.bxbot.exchange.api.ExchangeAdapter;
 import com.gazbert.bxbot.exchange.api.ExchangeConfig;
-import com.gazbert.bxbot.exchanges.trading.api.impl.BalanceInfoImpl;
-import com.gazbert.bxbot.exchanges.trading.api.impl.MarketOrderBookImpl;
-import com.gazbert.bxbot.exchanges.trading.api.impl.MarketOrderImpl;
-import com.gazbert.bxbot.exchanges.trading.api.impl.OpenOrderImpl;
+import com.gazbert.bxbot.exchanges.trading.api.impl.*;
 import com.gazbert.bxbot.trading.api.*;
 import com.google.common.base.MoreObjects;
 import com.google.gson.Gson;
@@ -464,6 +461,35 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter imple
     @Override
     public String getImplName() {
         return "Bitfinex API v1";
+    }
+
+
+    @Override
+    public Ticker getTicker(String marketId) throws TradingApiException, ExchangeNetworkException {
+
+        try {
+            final ExchangeHttpResponse response = sendPublicRequestToExchange("pubticker/" + marketId);
+            LOG.debug(() -> "Latest Market Price response: " + response);
+
+            final BitfinexTicker ticker = gson.fromJson(response.getPayload(), BitfinexTicker.class);
+            return new TickerImpl(
+                    ticker.last_price,
+                    ticker.bid,
+                    ticker.ask,
+                    ticker.low,
+                    ticker.high,
+                    null, // open not supplied by Bitfinex
+                    ticker.volume,
+                    null, // vwap not supplied by Bitfinex
+                    // for some reason 'finex adds decimal point to long date value, e.g. "1513631756.0798516"  - grrrr!
+                    Date.from(Instant.ofEpochMilli(Integer.parseInt(ticker.timestamp.split("\\.")[0]))).getTime());
+
+        } catch (ExchangeNetworkException | TradingApiException e) {
+            throw e;
+        } catch (Exception e) {
+            LOG.error(UNEXPECTED_ERROR_MSG, e);
+            throw new TradingApiException(UNEXPECTED_ERROR_MSG, e);
+        }
     }
 
     // ------------------------------------------------------------------------------------------------
