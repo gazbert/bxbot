@@ -27,10 +27,7 @@ import com.gazbert.bxbot.exchange.api.AuthenticationConfig;
 import com.gazbert.bxbot.exchange.api.ExchangeAdapter;
 import com.gazbert.bxbot.exchange.api.ExchangeConfig;
 import com.gazbert.bxbot.exchange.api.OptionalConfig;
-import com.gazbert.bxbot.exchanges.trading.api.impl.BalanceInfoImpl;
-import com.gazbert.bxbot.exchanges.trading.api.impl.MarketOrderBookImpl;
-import com.gazbert.bxbot.exchanges.trading.api.impl.MarketOrderImpl;
-import com.gazbert.bxbot.exchanges.trading.api.impl.OpenOrderImpl;
+import com.gazbert.bxbot.exchanges.trading.api.impl.*;
 import com.gazbert.bxbot.trading.api.*;
 import com.google.common.base.MoreObjects;
 import com.google.gson.Gson;
@@ -456,6 +453,37 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
     @Override
     public String getImplName() {
         return "OKCoin REST Spot Trading API v1";
+    }
+
+
+    @Override
+    public Ticker getTicker(String marketId) throws ExchangeNetworkException, TradingApiException {
+
+        try {
+            final Map<String, String> params = createRequestParamMap();
+            params.put("symbol", marketId);
+
+            final ExchangeHttpResponse response = sendPublicRequestToExchange("ticker.do", params);
+            LOG.debug(() -> "Latest Market Price response: " + response);
+
+            final OKCoinTickerWrapper tickerWrapper = gson.fromJson(response.getPayload(), OKCoinTickerWrapper.class);
+            return new TickerImpl(
+                    tickerWrapper.ticker.last,
+                    tickerWrapper.ticker.buy,
+                    tickerWrapper.ticker.sell,
+                    tickerWrapper.ticker.low,
+                    tickerWrapper.ticker.high,
+                    null, // open not supplied by OKCoin
+                    tickerWrapper.ticker.vol,
+                    null, // vwap not supplied by OKCoin
+                    Long.valueOf(tickerWrapper.date));
+
+        } catch (ExchangeNetworkException | TradingApiException e) {
+            throw e;
+        } catch (Exception e) {
+            LOG.error(UNEXPECTED_ERROR_MSG, e);
+            throw new TradingApiException(UNEXPECTED_ERROR_MSG, e);
+        }
     }
 
     // ------------------------------------------------------------------------------------------------

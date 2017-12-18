@@ -728,6 +728,84 @@ public class TestOkcoinExchangeAdapter {
     }
 
     // ------------------------------------------------------------------------------------------------
+    //  Get Ticker tests
+    // ------------------------------------------------------------------------------------------------
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void testGettingTickerSuccessfully() throws Exception {
+
+        // Load the canned response from the exchange
+        final byte[] encoded = Files.readAllBytes(Paths.get(TICKER_JSON_RESPONSE));
+        final AbstractExchangeAdapter.ExchangeHttpResponse exchangeResponse =
+                new AbstractExchangeAdapter.ExchangeHttpResponse(200, "OK", new String(encoded, StandardCharsets.UTF_8));
+
+        // Mock out param map so we can assert the contents passed to the transport layer are what we expect.
+        final Map<String, String> requestParamMap = PowerMock.createMock(Map.class);
+        expect(requestParamMap.put("symbol", MARKET_ID)).andStubReturn(null);
+
+        // Partial mock so we do not send stuff down the wire
+        final OkCoinExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
+                OkCoinExchangeAdapter.class, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD,
+                MOCKED_CREATE_REQUEST_PARAM_MAP_METHOD);
+
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_CREATE_REQUEST_PARAM_MAP_METHOD).andReturn(requestParamMap);
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD, eq(TICKER),
+                eq(requestParamMap)).andReturn(exchangeResponse);
+
+        PowerMock.replayAll();
+        exchangeAdapter.init(exchangeConfig);
+
+        final Ticker ticker = exchangeAdapter.getTicker(MARKET_ID);
+        assertTrue(ticker.getLast().compareTo(new BigDecimal("231.35")) == 0);
+        assertTrue(ticker.getAsk().compareTo(new BigDecimal("231.4")) == 0);
+        assertTrue(ticker.getBid().compareTo(new BigDecimal("231.32")) == 0);
+        assertTrue(ticker.getHigh().compareTo(new BigDecimal("233.6")) == 0);
+        assertTrue(ticker.getLow().compareTo(new BigDecimal("231.01")) == 0);
+        assertTrue(ticker.getOpen() == null); // open not supplied by OKCoin
+        assertTrue(ticker.getVolume().compareTo(new BigDecimal("5465.046")) == 0);
+        assertTrue(ticker.getVwap() == null); // vwap not supplied by OKCoin
+        assertTrue(ticker.getTimestamp() == 1442673698L);
+
+        PowerMock.verifyAll();
+    }
+
+    @Test(expected = ExchangeNetworkException.class)
+    public void testGettingTickerHandlesExchangeNetworkException() throws Exception {
+
+        // Partial mock so we do not send stuff down the wire
+        final OkCoinExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
+                OkCoinExchangeAdapter.class, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD);
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD, eq(TICKER),
+                anyObject(Map.class)).
+                andThrow(new ExchangeNetworkException("Where the hell can I get eyes like that?"));
+
+        PowerMock.replayAll();
+        exchangeAdapter.init(exchangeConfig);
+
+        exchangeAdapter.getTicker(MARKET_ID);
+        PowerMock.verifyAll();
+    }
+
+    @Test(expected = TradingApiException.class)
+    public void testGettingTickerHandlesUnexpectedException() throws Exception {
+
+        // Partial mock so we do not send stuff down the wire
+        final OkCoinExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
+                OkCoinExchangeAdapter.class, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD);
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD, eq(TICKER),
+                anyObject(Map.class)).
+                andThrow(new IllegalArgumentException("All you people are so scared of me. " +
+                        "Most days I'd take that as a compliment. But it ain't me you gotta worry about now."));
+
+        PowerMock.replayAll();
+        exchangeAdapter.init(exchangeConfig);
+
+        exchangeAdapter.getTicker(MARKET_ID);
+        PowerMock.verifyAll();
+    }
+
+    // ------------------------------------------------------------------------------------------------
     //  Non Exchange visiting tests
     // ------------------------------------------------------------------------------------------------
 
