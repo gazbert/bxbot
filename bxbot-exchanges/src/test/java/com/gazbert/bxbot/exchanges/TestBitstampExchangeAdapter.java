@@ -754,7 +754,6 @@ public class TestBitstampExchangeAdapter {
         exchangeAdapter.init(exchangeConfig);
 
         final Ticker ticker = exchangeAdapter.getTicker(MARKET_ID);
-
         assertTrue(ticker.getLast().compareTo(new BigDecimal("230.33")) == 0);
         assertTrue(ticker.getAsk().compareTo(new BigDecimal("230.69")) == 0);
         assertTrue(ticker.getBid().compareTo(new BigDecimal("230.34")) == 0);

@@ -29,8 +29,7 @@ import com.gazbert.bxbot.exchange.api.ExchangeConfig;
 import com.gazbert.bxbot.exchange.api.NetworkConfig;
 import com.gazbert.bxbot.trading.api.BalanceInfo;
 import com.gazbert.bxbot.trading.api.MarketOrderBook;
-import com.gazbert.bxbot.trading.api.OpenOrder;
-import com.gazbert.bxbot.trading.api.OrderType;
+import com.gazbert.bxbot.trading.api.Ticker;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -40,9 +39,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.easymock.EasyMock.*;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * Basic integration testing with Bitfinex exchange.
@@ -104,6 +101,17 @@ public class BitfinexIT {
         final MarketOrderBook orderBook = exchangeAdapter.getMarketOrders(MARKET_ID);
         assertFalse(orderBook.getBuyOrders().isEmpty());
         assertFalse(orderBook.getSellOrders().isEmpty());
+
+        final Ticker ticker = exchangeAdapter.getTicker(MARKET_ID);
+        assertNotNull(ticker.getLast());
+        assertNotNull(ticker.getAsk());
+        assertNotNull(ticker.getBid());
+        assertNotNull(ticker.getHigh());
+        assertNotNull(ticker.getLow());
+        assertNull(ticker.getOpen()); // vwap not supplied by finex
+        assertNotNull(ticker.getVolume());
+        assertNull(ticker.getVwap()); // vwap not supplied by finex
+        assertNotNull(ticker.getTimestamp());
 
         verify(authenticationConfig, networkConfig, exchangeConfig);
     }
