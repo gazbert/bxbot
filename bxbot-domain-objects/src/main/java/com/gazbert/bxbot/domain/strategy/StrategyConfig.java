@@ -40,6 +40,7 @@ public class StrategyConfig {
     private String name;
     private String description;
     private String className;
+    private String beanName;
     private Map<String, String> configItems = new HashMap<>();
 
 
@@ -52,14 +53,16 @@ public class StrategyConfig {
         this.name = other.name;
         this.description = other.description;
         this.className = other.className;
+        this.beanName = other.beanName;
         this.configItems = other.configItems;
     }
 
-    public StrategyConfig(String id, String name, String description, String className, Map<String, String> configItems) {
+    public StrategyConfig(String id, String name, String description, String className, String beanName, Map<String, String> configItems) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.className = className;
+        this.beanName = beanName;
         this.configItems = configItems;
     }
 
@@ -95,6 +98,14 @@ public class StrategyConfig {
         this.className = className;
     }
 
+    public String getBeanName() {
+        return beanName;
+    }
+
+    public void setBeanName(String beanName) {
+        this.beanName = beanName;
+    }
+
     public Map<String, String> getConfigItems() {
         return configItems;
     }
@@ -123,6 +134,7 @@ public class StrategyConfig {
                 .add("name", name)
                 .add("description", description)
                 .add("className", className)
+                .add("beanName", beanName)
                 .add("configItems", configItems)
                 .toString();
     }

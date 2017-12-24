@@ -67,11 +67,13 @@ public class TestStrategyConfigRepository {
     private static final String STRAT_NAME_1 = "MACD Long Position Algo";
     private static final String STRAT_DESCRIPTION_1 = "Uses MACD as indicator and takes long position in base currency.";
     private static final String STRAT_CLASSNAME_1 = "com.gazbert.nova.algos.MacdLongBase";
+    private static final String STRAT_BEANAME_1 = "macdLongBase";
 
     private static final String STRAT_ID_2 = "long-scalper";
     private static final String STRAT_NAME_2 = "Long Position Scalper Algo";
     private static final String STRAT_DESCRIPTION_2 = "Scalps and goes long...";
     private static final String STRAT_CLASSNAME_2 = "com.gazbert.nova.algos.LongScalper";
+    private static final String STRAT_BEANAME_2 = "longScalper";
 
     private static final String NEW_STRAT_NAME = "Short Position Scalper Algo";
     private static final String NEW_STRAT_DESCRIPTION = "Scalps and goes short...";
@@ -385,20 +387,20 @@ public class TestStrategyConfigRepository {
         final Map<String, String> configItems = new HashMap<>();
         configItems.put(BUY_PRICE_CONFIG_ITEM_KEY, BUY_PRICE_CONFIG_ITEM_VALUE);
         configItems.put(AMOUNT_TO_BUY_CONFIG_ITEM_KEY, AMOUNT_TO_BUY_CONFIG_ITEM_VALUE);
-        return new StrategyConfig(STRAT_ID_1, STRAT_NAME_1, STRAT_DESCRIPTION_1, STRAT_CLASSNAME_1, configItems);
+        return new StrategyConfig(STRAT_ID_1, STRAT_NAME_1, STRAT_DESCRIPTION_1, STRAT_CLASSNAME_1, STRAT_BEANAME_1, configItems);
     }
 
     private static StrategyConfig someNewExternalStrategyConfig() {
         final Map<String, String> configItems = new HashMap<>();
         configItems.put(BUY_PRICE_CONFIG_ITEM_KEY, BUY_PRICE_CONFIG_ITEM_VALUE);
         configItems.put(AMOUNT_TO_BUY_CONFIG_ITEM_KEY, AMOUNT_TO_BUY_CONFIG_ITEM_VALUE);
-        return new StrategyConfig(null, NEW_STRAT_NAME, NEW_STRAT_DESCRIPTION, NEW_STRAT_CLASSNAME, configItems);
+        return new StrategyConfig(null, NEW_STRAT_NAME, NEW_STRAT_DESCRIPTION, NEW_STRAT_CLASSNAME, STRAT_BEANAME_2, configItems);
     }
 
     private static StrategyConfig someExternalStrategyConfigWithUnknownId() {
         final Map<String, String> configItems = new HashMap<>();
         configItems.put(BUY_PRICE_CONFIG_ITEM_KEY, BUY_PRICE_CONFIG_ITEM_VALUE);
         configItems.put(AMOUNT_TO_BUY_CONFIG_ITEM_KEY, AMOUNT_TO_BUY_CONFIG_ITEM_VALUE);
-        return new StrategyConfig(UNKNOWN_STRAT_ID, STRAT_NAME_1, STRAT_DESCRIPTION_1, STRAT_CLASSNAME_1, configItems);
+        return new StrategyConfig(UNKNOWN_STRAT_ID, STRAT_NAME_1, STRAT_DESCRIPTION_1, STRAT_CLASSNAME_1, STRAT_BEANAME_1,configItems);
     }
 }
