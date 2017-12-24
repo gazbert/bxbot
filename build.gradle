@@ -43,7 +43,7 @@ ext.libraries = [
             force = true
         },
         spring_tx: dependencies.create("org.springframework:spring-tx:" + ext.versions.springTxVersion),
-        google_guava: dependencies.create("com.google.guava:guava:23.0"),
+        google_guava: dependencies.create("com.google.guava:guava:23.6-jre"),
         google_gson: dependencies.create("com.google.code.gson:gson:2.8.2"),
         javax_mail_api: dependencies.create("javax.mail:javax.mail-api:1.6.0"),
         javax_mail_sun: dependencies.create("com.sun.mail:javax.mail:1.6.0"),
