@@ -51,7 +51,7 @@ ext.libraries = [
         junit: dependencies.create("junit:junit:4.12"),
         powermock_junit: dependencies.create("org.powermock:powermock-module-junit4:1.7.3"),
         powermock_api_easymock: dependencies.create("org.powermock:powermock-api-easymock:1.7.3"),
-        easymock: dependencies.create("org.easymock:easymock:3.5") {
+        easymock: dependencies.create("org.easymock:easymock:3.5.1") {
             exclude module: "cglib-nodep"
             force = true
         },
