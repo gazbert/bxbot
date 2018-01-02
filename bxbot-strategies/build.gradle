@@ -5,6 +5,7 @@ dependencies {
     compile project(':bxbot-strategy-api')
     compile project(':bxbot-trading-api')
 
+    compile libraries.spring_boot_starter
     compile libraries.spring_boot_starter_log4j2
     compile libraries.google_guava
 
