@@ -30,7 +30,9 @@ import com.gazbert.bxbot.trading.api.*;
 import com.google.common.base.MoreObjects;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
@@ -115,6 +117,7 @@ import java.util.List;
  *
  * @author gazbert
  */
+@Component("exampleScalpingStrategy")
 public class ExampleScalpingStrategy implements TradingStrategy {
 
     private static final Logger LOG = LogManager.getLogger();

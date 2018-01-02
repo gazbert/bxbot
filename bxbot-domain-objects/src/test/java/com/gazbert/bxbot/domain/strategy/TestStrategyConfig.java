@@ -42,13 +42,14 @@ public class TestStrategyConfig {
     private static final String LABEL = "MACD Long Position Algo";
     private static final String DESCRIPTION = "Uses MACD as indicator and takes long position in base currency.";
     private static final String CLASSNAME = "com.gazbert.nova.algos.MacdLongBase";
+    private static final String BEANNAME = "macdLongBase";
     private static final Map<String, String> CONFIG_ITEMS = new HashMap<>();
 
 
     @Test
     public void testInitialisationWorksAsExpected() {
 
-        final StrategyConfig strategyConfig = new StrategyConfig(ID, LABEL, DESCRIPTION, CLASSNAME, CONFIG_ITEMS);
+        final StrategyConfig strategyConfig = new StrategyConfig(ID, LABEL, DESCRIPTION, CLASSNAME, BEANNAME, CONFIG_ITEMS);
         assertEquals(ID, strategyConfig.getId());
         assertEquals(LABEL, strategyConfig.getName());
         assertEquals(DESCRIPTION, strategyConfig.getDescription());
@@ -84,7 +85,7 @@ public class TestStrategyConfig {
 
     @Test
     public void testCloningWorksAsExpected() {
-        final StrategyConfig strategyConfig = new StrategyConfig(ID, LABEL, DESCRIPTION, CLASSNAME, CONFIG_ITEMS);
+        final StrategyConfig strategyConfig = new StrategyConfig(ID, LABEL, DESCRIPTION, CLASSNAME, BEANNAME, CONFIG_ITEMS);
         final StrategyConfig clonedStrategyConfig = new StrategyConfig(strategyConfig);
         assertEquals(clonedStrategyConfig, strategyConfig);
     }

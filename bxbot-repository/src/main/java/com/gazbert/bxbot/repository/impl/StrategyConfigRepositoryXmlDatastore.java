@@ -193,6 +193,7 @@ public class StrategyConfigRepositoryXmlDatastore implements StrategyConfigRepos
             strategyConfig.setName(item.getName());
             strategyConfig.setDescription(item.getDescription());
             strategyConfig.setClassName(item.getClassName());
+            strategyConfig.setBeanName(item.getBeanName());
 
             item.getOptionalConfig().getConfigItem().forEach(internalConfigItem ->
                     strategyConfig.getConfigItems().put(internalConfigItem.getName(), internalConfigItem.getValue()));
@@ -215,6 +216,8 @@ public class StrategyConfigRepositoryXmlDatastore implements StrategyConfigRepos
             strategyConfig.setName(internalStrategyConfig.getName());
             strategyConfig.setDescription(internalStrategyConfig.getDescription());
             strategyConfig.setClassName(internalStrategyConfig.getClassName());
+            strategyConfig.setBeanName(internalStrategyConfig.getBeanName());
+
 
             internalStrategyConfig.getOptionalConfig().getConfigItem().forEach(internalConfigItem ->
                     strategyConfig.getConfigItems().put(internalConfigItem.getName(), internalConfigItem.getValue()));
@@ -239,6 +242,7 @@ public class StrategyConfigRepositoryXmlDatastore implements StrategyConfigRepos
         strategyType.setName(externalStrategyConfig.getName());
         strategyType.setDescription(externalStrategyConfig.getDescription());
         strategyType.setClassName(externalStrategyConfig.getClassName());
+        strategyType.setBeanName(externalStrategyConfig.getBeanName());
         strategyType.setOptionalConfig(configurationType);
         return strategyType;
     }
