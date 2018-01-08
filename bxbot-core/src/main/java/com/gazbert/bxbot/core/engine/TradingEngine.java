@@ -244,7 +244,7 @@ public class TradingEngine {
                  * Trading Engine. Current policy is to log it and sleep until next trade cycle.
                  */
                 final String WARNING_MSG = "A network error has occurred in Exchange Adapter! " +
-                        "BX-bot will attempt next trade in " + tradeExecutionInterval + "s...";
+                        "BX-bot will try again in " + tradeExecutionInterval + "s...";
                 LOG.error(WARNING_MSG, e);
 
                 try {
@@ -624,7 +624,7 @@ public class TradingEngine {
                 strategyImpl = (TradingStrategy) springContext.getBean(tradingStrategyBeanName);
 
             } catch (NullPointerException e) {
-                final String errorMsg = "Failed to obtain bean [ "+tradingStrategyBeanName+"] from spring context";
+                final String errorMsg = "Failed to obtain bean ["+tradingStrategyBeanName+"] from spring context";
                 LOG.error(errorMsg);
                 throw new IllegalArgumentException(errorMsg);
             }

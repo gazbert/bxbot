@@ -373,6 +373,7 @@ You specify the Trading Strategies you wish to use in the
          price has reached a configurable minimum percentage gain, and then sells at current ASK price, thereby 
          taking profit from the spread. Don't forget to factor in the exchange fees!
         </description>
+        <!-- This strategy is injected using the bot's custom injection framework using its class-name -->
         <class-name>com.gazbert.bxbot.strategies.ExampleScalpingStrategy</class-name>
         <optional-config>
             <config-item>
@@ -389,7 +390,8 @@ You specify the Trading Strategies you wish to use in the
         <id>macd-strategy</id>
         <name>MACD Based Strat</name>
         <description>Strat uses MACD data to take long position in USD.</description>
-        <class-name>com.gazbert.bxbot.strategies.YourMacdStrategy</class-name>
+        <!-- This strategy is injected using a Spring bean-name -->
+        <bean-name>yourMacdStrategyBean</bean-name>
         <optional-config>
             <config-item>
                 <name>counter-currency-buy-order-amount</name>
@@ -420,8 +422,17 @@ All elements are mandatory unless stated otherwise.
 * The `<description>` value is optional, and used by [BX-bot UI](https://github.com/gazbert/bxbot-ui) (work in progress)
   to display the strategy's description.
 
-* For the `<class-name>` value, you must specify the fully qualified name of your Trading Strategy class for the
-  Trading Engine to inject on startup. The class _must_ be on the runtime classpath.
+You configure the loading of your strategy using either a `<class-name>` _or_ a `<bean-name>`; you cannot specify both. 
+
+* For the `<class-name>` value, you must specify the fully qualified name of your Strategy class for the Trading Engine
+  to load and execute. This will use the bot's custom injection framework. The class must be on the runtime classpath.
+  If you set this value to load your strategy, you cannot set the `<bean-name>` value.
+  
+* For the `<bean-name>` value, you must specify the Spring bean name of you Strategy component class for the Trading Engine
+  to load and execute. You will also need to annotate your strategy class with `@Component("yourMacdStrategyBean")` - 
+  see the [example strategy](./bxbot-strategies/src/main/java/com/gazbert/bxbot/strategies/ExampleScalpingStrategy.java).
+  This results in Spring injecting the bean.
+  If you set this value to load your strategy, you cannot set the `<class-name>` value.        
 
 * The `<optional-config>` section is optional. It allows you to set key/value pair config items. This config is passed
   to your Trading Strategy when the bot starts up; see the 
@@ -463,13 +474,19 @@ The best place to start is with the
 [`ExampleScalpingStrategy`](./bxbot-strategies/src/main/java/com/gazbert/bxbot/strategies/ExampleScalpingStrategy.java) -
 more ideas can be found in the excellent [ta4j](https://github.com/ta4j/ta4j) project.
 There is also a Trading Strategy specific channel on [Gitter](https://gitter.im/BX-bot/trading-strategies).
-
+  
 Your strategy must implement the [`TradingStrategy`](./bxbot-strategy-api/src/main/java/com/gazbert/bxbot/strategy/api/TradingStrategy.java)
 interface. This allows the Trading Engine to:
 
 * Inject your strategy on startup.
 * Pass any configuration (set in the `strategies.xml`) to your strategy.
 * Invoke your strategy at each trade cycle.
+
+You load your strategy using either `<class-name>` _or_ `<bean-name>` in the `strategies.xml` file - see the 
+_[Strategies Configuration](#strategies)_ section for full details. The choice is yours, but `<bean-name>` is the way to
+go if you want to use other Spring features in your strategy, e.g. a 
+[Repository](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/stereotype/Repository.html) 
+to store your trade data.   
 
 The Trading Engine will only send 1 thread through your Trading Strategy; you do not have to code for concurrency.
 

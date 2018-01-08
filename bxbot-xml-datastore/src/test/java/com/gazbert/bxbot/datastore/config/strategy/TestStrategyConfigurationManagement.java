@@ -51,6 +51,7 @@ public class TestStrategyConfigurationManagement {
     private static final String INVALID_XML_CONFIG_FILENAME = "src/test/config/strategies/invalid-strategies.xml";
     private static final String MISSING_XML_CONFIG_FILENAME = "src/test/config/strategies/missing-strategies.xml";
     private static final String XML_CONFIG_TO_SAVE_FILENAME = "src/test/config/strategies/saved-strategies.xml";
+    private static final String INVALID_STRATEGY_INJECTION_CONFIG_FILENAME = "src/test/config/strategies/invalid-strategy-injection.xml";
 
     private static final String STRAT_ID_1 = "macd-long-position";
     private static final String STRAT_NAME_1 = "MACD Long Position Algo";
@@ -60,7 +61,7 @@ public class TestStrategyConfigurationManagement {
     private static final String STRAT_ID_2 = "long-scalper";
     private static final String STRAT_NAME_2 = "Long Position Scalper Algo";
     private static final String STRAT_DESCRIPTION_2 = "Scalps and goes long...";
-    private static final String STRAT_CLASSNAME_2 = "com.gazbert.nova.algos.LongScalper";
+    private static final String STRAT_BEAN_NAME_2 = "myMacdStratBean";
 
     private static final String BUY_PRICE_CONFIG_ITEM_KEY = "buy-price";
     private static final String BUY_PRICE_CONFIG_ITEM_VALUE = "671.15";
@@ -86,6 +87,7 @@ public class TestStrategyConfigurationManagement {
                 "price has reached a configurable minimum percentage gain, and then sells at current ASK price, thereby " +
                 "taking profit from the spread. Don't forget to factor in the exchange fees!"));
         assertEquals("com.gazbert.bxbot.strategies.ExampleScalpingStrategy", tradingStrategiesType.getStrategies().get(0).getClassName());
+        assertNull(tradingStrategiesType.getStrategies().get(0).getBeanName());
 
         assertTrue(2 == tradingStrategiesType.getStrategies().get(0).getOptionalConfig().getConfigItem().size());
         assertEquals("counter-currency-buy-order-amount", tradingStrategiesType.getStrategies().get(0).getOptionalConfig().getConfigItem().get(0).getName());
@@ -100,6 +102,7 @@ public class TestStrategyConfigurationManagement {
         assertEquals("EMA Based Shorting Strat", tradingStrategiesType.getStrategies().get(1).getName());
         assertNull(tradingStrategiesType.getStrategies().get(1).getDescription()); // optional element check
         assertEquals("com.gazbert.bxbot.strategies.YourEmaShortingStrategy", tradingStrategiesType.getStrategies().get(1).getClassName());
+        assertNull(tradingStrategiesType.getStrategies().get(0).getBeanName());
 
         assertTrue(4 == tradingStrategiesType.getStrategies().get(1).getOptionalConfig().getConfigItem().size());
 
@@ -122,7 +125,8 @@ public class TestStrategyConfigurationManagement {
         assertEquals("MACD Based Strat", tradingStrategiesType.getStrategies().get(2).getName());
         assertTrue(tradingStrategiesType.getStrategies().get(2).getDescription().trim().equals(
                 "Strat uses MACD data to take long position in USD."));
-        assertEquals("com.gazbert.bxbot.strategies.YourMacdStrategy", tradingStrategiesType.getStrategies().get(2).getClassName());
+        assertEquals("myMacdStratBean", tradingStrategiesType.getStrategies().get(2).getBeanName());
+        assertNull(tradingStrategiesType.getStrategies().get(2).getClassName());
         assertNull(tradingStrategiesType.getStrategies().get(2).getOptionalConfig()); // optional element check
     }
 
@@ -172,7 +176,7 @@ public class TestStrategyConfigurationManagement {
         strategy2.setId(STRAT_ID_2);
         strategy2.setName(STRAT_NAME_2);
         strategy2.setDescription(STRAT_DESCRIPTION_2);
-        strategy2.setClassName(STRAT_CLASSNAME_2);
+        strategy2.setBeanName(STRAT_BEAN_NAME_2);
         strategy2.setOptionalConfig(strat2Config);
 
         final TradingStrategiesType strategiesConfig = new TradingStrategiesType();
@@ -190,6 +194,7 @@ public class TestStrategyConfigurationManagement {
         assertThat(strategiesReloaded.getStrategies().get(0).getName()).isEqualTo(STRAT_NAME_1);
         assertThat(strategiesReloaded.getStrategies().get(0).getDescription()).isEqualTo(STRAT_DESCRIPTION_1);
         assertThat(strategiesReloaded.getStrategies().get(0).getClassName()).isEqualTo(STRAT_CLASSNAME_1);
+        assertThat(strategiesReloaded.getStrategies().get(0).getBeanName()).isNull();
 
         assertThat(strategiesReloaded.getStrategies().get(0).getOptionalConfig().getConfigItem().get(0).getName())
                 .isEqualTo(BUY_PRICE_CONFIG_ITEM_KEY);
@@ -204,7 +209,8 @@ public class TestStrategyConfigurationManagement {
         assertThat(strategiesReloaded.getStrategies().get(1).getId()).isEqualTo(STRAT_ID_2);
         assertThat(strategiesReloaded.getStrategies().get(1).getName()).isEqualTo(STRAT_NAME_2);
         assertThat(strategiesReloaded.getStrategies().get(1).getDescription()).isEqualTo(STRAT_DESCRIPTION_2);
-        assertThat(strategiesReloaded.getStrategies().get(1).getClassName()).isEqualTo(STRAT_CLASSNAME_2);
+        assertThat(strategiesReloaded.getStrategies().get(1).getClassName()).isNull();
+        assertThat(strategiesReloaded.getStrategies().get(1).getBeanName()).isEqualTo(STRAT_BEAN_NAME_2);
 
         assertThat(strategiesReloaded.getStrategies().get(1).getOptionalConfig().getConfigItem().get(0).getName())
                 .isEqualTo(BUY_PRICE_CONFIG_ITEM_KEY);
@@ -217,5 +223,11 @@ public class TestStrategyConfigurationManagement {
 
         // cleanup
         Files.delete(FileSystems.getDefault().getPath(XML_CONFIG_TO_SAVE_FILENAME));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testLoadingInvalidStrategyInjectionConfigFileThrowsException() {
+        ConfigurationManager.loadConfig(TradingStrategiesType.class,
+                INVALID_STRATEGY_INJECTION_CONFIG_FILENAME, XML_SCHEMA_FILENAME);
     }
 }
