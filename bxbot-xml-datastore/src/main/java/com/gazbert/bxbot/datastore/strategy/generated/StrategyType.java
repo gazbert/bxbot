@@ -58,11 +58,12 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "strategyType", propOrder = {
-    "id",
-    "name",
-    "description",
-    "className",
-    "optionalConfig"
+        "id",
+        "name",
+        "description",
+        "className",
+        "beanName",
+        "optionalConfig"
 })
 public class StrategyType {
 
@@ -73,6 +74,8 @@ public class StrategyType {
     protected String description;
     @XmlElement(name = "class-name", required = true)
     protected String className;
+    @XmlElement(name = "bean-name")
+    protected String beanName;
     @XmlElement(name = "optional-config")
     protected OptionalConfigType optionalConfig;
 
@@ -161,6 +164,18 @@ public class StrategyType {
     }
 
     /**
+     * Gets the value of the beanName property.
+     *
+     * @return
+     *     possible object is
+     *     {@link String }
+     *
+     */
+    public String getBeanName() {
+        return beanName;
+    }
+
+    /**
      * Sets the value of the className property.
      * 
      * @param value
@@ -171,6 +186,19 @@ public class StrategyType {
     public void setClassName(String value) {
         this.className = value;
     }
+
+    /**
+     * Sets the value of the beanName property.
+     *
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *
+     */
+    public void setBeanName(String value) {
+        this.beanName = value;
+    }
+
 
     /**
      * Gets the value of the optionalConfig property.
