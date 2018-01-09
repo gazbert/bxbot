@@ -96,6 +96,17 @@ import java.util.List;
  * info on the different exchange fees.
  * </p>
  * <p>
+ * You configure the loading of your strategy using either a class-name OR a bean-name in the
+ * {project-root}/config/strategies.xml config file. This example strategy is configured using the bean-name and by
+ * setting the @Component("exampleScalpingStrategy") annotation - this results in Spring injecting the bean
+ * - see <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/stereotype/Component.html">
+ * Spring docs</a> for more details. Alternatively, you can load your strategy using class-name - this will use the
+ * bot's custom injection framework. The choice is yours, but bean-name is the way to go if you want to use other
+ * Spring features in your strategy, e.g. a
+ * <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/stereotype/Repository.html">Repository</a>
+ * to store your trade data.
+ * </p>
+ * <p>
  * The algorithm relies on config from the sample {project-root}/config/strategies.xml and
  * {project-root}/config/markets.xml files. You can pass additional config-items to your Strategy using the
  * {project-root}/config/strategies.xml file - you access it from the {@link #init(TradingApi, Market, StrategyConfig)}
@@ -109,7 +120,8 @@ import java.util.List;
  * </p>
  * <p>
  * This <a href="http://www.investopedia.com/articles/active-trading/101014/basics-algorithmic-trading-concepts-and-examples.asp">
- * site</a> might give you a few ideas. Also, check out the excellent [ta4j](https://github.com/ta4j/ta4j) project...
+ * site</a> might give you a few ideas. The {@link TradingApi} provides a basic Ticker that you might want to use...
+ * Finally, check out the excellent [ta4j](https://github.com/ta4j/ta4j) project!
  * </p>
  * <p>
  * Good luck!
@@ -117,7 +129,7 @@ import java.util.List;
  *
  * @author gazbert
  */
-@Component("exampleScalpingStrategy")
+@Component("exampleScalpingStrategy") // this is used to load the strategy using Spring bean injection
 public class ExampleScalpingStrategy implements TradingStrategy {
 
     private static final Logger LOG = LogManager.getLogger();
