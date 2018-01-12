@@ -43,6 +43,7 @@ import static org.junit.Assert.*;
  *
  * @author gazbert
  */
+@Ignore("gazbert - 12 Jan 2018: Tmp disable of IT as Kraken still down: https://status.kraken.com/incidents/nswthr1lyx72")
 public class KrakenIT {
 
     // Canned test data
