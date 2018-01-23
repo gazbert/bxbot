@@ -10,18 +10,17 @@
 <img src="./docs/bxbot-cropped.png" align="right" width="25%" />
 
 BX-bot (_Bex_) is a simple [Bitcoin](https://bitcoin.org) trading bot written in Java for trading on cryptocurrency 
-[exchanges](https://bitcoinwisdom.com/).
+[exchanges](https://bitcoin.org/en/exchanges).
 
 The project contains the basic infrastructure to trade on a [cryptocurrency](http://coinmarketcap.com/) exchange...
 except for the trading strategies - you'll need to write those yourself! A simple 
 [example](./bxbot-strategies/src/main/java/com/gazbert/bxbot/strategies/ExampleScalpingStrategy.java) of a 
 [scalping](http://www.investopedia.com/articles/trading/02/081902.asp) strategy is included to get you started with the
-Trading API - take a look [here](http://www.investopedia.com/articles/active-trading/101014/basics-algorithmic-trading-concepts-and-examples.asp)
-for more ideas.
+Trading API - take a look [here](https://github.com/ta4j/ta4j) for more ideas.
 
 Exchange Adapters for using [Bitstamp](https://www.bitstamp.net), [Bitfinex](https://www.bitfinex.com),
-[OKCoin](https://www.okcoin.com/), [Huobi](https://www.huobi.com/), [GDAX](https://www.gdax.com/),
-[itBit](https://www.itbit.com/), [Kraken](https://www.kraken.com), and [Gemini](https://gemini.com/) are included.
+[OKCoin](https://www.okcoin.com/), [GDAX](https://www.gdax.com/), [itBit](https://www.itbit.com/),
+[Kraken](https://www.kraken.com), and [Gemini](https://gemini.com/) are included.
 Feel free to improve these or contribute new adapters to the project; that would be 
 [shiny!](https://en.wikipedia.org/wiki/Firefly_(TV_series))
 
@@ -60,7 +59,7 @@ and evaluate the bot, Docker is the way to go.
 1. Install [Docker](https://docs.docker.com/engine/installation/) on the machine you want to run the bot.
 1. Fetch the BX-bot image from [Docker Hub](https://hub.docker.com/r/gazbert/bxbot/): `docker pull gazbert/bxbot:x.x.x` -
    replace `x.x.x` with the [Release](https://github.com/gazbert/bxbot/releases) version of the bot you want to run, e.g.
-   `docker pull gazbert/bxbot:0.8.4`
+   `docker pull gazbert/bxbot:0.8.5`
 1. Run the Docker container: `docker container run --name bxbot-x.x.x -it gazbert/bxbot:x.x.x bash`
 1. Change into the bot's directory: `cd bxbot*`
 1. Configure the bot as required - see the main _[Configuration](#configuration-2)_ section. The bot's default 
@@ -376,6 +375,7 @@ You specify the Trading Strategies you wish to use in the
          price has reached a configurable minimum percentage gain, and then sells at current ASK price, thereby 
          taking profit from the spread. Don't forget to factor in the exchange fees!
         </description>
+        <!-- This strategy is injected using the bot's custom injection framework using its class-name -->
         <class-name>com.gazbert.bxbot.strategies.ExampleScalpingStrategy</class-name>
         <optional-config>
             <config-item>
@@ -392,7 +392,8 @@ You specify the Trading Strategies you wish to use in the
         <id>macd-strategy</id>
         <name>MACD Based Strat</name>
         <description>Strat uses MACD data to take long position in USD.</description>
-        <class-name>com.gazbert.bxbot.strategies.YourMacdStrategy</class-name>
+        <!-- This strategy is injected using a Spring bean-name -->
+        <bean-name>yourMacdStrategyBean</bean-name>
         <optional-config>
             <config-item>
                 <name>counter-currency-buy-order-amount</name>
@@ -423,8 +424,17 @@ All elements are mandatory unless stated otherwise.
 * The `<description>` value is optional, and used by [BX-bot UI](https://github.com/gazbert/bxbot-ui) (work in progress)
   to display the strategy's description.
 
-* For the `<class-name>` value, you must specify the fully qualified name of your Trading Strategy class for the
-  Trading Engine to inject on startup. The class _must_ be on the runtime classpath.
+You configure the loading of your strategy using either a `<class-name>` _or_ a `<bean-name>`; you cannot specify both. 
+
+* For the `<class-name>` value, you must specify the fully qualified name of your Strategy class for the Trading Engine
+  to load and execute. This will use the bot's custom injection framework. The class must be on the runtime classpath.
+  If you set this value to load your strategy, you cannot set the `<bean-name>` value.
+  
+* For the `<bean-name>` value, you must specify the Spring bean name of you Strategy component class for the Trading Engine
+  to load and execute. You will also need to annotate your strategy class with `@Component("yourMacdStrategyBean")` - 
+  see the [example strategy](./bxbot-strategies/src/main/java/com/gazbert/bxbot/strategies/ExampleScalpingStrategy.java).
+  This results in Spring injecting the bean.
+  If you set this value to load your strategy, you cannot set the `<class-name>` value.        
 
 * The `<optional-config>` section is optional. It allows you to set key/value pair config items. This config is passed
   to your Trading Strategy when the bot starts up; see the 
@@ -464,16 +474,21 @@ _"Battle not with monsters, lest ye become a monster, and if you gaze into the a
 
 The best place to start is with the
 [`ExampleScalpingStrategy`](./bxbot-strategies/src/main/java/com/gazbert/bxbot/strategies/ExampleScalpingStrategy.java) -
-more ideas can be found
-[here](http://www.investopedia.com/articles/active-trading/101014/basics-algorithmic-trading-concepts-and-examples.asp).
+more ideas can be found in the excellent [ta4j](https://github.com/ta4j/ta4j) project.
 There is also a Trading Strategy specific channel on [Gitter](https://gitter.im/BX-bot/trading-strategies).
-
+  
 Your strategy must implement the [`TradingStrategy`](./bxbot-strategy-api/src/main/java/com/gazbert/bxbot/strategy/api/TradingStrategy.java)
 interface. This allows the Trading Engine to:
 
 * Inject your strategy on startup.
 * Pass any configuration (set in the `strategies.xml`) to your strategy.
 * Invoke your strategy at each trade cycle.
+
+You load your strategy using either `<class-name>` _or_ `<bean-name>` in the `strategies.xml` file - see the 
+_[Strategies Configuration](#strategies)_ section for full details. The choice is yours, but `<bean-name>` is the way to
+go if you want to use other Spring features in your strategy, e.g. a 
+[Repository](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/stereotype/Repository.html) 
+to store your trade data.   
 
 The Trading Engine will only send 1 thread through your Trading Strategy; you do not have to code for concurrency.
 
@@ -591,7 +606,6 @@ output from the Exchange Adapters; it's very handy for debugging, but not so goo
 The following features are in the pipeline:
 
 - Java 9 support - the migration work is being done on the [bxbot-java9](https://github.com/gazbert/bxbot/tree/bxbot-java9) branch.
-- Add Ticker operation to the Trading API and Exchange Adapters - ticket [#81](https://github.com/gazbert/bxbot/issues/81).
 - A REST API for administering the bot. It's being developed on the [bxbot-restapi](https://github.com/gazbert/bxbot/tree/bxbot-restapi) branch.
 - An [admin server](https://github.com/gazbert/bxbot-ui-server) for proxying commands and config updates to BX-bots in the cloud. 
   It will consume the bot's REST API.

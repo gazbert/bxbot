@@ -112,6 +112,7 @@ public class TestTradingEngine {
     private static final String STRATEGY_NAME = "MACD Shorting algo";
     private static final String STRATEGY_DESCRIPTION = "MACD Shorting algo description";
     private static final String STRATEGY_IMPL_CLASS = "com.my.strats.MyMacdStrategy";
+    private static final String STRATEGY_IMPL_BEAN = null;
     private static final String STRATEGY_CONFIG_ITEM_NAME = "btc-sell-order-amount";
     private static final String STRATEGY_CONFIG_ITEM_VALUE = "0.2";
 
@@ -601,7 +602,7 @@ public class TestTradingEngine {
         configItems.put(STRATEGY_CONFIG_ITEM_NAME, STRATEGY_CONFIG_ITEM_VALUE);
 
         final StrategyConfig strategyConfig1 = new StrategyConfig(
-                STRATEGY_ID, STRATEGY_NAME, STRATEGY_DESCRIPTION, STRATEGY_IMPL_CLASS, configItems);
+                STRATEGY_ID, STRATEGY_NAME, STRATEGY_DESCRIPTION, STRATEGY_IMPL_CLASS, STRATEGY_IMPL_BEAN, configItems);
 
         final List<StrategyConfig> allStrategies = new ArrayList<>();
         allStrategies.add(strategyConfig1);

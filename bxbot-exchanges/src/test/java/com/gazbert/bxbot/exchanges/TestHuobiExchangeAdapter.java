@@ -35,11 +35,13 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.reflect.Whitebox;
 
 import java.math.BigDecimal;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.DecimalFormat;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -47,25 +49,17 @@ import static org.easymock.EasyMock.*;
 import static org.junit.Assert.*;
 
 /**
- * <p>
  * Tests the behaviour of the Huobi Exchange Adapter.
- * </p>
  * <p>
- * <p>
- * Coverage could be better: it does not include calling the
- * {@link HuobiExchangeAdapter#sendPublicRequestToExchange(String)} and
- * {@link HuobiExchangeAdapter#sendAuthenticatedRequestToExchange(String, String, Map)} methods; the code in these
- * methods is a bloody nightmare to test!
- * </p>
- * <p>
- * TODO Unit test {@link HuobiExchangeAdapter#sendPublicRequestToExchange(String)} method.
- * TODO Unit test {@link HuobiExchangeAdapter#sendAuthenticatedRequestToExchange(String, String, Map)} method.
+ * Deprecated.
+ * Due to regulatory requirements from Chinese authorities Huobi ceased trading activity on October 31 2017.
  *
  * @author gazbert
  */
 @RunWith(PowerMockRunner.class)
 @PowerMockIgnore({"javax.crypto.*", "javax.management.*"})
 @PrepareForTest(HuobiExchangeAdapter.class)
+@Deprecated
 public class TestHuobiExchangeAdapter {
 
     // Canned JSON responses from exchange - expected to reside on filesystem relative to project root
@@ -100,9 +94,11 @@ public class TestHuobiExchangeAdapter {
     private static final String ORDER_ID_TO_CANCEL = "38471901";
 
     // Mocked out methods
-    private static final String MOCKED_GET_REQUEST_PARAM_MAP_METHOD = "getRequestParamMap";
+    private static final String MOCKED_CREATE_REQUEST_PARAM_MAP_METHOD = "createRequestParamMap";
     private static final String MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD = "sendAuthenticatedRequestToExchange";
     private static final String MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD = "sendPublicRequestToExchange";
+    private static final String MOCKED_CREATE_REQUEST_HEADER_MAP_METHOD = "createHeaderParamMap";
+    private static final String MOCKED_MAKE_NETWORK_REQUEST_METHOD = "makeNetworkRequest";
 
     // Mocked out state
     private static final String MOCKED_ACCOUNT_INFO_MARKET_FIELD_NAME = "accountInfoMarket";
@@ -113,6 +109,10 @@ public class TestHuobiExchangeAdapter {
     private static final List<Integer> nonFatalNetworkErrorCodes = Arrays.asList(502, 503, 504);
     private static final List<String> nonFatalNetworkErrorMessages = Arrays.asList(
             "Connection refused", "Connection reset", "Remote host closed connection during handshake");
+
+    private static final String HUOBI_API_VERSION = "v3";
+    private static final String PUBLIC_API_BASE_URL = "http://api.huobi.com/";
+    private static final String AUTHENTICATED_API_URL = "https://api.huobi.com/api" + HUOBI_API_VERSION + "/";
 
     private ExchangeConfig exchangeConfig;
     private AuthenticationConfig authenticationConfig;
@@ -151,6 +151,7 @@ public class TestHuobiExchangeAdapter {
     // ------------------------------------------------------------------------------------------------
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testCreateOrderToBuyIsSuccessful() throws Exception {
 
         // Load the canned response from the exchange
@@ -167,9 +168,9 @@ public class TestHuobiExchangeAdapter {
         // Partial mock so we do not send stuff down the wire
         final HuobiExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
                 HuobiExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD,
-                MOCKED_GET_REQUEST_PARAM_MAP_METHOD);
+                MOCKED_CREATE_REQUEST_PARAM_MAP_METHOD);
 
-        PowerMock.expectPrivate(exchangeAdapter, MOCKED_GET_REQUEST_PARAM_MAP_METHOD).andReturn(requestParamMap);
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_CREATE_REQUEST_PARAM_MAP_METHOD).andReturn(requestParamMap);
         PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(BUY_ORDER),
                 eq(AUTHENTICATED_REQUESTS_MARKET_ID), eq(requestParamMap)).andReturn(exchangeResponse);
 
@@ -183,6 +184,7 @@ public class TestHuobiExchangeAdapter {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testCreateOrderToSellIsSuccessful() throws Exception {
 
         // Load the canned response from the exchange
@@ -199,9 +201,9 @@ public class TestHuobiExchangeAdapter {
         // Partial mock so we do not send stuff down the wire
         final HuobiExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
                 HuobiExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD,
-                MOCKED_GET_REQUEST_PARAM_MAP_METHOD);
+                MOCKED_CREATE_REQUEST_PARAM_MAP_METHOD);
 
-        PowerMock.expectPrivate(exchangeAdapter, MOCKED_GET_REQUEST_PARAM_MAP_METHOD).andReturn(requestParamMap);
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_CREATE_REQUEST_PARAM_MAP_METHOD).andReturn(requestParamMap);
         PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(SELL_ORDER),
                 eq(AUTHENTICATED_REQUESTS_MARKET_ID), eq(requestParamMap)).andReturn(exchangeResponse);
 
@@ -278,6 +280,7 @@ public class TestHuobiExchangeAdapter {
     // ------------------------------------------------------------------------------------------------
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testCancelOrderIsSuccessful() throws Exception {
 
         // Load the canned response from the exchange
@@ -293,9 +296,9 @@ public class TestHuobiExchangeAdapter {
         // Partial mock so we do not send stuff down the wire
         final HuobiExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
                 HuobiExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD,
-                MOCKED_GET_REQUEST_PARAM_MAP_METHOD);
+                MOCKED_CREATE_REQUEST_PARAM_MAP_METHOD);
 
-        PowerMock.expectPrivate(exchangeAdapter, MOCKED_GET_REQUEST_PARAM_MAP_METHOD).andReturn(requestParamMap);
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_CREATE_REQUEST_PARAM_MAP_METHOD).andReturn(requestParamMap);
         PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(CANCEL_ORDER),
                 eq(AUTHENTICATED_REQUESTS_MARKET_ID), eq(requestParamMap)).andReturn(exchangeResponse);
 
@@ -369,6 +372,7 @@ public class TestHuobiExchangeAdapter {
     // ------------------------------------------------------------------------------------------------
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testGettingYourOpenOrdersSuccessfully() throws Exception {
 
         // Load the canned response from the exchange
@@ -383,9 +387,9 @@ public class TestHuobiExchangeAdapter {
         // Partial mock so we do not send stuff down the wire
         final HuobiExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
                 HuobiExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD,
-                MOCKED_GET_REQUEST_PARAM_MAP_METHOD);
+                MOCKED_CREATE_REQUEST_PARAM_MAP_METHOD);
 
-        PowerMock.expectPrivate(exchangeAdapter, MOCKED_GET_REQUEST_PARAM_MAP_METHOD).andReturn(requestParamMap);
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_CREATE_REQUEST_PARAM_MAP_METHOD).andReturn(requestParamMap);
         PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(GET_ORDERS),
                 eq(AUTHENTICATED_REQUESTS_MARKET_ID), eq(requestParamMap)).andReturn(exchangeResponse);
 
@@ -862,6 +866,204 @@ public class TestHuobiExchangeAdapter {
 
         final ExchangeAdapter exchangeAdapter = new HuobiExchangeAdapter();
         exchangeAdapter.init(exchangeConfig);
+        PowerMock.verifyAll();
+    }
+
+    // ------------------------------------------------------------------------------------------------
+    //  Request sending tests
+    // ------------------------------------------------------------------------------------------------
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void testSendingPublicRequestToExchangeSuccessfully() throws Exception {
+
+        final byte[] encoded = Files.readAllBytes(Paths.get(TICKER_JSON_RESPONSE));
+        final AbstractExchangeAdapter.ExchangeHttpResponse exchangeResponse =
+                new AbstractExchangeAdapter.ExchangeHttpResponse(200, "OK", new String(encoded, StandardCharsets.UTF_8));
+
+        final HuobiExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
+                HuobiExchangeAdapter.class, MOCKED_MAKE_NETWORK_REQUEST_METHOD);
+
+        final URL url = new URL(PUBLIC_API_BASE_URL + TICKER);
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_MAKE_NETWORK_REQUEST_METHOD,
+                eq(url),
+                eq("GET"),
+                eq(null),
+                eq(new HashMap<>()))
+                .andReturn(exchangeResponse);
+
+        PowerMock.replayAll();
+        exchangeAdapter.init(exchangeConfig);
+
+        final BigDecimal lastMarketPrice = exchangeAdapter.getLatestMarketPrice(MARKET_ID);
+        assertTrue(lastMarketPrice.compareTo(new BigDecimal("240.31")) == 0);
+
+        PowerMock.verifyAll();
+    }
+
+    @Test(expected = ExchangeNetworkException.class)
+    @SuppressWarnings("unchecked")
+    public void testSendingPublicRequestToExchangeHandlesExchangeNetworkException() throws Exception {
+
+        final HuobiExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
+                HuobiExchangeAdapter.class, MOCKED_MAKE_NETWORK_REQUEST_METHOD);
+
+        final URL url = new URL(PUBLIC_API_BASE_URL + TICKER);
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_MAKE_NETWORK_REQUEST_METHOD,
+                eq(url),
+                eq("GET"),
+                eq(null),
+                eq(new HashMap<>()))
+                .andThrow(new ExchangeNetworkException("What was that story you told me about Zardu Hasselfrau?"));
+
+        PowerMock.replayAll();
+        exchangeAdapter.init(exchangeConfig);
+
+        exchangeAdapter.getLatestMarketPrice(MARKET_ID);
+
+        PowerMock.verifyAll();
+    }
+
+    @Test(expected = TradingApiException.class)
+    @SuppressWarnings("unchecked")
+    public void testSendingPublicRequestToExchangeHandlesTradingApiException() throws Exception {
+
+        final HuobiExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
+                HuobiExchangeAdapter.class, MOCKED_MAKE_NETWORK_REQUEST_METHOD,
+                MOCKED_CREATE_REQUEST_PARAM_MAP_METHOD, MOCKED_CREATE_REQUEST_HEADER_MAP_METHOD);
+
+        final Map<String, Object> headerParamMap = PowerMock.createPartialMock(HashMap.class, "put");
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_CREATE_REQUEST_HEADER_MAP_METHOD).andReturn(headerParamMap);
+
+        final URL url = new URL(PUBLIC_API_BASE_URL + TICKER);
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_MAKE_NETWORK_REQUEST_METHOD,
+                eq(url),
+                eq("GET"),
+                eq(null),
+                eq(new HashMap<>()))
+                .andThrow(new TradingApiException("People usually want cute pets. Why would Ego want such a hideous one?"));
+
+        PowerMock.replayAll();
+        exchangeAdapter.init(exchangeConfig);
+
+        exchangeAdapter.getLatestMarketPrice(MARKET_ID);
+
+        PowerMock.verifyAll();
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void testSendingAuthenticatedRequestToExchangeSuccessfully() throws Exception {
+
+        final byte[] encoded = Files.readAllBytes(Paths.get(SELL_ORDER_JSON_RESPONSE));
+        final AbstractExchangeAdapter.ExchangeHttpResponse exchangeResponse =
+                new AbstractExchangeAdapter.ExchangeHttpResponse(200, "OK", new String(encoded, StandardCharsets.UTF_8));
+
+        final Map<String, String> requestParamMap = PowerMock.createPartialMock(HashMap.class, "put");
+        expect(requestParamMap.put("coin_type", "1")).andStubReturn(null); // 1 = BTC
+        expect(requestParamMap.put("price", new DecimalFormat("#.##").format(SELL_ORDER_PRICE))).andStubReturn(null);
+        expect(requestParamMap.put("amount", new DecimalFormat("#.########").format(SELL_ORDER_QUANTITY))).andStubReturn(null);
+        expect(requestParamMap.put("api_key", KEY)).andStubReturn(null);
+        expect(requestParamMap.put(eq("sign"), anyString())).andStubReturn(null);
+
+        final Map<String, String> requestHeaderMap = PowerMock.createPartialMock(HashMap.class, "put");
+        expect(requestHeaderMap.put("Content-Type", "application/x-www-form-urlencoded")).andStubReturn(null);
+        PowerMock.replay(requestHeaderMap); // map needs to be in play early
+
+        final HuobiExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
+                HuobiExchangeAdapter.class, MOCKED_MAKE_NETWORK_REQUEST_METHOD, MOCKED_CREATE_REQUEST_HEADER_MAP_METHOD,
+                MOCKED_CREATE_REQUEST_PARAM_MAP_METHOD);
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_CREATE_REQUEST_HEADER_MAP_METHOD).andReturn(requestHeaderMap);
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_CREATE_REQUEST_PARAM_MAP_METHOD).andReturn(requestParamMap);
+
+        final URL url = new URL(AUTHENTICATED_API_URL);
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_MAKE_NETWORK_REQUEST_METHOD,
+                eq(url),
+                eq("POST"),
+                anyString(),
+                eq(requestHeaderMap))
+                .andReturn(exchangeResponse);
+
+        PowerMock.replayAll();
+        exchangeAdapter.init(exchangeConfig);
+
+        final String orderId = exchangeAdapter.createOrder(MARKET_ID, OrderType.SELL, SELL_ORDER_QUANTITY, SELL_ORDER_PRICE);
+        assertTrue(orderId.equals("38367447"));
+
+        PowerMock.verifyAll();
+    }
+
+    @Test(expected = ExchangeNetworkException.class)
+    @SuppressWarnings("unchecked")
+    public void testSendingAuthenticatedRequestToExchangeHandlesExchangeNetworkException() throws Exception {
+
+        final Map<String, String> requestParamMap = PowerMock.createPartialMock(HashMap.class, "put");
+        expect(requestParamMap.put("coin_type", "1")).andStubReturn(null); // 1 = BTC
+        expect(requestParamMap.put("price", new DecimalFormat("#.##").format(SELL_ORDER_PRICE))).andStubReturn(null);
+        expect(requestParamMap.put("amount", new DecimalFormat("#.########").format(SELL_ORDER_QUANTITY))).andStubReturn(null);
+        expect(requestParamMap.put("api_key", KEY)).andStubReturn(null);
+        expect(requestParamMap.put(eq("sign"), anyString())).andStubReturn(null);
+
+        final Map<String, String> requestHeaderMap = PowerMock.createPartialMock(HashMap.class, "put");
+        expect(requestHeaderMap.put("Content-Type", "application/x-www-form-urlencoded")).andStubReturn(null);
+        PowerMock.replay(requestHeaderMap); // map needs to be in play early
+
+        final HuobiExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
+                HuobiExchangeAdapter.class, MOCKED_MAKE_NETWORK_REQUEST_METHOD, MOCKED_CREATE_REQUEST_HEADER_MAP_METHOD,
+                MOCKED_CREATE_REQUEST_PARAM_MAP_METHOD);
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_CREATE_REQUEST_HEADER_MAP_METHOD).andReturn(requestHeaderMap);
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_CREATE_REQUEST_PARAM_MAP_METHOD).andReturn(requestParamMap);
+
+        final URL url = new URL(AUTHENTICATED_API_URL);
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_MAKE_NETWORK_REQUEST_METHOD,
+                eq(url),
+                eq("POST"),
+                anyString(),
+                eq(requestHeaderMap))
+                .andThrow(new ExchangeNetworkException("I can't believe I'm taking orders from a hamster."));
+
+        PowerMock.replayAll();
+        exchangeAdapter.init(exchangeConfig);
+
+        exchangeAdapter.createOrder(MARKET_ID, OrderType.SELL, SELL_ORDER_QUANTITY, SELL_ORDER_PRICE);
+
+        PowerMock.verifyAll();
+    }
+
+    @Test(expected = TradingApiException.class)
+    @SuppressWarnings("unchecked")
+    public void testSendingAuthenticatedRequestToExchangeHandlesTradingApiException() throws Exception {
+
+        final Map<String, String> requestParamMap = PowerMock.createPartialMock(HashMap.class, "put");
+        expect(requestParamMap.put("coin_type", "1")).andStubReturn(null); // 1 = BTC
+        expect(requestParamMap.put("price", new DecimalFormat("#.##").format(SELL_ORDER_PRICE))).andStubReturn(null);
+        expect(requestParamMap.put("amount", new DecimalFormat("#.########").format(SELL_ORDER_QUANTITY))).andStubReturn(null);
+        expect(requestParamMap.put("api_key", KEY)).andStubReturn(null);
+        expect(requestParamMap.put(eq("sign"), anyString())).andStubReturn(null);
+
+        final Map<String, String> requestHeaderMap = PowerMock.createPartialMock(HashMap.class, "put");
+        expect(requestHeaderMap.put(eq("Content-Type"), eq("application/x-www-form-urlencoded"))).andStubReturn(null);
+        PowerMock.replay(requestHeaderMap); // map needs to be in play early
+
+        final HuobiExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
+                HuobiExchangeAdapter.class, MOCKED_MAKE_NETWORK_REQUEST_METHOD, MOCKED_CREATE_REQUEST_HEADER_MAP_METHOD,
+                MOCKED_CREATE_REQUEST_PARAM_MAP_METHOD);
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_CREATE_REQUEST_HEADER_MAP_METHOD).andReturn(requestHeaderMap);
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_CREATE_REQUEST_PARAM_MAP_METHOD).andReturn(requestParamMap);
+
+        final URL url = new URL(AUTHENTICATED_API_URL);
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_MAKE_NETWORK_REQUEST_METHOD,
+                eq(url),
+                eq("POST"),
+                anyString(),
+                eq(requestHeaderMap))
+                .andThrow(new TradingApiException("We are Groot."));
+
+        PowerMock.replayAll();
+        exchangeAdapter.init(exchangeConfig);
+
+        exchangeAdapter.createOrder(MARKET_ID, OrderType.SELL, SELL_ORDER_QUANTITY, SELL_ORDER_PRICE);
+
         PowerMock.verifyAll();
     }
 }

@@ -52,6 +52,7 @@ import com.gazbert.bxbot.trading.api.TradingApiException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Component;
 
@@ -153,6 +154,8 @@ public class TradingEngine {
     private final StrategyConfigService strategyConfigService;
     private final MarketConfigService marketConfigService;
 
+    @Autowired
+    private ApplicationContext springContext;
 
     @Autowired
     public TradingEngine(ExchangeConfigService exchangeConfigService, EngineConfigService engineConfigService,
@@ -241,7 +244,7 @@ public class TradingEngine {
                  * Trading Engine. Current policy is to log it and sleep until next trade cycle.
                  */
                 final String WARNING_MSG = "A network error has occurred in Exchange Adapter! " +
-                        "BX-bot will attempt next trade in " + tradeExecutionInterval + "s...";
+                        "BX-bot will try again in " + tradeExecutionInterval + "s...";
                 LOG.error(WARNING_MSG, e);
 
                 try {
@@ -573,7 +576,6 @@ public class TradingEngine {
 
             if (strategyDescriptions.containsKey(strategyToUse)) {
                 final StrategyConfig tradingStrategy = strategyDescriptions.get(strategyToUse);
-                final String tradingStrategyClassname = tradingStrategy.getClassName();
 
                 // Grab optional config for the Trading Strategy
                 final StrategyConfigItems tradingStrategyConfig = new StrategyConfigItems();
@@ -590,7 +592,7 @@ public class TradingEngine {
                  * Load the Trading Strategy impl, instantiate it, set its config, and store in the cached
                  * Trading Strategy execution list.
                  */
-                final TradingStrategy strategyImpl = ConfigurableComponentFactory.createComponent(tradingStrategyClassname);
+                TradingStrategy strategyImpl = obtainTradingStrategyInstance(tradingStrategy);;
                 strategyImpl.init(exchangeAdapter, tradingMarket, tradingStrategyConfig);
 
                 LOG.info(() -> "Initialized trading strategy successfully. Name: [" + tradingStrategy.getName()
@@ -609,5 +611,28 @@ public class TradingEngine {
         }
 
         LOG.info(() -> "Loaded and set Market configuration successfully!");
+    }
+
+    private TradingStrategy obtainTradingStrategyInstance(StrategyConfig tradingStrategy) {
+        final String tradingStrategyClassname = tradingStrategy.getClassName();
+        final String tradingStrategyBeanName = tradingStrategy.getBeanName();
+
+        TradingStrategy strategyImpl = null;
+        if (tradingStrategyBeanName != null) {
+            // if beanName is configured, try get the bean first
+            try {
+                strategyImpl = (TradingStrategy) springContext.getBean(tradingStrategyBeanName);
+
+            } catch (NullPointerException e) {
+                final String errorMsg = "Failed to obtain bean ["+tradingStrategyBeanName+"] from spring context";
+                LOG.error(errorMsg);
+                throw new IllegalArgumentException(errorMsg);
+            }
+        }
+        if (strategyImpl == null) {
+            // if beanName not configured use className
+            strategyImpl = ConfigurableComponentFactory.createComponent(tradingStrategyClassname);
+        }
+        return strategyImpl;
     }
 }

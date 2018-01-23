@@ -26,10 +26,7 @@ package com.gazbert.bxbot.exchanges;
 import com.gazbert.bxbot.exchange.api.AuthenticationConfig;
 import com.gazbert.bxbot.exchange.api.ExchangeAdapter;
 import com.gazbert.bxbot.exchange.api.ExchangeConfig;
-import com.gazbert.bxbot.exchanges.trading.api.impl.BalanceInfoImpl;
-import com.gazbert.bxbot.exchanges.trading.api.impl.MarketOrderBookImpl;
-import com.gazbert.bxbot.exchanges.trading.api.impl.MarketOrderImpl;
-import com.gazbert.bxbot.exchanges.trading.api.impl.OpenOrderImpl;
+import com.gazbert.bxbot.exchanges.trading.api.impl.*;
 import com.gazbert.bxbot.trading.api.*;
 import com.google.common.base.MoreObjects;
 import com.google.gson.*;
@@ -270,7 +267,7 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
             TradingApiException, ExchangeNetworkException {
 
         try {
-            final Map<String, String> params = getRequestParamMap();
+            final Map<String, String> params = createRequestParamMap();
 
             // note we need to limit price to 2 decimal places else exchange will barf
             params.put("price", new DecimalFormat("#.##", getDecimalFormatSymbols()).format(price));
@@ -321,7 +318,7 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
     public boolean cancelOrder(String orderId, String marketIdNotNeeded) throws TradingApiException, ExchangeNetworkException {
 
         try {
-            final Map<String, String> params = getRequestParamMap();
+            final Map<String, String> params = createRequestParamMap();
             params.put("id", orderId);
 
             final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("cancel_order", params);
@@ -468,6 +465,33 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
         return "Bitstamp HTTP API v2";
     }
 
+    @Override
+    public Ticker getTicker(String marketId) throws TradingApiException, ExchangeNetworkException {
+
+        try {
+            final ExchangeHttpResponse response = sendPublicRequestToExchange("ticker/" + marketId);
+            LOG.debug(() -> "Ticker response: " + response);
+
+            final BitstampTicker bitstampTicker = gson.fromJson(response.getPayload(), BitstampTicker.class);
+            return new TickerImpl(
+                    bitstampTicker.last,
+                    bitstampTicker.bid,
+                    bitstampTicker.ask,
+                    bitstampTicker.low,
+                    bitstampTicker.high,
+                    bitstampTicker.open,
+                    bitstampTicker.volume,
+                    bitstampTicker.vwap,
+                    bitstampTicker.timestamp);
+
+        } catch (ExchangeNetworkException | TradingApiException e) {
+            throw e;
+        } catch (Exception e) {
+            LOG.error(UNEXPECTED_ERROR_MSG, e);
+            throw new TradingApiException(UNEXPECTED_ERROR_MSG, e);
+        }
+    }
+
     // ------------------------------------------------------------------------------------------------
     //  GSON classes for JSON responses.
     //  See https://www.bitstamp.net/api/
@@ -581,12 +605,13 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
 
         public BigDecimal high;
         public BigDecimal last;
-        public long timestamp;
+        public Long timestamp;
         public BigDecimal bid;
         public BigDecimal vwap;
         public BigDecimal volume;
         public BigDecimal low;
         public BigDecimal ask;
+        public BigDecimal open;
 
         @Override
         public String toString() {
@@ -599,6 +624,7 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
                     .add("volume", volume)
                     .add("low", low)
                     .add("ask", ask)
+                    .add("open", open)
                     .toString();
         }
     }
@@ -693,7 +719,7 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
 
         try {
             final URL url = new URL(API_BASE_URL + apiMethod);
-            return makeNetworkRequest(url, "GET", null, new HashMap<>());
+            return makeNetworkRequest(url, "GET", null, createHeaderParamMap());
 
         } catch (MalformedURLException e) {
             final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
@@ -724,7 +750,7 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
 
             // Setup common params for the API call
             if (params == null) {
-                params = new HashMap<>();
+                params = createRequestParamMap();
             }
 
             params.put("key", key);
@@ -762,7 +788,7 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
             }
 
             // Request headers required by Exchange
-            final Map<String, String> requestHeaders = getHeaderParamMap();
+            final Map<String, String> requestHeaders = createHeaderParamMap();
             requestHeaders.put("Content-Type", "application/x-www-form-urlencoded");
 
             final URL url = new URL(API_BASE_URL + apiMethod + "/"); // MUST have the trailing slash else exchange barfs...
@@ -842,14 +868,14 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
     /*
      * Hack for unit-testing map params passed to transport layer.
      */
-    private Map<String, String> getRequestParamMap() {
+    private Map<String, String> createRequestParamMap() {
         return new HashMap<>();
     }
 
     /*
      * Hack for unit-testing header params passed to transport layer.
      */
-    private Map<String, String> getHeaderParamMap() {
+    private Map<String, String> createHeaderParamMap() {
         return new HashMap<>();
     }
 
