@@ -20,8 +20,8 @@ buildScan {
 }
 
 ext.versions = [
-        springBootVersion:'1.5.9.RELEASE',
-        springTxVersion:'4.3.13.RELEASE'
+        springBootVersion:'1.5.10.RELEASE',
+        springTxVersion:'4.3.14.RELEASE'
 ]
 
 ext.libraries = [
@@ -43,7 +43,7 @@ ext.libraries = [
             force = true
         },
         spring_tx: dependencies.create("org.springframework:spring-tx:" + ext.versions.springTxVersion),
-        google_guava: dependencies.create("com.google.guava:guava:23.6-jre"),
+        google_guava: dependencies.create("com.google.guava:guava:24.0-jre"),
         google_gson: dependencies.create("com.google.code.gson:gson:2.8.2"),
         javax_mail_api: dependencies.create("javax.mail:javax.mail-api:1.6.0"),
         javax_mail_sun: dependencies.create("com.sun.mail:javax.mail:1.6.0"),
@@ -66,7 +66,7 @@ allprojects {
     apply plugin: 'maven'
 
     group = 'com.gazbert.bxbot'
-        version = '0.8.6-SNAPSHOT'
+        version = '0.8.6'
 }
 
 subprojects {
@@ -196,6 +196,6 @@ task buildTarGzipDist(type: Tar, dependsOn: build) {
     }
 
     task wrapper(type: Wrapper) {
-        gradleVersion = '4.4.1'
+        gradleVersion = '5.0'
     }
 }

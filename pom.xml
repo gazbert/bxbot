@@ -6,7 +6,7 @@
     <groupId>com.gazbert.bxbot</groupId>
     <artifactId>bxbot-parent</artifactId>
     <packaging>pom</packaging>
-    <version>0.8.6-SNAPSHOT</version>
+    <version>0.8.6</version>
     <name>BX-bot Parent</name>
     <description>Parent POM for building the bot</description>
     <url>https://github.com/gazbert/bxbot</url>
@@ -45,14 +45,14 @@
     </prerequisites>
     <properties>
         <!-- spring-tx should be same version as Spring Boot's spring-core version -->
-        <spring-tx.version>4.3.13.RELEASE</spring-tx.version>
+        <spring-tx.version>4.3.14.RELEASE</spring-tx.version>
         <powermock.version>1.7.3</powermock.version>
-        <spring-boot-starter.version>1.5.9.RELEASE</spring-boot-starter.version>
+        <spring-boot-starter.version>1.5.10.RELEASE</spring-boot-starter.version>
     </properties>
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>1.5.9.RELEASE</version>
+        <version>1.5.10.RELEASE</version>
     </parent>
     <profiles>
         <profile>
@@ -173,7 +173,7 @@
             <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
-                <version>23.6-jre</version>
+                <version>24.0-jre</version>
             </dependency>
             <dependency>
                 <groupId>javax.mail</groupId>
