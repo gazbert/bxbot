@@ -196,6 +196,6 @@ task buildTarGzipDist(type: Tar, dependsOn: build) {
     }
 
     task wrapper(type: Wrapper) {
-        gradleVersion = '5.0'
+        gradleVersion = '4.5'
     }
 }
