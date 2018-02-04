@@ -71,11 +71,13 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
     private static final String STRAT_1_NAME = "MACD Strat Algo";
     private static final String STRAT_1_DESCRIPTION = "Uses MACD as indicator and takes long position in base currency.";
     private static final String STRAT_1_CLASSNAME = "com.gazbert.nova.algos.MacdLongBase";
+    private static final String STRAT_1_BEANNAME = "macdLongBase";
 
     private static final String STRAT_2_ID = "long-scalper";
     private static final String STRAT_2_NAME = "Long Position Scalper Algo";
     private static final String STRAT_2_DESCRIPTION = "Scalps and goes long...";
     private static final String STRAT_2_CLASSNAME = "com.gazbert.nova.algos.LongScalper";
+    private static final String STRAT_2_BEANNAME = "longScalper";
 
     private static final String BUY_PRICE_CONFIG_ITEM_KEY = "buy-price";
     private static final String BUY_PRICE_CONFIG_ITEM_VALUE = "671.15";
@@ -341,8 +343,8 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
         configItems.put(BUY_PRICE_CONFIG_ITEM_KEY, BUY_PRICE_CONFIG_ITEM_VALUE);
         configItems.put(AMOUNT_TO_BUY_CONFIG_ITEM_KEY, AMOUNT_TO_BUY_CONFIG_ITEM_VALUE);
 
-        final StrategyConfig strategyConfig1 = new StrategyConfig(STRAT_1_ID, STRAT_1_NAME, STRAT_1_DESCRIPTION, STRAT_1_CLASSNAME, configItems);
-        final StrategyConfig strategyConfig2 = new StrategyConfig(STRAT_2_ID, STRAT_2_NAME, STRAT_2_DESCRIPTION, STRAT_2_CLASSNAME, configItems);
+        final StrategyConfig strategyConfig1 = new StrategyConfig(STRAT_1_ID, STRAT_1_NAME, STRAT_1_DESCRIPTION, STRAT_1_CLASSNAME, STRAT_1_BEANNAME, configItems);
+        final StrategyConfig strategyConfig2 = new StrategyConfig(STRAT_2_ID, STRAT_2_NAME, STRAT_2_DESCRIPTION, STRAT_2_CLASSNAME, STRAT_2_BEANNAME, configItems);
 
         final List<StrategyConfig> allStrategies = new ArrayList<>();
         allStrategies.add(strategyConfig1);
@@ -354,20 +356,20 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
         final Map<String, String> configItems = new HashMap<>();
         configItems.put(BUY_PRICE_CONFIG_ITEM_KEY, BUY_PRICE_CONFIG_ITEM_VALUE);
         configItems.put(AMOUNT_TO_BUY_CONFIG_ITEM_KEY, AMOUNT_TO_BUY_CONFIG_ITEM_VALUE);
-        return new StrategyConfig(STRAT_1_ID, STRAT_1_NAME, STRAT_1_DESCRIPTION, STRAT_1_CLASSNAME, configItems);
+        return new StrategyConfig(STRAT_1_ID, STRAT_1_NAME, STRAT_1_DESCRIPTION, STRAT_1_CLASSNAME, STRAT_1_BEANNAME, configItems);
     }
 
     private static StrategyConfig someStrategyConfigWithMissingId() {
         final Map<String, String> configItems = new HashMap<>();
         configItems.put(BUY_PRICE_CONFIG_ITEM_KEY, BUY_PRICE_CONFIG_ITEM_VALUE);
         configItems.put(AMOUNT_TO_BUY_CONFIG_ITEM_KEY, AMOUNT_TO_BUY_CONFIG_ITEM_VALUE);
-        return new StrategyConfig(null, STRAT_1_NAME, STRAT_1_DESCRIPTION, STRAT_1_CLASSNAME, configItems);
+        return new StrategyConfig(null, STRAT_1_NAME, STRAT_1_DESCRIPTION, STRAT_1_CLASSNAME, STRAT_1_BEANNAME, configItems);
     }
 
     private static StrategyConfig unrecognizedStrategyConfig() {
         final Map<String, String> configItems = new HashMap<>();
         configItems.put(BUY_PRICE_CONFIG_ITEM_KEY, BUY_PRICE_CONFIG_ITEM_VALUE);
         configItems.put(AMOUNT_TO_BUY_CONFIG_ITEM_KEY, AMOUNT_TO_BUY_CONFIG_ITEM_VALUE);
-        return new StrategyConfig(UNKNOWN_STRAT_ID, STRAT_1_NAME, STRAT_1_DESCRIPTION, STRAT_1_CLASSNAME, configItems);
+        return new StrategyConfig(UNKNOWN_STRAT_ID, STRAT_1_NAME, STRAT_1_DESCRIPTION, STRAT_1_CLASSNAME, STRAT_1_BEANNAME, configItems);
     }
 }

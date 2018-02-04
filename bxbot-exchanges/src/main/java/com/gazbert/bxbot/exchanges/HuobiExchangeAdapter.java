@@ -66,6 +66,13 @@ import java.util.*;
  * </strong>
  * </p>
  * <p>
+ * <strong>
+ * NOTE: This adapter is now deprecated - due to regulatory requirements from Chinese authorities Huobi ceased trading
+ * activity on October 31 2017. The exchange has been superseded by <a href="https://www.huobipro.com">Huobi.pro</a>
+ * and a new Huobi adapter needs building.
+ * </strong>
+ * </p>
+ * <p>
  * This adapter only supports trading BTC, i.e. BTC-CNY and BTC-USD markets. It does not support trading of LTC-CNY.
  * </p>
  * <p>
@@ -117,6 +124,7 @@ import java.util.*;
  * @author gazbert
  * @since 1.0
  */
+@Deprecated()
 public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implements ExchangeAdapter {
 
     private static final Logger LOG = LogManager.getLogger();
@@ -273,7 +281,7 @@ public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implemen
         try {
             final String marketIdForAuthenticatedRequest = getAuthenticatedMarketIdForGivenPublicMarketId(marketId);
 
-            final Map<String, String> params = getRequestParamMap();
+            final Map<String, String> params = createRequestParamMap();
             params.put("coin_type", "1"); // "1" = BTC
 
             // we need to limit amount to 2 decimal places else exchange will barf
@@ -320,7 +328,7 @@ public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implemen
         try {
             final String marketIdForAuthenticatedRequest = getAuthenticatedMarketIdForGivenPublicMarketId(marketId);
 
-            final Map<String, String> params = getRequestParamMap();
+            final Map<String, String> params = createRequestParamMap();
             params.put("coin_type", "1"); // "1" = BTC
             params.put("id", orderId);
 
@@ -351,7 +359,7 @@ public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implemen
         try {
             final String marketIdForAuthenticatedRequest = getAuthenticatedMarketIdForGivenPublicMarketId(marketId);
 
-            final Map<String, String> params = getRequestParamMap();
+            final Map<String, String> params = createRequestParamMap();
             params.put("coin_type", "1"); // "1" = BTC
 
             final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("get_orders",
@@ -935,14 +943,9 @@ public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implemen
     private AbstractExchangeAdapter.ExchangeHttpResponse sendPublicRequestToExchange(String apiMethod)
             throws ExchangeNetworkException, TradingApiException {
 
-        // Request headers required by Exchange
-        final Map<String, String> requestHeaders = new HashMap<>();
-        requestHeaders.put("Content-Type", "application/x-www-form-urlencoded");
-
         try {
-
             final URL url = new URL(PUBLIC_API_BASE_URL + apiMethod);
-            return sendNetworkRequest(url, "GET", null, requestHeaders);
+            return makeNetworkRequest(url, "GET", null, createHeaderParamMap());
 
         } catch (MalformedURLException e) {
             final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
@@ -997,7 +1000,7 @@ public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implemen
         try {
 
             if (params == null) {
-                params = new HashMap<>();
+                params = createRequestParamMap();
             }
 
             final Map<String, String> signatureParams = new HashMap<>(params);
@@ -1041,12 +1044,11 @@ public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implemen
                         URLEncoder.encode(queryParam.getValue(), "UTF-8"));
             }
 
-            // Request headers required by Exchange
-            final Map<String, String> requestHeaders = new HashMap<>();
+            final Map<String, String> requestHeaders = createHeaderParamMap();
             requestHeaders.put("Content-Type", "application/x-www-form-urlencoded");
 
             final URL url = new URL(AUTHENTICATED_API_URL);
-            return sendNetworkRequest(url, "POST", payloadBuilder.toString(), requestHeaders);
+            return makeNetworkRequest(url, "POST", payloadBuilder.toString(), requestHeaders);
 
         } catch (MalformedURLException | UnsupportedEncodingException e) {
 
@@ -1175,7 +1177,22 @@ public final class HuobiExchangeAdapter extends AbstractExchangeAdapter implemen
     /*
      * Hack for unit-testing map params passed to transport layer.
      */
-    private Map<String, String> getRequestParamMap() {
+    private Map<String, String> createRequestParamMap() {
         return new HashMap<>();
+    }
+
+    /*
+     * Hack for unit-testing header params passed to transport layer.
+     */
+    private Map<String, String> createHeaderParamMap() {
+        return new HashMap<>();
+    }
+
+    /*
+     * Hack for unit-testing transport layer.
+     */
+    private ExchangeHttpResponse makeNetworkRequest(URL url, String httpMethod, String postData, Map<String, String> requestHeaders)
+            throws TradingApiException, ExchangeNetworkException {
+        return super.sendNetworkRequest(url, httpMethod, postData, requestHeaders);
     }
 }

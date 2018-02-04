@@ -11,7 +11,7 @@
     <parent>
         <groupId>com.gazbert.bxbot</groupId>
         <artifactId>bxbot-parent</artifactId>
-        <version>0.8.5-SNAPSHOT</version>
+        <version>0.8.7-SNAPSHOT</version>
     </parent>
     <properties>
         <start-class>com.gazbert.bxbot.BXBot</start-class>

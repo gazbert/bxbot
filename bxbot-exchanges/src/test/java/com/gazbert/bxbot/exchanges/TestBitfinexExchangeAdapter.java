@@ -88,10 +88,10 @@ public class TestBitfinexExchangeAdapter {
     private static final String ORDER_ID_TO_CANCEL = "426152651";
 
     // Mocked out methods
-    private static final String MOCKED_GET_REQUEST_PARAM_MAP_METHOD = "getRequestParamMap";
+    private static final String MOCKED_CREATE_REQUEST_PARAM_MAP_METHOD = "createRequestParamMap";
     private static final String MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD = "sendAuthenticatedRequestToExchange";
     private static final String MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD = "sendPublicRequestToExchange";
-    private static final String MOCKED_GET_REQUEST_HEADER_MAP_METHOD = "getHeaderParamMap";
+    private static final String MOCKED_CREATE_REQUEST_HEADER_MAP_METHOD = "createHeaderParamMap";
     private static final String MOCKED_MAKE_NETWORK_REQUEST_METHOD = "makeNetworkRequest";
 
     // Exchange Adapter config for the tests
@@ -156,9 +156,9 @@ public class TestBitfinexExchangeAdapter {
         // Partial mock so we do not send stuff down the wire
         final BitfinexExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
                 BitfinexExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD,
-                MOCKED_GET_REQUEST_PARAM_MAP_METHOD);
+                MOCKED_CREATE_REQUEST_PARAM_MAP_METHOD);
 
-        PowerMock.expectPrivate(exchangeAdapter, MOCKED_GET_REQUEST_PARAM_MAP_METHOD).andReturn(requestParamMap);
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_CREATE_REQUEST_PARAM_MAP_METHOD).andReturn(requestParamMap);
         PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(ORDER_NEW),
                 eq(requestParamMap)).andReturn(exchangeResponse);
 
@@ -192,9 +192,9 @@ public class TestBitfinexExchangeAdapter {
         // Partial mock so we do not send stuff down the wire
         final BitfinexExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
                 BitfinexExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD,
-                MOCKED_GET_REQUEST_PARAM_MAP_METHOD);
+                MOCKED_CREATE_REQUEST_PARAM_MAP_METHOD);
 
-        PowerMock.expectPrivate(exchangeAdapter, MOCKED_GET_REQUEST_PARAM_MAP_METHOD).andReturn(requestParamMap);
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_CREATE_REQUEST_PARAM_MAP_METHOD).andReturn(requestParamMap);
         PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(ORDER_NEW),
                 eq(requestParamMap)).andReturn(exchangeResponse);
 
@@ -265,9 +265,9 @@ public class TestBitfinexExchangeAdapter {
         // Partial mock so we do not send stuff down the wire
         final BitfinexExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
                 BitfinexExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD,
-                MOCKED_GET_REQUEST_PARAM_MAP_METHOD);
+                MOCKED_CREATE_REQUEST_PARAM_MAP_METHOD);
 
-        PowerMock.expectPrivate(exchangeAdapter, MOCKED_GET_REQUEST_PARAM_MAP_METHOD).andReturn(requestParamMap);
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_CREATE_REQUEST_PARAM_MAP_METHOD).andReturn(requestParamMap);
         PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(ORDER_CANCEL),
                 eq(requestParamMap)).andReturn(exchangeResponse);
 
@@ -744,6 +744,76 @@ public class TestBitfinexExchangeAdapter {
     }
 
     // ------------------------------------------------------------------------------------------------
+    //  Get Ticker tests
+    // ------------------------------------------------------------------------------------------------
+
+    @Test
+    public void testGettingTickerSuccessfully() throws Exception {
+
+        // Load the canned response from the exchange
+        final byte[] encoded = Files.readAllBytes(Paths.get(PUB_TICKER_JSON_RESPONSE));
+        final AbstractExchangeAdapter.ExchangeHttpResponse exchangeResponse =
+                new AbstractExchangeAdapter.ExchangeHttpResponse(200, "OK", new String(encoded, StandardCharsets.UTF_8));
+
+        // Partial mock so we do not send stuff down the wire
+        final BitfinexExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
+                BitfinexExchangeAdapter.class, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD);
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD, PUB_TICKER + "/" + MARKET_ID).
+                andReturn(exchangeResponse);
+
+        PowerMock.replayAll();
+        exchangeAdapter.init(exchangeConfig);
+
+        final Ticker ticker = exchangeAdapter.getTicker(MARKET_ID);
+        assertTrue(ticker.getLast().compareTo(new BigDecimal("236.07")) == 0);
+        assertTrue(ticker.getAsk().compareTo(new BigDecimal("236.3")) == 0);
+        assertTrue(ticker.getBid().compareTo(new BigDecimal("236.1")) == 0);
+        assertTrue(ticker.getHigh().compareTo(new BigDecimal("241.59")) == 0);
+        assertTrue(ticker.getLow().compareTo(new BigDecimal("235.51")) == 0);
+        assertNull(ticker.getOpen()); // vwap not supplied by finex
+        assertTrue(ticker.getVolume().compareTo(new BigDecimal("8002.20183869")) == 0);
+        assertNull(ticker.getVwap()); // vwap not supplied by finex
+        assertTrue(ticker.getTimestamp() == 1442080762L);
+
+        PowerMock.verifyAll();
+    }
+
+    @Test(expected = ExchangeNetworkException.class)
+    public void testGettingTickerHandlesExchangeNetworkException() throws Exception {
+
+        // Partial mock so we do not send stuff down the wire
+        final BitfinexExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
+                BitfinexExchangeAdapter.class, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD);
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD, PUB_TICKER + "/" + MARKET_ID).
+                andThrow(new ExchangeNetworkException(" You're born, you live and you die. There are no due overs," +
+                        " no second chances to make things right if you frak them up the first time, " +
+                        "not in this life anyway."));
+
+        PowerMock.replayAll();
+        exchangeAdapter.init(exchangeConfig);
+
+        exchangeAdapter.getTicker(MARKET_ID);
+        PowerMock.verifyAll();
+    }
+
+    @Test(expected = TradingApiException.class)
+    public void testGettingTickerHandlesUnexpectedException() throws Exception {
+
+        // Partial mock so we do not send stuff down the wire
+        final BitfinexExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
+                BitfinexExchangeAdapter.class, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD);
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD, PUB_TICKER + "/" + MARKET_ID).
+                andThrow(new IllegalArgumentException("Like I said, you make your choices and you live with them " +
+                        "and in the end you are those choices."));
+
+        PowerMock.replayAll();
+        exchangeAdapter.init(exchangeConfig);
+
+        exchangeAdapter.getLatestMarketPrice(MARKET_ID);
+        PowerMock.verifyAll();
+    }
+
+    // ------------------------------------------------------------------------------------------------
     //  Non Exchange visiting tests
     // ------------------------------------------------------------------------------------------------
 
@@ -818,7 +888,7 @@ public class TestBitfinexExchangeAdapter {
                 new AbstractExchangeAdapter.ExchangeHttpResponse(200, "OK", new String(encoded, StandardCharsets.UTF_8));
 
         final BitfinexExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
-                BitfinexExchangeAdapter.class, MOCKED_MAKE_NETWORK_REQUEST_METHOD, MOCKED_GET_REQUEST_PARAM_MAP_METHOD);
+                BitfinexExchangeAdapter.class, MOCKED_MAKE_NETWORK_REQUEST_METHOD, MOCKED_CREATE_REQUEST_PARAM_MAP_METHOD);
 
         final URL url = new URL(PUBLIC_API_BASE_URL + PUB_TICKER + "/" + MARKET_ID);
         PowerMock.expectPrivate(exchangeAdapter, MOCKED_MAKE_NETWORK_REQUEST_METHOD,
@@ -841,7 +911,7 @@ public class TestBitfinexExchangeAdapter {
     public void testSendingPublicRequestToExchangeHandlesExchangeNetworkException() throws Exception {
 
         final BitfinexExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
-                BitfinexExchangeAdapter.class, MOCKED_MAKE_NETWORK_REQUEST_METHOD, MOCKED_GET_REQUEST_PARAM_MAP_METHOD);
+                BitfinexExchangeAdapter.class, MOCKED_MAKE_NETWORK_REQUEST_METHOD, MOCKED_CREATE_REQUEST_PARAM_MAP_METHOD);
 
         final URL url = new URL(PUBLIC_API_BASE_URL + PUB_TICKER + "/" + MARKET_ID);
         PowerMock.expectPrivate(exchangeAdapter, MOCKED_MAKE_NETWORK_REQUEST_METHOD,
@@ -869,7 +939,7 @@ public class TestBitfinexExchangeAdapter {
     public void testSendingPublicRequestToExchangeHandlesTradingApiException() throws Exception {
 
         final BitfinexExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
-                BitfinexExchangeAdapter.class, MOCKED_MAKE_NETWORK_REQUEST_METHOD, MOCKED_GET_REQUEST_PARAM_MAP_METHOD);
+                BitfinexExchangeAdapter.class, MOCKED_MAKE_NETWORK_REQUEST_METHOD, MOCKED_CREATE_REQUEST_PARAM_MAP_METHOD);
 
         final URL url = new URL(PUBLIC_API_BASE_URL + PUB_TICKER + "/" + MARKET_ID);
         PowerMock.expectPrivate(exchangeAdapter, MOCKED_MAKE_NETWORK_REQUEST_METHOD,
@@ -914,10 +984,10 @@ public class TestBitfinexExchangeAdapter {
         PowerMock.replay(requestHeaderMap); // map needs to be in play early
 
         final BitfinexExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
-                BitfinexExchangeAdapter.class, MOCKED_MAKE_NETWORK_REQUEST_METHOD, MOCKED_GET_REQUEST_HEADER_MAP_METHOD,
-                MOCKED_GET_REQUEST_PARAM_MAP_METHOD);
-        PowerMock.expectPrivate(exchangeAdapter, MOCKED_GET_REQUEST_PARAM_MAP_METHOD).andReturn(requestParamMap);
-        PowerMock.expectPrivate(exchangeAdapter, MOCKED_GET_REQUEST_HEADER_MAP_METHOD).andReturn(requestHeaderMap);
+                BitfinexExchangeAdapter.class, MOCKED_MAKE_NETWORK_REQUEST_METHOD, MOCKED_CREATE_REQUEST_HEADER_MAP_METHOD,
+                MOCKED_CREATE_REQUEST_PARAM_MAP_METHOD);
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_CREATE_REQUEST_PARAM_MAP_METHOD).andReturn(requestParamMap);
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_CREATE_REQUEST_HEADER_MAP_METHOD).andReturn(requestHeaderMap);
 
         final URL url = new URL(AUTHENTICATED_API_URL + ORDER_NEW);
         PowerMock.expectPrivate(exchangeAdapter, MOCKED_MAKE_NETWORK_REQUEST_METHOD,
@@ -958,10 +1028,10 @@ public class TestBitfinexExchangeAdapter {
         PowerMock.replay(requestHeaderMap); // map needs to be in play early
 
         final BitfinexExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
-                BitfinexExchangeAdapter.class, MOCKED_MAKE_NETWORK_REQUEST_METHOD, MOCKED_GET_REQUEST_HEADER_MAP_METHOD,
-                MOCKED_GET_REQUEST_PARAM_MAP_METHOD);
-        PowerMock.expectPrivate(exchangeAdapter, MOCKED_GET_REQUEST_PARAM_MAP_METHOD).andReturn(requestParamMap);
-        PowerMock.expectPrivate(exchangeAdapter, MOCKED_GET_REQUEST_HEADER_MAP_METHOD).andReturn(requestHeaderMap);
+                BitfinexExchangeAdapter.class, MOCKED_MAKE_NETWORK_REQUEST_METHOD, MOCKED_CREATE_REQUEST_HEADER_MAP_METHOD,
+                MOCKED_CREATE_REQUEST_PARAM_MAP_METHOD);
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_CREATE_REQUEST_PARAM_MAP_METHOD).andReturn(requestParamMap);
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_CREATE_REQUEST_HEADER_MAP_METHOD).andReturn(requestHeaderMap);
 
         final URL url = new URL(AUTHENTICATED_API_URL + ORDER_NEW);
         PowerMock.expectPrivate(exchangeAdapter, MOCKED_MAKE_NETWORK_REQUEST_METHOD,
@@ -1001,10 +1071,10 @@ public class TestBitfinexExchangeAdapter {
         PowerMock.replay(requestHeaderMap); // map needs to be in play early
 
         final BitfinexExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
-                BitfinexExchangeAdapter.class, MOCKED_MAKE_NETWORK_REQUEST_METHOD, MOCKED_GET_REQUEST_HEADER_MAP_METHOD,
-                MOCKED_GET_REQUEST_PARAM_MAP_METHOD);
-        PowerMock.expectPrivate(exchangeAdapter, MOCKED_GET_REQUEST_PARAM_MAP_METHOD).andReturn(requestParamMap);
-        PowerMock.expectPrivate(exchangeAdapter, MOCKED_GET_REQUEST_HEADER_MAP_METHOD).andReturn(requestHeaderMap);
+                BitfinexExchangeAdapter.class, MOCKED_MAKE_NETWORK_REQUEST_METHOD, MOCKED_CREATE_REQUEST_HEADER_MAP_METHOD,
+                MOCKED_CREATE_REQUEST_PARAM_MAP_METHOD);
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_CREATE_REQUEST_PARAM_MAP_METHOD).andReturn(requestParamMap);
+        PowerMock.expectPrivate(exchangeAdapter, MOCKED_CREATE_REQUEST_HEADER_MAP_METHOD).andReturn(requestHeaderMap);
 
         final URL url = new URL(AUTHENTICATED_API_URL + ORDER_NEW);
         PowerMock.expectPrivate(exchangeAdapter, MOCKED_MAKE_NETWORK_REQUEST_METHOD,

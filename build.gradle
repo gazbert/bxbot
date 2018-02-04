@@ -6,12 +6,12 @@ buildscript {
 
     dependencies {
         classpath("io.spring.gradle:dependency-management-plugin:1.0.3.RELEASE")
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.5.8.RELEASE")
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.5.9.RELEASE")
     }
 }
 
 plugins {
-    id 'com.gradle.build-scan' version '1.10'
+    id 'com.gradle.build-scan' version '1.11'
 }
 
 buildScan {
@@ -20,8 +20,8 @@ buildScan {
 }
 
 ext.versions = [
-        springBootVersion:'1.5.8.RELEASE',
-        springTxVersion:'4.3.12.RELEASE'
+        springBootVersion:'1.5.10.RELEASE',
+        springTxVersion:'4.3.14.RELEASE'
 ]
 
 ext.libraries = [
@@ -43,7 +43,7 @@ ext.libraries = [
             force = true
         },
         spring_tx: dependencies.create("org.springframework:spring-tx:" + ext.versions.springTxVersion),
-        google_guava: dependencies.create("com.google.guava:guava:23.0"),
+        google_guava: dependencies.create("com.google.guava:guava:24.0-jre"),
         google_gson: dependencies.create("com.google.code.gson:gson:2.8.2"),
         javax_mail_api: dependencies.create("javax.mail:javax.mail-api:1.6.0"),
         javax_mail_sun: dependencies.create("com.sun.mail:javax.mail:1.6.0"),
@@ -51,7 +51,7 @@ ext.libraries = [
         junit: dependencies.create("junit:junit:4.12"),
         powermock_junit: dependencies.create("org.powermock:powermock-module-junit4:1.7.3"),
         powermock_api_easymock: dependencies.create("org.powermock:powermock-api-easymock:1.7.3"),
-        easymock: dependencies.create("org.easymock:easymock:3.5") {
+        easymock: dependencies.create("org.easymock:easymock:3.5.1") {
             exclude module: "cglib-nodep"
             force = true
         },
@@ -66,7 +66,7 @@ allprojects {
     apply plugin: 'maven'
 
     group = 'com.gazbert.bxbot'
-        version = '0.8.5-SNAPSHOT'
+        version = '0.8.7-SNAPSHOT'
 }
 
 subprojects {
@@ -196,6 +196,6 @@ task buildTarGzipDist(type: Tar, dependsOn: build) {
     }
 
     task wrapper(type: Wrapper) {
-        gradleVersion = '4.2.1'
+        gradleVersion = '4.5'
     }
 }
