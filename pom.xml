@@ -48,6 +48,7 @@
         <spring-tx.version>4.3.14.RELEASE</spring-tx.version>
         <powermock.version>1.7.3</powermock.version>
         <spring-boot-starter.version>1.5.10.RELEASE</spring-boot-starter.version>
+        <jaxb-api.version>2.2.7</jaxb-api.version>
     </properties>
     <parent>
         <groupId>org.springframework.boot</groupId>
