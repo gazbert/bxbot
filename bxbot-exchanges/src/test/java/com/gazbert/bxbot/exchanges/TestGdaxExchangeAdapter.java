@@ -55,7 +55,7 @@ import static org.junit.Assert.assertTrue;
 @RunWith(PowerMockRunner.class)
 @PowerMockIgnore({"javax.crypto.*", "javax.management.*"})
 @PrepareForTest(GdaxExchangeAdapter.class)
-public class TestGdaxExchangeAdapter {
+public class TestGdaxExchangeAdapter extends AbstractExchangeAdapterTest {
 
     // Canned JSON responses from exchange - expected to reside on filesystem relative to project root
     private static final String BOOK_JSON_RESPONSE = "./src/test/exchange-data/gdax/book.json";
@@ -150,8 +150,8 @@ public class TestGdaxExchangeAdapter {
 
         // Mock out param map so we can assert the contents passed to the transport layer are what we expect.
         final Map<String, String> requestParamMap = PowerMock.createMock(Map.class);
-        expect(requestParamMap.put("size", new DecimalFormat("#.########").format(BUY_ORDER_QUANTITY))).andStubReturn(null);
-        expect(requestParamMap.put("price", new DecimalFormat("#.##").format(BUY_ORDER_PRICE))).andStubReturn(null);
+        expect(requestParamMap.put("size", new DecimalFormat("#.########", getDecimalFormatSymbols()).format(BUY_ORDER_QUANTITY))).andStubReturn(null);
+        expect(requestParamMap.put("price", new DecimalFormat("#.##", getDecimalFormatSymbols()).format(BUY_ORDER_PRICE))).andStubReturn(null);
         expect(requestParamMap.put("side", "buy")).andStubReturn(null);
         expect(requestParamMap.put("product_id", MARKET_ID)).andStubReturn(null);
 
@@ -184,8 +184,8 @@ public class TestGdaxExchangeAdapter {
 
         // Mock out param map so we can assert the contents passed to the transport layer are what we expect.
         final Map<String, String> requestParamMap = PowerMock.createMock(Map.class);
-        expect(requestParamMap.put("size", new DecimalFormat("#.########").format(SELL_ORDER_QUANTITY))).andStubReturn(null);
-        expect(requestParamMap.put("price", new DecimalFormat("#.##").format(SELL_ORDER_PRICE))).andStubReturn(null);
+        expect(requestParamMap.put("size", new DecimalFormat("#.########", getDecimalFormatSymbols()).format(SELL_ORDER_QUANTITY))).andStubReturn(null);
+        expect(requestParamMap.put("price", new DecimalFormat("#.##", getDecimalFormatSymbols()).format(SELL_ORDER_PRICE))).andStubReturn(null);
         expect(requestParamMap.put("side", "sell")).andStubReturn(null);
         expect(requestParamMap.put("product_id", MARKET_ID)).andStubReturn(null);
 
@@ -915,8 +915,8 @@ public class TestGdaxExchangeAdapter {
                 new AbstractExchangeAdapter.ExchangeHttpResponse(200, "OK", new String(encoded, StandardCharsets.UTF_8));
 
         final Map<String, String> requestParamMap = new HashMap<>();
-        requestParamMap.put("size", new DecimalFormat("#.########").format(SELL_ORDER_QUANTITY));
-        requestParamMap.put("price", new DecimalFormat("#.##").format(SELL_ORDER_PRICE));
+        requestParamMap.put("size", new DecimalFormat("#.########", getDecimalFormatSymbols()).format(SELL_ORDER_QUANTITY));
+        requestParamMap.put("price", new DecimalFormat("#.##", getDecimalFormatSymbols()).format(SELL_ORDER_PRICE));
         requestParamMap.put("side", "sell");
         requestParamMap.put("product_id", MARKET_ID);
 
@@ -954,8 +954,8 @@ public class TestGdaxExchangeAdapter {
     public void testSendingAuthenticatedRequestToExchangeHandlesExchangeNetworkException() throws Exception {
 
         final Map<String, String> requestParamMap = new HashMap<>();
-        requestParamMap.put("size", new DecimalFormat("#.########").format(SELL_ORDER_QUANTITY));
-        requestParamMap.put("price", new DecimalFormat("#.##").format(SELL_ORDER_PRICE));
+        requestParamMap.put("size", new DecimalFormat("#.########", getDecimalFormatSymbols()).format(SELL_ORDER_QUANTITY));
+        requestParamMap.put("price", new DecimalFormat("#.##", getDecimalFormatSymbols()).format(SELL_ORDER_PRICE));
         requestParamMap.put("side", "sell");
         requestParamMap.put("product_id", MARKET_ID);
 
@@ -993,8 +993,8 @@ public class TestGdaxExchangeAdapter {
     public void testSendingAuthenticatedRequestToExchangeHandlesTradingApiException() throws Exception {
 
         final Map<String, String> requestParamMap = new HashMap<>();
-        requestParamMap.put("size", new DecimalFormat("#.########").format(SELL_ORDER_QUANTITY));
-        requestParamMap.put("price", new DecimalFormat("#.##").format(SELL_ORDER_PRICE));
+        requestParamMap.put("size", new DecimalFormat("#.########", getDecimalFormatSymbols()).format(SELL_ORDER_QUANTITY));
+        requestParamMap.put("price", new DecimalFormat("#.##", getDecimalFormatSymbols()).format(SELL_ORDER_PRICE));
         requestParamMap.put("side", "sell");
         requestParamMap.put("product_id", MARKET_ID);
 
