@@ -43,6 +43,8 @@ import com.gazbert.bxbot.trading.api.BalanceInfo;
 import com.gazbert.bxbot.trading.api.ExchangeNetworkException;
 import com.gazbert.bxbot.trading.api.Market;
 import com.gazbert.bxbot.trading.api.TradingApiException;
+
+import org.easymock.EasyMock;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -143,7 +145,7 @@ public class TestTradingEngine {
 
         exchangeAdapter = PowerMock.createMock(ExchangeAdapter.class);
         tradingStrategy = PowerMock.createMock(TradingStrategy.class);
-        emailAlerter = PowerMock.createMock(EmailAlerter.class);
+        emailAlerter = EasyMock.createMock(EmailAlerter.class);
 
         exchangeConfigService = PowerMock.createMock(ExchangeConfigService.class);
         engineConfigService = PowerMock.createMock(EngineConfigService.class);
