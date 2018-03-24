@@ -58,7 +58,7 @@ import static org.junit.Assert.*;
 @RunWith(PowerMockRunner.class)
 @PowerMockIgnore({"javax.crypto.*", "javax.management.*"})
 @PrepareForTest(OkCoinExchangeAdapter.class)
-public class TestOkcoinExchangeAdapter {
+public class TestOkcoinExchangeAdapter extends AbstractExchangeAdapterTest {
 
     // Canned JSON responses from exchange - expected to reside on filesystem relative to project root
     private static final String DEPTH_JSON_RESPONSE = "./src/test/exchange-data/okcoin/depth.json";
@@ -247,8 +247,8 @@ public class TestOkcoinExchangeAdapter {
         // Mock out param map so we can assert the contents passed to the transport layer are what we expect.
         final Map<String, String> requestParamMap = PowerMock.createMock(Map.class);
         expect(requestParamMap.put("symbol", MARKET_ID)).andStubReturn(null);
-        expect(requestParamMap.put("amount", new DecimalFormat("#.########").format(BUY_ORDER_QUANTITY))).andStubReturn(null);
-        expect(requestParamMap.put("price", new DecimalFormat("#.########").format(BUY_ORDER_PRICE))).andStubReturn(null);
+        expect(requestParamMap.put("amount", new DecimalFormat("#.########", getDecimalFormatSymbols()).format(BUY_ORDER_QUANTITY))).andStubReturn(null);
+        expect(requestParamMap.put("price", new DecimalFormat("#.########", getDecimalFormatSymbols()).format(BUY_ORDER_PRICE))).andStubReturn(null);
         expect(requestParamMap.put("type", "buy")).andStubReturn(null);
 
         // Partial mock so we do not send stuff down the wire
@@ -281,8 +281,8 @@ public class TestOkcoinExchangeAdapter {
         // Mock out param map so we can assert the contents passed to the transport layer are what we expect.
         final Map<String, String> requestParamMap = PowerMock.createMock(Map.class);
         expect(requestParamMap.put("symbol", MARKET_ID)).andStubReturn(null);
-        expect(requestParamMap.put("amount", new DecimalFormat("#.########").format(SELL_ORDER_QUANTITY))).andStubReturn(null);
-        expect(requestParamMap.put("price", new DecimalFormat("#.########").format(SELL_ORDER_PRICE))).andStubReturn(null);
+        expect(requestParamMap.put("amount", new DecimalFormat("#.########", getDecimalFormatSymbols()).format(SELL_ORDER_QUANTITY))).andStubReturn(null);
+        expect(requestParamMap.put("price", new DecimalFormat("#.########", getDecimalFormatSymbols()).format(SELL_ORDER_PRICE))).andStubReturn(null);
         expect(requestParamMap.put("type", "sell")).andStubReturn(null);
 
         // Partial mock so we do not send stuff down the wire
@@ -1045,8 +1045,8 @@ public class TestOkcoinExchangeAdapter {
 
         final Map<String, String> requestParamMap = PowerMock.createPartialMock(HashMap.class, "put");
         expect(requestParamMap.put("symbol", MARKET_ID)).andStubReturn(null);
-        expect(requestParamMap.put("amount", new DecimalFormat("#.########").format(SELL_ORDER_QUANTITY))).andStubReturn(null);
-        expect(requestParamMap.put("price", new DecimalFormat("#.########").format(SELL_ORDER_PRICE))).andStubReturn(null);
+        expect(requestParamMap.put("amount", new DecimalFormat("#.########", getDecimalFormatSymbols()).format(SELL_ORDER_QUANTITY))).andStubReturn(null);
+        expect(requestParamMap.put("price", new DecimalFormat("#.########", getDecimalFormatSymbols()).format(SELL_ORDER_PRICE))).andStubReturn(null);
         expect(requestParamMap.put("type", "sell")).andStubReturn(null);
         expect(requestParamMap.put("api_key", KEY)).andStubReturn(null);
         expect(requestParamMap.put(eq("sign"), anyString())).andStubReturn(null);
@@ -1084,8 +1084,8 @@ public class TestOkcoinExchangeAdapter {
 
         final Map<String, String> requestParamMap = PowerMock.createPartialMock(HashMap.class, "put");
         expect(requestParamMap.put("symbol", MARKET_ID)).andStubReturn(null);
-        expect(requestParamMap.put("amount", new DecimalFormat("#.########").format(SELL_ORDER_QUANTITY))).andStubReturn(null);
-        expect(requestParamMap.put("price", new DecimalFormat("#.########").format(SELL_ORDER_PRICE))).andStubReturn(null);
+        expect(requestParamMap.put("amount", new DecimalFormat("#.########", getDecimalFormatSymbols()).format(SELL_ORDER_QUANTITY))).andStubReturn(null);
+        expect(requestParamMap.put("price", new DecimalFormat("#.########", getDecimalFormatSymbols()).format(SELL_ORDER_PRICE))).andStubReturn(null);
         expect(requestParamMap.put("type", "sell")).andStubReturn(null);
         expect(requestParamMap.put("api_key", KEY)).andStubReturn(null);
         expect(requestParamMap.put(eq("sign"), anyString())).andStubReturn(null);
@@ -1122,8 +1122,8 @@ public class TestOkcoinExchangeAdapter {
 
         final Map<String, String> requestParamMap = PowerMock.createPartialMock(HashMap.class, "put");
         expect(requestParamMap.put("symbol", MARKET_ID)).andStubReturn(null);
-        expect(requestParamMap.put("amount", new DecimalFormat("#.########").format(SELL_ORDER_QUANTITY))).andStubReturn(null);
-        expect(requestParamMap.put("price", new DecimalFormat("#.########").format(SELL_ORDER_PRICE))).andStubReturn(null);
+        expect(requestParamMap.put("amount", new DecimalFormat("#.########", getDecimalFormatSymbols()).format(SELL_ORDER_QUANTITY))).andStubReturn(null);
+        expect(requestParamMap.put("price", new DecimalFormat("#.########", getDecimalFormatSymbols()).format(SELL_ORDER_PRICE))).andStubReturn(null);
         expect(requestParamMap.put("type", "sell")).andStubReturn(null);
         expect(requestParamMap.put("api_key", KEY)).andStubReturn(null);
         expect(requestParamMap.put(eq("sign"), anyString())).andStubReturn(null);

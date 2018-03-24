@@ -59,7 +59,7 @@ import static org.junit.Assert.*;
 @RunWith(PowerMockRunner.class)
 @PowerMockIgnore({"javax.crypto.*", "javax.management.*"})
 @PrepareForTest(BitstampExchangeAdapter.class)
-public class TestBitstampExchangeAdapter {
+public class TestBitstampExchangeAdapter extends AbstractExchangeAdapter {
 
     // Canned JSON responses from exchange - expected to reside on filesystem relative to project root
     private static final String ORDER_BOOK_JSON_RESPONSE = "./src/test/exchange-data/bitstamp/order_book.json";
@@ -225,8 +225,8 @@ public class TestBitstampExchangeAdapter {
 
         // Mock out param map so we can assert the contents passed to the transport layer are what we expect.
         final Map<String, String> requestParamMap = PowerMock.createMock(Map.class);
-        expect(requestParamMap.put("price", new DecimalFormat("#.##").format(BUY_ORDER_PRICE))).andStubReturn(null);
-        expect(requestParamMap.put("amount", new DecimalFormat("#.########").format(BUY_ORDER_QUANTITY))).andStubReturn(null);
+        expect(requestParamMap.put("price", new DecimalFormat("#.##", getDecimalFormatSymbols()).format(BUY_ORDER_PRICE))).andStubReturn(null);
+        expect(requestParamMap.put("amount", new DecimalFormat("#.########", getDecimalFormatSymbols()).format(BUY_ORDER_QUANTITY))).andStubReturn(null);
         expect(requestParamMap.put("type", "buy")).andStubReturn(null);
 
         // Partial mock so we do not send stuff down the wire
@@ -259,8 +259,8 @@ public class TestBitstampExchangeAdapter {
 
         // Mock out param map so we can assert the contents passed to the transport layer are what we expect.
         final Map<String, String> requestParamMap = PowerMock.createMock(Map.class);
-        expect(requestParamMap.put("price", new DecimalFormat("#.##").format(SELL_ORDER_PRICE))).andStubReturn(null);
-        expect(requestParamMap.put("amount", new DecimalFormat("#.########").format(SELL_ORDER_QUANTITY))).andStubReturn(null);
+        expect(requestParamMap.put("price", new DecimalFormat("#.##", getDecimalFormatSymbols()).format(SELL_ORDER_PRICE))).andStubReturn(null);
+        expect(requestParamMap.put("amount", new DecimalFormat("#.########", getDecimalFormatSymbols()).format(SELL_ORDER_QUANTITY))).andStubReturn(null);
         expect(requestParamMap.put("type", "sell")).andStubReturn(null);
 
         // Partial mock so we do not send stuff down the wire
@@ -971,8 +971,8 @@ public class TestBitstampExchangeAdapter {
                 new AbstractExchangeAdapter.ExchangeHttpResponse(200, "OK", new String(encoded, StandardCharsets.UTF_8));
 
         final Map<String, String> requestParamMap = PowerMock.createPartialMock(HashMap.class, "put");
-        expect(requestParamMap.put("price", new DecimalFormat("#.##").format(SELL_ORDER_PRICE))).andStubReturn(null);
-        expect(requestParamMap.put("amount", new DecimalFormat("#.########").format(SELL_ORDER_QUANTITY))).andStubReturn(null);
+        expect(requestParamMap.put("price", new DecimalFormat("#.##", getDecimalFormatSymbols()).format(SELL_ORDER_PRICE))).andStubReturn(null);
+        expect(requestParamMap.put("amount", new DecimalFormat("#.########", getDecimalFormatSymbols()).format(SELL_ORDER_QUANTITY))).andStubReturn(null);
         expect(requestParamMap.put("type", "sell")).andStubReturn(null);
         expect(requestParamMap.put("key", "key123")).andStubReturn(null);
         expect(requestParamMap.put(eq("nonce"), anyString())).andStubReturn(null);
@@ -1010,8 +1010,8 @@ public class TestBitstampExchangeAdapter {
     public void testSendingAuthenticatedRequestToExchangeHandlesExchangeNetworkException() throws Exception {
 
         final Map<String, String> requestParamMap = PowerMock.createPartialMock(HashMap.class, "put");
-        expect(requestParamMap.put("price", new DecimalFormat("#.##").format(SELL_ORDER_PRICE))).andStubReturn(null);
-        expect(requestParamMap.put("amount", new DecimalFormat("#.########").format(SELL_ORDER_QUANTITY))).andStubReturn(null);
+        expect(requestParamMap.put("price", new DecimalFormat("#.##", getDecimalFormatSymbols()).format(SELL_ORDER_PRICE))).andStubReturn(null);
+        expect(requestParamMap.put("amount", new DecimalFormat("#.########", getDecimalFormatSymbols()).format(SELL_ORDER_QUANTITY))).andStubReturn(null);
         expect(requestParamMap.put("type", "sell")).andStubReturn(null);
         expect(requestParamMap.put("key", "key123")).andStubReturn(null);
         expect(requestParamMap.put(eq("nonce"), anyString())).andStubReturn(null);
@@ -1048,8 +1048,8 @@ public class TestBitstampExchangeAdapter {
     public void testSendingAuthenticatedRequestToExchangeHandlesTradingApiException() throws Exception {
 
         final Map<String, String> requestParamMap = PowerMock.createPartialMock(HashMap.class, "put");
-        expect(requestParamMap.put("price", new DecimalFormat("#.##").format(SELL_ORDER_PRICE))).andStubReturn(null);
-        expect(requestParamMap.put("amount", new DecimalFormat("#.########").format(SELL_ORDER_QUANTITY))).andStubReturn(null);
+        expect(requestParamMap.put("price", new DecimalFormat("#.##", getDecimalFormatSymbols()).format(SELL_ORDER_PRICE))).andStubReturn(null);
+        expect(requestParamMap.put("amount", new DecimalFormat("#.########", getDecimalFormatSymbols()).format(SELL_ORDER_QUANTITY))).andStubReturn(null);
         expect(requestParamMap.put("type", "sell")).andStubReturn(null);
         expect(requestParamMap.put("key", "key123")).andStubReturn(null);
         expect(requestParamMap.put(eq("nonce"), anyString())).andStubReturn(null);

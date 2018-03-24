@@ -60,7 +60,7 @@ import static org.junit.Assert.*;
 @PowerMockIgnore({"javax.crypto.*", "javax.management.*"})
 @PrepareForTest(HuobiExchangeAdapter.class)
 @Deprecated
-public class TestHuobiExchangeAdapter {
+public class TestHuobiExchangeAdapter extends AbstractExchangeAdapterTest {
 
     // Canned JSON responses from exchange - expected to reside on filesystem relative to project root
     private static final String GET_ACCOUNT_INFO_JSON_RESPONSE = "./src/test/exchange-data/huobi/get_account_info.json";
@@ -162,8 +162,8 @@ public class TestHuobiExchangeAdapter {
         // Mock out param map so we can assert the contents passed to the transport layer are what we expect.
         final Map<String, String> requestParamMap = PowerMock.createMock(Map.class);
         expect(requestParamMap.put("coin_type", "1")).andStubReturn(null); // 1 = BTC
-        expect(requestParamMap.put("price", new DecimalFormat("#.##").format(BUY_ORDER_PRICE))).andStubReturn(null);
-        expect(requestParamMap.put("amount", new DecimalFormat("#.########").format(BUY_ORDER_QUANTITY))).andStubReturn(null);
+        expect(requestParamMap.put("price", new DecimalFormat("#.##", getDecimalFormatSymbols()).format(BUY_ORDER_PRICE))).andStubReturn(null);
+        expect(requestParamMap.put("amount", new DecimalFormat("#.########", getDecimalFormatSymbols()).format(BUY_ORDER_QUANTITY))).andStubReturn(null);
 
         // Partial mock so we do not send stuff down the wire
         final HuobiExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
@@ -195,8 +195,8 @@ public class TestHuobiExchangeAdapter {
         // Mock out param map so we can assert the contents passed to the transport layer are what we expect.
         final Map<String, String> requestParamMap = PowerMock.createMock(Map.class);
         expect(requestParamMap.put("coin_type", "1")).andStubReturn(null); // 1 = BTC
-        expect(requestParamMap.put("price", new DecimalFormat("#.##").format(SELL_ORDER_PRICE))).andStubReturn(null);
-        expect(requestParamMap.put("amount", new DecimalFormat("#.########").format(SELL_ORDER_QUANTITY))).andStubReturn(null);
+        expect(requestParamMap.put("price", new DecimalFormat("#.##", getDecimalFormatSymbols()).format(SELL_ORDER_PRICE))).andStubReturn(null);
+        expect(requestParamMap.put("amount", new DecimalFormat("#.########", getDecimalFormatSymbols()).format(SELL_ORDER_QUANTITY))).andStubReturn(null);
 
         // Partial mock so we do not send stuff down the wire
         final HuobiExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
@@ -961,8 +961,8 @@ public class TestHuobiExchangeAdapter {
 
         final Map<String, String> requestParamMap = PowerMock.createPartialMock(HashMap.class, "put");
         expect(requestParamMap.put("coin_type", "1")).andStubReturn(null); // 1 = BTC
-        expect(requestParamMap.put("price", new DecimalFormat("#.##").format(SELL_ORDER_PRICE))).andStubReturn(null);
-        expect(requestParamMap.put("amount", new DecimalFormat("#.########").format(SELL_ORDER_QUANTITY))).andStubReturn(null);
+        expect(requestParamMap.put("price", new DecimalFormat("#.##", getDecimalFormatSymbols()).format(SELL_ORDER_PRICE))).andStubReturn(null);
+        expect(requestParamMap.put("amount", new DecimalFormat("#.########", getDecimalFormatSymbols()).format(SELL_ORDER_QUANTITY))).andStubReturn(null);
         expect(requestParamMap.put("api_key", KEY)).andStubReturn(null);
         expect(requestParamMap.put(eq("sign"), anyString())).andStubReturn(null);
 
@@ -999,8 +999,8 @@ public class TestHuobiExchangeAdapter {
 
         final Map<String, String> requestParamMap = PowerMock.createPartialMock(HashMap.class, "put");
         expect(requestParamMap.put("coin_type", "1")).andStubReturn(null); // 1 = BTC
-        expect(requestParamMap.put("price", new DecimalFormat("#.##").format(SELL_ORDER_PRICE))).andStubReturn(null);
-        expect(requestParamMap.put("amount", new DecimalFormat("#.########").format(SELL_ORDER_QUANTITY))).andStubReturn(null);
+        expect(requestParamMap.put("price", new DecimalFormat("#.##", getDecimalFormatSymbols()).format(SELL_ORDER_PRICE))).andStubReturn(null);
+        expect(requestParamMap.put("amount", new DecimalFormat("#.########", getDecimalFormatSymbols()).format(SELL_ORDER_QUANTITY))).andStubReturn(null);
         expect(requestParamMap.put("api_key", KEY)).andStubReturn(null);
         expect(requestParamMap.put(eq("sign"), anyString())).andStubReturn(null);
 
@@ -1036,8 +1036,8 @@ public class TestHuobiExchangeAdapter {
 
         final Map<String, String> requestParamMap = PowerMock.createPartialMock(HashMap.class, "put");
         expect(requestParamMap.put("coin_type", "1")).andStubReturn(null); // 1 = BTC
-        expect(requestParamMap.put("price", new DecimalFormat("#.##").format(SELL_ORDER_PRICE))).andStubReturn(null);
-        expect(requestParamMap.put("amount", new DecimalFormat("#.########").format(SELL_ORDER_QUANTITY))).andStubReturn(null);
+        expect(requestParamMap.put("price", new DecimalFormat("#.##", getDecimalFormatSymbols()).format(SELL_ORDER_PRICE))).andStubReturn(null);
+        expect(requestParamMap.put("amount", new DecimalFormat("#.########", getDecimalFormatSymbols()).format(SELL_ORDER_QUANTITY))).andStubReturn(null);
         expect(requestParamMap.put("api_key", KEY)).andStubReturn(null);
         expect(requestParamMap.put(eq("sign"), anyString())).andStubReturn(null);
 
