@@ -46,7 +46,7 @@
     <properties>
         <!-- spring-tx should be same version as Spring Boot's spring-core version -->
         <spring-tx.version>4.3.14.RELEASE</spring-tx.version>
-        <powermock.version>1.7.3</powermock.version>
+        <powermock.version>2.0.0-beta.5</powermock.version>
         <spring-boot-starter.version>1.5.10.RELEASE</spring-boot-starter.version>
         <jaxb-api.version>2.2.7</jaxb-api.version>
     </properties>
@@ -246,7 +246,7 @@
             <dependency>
                 <groupId>cglib</groupId>
                 <artifactId>cglib-nodep</artifactId>
-                <version>3.2.5</version>
+                <version>3.2.6</version>
                 <scope>test</scope>
             </dependency>
             <dependency>

@@ -49,7 +49,8 @@ import static org.easymock.EasyMock.expect;
  */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({Transport.class})
-@PowerMockIgnore({"javax.management.*"})
+@PowerMockIgnore({"javax.crypto.*", "javax.management.*",
+        "com.sun.org.apache.xerces.*", "javax.xml.parsers.*", "org.xml.sax.*", "org.w3c.dom.*"})
 public class TestEmailAlerter {
 
     private static final String EMAIL_SUBJECT = "CRITICAL Alert message from BX-bot";

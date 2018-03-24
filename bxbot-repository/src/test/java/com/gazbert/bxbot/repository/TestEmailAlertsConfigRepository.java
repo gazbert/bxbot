@@ -49,7 +49,8 @@ import static org.easymock.EasyMock.*;
  */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ConfigurationManager.class})
-@PowerMockIgnore({"javax.management.*"})
+@PowerMockIgnore({"javax.crypto.*", "javax.management.*",
+        "com.sun.org.apache.xerces.*", "javax.xml.parsers.*", "org.xml.sax.*", "org.w3c.dom.*"})
 public class TestEmailAlertsConfigRepository {
 
     private static final boolean ENABLED = true;
