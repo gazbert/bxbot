@@ -58,7 +58,7 @@ import static org.junit.Assert.*;
 @RunWith(PowerMockRunner.class)
 @PowerMockIgnore({"javax.crypto.*", "javax.management.*"})
 @PrepareForTest(GeminiExchangeAdapter.class)
-public class TestGeminiExchangeAdapter {
+public class TestGeminiExchangeAdapter extends AbstractExchangeAdapterTest {
 
     // Canned JSON responses from exchange - expected to reside on filesystem relative to project root
     private static final String BOOK_JSON_RESPONSE = "./src/test/exchange-data/gemini/book.json";
@@ -234,8 +234,8 @@ public class TestGeminiExchangeAdapter {
         // Mock out param map so we can assert the contents passed to the transport layer are what we expect.
         final Map<String, String> requestParamMap = PowerMock.createMock(Map.class);
         expect(requestParamMap.put("symbol", BTC_USD_MARKET_ID)).andStubReturn(null);
-        expect(requestParamMap.put("amount", new DecimalFormat("#.########").format(BUY_ORDER_QUANTITY))).andStubReturn(null);
-        expect(requestParamMap.put("price", new DecimalFormat("#.##").format(BUY_ORDER_PRICE))).andStubReturn(null);
+        expect(requestParamMap.put("amount", new DecimalFormat("#.########", getDecimalFormatSymbols()).format(BUY_ORDER_QUANTITY))).andStubReturn(null);
+        expect(requestParamMap.put("price", new DecimalFormat("#.##", getDecimalFormatSymbols()).format(BUY_ORDER_PRICE))).andStubReturn(null);
         expect(requestParamMap.put("side", "buy")).andStubReturn(null);
         expect(requestParamMap.put("type", "exchange limit")).andStubReturn(null);
 
@@ -269,8 +269,8 @@ public class TestGeminiExchangeAdapter {
         // Mock out param map so we can assert the contents passed to the transport layer are what we expect.
         final Map<String, Object> requestParamMap = PowerMock.createMock(Map.class);
         expect(requestParamMap.put("symbol", ETH_BTC_MARKET_ID)).andStubReturn(null);
-        expect(requestParamMap.put("amount", new DecimalFormat("#.########").format(SELL_ORDER_QUANTITY))).andStubReturn(null);
-        expect(requestParamMap.put("price", new DecimalFormat("#.########").format(SELL_ORDER_PRICE))).andStubReturn(null);
+        expect(requestParamMap.put("amount", new DecimalFormat("#.########", getDecimalFormatSymbols()).format(SELL_ORDER_QUANTITY))).andStubReturn(null);
+        expect(requestParamMap.put("price", new DecimalFormat("#.########", getDecimalFormatSymbols()).format(SELL_ORDER_PRICE))).andStubReturn(null);
         expect(requestParamMap.put("side", "sell")).andStubReturn(null);
         expect(requestParamMap.put("type", "exchange limit")).andStubReturn(null);
 
@@ -793,8 +793,8 @@ public class TestGeminiExchangeAdapter {
 
         final Map<String, Object> requestParamMap = PowerMock.createPartialMock(HashMap.class, "put");
         expect(requestParamMap.put("symbol", ETH_BTC_MARKET_ID)).andStubReturn(null);
-        expect(requestParamMap.put("amount", new DecimalFormat("#.########").format(SELL_ORDER_QUANTITY))).andStubReturn(null);
-        expect(requestParamMap.put("price", new DecimalFormat("#.########").format(SELL_ORDER_PRICE))).andStubReturn(null);
+        expect(requestParamMap.put("amount", new DecimalFormat("#.########", getDecimalFormatSymbols()).format(SELL_ORDER_QUANTITY))).andStubReturn(null);
+        expect(requestParamMap.put("price", new DecimalFormat("#.########", getDecimalFormatSymbols()).format(SELL_ORDER_PRICE))).andStubReturn(null);
         expect(requestParamMap.put("side", "sell")).andStubReturn(null);
         expect(requestParamMap.put("type", "exchange limit")).andStubReturn(null);
         expect(requestParamMap.put("request", "/" + GEMINI_API_VERSION + "/" + ORDER_NEW)).andStubReturn(null);
@@ -836,8 +836,8 @@ public class TestGeminiExchangeAdapter {
 
         final Map<String, Object> requestParamMap = PowerMock.createPartialMock(HashMap.class, "put");
         expect(requestParamMap.put("symbol", ETH_BTC_MARKET_ID)).andStubReturn(null);
-        expect(requestParamMap.put("amount", new DecimalFormat("#.########").format(SELL_ORDER_QUANTITY))).andStubReturn(null);
-        expect(requestParamMap.put("price", new DecimalFormat("#.########").format(SELL_ORDER_PRICE))).andStubReturn(null);
+        expect(requestParamMap.put("amount", new DecimalFormat("#.########", getDecimalFormatSymbols()).format(SELL_ORDER_QUANTITY))).andStubReturn(null);
+        expect(requestParamMap.put("price", new DecimalFormat("#.########", getDecimalFormatSymbols()).format(SELL_ORDER_PRICE))).andStubReturn(null);
         expect(requestParamMap.put("side", "sell")).andStubReturn(null);
         expect(requestParamMap.put("type", "exchange limit")).andStubReturn(null);
         expect(requestParamMap.put("request", "/" + GEMINI_API_VERSION + "/" + ORDER_NEW)).andStubReturn(null);
@@ -879,8 +879,8 @@ public class TestGeminiExchangeAdapter {
 
         final Map<String, Object> requestParamMap = PowerMock.createPartialMock(HashMap.class, "put");
         expect(requestParamMap.put("symbol", ETH_BTC_MARKET_ID)).andStubReturn(null);
-        expect(requestParamMap.put("amount", new DecimalFormat("#.########").format(SELL_ORDER_QUANTITY))).andStubReturn(null);
-        expect(requestParamMap.put("price", new DecimalFormat("#.########").format(SELL_ORDER_PRICE))).andStubReturn(null);
+        expect(requestParamMap.put("amount", new DecimalFormat("#.########", getDecimalFormatSymbols()).format(SELL_ORDER_QUANTITY))).andStubReturn(null);
+        expect(requestParamMap.put("price", new DecimalFormat("#.########", getDecimalFormatSymbols()).format(SELL_ORDER_PRICE))).andStubReturn(null);
         expect(requestParamMap.put("side", "sell")).andStubReturn(null);
         expect(requestParamMap.put("type", "exchange limit")).andStubReturn(null);
         expect(requestParamMap.put("request", "/" + GEMINI_API_VERSION + "/" + ORDER_NEW)).andStubReturn(null);

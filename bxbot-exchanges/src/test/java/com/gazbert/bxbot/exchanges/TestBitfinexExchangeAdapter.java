@@ -58,7 +58,7 @@ import static org.junit.Assert.*;
 @RunWith(PowerMockRunner.class)
 @PowerMockIgnore({"javax.crypto.*", "javax.management.*"})
 @PrepareForTest(BitfinexExchangeAdapter.class)
-public class TestBitfinexExchangeAdapter {
+public class TestBitfinexExchangeAdapter extends AbstractExchangeAdapterTest {
 
     // Canned JSON responses from exchange - expected to reside on filesystem relative to project root
     private static final String BOOK_JSON_RESPONSE = "./src/test/exchange-data/bitfinex/book.json";
@@ -147,8 +147,8 @@ public class TestBitfinexExchangeAdapter {
         // Mock out param map so we can assert the contents passed to the transport layer are what we expect.
         final Map<String, Object> requestParamMap = PowerMock.createMock(Map.class);
         expect(requestParamMap.put("symbol", MARKET_ID)).andStubReturn(null);
-        expect(requestParamMap.put("amount", new DecimalFormat("#.########").format(BUY_ORDER_QUANTITY))).andStubReturn(null);
-        expect(requestParamMap.put("price", new DecimalFormat("#.########").format(BUY_ORDER_PRICE))).andStubReturn(null);
+        expect(requestParamMap.put("amount", new DecimalFormat("#.########", getDecimalFormatSymbols()).format(BUY_ORDER_QUANTITY))).andStubReturn(null);
+        expect(requestParamMap.put("price", new DecimalFormat("#.########", getDecimalFormatSymbols()).format(BUY_ORDER_PRICE))).andStubReturn(null);
         expect(requestParamMap.put("exchange", "bitfinex")).andStubReturn(null);
         expect(requestParamMap.put("side", "buy")).andStubReturn(null);
         expect(requestParamMap.put("type", "exchange limit")).andStubReturn(null);
@@ -183,8 +183,8 @@ public class TestBitfinexExchangeAdapter {
         // Mock out param map so we can assert the contents passed to the transport layer are what we expect.
         final Map<String, Object> requestParamMap = PowerMock.createMock(Map.class);
         expect(requestParamMap.put("symbol", MARKET_ID)).andStubReturn(null);
-        expect(requestParamMap.put("amount", new DecimalFormat("#.########").format(SELL_ORDER_QUANTITY))).andStubReturn(null);
-        expect(requestParamMap.put("price", new DecimalFormat("#.########").format(SELL_ORDER_PRICE))).andStubReturn(null);
+        expect(requestParamMap.put("amount", new DecimalFormat("#.########", getDecimalFormatSymbols()).format(SELL_ORDER_QUANTITY))).andStubReturn(null);
+        expect(requestParamMap.put("price", new DecimalFormat("#.########", getDecimalFormatSymbols()).format(SELL_ORDER_PRICE))).andStubReturn(null);
         expect(requestParamMap.put("exchange", "bitfinex")).andStubReturn(null);
         expect(requestParamMap.put("side", "sell")).andStubReturn(null);
         expect(requestParamMap.put("type", "exchange limit")).andStubReturn(null);
@@ -968,8 +968,8 @@ public class TestBitfinexExchangeAdapter {
 
         final Map<String, Object> requestParamMap = PowerMock.createPartialMock(HashMap.class, "put");
         expect(requestParamMap.put("symbol", MARKET_ID)).andStubReturn(null);
-        expect(requestParamMap.put("amount", new DecimalFormat("#.########").format(SELL_ORDER_QUANTITY))).andStubReturn(null);
-        expect(requestParamMap.put("price", new DecimalFormat("#.########").format(SELL_ORDER_PRICE))).andStubReturn(null);
+        expect(requestParamMap.put("amount", new DecimalFormat("#.########", getDecimalFormatSymbols()).format(SELL_ORDER_QUANTITY))).andStubReturn(null);
+        expect(requestParamMap.put("price", new DecimalFormat("#.########", getDecimalFormatSymbols()).format(SELL_ORDER_PRICE))).andStubReturn(null);
         expect(requestParamMap.put("exchange", "bitfinex")).andStubReturn(null);
         expect(requestParamMap.put("side", "sell")).andStubReturn(null);
         expect(requestParamMap.put("type", "exchange limit")).andStubReturn(null);
@@ -1012,8 +1012,8 @@ public class TestBitfinexExchangeAdapter {
 
         final Map<String, Object> requestParamMap = PowerMock.createPartialMock(HashMap.class, "put");
         expect(requestParamMap.put("symbol", MARKET_ID)).andStubReturn(null);
-        expect(requestParamMap.put("amount", new DecimalFormat("#.########").format(SELL_ORDER_QUANTITY))).andStubReturn(null);
-        expect(requestParamMap.put("price", new DecimalFormat("#.########").format(SELL_ORDER_PRICE))).andStubReturn(null);
+        expect(requestParamMap.put("amount", new DecimalFormat("#.########", getDecimalFormatSymbols()).format(SELL_ORDER_QUANTITY))).andStubReturn(null);
+        expect(requestParamMap.put("price", new DecimalFormat("#.########", getDecimalFormatSymbols()).format(SELL_ORDER_PRICE))).andStubReturn(null);
         expect(requestParamMap.put("exchange", "bitfinex")).andStubReturn(null);
         expect(requestParamMap.put("side", "sell")).andStubReturn(null);
         expect(requestParamMap.put("type", "exchange limit")).andStubReturn(null);
@@ -1055,8 +1055,8 @@ public class TestBitfinexExchangeAdapter {
 
         final Map<String, Object> requestParamMap = PowerMock.createPartialMock(HashMap.class, "put");
         expect(requestParamMap.put("symbol", MARKET_ID)).andStubReturn(null);
-        expect(requestParamMap.put("amount", new DecimalFormat("#.########").format(SELL_ORDER_QUANTITY))).andStubReturn(null);
-        expect(requestParamMap.put("price", new DecimalFormat("#.########").format(SELL_ORDER_PRICE))).andStubReturn(null);
+        expect(requestParamMap.put("amount", new DecimalFormat("#.########", getDecimalFormatSymbols()).format(SELL_ORDER_QUANTITY))).andStubReturn(null);
+        expect(requestParamMap.put("price", new DecimalFormat("#.########", getDecimalFormatSymbols()).format(SELL_ORDER_PRICE))).andStubReturn(null);
         expect(requestParamMap.put("exchange", "bitfinex")).andStubReturn(null);
         expect(requestParamMap.put("side", "sell")).andStubReturn(null);
         expect(requestParamMap.put("type", "exchange limit")).andStubReturn(null);

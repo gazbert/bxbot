@@ -55,7 +55,7 @@ import static org.junit.Assert.*;
 @RunWith(PowerMockRunner.class)
 @PowerMockIgnore({"javax.crypto.*", "javax.management.*"})
 @PrepareForTest(KrakenExchangeAdapter.class)
-public class TestKrakenExchangeAdapter {
+public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
 
     // Canned JSON responses from exchange - expected to reside on filesystem relative to project root
     private static final String DEPTH_JSON_RESPONSE = "./src/test/exchange-data/kraken/Depth.json";
@@ -379,8 +379,8 @@ public class TestKrakenExchangeAdapter {
         expect(requestParamMap.put("pair", MARKET_ID)).andStubReturn(null);
         expect(requestParamMap.put("type", "buy")).andStubReturn(null);
         expect(requestParamMap.put("ordertype", "limit")).andStubReturn(null);
-        expect(requestParamMap.put("price", new DecimalFormat("#.########").format(BUY_ORDER_PRICE))).andStubReturn(null);
-        expect(requestParamMap.put("volume", new DecimalFormat("#.########").format(BUY_ORDER_QUANTITY))).andStubReturn(null);
+        expect(requestParamMap.put("price", new DecimalFormat("#.########", getDecimalFormatSymbols()).format(BUY_ORDER_PRICE))).andStubReturn(null);
+        expect(requestParamMap.put("volume", new DecimalFormat("#.########", getDecimalFormatSymbols()).format(BUY_ORDER_QUANTITY))).andStubReturn(null);
 
         // Partial mock so we do not send stuff down the wire
         final KrakenExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
@@ -414,8 +414,8 @@ public class TestKrakenExchangeAdapter {
         expect(requestParamMap.put("pair", MARKET_ID)).andStubReturn(null);
         expect(requestParamMap.put("type", "sell")).andStubReturn(null);
         expect(requestParamMap.put("ordertype", "limit")).andStubReturn(null);
-        expect(requestParamMap.put("price", new DecimalFormat("#.########").format(SELL_ORDER_PRICE))).andStubReturn(null);
-        expect(requestParamMap.put("volume", new DecimalFormat("#.########").format(SELL_ORDER_QUANTITY))).andStubReturn(null);
+        expect(requestParamMap.put("price", new DecimalFormat("#.########", getDecimalFormatSymbols()).format(SELL_ORDER_PRICE))).andStubReturn(null);
+        expect(requestParamMap.put("volume", new DecimalFormat("#.########", getDecimalFormatSymbols()).format(SELL_ORDER_QUANTITY))).andStubReturn(null);
 
         // Partial mock so we do not send stuff down the wire
         final KrakenExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
@@ -1065,8 +1065,8 @@ public class TestKrakenExchangeAdapter {
         expect(requestParamMap.put("pair", MARKET_ID)).andStubReturn(null);
         expect(requestParamMap.put("type", "sell")).andStubReturn(null);
         expect(requestParamMap.put("ordertype", "limit")).andStubReturn(null);
-        expect(requestParamMap.put("price", new DecimalFormat("#.########").format(SELL_ORDER_PRICE))).andStubReturn(null);
-        expect(requestParamMap.put("volume", new DecimalFormat("#.########").format(SELL_ORDER_QUANTITY))).andStubReturn(null);
+        expect(requestParamMap.put("price", new DecimalFormat("#.########", getDecimalFormatSymbols()).format(SELL_ORDER_PRICE))).andStubReturn(null);
+        expect(requestParamMap.put("volume", new DecimalFormat("#.########", getDecimalFormatSymbols()).format(SELL_ORDER_QUANTITY))).andStubReturn(null);
         expect(requestParamMap.put(eq("nonce"), anyString())).andStubReturn(null);
 
         final Map<String, String> requestHeaderMap = PowerMock.createPartialMock(HashMap.class, "put");
@@ -1106,8 +1106,8 @@ public class TestKrakenExchangeAdapter {
         expect(requestParamMap.put("pair", MARKET_ID)).andStubReturn(null);
         expect(requestParamMap.put("type", "sell")).andStubReturn(null);
         expect(requestParamMap.put("ordertype", "limit")).andStubReturn(null);
-        expect(requestParamMap.put("price", new DecimalFormat("#.########").format(SELL_ORDER_PRICE))).andStubReturn(null);
-        expect(requestParamMap.put("volume", new DecimalFormat("#.########").format(SELL_ORDER_QUANTITY))).andStubReturn(null);
+        expect(requestParamMap.put("price", new DecimalFormat("#.########", getDecimalFormatSymbols()).format(SELL_ORDER_PRICE))).andStubReturn(null);
+        expect(requestParamMap.put("volume", new DecimalFormat("#.########", getDecimalFormatSymbols()).format(SELL_ORDER_QUANTITY))).andStubReturn(null);
         expect(requestParamMap.put(eq("nonce"), anyString())).andStubReturn(null);
 
         final Map<String, String> requestHeaderMap = PowerMock.createPartialMock(HashMap.class, "put");
@@ -1146,8 +1146,8 @@ public class TestKrakenExchangeAdapter {
         expect(requestParamMap.put("pair", MARKET_ID)).andStubReturn(null);
         expect(requestParamMap.put("type", "sell")).andStubReturn(null);
         expect(requestParamMap.put("ordertype", "limit")).andStubReturn(null);
-        expect(requestParamMap.put("price", new DecimalFormat("#.########").format(SELL_ORDER_PRICE))).andStubReturn(null);
-        expect(requestParamMap.put("volume", new DecimalFormat("#.########").format(SELL_ORDER_QUANTITY))).andStubReturn(null);
+        expect(requestParamMap.put("price", new DecimalFormat("#.########", getDecimalFormatSymbols()).format(SELL_ORDER_PRICE))).andStubReturn(null);
+        expect(requestParamMap.put("volume", new DecimalFormat("#.########", getDecimalFormatSymbols()).format(SELL_ORDER_QUANTITY))).andStubReturn(null);
         expect(requestParamMap.put(eq("nonce"), anyString())).andStubReturn(null);
 
         final Map<String, String> requestHeaderMap = PowerMock.createPartialMock(HashMap.class, "put");

@@ -52,6 +52,7 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.util.*;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -171,8 +172,9 @@ public class TestTradingEngine {
         setupConfigLoadingExpectations();
 
         final Map<String, BigDecimal> balancesAvailable = new HashMap<>();
+        final BigDecimal btcBalance = new BigDecimal("0.49999999");
         // balance limit has been breached for BTC
-        balancesAvailable.put(ENGINE_EMERGENCY_STOP_CURRENCY, new BigDecimal("0.49999999"));
+        balancesAvailable.put(ENGINE_EMERGENCY_STOP_CURRENCY, btcBalance);
 
         // expect BalanceInfo to be fetched using Trading API
         final BalanceInfo balanceInfo = PowerMock.createMock(BalanceInfo.class);
@@ -181,8 +183,10 @@ public class TestTradingEngine {
 
         // expect Email Alert to be sent
         emailAlerter.sendMessage(eq(CRITICAL_EMAIL_ALERT_SUBJECT),
-                contains("EMERGENCY STOP triggered! - Current Emergency Stop Currency [BTC] wallet balance [0.49999999]" +
-                        " on exchange is lower than configured Emergency Stop balance [0.5] BTC"));
+                contains("EMERGENCY STOP triggered! - Current Emergency Stop Currency [BTC] wallet balance [" +
+                        new DecimalFormat("#.########").format(btcBalance)) +
+                        "] on exchange is lower than configured Emergency Stop balance [" +
+                        new DecimalFormat("#.########").format(ENGINE_EMERGENCY_STOP_BALANCE) + "] BTC");
 
         PowerMock.replayAll();
 
@@ -495,8 +499,8 @@ public class TestTradingEngine {
 
         // expect BalanceInfo to be fetched using Trading API
         final BalanceInfo balanceInfo = PowerMock.createMock(BalanceInfo.class);
-        expect(exchangeAdapter.getBalanceInfo()).andReturn(balanceInfo);
-        expect(balanceInfo.getBalancesAvailable()).andReturn(balancesAvailable);
+        expect(exchangeAdapter.getBalanceInfo()).andReturn(balanceInfo).atLeastOnce();
+        expect(balanceInfo.getBalancesAvailable()).andReturn(balancesAvailable).atLeastOnce();
 
         // expect Trading Strategy to be invoked 1 time
         tradingStrategy.execute();

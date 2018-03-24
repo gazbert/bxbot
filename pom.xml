@@ -6,7 +6,7 @@
     <groupId>com.gazbert.bxbot</groupId>
     <artifactId>bxbot-parent</artifactId>
     <packaging>pom</packaging>
-    <version>0.8.7-SNAPSHOT</version>
+    <version>0.8.8-SNAPSHOT</version>
     <name>BX-bot Parent</name>
     <description>Parent POM for building the bot</description>
     <url>https://github.com/gazbert/bxbot</url>
@@ -173,18 +173,18 @@
             <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
-                <version>24.0-jre</version>
+                <version>24.1-jre</version>
             </dependency>
             <dependency>
                 <groupId>javax.mail</groupId>
                 <artifactId>javax.mail-api</artifactId>
-                <version>1.6.0</version>
+                <version>1.6.1</version>
                 <scope>compile</scope>
             </dependency>
             <dependency>
                 <groupId>com.sun.mail</groupId>
                 <artifactId>javax.mail</artifactId>
-                <version>1.6.0</version>
+                <version>1.6.1</version>
                 <scope>compile</scope>
             </dependency>
 
@@ -322,7 +322,7 @@
                 <plugin>
                     <groupId>org.springframework.boot</groupId>
                     <artifactId>spring-boot-maven-plugin</artifactId>
-                    <version>1.5.9.RELEASE</version>
+                    <version>1.5.10.RELEASE</version>
                     <executions>
                         <execution>
                             <goals>
