@@ -1,0 +1,39 @@
+{
+    "Success": true,
+    "Message": null,
+    "Data": [
+    {
+        "Id": 100,
+        "Label": "DOT/BTC",
+        "Currency": "Dotcoin",
+        "Symbol": "DOT",
+        "BaseCurrency": "Bitcoin",
+        "BaseSymbol": "BTC",
+        "Status": "OK",
+        "StatusMessage": null,
+        "TradeFee": 0.20000000,
+        "MinimumTrade": 0.00000001,
+        "MaximumTrade": 100000000.0,
+        "MinimumBaseTrade": 0.00050000,
+        "MaximumBaseTrade": 100000000.0,
+        "MinimumPrice": 0.00000001,
+        "MaximumPrice": 100000000.0
+    },
+    {
+        "Id": 101,
+        "Label": "LTC/BTC",
+        "Currency": "Litecoin",
+        "Symbol": "LTC",
+        "BaseCurrency": "Bitcoin",
+        "BaseSymbol": "BTC",
+        "Status": "OK",
+        "StatusMessage": null,
+        "TradeFee": 0.20000000,
+        "MinimumTrade": 0.00000001,
+        "MaximumTrade": 100000000.0,
+        "MinimumBaseTrade": 0.00050000,
+        "MaximumBaseTrade": 100000000.0,
+        "MinimumPrice": 0.00000001,
+        "MaximumPrice": 100000000.0
+    }]
+}
