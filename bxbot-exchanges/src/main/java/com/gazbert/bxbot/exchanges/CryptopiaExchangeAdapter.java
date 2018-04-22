@@ -101,7 +101,7 @@ public class CryptopiaExchangeAdapter extends AbstractExchangeAdapter implements
     /**
      * Used to indicate if we have initialised the MAC authentication protocol.
      */
-    private boolean initializedMACAuthentication = false;
+    private boolean initializedAuthentication = false;
 
     /**
      * The key used in the MAC message.
@@ -118,6 +118,12 @@ public class CryptopiaExchangeAdapter extends AbstractExchangeAdapter implements
      * Used to encrypt the hash of the entire message with the private key to ensure message integrity.
      */
     private Mac mac;
+    
+    /**
+     * Provides the "Message Digest" (MAC) algorithm used for the secure messaging layer.
+     * Used to encrypt a part of the hash of message.
+     */
+    private MessageDigest md5;
 
     /**
      * GSON engine used for parsing JSON in Cryptopia API call responses.
@@ -157,6 +163,8 @@ public class CryptopiaExchangeAdapter extends AbstractExchangeAdapter implements
 	public MarketOrderBook getMarketOrders(String marketId) throws ExchangeNetworkException, TradingApiException {
 		try {
 			final ExchangeHttpResponse response = sendPublicRequestToExchange("GetMarketOrders/" + marketId.toUpperCase());
+			LOG.debug(() -> "Market Orders response: " + response);
+			
 			Type responseApiType = new TypeToken<CryptopiaPublicApiResponse<CryptopiaOrderBook>>() {}.getType();
 			final CryptopiaPublicApiResponse<CryptopiaOrderBook> cryptopiaResponse = gson.fromJson(response.getPayload(), responseApiType);
 			final CryptopiaOrderBook cryptopiaMarket = cryptopiaResponse.Data;
@@ -292,6 +300,8 @@ public class CryptopiaExchangeAdapter extends AbstractExchangeAdapter implements
 			params.put("Type", "Trade"); // to cancel a single Trade by order id
 			params.put("OrderId", Long.parseLong(orderId));
 			final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("CancelTrade", params);
+			LOG.debug(() -> "Cancel Order response: " + response);
+			
 			final Type responseApiType = new TypeToken<CryptopiaPrivateApiResponse<CryptopiaCancelOrderResponse>>() {}.getType();
 			final CryptopiaPrivateApiResponse<CryptopiaCancelOrderResponse> cryptopiaResponse = gson.fromJson(response.getPayload(), responseApiType);
 			return cryptopiaResponse.Success;
@@ -307,6 +317,8 @@ public class CryptopiaExchangeAdapter extends AbstractExchangeAdapter implements
 	public BigDecimal getLatestMarketPrice(String marketId) throws ExchangeNetworkException, TradingApiException {
 		try {
 			final ExchangeHttpResponse response = sendPublicRequestToExchange("GetMarket/" + marketId.toUpperCase());
+			LOG.debug(() -> "Market response: " + response);
+			
 			final Type responseApiType = new TypeToken<CryptopiaPublicApiResponse<CryptopiaMarket>>() {}.getType();
 			final CryptopiaPublicApiResponse<CryptopiaMarket> cryptopiaResponse = gson.fromJson(response.getPayload(), responseApiType);
 			return cryptopiaResponse.Data.LastPrice;
@@ -322,6 +334,8 @@ public class CryptopiaExchangeAdapter extends AbstractExchangeAdapter implements
 	public BalanceInfo getBalanceInfo() throws ExchangeNetworkException, TradingApiException {
 		try {
 			final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("GetBalance", null);
+			LOG.debug(() -> "Balance response: " + response);
+			
 			final Type responseApiType = new TypeToken<CryptopiaPrivateApiResponse<CryptopiaBalances>>() {}.getType();
 			final CryptopiaPrivateApiResponse<CryptopiaBalances> cryptopiaResponse = gson.fromJson(response.getPayload(), responseApiType);
 			final CryptopiaBalances cryptopiaBalances = cryptopiaResponse.Data;
@@ -349,6 +363,7 @@ public class CryptopiaExchangeAdapter extends AbstractExchangeAdapter implements
 				return globalTradingFee;
 			} else {
 				final ExchangeHttpResponse response = sendPublicRequestToExchange("GetTradePairs");
+				LOG.debug(() -> "Buy Fee response: " + response);
 				final Type responseApiType = new TypeToken<CryptopiaPrivateApiResponse<CryptopiaTradePairs>>() {}.getType();
 				final CryptopiaPrivateApiResponse<CryptopiaTradePairs> cryptopiaResponse = gson.fromJson(response.getPayload(), responseApiType);
 				final CryptopiaTradePairs cryptopiaTradePairs = cryptopiaResponse.Data;
@@ -379,6 +394,7 @@ public class CryptopiaExchangeAdapter extends AbstractExchangeAdapter implements
 				return globalTradingFee;
 			} else {
 				final ExchangeHttpResponse response = sendPublicRequestToExchange("GetTradePairs");
+				LOG.debug(() -> "Buy Fee response: " + response);
 				final Type responseApiType = new TypeToken<CryptopiaPrivateApiResponse<CryptopiaTradePairs>>() {}.getType();
 				final CryptopiaPrivateApiResponse<CryptopiaTradePairs> cryptopiaResponse = gson.fromJson(response.getPayload(), responseApiType);
 				final CryptopiaTradePairs cryptopiaTradePairs = cryptopiaResponse.Data;
@@ -714,7 +730,7 @@ public class CryptopiaExchangeAdapter extends AbstractExchangeAdapter implements
 	
 	/**
      * Initialises the secure messaging layer
-     * Sets up the MAC to safeguard the data we send to the exchange.
+     * Sets up the MAC and MessageDigest to safeguard the data we send to the exchange.
      * We fail hard n fast if any of this stuff blows.
      */
     private void initSecureMessageLayer() {
@@ -725,13 +741,17 @@ public class CryptopiaExchangeAdapter extends AbstractExchangeAdapter implements
             final SecretKeySpec keyspec = new SecretKeySpec(base64DecodedSecret, "HmacSHA256");
             mac = Mac.getInstance("HmacSHA256");
             mac.init(keyspec);
-            initializedMACAuthentication = true;
+
+            md5 = MessageDigest.getInstance("MD5");
+            
+            initializedAuthentication = true;
+            
         } catch (NoSuchAlgorithmException e) {
-            final String errorMsg = "Failed to setup MAC security. HINT: Is HmacSHA256 installed?";
+            final String errorMsg = "Failed to setup MAC or MessageDigest security. HINT: Is HmacSHA256/MD5 installed?";
             LOG.error(errorMsg, e);
             throw new IllegalStateException(errorMsg, e);
         } catch (InvalidKeyException e) {
-            final String errorMsg = "Failed to setup MAC security. Secret key seems invalid!";
+            final String errorMsg = "Failed to setup MAC/MessageDigest security. Secret key seems invalid!";
             LOG.error(errorMsg, e);
             throw new IllegalArgumentException(errorMsg, e);
         }
@@ -793,7 +813,7 @@ public class CryptopiaExchangeAdapter extends AbstractExchangeAdapter implements
             throws ExchangeNetworkException, TradingApiException {
 
     	
-        if (!initializedMACAuthentication) {
+        if (!initializedAuthentication) {
             final String errorMsg = "MAC Message security layer has not been initialized.";
             LOG.error(errorMsg);
             throw new IllegalStateException(errorMsg);
@@ -810,7 +830,7 @@ public class CryptopiaExchangeAdapter extends AbstractExchangeAdapter implements
             //Generate authorization header
             final String nonce = generateNonce();
             final String encodedUrl = URLEncoder.encode(url.toString(),StandardCharsets.UTF_8.toString()).toLowerCase();
-            final String md5Checksum = encodeBase64(MessageDigest.getInstance("MD5").digest(paramsInJson.getBytes("UTF-8")));
+			final String md5Checksum = encodeBase64(md5.digest(paramsInJson.getBytes("UTF-8")));
             final String requestSignature = publicKey + "POST" + encodedUrl + nonce + md5Checksum;
             final String encodedAndHashedSignature = encodeBase64(mac.doFinal(requestSignature.getBytes("UTF-8")));
 			final String authHeader = "amx " + publicKey + ":" + encodedAndHashedSignature + ":" + nonce;
@@ -826,11 +846,7 @@ public class CryptopiaExchangeAdapter extends AbstractExchangeAdapter implements
             final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
             LOG.error(errorMsg, e);
             throw new TradingApiException(errorMsg, e);
-        } catch (NoSuchAlgorithmException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return null;
-		}
+        }
     }
     
     // ------------------------------------------------------------------------------------------------
