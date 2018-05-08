@@ -1,0 +1,20 @@
+{
+	"Success":true,
+	"Message":null,
+	"Data":{
+		"Buy":[{
+            "TradePairId":100,
+            "Label":"DOT/BTC",
+            "Price":0.00006000,
+            "Volume":455055.00360000,
+            "Total":27.303300
+		}],
+		"Sell":[{
+			"TradePairId":100,
+			"Label":"DOT/BTC",
+			"Price":0.02000000,
+			"Volume":499.99640000,
+			"Total":9.999928
+		}]
+	}
+}
