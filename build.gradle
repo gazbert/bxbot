@@ -66,7 +66,7 @@ allprojects {
     apply plugin: 'maven'
 
     group = 'com.gazbert.bxbot'
-        version = '0.8.8'
+        version = '0.8.9-SNAPSHOT'
 }
 
 subprojects {
