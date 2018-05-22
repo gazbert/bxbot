@@ -1,6 +1,7 @@
 apply plugin: 'org.springframework.boot'
-bootRepackage {
-    mainClass = 'com.gazbert.bxbot.BXBot'
+
+bootJar {
+    mainClassName = 'com.gazbert.bxbot.BXBot'
 }
 
 dependencies {
