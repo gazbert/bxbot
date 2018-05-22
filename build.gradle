@@ -7,7 +7,7 @@ buildscript {
 
     dependencies {
         classpath("io.spring.gradle:dependency-management-plugin:1.0.5.RELEASE")
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.5.13.RELEASE")
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:2.0.2.RELEASE")
     }
 }
 
@@ -21,8 +21,8 @@ buildScan {
 }
 
 ext.versions = [
-        springBootVersion:'1.5.13.RELEASE',
-        springTxVersion:'4.3.17.RELEASE'
+        springBootVersion:'2.0.2.RELEASE',
+        springTxVersion:'5.0.6.RELEASE'
 ]
 
 ext.libraries = [
@@ -32,15 +32,15 @@ ext.libraries = [
         },
         spring_boot_starter_log4j2: dependencies.create("org.springframework.boot:spring-boot-starter-log4j2:" + ext.versions.springBootVersion),
         spring_boot_starter_web: dependencies.create("org.springframework.boot:spring-boot-starter-web:" + ext.versions.springBootVersion) {
-            exclude module: "logback-classic"
+            exclude module: "spring-boot-starter-logging"
             force = true
         },
         spring_boot_starter_actuator: dependencies.create("org.springframework.boot:spring-boot-starter-actuator:" + ext.versions.springBootVersion) {
-            exclude module: "logback-classic"
+            exclude module: "spring-boot-starter-logging"
             force = true
         },
         spring_boot_starter_security: dependencies.create("org.springframework.boot:spring-boot-starter-security:" + ext.versions.springBootVersion) {
-            exclude module: "logback-classic"
+            exclude module: "spring-boot-starter-logging"
             force = true
         },
         spring_tx: dependencies.create("org.springframework:spring-tx:" + ext.versions.springTxVersion),
@@ -55,13 +55,16 @@ ext.libraries = [
         junit: dependencies.create("junit:junit:4.12"),
         powermock_junit: dependencies.create("org.powermock:powermock-module-junit4:1.7.4"),
         powermock_api_easymock: dependencies.create("org.powermock:powermock-api-easymock:1.7.4"),
-        easymock: dependencies.create("org.easymock:easymock:3.5.1") {
+        easymock: dependencies.create("org.easymock:easymock:3.6") {
             exclude module: "cglib-nodep"
             force = true
         },
         objenesis: dependencies.create("org.objenesis:objenesis:2.6"),
         cglib_nodep: dependencies.create("cglib:cglib-nodep:3.2.6"),
-        spring_boot_starter_test: dependencies.create("org.springframework.boot:spring-boot-starter-test:" + ext.versions.springBootVersion)
+        spring_boot_starter_test: dependencies.create("org.springframework.boot:spring-boot-starter-test:" + ext.versions.springBootVersion) {
+            exclude module: "spring-boot-starter-logging"
+            force = true
+        }
 ]
 
 allprojects {
@@ -70,7 +73,7 @@ allprojects {
     apply plugin: 'maven'
 
     group = 'com.gazbert.bxbot'
-        version = '0.8.9-SNAPSHOT'
+        version = '0.9.0-SNAPSHOT'
 }
 
 subprojects {
