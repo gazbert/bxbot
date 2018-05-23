@@ -75,7 +75,8 @@ import com.google.gson.GsonBuilder;
  * @author nodueck
  */
 @RunWith(PowerMockRunner.class)
-@PowerMockIgnore({"javax.crypto.*", "javax.management.*"})
+@PowerMockIgnore({"javax.crypto.*", "javax.management.*",
+        "com.sun.org.apache.xerces.*", "javax.xml.parsers.*", "org.xml.sax.*", "org.w3c.dom.*"})
 @PrepareForTest(CryptopiaExchangeAdapter.class)
 public class TestCryptopiaExchangeAdapter extends AbstractExchangeAdapterTest {
 

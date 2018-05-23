@@ -46,9 +46,9 @@
     <properties>
         <!-- spring-tx should be same version as Spring Boot's spring-core version -->
         <spring-tx.version>5.0.6.RELEASE</spring-tx.version>
-        <powermock.version>1.7.4</powermock.version>
+        <powermock.version>2.0.0-beta.5</powermock.version>
         <spring-boot-starter.version>2.0.2.RELEASE</spring-boot-starter.version>
-        <jaxb-api.version>2.2.7</jaxb-api.version>
+        <jaxb-api.version>2.3.0</jaxb-api.version>
     </properties>
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -202,6 +202,16 @@
                 <groupId>com.sun.xml.bind</groupId>
                 <artifactId>jaxb-core</artifactId>
                 <version>${jaxb-api.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.jaxb</groupId>
+                <artifactId>jaxb-runtime</artifactId>
+                <version>${jaxb-api.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.activation</groupId>
+                <artifactId>activation</artifactId>
+                <version>1.1.1</version>
             </dependency>
 
             <!--
