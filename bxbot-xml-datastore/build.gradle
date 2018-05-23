@@ -10,6 +10,8 @@ dependencies {
     compile libraries.javax_xml_api
     compile libraries.javax_xml_impl
     compile libraries.javax_xml_core
+    compile libraries.javax_xml_runtime
+    compile libraries.javax_activation
 
     testCompile libraries.spring_boot_starter_test
 }
