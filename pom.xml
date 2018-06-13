@@ -6,7 +6,7 @@
     <groupId>com.gazbert.bxbot</groupId>
     <artifactId>bxbot-parent</artifactId>
     <packaging>pom</packaging>
-    <version>0.9.1-SNAPSHOT</version>
+    <version>${revision}</version>
     <name>BX-bot Parent</name>
     <description>Parent POM for building the bot</description>
     <url>https://github.com/gazbert/bxbot</url>
@@ -41,9 +41,10 @@
         </developer>
     </developers>
     <prerequisites>
-        <maven>3.2.1</maven>
+        <maven>3.5.0</maven>
     </prerequisites>
     <properties>
+        <revision>0.9.1-SNAPSHOT</revision>
         <!-- spring-tx should be same version as Spring Boot's spring-core version -->
         <spring-tx.version>5.0.6.RELEASE</spring-tx.version>
         <powermock.version>1.7.4</powermock.version>
