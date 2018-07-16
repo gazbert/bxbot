@@ -1,6 +1,6 @@
 language: java
 jdk:
-    - openjdk10
+    - oraclejdk10
 
 install: true
 
