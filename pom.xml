@@ -6,7 +6,7 @@
     <groupId>com.gazbert.bxbot</groupId>
     <artifactId>bxbot-parent</artifactId>
     <packaging>pom</packaging>
-    <version>0.10.0-SNAPSHOT</version>
+    <version>${revision}</version>
     <name>BX-bot Parent</name>
     <description>Parent POM for building the bot</description>
     <url>https://github.com/gazbert/bxbot</url>
@@ -41,9 +41,10 @@
         </developer>
     </developers>
     <prerequisites>
-        <maven>3.2.1</maven>
+        <maven>3.5.0</maven>
     </prerequisites>
     <properties>
+        <revision>0.9.1-SNAPSHOT</revision>
         <!-- spring-tx should be same version as Spring Boot's spring-core version -->
         <spring-tx.version>5.0.6.RELEASE</spring-tx.version>
         <powermock.version>2.0.0-beta.5</powermock.version>
@@ -353,6 +354,30 @@
                         <execution>
                             <goals>
                                 <goal>repackage</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>flatten-maven-plugin</artifactId>
+                    <version>1.0.1</version>
+                    <configuration>
+                        <updatePomFile>true</updatePomFile>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>flatten</id>
+                            <phase>process-resources</phase>
+                            <goals>
+                                <goal>flatten</goal>
+                            </goals>
+                        </execution>
+                        <execution>
+                            <id>flatten.clean</id>
+                            <phase>clean</phase>
+                            <goals>
+                                <goal>clean</goal>
                             </goals>
                         </execution>
                     </executions>
