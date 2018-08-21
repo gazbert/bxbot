@@ -37,7 +37,7 @@ IF NOT "%1"=="status" GOTO:invalidArgs
 REM TODO - check if bot is already running before trying to start it!
 SET START_TIME=%time%
 ECHO Starting BX-bot...
-START "BX-bot - %START_TIME%" java -Xmx64m -Xss256k -Dlog4j.configurationFile=%log4j2_config% -jar %lib_dir%\%bxbot_jar%
+START "BX-bot - %START_TIME%" java -Xmx64m -Xss256k -Dlog4j.configurationFile=%log4j2_config% --illegal-access=deny -jar %lib_dir%\%bxbot_jar%
 FOR /F "tokens=2" %%i in ('TASKLIST /NH /FI "WINDOWTITLE eq BX-bot - %START_TIME%"' ) DO (SET PID=%%i)
 ECHO %PID% > %pid_file%
 ECHO BX-bot started with PID: %PID%
