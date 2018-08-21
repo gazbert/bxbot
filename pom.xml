@@ -44,7 +44,7 @@
         <maven>3.5.0</maven>
     </prerequisites>
     <properties>
-        <revision>0.9.1-SNAPSHOT</revision>
+        <revision>0.10.0-SNAPSHOT</revision>
         <!-- spring-tx should be same version as Spring Boot's spring-core version -->
         <spring-tx.version>5.0.6.RELEASE</spring-tx.version>
         <powermock.version>2.0.0-beta.5</powermock.version>
@@ -304,10 +304,10 @@
                 </plugin>
                 <plugin>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.7.0</version>
+                    <version>3.8.0</version>
                     <configuration>
-                        <source>1.8</source>
-                        <target>1.8</target>
+                        <source>10</source>
+                        <target>10</target>
                     </configuration>
                 </plugin>
 
@@ -344,7 +344,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>3.0.0</version>
+                    <version>3.0.1</version>
                 </plugin>
                 <plugin>
                     <groupId>org.springframework.boot</groupId>
