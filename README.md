@@ -87,9 +87,8 @@ BX-bot requires a Java 10 JDK ([openjdk-10-jdk](http://openjdk.java.net/projects
 [Oracle JDK 10](http://www.oracle.com/technetwork/java/javase/downloads/jdk10-downloads-4416644.html))
 to be installed on the machine you are going to use to build the bot. 
 
-_JDK 8 will continue to be supported on the
-[0.8.x](https://github.com/gazbert/bxbot/releases) (Spring Boot 1.5.x) and 
-[0.9.x](https://github.com/gazbert/bxbot/releases) (Spring Boot 2) release streams until end of life Jan 2019._
+_JDK 8 will continue to be supported on the 0.8.x (Spring Boot 1.5.x) and 0.9.x (Spring Boot 2) 
+[release](https://github.com/gazbert/bxbot/releases) streams until end of life Jan 2019._
 
 You can use [Maven](https://maven.apache.org) or [Gradle](https://gradle.org/) to build the bot and distribution artifact.
 The instructions below are for Linux and macOS, but equivalent Windows scripts are included. 
