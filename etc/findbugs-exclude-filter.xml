@@ -16,6 +16,12 @@
         <Bug code="RCN"/>
     </Match>
 
+    <!-- False positive - this NPE check is required. -->
+    <Match>
+        <Class name="com.gazbert.bxbot.datastore.ConfigurationManager"/>
+        <Bug code="OBL"/>
+    </Match>
+
     <!-- Don't bother with EI - expose internal representation (e.g. getter/setter for Date) -->
     <!--<Match>-->
     <!--<Bug code="EI,EI2"/>-->

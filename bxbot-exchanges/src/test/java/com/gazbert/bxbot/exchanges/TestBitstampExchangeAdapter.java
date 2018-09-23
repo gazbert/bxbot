@@ -57,7 +57,8 @@ import static org.junit.Assert.*;
  * @author gazbert
  */
 @RunWith(PowerMockRunner.class)
-@PowerMockIgnore({"javax.crypto.*", "javax.management.*"})
+@PowerMockIgnore({"javax.crypto.*", "javax.management.*",
+        "com.sun.org.apache.xerces.*", "javax.xml.parsers.*", "org.xml.sax.*", "org.w3c.dom.*"})
 @PrepareForTest(BitstampExchangeAdapter.class)
 public class TestBitstampExchangeAdapter extends AbstractExchangeAdapter {
 

@@ -1,4 +1,4 @@
-FROM openjdk:8
+FROM openjdk:10
 RUN apt-get update
 RUN apt-get install -y maven
 

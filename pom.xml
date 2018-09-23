@@ -44,11 +44,12 @@
         <maven>3.5.0</maven>
     </prerequisites>
     <properties>
-        <revision>0.9.1-SNAPSHOT</revision>
+        <revision>0.10.0-SNAPSHOT</revision>
         <!-- spring-tx should be same version as Spring Boot's spring-core version -->
         <spring-tx.version>5.0.6.RELEASE</spring-tx.version>
-        <powermock.version>1.7.4</powermock.version>
+        <powermock.version>2.0.0-beta.5</powermock.version>
         <spring-boot-starter.version>2.0.2.RELEASE</spring-boot-starter.version>
+        <jaxb-api.version>2.3.0</jaxb-api.version>
     </properties>
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -188,6 +189,31 @@
                 <version>1.6.1</version>
                 <scope>compile</scope>
             </dependency>
+            <dependency>
+                <groupId>javax.xml.bind</groupId>
+                <artifactId>jaxb-api</artifactId>
+                <version>${jaxb-api.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sun.xml.bind</groupId>
+                <artifactId>jaxb-impl</artifactId>
+                <version>${jaxb-api.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sun.xml.bind</groupId>
+                <artifactId>jaxb-core</artifactId>
+                <version>${jaxb-api.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.jaxb</groupId>
+                <artifactId>jaxb-runtime</artifactId>
+                <version>${jaxb-api.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.activation</groupId>
+                <artifactId>activation</artifactId>
+                <version>1.1.1</version>
+            </dependency>
 
             <!--
             Testing dependencies
@@ -278,10 +304,10 @@
                 </plugin>
                 <plugin>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.7.0</version>
+                    <version>3.8.0</version>
                     <configuration>
-                        <source>1.8</source>
-                        <target>1.8</target>
+                        <source>10</source>
+                        <target>10</target>
                     </configuration>
                 </plugin>
 
@@ -318,7 +344,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>3.0.0</version>
+                    <version>3.0.1</version>
                 </plugin>
                 <plugin>
                     <groupId>org.springframework.boot</groupId>
