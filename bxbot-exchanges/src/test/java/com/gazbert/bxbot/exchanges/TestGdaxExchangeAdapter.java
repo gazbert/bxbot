@@ -53,10 +53,9 @@ import static org.junit.Assert.assertTrue;
  *
  * @author gazbert
  */
-@Ignore("FIXME - not work with Java 9")
 @RunWith(PowerMockRunner.class)
 @PowerMockIgnore({"javax.crypto.*", "javax.management.*",
-        "com.sun.org.apache.xerces.*", "javax.xml.parsers.*", "org.xml.sax.*", "org.w3c.dom.*"})
+        "com.sun.org.apache.xerces.*", "javax.xml.parsers.*", "org.xml.sax.*", "org.w3c.dom.*", "javax.xml.datatype.*"})
 @PrepareForTest(GdaxExchangeAdapter.class)
 public class TestGdaxExchangeAdapter extends AbstractExchangeAdapterTest {
 
