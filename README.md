@@ -3,8 +3,6 @@
 [![Build Status](https://travis-ci.org/gazbert/bxbot.svg?branch=master)](https://travis-ci.org/gazbert/bxbot)
 [![Join the chat at https://gitter.im/BX-bot/Lobby](https://badges.gitter.im/BX-bot/Lobby.svg)](https://gitter.im/BX-bot/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)		 	 
  
-**Note:** This branch is work in progress and not safe for production.
- 
 ## What is BX-bot?
 
 <img src="./docs/bxbot-cropped.png" align="right" width="25%" />
