@@ -603,7 +603,7 @@ You can change this default logging configuration in the [`config/log4j2.xml`](.
 I recommend running at `info` level, as `debug` level logging will produce a *lot* of
 output from the Exchange Adapters; it's very handy for debugging, but not so good for your disk space!
  
-## Coming Soon
+## Coming Soon... (Definitely Maybe)
 The following features are in the pipeline:
 
 - A REST API for administering the bot. It's being developed on the [bxbot-restapi](https://github.com/gazbert/bxbot/tree/bxbot-restapi) branch.
