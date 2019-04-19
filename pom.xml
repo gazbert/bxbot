@@ -44,17 +44,17 @@
         <maven>3.5.0</maven>
     </prerequisites>
     <properties>
-        <revision>0.10.1-SNAPSHOT</revision>
+        <revision>0.11.0-SNAPSHOT</revision>
         <!-- spring-tx should be same version as Spring Boot's spring-core version -->
-        <spring-tx.version>5.0.6.RELEASE</spring-tx.version>
-        <powermock.version>2.0.0-beta.5</powermock.version>
-        <spring-boot-starter.version>2.0.2.RELEASE</spring-boot-starter.version>
-        <jaxb-api.version>2.3.0</jaxb-api.version>
+        <spring-tx.version>5.1.6.RELEASE</spring-tx.version>
+        <powermock.version>2.0.0</powermock.version>
+        <spring-boot-starter.version>2.1.4.RELEASE</spring-boot-starter.version>
+        <jaxb-api.version>2.3.1</jaxb-api.version>
     </properties>
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.0.2.RELEASE</version>
+        <version>2.1.4.RELEASE</version>
     </parent>
     <profiles>
         <profile>
@@ -202,7 +202,7 @@
             <dependency>
                 <groupId>com.sun.xml.bind</groupId>
                 <artifactId>jaxb-core</artifactId>
-                <version>${jaxb-api.version}</version>
+                <version>2.3.0.1</version>
             </dependency>
             <dependency>
                 <groupId>org.glassfish.jaxb</groupId>
@@ -306,8 +306,8 @@
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>3.8.0</version>
                     <configuration>
-                        <source>10</source>
-                        <target>10</target>
+                        <source>11</source>
+                        <target>11</target>
                     </configuration>
                 </plugin>
 
@@ -349,7 +349,7 @@
                 <plugin>
                     <groupId>org.springframework.boot</groupId>
                     <artifactId>spring-boot-maven-plugin</artifactId>
-                    <version>2.0.2.RELEASE</version>
+                    <version>2.1.4.RELEASE</version>
                     <executions>
                         <execution>
                             <goals>
