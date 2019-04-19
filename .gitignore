@@ -33,3 +33,6 @@ hs_err_pid*
 
 # Gradle
 .gradle
+
+# IT test output
+bxbot-exchanges/out
