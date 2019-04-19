@@ -1,6 +1,6 @@
 # BX-bot
 
-[![Build Status](https://travis-ci.org/gazbert/bxbot.svg?branch=master)](https://travis-ci.org/gazbert/bxbot)
+[![Build Status](https://travis-ci.org/gazbert/bxbot.svg?branch=bxbot-jdk11)](https://travis-ci.org/gazbert/bxbot)
 [![Join the chat at https://gitter.im/BX-bot/Lobby](https://badges.gitter.im/BX-bot/Lobby.svg)](https://gitter.im/BX-bot/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)		 	 
  
 ## What is BX-bot?
@@ -57,7 +57,7 @@ and evaluate the bot, Docker is the way to go.
 1. Install [Docker](https://docs.docker.com/engine/installation/) on the machine you want to run the bot.
 1. Fetch the BX-bot image from [Docker Hub](https://hub.docker.com/r/gazbert/bxbot/): `docker pull gazbert/bxbot:x.x.x` -
    replace `x.x.x` with the [Release](https://github.com/gazbert/bxbot/releases) version of the bot you want to run, e.g.
-   `docker pull gazbert/bxbot:0.10.0`
+   `docker pull gazbert/bxbot:0.11.0`
 1. Run the Docker container: `docker container run --name bxbot-x.x.x -it gazbert/bxbot:x.x.x bash`
 1. Change into the bot's directory: `cd bxbot*`
 1. Configure the bot as required - see the main _[Configuration](#configuration-2)_ section. The bot's default 
@@ -81,12 +81,9 @@ from the head of the master branch.
 The bot runs on Linux, macOS, and Windows. The Windows [bxbot.bat](./bxbot.bat) script for starting/stopping the bot is
 elementary and needs further development.
 
-BX-bot requires a Java 10 JDK ([openjdk-10-jdk](http://openjdk.java.net/projects/jdk/10/) or 
-[Oracle JDK 10](http://www.oracle.com/technetwork/java/javase/downloads/jdk10-downloads-4416644.html))
+BX-bot requires a Java 11 JDK ([openjdk-11-jdk](http://openjdk.java.net/projects/jdk/11/) or 
+[Oracle JDK 11](https://www.oracle.com/technetwork/java/javase/downloads/jdk11-downloads-5066655.html))
 to be installed on the machine you are going to use to build the bot. 
-
-_JDK 8 will continue to be supported on the 0.8.x (Spring Boot 1.5.x) and 0.9.x (Spring Boot 2) 
-[release](https://github.com/gazbert/bxbot/releases) streams until end of life Jan 2019._
 
 You can use [Maven](https://maven.apache.org) or [Gradle](https://gradle.org/) to build the bot and distribution artifact.
 The instructions below are for Linux and macOS, but equivalent Windows scripts are included. 
@@ -125,14 +122,10 @@ The instructions below are for Linux and macOS, but equivalent Windows scripts a
    by default - it makes public API calls to [Bitstamp](https://www.bitstamp.net), but stubs out the private API (order management) 
    calls; it's good for testing your initial setup without actually sending orders to the exchange.
 1. Usage: `./bxbot.sh [start|stop|status]`
-
-**NOTE:** You only need a Java 10 JRE ([openjdk-10-jre](http://openjdk.java.net/projects/jdk/10/) or 
-[Oracle JRE 10](http://www.oracle.com/technetwork/java/javase/downloads/jre10-downloads-4417026.html)) to be installed on
-the machine you want to _run_ the bot.
    
 ## Build Guide
-BX-bot requires a Java 10 JDK ([openjdk-10-jdk](http://openjdk.java.net/projects/jdk/10/) or 
-[Oracle JDK 10](http://www.oracle.com/technetwork/java/javase/downloads/jdk10-downloads-4416644.html)) for the development
+BX-bot requires a Java 11 JDK ([openjdk-11-jdk](http://openjdk.java.net/projects/jdk/11/) or 
+[Oracle JDK 11](https://www.oracle.com/technetwork/java/javase/downloads/jdk11-downloads-5066655.html)) for the development
 environment.
 
 You can use [Maven](https://maven.apache.org) or [Gradle](https://gradle.org/) to build the bot and pull down the dependencies;

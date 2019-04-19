@@ -7,7 +7,7 @@
 #
 # Could be made better, but will do for now...
 #
-# You need the Java 10 JRE installed.
+# You need the Java 11 JDK installed.
 #
 # This script expects all the jar files to live in the lib_dir.
 #
@@ -21,7 +21,7 @@ lib_dir=./libs
 log4j2_config=./config/log4j2.xml
 
 # The BX-bot 'fat' jar (Spring Boot app containing all the dependencies)
-bxbot_jar=bxbot-app-0.10.1-SNAPSHOT.jar
+bxbot_jar=bxbot-app-0.11.0-SNAPSHOT.jar
 
 # PID file for checking if bot is running
 pid_file=./.bxbot.pid

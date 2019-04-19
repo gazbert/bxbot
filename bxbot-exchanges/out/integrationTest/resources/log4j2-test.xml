@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="warn" name="BX-bot" packages="">
+    <Appenders>
+        <Console name="STDOUT" target="SYSTEM_OUT">
+            <PatternLayout>
+                <Pattern>%-4r [%t] %d %-5p %c{1} %M() - %m%n</Pattern>
+            </PatternLayout>
+        </Console>
+        <!--<RollingFile name="BXBot_RollingFile" fileName="./logs/bxbot.log"-->
+                     <!--filePattern="logs/$${date:yyyy-MM}/bxbot-%d{MM-dd-yyyy}-%i.log.gz">-->
+            <!--<PatternLayout>-->
+                <!--<Pattern>%-4r [%t] %d %-5p %c{1} %M() - %m%n</Pattern>-->
+            <!--</PatternLayout>-->
+            <!--<Policies>-->
+                <!--<TimeBasedTriggeringPolicy/>-->
+                <!--<SizeBasedTriggeringPolicy size="100 MB"/>-->
+            <!--</Policies>-->
+            <!--<DefaultRolloverStrategy max="90"/>-->
+        <!--</RollingFile>-->
+    </Appenders>
+    <Loggers>
+        <!--
+        debug for testing
+        -->
+        <Root level="debug">
+            <AppenderRef ref="STDOUT"/>
+            <!--<AppenderRef ref="BXBot_RollingFile"/>-->
+        </Root>
+    </Loggers>
+</Configuration>
