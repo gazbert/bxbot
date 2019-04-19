@@ -47,7 +47,6 @@ import static org.junit.Assert.*;
  *
  * @author nodueck
  */
-@Ignore("Disabling tests for now in light of recent events: https://www.radionz.co.nz/news/national/381010/cryptopia-funds-still-being-drained-by-hackers-while-police-investigated")
 public class CryptopiaIT {
 
     // Canned test data
