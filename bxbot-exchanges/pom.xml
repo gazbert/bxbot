@@ -201,6 +201,43 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <configuration>
+                    <!--
+                      Ignore classes tested using Powermock. JaCoCo won't/can't instrument them:
+                      "... right now there is NO WAY TO USE PowerMock with JaCoCo On-the-fly instrumentation."
+                      See https://github.com/powermock/powermock/wiki/Code-coverage-with-JaCoCo
+                     -->
+                    <excludes>
+                        <exclude>**/exchanges/*Adapter.class</exclude>    <!-- main adapter classes -->
+                        <exclude>**/exchanges/*Adapter$*.class</exclude>  <!-- adapter static inner classes -->
+                    </excludes>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>jacoco-check</id>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <rule>
+                                    <element>PACKAGE</element>
+                                    <limits>
+                                        <limit>
+                                            <counter>LINE</counter>
+                                            <value>COVEREDRATIO</value>
+                                            <minimum>0.62</minimum>
+                                        </limit>
+                                    </limits>
+                                </rule>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 </project>
