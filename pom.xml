@@ -50,6 +50,7 @@
         <powermock.version>2.0.0</powermock.version>
         <spring-boot-starter.version>2.1.4.RELEASE</spring-boot-starter.version>
         <jaxb-api.version>2.3.1</jaxb-api.version>
+        <spotbugs.version>3.1.11</spotbugs.version>
     </properties>
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -85,21 +86,20 @@
             </properties>
         </profile>
         <profile>
-            <id>findbugs</id>
+            <id>spotbugs</id>
             <activation>
                 <activeByDefault>false</activeByDefault>
             </activation>
             <build>
                 <plugins>
                     <plugin>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>findbugs-maven-plugin</artifactId>
-                        <!-- TODO JDK11: Upgrade plugin - is this currently broken? -->
-                        <version>3.0.4</version>
+                        <groupId>com.github.spotbugs</groupId>
+                        <artifactId>spotbugs-maven-plugin</artifactId>
+                        <version>${spotbugs.version}</version>
                         <configuration>
-                            <excludeFilterFile>etc/findbugs-exclude-filter.xml</excludeFilterFile>
+                            <excludeFilterFile>etc/spotbugs-exclude-filter.xml</excludeFilterFile>
                             <xmlOutput>true</xmlOutput>
-                            <!-- Optional directory to put findbugs xdoc xml report -->
+                            <!-- Optional directory to put spotbugs xdoc xml report -->
                             <xmlOutputDirectory>target/site</xmlOutputDirectory>
                         </configuration>
                         <executions>
@@ -393,9 +393,9 @@
     <reporting>
         <plugins>
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>findbugs-maven-plugin</artifactId>
-                <version>3.0.5</version>
+                <groupId>com.github.spotbugs</groupId>
+                <artifactId>spotbugs-maven-plugin</artifactId>
+                <version>${spotbugs.version}</version>
             </plugin>
         </plugins>
     </reporting>
