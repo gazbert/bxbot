@@ -11,8 +11,6 @@ Building & Testing
 * JUnit                     - http://junit.org/                      - http://opensource.org/licenses/eclipse-1.0.html
 * Powermock                 - https://github.com/jayway/powermock    - https://github.com/jayway/powermock/blob/master/LICENSE.txt
 * EasyMock                  - http://easymock.org/                   - http://easymock.org/License.html
-* Objenesis                 - http://objenesis.org/index.html        - http://objenesis.org/license.html
-* cglib                     - https://github.com/cglib/cglib         - https://github.com/cglib/cglib/blob/master/LICENSE
 * Maven                     - https://maven.apache.org/              - http://www.apache.org/licenses/
 * Gradle                    - https://gradle.org/                    - https://gradle.org/license/
 * JsonPath                  - https://github.com/jayway/JsonPath     - https://github.com/jayway/JsonPath/blob/master/LICENSE

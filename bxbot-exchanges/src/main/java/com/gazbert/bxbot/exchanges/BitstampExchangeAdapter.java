@@ -687,6 +687,9 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
     private static class BitstampDateDeserializer implements JsonDeserializer<Date> {
         private final SimpleDateFormat bitstampDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
+        BitstampDateDeserializer() {
+        }
+
         public Date deserialize(JsonElement json, Type type, JsonDeserializationContext context)
                 throws JsonParseException {
             Date dateFromBitstamp = null;

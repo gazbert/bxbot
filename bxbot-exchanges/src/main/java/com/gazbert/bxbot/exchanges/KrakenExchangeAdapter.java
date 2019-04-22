@@ -853,6 +853,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
      * GSON class that wraps a Ticker API call result.
      */
     private static class KrakenTickerResult extends HashMap<String, String> {
+        KrakenTickerResult() {}
     }
 
     /**
@@ -1017,6 +1018,8 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
      * Have to do this because last entry in the Ticker param map is a String, not an array like the rest of 'em!
      */
     private static class KrakenTickerResultDeserializer implements JsonDeserializer<KrakenTickerResult> {
+
+        KrakenTickerResultDeserializer() {}
 
         public KrakenTickerResult deserialize(JsonElement json, Type type, JsonDeserializationContext context)
                 throws JsonParseException {
