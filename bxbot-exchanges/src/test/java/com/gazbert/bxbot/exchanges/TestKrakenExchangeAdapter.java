@@ -55,9 +55,8 @@ import static org.junit.Assert.*;
  */
 @RunWith(PowerMockRunner.class)
 @PowerMockIgnore({"javax.crypto.*", "javax.management.*",
-        "com.sun.org.apache.xerces.*", "javax.xml.parsers.*", "org.xml.sax.*", "org.w3c.dom.*", "javax.xml.datatype.*"})
+        "com.sun.org.apache.xerces.*", "javax.xml.parsers.*", "org.xml.sax.*", "org.w3c.dom.*"})
 @PrepareForTest(KrakenExchangeAdapter.class)
-// TODO JDK11 - FIXME - Broken when running with Gradle 5.4 :-(
 public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
 
     // Canned JSON responses from exchange - expected to reside on filesystem relative to project root
