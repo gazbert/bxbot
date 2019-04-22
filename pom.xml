@@ -47,7 +47,7 @@
         <revision>0.11.0-SNAPSHOT</revision>
         <!-- spring-tx should be same version as Spring Boot's spring-core version -->
         <spring-tx.version>5.1.6.RELEASE</spring-tx.version>
-        <powermock.version>2.0.0</powermock.version>
+        <powermock.version>2.0.2</powermock.version>
         <spring-boot-starter.version>2.1.4.RELEASE</spring-boot-starter.version>
         <jaxb-api.version>2.3.1</jaxb-api.version>
         <spotbugs.version>3.1.11</spotbugs.version>
