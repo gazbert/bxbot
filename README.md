@@ -47,8 +47,6 @@ it will log the error, send an email alert (if configured), and then shut down.
 
 ## Installation Guide
   
-The [Releases](https://github.com/gazbert/bxbot/releases) page lists the stable releases.
-
 The bot runs on Linux, macOS, and Windows.
 
 BX-bot requires a Java 11 JDK ([openjdk-11-jdk](http://openjdk.java.net/projects/jdk/11/) or 
@@ -56,17 +54,18 @@ BX-bot requires a Java 11 JDK ([openjdk-11-jdk](http://openjdk.java.net/projects
 to be installed on the machine you are going to use to build and run the bot. 
 
 You can use [Maven](https://maven.apache.org) or [Gradle](https://gradle.org/) to build the bot.
-The instructions below are for Linux/macOS, but equivalent Windows scripts are included. 
+The instructions below are for Linux/macOS, but equivalent Windows scripts are included.
+
+Download the latest [Release](https://github.com/gazbert/bxbot/releases) and unzip the bot.
 
 #### Maven
-1. Download the latest [release](https://github.com/gazbert/bxbot/releases). Unzip the bot.
 1. If you plan on using your own Trading Strategies/Exchange Adapters packaged in separate jar files, you'll need to add
    the dependency in the [bxbot-app/pom.xml](./bxbot-app/pom.xml) - see the commented out dependency examples inside it.
 1. From the project root, run `./mvnw clean assembly:assembly` to produce the distribution 
    artifacts `bxbot-app-<version>-dist.tar.gz` and `bxbot-app-<version>-dist.zip` in the `./target` folder.
 1. Copy either the `bxbot-app-<version>-dist.tar.gz` or the `bxbot-app-<version>-dist.zip` onto the machine you 
    want to run the bot and unzip it someplace.
-1. Configure the bot as required - see the main _[Configuration](#configuration-2)_ section.
+1. Configure the bot as required - see the main _[Configuration](#configuration)_ section.
    The bot's default configuration uses the 
    [`ExampleScalpingStrategy`](./bxbot-strategies/src/main/java/com/gazbert/bxbot/strategies/ExampleScalpingStrategy.java), 
    but you'll probably want to [code your own](#how-do-i-write-my-own-trading-strategy)! The 
@@ -76,7 +75,6 @@ The instructions below are for Linux/macOS, but equivalent Windows scripts are i
 1. Usage: `./bxbot.sh [start|stop|status]`   
     
 #### Gradle    
-1. Download the latest [release](https://github.com/gazbert/bxbot/releases). Unzip the bot.
 1. If you plan on using your own Trading Strategies/Exchange Adapters packaged in separate jar files, you'll need to add
    the dependency in the [bxbot-app/build.gradle](bxbot-app/build.gradle) - see the commented out dependency examples inside it.
 1. From the project root, run `./gradlew clean build` to build the bot.   
@@ -84,13 +82,7 @@ The instructions below are for Linux/macOS, but equivalent Windows scripts are i
    artifact: either `bxbot-app-<version>.tar.gz` or `bxbot-app-<version>.zip` respectively. 
    It will be placed in the `./build/distributions` folder.
 1. Copy the artifact onto the machine you want to run the bot and unzip it someplace.
-1. Configure the bot as required - see the main _[Configuration](#configuration-2)_ section.
-   The bot's default configuration uses the 
-   [`ExampleScalpingStrategy`](./bxbot-strategies/src/main/java/com/gazbert/bxbot/strategies/ExampleScalpingStrategy.java), 
-   but you'll probably want to [code your own](#how-do-i-write-my-own-trading-strategy)! The 
-   [`TestExchangeAdapter`](./bxbot-exchanges/src/main/java/com/gazbert/bxbot/exchanges/TestExchangeAdapter.java) is configured 
-   by default - it makes public API calls to [Bitstamp](https://www.bitstamp.net), but stubs out the private API (order management) 
-   calls; it's good for testing your initial setup without actually sending orders to the exchange.
+1. Configure the bot as described in step 4 of the previous [Maven](#maven) section.
 1. Usage: `./bxbot.sh [start|stop|status]`
 
 ### Docker
@@ -104,13 +96,7 @@ and evaluate the bot, Docker is the way to go.
    `docker pull gazbert/bxbot:0.11.0`
 1. Run the Docker container: `docker container run --name bxbot-x.x.x -it gazbert/bxbot:x.x.x bash`
 1. Change into the bot's directory: `cd bxbot*`
-1. Configure the bot as required - see the main _[Configuration](#configuration-2)_ section. The bot's default 
-   configuration uses the 
-   [`ExampleScalpingStrategy`](./bxbot-strategies/src/main/java/com/gazbert/bxbot/strategies/ExampleScalpingStrategy.java), 
-   but you'll probably want to [code your own](#how-do-i-write-my-own-trading-strategy)! The 
-   [`TestExchangeAdapter`](./bxbot-exchanges/src/main/java/com/gazbert/bxbot/exchanges/TestExchangeAdapter.java) is 
-   configured by default - it makes public API calls to [Bitstamp](https://www.bitstamp.net), but stubs out the private 
-   API (order management) calls; it's good for testing your initial setup without actually sending orders to the exchange.
+1. Configure the bot as described in step 4 of the previous [Maven](#maven) section.
 1. Usage: `./bxbot.sh [start|stop|status]`
 1. You can detach from the container and leave the bot running using the `CTRL-p` `CTRL-q` key sequence.
 1. To re-attach to the Docker container, run `docker container ls` to get the CONTAINER ID. 
@@ -126,8 +112,9 @@ BX-bot depends on [Spring Boot](http://projects.spring.io/spring-boot/), [log4j]
 
 The instructions below are for Linux/macOS, but equivalent Windows scripts are included.
 
+Clone the repo locally (master branch).
+
 ### Maven
-1. Clone the repo locally (master branch).
 1. From the project root, run `./mvnw clean install`.
    If you want to run the exchange integration tests, use `./mvnw clean install -Pint`. 
    To execute both unit and integration tests, use `./mvnw clean install -Pall`.
@@ -135,7 +122,6 @@ The instructions below are for Linux/macOS, but equivalent Windows scripts are i
    and bxbot-exchange-api modules after the build completes.
    
 ### Gradle
-1. Clone the repo locally (master branch).
 1. From the project root, run `./gradlew build`.
    If you want to run the exchange integration tests, use `./gradlew integrationTests`.
    To execute both unit and integration tests, use `./gradlew build integrationTests`.
