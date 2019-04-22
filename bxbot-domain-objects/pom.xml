@@ -36,6 +36,7 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
     <build>
         <defaultGoal>clean install</defaultGoal>
         <plugins>
