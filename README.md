@@ -23,9 +23,7 @@ Feel free to improve these or contribute new adapters to the project; that would
 [shiny!](https://en.wikipedia.org/wiki/Firefly_(TV_series))
 
 The Trading API provides support for [limit orders](http://www.investopedia.com/terms/l/limitorder.asp)
-traded at the [spot price](http://www.investopedia.com/terms/s/spotprice.asp);
-it does not support [futures](http://www.investopedia.com/university/beginners-guide-to-trading-futures/) or 
-[margin](http://www.investopedia.com/university/margin/) trading.
+traded at the [spot price](http://www.investopedia.com/terms/s/spotprice.asp).
  
 **Warning:** Trading Bitcoin carries significant financial risk; you could lose money. This software is provided 'as is'
 and released under the [MIT license](http://opensource.org/licenses/MIT).
@@ -51,8 +49,7 @@ it will log the error, send an email alert (if configured), and then shut down.
   
 The [Releases](https://github.com/gazbert/bxbot/releases) page lists the stable releases.
 
-The bot runs on Linux, macOS, and Windows. The Windows [bxbot.bat](./bxbot.bat) script for starting/stopping the bot is
-elementary and needs further development.
+The bot runs on Linux, macOS, and Windows.
 
 BX-bot requires a Java 11 JDK ([openjdk-11-jdk](http://openjdk.java.net/projects/jdk/11/) or 
 [Oracle JDK 11](https://www.oracle.com/technetwork/java/javase/downloads/jdk11-downloads-5066655.html))
