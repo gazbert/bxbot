@@ -1018,6 +1018,9 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
      */
     private static class KrakenTickerResultDeserializer implements JsonDeserializer<KrakenTickerResult> {
 
+        KrakenTickerResultDeserializer() {
+        }
+
         public KrakenTickerResult deserialize(JsonElement json, Type type, JsonDeserializationContext context)
                 throws JsonParseException {
 

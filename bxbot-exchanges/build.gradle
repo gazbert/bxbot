@@ -19,8 +19,6 @@ dependencies {
     testCompile libraries.powermock_junit
     testCompile libraries.powermock_api_easymock
     testCompile libraries.easymock
-    testCompile libraries.objenesis
-    testCompile libraries.cglib_nodep
 }
 
 sourceSets {

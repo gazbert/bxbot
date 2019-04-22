@@ -70,9 +70,7 @@ and evaluate the bot, Docker is the way to go.
 1. Usage: `./bxbot.sh [start|stop|status]`
 1. You can detach from the container and leave the bot running using the `CTRL-p` `CTRL-q` key sequence.
 1. To re-attach to the Docker container, run `docker container ls` to get the CONTAINER ID. 
-   Then run: `docker container attach <CONTAINER ID>`
-   
-A Docker image for each release is available on [Docker Hub](https://hub.docker.com/r/gazbert/bxbot/tags/).
+   Then run: `docker container attach <CONTAINER ID>`   
   
 ### The manual way
 The [Releases](https://github.com/gazbert/bxbot/releases) page has the stable releases, or you can grab the latest code 
