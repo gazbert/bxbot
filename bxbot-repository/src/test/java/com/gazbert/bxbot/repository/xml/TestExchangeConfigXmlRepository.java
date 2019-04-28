@@ -93,7 +93,7 @@ public class TestExchangeConfigXmlRepository {
 
         PowerMock.replayAll();
 
-        final ExchangeConfigRepository exchangeConfigRepository = new ExchangeConfigRepositoryXmlDatastore();
+        final ExchangeConfigRepository exchangeConfigRepository = new ExchangeConfigXmlRepository();
         final ExchangeConfig exchangeConfig = exchangeConfigRepository.get();
 
         assertThat(exchangeConfig.getExchangeName()).isEqualTo(EXCHANGE_NAME);
@@ -130,7 +130,7 @@ public class TestExchangeConfigXmlRepository {
 
         PowerMock.replayAll();
 
-        final ExchangeConfigRepository exchangeConfigRepository = new ExchangeConfigRepositoryXmlDatastore();
+        final ExchangeConfigRepository exchangeConfigRepository = new ExchangeConfigXmlRepository();
         final ExchangeConfig savedExchangeConfig = exchangeConfigRepository.save(withSomeExternalExchangeConfig());
 
         assertThat(savedExchangeConfig.getExchangeName()).isEqualTo(EXCHANGE_NAME);

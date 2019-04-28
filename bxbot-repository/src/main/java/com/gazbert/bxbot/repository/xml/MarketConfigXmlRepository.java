@@ -47,9 +47,9 @@ import static com.gazbert.bxbot.datastore.xml.FileLocations.MARKETS_CONFIG_XSD_F
  *
  * @author gazbert
  */
-@Repository("marketConfigRepository")
+@Repository("marketConfigXmlRepository")
 @Transactional
-public class MarketConfigRepositoryXmlDatastore implements MarketConfigRepository {
+public class MarketConfigXmlRepository implements MarketConfigRepository {
 
     private static final Logger LOG = LogManager.getLogger();
 

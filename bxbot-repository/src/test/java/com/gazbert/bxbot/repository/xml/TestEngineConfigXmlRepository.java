@@ -76,7 +76,7 @@ public class TestEngineConfigXmlRepository {
 
         PowerMock.replayAll();
 
-        final EngineConfigRepository engineConfigRepository = new EngineConfigRepositoryXmlDatastore();
+        final EngineConfigRepository engineConfigRepository = new EngineConfigXmlRepository();
         final EngineConfig engineConfig = engineConfigRepository.get();
         assertThat(engineConfig.getBotId()).isEqualTo(BOT_ID);
         assertThat(engineConfig.getBotName()).isEqualTo(BOT_NAME);
@@ -100,7 +100,7 @@ public class TestEngineConfigXmlRepository {
 
         PowerMock.replayAll();
 
-        final EngineConfigRepository engineConfigRepository = new EngineConfigRepositoryXmlDatastore();
+        final EngineConfigRepository engineConfigRepository = new EngineConfigXmlRepository();
         final EngineConfig savedConfig  = engineConfigRepository.save(withSomeExternalEngineConfig());
 
         assertThat(savedConfig.getBotId()).isEqualTo(BOT_ID);

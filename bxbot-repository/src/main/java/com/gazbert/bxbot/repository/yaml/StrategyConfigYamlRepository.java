@@ -46,7 +46,7 @@ import static com.gazbert.bxbot.datastore.yaml.FileLocations.STRATEGIES_CONFIG_Y
  */
 @Repository("strategyConfigYamlRepository")
 @Transactional
-public class StrategyConfigRepositoryYamlDatastore implements StrategyConfigRepository {
+public class StrategyConfigYamlRepository implements StrategyConfigRepository {
 
     private static final Logger LOG = LogManager.getLogger();
 

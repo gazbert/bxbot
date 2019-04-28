@@ -40,9 +40,9 @@ import static com.gazbert.bxbot.datastore.xml.FileLocations.ENGINE_CONFIG_XSD_FI
  *
  * @author gazbert
  */
-@Repository("engineConfigRepository")
+@Repository("engineConfigXmlRepository")
 @Transactional
-public class EngineConfigRepositoryXmlDatastore implements EngineConfigRepository {
+public class EngineConfigXmlRepository implements EngineConfigRepository {
 
     private static final Logger LOG = LogManager.getLogger();
 

@@ -43,9 +43,9 @@ import static com.gazbert.bxbot.datastore.xml.FileLocations.EMAIL_ALERTS_CONFIG_
  *
  * @author gazbert
  */
-@Repository("emailAlertsConfigRepository")
+@Repository("emailAlertsConfigXmlRepository")
 @Transactional
-public class EmailAlertsConfigRepositoryXmlDatastore implements EmailAlertsConfigRepository {
+public class EmailAlertsConfigXmlRepository implements EmailAlertsConfigRepository {
 
     private static final Logger LOG = LogManager.getLogger();
 

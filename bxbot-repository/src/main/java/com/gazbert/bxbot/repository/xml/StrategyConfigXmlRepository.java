@@ -51,7 +51,7 @@ import static com.gazbert.bxbot.datastore.xml.FileLocations.STRATEGIES_CONFIG_XS
  */
 @Repository("strategyConfigXmlRepository")
 @Transactional
-public class StrategyConfigRepositoryXmlDatastore implements StrategyConfigRepository {
+public class StrategyConfigXmlRepository implements StrategyConfigRepository {
 
     private static final Logger LOG = LogManager.getLogger();
 

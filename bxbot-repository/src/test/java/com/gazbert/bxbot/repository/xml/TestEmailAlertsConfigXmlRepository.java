@@ -85,7 +85,7 @@ public class TestEmailAlertsConfigXmlRepository {
 
         PowerMock.replayAll();
 
-        final EmailAlertsConfigRepository emailAlertsConfigRepository = new EmailAlertsConfigRepositoryXmlDatastore();
+        final EmailAlertsConfigRepository emailAlertsConfigRepository = new EmailAlertsConfigXmlRepository();
         final EmailAlertsConfig emailAlertsConfig = emailAlertsConfigRepository.get();
         assertThat(emailAlertsConfig.isEnabled()).isEqualTo(ENABLED);
         assertThat(emailAlertsConfig.getSmtpConfig().getHost()).isEqualTo(HOST);
@@ -111,7 +111,7 @@ public class TestEmailAlertsConfigXmlRepository {
 
         PowerMock.replayAll();
 
-        final EmailAlertsConfigRepository emailAlertsConfigRepository = new EmailAlertsConfigRepositoryXmlDatastore();
+        final EmailAlertsConfigRepository emailAlertsConfigRepository = new EmailAlertsConfigXmlRepository();
         final EmailAlertsConfig saveConfig = emailAlertsConfigRepository.save(withSomeExternalEmailAlertsConfig());
 
         assertThat(saveConfig.isEnabled()).isEqualTo(ENABLED);

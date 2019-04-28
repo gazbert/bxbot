@@ -53,7 +53,7 @@ import static org.easymock.EasyMock.*;
  * @author gazbert
  */
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ConfigurationManager.class, StrategyConfigRepositoryXmlDatastore.class})
+@PrepareForTest({ConfigurationManager.class, StrategyConfigXmlRepository.class})
 @PowerMockIgnore({"javax.crypto.*", "javax.management.*",
         "com.sun.org.apache.xerces.*", "javax.xml.parsers.*", "org.xml.sax.*", "org.w3c.dom.*"})
 public class TestStrategyConfigXmlRepository {
@@ -102,7 +102,7 @@ public class TestStrategyConfigXmlRepository {
 
         PowerMock.replayAll();
 
-        final StrategyConfigRepository strategyConfigRepository = new StrategyConfigRepositoryXmlDatastore();
+        final StrategyConfigRepository strategyConfigRepository = new StrategyConfigXmlRepository();
         final List<StrategyConfig> strategyConfigItems = strategyConfigRepository.findAll();
 
         assertThat(strategyConfigItems.size()).isEqualTo(2);
@@ -139,7 +139,7 @@ public class TestStrategyConfigXmlRepository {
 
         PowerMock.replayAll();
 
-        final StrategyConfigRepository strategyConfigRepository = new StrategyConfigRepositoryXmlDatastore();
+        final StrategyConfigRepository strategyConfigRepository = new StrategyConfigXmlRepository();
         final StrategyConfig strategyConfig = strategyConfigRepository.findById(STRAT_ID_1);
 
         assertThat(strategyConfig.getId()).isEqualTo(STRAT_ID_1);
@@ -165,7 +165,7 @@ public class TestStrategyConfigXmlRepository {
 
         PowerMock.replayAll();
 
-        final StrategyConfigRepository strategyConfigRepository = new StrategyConfigRepositoryXmlDatastore();
+        final StrategyConfigRepository strategyConfigRepository = new StrategyConfigXmlRepository();
         final StrategyConfig strategyConfig = strategyConfigRepository.findById(UNKNOWN_STRAT_ID);
 
         assertThat(strategyConfig).isEqualTo(null);
@@ -194,7 +194,7 @@ public class TestStrategyConfigXmlRepository {
 
         PowerMock.replayAll();
 
-        final StrategyConfigRepository strategyConfigRepository = new StrategyConfigRepositoryXmlDatastore();
+        final StrategyConfigRepository strategyConfigRepository = new StrategyConfigXmlRepository();
         final StrategyConfig strategyConfig = strategyConfigRepository.save(someExternalStrategyConfig());
 
         assertThat(strategyConfig.getId()).isEqualTo(STRAT_ID_1);
@@ -220,7 +220,7 @@ public class TestStrategyConfigXmlRepository {
 
         PowerMock.replayAll();
 
-        final StrategyConfigRepository strategyConfigRepository = new StrategyConfigRepositoryXmlDatastore();
+        final StrategyConfigRepository strategyConfigRepository = new StrategyConfigXmlRepository();
         final StrategyConfig strategyConfig = strategyConfigRepository.save(someExternalStrategyConfigWithUnknownId());
 
         assertThat(strategyConfig).isEqualTo(null);
@@ -248,7 +248,7 @@ public class TestStrategyConfigXmlRepository {
                 andReturn(allTheInternalStrategiesConfigPlusNewOne());
 
         final StrategyConfigRepository strategyConfigRepository = PowerMock.createPartialMock(
-                StrategyConfigRepositoryXmlDatastore.class, MOCKED_GENERATE_UUID_METHOD);
+                StrategyConfigXmlRepository.class, MOCKED_GENERATE_UUID_METHOD);
         PowerMock.expectPrivate(strategyConfigRepository, MOCKED_GENERATE_UUID_METHOD).andReturn(GENERATED_STRAT_ID);
 
         PowerMock.replayAll();
@@ -283,7 +283,7 @@ public class TestStrategyConfigXmlRepository {
 
         PowerMock.replayAll();
 
-        final StrategyConfigRepository strategyConfigRepository = new StrategyConfigRepositoryXmlDatastore();
+        final StrategyConfigRepository strategyConfigRepository = new StrategyConfigXmlRepository();
         final StrategyConfig strategyConfig = strategyConfigRepository.delete(STRAT_ID_1);
 
         assertThat(strategyConfig.getId()).isEqualTo(STRAT_ID_1);
@@ -309,7 +309,7 @@ public class TestStrategyConfigXmlRepository {
 
         PowerMock.replayAll();
 
-        final StrategyConfigRepository strategyConfigRepository = new StrategyConfigRepositoryXmlDatastore();
+        final StrategyConfigRepository strategyConfigRepository = new StrategyConfigXmlRepository();
         final StrategyConfig strategyConfig = strategyConfigRepository.delete(UNKNOWN_STRAT_ID);
 
         assertThat(strategyConfig).isEqualTo(null);

@@ -49,7 +49,7 @@ import static org.easymock.EasyMock.*;
  * @author gazbert
  */
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ConfigurationManager.class, MarketConfigRepositoryXmlDatastore.class})
+@PrepareForTest({ConfigurationManager.class, MarketConfigXmlRepository.class})
 @PowerMockIgnore({"javax.crypto.*", "javax.management.*",
         "com.sun.org.apache.xerces.*", "javax.xml.parsers.*", "org.xml.sax.*", "org.w3c.dom.*"})
 public class TestMarketConfigXmlRepository {
@@ -97,7 +97,7 @@ public class TestMarketConfigXmlRepository {
 
         PowerMock.replayAll();
 
-        final MarketConfigRepository marketConfigRepository = new MarketConfigRepositoryXmlDatastore();
+        final MarketConfigRepository marketConfigRepository = new MarketConfigXmlRepository();
         final List<MarketConfig> marketConfigItems = marketConfigRepository.findAll();
 
         assertThat(marketConfigItems.size()).isEqualTo(2);
@@ -130,7 +130,7 @@ public class TestMarketConfigXmlRepository {
 
         PowerMock.replayAll();
 
-        final MarketConfigRepository marketConfigRepository = new MarketConfigRepositoryXmlDatastore();
+        final MarketConfigRepository marketConfigRepository = new MarketConfigXmlRepository();
         final MarketConfig marketConfig = marketConfigRepository.findById(MARKET_1_ID);
 
         assertThat(marketConfig.getId()).isEqualTo(MARKET_1_ID);
@@ -154,7 +154,7 @@ public class TestMarketConfigXmlRepository {
 
         PowerMock.replayAll();
 
-        final MarketConfigRepository marketConfigRepository = new MarketConfigRepositoryXmlDatastore();
+        final MarketConfigRepository marketConfigRepository = new MarketConfigXmlRepository();
         final MarketConfig marketConfig = marketConfigRepository.findById(UNKNOWN_MARKET_ID);
 
         assertThat(marketConfig).isNull();
@@ -183,7 +183,7 @@ public class TestMarketConfigXmlRepository {
 
         PowerMock.replayAll();
 
-        final MarketConfigRepository marketConfigRepository = new MarketConfigRepositoryXmlDatastore();
+        final MarketConfigRepository marketConfigRepository = new MarketConfigXmlRepository();
         final MarketConfig marketConfig = marketConfigRepository.save(someExternalMarketConfig());
 
         assertThat(marketConfig.getId()).isEqualTo(MARKET_1_ID);
@@ -207,7 +207,7 @@ public class TestMarketConfigXmlRepository {
 
         PowerMock.replayAll();
 
-        final MarketConfigRepository marketConfigRepository = new MarketConfigRepositoryXmlDatastore();
+        final MarketConfigRepository marketConfigRepository = new MarketConfigXmlRepository();
         final MarketConfig marketConfig = marketConfigRepository.save(someExternalMarketConfigWithUnknownId());
 
         assertThat(marketConfig).isEqualTo(null);
@@ -235,7 +235,7 @@ public class TestMarketConfigXmlRepository {
                 andReturn(allTheInternalMarketsConfigPlusNewOne());
 
         final MarketConfigRepository marketConfigRepository = PowerMock.createPartialMock(
-                MarketConfigRepositoryXmlDatastore.class, MOCKED_GENERATE_UUID_METHOD);
+                MarketConfigXmlRepository.class, MOCKED_GENERATE_UUID_METHOD);
         PowerMock.expectPrivate(marketConfigRepository, MOCKED_GENERATE_UUID_METHOD).andReturn(GENERATED_MARKET_ID);
 
         PowerMock.replayAll();
@@ -268,7 +268,7 @@ public class TestMarketConfigXmlRepository {
 
         PowerMock.replayAll();
 
-        final MarketConfigRepository marketConfigRepository = new MarketConfigRepositoryXmlDatastore();
+        final MarketConfigRepository marketConfigRepository = new MarketConfigXmlRepository();
         final MarketConfig marketConfig = marketConfigRepository.delete(MARKET_1_ID);
 
         assertThat(marketConfig.getId()).isEqualTo(MARKET_1_ID);
@@ -292,7 +292,7 @@ public class TestMarketConfigXmlRepository {
 
         PowerMock.replayAll();
 
-        final MarketConfigRepository marketConfigRepository = new MarketConfigRepositoryXmlDatastore();
+        final MarketConfigRepository marketConfigRepository = new MarketConfigXmlRepository();
         final MarketConfig marketConfig = marketConfigRepository.delete(UNKNOWN_MARKET_ID);
 
         assertThat(marketConfig).isNull();

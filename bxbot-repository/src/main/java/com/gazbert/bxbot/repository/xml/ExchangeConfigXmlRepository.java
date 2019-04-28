@@ -43,9 +43,9 @@ import static com.gazbert.bxbot.datastore.xml.FileLocations.EXCHANGE_CONFIG_XSD_
  *
  * @author gazbert
  */
-@Repository("exchangeConfigRepository")
+@Repository("exchangeConfigXmlRepository")
 @Transactional
-public class ExchangeConfigRepositoryXmlDatastore implements ExchangeConfigRepository {
+public class ExchangeConfigXmlRepository implements ExchangeConfigRepository {
 
     private static final Logger LOG = LogManager.getLogger();
 
