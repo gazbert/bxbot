@@ -44,7 +44,7 @@ import static com.gazbert.bxbot.datastore.yaml.FileLocations.STRATEGIES_CONFIG_Y
  *
  * @author gazbert
  */
-@Repository("strategyConfigRepository")
+@Repository("strategyConfigYamlRepository")
 @Transactional
 public class StrategyConfigRepositoryYamlDatastore implements StrategyConfigRepository {
 
