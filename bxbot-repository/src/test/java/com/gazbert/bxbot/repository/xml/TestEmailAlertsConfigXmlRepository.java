@@ -43,7 +43,7 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.easymock.EasyMock.*;
 
 /**
- * Tests Email Alerts configuration repository behaves as expected.
+ * Tests XML backed Email Alerts configuration repository behaves as expected.
  *
  * @author gazbert
  */
@@ -70,12 +70,12 @@ public class TestEmailAlertsConfigXmlRepository {
 
 
     @Before
-    public void setup() throws Exception {
+    public void setup() {
         PowerMock.mockStatic(ConfigurationManager.class);
     }
 
     @Test
-    public void whenGetCalledThenExpectEmailAlertsConfigToBeReturned() throws Exception {
+    public void whenGetCalledThenExpectEmailAlertsConfigToBeReturned() {
 
         expect(ConfigurationManager.loadConfig(
                 eq(EmailAlertsType.class),
@@ -99,7 +99,7 @@ public class TestEmailAlertsConfigXmlRepository {
     }
 
     @Test
-    public void whenSaveCalledThenExpectRepositoryToSaveItAndReturnSavedEmailAlertsConfig() throws Exception {
+    public void whenSaveCalledThenExpectRepositoryToSaveItAndReturnSavedEmailAlertsConfig() {
 
         ConfigurationManager.saveConfig(eq(EmailAlertsType.class), anyObject(EmailAlertsType.class), eq(EMAIL_ALERTS_CONFIG_XML_FILENAME));
 

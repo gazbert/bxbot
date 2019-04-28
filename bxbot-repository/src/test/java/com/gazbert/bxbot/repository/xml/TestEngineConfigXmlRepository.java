@@ -43,7 +43,7 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.easymock.EasyMock.*;
 
 /**
- * Tests Engine configuration repository behaves as expected.
+ * Tests XML backed Engine configuration repository behaves as expected.
  *
  * @author gazbert
  */
@@ -61,12 +61,12 @@ public class TestEngineConfigXmlRepository {
 
 
     @Before
-    public void setup() throws Exception {
+    public void setup() {
         PowerMock.mockStatic(ConfigurationManager.class);
     }
 
     @Test
-    public void whenGetCalledThenExpectEngineConfigToBeReturned() throws Exception {
+    public void whenGetCalledThenExpectEngineConfigToBeReturned() {
 
         expect(ConfigurationManager.loadConfig(
                 eq(EngineType.class),
@@ -88,7 +88,7 @@ public class TestEngineConfigXmlRepository {
     }
 
     @Test
-    public void whenSaveCalledThenExpectRepositoryToSaveItAndReturnSavedEngineConfig() throws Exception {
+    public void whenSaveCalledThenExpectRepositoryToSaveItAndReturnSavedEngineConfig() {
 
         ConfigurationManager.saveConfig(eq(EngineType.class), anyObject(EngineType.class), eq(ENGINE_CONFIG_XML_FILENAME));
 

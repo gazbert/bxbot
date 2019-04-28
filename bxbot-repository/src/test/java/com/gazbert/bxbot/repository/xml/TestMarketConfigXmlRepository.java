@@ -44,7 +44,7 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.easymock.EasyMock.*;
 
 /**
- * Tests Market configuration repository behaves as expected.
+ * Tests XML backed Market configuration repository behaves as expected.
  *
  * @author gazbert
  */
@@ -82,12 +82,12 @@ public class TestMarketConfigXmlRepository {
 
 
     @Before
-    public void setup() throws Exception {
+    public void setup() {
         PowerMock.mockStatic(ConfigurationManager.class);
     }
 
     @Test
-    public void whenFindAllCalledThenExpectServiceToReturnAllMarketConfigs() throws Exception {
+    public void whenFindAllCalledThenExpectServiceToReturnAllMarketConfigs() {
 
         expect(ConfigurationManager.loadConfig(
                 eq(MarketsType.class),
@@ -120,7 +120,7 @@ public class TestMarketConfigXmlRepository {
     }
 
     @Test
-    public void whenFindByIdCalledWithKnownIdThenReturnMatchingMarketConfig() throws Exception {
+    public void whenFindByIdCalledWithKnownIdThenReturnMatchingMarketConfig() {
 
         expect(ConfigurationManager.loadConfig(
                 eq(MarketsType.class),
@@ -144,7 +144,7 @@ public class TestMarketConfigXmlRepository {
     }
 
     @Test
-    public void whenFindByIdCalledWithUnknownIdThenReturnNullMarketConfig() throws Exception {
+    public void whenFindByIdCalledWithUnknownIdThenReturnNullMarketConfig() {
 
         expect(ConfigurationManager.loadConfig(
                 eq(MarketsType.class),
@@ -162,7 +162,7 @@ public class TestMarketConfigXmlRepository {
     }
 
     @Test
-    public void whenSaveCalledWithKnownIdThenReturnUpdatedMarketConfig() throws Exception {
+    public void whenSaveCalledWithKnownIdThenReturnUpdatedMarketConfig() {
 
         expect(ConfigurationManager.loadConfig(
                 eq(MarketsType.class),
@@ -197,7 +197,7 @@ public class TestMarketConfigXmlRepository {
     }
 
     @Test
-    public void whenSaveCalledWithUnknownIdThenReturnEmptyMarketConfig() throws Exception {
+    public void whenSaveCalledWithUnknownIdThenReturnEmptyMarketConfig() {
 
         expect(ConfigurationManager.loadConfig(
                 eq(MarketsType.class),
@@ -253,7 +253,7 @@ public class TestMarketConfigXmlRepository {
     }
 
     @Test
-    public void whenDeleteCalledWithKnownIdThenReturnMatchingMarketConfig() throws Exception {
+    public void whenDeleteCalledWithKnownIdThenReturnMatchingMarketConfig() {
 
         expect(ConfigurationManager.loadConfig(
                 eq(MarketsType.class),
@@ -282,7 +282,7 @@ public class TestMarketConfigXmlRepository {
     }
 
     @Test
-    public void whenDeleteCalledWithUnknownIdThenReturnEmptyMarket() throws Exception {
+    public void whenDeleteCalledWithUnknownIdThenReturnEmptyMarket() {
 
         expect(ConfigurationManager.loadConfig(
                 eq(MarketsType.class),

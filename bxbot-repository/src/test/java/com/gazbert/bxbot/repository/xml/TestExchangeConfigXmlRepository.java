@@ -47,7 +47,7 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.easymock.EasyMock.*;
 
 /**
- * Tests Exchange configuration repository behaves as expected.
+ * Tests XML backed Exchange configuration repository behaves as expected.
  *
  * @author gazbert
  */
@@ -78,12 +78,12 @@ public class TestExchangeConfigXmlRepository {
 
 
     @Before
-    public void setup() throws Exception {
+    public void setup() {
         PowerMock.mockStatic(ConfigurationManager.class);
     }
 
     @Test
-    public void whenGetCalledThenReturnExchangeConfig() throws Exception {
+    public void whenGetCalledThenReturnExchangeConfig() {
 
         expect(ConfigurationManager.loadConfig(
                 eq(ExchangeType.class),
@@ -112,7 +112,7 @@ public class TestExchangeConfigXmlRepository {
     }
 
     @Test
-    public void whenSaveCalledThenExpectRepositoryToSaveItAndReturnSavedExchangeConfig() throws Exception {
+    public void whenSaveCalledThenExpectRepositoryToSaveItAndReturnSavedExchangeConfig() {
 
         expect(ConfigurationManager.loadConfig(
                 eq(ExchangeType.class),

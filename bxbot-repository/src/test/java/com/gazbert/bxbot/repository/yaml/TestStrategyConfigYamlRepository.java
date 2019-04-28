@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016 Gareth Jon Lynch
+ * Copyright (c) 2019 gazbert
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -21,13 +21,10 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.repository.xml;
+package com.gazbert.bxbot.repository.yaml;
 
-import com.gazbert.bxbot.datastore.xml.ConfigurationManager;
-import com.gazbert.bxbot.datastore.xml.strategy.generated.ConfigItemType;
-import com.gazbert.bxbot.datastore.xml.strategy.generated.OptionalConfigType;
-import com.gazbert.bxbot.datastore.xml.strategy.generated.StrategyType;
-import com.gazbert.bxbot.datastore.xml.strategy.generated.TradingStrategiesType;
+import com.gazbert.bxbot.datastore.yaml.ConfigurationManager;
+import com.gazbert.bxbot.datastore.yaml.strategy.StrategiesType;
 import com.gazbert.bxbot.domain.strategy.StrategyConfig;
 import com.gazbert.bxbot.repository.StrategyConfigRepository;
 import org.junit.Before;
@@ -42,21 +39,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.gazbert.bxbot.datastore.xml.FileLocations.STRATEGIES_CONFIG_XML_FILENAME;
-import static com.gazbert.bxbot.datastore.xml.FileLocations.STRATEGIES_CONFIG_XSD_FILENAME;
+import static com.gazbert.bxbot.datastore.yaml.FileLocations.STRATEGIES_CONFIG_YAML_FILENAME;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.easymock.EasyMock.*;
 
 /**
- * Tests XML backed Strategy configuration repository behaves as expected.
+ * Tests YAML backed Strategy configuration repository behaves as expected.
  *
  * @author gazbert
  */
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ConfigurationManager.class, StrategyConfigRepositoryXmlDatastore.class})
+@PrepareForTest({ConfigurationManager.class, StrategyConfigRepositoryYamlDatastore.class})
 @PowerMockIgnore({"javax.crypto.*", "javax.management.*",
         "com.sun.org.apache.xerces.*", "javax.xml.parsers.*", "org.xml.sax.*", "org.w3c.dom.*"})
-public class TestStrategyConfigXmlRepository {
+public class TestStrategyConfigYamlRepository {
 
     // Mocked out methods
     private static final String MOCKED_GENERATE_UUID_METHOD = "generateUuid";
@@ -95,14 +91,13 @@ public class TestStrategyConfigXmlRepository {
     public void whenFindAllCalledThenExpectServiceToReturnAllStrategyConfigs() {
 
         expect(ConfigurationManager.loadConfig(
-                eq(TradingStrategiesType.class),
-                eq(STRATEGIES_CONFIG_XML_FILENAME),
-                eq(STRATEGIES_CONFIG_XSD_FILENAME))).
+                eq(StrategiesType.class),
+                eq(STRATEGIES_CONFIG_YAML_FILENAME))).
                 andReturn(allTheInternalStrategiesConfig());
 
         PowerMock.replayAll();
 
-        final StrategyConfigRepository strategyConfigRepository = new StrategyConfigRepositoryXmlDatastore();
+        final StrategyConfigRepository strategyConfigRepository = new StrategyConfigRepositoryYamlDatastore();
         final List<StrategyConfig> strategyConfigItems = strategyConfigRepository.findAll();
 
         assertThat(strategyConfigItems.size()).isEqualTo(2);
@@ -132,14 +127,13 @@ public class TestStrategyConfigXmlRepository {
     public void whenFindByIdCalledWithKnownIdThenReturnMatchingStrategyConfig() {
 
         expect(ConfigurationManager.loadConfig(
-                eq(TradingStrategiesType.class),
-                eq(STRATEGIES_CONFIG_XML_FILENAME),
-                eq(STRATEGIES_CONFIG_XSD_FILENAME))).
+                eq(StrategiesType.class),
+                eq(STRATEGIES_CONFIG_YAML_FILENAME))).
                 andReturn(allTheInternalStrategiesConfig());
 
         PowerMock.replayAll();
 
-        final StrategyConfigRepository strategyConfigRepository = new StrategyConfigRepositoryXmlDatastore();
+        final StrategyConfigRepository strategyConfigRepository = new StrategyConfigRepositoryYamlDatastore();
         final StrategyConfig strategyConfig = strategyConfigRepository.findById(STRAT_ID_1);
 
         assertThat(strategyConfig.getId()).isEqualTo(STRAT_ID_1);
@@ -158,14 +152,13 @@ public class TestStrategyConfigXmlRepository {
     public void whenFindByIdCalledWithUnknownIdThenReturnNullStrategyConfig() {
 
         expect(ConfigurationManager.loadConfig(
-                eq(TradingStrategiesType.class),
-                eq(STRATEGIES_CONFIG_XML_FILENAME),
-                eq(STRATEGIES_CONFIG_XSD_FILENAME))).
+                eq(StrategiesType.class),
+                eq(STRATEGIES_CONFIG_YAML_FILENAME))).
                 andReturn(allTheInternalStrategiesConfig());
 
         PowerMock.replayAll();
 
-        final StrategyConfigRepository strategyConfigRepository = new StrategyConfigRepositoryXmlDatastore();
+        final StrategyConfigRepository strategyConfigRepository = new StrategyConfigRepositoryYamlDatastore();
         final StrategyConfig strategyConfig = strategyConfigRepository.findById(UNKNOWN_STRAT_ID);
 
         assertThat(strategyConfig).isEqualTo(null);
@@ -176,25 +169,23 @@ public class TestStrategyConfigXmlRepository {
     public void whenSaveCalledWithKnownIdThenReturnUpdatedStrategyConfig() {
 
         expect(ConfigurationManager.loadConfig(
-                eq(TradingStrategiesType.class),
-                eq(STRATEGIES_CONFIG_XML_FILENAME),
-                eq(STRATEGIES_CONFIG_XSD_FILENAME))).
+                eq(StrategiesType.class),
+                eq(STRATEGIES_CONFIG_YAML_FILENAME))).
                 andReturn(allTheInternalStrategiesConfig());
 
         ConfigurationManager.saveConfig(
-                eq(TradingStrategiesType.class),
-                anyObject(TradingStrategiesType.class),
-                eq(STRATEGIES_CONFIG_XML_FILENAME));
+                eq(StrategiesType.class),
+                anyObject(StrategiesType.class),
+                eq(STRATEGIES_CONFIG_YAML_FILENAME));
 
         expect(ConfigurationManager.loadConfig(
-                eq(TradingStrategiesType.class),
-                eq(STRATEGIES_CONFIG_XML_FILENAME),
-                eq(STRATEGIES_CONFIG_XSD_FILENAME))).
+                eq(StrategiesType.class),
+                eq(STRATEGIES_CONFIG_YAML_FILENAME))).
                 andReturn(allTheInternalStrategiesConfig());
 
         PowerMock.replayAll();
 
-        final StrategyConfigRepository strategyConfigRepository = new StrategyConfigRepositoryXmlDatastore();
+        final StrategyConfigRepository strategyConfigRepository = new StrategyConfigRepositoryYamlDatastore();
         final StrategyConfig strategyConfig = strategyConfigRepository.save(someExternalStrategyConfig());
 
         assertThat(strategyConfig.getId()).isEqualTo(STRAT_ID_1);
@@ -213,14 +204,13 @@ public class TestStrategyConfigXmlRepository {
     public void whenSaveCalledWithUnknownIdThenReturnEmptyStrategyConfig() {
 
         expect(ConfigurationManager.loadConfig(
-                eq(TradingStrategiesType.class),
-                eq(STRATEGIES_CONFIG_XML_FILENAME),
-                eq(STRATEGIES_CONFIG_XSD_FILENAME))).
+                eq(StrategiesType.class),
+                eq(STRATEGIES_CONFIG_YAML_FILENAME))).
                 andReturn(allTheInternalStrategiesConfig());
 
         PowerMock.replayAll();
 
-        final StrategyConfigRepository strategyConfigRepository = new StrategyConfigRepositoryXmlDatastore();
+        final StrategyConfigRepository strategyConfigRepository = new StrategyConfigRepositoryYamlDatastore();
         final StrategyConfig strategyConfig = strategyConfigRepository.save(someExternalStrategyConfigWithUnknownId());
 
         assertThat(strategyConfig).isEqualTo(null);
@@ -231,24 +221,22 @@ public class TestStrategyConfigXmlRepository {
     public void whenSaveCalledWithEmptyIdThenExpectCreatedStrategyConfigToBeReturned() throws Exception {
 
         expect(ConfigurationManager.loadConfig(
-                eq(TradingStrategiesType.class),
-                eq(STRATEGIES_CONFIG_XML_FILENAME),
-                eq(STRATEGIES_CONFIG_XSD_FILENAME))).
+                eq(StrategiesType.class),
+                eq(STRATEGIES_CONFIG_YAML_FILENAME))).
                 andReturn(allTheInternalStrategiesConfig());
 
         ConfigurationManager.saveConfig(
-                eq(TradingStrategiesType.class),
-                anyObject(TradingStrategiesType.class),
-                eq(STRATEGIES_CONFIG_XML_FILENAME));
+                eq(StrategiesType.class),
+                anyObject(StrategiesType.class),
+                eq(STRATEGIES_CONFIG_YAML_FILENAME));
 
         expect(ConfigurationManager.loadConfig(
-                eq(TradingStrategiesType.class),
-                eq(STRATEGIES_CONFIG_XML_FILENAME),
-                eq(STRATEGIES_CONFIG_XSD_FILENAME))).
+                eq(StrategiesType.class),
+                eq(STRATEGIES_CONFIG_YAML_FILENAME))).
                 andReturn(allTheInternalStrategiesConfigPlusNewOne());
 
         final StrategyConfigRepository strategyConfigRepository = PowerMock.createPartialMock(
-                StrategyConfigRepositoryXmlDatastore.class, MOCKED_GENERATE_UUID_METHOD);
+                StrategyConfigRepositoryYamlDatastore.class, MOCKED_GENERATE_UUID_METHOD);
         PowerMock.expectPrivate(strategyConfigRepository, MOCKED_GENERATE_UUID_METHOD).andReturn(GENERATED_STRAT_ID);
 
         PowerMock.replayAll();
@@ -271,19 +259,18 @@ public class TestStrategyConfigXmlRepository {
     public void whenDeleteCalledWithKnownIdThenReturnDeletedStrategyConfig() {
 
         expect(ConfigurationManager.loadConfig(
-                eq(TradingStrategiesType.class),
-                eq(STRATEGIES_CONFIG_XML_FILENAME),
-                eq(STRATEGIES_CONFIG_XSD_FILENAME))).
+                eq(StrategiesType.class),
+                eq(STRATEGIES_CONFIG_YAML_FILENAME))).
                 andReturn(allTheInternalStrategiesConfig());
 
         ConfigurationManager.saveConfig(
-                eq(TradingStrategiesType.class),
-                anyObject(TradingStrategiesType.class),
-                eq(STRATEGIES_CONFIG_XML_FILENAME));
+                eq(StrategiesType.class),
+                anyObject(StrategiesType.class),
+                eq(STRATEGIES_CONFIG_YAML_FILENAME));
 
         PowerMock.replayAll();
 
-        final StrategyConfigRepository strategyConfigRepository = new StrategyConfigRepositoryXmlDatastore();
+        final StrategyConfigRepository strategyConfigRepository = new StrategyConfigRepositoryYamlDatastore();
         final StrategyConfig strategyConfig = strategyConfigRepository.delete(STRAT_ID_1);
 
         assertThat(strategyConfig.getId()).isEqualTo(STRAT_ID_1);
@@ -302,14 +289,13 @@ public class TestStrategyConfigXmlRepository {
     public void whenDeleteCalledWithUnknownIdThenReturnEmptyStrategyConfig() {
 
         expect(ConfigurationManager.loadConfig(
-                eq(TradingStrategiesType.class),
-                eq(STRATEGIES_CONFIG_XML_FILENAME),
-                eq(STRATEGIES_CONFIG_XSD_FILENAME))).
+                eq(StrategiesType.class),
+                eq(STRATEGIES_CONFIG_YAML_FILENAME))).
                 andReturn(allTheInternalStrategiesConfig());
 
         PowerMock.replayAll();
 
-        final StrategyConfigRepository strategyConfigRepository = new StrategyConfigRepositoryXmlDatastore();
+        final StrategyConfigRepository strategyConfigRepository = new StrategyConfigRepositoryYamlDatastore();
         final StrategyConfig strategyConfig = strategyConfigRepository.delete(UNKNOWN_STRAT_ID);
 
         assertThat(strategyConfig).isEqualTo(null);
@@ -320,66 +306,47 @@ public class TestStrategyConfigXmlRepository {
     // Private utils
     // ------------------------------------------------------------------------------------------------
 
-    /*
-     * Very, very painful... muh.
-     */
-    private static TradingStrategiesType allTheInternalStrategiesConfig() {
+    private static StrategiesType allTheInternalStrategiesConfig() {
 
-        final ConfigItemType buyPriceConfigItem = new ConfigItemType();
-        buyPriceConfigItem.setName(BUY_PRICE_CONFIG_ITEM_KEY);
-        buyPriceConfigItem.setValue(BUY_PRICE_CONFIG_ITEM_VALUE);
+        final Map<String, String> configItems = new HashMap<>();
+        configItems.put(BUY_PRICE_CONFIG_ITEM_KEY, BUY_PRICE_CONFIG_ITEM_VALUE);
+        configItems.put(AMOUNT_TO_BUY_CONFIG_ITEM_KEY, AMOUNT_TO_BUY_CONFIG_ITEM_VALUE);
 
-        final ConfigItemType amountToBuyConfigItem = new ConfigItemType();
-        amountToBuyConfigItem.setName(AMOUNT_TO_BUY_CONFIG_ITEM_KEY);
-        amountToBuyConfigItem.setValue(AMOUNT_TO_BUY_CONFIG_ITEM_VALUE);
+        final StrategyConfig strategyConfig1 = new StrategyConfig();
+        strategyConfig1.setId(STRAT_ID_1);
+        strategyConfig1.setName(STRAT_NAME_1);
+        strategyConfig1.setDescription(STRAT_DESCRIPTION_1);
+        strategyConfig1.setClassName(STRAT_CLASSNAME_1);
+        strategyConfig1.setConfigItems(configItems);
 
-        final OptionalConfigType configurationType = new OptionalConfigType();
-        configurationType.getConfigItem().add(buyPriceConfigItem);
-        configurationType.getConfigItem().add(amountToBuyConfigItem);
+        final StrategyConfig strategyConfig2 = new StrategyConfig();
+        strategyConfig2.setId(STRAT_ID_2);
+        strategyConfig2.setName(STRAT_NAME_2);
+        strategyConfig2.setDescription(STRAT_DESCRIPTION_2);
+        strategyConfig2.setClassName(STRAT_CLASSNAME_2);
+        strategyConfig2.setConfigItems(configItems);
 
-        final StrategyType strategyType1 = new StrategyType();
-        strategyType1.setId(STRAT_ID_1);
-        strategyType1.setName(STRAT_NAME_1);
-        strategyType1.setDescription(STRAT_DESCRIPTION_1);
-        strategyType1.setClassName(STRAT_CLASSNAME_1);
-        strategyType1.setOptionalConfig(configurationType);
+        final StrategiesType strategiesType = new StrategiesType();
+        strategiesType.getStrategies().add(strategyConfig1);
+        strategiesType.getStrategies().add(strategyConfig2);
 
-        final StrategyType strategyType2 = new StrategyType();
-        strategyType2.setId(STRAT_ID_2);
-        strategyType2.setName(STRAT_NAME_2);
-        strategyType2.setDescription(STRAT_DESCRIPTION_2);
-        strategyType2.setClassName(STRAT_CLASSNAME_2);
-        strategyType2.setOptionalConfig(configurationType);
-
-        final TradingStrategiesType tradingStrategiesType = new TradingStrategiesType();
-        tradingStrategiesType.getStrategies().add(strategyType1);
-        tradingStrategiesType.getStrategies().add(strategyType2);
-
-        return tradingStrategiesType;
+        return strategiesType;
     }
 
-    private static TradingStrategiesType allTheInternalStrategiesConfigPlusNewOne() {
+    private static StrategiesType allTheInternalStrategiesConfigPlusNewOne() {
 
-        final ConfigItemType buyPriceConfigItem = new ConfigItemType();
-        buyPriceConfigItem.setName(BUY_PRICE_CONFIG_ITEM_KEY);
-        buyPriceConfigItem.setValue(BUY_PRICE_CONFIG_ITEM_VALUE);
+        final Map<String, String> configItems = new HashMap<>();
+        configItems.put(BUY_PRICE_CONFIG_ITEM_KEY, BUY_PRICE_CONFIG_ITEM_VALUE);
+        configItems.put(AMOUNT_TO_BUY_CONFIG_ITEM_KEY, AMOUNT_TO_BUY_CONFIG_ITEM_VALUE);
 
-        final ConfigItemType amountToBuyConfigItem = new ConfigItemType();
-        amountToBuyConfigItem.setName(AMOUNT_TO_BUY_CONFIG_ITEM_KEY);
-        amountToBuyConfigItem.setValue(AMOUNT_TO_BUY_CONFIG_ITEM_VALUE);
-
-        final OptionalConfigType configurationType = new OptionalConfigType();
-        configurationType.getConfigItem().add(buyPriceConfigItem);
-        configurationType.getConfigItem().add(amountToBuyConfigItem);
-
-        final StrategyType newStrat = new StrategyType();
+        final StrategyConfig newStrat = new StrategyConfig();
         newStrat.setId(GENERATED_STRAT_ID);
         newStrat.setName(NEW_STRAT_NAME);
         newStrat.setDescription(NEW_STRAT_DESCRIPTION);
         newStrat.setClassName(NEW_STRAT_CLASSNAME);
-        newStrat.setOptionalConfig(configurationType);
+        newStrat.setConfigItems(configItems);
 
-        final TradingStrategiesType existingStatsPlusNewOne = allTheInternalStrategiesConfig();
+        final StrategiesType existingStatsPlusNewOne = allTheInternalStrategiesConfig();
         existingStatsPlusNewOne.getStrategies().add(newStrat);
         return existingStatsPlusNewOne;
     }
