@@ -329,85 +329,63 @@ All elements are mandatory unless stated otherwise.
 
 * The `<enabled>` value allows you to toggle trading on the market. Remember, config changes are only applied on startup.
 
-* The `<trading-strategy-id>` value _must_ match a strategy `<id>` defined in your `strategies.xml` config.
+* The `<trading-strategy-id>` value _must_ match a strategy `<id>` defined in your `strategies.yaml` config.
   Currently, BX-bot only supports 1 `<strategy>` per `<market>`.
 
 ##### Strategies #####
 You specify the Trading Strategies you wish to use in the 
-[`strategies.xml`](./config/strategies.xml) file.
+[`strategies.yaml`](./config/strategies.yaml) file.
 
-```xml
-<trading-strategies>
-    <strategy>
-        <id>scalping-strategy</id>
-        <name>Basic Scalping Strat</name>
-        <description>
-         A simple trend following scalper that buys at the current BID price, holds until current market 
-         price has reached a configurable minimum percentage gain, and then sells at current ASK price, thereby 
-         taking profit from the spread. Don't forget to factor in the exchange fees!
-        </description>
-        <!-- This strategy is injected using the bot's custom injection framework using its class-name -->
-        <class-name>com.gazbert.bxbot.strategies.ExampleScalpingStrategy</class-name>
-        <optional-config>
-            <config-item>
-                <name>counter-currency-buy-order-amount</name>
-                <value>20</value>
-            </config-item>
-            <config-item>
-                <name>minimum-percentage-gain</name>
-                <value>2</value>
-            </config-item>
-        </optional-config>
-    </strategy>
-    <strategy>
-        <id>macd-strategy</id>
-        <name>MACD Based Strat</name>
-        <description>Strat uses MACD data to take long position in USD.</description>
-        <!-- This strategy is injected using a Spring bean-name -->
-        <bean-name>yourMacdStrategyBean</bean-name>
-        <optional-config>
-            <config-item>
-                <name>counter-currency-buy-order-amount</name>
-                <value>20</value>
-            </config-item>
-            <config-item>
-                <name>shortEmaInterval</name>
-                <value>12</value>
-            </config-item>
-            <config-item>
-                <name>longEmaInterval</name>
-                <value>26</value>
-            </config-item>
-        </optional-config>
-    </strategy>
-</trading-strategies>
+```yaml
+strategies:
+  - id: scalping-strategy
+    name: Basic Scalping Strat
+    description: >
+      A simple trend following scalper that buys at the current BID price, holds until current market 
+      price has reached a configurable minimum percentage gain, and then sells at current ASK price, thereby 
+      taking profit from the spread. Don't forget to factor in the exchange fees!                  
+    # This strategy is injected using the bot's custom injection framework using its className
+    className: com.gazbert.bxbot.strategies.ExampleScalpingStrategy
+    configItems:
+      counter-currency-buy-order-amount: 20                        
+      minimum-percentage-gain: 2
+            
+  - id: macd-strategy
+    name: MACD Based Strat
+    description: Strat uses MACD data to take long position in USD.    
+    # This strategy is injected using a Spring beanName
+    beanName: yourMacdStrategyBean
+    configItems:
+      counter-currency-buy-order-amount: 20      
+      shortEmaInterval: 12            
+      longEmaInterval: 26            
 ```
 
-All elements are mandatory unless stated otherwise.
+All fields are mandatory unless stated otherwise.
 
-* The `<id>` value is a unique identifier for the strategy. The `markets.xml` `<trading-strategy-id>` entries cross-reference this.
+* The `id` value is a unique identifier for the strategy. The `markets.yaml` `tradingStrategyId` entries cross-reference this.
   Value must be an alphanumeric string. Underscores and dashes are also permitted.
 
-* The `<name>` value is a friendly name for the strategy. The is used in the logs and by
+* The `name` value is a friendly name for the strategy. The is used in the logs and by
   [BX-bot UI](https://github.com/gazbert/bxbot-ui) (work in progress) to display the strategy's name.
   Value must be an alphanumeric string. Spaces are allowed.
 
-* The `<description>` value is optional, and used by [BX-bot UI](https://github.com/gazbert/bxbot-ui) (work in progress)
+* The `description` value is optional, and used by [BX-bot UI](https://github.com/gazbert/bxbot-ui) (work in progress)
   to display the strategy's description.
 
-You configure the loading of your strategy using either a `<class-name>` _or_ a `<bean-name>`; you cannot specify both. 
+You configure the loading of your strategy using either a `className` _or_ a `beanName`; you cannot specify both. 
 
-* For the `<class-name>` value, you must specify the fully qualified name of your Strategy class for the Trading Engine
+* For the `className` value, you must specify the fully qualified name of your Strategy class for the Trading Engine
   to load and execute. This will use the bot's custom injection framework. The class must be on the runtime classpath.
-  If you set this value to load your strategy, you cannot set the `<bean-name>` value.
+  If you set this value to load your strategy, you cannot set the `beanName` value.
   
-* For the `<bean-name>` value, you must specify the Spring bean name of you Strategy component class for the Trading Engine
+* For the `beanName` value, you must specify the Spring bean name of you Strategy component class for the Trading Engine
   to load and execute. You will also need to annotate your strategy class with `@Component("yourMacdStrategyBean")` - 
   see the [example strategy](./bxbot-strategies/src/main/java/com/gazbert/bxbot/strategies/ExampleScalpingStrategy.java).
   This results in Spring injecting the bean.
-  If you set this value to load your strategy, you cannot set the `<class-name>` value.        
+  If you set this value to load your strategy, you cannot set the `className` value.        
 
-* The `<optional-config>` section is optional. It allows you to set key/value pair config items. This config is passed
+* The `configItems` section is optional. It allows you to set key/value pair config items. This config is passed
   to your Trading Strategy when the bot starts up; see the 
  _[How do I write my own Trading Strategy?](#how-do-i-write-my-own-trading-strategy)_ section.
 
@@ -452,11 +430,11 @@ Your strategy must implement the [`TradingStrategy`](./bxbot-strategy-api/src/ma
 interface. This allows the Trading Engine to:
 
 * Inject your strategy on startup.
-* Pass any configuration (set in the `strategies.xml`) to your strategy.
+* Pass any configuration (set in the `strategies.yaml`) to your strategy.
 * Invoke your strategy at each trade cycle.
 
-You load your strategy using either `<class-name>` _or_ `<bean-name>` in the `strategies.xml` file - see the 
-_[Strategies Configuration](#strategies)_ section for full details. The choice is yours, but `<bean-name>` is the way to
+You load your strategy using either `className` _or_ `beanName` in the `strategies.yaml` file - see the 
+_[Strategies Configuration](#strategies)_ section for full details. The choice is yours, but `beanName` is the way to
 go if you want to use other Spring features in your strategy, e.g. a 
 [Repository](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/stereotype/Repository.html) 
 to store your trade data.   
@@ -480,10 +458,10 @@ choose what to do next, e.g. retry the previous Trading API call, or 'swallow' t
 Engine invokes the strategy again at the next trade cycle.
 
 ##### Configuration
-You specify the Trading Strategies you wish to use in the `strategies.xml` file - see the _[Strategies Configuration](#strategies)_ section 
+You specify the Trading Strategies you wish to use in the `strategies.yaml` file - see the _[Strategies Configuration](#strategies)_ section 
 for full details.
 
-The `<optional-config>` section in the `strategies.xml` allows you to set key/value pair config items to pass to your
+The `configItems` section in the `strategies.yaml` allows you to set key/value pair config items to pass to your
 Trading Strategy implementation. On startup, the Trading Engine will pass the config to your Trading Strategy's 
 `init(TradingApi tradingApi, Market market, StrategyConfig config)` method. 
 
