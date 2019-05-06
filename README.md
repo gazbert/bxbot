@@ -342,8 +342,8 @@ strategies:
     name: Basic Scalping Strat
     description: >
       A simple trend following scalper that buys at the current BID price, holds until current market 
-      price has reached a configurable minimum percentage gain, and then sells at current ASK price, thereby 
-      taking profit from the spread. Don't forget to factor in the exchange fees!                  
+      price has reached a configurable minimum percentage gain, and then sells at current ASK price, 
+      thereby taking profit from the spread. Don't forget to factor in the exchange fees!      
     # This strategy is injected using the bot's custom injection framework using its className
     className: com.gazbert.bxbot.strategies.ExampleScalpingStrategy
     configItems:
