@@ -39,7 +39,7 @@ and released under the [MIT license](http://opensource.org/licenses/MIT).
 - **Strategy API** - Trading Strategies implement this so the Trading Engine can execute them.
  
 Trading Strategies and Exchange Adapters are injected by the Trading Engine on startup. The bot uses a simple 
-[YAML](https://en.wikipedia.org/wiki/YAML) based dependency injection framework to achieve this; the long term goal is
+[YAML](https://en.wikipedia.org/wiki/YAML) backed dependency injection framework to achieve this; the long term goal is
 to convert it into a fully configurable [Spring Boot](http://projects.spring.io/spring-boot/) app.
 
 The bot was designed to fail hard and fast if any unexpected errors occur in the Exchange Adapters or Trading Strategies:
