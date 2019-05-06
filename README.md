@@ -325,7 +325,7 @@ All elements are mandatory unless stated otherwise.
 
 * The `enabled` value allows you to toggle trading on the market. Remember, config changes are only applied on startup.
 
-* The `tradingStrategyId>` value _must_ match a strategy `id` defined in your `strategies.yaml` config.
+* The `tradingStrategyId` value _must_ match a strategy `id` defined in your `strategies.yaml` config.
   Currently, BX-bot only supports 1 `strategy` per `market`.
 
 ##### Strategies #####
