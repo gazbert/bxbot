@@ -38,9 +38,9 @@ and released under the [MIT license](http://opensource.org/licenses/MIT).
   to a given exchange.
 - **Strategy API** - Trading Strategies implement this so the Trading Engine can execute them.
  
-Trading Strategies and Exchange Adapters are injected by the Trading Engine on startup. The bot uses a crude XML based
-dependency injection framework to achieve this; the long term goal is to convert it into a fully configurable 
-[Spring Boot](http://projects.spring.io/spring-boot/) app.
+Trading Strategies and Exchange Adapters are injected by the Trading Engine on startup. The bot uses a simple 
+[YAML](https://en.wikipedia.org/wiki/YAML) based dependency injection framework to achieve this; the long term goal is
+to convert it into a fully configurable [Spring Boot](http://projects.spring.io/spring-boot/) app.
 
 The bot was designed to fail hard and fast if any unexpected errors occur in the Exchange Adapters or Trading Strategies:
 it will log the error, send an email alert (if configured), and then shut down.
@@ -154,8 +154,8 @@ The bot provides a simple plugin framework for:
 * Markets to trade on.
 * Trading Strategies to execute.
 
-It uses XML configuration files. These live in the [`config`](./config) folder. Any config changes require a restart of
-the bot to take effect.
+It uses [YAML](https://en.wikipedia.org/wiki/YAML) configuration files. These live in the [`config`](./config) folder.
+Any config changes require a restart of the bot to take effect.
 
 Sample configurations for running on different exchanges can be found in the 
 [`config/samples`](./config/samples)folder.
