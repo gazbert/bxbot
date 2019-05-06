@@ -287,50 +287,46 @@ All elements are mandatory unless stated otherwise.
 
 ##### Markets
 You specify which markets you want to trade on in the 
-[`markets.xml`](./config/markets.xml) file.
+[`markets.yaml`](./config/markets.yaml) file.
 
-```xml
-<markets>      
-    <market>
-        <id>btcusd</id>    
-        <name>BTC/USD</name>        
-        <base-currency>BTC</base-currency>
-        <counter-currency>USD</counter-currency>
-        <enabled>true</enabled>
-        <trading-strategy-id>scalping-strategy</trading-strategy-id>
-    </market>
-    <market>
-        <id>ltcusd</id>
-        <name>LTC/BTC</name>
-        <base-currency>LTC</base-currency>
-        <counter-currency>BTC</counter-currency>
-        <enabled>false</enabled>
-        <trading-strategy-id>scalping-strategy</trading-strategy-id>
-    </market>        
-</markets>
+```yaml
+  markets:            
+    - id: btcusd    
+      name: BTC/USD        
+      baseCurrency: BTC
+      counterCurrency: USD
+      enabled: true
+      tradingStrategyId: scalping-strategy
+  
+    - id: ltcusd
+      name: LTC/BTC
+      baseCurrency: LTC
+      counterCurrency: BTC
+      enabled: false
+      tradingStrategyId: scalping-strategy
 ```
 
 All elements are mandatory unless stated otherwise.
 
-* The `<id>` value is the market id as defined on the exchange. E.g. the BTC/USD market id is `btcusd` on 
+* The `id` value is the market id as defined on the exchange. E.g. the BTC/USD market id is `btcusd` on 
   [Bitstamp](https://www.bitstamp.net/api/) - see `currency_pair` values.
 
-* The `<name>` value is a friendly name for the market. The is used in the logs and by
+* The `name` value is a friendly name for the market. The is used in the logs and by
   [BX-bot UI](https://github.com/gazbert/bxbot-ui) (work in progress) to display the market's name.
   Value must be an alphanumeric string.
 
-* The `<base-currency>` value is the currency short code for the base currency in the currency pair. When you buy or sell a
+* The `baseCurrency` value is the currency short code for the base currency in the currency pair. When you buy or sell a
   currency pair, you are performing that action on the base currency. The base currency is the commodity you are buying or
   selling. E.g. in a BTC/USD market, the first currency (BTC) is the base currency and the second currency (USD) is the
   counter currency.
 
-* The `<counter-currency>` value is the currency short code for the counter currency in the currency pair. This is also known
+* The `counterCurrency` value is the currency short code for the counter currency in the currency pair. This is also known
   as the _quote_ currency.
 
-* The `<enabled>` value allows you to toggle trading on the market. Remember, config changes are only applied on startup.
+* The `enabled` value allows you to toggle trading on the market. Remember, config changes are only applied on startup.
 
-* The `<trading-strategy-id>` value _must_ match a strategy `<id>` defined in your `strategies.yaml` config.
-  Currently, BX-bot only supports 1 `<strategy>` per `<market>`.
+* The `tradingStrategyId>` value _must_ match a strategy `id` defined in your `strategies.yaml` config.
+  Currently, BX-bot only supports 1 `strategy` per `market`.
 
 ##### Strategies #####
 You specify the Trading Strategies you wish to use in the 
