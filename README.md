@@ -306,7 +306,7 @@ You specify which markets you want to trade on in the
       tradingStrategyId: scalping-strategy
 ```
 
-All elements are mandatory unless stated otherwise.
+All fields are mandatory unless stated otherwise.
 
 * The `id` value is the market id as defined on the exchange. E.g. the BTC/USD market id is `btcusd` on 
   [Bitstamp](https://www.bitstamp.net/api/) - see `currency_pair` values.
