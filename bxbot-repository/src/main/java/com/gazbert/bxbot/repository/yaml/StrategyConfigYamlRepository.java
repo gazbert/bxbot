@@ -52,12 +52,8 @@ public class StrategyConfigYamlRepository implements StrategyConfigRepository {
 
     @Override
     public List<StrategyConfig> findAll() {
-
         LOG.info(() -> "Fetching all Strategy configs...");
-
-        final StrategiesType internalStrategiesConfig = ConfigurationManager.loadConfig(StrategiesType.class,
-                STRATEGIES_CONFIG_YAML_FILENAME);
-        return adaptAllInternalToAllExternalConfig(internalStrategiesConfig);
+        return ConfigurationManager.loadConfig(StrategiesType.class, STRATEGIES_CONFIG_YAML_FILENAME).getStrategies();
     }
 
     @Override
@@ -112,7 +108,7 @@ public class StrategyConfigYamlRepository implements StrategyConfigRepository {
             } else {
                 throw new IllegalStateException("Trying to create new StrategyConfig but null/empty id already exists. " +
                         "StrategyConfig: " + config + " Existing StrategyConfigs: "
-                        + adaptAllInternalToAllExternalConfig(internalStrategiesConfig));
+                        + internalStrategiesConfig.getStrategies());
             }
 
         } else {
@@ -136,7 +132,7 @@ public class StrategyConfigYamlRepository implements StrategyConfigRepository {
                                 .collect(Collectors.toList()));
             } else {
                 LOG.warn("Trying to update StrategyConfig but id does not exist StrategyConfig: " + config +
-                        " Existing StrategyConfig: " + adaptAllInternalToAllExternalConfig(internalStrategiesConfig));
+                        " Existing StrategyConfig: " + internalStrategiesConfig.getStrategies());
                 return null;
             }
         }
@@ -166,7 +162,7 @@ public class StrategyConfigYamlRepository implements StrategyConfigRepository {
             return adaptInternalToExternalConfig(Collections.singletonList(strategyToRemove));
         } else {
             LOG.warn("Trying to delete StrategyConfig but id does not exist. StrategyConfig id: " + id
-                    + " Existing StrategyConfig: " + adaptAllInternalToAllExternalConfig(internalStrategiesConfig));
+                    + " Existing StrategyConfig: " + internalStrategiesConfig.getStrategies());
             return null;
         }
     }
@@ -174,10 +170,6 @@ public class StrategyConfigYamlRepository implements StrategyConfigRepository {
     // ------------------------------------------------------------------------------------------------
     // Adapter methods
     // ------------------------------------------------------------------------------------------------
-
-    private static List<StrategyConfig> adaptAllInternalToAllExternalConfig(StrategiesType internalStrategiesConfig) {
-        return internalStrategiesConfig.getStrategies();
-    }
 
     private static StrategyConfig adaptInternalToExternalConfig(List<StrategyConfig> internalStrategyConfigItems) {
         if (!internalStrategyConfigItems.isEmpty()) {
@@ -187,7 +179,7 @@ public class StrategyConfigYamlRepository implements StrategyConfigRepository {
         return null;
     }
 
-    // ------------------------------------------------------------------------------------------------
+    // -----------------------------------------------------------------------------------------------
     // Util methods
     // ------------------------------------------------------------------------------------------------
 
