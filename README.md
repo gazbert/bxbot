@@ -161,37 +161,35 @@ Sample configurations for running on different exchanges can be found in the
 [`config/samples`](./config/samples)folder.
 
 ##### Engine
-The [`engine.xml`](./config/engine.xml) file is used to configure the Trading Engine.
+The [`engine.yaml`](./config/engine.yaml) file is used to configure the Trading Engine.
 
-```xml
-<engine>
-    <bot-id>my-bitstamp-bot_1</bot-id>
-    <bot-name>Bitstamp Bot</bot-name>
-    <emergency-stop-currency>BTC</emergency-stop-currency>
-    <emergency-stop-balance>1.0</emergency-stop-balance>
-    <trade-cycle-interval>20</trade-cycle-interval>
-</engine>
+```yaml
+botId: my-bitstamp-bot_1
+botName: Bitstamp Bot
+emergencyStopCurrency: BTC
+emergencyStopBalance: 1.0
+tradeCycleInterval: 20
 ```
 
-All elements are mandatory.
+All fields are mandatory.
 
-* The `<bot-id>` value is a unique identifier for the bot. This is used by 
+* The `botId` value is a unique identifier for the bot. This is used by 
   [BX-bot UI Server](https://github.com/gazbert/bxbot-ui-server) (work in progress) to identify and route configuration 
   updates and commands to the bot. Value must be an alphanumeric string. Underscores and dashes are also permitted.
 
-* The `<bot-name>` is a friendly name for the bot. The is used by [BX-bot UI](https://github.com/gazbert/bxbot-ui) 
+* The `botName` is a friendly name for the bot. The is used by [BX-bot UI](https://github.com/gazbert/bxbot-ui) 
   (work in progress) to display the bot's name. Value must be an alphanumeric string. Spaces are allowed.
       
-* The `<emergency-stop-currency>` value must be set to prevent catastrophic loss on the exchange. 
+* The `emergencyStopCurrency` value must be set to prevent catastrophic loss on the exchange. 
   This is normally the currency you intend to hold a long position in. It should be set to the currency short code for the
   wallet, e.g. BTC, LTC, USD. This value can be case sensitive for some exchanges - check the Exchange Adapter documentation.
 
-* The `<emergency-stop-balance>` value must be set to prevent catastrophic loss on the exchange. 
-  The Trading Engine checks this value at the start of every trade cycle: if your `<emergency-stop-currency>` wallet balance on
+* The `emergencyStopBalance` value must be set to prevent catastrophic loss on the exchange. 
+  The Trading Engine checks this value at the start of every trade cycle: if your `emergencyStopCurrency` wallet balance on
   the exchange drops below this value, the Trading Engine will log it, send an Email Alert (if configured) and then shut down.
   If you set this value to 0, the bot will bypass the check - be careful.
 
-* The `<trade-cycle-interval>` value is the interval in _seconds_ that the Trading Engine will wait/sleep before executing
+* The `tradeCycleInterval` value is the interval in _seconds_ that the Trading Engine will wait/sleep before executing
   each trade cycle. The minimum value is 1 second. Some exchanges allow you to hit them harder than others. However, while
   their API documentation might say one thing, the reality is you might get socket timeouts and 5xx responses if you hit it
   too hard. You'll need to experiment with the trade cycle interval for different exchanges.
