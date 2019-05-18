@@ -173,12 +173,10 @@ tradeCycleInterval: 20
 
 All fields are mandatory.
 
-* The `botId` value is a unique identifier for the bot. This is used by 
-  [BX-bot UI Server](https://github.com/gazbert/bxbot-ui-server) (work in progress) to identify and route configuration 
-  updates and commands to the bot. Value must be an alphanumeric string. Underscores and dashes are also permitted.
+* The `botId` value is a unique identifier for the bot. Value must be an alphanumeric string. 
+  Underscores and dashes are also permitted.
 
-* The `botName` is a friendly name for the bot. The is used by [BX-bot UI](https://github.com/gazbert/bxbot-ui) 
-  (work in progress) to display the bot's name. Value must be an alphanumeric string. Spaces are allowed.
+* The `botName` is a friendly name for the bot. Value must be an alphanumeric string. Spaces are allowed.
       
 * The `emergencyStopCurrency` value must be set to prevent catastrophic loss on the exchange. 
   This is normally the currency you intend to hold a long position in. It should be set to the currency short code for the
@@ -249,8 +247,7 @@ BX-bot only supports 1 Exchange Adapter per bot, but you could have multiple bot
 
 All elements are mandatory unless stated otherwise.
 
-* The `<name>` value is a friendly name for the Exchange. It is used in log statements and by
-  [BX-bot UI](https://github.com/gazbert/bxbot-ui) (work in progress) to display the Exchange's name.
+* The `<name>` value is a friendly name for the Exchange. It is used in log statements to display the Exchange's name.
   Value must be an alphanumeric string. Spaces are allowed.
 
 * For the `<adapter>` value, you must specify the fully qualified name of the Exchange Adapter class for the Trading Engine
@@ -309,8 +306,7 @@ All fields are mandatory unless stated otherwise.
 * The `id` value is the market id as defined on the exchange. E.g. the BTC/USD market id is `btcusd` on 
   [Bitstamp](https://www.bitstamp.net/api/) - see `currency_pair` values.
 
-* The `name` value is a friendly name for the market. The is used in the logs and by
-  [BX-bot UI](https://github.com/gazbert/bxbot-ui) (work in progress) to display the market's name.
+* The `name` value is a friendly name for the market. The is used in the logs to display the market's name.
   Value must be an alphanumeric string.
 
 * The `baseCurrency` value is the currency short code for the base currency in the currency pair. When you buy or sell a
@@ -360,12 +356,10 @@ All fields are mandatory unless stated otherwise.
 * The `id` value is a unique identifier for the strategy. The `markets.yaml` `tradingStrategyId` entries cross-reference this.
   Value must be an alphanumeric string. Underscores and dashes are also permitted.
 
-* The `name` value is a friendly name for the strategy. The is used in the logs and by
-  [BX-bot UI](https://github.com/gazbert/bxbot-ui) (work in progress) to display the strategy's name.
+* The `name` value is a friendly name for the strategy. The is used in the logs to display the strategy's name.
   Value must be an alphanumeric string. Spaces are allowed.
 
-* The `description` value is optional, and used by [BX-bot UI](https://github.com/gazbert/bxbot-ui) (work in progress)
-  to display the strategy's description.
+* The `description` value is optional.
 
 You configure the loading of your strategy using either a `className` _or_ a `beanName`; you cannot specify both. 
 
@@ -549,9 +543,6 @@ output from the Exchange Adapters; it's very handy for debugging, but not so goo
 The following features are in the pipeline:
 
 - A REST API for administering the bot. It's being developed on the [bxbot-restapi](https://github.com/gazbert/bxbot/tree/bxbot-restapi) branch.
-- An [admin server](https://github.com/gazbert/bxbot-ui-server) for proxying commands and config updates to BX-bots in the cloud. 
-  It will consume the bot's REST API.
-- A [Web UI](https://github.com/gazbert/bxbot-ui) written in [Angular](https://angular.io/) for administering multiple
-  bots in the cloud. It will integrate with the admin server. 
+- A UI built with [React](https://reactjs.org/) - it will consume the REST API. 
   
 See the main project [Issue Tracker](https://github.com/gazbert/bxbot/issues) for timescales and progress.
