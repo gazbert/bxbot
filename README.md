@@ -164,11 +164,12 @@ Sample configurations for running on different exchanges can be found in the
 The [`engine.yaml`](./config/engine.yaml) file is used to configure the Trading Engine.
 
 ```yaml
-botId: my-bitstamp-bot_1
-botName: Bitstamp Bot
-emergencyStopCurrency: BTC
-emergencyStopBalance: 1.0
-tradeCycleInterval: 20
+engine:
+  botId: my-bitstamp-bot_1
+  botName: Bitstamp Bot
+  emergencyStopCurrency: BTC
+  emergencyStopBalance: 1.0
+  tradeCycleInterval: 20
 ```
 
 All fields are mandatory.
