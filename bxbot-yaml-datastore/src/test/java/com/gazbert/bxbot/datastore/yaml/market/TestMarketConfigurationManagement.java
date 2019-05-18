@@ -40,7 +40,6 @@ import static org.junit.Assert.*;
  */
 public class TestMarketConfigurationManagement {
 
-    /* Test YAML config */
     private static final String VALID_YAML_CONFIG_FILENAME = "src/test/config/markets/valid-markets.yaml";
     private static final String INVALID_YAML_CONFIG_FILENAME = "src/test/config/markets/invalid-markets.yaml";
     private static final String MISSING_YAML_CONFIG_FILENAME = "src/test/config/markets/missing-markets.yaml";

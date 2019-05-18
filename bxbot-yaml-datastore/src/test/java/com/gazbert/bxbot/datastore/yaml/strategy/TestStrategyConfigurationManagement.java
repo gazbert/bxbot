@@ -42,7 +42,6 @@ import static org.junit.Assert.*;
  */
 public class TestStrategyConfigurationManagement {
 
-    /* Test YAML config */
     private static final String VALID_YAML_CONFIG_FILENAME = "src/test/config/strategies/valid-strategies.yaml";
     private static final String INVALID_YAML_CONFIG_FILENAME = "src/test/config/strategies/invalid-strategies.yaml";
     private static final String MISSING_YAML_CONFIG_FILENAME = "src/test/config/strategies/missing-strategies.yaml";
