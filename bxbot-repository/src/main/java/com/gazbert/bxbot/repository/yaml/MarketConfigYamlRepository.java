@@ -40,7 +40,7 @@ import java.util.stream.Collectors;
 import static com.gazbert.bxbot.datastore.yaml.FileLocations.MARKETS_CONFIG_YAML_FILENAME;
 
 /**
- *  A Market config repo uses a YAML backed datastore.
+ *  A Market config repo that uses a YAML backed datastore.
  *
  * @author gazbert
  */

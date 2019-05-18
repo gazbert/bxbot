@@ -40,7 +40,7 @@ import java.util.stream.Collectors;
 import static com.gazbert.bxbot.datastore.yaml.FileLocations.STRATEGIES_CONFIG_YAML_FILENAME;
 
 /**
- * A Strategy config repo uses a YAML backed datastore.
+ * A Strategy config repo that uses a YAML backed datastore.
  *
  * @author gazbert
  */

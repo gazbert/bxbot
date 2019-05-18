@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016 Gareth Jon Lynch
+ * Copyright (c) 2019 gazbert
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -21,47 +21,45 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.services.impl;
+package com.gazbert.bxbot.repository.yaml;
 
+import com.gazbert.bxbot.datastore.yaml.ConfigurationManager;
+import com.gazbert.bxbot.datastore.yaml.engine.EngineType;
 import com.gazbert.bxbot.domain.engine.EngineConfig;
 import com.gazbert.bxbot.repository.EngineConfigRepository;
-import com.gazbert.bxbot.services.EngineConfigService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.Assert;
+
+import static com.gazbert.bxbot.datastore.yaml.FileLocations.ENGINE_CONFIG_YAML_FILENAME;
 
 /**
- * Implementation of the Engine config service.
+ * An Engine config repo that uses a YAML backed datastore.
  *
  * @author gazbert
  */
-@Service("engineConfigService")
+@Repository("engineConfigYamlRepository")
 @Transactional
-@ComponentScan(basePackages = {"com.gazbert.bxbot.repository"})
-public class EngineConfigServiceImpl implements EngineConfigService {
+public class EngineConfigYamlRepository implements EngineConfigRepository {
 
     private static final Logger LOG = LogManager.getLogger();
 
-    private final EngineConfigRepository engineConfigRepository;
-
-    @Autowired
-    public EngineConfigServiceImpl(@Qualifier("engineConfigYamlRepository") EngineConfigRepository engineConfigRepository) {
-        this.engineConfigRepository = engineConfigRepository;
+    @Override
+    public EngineConfig get() {
+        LOG.info(() -> "Fetching EngineConfig...");
+        return ConfigurationManager.loadConfig(EngineType.class, ENGINE_CONFIG_YAML_FILENAME).getEngine();
     }
 
     @Override
-    public EngineConfig getEngineConfig() {
-        return engineConfigRepository.get();
-    }
+    public EngineConfig save(EngineConfig config) {
 
-    @Override
-    public EngineConfig updateEngineConfig(EngineConfig config) {
-        LOG.info(() -> "About to update Engine config: " + config);
-        return engineConfigRepository.save(config);
+        LOG.info(() -> "About to save EngineConfig: " + config);
+
+        final EngineType internalEngineConfig = new EngineType();
+        internalEngineConfig.setEngine(config);
+        ConfigurationManager.saveConfig(EngineType.class, internalEngineConfig, ENGINE_CONFIG_YAML_FILENAME);
+
+        return ConfigurationManager.loadConfig(EngineType.class, ENGINE_CONFIG_YAML_FILENAME).getEngine();
     }
 }
