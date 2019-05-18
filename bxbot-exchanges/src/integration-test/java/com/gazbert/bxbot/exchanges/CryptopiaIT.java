@@ -47,6 +47,7 @@ import static org.junit.Assert.*;
  *
  * @author nodueck
  */
+@Ignore("18 May 2019 : Disabling test - the exchange has gone into liquidation: ")
 public class CryptopiaIT {
 
     // Canned test data
