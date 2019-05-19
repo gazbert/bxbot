@@ -195,90 +195,67 @@ All fields are mandatory.
 
 ##### Exchange Adapters
 You specify the Exchange Adapter you want BX-bot to use in the 
-[`exchange.xml`](./config/exchange.xml) file. 
+[`exchange.yaml`](./config/exchange.yaml) file. 
 
 BX-bot only supports 1 Exchange Adapter per bot, but you could have multiple bots running on the same exchange.
 
-```xml
-<exchange>
-    <name>Bitstamp</name>
-    <adapter>com.gazbert.bxbot.exchanges.BitstampExchangeAdapter</adapter>
-    <authentication-config>
-        <config-item>
-            <name>client-id</name>
-            <value>your-client-id</value>
-        </config-item>    
-        <config-item>
-            <name>key</name>
-            <value>your-api-key</value>
-        </config-item>
-        <config-item>
-            <name>secret</name>
-            <value>your-secret-key</value>
-        </config-item>
-    </authentication-config>
-    <network-config>
-        <connection-timeout>30</connection-timeout>
-        <non-fatal-error-codes>
-            <code>502</code>
-            <code>503</code>
-            <code>520</code>
-            <code>522</code>
-            <code>525</code>            
-        </non-fatal-error-codes>
-        <non-fatal-error-messages>
-            <message>Connection reset</message>
-            <message>Connection refused</message>
-            <message>Remote host closed connection during handshake</message>
-            <message>Unexpected end of file from server</message>           
-        </non-fatal-error-messages>
-    </network-config>
-    <optional-config>
-        <config-item>
-            <name>not-needed-on-bitstamp-1</name>
-            <value>here for illustration purposes only</value>
-        </config-item>
-        <config-item>
-            <name>not-needed-on-bitstamp-2</name>
-            <value>here for illustration purposes only</value>
-        </config-item>
-    </optional-config>
-</exchange>
+```yaml
+exchange:
+  name: Bitstamp
+  adapter: com.gazbert.bxbot.exchanges.BitstampExchangeAdapter
+  
+  authenticationConfig:
+    clientId: your-client-id
+    key: your-api-key
+    secret: your-secret-key
+           
+  networkConfig:
+    connectionTimeout: 30
+    nonFatalErrorCodes: [502, 503, 520, 522, 525]            
+    nonFatalErrorMessages:
+      - Connection reset
+      - Connection refused
+      - Remote host closed connection during handshake
+      - Unexpected end of file from server
+      
+    configItems:
+      not-needed-on-bitstamp-1: here for illustration purposes only
+      not-needed-on-bitstamp-2: here for illustration purposes again
 ```
 
-All elements are mandatory unless stated otherwise.
+All fields are mandatory unless stated otherwise.
 
-* The `<name>` value is a friendly name for the Exchange. It is used in log statements to display the Exchange's name.
+* The `name` value is a friendly name for the Exchange. It is used in log statements to display the Exchange's name.
   Value must be an alphanumeric string. Spaces are allowed.
 
-* For the `<adapter>` value, you must specify the fully qualified name of the Exchange Adapter class for the Trading Engine
+* For the `adapter` value, you must specify the fully qualified name of the Exchange Adapter class for the Trading Engine
   to inject on startup. The class must be on the runtime classpath. See the 
   _[How do I write my own Exchange Adapter?](#how-do-i-write-my-own-exchange-adapter)_ section for more details.
 
-* The `<authentication-config>` section is optional. If present, at least 1 `<config-item>` must be set - these are repeating
-  key/value pairs. This section is used by the inbuilt Exchange Adapters to configure their exchange trading API credentials - see
-  the sample `exchange.xml` config files for details.
+* The `authenticationConfig` section is optional. If present, at least 1 item must be set - these are repeating key/value String pairs.
+  This section is used by the inbuilt Exchange Adapters to configure their exchange trading API credentials - see
+  the sample `exchange.yaml` config files for details.
 
-* The `<network-config>` section is optional. If present, the `<connection-timeout>`, `<non-fatal-error-codes>`, and
-  `<non-fatal-error-messages>` sections must be set. This section is used by the inbuilt Exchange Adapters to set
+* The `networkConfig` section is optional. If present, the `connectionTimeout`, `nonFatalErrorCodes`, and
+  `nonFatalErrorMessages` sections must be set. This section is used by the inbuilt Exchange Adapters to set
   their network configuration as detailed below:
 
-    * The `<connection-timeout>` is the timeout value that the exchange adapter will wait on socket connect/socket read when
+    * The `connectionTimeout` is the timeout value that the exchange adapter will wait on socket connect/socket read when
       communicating with the exchange. Once this threshold has been breached, the exchange adapter will give up and throw an
       [`ExchangeNetworkException`](./bxbot-trading-api/src/main/java/com/gazbert/bxbot/trading/api/ExchangeNetworkException.java).
       The sample Exchange Adapters are single threaded: if a request gets blocked, it will block all subsequent requests from
       getting to the exchange. This timeout value prevents an indefinite block.
 
-    * The `<non-fatal-error-codes>` section contains a list of HTTP status codes that will trigger the adapter to throw a
+    * The `nonFatalErrorCodes` section contains a list of HTTP status codes that will trigger the adapter to throw a
       non-fatal `ExchangeNetworkException`.
-      This allows the bot to recover from temporary network issues. See the sample `exchange.xml` config files for status codes to use.
+      This allows the bot to recover from temporary network issues. See the sample `exchange.yaml` config files for status codes to use.
 
-    * The `<non-fatal-error-messages>` section contains a list of `java.io` Exception message content that will trigger the 
+    * The `nonFatalErrorMessages` section contains a list of `java.io` Exception message content that will trigger the 
       adapter to throw a non-fatal `ExchangeNetworkException`. This allows the bot to recover from temporary network issues.
-      See the sample `exchange.xml` config files for messages to use.
+      See the sample `exchange.yaml` config files for messages to use.
 
-* The `<optional-config>` section is optional. It is not needed for Bitstamp, but shown above for illustration purposes.
-  If present, at least 1 `<config-item>` must be set - these are repeating key/value String pairs.
+* The `configItems` section is optional. It is not needed for Bitstamp, but shown above for illustration purposes.
+  If present, at least 1 item must be set - these are repeating key/value String pairs.
   This section is used by the inbuilt Exchange Adapters to set any additional config, e.g. buy/sell fees.
 
 ##### Markets
@@ -332,9 +309,8 @@ strategies:
   - id: scalping-strategy
     name: Basic Scalping Strat
     description: >
-      A simple trend following scalper that buys at the current BID price, holds until current market 
-      price has reached a configurable minimum percentage gain, and then sells at current ASK price, 
-      thereby taking profit from the spread. Don't forget to factor in the exchange fees!      
+      A simple scalper that buys at the current BID price, holds until current market price has reached a configurable
+      minimum percentage gain, then sells at current ASK price, thereby taking profit from the spread.       
     # This strategy is injected using the bot's custom injection framework using its className
     className: com.gazbert.bxbot.strategies.ExampleScalpingStrategy
     configItems:
@@ -479,7 +455,7 @@ and the [`ExchangeAdapter`](./bxbot-exchange-api/src/main/java/com/gazbert/bxbot
 interfaces. This allows the:
             
 * Trading Engine to inject your adapter on startup.
-* Trading Engine to pass any configuration (set in the `exchange.xml`) to your adapter.
+* Trading Engine to pass any configuration (set in the `exchange.yaml`) to your adapter.
 * Trading Strategies to invoke your adapter's implementation of the `TradingApi` at each trade cycle.
 
 [`AbstractExchangeAdapter`](./bxbot-exchanges/src/main/java/com/gazbert/bxbot/exchanges/AbstractExchangeAdapter.java)
@@ -493,8 +469,8 @@ whenever it breaks; the Trading Strategies should catch this and decide how they
 
 The Trading API provides an [`ExchangeNetworkException`](./bxbot-trading-api/src/main/java/com/gazbert/bxbot/trading/api/ExchangeNetworkException.java)
 for adapters to throw when they cannot connect to the exchange to make Trading API calls. This allows for
-Trading Strategies to recover from temporary network failures. The `exchange.xml` config file has an optional `<network-config>`
-section, which contains `<non-fatal-error-codes>` and `<non-fatal-error-messages>` elements - these can be used to tell the
+Trading Strategies to recover from temporary network failures. The `exchange.yaml` config file has an optional `networkConfig`
+section, which contains `nonFatalErrorCodes` and `nonFatalErrorMessages` elements - these can be used to tell the
 adapter when to throw the exception.
 
 The first release of the bot is _single-threaded_ for simplicity. The downside to this is that if an API call to the 
@@ -504,17 +480,17 @@ connections - see the [`AbstractExchangeAdapter`](./bxbot-exchanges/src/main/jav
 for an example how to do this.
 
 The Trading Engine will also call your adapter directly when performing the _Emergency Stop_ check to see if the 
-`<emergency-stop-currency>` wallet balance on the exchange drops below the configured `<emergency-stop-value>` value.
+`emergencyStopCurrency` wallet balance on the exchange drops below the configured `emergencyStopValue` value.
 If this call to the [`TradingApi`](./bxbot-trading-api/src/main/java/com/gazbert/bxbot/trading/api/TradingApi.java)
 `getBalanceInfo()` fails and is not due to a `ExchangeNetworkException`, the Trading Engine will log the error, send an 
 Email Alert (if configured), and shut down. If the API call failed due to an `ExchangeNetworkException`, the 
 Trading Engine will log the error and sleep until the next trade cycle.
 
 ##### Configuration
-You provide your Exchange Adapter details in the `exchange.xml` file - see the _[Exchange Adapters Configuration](#exchange-adapters)_ 
+You provide your Exchange Adapter details in the `exchange.yaml` file - see the _[Exchange Adapters Configuration](#exchange-adapters)_ 
 section for full details.
 
-The `<optional-config>` section in the `exchange.xml` allows you to set key/value pair config items to pass to your
+The `optionalConfig` section in the `exchange.yaml` allows you to set key/value pair config items to pass to your
 Exchange Adapter implementation. On startup, the Trading Engine will pass the config to your Exchange Adapter's 
 `init(ExchangeConfig config)` method. 
 
