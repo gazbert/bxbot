@@ -218,9 +218,9 @@ exchange:
       - Remote host closed connection during handshake
       - Unexpected end of file from server
       
-    configItems:
-      not-needed-on-bitstamp-1: here for illustration purposes only
-      not-needed-on-bitstamp-2: here for illustration purposes again
+  configItems:
+    not-needed-on-bitstamp-1: here for illustration purposes only
+    not-needed-on-bitstamp-2: here for illustration purposes again
 ```
 
 All fields are mandatory unless stated otherwise.
@@ -309,8 +309,9 @@ strategies:
   - id: scalping-strategy
     name: Basic Scalping Strat
     description: >
-      A simple scalper that buys at the current BID price, holds until current market price has reached a configurable
-      minimum percentage gain, then sells at current ASK price, thereby taking profit from the spread.       
+      A simple scalper that buys at the current BID price, holds until current market price has 
+      reached a configurable minimum percentage gain, then sells at current ASK price, thereby
+      taking profit from the spread.       
     # This strategy is injected using the bot's custom injection framework using its className
     className: com.gazbert.bxbot.strategies.ExampleScalpingStrategy
     configItems:
@@ -480,7 +481,7 @@ connections - see the [`AbstractExchangeAdapter`](./bxbot-exchanges/src/main/jav
 for an example how to do this.
 
 The Trading Engine will also call your adapter directly when performing the _Emergency Stop_ check to see if the 
-`emergencyStopCurrency` wallet balance on the exchange drops below the configured `emergencyStopValue` value.
+`emergencyStopCurrency` wallet balance on the exchange drops below the configured `emergencyStopBalance` value.
 If this call to the [`TradingApi`](./bxbot-trading-api/src/main/java/com/gazbert/bxbot/trading/api/TradingApi.java)
 `getBalanceInfo()` fails and is not due to a `ExchangeNetworkException`, the Trading Engine will log the error, send an 
 Email Alert (if configured), and shut down. If the API call failed due to an `ExchangeNetworkException`, the 
