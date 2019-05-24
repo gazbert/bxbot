@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2015 Gareth Jon Lynch
+ * Copyright (c) 2016 Gareth Jon Lynch
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -21,35 +21,35 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.domain.strategy;
+package com.gazbert.bxbot.core.config.exchange;
 
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
 /**
- * Test the StrategyConfigItems behaves as expected.
+ * Tests Other Config exchange API config object behaves as expected.
  *
  * @author gazbert
  */
-public class TestStrategyConfigItems {
+public class TestOtherConfigImpl {
 
-    private static final String BUY_PRICE_CONFIG_ITEM_KEY = "buyPrice";
-    private static final String BUY_PRICE_CONFIG_ITEM_VALUE = "671.15";
+    private static final String BUY_FEE_CONFIG_ITEM_KEY = "buy-fee";
+    private static final String BUY_FEE_CONFIG_ITEM_VALUE = "0.20";
 
-    private static final String AMOUNT_TO_BUY_CONFIG_ITEM_KEY = "amountToBuy";
-    private static final String AMOUNT_TO_BUY_CONFIG_ITEM_VALUE = "0.5";
+    private static final String SELL_FEE_CONFIG_ITEM_KEY = "sell-fee";
+    private static final String SELL_FEE_CONFIG_ITEM_VALUE = "0.25";
 
 
     @Test
-    public void testAddingAndFetchingConfigItems() throws Exception {
+    public void testAddingAndFetchingOtherConfigItems() {
 
-        final StrategyConfigItems strategyConfig = new StrategyConfigItems();
-        strategyConfig.getItems().put(BUY_PRICE_CONFIG_ITEM_KEY, BUY_PRICE_CONFIG_ITEM_VALUE);
-        strategyConfig.getItems().put(AMOUNT_TO_BUY_CONFIG_ITEM_KEY, AMOUNT_TO_BUY_CONFIG_ITEM_VALUE);
+        final OtherConfigImpl otherConfig = new OtherConfigImpl();
+        otherConfig.getItems().put(BUY_FEE_CONFIG_ITEM_KEY, BUY_FEE_CONFIG_ITEM_VALUE);
+        otherConfig.getItems().put(SELL_FEE_CONFIG_ITEM_KEY, SELL_FEE_CONFIG_ITEM_VALUE);
 
-        assertEquals(2, strategyConfig.getItems().size());
-        assertEquals(BUY_PRICE_CONFIG_ITEM_VALUE, strategyConfig.getItems().get(BUY_PRICE_CONFIG_ITEM_KEY));
-        assertEquals(AMOUNT_TO_BUY_CONFIG_ITEM_VALUE, strategyConfig.getItems().get(AMOUNT_TO_BUY_CONFIG_ITEM_KEY));
+        assertEquals(2, otherConfig.getItems().size());
+        assertEquals(BUY_FEE_CONFIG_ITEM_VALUE, otherConfig.getItems().get(BUY_FEE_CONFIG_ITEM_KEY));
+        assertEquals(SELL_FEE_CONFIG_ITEM_VALUE, otherConfig.getItems().get(SELL_FEE_CONFIG_ITEM_KEY));
     }
 }

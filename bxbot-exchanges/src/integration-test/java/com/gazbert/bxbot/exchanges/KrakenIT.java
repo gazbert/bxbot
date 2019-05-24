@@ -61,7 +61,7 @@ public class KrakenIT {
     private ExchangeConfig exchangeConfig;
     private AuthenticationConfig authenticationConfig;
     private NetworkConfig networkConfig;
-    private OptionalConfig optionalConfig;
+    private OtherConfig otherConfig;
 
     /*
      * Create some exchange config - the TradingEngine would normally do this.
@@ -78,21 +78,21 @@ public class KrakenIT {
         expect(networkConfig.getNonFatalErrorCodes()).andReturn(nonFatalNetworkErrorCodes);
         expect(networkConfig.getNonFatalErrorMessages()).andReturn(nonFatalNetworkErrorMessages);
 
-        optionalConfig = createMock(OptionalConfig.class);
-        expect(optionalConfig.getItem("buy-fee")).andReturn("0.25");
-        expect(optionalConfig.getItem("sell-fee")).andReturn("0.25");
-        expect(optionalConfig.getItem("keep-alive-during-maintenance")).andReturn("false");
+        otherConfig = createMock(OtherConfig.class);
+        expect(otherConfig.getItem("buy-fee")).andReturn("0.25");
+        expect(otherConfig.getItem("sell-fee")).andReturn("0.25");
+        expect(otherConfig.getItem("keep-alive-during-maintenance")).andReturn("false");
 
         exchangeConfig = createMock(ExchangeConfig.class);
         expect(exchangeConfig.getAuthenticationConfig()).andReturn(authenticationConfig);
         expect(exchangeConfig.getNetworkConfig()).andReturn(networkConfig);
-        expect(exchangeConfig.getOptionalConfig()).andReturn(optionalConfig);
+        expect(exchangeConfig.getOtherConfig()).andReturn(otherConfig);
     }
 
     @Test
     public void testPublicApiCalls() throws Exception {
 
-        replay(authenticationConfig, networkConfig, optionalConfig, exchangeConfig);
+        replay(authenticationConfig, networkConfig, otherConfig, exchangeConfig);
 
         final ExchangeAdapter exchangeAdapter = new KrakenExchangeAdapter();
         exchangeAdapter.init(exchangeConfig);
@@ -114,7 +114,7 @@ public class KrakenIT {
         assertTrue(ticker.getVwap() != null);
         assertTrue(ticker.getTimestamp() == null);  // timestamp not supplied by Kraken
 
-        verify(authenticationConfig, networkConfig, optionalConfig, exchangeConfig);
+        verify(authenticationConfig, networkConfig, otherConfig, exchangeConfig);
     }
 
     /*
@@ -124,7 +124,7 @@ public class KrakenIT {
     @Test
     public void testAuthenticatedApiCalls() throws Exception {
 
-        replay(authenticationConfig, networkConfig, optionalConfig, exchangeConfig);
+        replay(authenticationConfig, networkConfig, otherConfig, exchangeConfig);
 
         final ExchangeAdapter exchangeAdapter = new KrakenExchangeAdapter();
         exchangeAdapter.init(exchangeConfig);
@@ -138,6 +138,6 @@ public class KrakenIT {
 //        assertTrue(openOrders.stream().anyMatch(o -> o.getId().equals(orderId)));
 //        assertTrue(exchangeAdapter.cancelOrder(orderId, MARKET_ID));
 
-        verify(authenticationConfig, networkConfig, optionalConfig, exchangeConfig);
+        verify(authenticationConfig, networkConfig, otherConfig, exchangeConfig);
     }
 }

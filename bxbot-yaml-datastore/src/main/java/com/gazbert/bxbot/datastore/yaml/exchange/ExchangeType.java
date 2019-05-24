@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016 Gareth Jon Lynch
+ * Copyright (c) 2019 gazbert
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -21,44 +21,24 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.core.config.exchange;
+package com.gazbert.bxbot.datastore.yaml.exchange;
 
-import com.gazbert.bxbot.exchange.api.OptionalConfig;
-import com.google.common.base.MoreObjects;
-
-import java.util.HashMap;
-import java.util.Map;
+import com.gazbert.bxbot.domain.exchange.ExchangeConfig;
 
 /**
- * Exchange API optional config.
+ * Wraps Exchange config for dumping to and loading from YAML.
  *
  * @author gazbert
  */
-public class OptionalConfigImpl implements OptionalConfig {
+public class ExchangeType {
 
-    private Map<String, String> items;
+    private ExchangeConfig exchange;
 
-    public OptionalConfigImpl() {
-        items = new HashMap<>();
+    public ExchangeConfig getExchange() {
+        return exchange;
     }
 
-    @Override
-    public String getItem(String name) {
-        return items.get(name);
-    }
-
-    public Map<String, String> getItems() {
-        return items;
-    }
-
-    public void setItems(Map<String, String> items) {
-        this.items = items;
-    }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-                .add("items", items)
-                .toString();
+    public void setExchange(ExchangeConfig exchange) {
+        this.exchange = exchange;
     }
 }

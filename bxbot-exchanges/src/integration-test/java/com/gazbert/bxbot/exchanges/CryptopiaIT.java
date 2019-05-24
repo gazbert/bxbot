@@ -27,7 +27,7 @@ import com.gazbert.bxbot.exchange.api.AuthenticationConfig;
 import com.gazbert.bxbot.exchange.api.ExchangeAdapter;
 import com.gazbert.bxbot.exchange.api.ExchangeConfig;
 import com.gazbert.bxbot.exchange.api.NetworkConfig;
-import com.gazbert.bxbot.exchange.api.OptionalConfig;
+import com.gazbert.bxbot.exchange.api.OtherConfig;
 import com.gazbert.bxbot.trading.api.BalanceInfo;
 import com.gazbert.bxbot.trading.api.MarketOrderBook;
 import com.gazbert.bxbot.trading.api.Ticker;
@@ -65,7 +65,7 @@ public class CryptopiaIT {
     private ExchangeConfig exchangeConfig;
     private AuthenticationConfig authenticationConfig;
     private NetworkConfig networkConfig;
-    private OptionalConfig optionalConfig;
+    private OtherConfig otherConfig;
 
 
     /*
@@ -74,9 +74,9 @@ public class CryptopiaIT {
     @Before
     public void setupForEachTest() throws Exception {
 
-    	optionalConfig = createMock(OptionalConfig.class);
-    	expect(optionalConfig.getItem("use_global_trading_fee")).andReturn("false");
-    	expect(optionalConfig.getItem("global_trading_fee")).andReturn("0.20");
+    	otherConfig = createMock(OtherConfig.class);
+    	expect(otherConfig.getItem("use_global_trading_fee")).andReturn("false");
+    	expect(otherConfig.getItem("global_trading_fee")).andReturn("0.20");
     	
         authenticationConfig = createMock(AuthenticationConfig.class);
         expect(authenticationConfig.getItem("public_key")).andReturn(PUBLIC_KEY);
@@ -90,14 +90,14 @@ public class CryptopiaIT {
         exchangeConfig = createMock(ExchangeConfig.class);
         expect(exchangeConfig.getAuthenticationConfig()).andReturn(authenticationConfig);
         expect(exchangeConfig.getNetworkConfig()).andReturn(networkConfig);
-        expect(exchangeConfig.getOptionalConfig()).andReturn(optionalConfig);
+        expect(exchangeConfig.getOtherConfig()).andReturn(otherConfig);
         
     }
 
     @Test
     public void testPublicApiCalls() throws Exception {
 
-        replay(authenticationConfig, networkConfig, optionalConfig, exchangeConfig);
+        replay(authenticationConfig, networkConfig, otherConfig, exchangeConfig);
 
         final ExchangeAdapter exchangeAdapter = new CryptopiaExchangeAdapter();
         exchangeAdapter.init(exchangeConfig);
@@ -130,7 +130,7 @@ public class CryptopiaIT {
     @Test
     public void testAuthenticatedApiCalls() throws Exception {
 
-        replay(authenticationConfig, networkConfig, optionalConfig, exchangeConfig);
+        replay(authenticationConfig, networkConfig, otherConfig, exchangeConfig);
 
         final ExchangeAdapter exchangeAdapter = new CryptopiaExchangeAdapter();
         exchangeAdapter.init(exchangeConfig);

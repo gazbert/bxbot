@@ -26,16 +26,14 @@ package com.gazbert.bxbot.core.engine;
 import com.gazbert.bxbot.core.config.exchange.AuthenticationConfigImpl;
 import com.gazbert.bxbot.core.config.exchange.ExchangeConfigImpl;
 import com.gazbert.bxbot.core.config.exchange.NetworkConfigImpl;
-import com.gazbert.bxbot.core.config.exchange.OptionalConfigImpl;
+import com.gazbert.bxbot.core.config.exchange.OtherConfigImpl;
 import com.gazbert.bxbot.core.config.market.MarketImpl;
 import com.gazbert.bxbot.core.config.strategy.StrategyConfigItems;
 import com.gazbert.bxbot.core.mail.EmailAlerter;
 import com.gazbert.bxbot.core.util.ConfigurableComponentFactory;
 import com.gazbert.bxbot.domain.engine.EngineConfig;
-import com.gazbert.bxbot.domain.exchange.AuthenticationConfig;
 import com.gazbert.bxbot.domain.exchange.ExchangeConfig;
 import com.gazbert.bxbot.domain.exchange.NetworkConfig;
-import com.gazbert.bxbot.domain.exchange.OptionalConfig;
 import com.gazbert.bxbot.domain.market.MarketConfig;
 import com.gazbert.bxbot.domain.strategy.StrategyConfig;
 import com.gazbert.bxbot.exchange.api.ExchangeAdapter;
@@ -450,7 +448,7 @@ public class TradingEngine {
         final ExchangeConfig domainExchangeConfig = exchangeConfigService.getExchangeConfig();
         LOG.info(() -> "Fetched Exchange config from repository: " + domainExchangeConfig);
 
-        exchangeAdapter = ConfigurableComponentFactory.createComponent(domainExchangeConfig.getExchangeAdapter());
+        exchangeAdapter = ConfigurableComponentFactory.createComponent(domainExchangeConfig.getAdapter());
         LOG.info(() -> "Trading Engine will use Exchange Adapter for: " + exchangeAdapter.getImplName());
 
         final ExchangeConfigImpl adapterExchangeConfig = new ExchangeConfigImpl();
@@ -490,11 +488,11 @@ public class TradingEngine {
         }
 
         // Fetch optional authentication config
-        final AuthenticationConfig authenticationConfig = domainExchangeConfig.getAuthenticationConfig();
+        final Map<String, String> authenticationConfig = domainExchangeConfig.getAuthenticationConfig();
         if (authenticationConfig != null) {
 
             final AuthenticationConfigImpl adapterAuthenticationConfig = new AuthenticationConfigImpl();
-            adapterAuthenticationConfig.setItems(authenticationConfig.getItems());
+            adapterAuthenticationConfig.setItems(authenticationConfig);
             adapterExchangeConfig.setAuthenticationConfig(adapterAuthenticationConfig);
 
             // WARNING - careful when you log this
@@ -506,16 +504,16 @@ public class TradingEngine {
         }
 
         // Fetch optional config
-        final OptionalConfig optionalConfig = domainExchangeConfig.getOptionalConfig();
-        if (optionalConfig != null) {
+        final Map<String, String> otherConfig = domainExchangeConfig.getOtherConfig();
+        if (otherConfig != null) {
 
-            final OptionalConfigImpl adapterOptionalConfig = new OptionalConfigImpl();
-            adapterOptionalConfig.setItems(optionalConfig.getItems());
-            adapterExchangeConfig.setOptionalConfig(adapterOptionalConfig);
-            LOG.info(() -> "Optional Exchange Adapter config has been set: " + adapterOptionalConfig);
+            final OtherConfigImpl adapterOtherConfig = new OtherConfigImpl();
+            adapterOtherConfig.setItems(otherConfig);
+            adapterExchangeConfig.setOtherConfig(adapterOtherConfig);
+            LOG.info(() -> "Other Exchange Adapter config has been set: " + adapterOtherConfig);
 
         } else {
-            LOG.info(() -> "No Optional config has been set for Exchange Adapter: " + exchangeAdapter.getImplName());
+            LOG.info(() -> "No Other config has been set for Exchange Adapter: " + exchangeAdapter.getImplName());
         }
 
         exchangeAdapter.init(adapterExchangeConfig);

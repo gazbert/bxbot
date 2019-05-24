@@ -61,7 +61,7 @@ public class ItBitIT {
     private ExchangeConfig exchangeConfig;
     private AuthenticationConfig authenticationConfig;
     private NetworkConfig networkConfig;
-    private OptionalConfig optionalConfig;
+    private OtherConfig otherConfig;
 
 
     /*
@@ -80,21 +80,21 @@ public class ItBitIT {
         expect(networkConfig.getNonFatalErrorCodes()).andReturn(nonFatalNetworkErrorCodes);
         expect(networkConfig.getNonFatalErrorMessages()).andReturn(nonFatalNetworkErrorMessages);
 
-        optionalConfig = createMock(OptionalConfig.class);
-        expect(optionalConfig.getItem("buy-fee")).andReturn("0.25");
-        expect(optionalConfig.getItem("sell-fee")).andReturn("0.25");
-        expect(optionalConfig.getItem("keep-alive-during-maintenance")).andReturn("false");
+        otherConfig = createMock(OtherConfig.class);
+        expect(otherConfig.getItem("buy-fee")).andReturn("0.25");
+        expect(otherConfig.getItem("sell-fee")).andReturn("0.25");
+        expect(otherConfig.getItem("keep-alive-during-maintenance")).andReturn("false");
 
         exchangeConfig = createMock(ExchangeConfig.class);
         expect(exchangeConfig.getAuthenticationConfig()).andReturn(authenticationConfig);
         expect(exchangeConfig.getNetworkConfig()).andReturn(networkConfig);
-        expect(exchangeConfig.getOptionalConfig()).andReturn(optionalConfig);
+        expect(exchangeConfig.getOtherConfig()).andReturn(otherConfig);
     }
 
     @Test
     public void testPublicApiCalls() throws Exception {
 
-        replay(authenticationConfig, networkConfig, optionalConfig, exchangeConfig);
+        replay(authenticationConfig, networkConfig, otherConfig, exchangeConfig);
 
         final ExchangeAdapter exchangeAdapter = new ItBitExchangeAdapter();
         exchangeAdapter.init(exchangeConfig);
@@ -116,7 +116,7 @@ public class ItBitIT {
         assertTrue(ticker.getVwap() != null);
         assertTrue(ticker.getTimestamp() != null);
 
-        verify(authenticationConfig, networkConfig, optionalConfig, exchangeConfig);
+        verify(authenticationConfig, networkConfig, otherConfig, exchangeConfig);
     }
 
     /*
@@ -126,7 +126,7 @@ public class ItBitIT {
     @Test
     public void testAuthenticatedApiCalls() throws Exception {
 
-        replay(authenticationConfig, networkConfig, optionalConfig, exchangeConfig);
+        replay(authenticationConfig, networkConfig, otherConfig, exchangeConfig);
 
         final ExchangeAdapter exchangeAdapter = new ItBitExchangeAdapter();
         exchangeAdapter.init(exchangeConfig);
@@ -140,6 +140,6 @@ public class ItBitIT {
 //        assertTrue(openOrders.stream().anyMatch(o -> o.getId().equals(orderId)));
 //        assertTrue(exchangeAdapter.cancelOrder(orderId, MARKET_ID));
 
-        verify(authenticationConfig, networkConfig, optionalConfig, exchangeConfig);
+        verify(authenticationConfig, networkConfig, otherConfig, exchangeConfig);
     }
 }

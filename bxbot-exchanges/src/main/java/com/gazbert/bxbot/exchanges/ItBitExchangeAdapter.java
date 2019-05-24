@@ -26,7 +26,7 @@ package com.gazbert.bxbot.exchanges;
 import com.gazbert.bxbot.exchange.api.AuthenticationConfig;
 import com.gazbert.bxbot.exchange.api.ExchangeAdapter;
 import com.gazbert.bxbot.exchange.api.ExchangeConfig;
-import com.gazbert.bxbot.exchange.api.OptionalConfig;
+import com.gazbert.bxbot.exchange.api.OtherConfig;
 import com.gazbert.bxbot.exchanges.trading.api.impl.*;
 import com.gazbert.bxbot.trading.api.*;
 import com.google.common.base.MoreObjects;
@@ -1101,17 +1101,17 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
 
     private void setOptionalConfig(ExchangeConfig exchangeConfig) {
 
-        final OptionalConfig optionalConfig = getOptionalConfig(exchangeConfig);
+        final OtherConfig otherConfig = getOtherConfig(exchangeConfig);
 
-        final String buyFeeInConfig = getOptionalConfigItem(optionalConfig, BUY_FEE_PROPERTY_NAME);
+        final String buyFeeInConfig = getOtherConfigItem(otherConfig, BUY_FEE_PROPERTY_NAME);
         buyFeePercentage = new BigDecimal(buyFeeInConfig).divide(new BigDecimal("100"), 8, BigDecimal.ROUND_HALF_UP);
         LOG.info(() -> "Buy fee % in BigDecimal format: " + buyFeePercentage);
 
-        final String sellFeeInConfig = getOptionalConfigItem(optionalConfig, SELL_FEE_PROPERTY_NAME);
+        final String sellFeeInConfig = getOtherConfigItem(otherConfig, SELL_FEE_PROPERTY_NAME);
         sellFeePercentage = new BigDecimal(sellFeeInConfig).divide(new BigDecimal("100"), 8, BigDecimal.ROUND_HALF_UP);
         LOG.info(() -> "Sell fee % in BigDecimal format: " + sellFeePercentage);
 
-        final String keepAliveDuringMaintenanceConfig = getOptionalConfigItem(optionalConfig,
+        final String keepAliveDuringMaintenanceConfig = getOtherConfigItem(otherConfig,
                 KEEP_ALIVE_DURING_MAINTENANCE_PROPERTY_NAME);
         if (keepAliveDuringMaintenanceConfig != null && !keepAliveDuringMaintenanceConfig.isEmpty()) {
             keepAliveDuringMaintenance = Boolean.valueOf(keepAliveDuringMaintenanceConfig);

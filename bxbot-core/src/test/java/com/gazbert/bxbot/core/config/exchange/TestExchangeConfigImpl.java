@@ -25,10 +25,11 @@ package com.gazbert.bxbot.core.config.exchange;
 
 import com.gazbert.bxbot.exchange.api.AuthenticationConfig;
 import com.gazbert.bxbot.exchange.api.NetworkConfig;
-import com.gazbert.bxbot.exchange.api.OptionalConfig;
+import com.gazbert.bxbot.exchange.api.OtherConfig;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 /**
  * Tests Exchange Config exchange API config object behaves as expected.
@@ -41,18 +42,18 @@ public class TestExchangeConfigImpl {
     private static final String EXCHANGE_ADAPTER = "com.gazbert.bxbot.exchanges.TestExchangeAdapter";
     private static final AuthenticationConfig AUTHENTICATION_CONFIG = new AuthenticationConfigImpl();
     private static final NetworkConfig NETWORK_CONFIG = new NetworkConfigImpl();
-    private static final OptionalConfig OTHER_CONFIG = new OptionalConfigImpl();
+    private static final OtherConfig OTHER_CONFIG = new OtherConfigImpl();
 
 
     @Test
     public void testInitialisationWorksAsExpected() {
 
         final ExchangeConfigImpl exchangeConfig = new ExchangeConfigImpl();
-        assertEquals(null, exchangeConfig.getExchangeName());
-        assertEquals(null, exchangeConfig.getExchangeAdapter());
-        assertEquals(null, exchangeConfig.getAuthenticationConfig());
-        assertEquals(null, exchangeConfig.getNetworkConfig());
-        assertEquals(null, exchangeConfig.getOptionalConfig());
+        assertNull(exchangeConfig.getExchangeName());
+        assertNull(exchangeConfig.getExchangeAdapter());
+        assertNull(exchangeConfig.getAuthenticationConfig());
+        assertNull(exchangeConfig.getNetworkConfig());
+        assertNull(exchangeConfig.getOtherConfig());
     }
 
     @Test
@@ -72,7 +73,7 @@ public class TestExchangeConfigImpl {
         exchangeConfig.setNetworkConfig(NETWORK_CONFIG);
         assertEquals(NETWORK_CONFIG, exchangeConfig.getNetworkConfig());
 
-        exchangeConfig.setOptionalConfig(OTHER_CONFIG);
-        assertEquals(OTHER_CONFIG, exchangeConfig.getOptionalConfig());
+        exchangeConfig.setOtherConfig(OTHER_CONFIG);
+        assertEquals(OTHER_CONFIG, exchangeConfig.getOtherConfig());
     }
 }

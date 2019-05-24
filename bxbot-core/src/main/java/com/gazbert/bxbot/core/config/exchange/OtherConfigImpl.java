@@ -21,35 +21,44 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.domain.exchange;
+package com.gazbert.bxbot.core.config.exchange;
 
-import org.junit.Test;
+import com.gazbert.bxbot.exchange.api.OtherConfig;
+import com.google.common.base.MoreObjects;
 
-import static org.junit.Assert.assertEquals;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * Tests AuthenticationConfig domain object behaves as expected.
+ * Exchange API Other config.
  *
  * @author gazbert
  */
-public class TestAuthenticationConfig {
+public class OtherConfigImpl implements OtherConfig {
 
-    private static final String API_KEY_CONFIG_ITEM_KEY = "api-key";
-    private static final String API_KEY_CONFIG_ITEM_VALUE = "apiKey--123";
+    private Map<String, String> items;
 
-    private static final String SECRET_CONFIG_ITEM_KEY = "secret";
-    private static final String SECRET_FEE_CONFIG_ITEM_VALUE = "secret-key";
+    public OtherConfigImpl() {
+        items = new HashMap<>();
+    }
 
+    @Override
+    public String getItem(String name) {
+        return items.get(name);
+    }
 
-    @Test
-    public void testAddingAndFetchingAuthenticationConfig() throws Exception {
+    public Map<String, String> getItems() {
+        return items;
+    }
 
-        final AuthenticationConfig authenticationConfig = new AuthenticationConfig();
-        authenticationConfig.getItems().put(API_KEY_CONFIG_ITEM_KEY, API_KEY_CONFIG_ITEM_VALUE);
-        authenticationConfig.getItems().put(SECRET_CONFIG_ITEM_KEY, SECRET_FEE_CONFIG_ITEM_VALUE);
+    public void setItems(Map<String, String> items) {
+        this.items = items;
+    }
 
-        assertEquals(2, authenticationConfig.getItems().size());
-        assertEquals(API_KEY_CONFIG_ITEM_VALUE, authenticationConfig.getItems().get(API_KEY_CONFIG_ITEM_KEY));
-        assertEquals(SECRET_FEE_CONFIG_ITEM_VALUE, authenticationConfig.getItems().get(SECRET_CONFIG_ITEM_KEY));
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("items", items)
+                .toString();
     }
 }

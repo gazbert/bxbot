@@ -21,35 +21,21 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.domain.exchange;
-
-import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
+package com.gazbert.bxbot.exchange.api;
 
 /**
- * Tests OptionalConfig domain object behaves as expected.
+ * Encapsulates other configuration for an Exchange Adapter.
  *
  * @author gazbert
+ * @since 1.0
  */
-public class TestOptionalConfig {
+public interface OtherConfig {
 
-    private static final String BUY_FEE_CONFIG_ITEM_KEY = "buy-fee";
-    private static final String BUY_FEE_CONFIG_ITEM_VALUE = "0.20";
-
-    private static final String SELL_FEE_CONFIG_ITEM_KEY = "sell-fee";
-    private static final String SELL_FEE_CONFIG_ITEM_VALUE = "0.25";
-
-
-    @Test
-    public void testAddingAndFetchingOptionalConfigItems() throws Exception {
-
-        final OptionalConfig strategyConfig = new OptionalConfig();
-        strategyConfig.getItems().put(BUY_FEE_CONFIG_ITEM_KEY, BUY_FEE_CONFIG_ITEM_VALUE);
-        strategyConfig.getItems().put(SELL_FEE_CONFIG_ITEM_KEY, SELL_FEE_CONFIG_ITEM_VALUE);
-
-        assertEquals(2, strategyConfig.getItems().size());
-        assertEquals(BUY_FEE_CONFIG_ITEM_VALUE, strategyConfig.getItems().get(BUY_FEE_CONFIG_ITEM_KEY));
-        assertEquals(SELL_FEE_CONFIG_ITEM_VALUE, strategyConfig.getItems().get(SELL_FEE_CONFIG_ITEM_KEY));
-    }
+    /**
+     * Fetches a given config item by name.
+     *
+     * @param name the name of the item to fetch.
+     * @return the item value if found, null otherwise.
+     */
+    String getItem(String name);
 }

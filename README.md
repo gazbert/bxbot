@@ -210,7 +210,7 @@ exchange:
     secret: your-secret-key
            
   networkConfig:
-    connectionTimeout: 30
+    connectionTimeout: 15
     nonFatalErrorCodes: [502, 503, 520, 522, 525]            
     nonFatalErrorMessages:
       - Connection reset
@@ -218,7 +218,7 @@ exchange:
       - Remote host closed connection during handshake
       - Unexpected end of file from server
       
-  configItems:
+  otherConfig:
     not-needed-on-bitstamp-1: here for illustration purposes only
     not-needed-on-bitstamp-2: here for illustration purposes again
 ```
@@ -232,29 +232,28 @@ All fields are mandatory unless stated otherwise.
   to inject on startup. The class must be on the runtime classpath. See the 
   _[How do I write my own Exchange Adapter?](#how-do-i-write-my-own-exchange-adapter)_ section for more details.
 
-* The `authenticationConfig` section is optional. If present, at least 1 item must be set - these are repeating key/value String pairs.
-  This section is used by the inbuilt Exchange Adapters to configure their exchange trading API credentials - see
-  the sample `exchange.yaml` config files for details.
+* The `authenticationConfig` section is used by the inbuilt Exchange Adapters to configure their exchange trading
+  API credentials - see the sample `exchange.yaml` config files for details.
 
-* The `networkConfig` section is optional. If present, the `connectionTimeout`, `nonFatalErrorCodes`, and
-  `nonFatalErrorMessages` sections must be set. This section is used by the inbuilt Exchange Adapters to set
-  their network configuration as detailed below:
+* The `networkConfig` section is optional. It is used by the inbuilt Exchange Adapters to set their network
+  configuration as detailed below:
 
-    * The `connectionTimeout` is the timeout value that the exchange adapter will wait on socket connect/socket read when
-      communicating with the exchange. Once this threshold has been breached, the exchange adapter will give up and throw an
+    * The `connectionTimeout` field is optional. This is the timeout value that the exchange adapter will wait on socket
+      connect/socket read when communicating with the exchange. Once this threshold has been breached,
+      the exchange adapter will give up and throw an
       [`ExchangeNetworkException`](./bxbot-trading-api/src/main/java/com/gazbert/bxbot/trading/api/ExchangeNetworkException.java).
       The sample Exchange Adapters are single threaded: if a request gets blocked, it will block all subsequent requests from
-      getting to the exchange. This timeout value prevents an indefinite block.
+      getting to the exchange. This timeout value prevents an indefinite block. If not set, it defaults to 30 seconds.
 
-    * The `nonFatalErrorCodes` section contains a list of HTTP status codes that will trigger the adapter to throw a
-      non-fatal `ExchangeNetworkException`.
-      This allows the bot to recover from temporary network issues. See the sample `exchange.yaml` config files for status codes to use.
+    * The `nonFatalErrorCodes` field is optional. It contains a list of HTTP status codes that will trigger the
+      adapter to throw a non-fatal `ExchangeNetworkException`. This allows the bot to recover from temporary network
+      issues. See the sample `exchange.yaml` config files for status codes to use.
 
-    * The `nonFatalErrorMessages` section contains a list of `java.io` Exception message content that will trigger the 
-      adapter to throw a non-fatal `ExchangeNetworkException`. This allows the bot to recover from temporary network issues.
-      See the sample `exchange.yaml` config files for messages to use.
+    * The `nonFatalErrorMessages` field is optional. It contains a list of `java.io` Exception message content that will
+      trigger the adapter to throw a non-fatal `ExchangeNetworkException`. This allows the bot to recover from
+      temporary network issues. See the sample `exchange.yaml` config files for messages to use.
 
-* The `configItems` section is optional. It is not needed for Bitstamp, but shown above for illustration purposes.
+* The `otherConfig` section is optional. It is not needed for Bitstamp, but shown above for illustration purposes.
   If present, at least 1 item must be set - these are repeating key/value String pairs.
   This section is used by the inbuilt Exchange Adapters to set any additional config, e.g. buy/sell fees.
 
@@ -353,7 +352,7 @@ You configure the loading of your strategy using either a `className` _or_ a `be
 
 * The `configItems` section is optional. It allows you to set key/value pair config items. This config is passed
   to your Trading Strategy when the bot starts up; see the 
- _[How do I write my own Trading Strategy?](#how-do-i-write-my-own-trading-strategy)_ section.
+  _[How do I write my own Trading Strategy?](#how-do-i-write-my-own-trading-strategy)_ section.
 
 ##### Email Alerts
 You specify the Email Alerts config in the 
@@ -491,7 +490,7 @@ Trading Engine will log the error and sleep until the next trade cycle.
 You provide your Exchange Adapter details in the `exchange.yaml` file - see the _[Exchange Adapters Configuration](#exchange-adapters)_ 
 section for full details.
 
-The `optionalConfig` section in the `exchange.yaml` allows you to set key/value pair config items to pass to your
+The `otherConfig` section in the `exchange.yaml` allows you to set key/value pair config items to pass to your
 Exchange Adapter implementation. On startup, the Trading Engine will pass the config to your Exchange Adapter's 
 `init(ExchangeConfig config)` method. 
 

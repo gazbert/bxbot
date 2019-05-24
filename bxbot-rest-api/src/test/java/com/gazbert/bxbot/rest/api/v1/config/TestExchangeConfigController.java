@@ -27,7 +27,6 @@ import com.gazbert.bxbot.core.engine.TradingEngine;
 import com.gazbert.bxbot.core.mail.EmailAlerter;
 import com.gazbert.bxbot.domain.exchange.ExchangeConfig;
 import com.gazbert.bxbot.domain.exchange.NetworkConfig;
-import com.gazbert.bxbot.domain.exchange.OptionalConfig;
 import com.gazbert.bxbot.services.ExchangeConfigService;
 import org.junit.Before;
 import org.junit.Test;
@@ -40,7 +39,9 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
@@ -111,8 +112,8 @@ public class TestExchangeConfigController extends AbstractConfigControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
 
-                .andExpect(jsonPath("$.exchangeName").value(EXCHANGE_NAME))
-                .andExpect(jsonPath("$.exchangeAdapter").value(EXCHANGE_ADAPTER))
+                .andExpect(jsonPath("$.name").value(EXCHANGE_NAME))
+                .andExpect(jsonPath("$.adapter").value(EXCHANGE_ADAPTER))
 
                 // REST API does not expose AuthenticationConfig - potential security risk.
                 .andExpect(jsonPath("$.authenticationConfig").doesNotExist())
@@ -125,8 +126,8 @@ public class TestExchangeConfigController extends AbstractConfigControllerTest {
                 .andExpect(jsonPath("$.networkConfig.nonFatalErrorMessages[1]").value(ERROR_MESSAGE_RESET))
                 .andExpect(jsonPath("$.networkConfig.nonFatalErrorMessages[2]").value(ERROR_MESSAGE_CLOSED))
 
-                .andExpect(jsonPath("$.optionalConfig.items.buy-fee").value(BUY_FEE_CONFIG_ITEM_VALUE))
-                .andExpect(jsonPath("$.optionalConfig.items.sell-fee").value(SELL_FEE_CONFIG_ITEM_VALUE));
+                .andExpect(jsonPath("$.otherConfig.buy-fee").value(BUY_FEE_CONFIG_ITEM_VALUE))
+                .andExpect(jsonPath("$.otherConfig.sell-fee").value(SELL_FEE_CONFIG_ITEM_VALUE));
 
         verify(exchangeConfigService, times(1)).getExchangeConfig();
     }
@@ -160,8 +161,8 @@ public class TestExchangeConfigController extends AbstractConfigControllerTest {
                 .content(jsonify(someExchangeConfig())))
                 .andExpect(status().isOk())
 
-                .andExpect(jsonPath("$.exchangeName").value(EXCHANGE_NAME))
-                .andExpect(jsonPath("$.exchangeAdapter").value(EXCHANGE_ADAPTER))
+                .andExpect(jsonPath("$.name").value(EXCHANGE_NAME))
+                .andExpect(jsonPath("$.adapter").value(EXCHANGE_ADAPTER))
 
                 // REST API does not expose AuthenticationConfig - potential security risk.
                 .andExpect(jsonPath("$.authenticationConfig").doesNotExist())
@@ -174,8 +175,8 @@ public class TestExchangeConfigController extends AbstractConfigControllerTest {
                 .andExpect(jsonPath("$.networkConfig.nonFatalErrorMessages[1]").value(ERROR_MESSAGE_RESET))
                 .andExpect(jsonPath("$.networkConfig.nonFatalErrorMessages[2]").value(ERROR_MESSAGE_CLOSED))
 
-                .andExpect(jsonPath("$.optionalConfig.items.buy-fee").value(BUY_FEE_CONFIG_ITEM_VALUE))
-                .andExpect(jsonPath("$.optionalConfig.items.sell-fee").value(SELL_FEE_CONFIG_ITEM_VALUE));
+                .andExpect(jsonPath("$.otherConfig.buy-fee").value(BUY_FEE_CONFIG_ITEM_VALUE))
+                .andExpect(jsonPath("$.otherConfig.sell-fee").value(SELL_FEE_CONFIG_ITEM_VALUE));
 
         verify(exchangeConfigService, times(1)).getExchangeConfig();
         verify(exchangeConfigService, times(1)).updateExchangeConfig(any());
@@ -212,15 +213,15 @@ public class TestExchangeConfigController extends AbstractConfigControllerTest {
         networkConfig.setNonFatalErrorCodes(NON_FATAL_ERROR_CODES);
         networkConfig.setNonFatalErrorMessages(NON_FATAL_ERROR_MESSAGES);
 
-        final OptionalConfig optionalConfig = new OptionalConfig();
-        optionalConfig.getItems().put(BUY_FEE_CONFIG_ITEM_KEY, BUY_FEE_CONFIG_ITEM_VALUE);
-        optionalConfig.getItems().put(SELL_FEE_CONFIG_ITEM_KEY, SELL_FEE_CONFIG_ITEM_VALUE);
+        final Map<String, String> otherConfig = new HashMap<>();
+        otherConfig.put(BUY_FEE_CONFIG_ITEM_KEY, BUY_FEE_CONFIG_ITEM_VALUE);
+        otherConfig.put(SELL_FEE_CONFIG_ITEM_KEY, SELL_FEE_CONFIG_ITEM_VALUE);
 
         final ExchangeConfig exchangeConfig = new ExchangeConfig();
-        exchangeConfig.setExchangeName(EXCHANGE_NAME);
-        exchangeConfig.setExchangeAdapter(EXCHANGE_ADAPTER);
+        exchangeConfig.setName(EXCHANGE_NAME);
+        exchangeConfig.setAdapter(EXCHANGE_ADAPTER);
         exchangeConfig.setNetworkConfig(networkConfig);
-        exchangeConfig.setOptionalConfig(optionalConfig);
+        exchangeConfig.setOtherConfig(otherConfig);
 
         return exchangeConfig;
     }

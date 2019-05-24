@@ -25,15 +25,16 @@ package com.gazbert.bxbot.repository.xml;
 
 import com.gazbert.bxbot.datastore.xml.ConfigurationManager;
 import com.gazbert.bxbot.datastore.xml.exchange.generated.*;
-import com.gazbert.bxbot.domain.exchange.AuthenticationConfig;
 import com.gazbert.bxbot.domain.exchange.ExchangeConfig;
 import com.gazbert.bxbot.domain.exchange.NetworkConfig;
-import com.gazbert.bxbot.domain.exchange.OptionalConfig;
 import com.gazbert.bxbot.repository.ExchangeConfigRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static com.gazbert.bxbot.datastore.xml.FileLocations.EXCHANGE_CONFIG_XML_FILENAME;
 import static com.gazbert.bxbot.datastore.xml.FileLocations.EXCHANGE_CONFIG_XSD_FILENAME;
@@ -79,28 +80,28 @@ public class ExchangeConfigXmlRepository implements ExchangeConfigRepository {
 
     private static ExchangeConfig adaptInternalToExternalConfig(ExchangeType internalExchangeConfig) {
 
-        final AuthenticationConfig authenticationConfig = new AuthenticationConfig();
+        final Map<String, String> authenticationConfig = new HashMap<>();
         internalExchangeConfig.getAuthenticationConfig().getConfigItems()
-                .forEach(item -> authenticationConfig.getItems().put(item.getName(), item.getValue()));
+                .forEach(item -> authenticationConfig.put(item.getName(), item.getValue()));
 
         final NetworkConfig networkConfig = new NetworkConfig();
         networkConfig.setConnectionTimeout(internalExchangeConfig.getNetworkConfig().getConnectionTimeout());
         networkConfig.setNonFatalErrorCodes(internalExchangeConfig.getNetworkConfig().getNonFatalErrorCodes().getCodes());
         networkConfig.setNonFatalErrorMessages(internalExchangeConfig.getNetworkConfig().getNonFatalErrorMessages().getMessages());
 
-        final OptionalConfig optionalConfig = new OptionalConfig();
+        final Map<String, String> optionalConfig = new HashMap<>();
         final OptionalConfigType internalOptionalConfig = internalExchangeConfig.getOptionalConfig();
         if (internalOptionalConfig != null) { // it's optional
             internalExchangeConfig.getOptionalConfig().getConfigItems()
-                    .forEach(item -> optionalConfig.getItems().put(item.getName(), item.getValue()));
+                    .forEach(item -> optionalConfig.put(item.getName(), item.getValue()));
         }
 
         final ExchangeConfig exchangeConfig = new ExchangeConfig();
         exchangeConfig.setAuthenticationConfig(authenticationConfig);
-        exchangeConfig.setExchangeName(internalExchangeConfig.getName());
-        exchangeConfig.setExchangeAdapter(internalExchangeConfig.getAdapter());
+        exchangeConfig.setName(internalExchangeConfig.getName());
+        exchangeConfig.setAdapter(internalExchangeConfig.getAdapter());
         exchangeConfig.setNetworkConfig(networkConfig);
-        exchangeConfig.setOptionalConfig(optionalConfig);
+        exchangeConfig.setOtherConfig(optionalConfig);
         return exchangeConfig;
     }
 
@@ -116,7 +117,7 @@ public class ExchangeConfigXmlRepository implements ExchangeConfigRepository {
         networkConfig.setNonFatalErrorMessages(nonFatalErrorMessages);
 
         final OptionalConfigType optionalConfig = new OptionalConfigType();
-        externalExchangeConfig.getOptionalConfig().getItems().forEach((key, value) -> {
+        externalExchangeConfig.getOtherConfig().forEach((key, value) -> {
             final ConfigItemType configItem = new ConfigItemType();
             configItem.setName(key);
             configItem.setValue(value);
@@ -124,8 +125,8 @@ public class ExchangeConfigXmlRepository implements ExchangeConfigRepository {
         });
 
         final ExchangeType exchangeConfig = new ExchangeType();
-        exchangeConfig.setName(externalExchangeConfig.getExchangeName());
-        exchangeConfig.setAdapter(externalExchangeConfig.getExchangeAdapter());
+        exchangeConfig.setName(externalExchangeConfig.getName());
+        exchangeConfig.setAdapter(externalExchangeConfig.getAdapter());
         exchangeConfig.setNetworkConfig(networkConfig);
         exchangeConfig.setOptionalConfig(optionalConfig);
 
