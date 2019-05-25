@@ -49,7 +49,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>bxbot-xml-datastore</artifactId>
+            <artifactId>bxbot-yaml-datastore</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

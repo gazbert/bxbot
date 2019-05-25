@@ -122,7 +122,6 @@
         <module>bxbot-exchanges</module>
         <module>bxbot-strategies</module>
         <module>bxbot-domain-objects</module>
-        <module>bxbot-xml-datastore</module>
         <module>bxbot-yaml-datastore</module>
         <module>bxbot-repository</module>
         <module>bxbot-core</module>

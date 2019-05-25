@@ -50,6 +50,7 @@ ext.libraries = [
         javax_mail_api: dependencies.create("javax.mail:javax.mail-api:1.6.2"),
         javax_mail_sun: dependencies.create("com.sun.mail:javax.mail:1.6.2"),
 
+        snake_yaml: dependencies.create("org.yaml:snakeyaml:1.24"),
         javax_xml_api: dependencies.create("javax.xml.bind:jaxb-api:2.3.1"),
         javax_xml_impl: dependencies.create("com.sun.xml.bind:jaxb-impl:2.3.1"),
         javax_xml_core: dependencies.create("com.sun.xml.bind:jaxb-core:2.3.0.1"),
@@ -146,6 +147,7 @@ task buildZipDist(type: Zip, dependsOn: build) {
         into('config') {
             from 'config'
             include('*.xml')
+            include('*.yaml')
         }
     }
 }
@@ -199,6 +201,7 @@ task buildTarGzipDist(type: Tar, dependsOn: build) {
         into('config') {
             from 'config'
             include('*.xml')
+            include('*.yaml')
         }
     }
 }

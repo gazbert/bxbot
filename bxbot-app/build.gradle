@@ -12,7 +12,7 @@ dependencies {
     compile project(':bxbot-strategies')
     compile project(':bxbot-exchanges')
     compile project(':bxbot-domain-objects')
-    compile project(':bxbot-xml-datastore')
+    compile project(':bxbot-yaml-datastore')
     compile project(':bxbot-repository')
     compile project(':bxbot-core')
     compile project(':bxbot-rest-api')

@@ -1,0 +1,14 @@
+description = 'BX-bot YAML Datastore'
+
+
+dependencies {
+
+    compile project(':bxbot-domain-objects')
+
+    compile libraries.spring_boot_starter_log4j2
+    compile libraries.google_guava
+    compile libraries.snake_yaml
+    compile libraries.javax_activation
+
+    testCompile libraries.spring_boot_starter_test
+}
