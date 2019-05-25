@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016 Gareth Jon Lynch
+ * Copyright (c) 2019 gazbert
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -21,46 +21,45 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.services.impl;
+package com.gazbert.bxbot.repository.yaml;
 
-import com.gazbert.bxbot.domain.engine.EngineConfig;
-import com.gazbert.bxbot.repository.EngineConfigRepository;
-import com.gazbert.bxbot.services.EngineConfigService;
+import com.gazbert.bxbot.datastore.yaml.ConfigurationManager;
+import com.gazbert.bxbot.datastore.yaml.exchange.ExchangeType;
+import com.gazbert.bxbot.domain.exchange.ExchangeConfig;
+import com.gazbert.bxbot.repository.ExchangeConfigRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import static com.gazbert.bxbot.datastore.yaml.FileLocations.EXCHANGE_CONFIG_YAML_FILENAME;
+
 /**
- * Implementation of the Engine config service.
+ * An Exchange config repo that uses a YAML backed datastore.
  *
  * @author gazbert
  */
-@Service("engineConfigService")
+@Repository("exchangeConfigYamlRepository")
 @Transactional
-@ComponentScan(basePackages = {"com.gazbert.bxbot.repository"})
-public class EngineConfigServiceImpl implements EngineConfigService {
+public class ExchangeConfigYamlRepository implements ExchangeConfigRepository {
 
     private static final Logger LOG = LogManager.getLogger();
 
-    private final EngineConfigRepository engineConfigRepository;
-
-    @Autowired
-    public EngineConfigServiceImpl(@Qualifier("engineConfigYamlRepository") EngineConfigRepository engineConfigRepository) {
-        this.engineConfigRepository = engineConfigRepository;
+    @Override
+    public ExchangeConfig get() {
+        LOG.info(() -> "Fetching ExchangeConfig...");
+        return ConfigurationManager.loadConfig(ExchangeType.class, EXCHANGE_CONFIG_YAML_FILENAME).getExchange();
     }
 
     @Override
-    public EngineConfig getEngineConfig() {
-        return engineConfigRepository.get();
-    }
+    public ExchangeConfig save(ExchangeConfig config) {
 
-    @Override
-    public EngineConfig updateEngineConfig(EngineConfig config) {
-        LOG.info(() -> "About to update Engine config: " + config);
-        return engineConfigRepository.save(config);
+        LOG.info(() -> "About to save ExchangeConfig: " + config);
+
+        final ExchangeType exchangeType = new ExchangeType();
+        exchangeType.setExchange(config);
+        ConfigurationManager.saveConfig(ExchangeType.class, exchangeType, EXCHANGE_CONFIG_YAML_FILENAME);
+
+        return ConfigurationManager.loadConfig(ExchangeType.class, EXCHANGE_CONFIG_YAML_FILENAME).getExchange();
     }
 }
