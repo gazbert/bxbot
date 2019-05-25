@@ -28,8 +28,7 @@ import org.junit.Test;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * Tests NetworkConfig domain object behaves as expected.
@@ -47,7 +46,7 @@ public class TestNetworkConfig {
     public void testInitialisationWorksAsExpected() {
 
         final NetworkConfig networkConfig = new NetworkConfig();
-        assertEquals(null, networkConfig.getConnectionTimeout());
+        assertNull(networkConfig.getConnectionTimeout());
         assertTrue(networkConfig.getNonFatalErrorCodes().isEmpty());
         assertTrue(networkConfig.getNonFatalErrorMessages().isEmpty());
     }
