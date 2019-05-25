@@ -305,7 +305,7 @@ public class TradingEngine {
     /*
      * Shutdown the Trading Engine.
      * Might be called from a different thread.
-     * TODO currently not used - but will eventually be called from Admin Console.
+     * TODO currently not used - but will eventually be called from BX-bot UI
      */
     public void shutdown() {
 

@@ -136,8 +136,6 @@ public final class ConfigurationManager {
 
     /**
      * Orders properties before dumping out YAML.
-     * <p>
-     * TODO - need to use Comparator here to order fields as per the spec in README.
      */
     private static class ReversedPropertyUtils extends PropertyUtils {
         @Override
