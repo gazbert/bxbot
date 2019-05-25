@@ -216,7 +216,7 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter impleme
         LOG.info(() -> "About to initialise Gemini ExchangeConfig: " + config);
         setAuthenticationConfig(config);
         setNetworkConfig(config);
-        setOptionalConfig(config);
+        setOtherConfig(config);
 
         nonce = System.currentTimeMillis() / 1000; // set the initial nonce used in the secure messaging.
         initSecureMessageLayer();
@@ -839,7 +839,7 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter impleme
         secret = getAuthenticationConfigItem(authenticationConfig, SECRET_PROPERTY_NAME);
     }
 
-    private void setOptionalConfig(ExchangeConfig exchangeConfig) {
+    private void setOtherConfig(ExchangeConfig exchangeConfig) {
 
         final OtherConfig otherConfig = getOtherConfig(exchangeConfig);
 

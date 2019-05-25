@@ -175,7 +175,7 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
         LOG.info(() -> "About to initialise OKCoin ExchangeConfig: " + config);
         setAuthenticationConfig(config);
         setNetworkConfig(config);
-        setOptionalConfig(config);
+        setOtherConfig(config);
 
         initSecureMessageLayer();
         initGson();
@@ -926,7 +926,7 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
         secret = getAuthenticationConfigItem(authenticationConfig, SECRET_PROPERTY_NAME);
     }
 
-    private void setOptionalConfig(ExchangeConfig exchangeConfig) {
+    private void setOtherConfig(ExchangeConfig exchangeConfig) {
 
         final OtherConfig otherConfig = getOtherConfig(exchangeConfig);
 

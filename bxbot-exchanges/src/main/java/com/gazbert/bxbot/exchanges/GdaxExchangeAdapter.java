@@ -188,7 +188,7 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
         LOG.info(() -> "About to initialise GDAX ExchangeConfig: " + config);
         setAuthenticationConfig(config);
         setNetworkConfig(config);
-        setOptionalConfig(config);
+        setOtherConfig(config);
 
         initSecureMessageLayer();
         initGson();
@@ -922,7 +922,7 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
         secret = getAuthenticationConfigItem(authenticationConfig, SECRET_PROPERTY_NAME);
     }
 
-    private void setOptionalConfig(ExchangeConfig exchangeConfig) {
+    private void setOtherConfig(ExchangeConfig exchangeConfig) {
 
         final OtherConfig otherConfig = getOtherConfig(exchangeConfig);
 

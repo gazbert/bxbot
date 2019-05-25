@@ -153,7 +153,7 @@ public class CryptopiaExchangeAdapter extends AbstractExchangeAdapter implements
 		LOG.info(() -> "About to initialise Cryptopia ExchangeConfig: " + config);
         setAuthenticationConfig(config);
         setNetworkConfig(config);
-        setOptionalConfig(config);
+        setOtherConfig(config);
 
         initSecureMessageLayer();
         initGson();
@@ -859,7 +859,7 @@ public class CryptopiaExchangeAdapter extends AbstractExchangeAdapter implements
         privateKey = getAuthenticationConfigItem(authenticationConfig, PRIVATE_KEY_PROPERTY_NAME);
     }
     
-    private void setOptionalConfig(ExchangeConfig exchangeConfig) {
+    private void setOtherConfig(ExchangeConfig exchangeConfig) {
     	final OtherConfig otherConfig = getOtherConfig(exchangeConfig);
     	
     	final String useGlobalTradingFeeConfigItem = getOtherConfigItem(otherConfig, USE_GLOBAL_TRADING_FEE_PROPERTY_NAME);
