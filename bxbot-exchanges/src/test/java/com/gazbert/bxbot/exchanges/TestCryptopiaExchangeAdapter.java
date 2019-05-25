@@ -48,6 +48,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.gazbert.bxbot.exchange.api.OtherConfig;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -59,7 +60,6 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import com.gazbert.bxbot.exchange.api.AuthenticationConfig;
 import com.gazbert.bxbot.exchange.api.ExchangeConfig;
 import com.gazbert.bxbot.exchange.api.NetworkConfig;
-import com.gazbert.bxbot.exchange.api.OptionalConfig;
 import com.gazbert.bxbot.trading.api.BalanceInfo;
 import com.gazbert.bxbot.trading.api.ExchangeNetworkException;
 import com.gazbert.bxbot.trading.api.MarketOrderBook;
@@ -128,7 +128,7 @@ public class TestCryptopiaExchangeAdapter extends AbstractExchangeAdapterTest {
     private ExchangeConfig exchangeConfig;
     private AuthenticationConfig authenticationConfig;
     private NetworkConfig networkConfig;
-    private OptionalConfig optionalConfig;
+    private OtherConfig otherConfig;
 
 
     /*
@@ -146,13 +146,13 @@ public class TestCryptopiaExchangeAdapter extends AbstractExchangeAdapterTest {
         expect(networkConfig.getNonFatalErrorCodes()).andReturn(nonFatalNetworkErrorCodes);
         expect(networkConfig.getNonFatalErrorMessages()).andReturn(nonFatalNetworkErrorMessages);
         
-        optionalConfig = PowerMock.createMock(OptionalConfig.class);
-        expect(optionalConfig.getItem("use_global_trading_fee")).andReturn("false");
+        otherConfig = PowerMock.createMock(OtherConfig.class);
+        expect(otherConfig.getItem("use_global_trading_fee")).andReturn("false");
 
         exchangeConfig = PowerMock.createMock(ExchangeConfig.class);
         expect(exchangeConfig.getAuthenticationConfig()).andReturn(authenticationConfig);
         expect(exchangeConfig.getNetworkConfig()).andReturn(networkConfig);
-        expect(exchangeConfig.getOptionalConfig()).andReturn(optionalConfig);
+        expect(exchangeConfig.getOtherConfig()).andReturn(otherConfig);
         // optional config not needed for this adapter
     }
 

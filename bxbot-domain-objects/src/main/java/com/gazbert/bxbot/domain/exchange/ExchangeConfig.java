@@ -25,6 +25,8 @@ package com.gazbert.bxbot.domain.exchange;
 
 import com.google.common.base.MoreObjects;
 
+import java.util.Map;
+
 /**
  * Domain object representing the overall Exchange config.
  *
@@ -32,35 +34,35 @@ import com.google.common.base.MoreObjects;
  */
 public class ExchangeConfig {
 
-    private String exchangeName;
-    private String exchangeAdapter;
-    private AuthenticationConfig authenticationConfig;
+    private String name;
+    private String adapter;
+    private Map<String, String> authenticationConfig;
 
     private NetworkConfig networkConfig;
-    private OptionalConfig optionalConfig;
+    private Map<String, String> otherConfig;
 
 
-    public String getExchangeName() {
-        return exchangeName;
+    public String getName() {
+        return name;
     }
 
-    public void setExchangeName(String exchangeName) {
-        this.exchangeName = exchangeName;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getExchangeAdapter() {
-        return exchangeAdapter;
+    public String getAdapter() {
+        return adapter;
     }
 
-    public void setExchangeAdapter(String exchangeAdapter) {
-        this.exchangeAdapter = exchangeAdapter;
+    public void setAdapter(String adapter) {
+        this.adapter = adapter;
     }
 
-    public AuthenticationConfig getAuthenticationConfig() {
+    public Map<String, String> getAuthenticationConfig() {
         return authenticationConfig;
     }
 
-    public void setAuthenticationConfig(AuthenticationConfig authenticationConfig) {
+    public void setAuthenticationConfig(Map<String, String> authenticationConfig) {
         this.authenticationConfig = authenticationConfig;
     }
 
@@ -72,23 +74,23 @@ public class ExchangeConfig {
         return networkConfig;
     }
 
-    public OptionalConfig getOptionalConfig() {
-        return optionalConfig;
+    public Map<String, String> getOtherConfig() {
+        return otherConfig;
     }
 
-    public void setOptionalConfig(OptionalConfig optionalConfig) {
-        this.optionalConfig = optionalConfig;
+    public void setOtherConfig(Map<String, String> otherConfig) {
+        this.otherConfig = otherConfig;
     }
 
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("exchangeName", exchangeName)
-                .add("exchangeAdapter", exchangeAdapter)
+                .add("name", name)
+                .add("adapter", adapter)
                 // WARNING - careful showing this!
                 //.add("authenticationConfig", authenticationConfig)
                 .add("networkConfig", networkConfig)
-                .add("optionalConfig", optionalConfig)
+                .add("otherConfig", otherConfig)
                 .toString();
     }
 }

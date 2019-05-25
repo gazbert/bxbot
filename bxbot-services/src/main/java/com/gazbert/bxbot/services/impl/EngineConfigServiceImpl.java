@@ -29,10 +29,10 @@ import com.gazbert.bxbot.services.EngineConfigService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.Assert;
 
 /**
  * Implementation of the Engine config service.
@@ -49,7 +49,7 @@ public class EngineConfigServiceImpl implements EngineConfigService {
     private final EngineConfigRepository engineConfigRepository;
 
     @Autowired
-    public EngineConfigServiceImpl(EngineConfigRepository engineConfigRepository) {
+    public EngineConfigServiceImpl(@Qualifier("engineConfigYamlRepository") EngineConfigRepository engineConfigRepository) {
         this.engineConfigRepository = engineConfigRepository;
     }
 

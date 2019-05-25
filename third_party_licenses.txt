@@ -5,6 +5,7 @@ Product
 * log4j        - http://logging.apache.org/log4j/2.x/             - https://logging.apache.org/log4j/2.0/license.html
 * JavaMail     - https://java.net/projects/javamail/pages/Home    - https://glassfish.java.net/public/CDDL+GPL_1_1.html
 * Spring Boot  - http://projects.spring.io/spring-boot/           - https://github.com/spring-projects/spring-boot/blob/master/LICENSE.txt
+* Snake YAML   - https://bitbucket.org/asomov/snakeyaml           - https://bitbucket.org/asomov/snakeyaml/src/default/LICENSE.txt
 
 Building & Testing
 ===================

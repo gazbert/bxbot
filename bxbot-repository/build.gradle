@@ -2,7 +2,7 @@ description = 'BX-bot Repository'
 
 dependencies {
 
-    compile project(':bxbot-xml-datastore')
+    compile project(':bxbot-yaml-datastore')
     compile project(':bxbot-domain-objects')
 
     compile libraries.spring_tx

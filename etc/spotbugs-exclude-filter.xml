@@ -18,7 +18,7 @@
 
     <!-- False positive - this NPE check is required. -->
     <Match>
-        <Class name="com.gazbert.bxbot.datastore.ConfigurationManager"/>
+        <Class name="com.gazbert.bxbot.datastore.xml.ConfigurationManager"/>
         <Bug code="OBL"/>
     </Match>
 

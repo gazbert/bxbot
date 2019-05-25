@@ -25,7 +25,7 @@ package com.gazbert.bxbot.exchanges;
 import com.gazbert.bxbot.exchange.api.AuthenticationConfig;
 import com.gazbert.bxbot.exchange.api.ExchangeConfig;
 import com.gazbert.bxbot.exchange.api.NetworkConfig;
-import com.gazbert.bxbot.exchange.api.OptionalConfig;
+import com.gazbert.bxbot.exchange.api.OtherConfig;
 import com.gazbert.bxbot.trading.api.ExchangeNetworkException;
 import com.gazbert.bxbot.trading.api.TradingApiException;
 import com.google.common.base.MoreObjects;
@@ -73,9 +73,9 @@ abstract class AbstractExchangeAdapter {
     private static final String NETWORK_CONFIG_MISSING = "NetworkConfig is missing for adapter in exchange.xml file.";
 
     /**
-     * Fatal error message for when OptionalConfig is missing in the exchange.xml config file.
+     * Fatal error message for when OtherConfig is missing in the exchange.xml config file.
      */
-    private static final String OTHER_CONFIG_MISSING = "OptionalConfig is missing for adapter in exchange.xml file.";
+    private static final String OTHER_CONFIG_MISSING = "OtherConfig is missing for adapter in exchange.xml file.";
 
     /**
      * Used for building error messages for missing config.
@@ -326,21 +326,21 @@ abstract class AbstractExchangeAdapter {
     }
 
     /**
-     * Fetches the optional config for the exchange adapter.
+     * Fetches other config for the exchange adapter.
      *
      * @param exchangeConfig the exchange adapter config.
-     * @return the optional config for the adapter.
+     * @return the other config for the adapter.
      * @throws IllegalArgumentException if optional config is not set.
      */
-    OptionalConfig getOptionalConfig(ExchangeConfig exchangeConfig) {
+    OtherConfig getOtherConfig(ExchangeConfig exchangeConfig) {
 
-        final OptionalConfig optionalConfig = exchangeConfig.getOptionalConfig();
-        if (optionalConfig == null) {
+        final OtherConfig otherConfig = exchangeConfig.getOtherConfig();
+        if (otherConfig == null) {
             final String errorMsg = OTHER_CONFIG_MISSING + exchangeConfig;
             LOG.error(errorMsg);
             throw new IllegalArgumentException(errorMsg);
         }
-        return optionalConfig;
+        return otherConfig;
     }
 
     /**
@@ -360,16 +360,16 @@ abstract class AbstractExchangeAdapter {
     }
 
     /**
-     * Fetches an optional config item value from the adapter config.
+     * Fetches an other config item value from the adapter config.
      *
-     * @param optionalConfig the optional config for the adapter.
+     * @param otherConfig other config for the adapter.
      * @param itemName    the config item name, e.g. buy-fee, sell-fee
      * @return the config item value.
      * @throws IllegalArgumentException if authentication item is not set.
      */
-    String getOptionalConfigItem(OptionalConfig optionalConfig, String itemName) {
+    String getOtherConfigItem(OtherConfig otherConfig, String itemName) {
 
-        final String itemValue = optionalConfig.getItem(itemName);
+        final String itemValue = otherConfig.getItem(itemName);
         LOG.info(() -> itemName + ": " + itemValue);
         return assertItemExists(itemName, itemValue);
     }

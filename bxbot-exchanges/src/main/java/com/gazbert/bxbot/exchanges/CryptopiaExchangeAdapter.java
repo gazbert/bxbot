@@ -22,6 +22,7 @@ import java.util.Map;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
+import com.gazbert.bxbot.exchange.api.OtherConfig;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.util.StringUtils;
@@ -29,7 +30,6 @@ import org.springframework.util.StringUtils;
 import com.gazbert.bxbot.exchange.api.AuthenticationConfig;
 import com.gazbert.bxbot.exchange.api.ExchangeAdapter;
 import com.gazbert.bxbot.exchange.api.ExchangeConfig;
-import com.gazbert.bxbot.exchange.api.OptionalConfig;
 import com.gazbert.bxbot.exchanges.trading.api.impl.BalanceInfoImpl;
 import com.gazbert.bxbot.exchanges.trading.api.impl.MarketOrderBookImpl;
 import com.gazbert.bxbot.exchanges.trading.api.impl.MarketOrderImpl;
@@ -153,7 +153,7 @@ public class CryptopiaExchangeAdapter extends AbstractExchangeAdapter implements
 		LOG.info(() -> "About to initialise Cryptopia ExchangeConfig: " + config);
         setAuthenticationConfig(config);
         setNetworkConfig(config);
-        setOptionalConfig(config);
+        setOtherConfig(config);
 
         initSecureMessageLayer();
         initGson();
@@ -859,13 +859,13 @@ public class CryptopiaExchangeAdapter extends AbstractExchangeAdapter implements
         privateKey = getAuthenticationConfigItem(authenticationConfig, PRIVATE_KEY_PROPERTY_NAME);
     }
     
-    private void setOptionalConfig(ExchangeConfig exchangeConfig) {
-    	final OptionalConfig optionalConfig = getOptionalConfig(exchangeConfig);
+    private void setOtherConfig(ExchangeConfig exchangeConfig) {
+    	final OtherConfig otherConfig = getOtherConfig(exchangeConfig);
     	
-    	final String useGlobalTradingFeeConfigItem = getOptionalConfigItem(optionalConfig, USE_GLOBAL_TRADING_FEE_PROPERTY_NAME);
+    	final String useGlobalTradingFeeConfigItem = getOtherConfigItem(otherConfig, USE_GLOBAL_TRADING_FEE_PROPERTY_NAME);
 		useGlobalTradingFee = !StringUtils.isEmpty(useGlobalTradingFeeConfigItem) ? Boolean.parseBoolean(useGlobalTradingFeeConfigItem) : false;
     	
-    	final String globalTradingFeeConfigItem = useGlobalTradingFee ? getOptionalConfigItem(optionalConfig, GLOBAL_TRADING_FEE_PROPERTY_NAME) : null;
+    	final String globalTradingFeeConfigItem = useGlobalTradingFee ? getOtherConfigItem(otherConfig, GLOBAL_TRADING_FEE_PROPERTY_NAME) : null;
     	globalTradingFee = !StringUtils.isEmpty(globalTradingFeeConfigItem) ? new BigDecimal(globalTradingFeeConfigItem): DEFAULT_CRYPTOPIA_TRADING_FEE_PERCENT;
     }
     

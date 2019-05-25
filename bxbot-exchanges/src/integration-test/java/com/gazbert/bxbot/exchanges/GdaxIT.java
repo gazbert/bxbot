@@ -61,7 +61,7 @@ public class GdaxIT {
     private ExchangeConfig exchangeConfig;
     private AuthenticationConfig authenticationConfig;
     private NetworkConfig networkConfig;
-    private OptionalConfig optionalConfig;
+    private OtherConfig otherConfig;
 
 
     /*
@@ -80,20 +80,20 @@ public class GdaxIT {
         expect(networkConfig.getNonFatalErrorCodes()).andReturn(nonFatalNetworkErrorCodes);
         expect(networkConfig.getNonFatalErrorMessages()).andReturn(nonFatalNetworkErrorMessages);
 
-        optionalConfig = createMock(OptionalConfig.class);
-        expect(optionalConfig.getItem("buy-fee")).andReturn("0.25");
-        expect(optionalConfig.getItem("sell-fee")).andReturn("0.25");
+        otherConfig = createMock(OtherConfig.class);
+        expect(otherConfig.getItem("buy-fee")).andReturn("0.25");
+        expect(otherConfig.getItem("sell-fee")).andReturn("0.25");
 
         exchangeConfig = createMock(ExchangeConfig.class);
         expect(exchangeConfig.getAuthenticationConfig()).andReturn(authenticationConfig);
         expect(exchangeConfig.getNetworkConfig()).andReturn(networkConfig);
-        expect(exchangeConfig.getOptionalConfig()).andReturn(optionalConfig);
+        expect(exchangeConfig.getOtherConfig()).andReturn(otherConfig);
     }
 
     @Test
     public void testPublicApiCalls() throws Exception {
 
-        replay(authenticationConfig, networkConfig, optionalConfig, exchangeConfig);
+        replay(authenticationConfig, networkConfig, otherConfig, exchangeConfig);
 
         final ExchangeAdapter exchangeAdapter = new GdaxExchangeAdapter();
         exchangeAdapter.init(exchangeConfig);
@@ -115,7 +115,7 @@ public class GdaxIT {
         assertTrue(ticker.getVwap() == null); // not provided by GDAX
         assertTrue(ticker.getTimestamp() != null);
 
-        verify(authenticationConfig, networkConfig, optionalConfig, exchangeConfig);
+        verify(authenticationConfig, networkConfig, otherConfig, exchangeConfig);
     }
 
     /*
@@ -125,7 +125,7 @@ public class GdaxIT {
     @Test
     public void testAuthenticatedApiCalls() throws Exception {
 
-        replay(authenticationConfig, networkConfig, optionalConfig, exchangeConfig);
+        replay(authenticationConfig, networkConfig, otherConfig, exchangeConfig);
 
         final ExchangeAdapter exchangeAdapter = new GdaxExchangeAdapter();
         exchangeAdapter.init(exchangeConfig);
@@ -139,6 +139,6 @@ public class GdaxIT {
 //        assertTrue(openOrders.stream().anyMatch(o -> o.getId().equals(orderId)));
 //        assertTrue(exchangeAdapter.cancelOrder(orderId, MARKET_ID));
 
-        verify(authenticationConfig, networkConfig, optionalConfig, exchangeConfig);
+        verify(authenticationConfig, networkConfig, otherConfig, exchangeConfig);
     }
 }

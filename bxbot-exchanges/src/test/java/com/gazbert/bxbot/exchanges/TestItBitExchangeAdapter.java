@@ -26,10 +26,9 @@ package com.gazbert.bxbot.exchanges;
 import com.gazbert.bxbot.exchange.api.AuthenticationConfig;
 import com.gazbert.bxbot.exchange.api.ExchangeConfig;
 import com.gazbert.bxbot.exchange.api.NetworkConfig;
-import com.gazbert.bxbot.exchange.api.OptionalConfig;
+import com.gazbert.bxbot.exchange.api.OtherConfig;
 import com.gazbert.bxbot.trading.api.*;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.api.easymock.PowerMock;
@@ -113,7 +112,7 @@ public class TestItBitExchangeAdapter extends AbstractExchangeAdapterTest {
     private ExchangeConfig exchangeConfig;
     private AuthenticationConfig authenticationConfig;
     private NetworkConfig networkConfig;
-    private OptionalConfig optionalConfig;
+    private OtherConfig otherConfig;
 
 
     /*
@@ -132,15 +131,15 @@ public class TestItBitExchangeAdapter extends AbstractExchangeAdapterTest {
         expect(networkConfig.getNonFatalErrorCodes()).andReturn(nonFatalNetworkErrorCodes);
         expect(networkConfig.getNonFatalErrorMessages()).andReturn(nonFatalNetworkErrorMessages);
 
-        optionalConfig = PowerMock.createMock(OptionalConfig.class);
-        expect(optionalConfig.getItem("buy-fee")).andReturn("0.5");
-        expect(optionalConfig.getItem("sell-fee")).andReturn("0.5");
-        expect(optionalConfig.getItem("keep-alive-during-maintenance")).andReturn("false");
+        otherConfig = PowerMock.createMock(OtherConfig.class);
+        expect(otherConfig.getItem("buy-fee")).andReturn("0.5");
+        expect(otherConfig.getItem("sell-fee")).andReturn("0.5");
+        expect(otherConfig.getItem("keep-alive-during-maintenance")).andReturn("false");
 
         exchangeConfig = PowerMock.createMock(ExchangeConfig.class);
         expect(exchangeConfig.getAuthenticationConfig()).andReturn(authenticationConfig);
         expect(exchangeConfig.getNetworkConfig()).andReturn(networkConfig);
-        expect(exchangeConfig.getOptionalConfig()).andReturn(optionalConfig);
+        expect(exchangeConfig.getOtherConfig()).andReturn(otherConfig);
     }
 
     // ------------------------------------------------------------------------------------------------
@@ -800,9 +799,9 @@ public class TestItBitExchangeAdapter extends AbstractExchangeAdapterTest {
     @Test(expected = IllegalArgumentException.class)
     public void testExchangeAdapterThrowsExceptionIfBuyFeeIsMissing() throws Exception {
 
-        PowerMock.reset(optionalConfig);
-        expect(optionalConfig.getItem("buy-fee")).andReturn("");
-        expect(optionalConfig.getItem("sell-fee")).andReturn("0.5");
+        PowerMock.reset(otherConfig);
+        expect(otherConfig.getItem("buy-fee")).andReturn("");
+        expect(otherConfig.getItem("sell-fee")).andReturn("0.5");
         PowerMock.replayAll();
 
         final ItBitExchangeAdapter exchangeAdapter = new ItBitExchangeAdapter();
@@ -813,9 +812,9 @@ public class TestItBitExchangeAdapter extends AbstractExchangeAdapterTest {
     @Test(expected = IllegalArgumentException.class)
     public void testExchangeAdapterThrowsExceptionIfSellFeeIsMissing() throws Exception {
 
-        PowerMock.reset(optionalConfig);
-        expect(optionalConfig.getItem("buy-fee")).andReturn("0.5");
-        expect(optionalConfig.getItem("sell-fee")).andReturn(null);
+        PowerMock.reset(otherConfig);
+        expect(otherConfig.getItem("buy-fee")).andReturn("0.5");
+        expect(otherConfig.getItem("sell-fee")).andReturn(null);
         PowerMock.replayAll();
 
         final ItBitExchangeAdapter exchangeAdapter = new ItBitExchangeAdapter();

@@ -20,6 +20,7 @@
                 <include>bxbot.sh</include>
                 <include>bxbot.bat</include>
                 <include>config/*.xml</include>
+                <include>config/*.yaml</include>
                 <include>config/application.properties</include>
                 <include>config/log4j2.xml</include>
             </includes>
