@@ -356,32 +356,30 @@ You configure the loading of your strategy using either a `className` _or_ a `be
 
 ##### Email Alerts
 You specify the Email Alerts config in the 
-[`email-alerts.xml`](./config/email-alerts.xml) file.
+[`email-alerts.yaml`](./config/email-alerts.yaml) file.
 
 This config is used to send email alerts when the bot is forced to shut down due to an unexpected error occurring in the 
 Trading Strategies or Exchange Adapters. The email is sent to the SMTP host using TLS.
 
-```xml
-<email-alerts>
-    <enabled>false</enabled>
-    <smtp-config>
-        <smtp-host>smtp.gmail.com</smtp-host>
-        <smtp-tls-port>587</smtp-tls-port>
-        <account-username>your.account.username@gmail.com</account-username>
-        <account-password>your.account.password</account-password>
-        <from-addr>from.addr@gmail.com</from-addr>
-        <to-addr>to.addr@gmail.com</to-addr>
-    </smtp-config>
-</email-alerts>
+```yaml
+emailAlerts:
+  enabled: false
+  smtpConfig:
+    host: smtp.gmail.com
+    tlsPort: 587
+    accountUsername: your.account.username@gmail.com
+    accountPassword: your.account.password
+    fromAddr: from.addr@gmail.com
+    toAddr: to.addr@gmail.com
 ```
 
-All elements are mandatory unless stated otherwise.
+All fields are mandatory unless stated otherwise.
 
-* If `<enabled>` is set to 'true', the bot will send email alerts to the `<to-addr>` if it needs to shut down due to a
+* If `enabled` is set to true, the bot will send email alerts to the `toAddr` if it needs to shut down due to a
   critical error. 
 
-* The `<smtp-config>` config is optional and only required if `<enabled>` is set to 'true'. 
-  Sample SMTP config for using a Gmail account is shown above - all elements within `<smtp-config>` are mandatory. 
+* The `smtpConfig` config is optional and only required if `enabled` is set to true. 
+  Sample SMTP config for using a Gmail account is shown above - all elements within `smtpConfig` are mandatory. 
 
 ### How do I write my own Trading Strategy?
 _"Battle not with monsters, lest ye become a monster, and if you gaze into the abyss, the abyss gazes also into you."_ - Friedrich Nietzsche
