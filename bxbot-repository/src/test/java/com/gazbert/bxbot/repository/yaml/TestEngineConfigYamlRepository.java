@@ -98,7 +98,7 @@ public class TestEngineConfigYamlRepository {
         PowerMock.replayAll();
 
         final EngineConfigRepository engineConfigRepository = new EngineConfigYamlRepository();
-        final EngineConfig savedConfig  = engineConfigRepository.save(withSomeExternalEngineConfig());
+        final EngineConfig savedConfig = engineConfigRepository.save(someExternalEngineConfig());
 
         assertThat(savedConfig.getBotId()).isEqualTo(BOT_ID);
         assertThat(savedConfig.getBotName()).isEqualTo(BOT_NAME);
@@ -126,7 +126,7 @@ public class TestEngineConfigYamlRepository {
         return internalConfig;
     }
 
-    private static EngineConfig withSomeExternalEngineConfig() {
+    private static EngineConfig someExternalEngineConfig() {
         final EngineConfig externalConfig = new EngineConfig();
         externalConfig.setBotId(BOT_ID);
         externalConfig.setBotName(BOT_NAME);

@@ -61,10 +61,10 @@ public class MarketConfigYamlRepository implements MarketConfigRepository {
 
         LOG.info(() -> "Fetching Market config for id: " + id);
 
-        final MarketsType internalMarketsConfig = ConfigurationManager.loadConfig(MarketsType.class, MARKETS_CONFIG_YAML_FILENAME);
+        final MarketsType marketsType = ConfigurationManager.loadConfig(MarketsType.class, MARKETS_CONFIG_YAML_FILENAME);
 
         return adaptInternalToExternalConfig(
-                internalMarketsConfig.getMarkets()
+                marketsType.getMarkets()
                         .stream()
                         .filter((item) -> item.getId().equals(id))
                         .distinct()
@@ -74,9 +74,9 @@ public class MarketConfigYamlRepository implements MarketConfigRepository {
     @Override
     public MarketConfig save(MarketConfig config) {
 
-        final MarketsType internalMarketsConfig = ConfigurationManager.loadConfig(MarketsType.class, MARKETS_CONFIG_YAML_FILENAME);
+        final MarketsType marketsType = ConfigurationManager.loadConfig(MarketsType.class, MARKETS_CONFIG_YAML_FILENAME);
 
-        final List<MarketConfig> marketConfigs = internalMarketsConfig.getMarkets()
+        final List<MarketConfig> marketConfigs = marketsType.getMarkets()
                 .stream()
                 .filter((item) -> item.getId().equals(config.getId()))
                 .distinct()
@@ -91,8 +91,8 @@ public class MarketConfigYamlRepository implements MarketConfigRepository {
                 final MarketConfig newMarketConfig = new MarketConfig(config);
                 newMarketConfig.setId(generateUuid());
 
-                internalMarketsConfig.getMarkets().add(newMarketConfig);
-                ConfigurationManager.saveConfig(MarketsType.class, internalMarketsConfig, MARKETS_CONFIG_YAML_FILENAME);
+                marketsType.getMarkets().add(newMarketConfig);
+                ConfigurationManager.saveConfig(MarketsType.class, marketsType, MARKETS_CONFIG_YAML_FILENAME);
 
                 final MarketsType updatedInternalMarketsConfig = ConfigurationManager.loadConfig(MarketsType.class,
                         MARKETS_CONFIG_YAML_FILENAME);
@@ -106,7 +106,7 @@ public class MarketConfigYamlRepository implements MarketConfigRepository {
             } else {
                 throw new IllegalStateException("Trying to create new MarketConfig but null/empty id already exists. " +
                         "MarketConfig: " + config + " Existing MarketConfig: "
-                        + internalMarketsConfig.getMarkets());
+                        + marketsType.getMarkets());
             }
 
         } else {
@@ -115,22 +115,22 @@ public class MarketConfigYamlRepository implements MarketConfigRepository {
 
             if (!marketConfigs.isEmpty()) {
 
-                internalMarketsConfig.getMarkets().remove(marketConfigs.get(0)); // will only be 1 unique strat
-                internalMarketsConfig.getMarkets().add(config);
-                ConfigurationManager.saveConfig(MarketsType.class, internalMarketsConfig, MARKETS_CONFIG_YAML_FILENAME);
+                marketsType.getMarkets().remove(marketConfigs.get(0)); // will only be 1 unique strat
+                marketsType.getMarkets().add(config);
+                ConfigurationManager.saveConfig(MarketsType.class, marketsType, MARKETS_CONFIG_YAML_FILENAME);
 
-                final MarketsType updatedInternalMarketsConfig = ConfigurationManager.loadConfig(
+                final MarketsType updatedMarketsType = ConfigurationManager.loadConfig(
                         MarketsType.class, MARKETS_CONFIG_YAML_FILENAME);
 
                 return adaptInternalToExternalConfig(
-                        updatedInternalMarketsConfig.getMarkets()
+                        updatedMarketsType.getMarkets()
                                 .stream()
                                 .filter((item) -> item.getId().equals(config.getId()))
                                 .distinct()
                                 .collect(Collectors.toList()));
             } else {
                 LOG.warn("Trying to update MarketConfig but id does not exist MarketConfig: " + config +
-                        " Existing MarketConfig: " + internalMarketsConfig.getMarkets());
+                        " Existing MarketConfig: " + marketsType.getMarkets());
                 return null;
             }
         }
@@ -141,9 +141,9 @@ public class MarketConfigYamlRepository implements MarketConfigRepository {
 
         LOG.info(() -> "Deleting Market config for id: " + id);
 
-        final MarketsType internalMarketsConfig = ConfigurationManager.loadConfig(MarketsType.class, MARKETS_CONFIG_YAML_FILENAME);
+        final MarketsType marketsType = ConfigurationManager.loadConfig(MarketsType.class, MARKETS_CONFIG_YAML_FILENAME);
 
-        final List<MarketConfig> marketConfigs = internalMarketsConfig.getMarkets()
+        final List<MarketConfig> marketConfigs = marketsType.getMarkets()
                 .stream()
                 .filter((item) -> item.getId().equals(id))
                 .distinct()
@@ -152,13 +152,13 @@ public class MarketConfigYamlRepository implements MarketConfigRepository {
         if (!marketConfigs.isEmpty()) {
 
             final MarketConfig marketToRemove = marketConfigs.get(0); // will only be 1 unique strat
-            internalMarketsConfig.getMarkets().remove(marketToRemove);
-            ConfigurationManager.saveConfig(MarketsType.class, internalMarketsConfig, MARKETS_CONFIG_YAML_FILENAME);
+            marketsType.getMarkets().remove(marketToRemove);
+            ConfigurationManager.saveConfig(MarketsType.class, marketsType, MARKETS_CONFIG_YAML_FILENAME);
 
             return adaptInternalToExternalConfig(Collections.singletonList(marketToRemove));
         } else {
             LOG.warn("Trying to delete MarketConfig but id does not exist. MarketConfig id: " + id
-                    + " Existing MarketConfig: " + internalMarketsConfig.getMarkets());
+                    + " Existing MarketConfig: " + marketsType.getMarkets());
             return null;
         }
     }

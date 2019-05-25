@@ -122,7 +122,7 @@ public class TestExchangeConfigYamlRepository {
         PowerMock.replayAll();
 
         final ExchangeConfigRepository exchangeConfigRepository = new ExchangeConfigYamlRepository();
-        final ExchangeConfig savedExchangeConfig = exchangeConfigRepository.save(withSomeExternalExchangeConfig());
+        final ExchangeConfig savedExchangeConfig = exchangeConfigRepository.save(someExternalExchangeConfig());
 
         assertThat(savedExchangeConfig.getName()).isEqualTo(EXCHANGE_NAME);
         assertThat(savedExchangeConfig.getAdapter()).isEqualTo(EXCHANGE_ADAPTER);
@@ -170,7 +170,7 @@ public class TestExchangeConfigYamlRepository {
         return exchangeType;
     }
 
-    private static ExchangeConfig withSomeExternalExchangeConfig() {
+    private static ExchangeConfig someExternalExchangeConfig() {
 
         final Map<String, String> authenticationConfig = new HashMap<>();
         authenticationConfig.put(API_KEY_CONFIG_ITEM_KEY, API_KEY_CONFIG_ITEM_VALUE);

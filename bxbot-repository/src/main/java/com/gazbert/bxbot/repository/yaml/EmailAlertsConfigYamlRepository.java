@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016 Gareth Jon Lynch
+ * Copyright (c) 2019 gazbert
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -21,46 +21,46 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.services.impl;
+package com.gazbert.bxbot.repository.yaml;
 
+import com.gazbert.bxbot.datastore.yaml.ConfigurationManager;
+import com.gazbert.bxbot.datastore.yaml.emailalerts.EmailAlertsType;
 import com.gazbert.bxbot.domain.emailalerts.EmailAlertsConfig;
 import com.gazbert.bxbot.repository.EmailAlertsConfigRepository;
-import com.gazbert.bxbot.services.EmailAlertsConfigService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import static com.gazbert.bxbot.datastore.yaml.FileLocations.EMAIL_ALERTS_CONFIG_YAML_FILENAME;
+
+
 /**
- * Implementation of the Email Alerts configuration service.
+ * An Email Alerts config repo that uses a YAML backed datastore.
  *
  * @author gazbert
  */
-@Service("emailAlertsConfigService")
+@Repository("emailAlertsConfigYamlRepository")
 @Transactional
-@ComponentScan(basePackages = {"com.gazbert.bxbot.repository"})
-public class EmailAlertsConfigServiceImpl implements EmailAlertsConfigService {
+public class EmailAlertsConfigYamlRepository implements EmailAlertsConfigRepository {
 
     private static final Logger LOG = LogManager.getLogger();
 
-    private final EmailAlertsConfigRepository emailAlertsConfigRepository;
-
-    @Autowired
-    public EmailAlertsConfigServiceImpl(@Qualifier("emailAlertsConfigYamlRepository")EmailAlertsConfigRepository emailAlertsConfigRepository) {
-        this.emailAlertsConfigRepository = emailAlertsConfigRepository;
+    @Override
+    public EmailAlertsConfig get() {
+        LOG.info(() -> "Fetching EmailAlertsConfig...");
+        return ConfigurationManager.loadConfig(EmailAlertsType.class, EMAIL_ALERTS_CONFIG_YAML_FILENAME).getEmailAlerts();
     }
 
     @Override
-    public EmailAlertsConfig getEmailAlertsConfig() {
-        return emailAlertsConfigRepository.get();
-    }
+    public EmailAlertsConfig save(EmailAlertsConfig config) {
 
-    @Override
-    public EmailAlertsConfig updateEmailAlertsConfig(EmailAlertsConfig config) {
-        LOG.info(() -> "About to update Email Alerts config: " + config);
-        return emailAlertsConfigRepository.save(config);
+        LOG.info(() -> "About to save EmailAlertsConfig: " + config);
+
+        final EmailAlertsType emailAlertsType = new EmailAlertsType();
+        emailAlertsType.setEmailAlerts(config);
+        ConfigurationManager.saveConfig(EmailAlertsType.class, emailAlertsType, EMAIL_ALERTS_CONFIG_YAML_FILENAME);
+
+        return ConfigurationManager.loadConfig(EmailAlertsType.class, EMAIL_ALERTS_CONFIG_YAML_FILENAME).getEmailAlerts();
     }
 }

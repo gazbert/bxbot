@@ -56,9 +56,9 @@ public class EngineConfigYamlRepository implements EngineConfigRepository {
 
         LOG.info(() -> "About to save EngineConfig: " + config);
 
-        final EngineType internalEngineConfig = new EngineType();
-        internalEngineConfig.setEngine(config);
-        ConfigurationManager.saveConfig(EngineType.class, internalEngineConfig, ENGINE_CONFIG_YAML_FILENAME);
+        final EngineType engineType = new EngineType();
+        engineType.setEngine(config);
+        ConfigurationManager.saveConfig(EngineType.class, engineType, ENGINE_CONFIG_YAML_FILENAME);
 
         return ConfigurationManager.loadConfig(EngineType.class, ENGINE_CONFIG_YAML_FILENAME).getEngine();
     }
