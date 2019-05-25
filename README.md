@@ -108,8 +108,8 @@ If you plan on developing the bot, you'll need [openjdk-11-jdk](http://openjdk.j
 
 You can use [Maven](https://maven.apache.org) or [Gradle](https://gradle.org/) to build the bot and pull down the dependencies. 
 BX-bot depends on [Spring Boot](http://projects.spring.io/spring-boot/), [log4j](http://logging.apache.org/log4j), 
-[JavaMail](https://java.net/projects/javamail/pages/Home), [Google Gson](https://code.google.com/p/google-gson/), and 
-[Google Guava](https://github.com/google/guava).
+[JavaMail](https://java.net/projects/javamail/pages/Home), [Google Gson](https://code.google.com/p/google-gson/), 
+[Google Guava](https://github.com/google/guava), and [Snake YAML](https://bitbucket.org/asomov/snakeyaml).
 
 The instructions below are for Linux/macOS, but equivalent Windows scripts are included.
 
