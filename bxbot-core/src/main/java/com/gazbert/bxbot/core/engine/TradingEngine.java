@@ -590,7 +590,7 @@ public class TradingEngine {
                  * Load the Trading Strategy impl, instantiate it, set its config, and store in the cached
                  * Trading Strategy execution list.
                  */
-                TradingStrategy strategyImpl = obtainTradingStrategyInstance(tradingStrategy);;
+                TradingStrategy strategyImpl = obtainTradingStrategyInstance(tradingStrategy);
                 strategyImpl.init(exchangeAdapter, tradingMarket, tradingStrategyConfig);
 
                 LOG.info(() -> "Initialized trading strategy successfully. Name: [" + tradingStrategy.getName()
