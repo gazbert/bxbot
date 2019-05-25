@@ -369,13 +369,13 @@ emailAlerts:
     tlsPort: 587
     accountUsername: your.account.username@gmail.com
     accountPassword: your.account.password
-    fromAddr: from.addr@gmail.com
-    toAddr: to.addr@gmail.com
+    fromAddress: from.addr@gmail.com
+    toAddress: to.addr@gmail.com
 ```
 
 All fields are mandatory unless stated otherwise.
 
-* If `enabled` is set to true, the bot will send email alerts to the `toAddr` if it needs to shut down due to a
+* If `enabled` is set to true, the bot will send email alerts to the `toAddress` if it needs to shut down due to a
   critical error. 
 
 * The `smtpConfig` config is optional and only required if `enabled` is set to true. 
