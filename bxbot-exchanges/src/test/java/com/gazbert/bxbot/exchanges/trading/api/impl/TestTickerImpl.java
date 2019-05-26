@@ -28,6 +28,7 @@ import org.junit.Test;
 import java.math.BigDecimal;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 /**
  * Tests the Market Order impl behaves as expected.
@@ -70,15 +71,15 @@ public class TestTickerImpl {
     public void testSettersWorkAsExpected() {
 
         final TickerImpl ticker = new TickerImpl(null, null, null, null, null, null, null, null, null);
-        assertEquals(null, ticker.getLast());
-        assertEquals(null, ticker.getBid());
-        assertEquals(null, ticker.getAsk());
-        assertEquals(null, ticker.getLow());
-        assertEquals(null, ticker.getHigh());
-        assertEquals(null, ticker.getOpen());
-        assertEquals(null, ticker.getVolume());
-        assertEquals(null, ticker.getVwap());
-        assertEquals(null, ticker.getTimestamp());
+        assertNull(ticker.getLast());
+        assertNull(ticker.getBid());
+        assertNull(ticker.getAsk());
+        assertNull(ticker.getLow());
+        assertNull(ticker.getHigh());
+        assertNull(ticker.getOpen());
+        assertNull(ticker.getVolume());
+        assertNull(ticker.getVwap());
+        assertNull(ticker.getTimestamp());
 
         ticker.setLast(LAST);
         assertEquals(LAST, ticker.getLast());

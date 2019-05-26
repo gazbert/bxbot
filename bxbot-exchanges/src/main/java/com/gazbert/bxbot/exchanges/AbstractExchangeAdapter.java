@@ -34,6 +34,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.*;
 import java.net.*;
+import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormatSymbols;
 import java.util.*;
 
@@ -169,7 +170,7 @@ abstract class AbstractExchangeAdapter {
 
             // Er, perhaps, I need to be a bit more stealth here... this was needed for some exchanges back in the day!
             exchangeConnection.setRequestProperty("User-Agent",
-                    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.78 Safari/537.36");
+                    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36");
 
             if (requestHeaders != null) {
                 for (final Map.Entry<String, String> requestHeader : requestHeaders.entrySet()) {
@@ -185,14 +186,15 @@ abstract class AbstractExchangeAdapter {
 
             if (httpMethod.equalsIgnoreCase("POST") && postData != null) {
                 LOG.debug(() -> "Doing POST with request body: " + postData);
-                final OutputStreamWriter outputPostStream = new OutputStreamWriter(exchangeConnection.getOutputStream(), "UTF-8");
+                final OutputStreamWriter outputPostStream = new OutputStreamWriter(
+                        exchangeConnection.getOutputStream(), StandardCharsets.UTF_8);
                 outputPostStream.write(postData);
                 outputPostStream.close();
             }
 
             // Grab the response - we just block here as per Connection API
             final BufferedReader responseInputStream = new BufferedReader(new InputStreamReader(
-                    exchangeConnection.getInputStream(), "UTF-8"));
+                    exchangeConnection.getInputStream(), StandardCharsets.UTF_8));
 
             // Read the JSON response lines into our response buffer
             String responseLine;
@@ -245,7 +247,8 @@ abstract class AbstractExchangeAdapter {
                     if (exchangeConnection != null) {
                         final InputStream rawErrorStream = exchangeConnection.getErrorStream();
                         if (rawErrorStream != null) {
-                            final BufferedReader errorInputStream = new BufferedReader(new InputStreamReader(rawErrorStream, "UTF-8"));
+                            final BufferedReader errorInputStream = new BufferedReader(
+                                    new InputStreamReader(rawErrorStream, StandardCharsets.UTF_8));
                             final StringBuilder errorResponse = new StringBuilder();
                             String errorLine;
                             while ((errorLine = errorInputStream.readLine()) != null) {

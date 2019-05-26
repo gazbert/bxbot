@@ -29,6 +29,7 @@ import org.junit.Test;
 import java.math.BigDecimal;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 /**
  * Tests the Market Order impl behaves as expected.
@@ -57,10 +58,10 @@ public class TestMarketOrderImpl {
     public void testSettersWorkAsExpected() {
 
         final MarketOrderImpl marketOrder = new MarketOrderImpl(null, null, null, null);
-        assertEquals(null, marketOrder.getType());
-        assertEquals(null, marketOrder.getPrice());
-        assertEquals(null, marketOrder.getQuantity());
-        assertEquals(null, marketOrder.getTotal());
+        assertNull(marketOrder.getType());
+        assertNull(marketOrder.getPrice());
+        assertNull(marketOrder.getQuantity());
+        assertNull(marketOrder.getTotal());
 
         marketOrder.setType(OrderType.BUY);
         assertEquals(OrderType.BUY, marketOrder.getType());

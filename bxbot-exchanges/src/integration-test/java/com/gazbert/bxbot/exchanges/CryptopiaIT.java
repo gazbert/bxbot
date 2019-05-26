@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016 Gareth Jon Lynch
+ * Copyright (c) 2016 nodueck
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -47,7 +47,8 @@ import static org.junit.Assert.*;
  *
  * @author nodueck
  */
-@Ignore("18 May 2019 : Disabling test - the exchange has gone into liquidation: ")
+@Ignore("18 May 2019 : Disabling test - the exchange has gone into liquidation: https://www.cryptopia.co.nz/")
+@Deprecated
 public class CryptopiaIT {
 
     // Canned test data
@@ -72,7 +73,7 @@ public class CryptopiaIT {
      * Create some exchange config - the TradingEngine would normally do this.
      */
     @Before
-    public void setupForEachTest() throws Exception {
+    public void setupForEachTest() {
 
     	otherConfig = createMock(OtherConfig.class);
     	expect(otherConfig.getItem("use_global_trading_fee")).andReturn("false");

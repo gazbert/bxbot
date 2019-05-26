@@ -46,7 +46,6 @@ import static org.junit.Assert.*;
  *
  * @author gazbert
  */
-@Ignore("gazbert 21 Oct 2018 - tmp disable of tests as Travis openjdk10 jvm used in build does not trust Bitstamp server cert.")
 public class BitstampIT {
 
     // Canned test data
@@ -71,7 +70,7 @@ public class BitstampIT {
      * Create some exchange config - the TradingEngine would normally do this.
      */
     @Before
-    public void setupForEachTest() throws Exception {
+    public void setupForEachTest() {
 
         authenticationConfig = createMock(AuthenticationConfig.class);
         expect(authenticationConfig.getItem("client-id")).andReturn(CLIENT_ID);
@@ -87,7 +86,7 @@ public class BitstampIT {
         expect(exchangeConfig.getAuthenticationConfig()).andReturn(authenticationConfig);
         expect(exchangeConfig.getNetworkConfig()).andReturn(networkConfig);
 
-        // no optional config for this adapter
+        // no other config for this adapter
     }
 
     @Test
@@ -105,15 +104,15 @@ public class BitstampIT {
         assertFalse(orderBook.getSellOrders().isEmpty());
 
         final Ticker ticker = exchangeAdapter.getTicker(MARKET_ID);
-        assertTrue(ticker.getLast() != null);
-        assertTrue(ticker.getAsk() != null);
-        assertTrue(ticker.getBid() != null);
-        assertTrue(ticker.getHigh() != null);
-        assertTrue(ticker.getLow() != null);
-        assertTrue(ticker.getOpen() != null);
-        assertTrue(ticker.getVolume() != null);
-        assertTrue(ticker.getVwap() != null);
-        assertTrue(ticker.getTimestamp() != null);
+        assertNotNull(ticker.getLast());
+        assertNotNull(ticker.getAsk());
+        assertNotNull(ticker.getBid());
+        assertNotNull(ticker.getHigh());
+        assertNotNull(ticker.getLow());
+        assertNotNull(ticker.getOpen());
+        assertNotNull(ticker.getVolume());
+        assertNotNull(ticker.getVwap());
+        assertNotNull(ticker.getTimestamp());
 
         verify(authenticationConfig, networkConfig, exchangeConfig);
     }

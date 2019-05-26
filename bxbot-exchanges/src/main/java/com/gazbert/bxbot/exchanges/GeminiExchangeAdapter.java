@@ -41,11 +41,12 @@ import org.apache.logging.log4j.Logger;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import javax.xml.bind.DatatypeConverter;
-import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
@@ -466,18 +467,14 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter impleme
     }
 
     @Override
-    public BigDecimal getPercentageOfBuyOrderTakenForExchangeFee(String marketId) throws TradingApiException,
-            ExchangeNetworkException {
-
+    public BigDecimal getPercentageOfBuyOrderTakenForExchangeFee(String marketId) {
         // Gemini does not provide API call for fetching % buy fee.
         // We load the % fee statically from exchange.xml file - see https://gemini.com/fee-schedule/
         return buyFeePercentage;
     }
 
     @Override
-    public BigDecimal getPercentageOfSellOrderTakenForExchangeFee(String marketId) throws TradingApiException,
-            ExchangeNetworkException {
-
+    public BigDecimal getPercentageOfSellOrderTakenForExchangeFee(String marketId) {
         // Gemini does not provide API call for fetching % sell fee.
         // We load the % fee statically from exchange.xml file - see https://gemini.com/fee-schedule/
         return sellFeePercentage;
@@ -762,11 +759,11 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter impleme
             final String paramsInJson = gson.toJson(params);
 
             // Need to base64 encode payload as per API
-            final String base64payload = DatatypeConverter.printBase64Binary(paramsInJson.getBytes("UTF-8"));
+            final String base64payload = DatatypeConverter.printBase64Binary(paramsInJson.getBytes(StandardCharsets.UTF_8));
 
             // Create the signature
             mac.reset(); // force reset
-            mac.update(base64payload.getBytes("UTF-8"));
+            mac.update(base64payload.getBytes(StandardCharsets.UTF_8));
             final String signature = toHex(mac.doFinal()).toLowerCase();
 
             // Request headers required by Exchange
@@ -781,7 +778,7 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter impleme
             final URL url = new URL(AUTHENTICATED_API_URL + apiMethod);
             return makeNetworkRequest(url, "POST", paramsInJson, requestHeaders);
 
-        } catch (MalformedURLException | UnsupportedEncodingException e) {
+        } catch (MalformedURLException e) {
 
             final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
             LOG.error(errorMsg, e);
@@ -813,11 +810,11 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter impleme
     private void initSecureMessageLayer() {
 
         try {
-            final SecretKeySpec keyspec = new SecretKeySpec(secret.getBytes("UTF-8"), "HmacSHA384");
+            final SecretKeySpec keyspec = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), "HmacSHA384");
             mac = Mac.getInstance("HmacSHA384");
             mac.init(keyspec);
             initializedMACAuthentication = true;
-        } catch (UnsupportedEncodingException | NoSuchAlgorithmException e) {
+        } catch (NoSuchAlgorithmException e) {
             final String errorMsg = "Failed to setup MAC security. HINT: Is HMAC-SHA384 installed?";
             LOG.error(errorMsg, e);
             throw new IllegalStateException(errorMsg, e);
@@ -844,11 +841,11 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter impleme
         final OtherConfig otherConfig = getOtherConfig(exchangeConfig);
 
         final String buyFeeInConfig = getOtherConfigItem(otherConfig, BUY_FEE_PROPERTY_NAME);
-        buyFeePercentage = new BigDecimal(buyFeeInConfig).divide(new BigDecimal("100"), 8, BigDecimal.ROUND_HALF_UP);
+        buyFeePercentage = new BigDecimal(buyFeeInConfig).divide(new BigDecimal("100"), 8, RoundingMode.HALF_UP);
         LOG.info(() -> "Buy fee % in BigDecimal format: " + buyFeePercentage);
 
         final String sellFeeInConfig = getOtherConfigItem(otherConfig, SELL_FEE_PROPERTY_NAME);
-        sellFeePercentage = new BigDecimal(sellFeeInConfig).divide(new BigDecimal("100"), 8, BigDecimal.ROUND_HALF_UP);
+        sellFeePercentage = new BigDecimal(sellFeeInConfig).divide(new BigDecimal("100"), 8, RoundingMode.HALF_UP);
         LOG.info(() -> "Sell fee % in BigDecimal format: " + sellFeePercentage);
     }
 

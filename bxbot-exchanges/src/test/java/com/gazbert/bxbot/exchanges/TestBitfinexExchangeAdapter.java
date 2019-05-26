@@ -29,7 +29,6 @@ import com.gazbert.bxbot.exchange.api.NetworkConfig;
 import com.gazbert.bxbot.trading.api.*;
 import com.google.gson.GsonBuilder;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.api.easymock.PowerMock;
@@ -38,6 +37,7 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -116,7 +116,7 @@ public class TestBitfinexExchangeAdapter extends AbstractExchangeAdapterTest {
      * Create some exchange config - the TradingEngine would normally do this.
      */
     @Before
-    public void setupForEachTest() throws Exception {
+    public void setupForEachTest() {
 
         authenticationConfig = PowerMock.createMock(AuthenticationConfig.class);
         expect(authenticationConfig.getItem("key")).andReturn(KEY);
@@ -168,7 +168,7 @@ public class TestBitfinexExchangeAdapter extends AbstractExchangeAdapterTest {
         exchangeAdapter.init(exchangeConfig);
 
         final String orderId = exchangeAdapter.createOrder(MARKET_ID, OrderType.BUY, BUY_ORDER_QUANTITY, BUY_ORDER_PRICE);
-        assertTrue(orderId.equals("425116925"));
+        assertEquals("425116925", orderId);
 
         PowerMock.verifyAll();
     }
@@ -205,7 +205,7 @@ public class TestBitfinexExchangeAdapter extends AbstractExchangeAdapterTest {
 
         final String orderId = exchangeAdapter.createOrder(MARKET_ID, OrderType.SELL, SELL_ORDER_QUANTITY,
                 SELL_ORDER_PRICE);
-        assertTrue(orderId.equals("425116929"));
+        assertEquals("425116929", orderId);
 
         PowerMock.verifyAll();
     }
@@ -347,27 +347,27 @@ public class TestBitfinexExchangeAdapter extends AbstractExchangeAdapterTest {
         final MarketOrderBook marketOrderBook = exchangeAdapter.getMarketOrders(MARKET_ID);
 
         // assert some key stuff; we're not testing GSON here.
-        assertTrue(marketOrderBook.getMarketId().equals(MARKET_ID));
+        assertEquals(marketOrderBook.getMarketId(), MARKET_ID);
 
         final BigDecimal buyPrice = new BigDecimal("239.43");
         final BigDecimal buyQuantity = new BigDecimal("5.0");
         final BigDecimal buyTotal = buyPrice.multiply(buyQuantity);
 
-        assertTrue(marketOrderBook.getBuyOrders().size() == 906); // 'finex sends them all back!
-        assertTrue(marketOrderBook.getBuyOrders().get(0).getType() == OrderType.BUY);
-        assertTrue(marketOrderBook.getBuyOrders().get(0).getPrice().compareTo(buyPrice) == 0);
-        assertTrue(marketOrderBook.getBuyOrders().get(0).getQuantity().compareTo(buyQuantity) == 0);
-        assertTrue(marketOrderBook.getBuyOrders().get(0).getTotal().compareTo(buyTotal) == 0);
+        assertEquals(906, marketOrderBook.getBuyOrders().size()); // 'finex sends them all back!
+        assertSame(marketOrderBook.getBuyOrders().get(0).getType(), OrderType.BUY);
+        assertEquals(0, marketOrderBook.getBuyOrders().get(0).getPrice().compareTo(buyPrice));
+        assertEquals(0, marketOrderBook.getBuyOrders().get(0).getQuantity().compareTo(buyQuantity));
+        assertEquals(0, marketOrderBook.getBuyOrders().get(0).getTotal().compareTo(buyTotal));
 
         final BigDecimal sellPrice = new BigDecimal("239.53");
         final BigDecimal sellQuantity = new BigDecimal("6.35595596");
         final BigDecimal sellTotal = sellPrice.multiply(sellQuantity);
 
-        assertTrue(marketOrderBook.getSellOrders().size() == 984); // 'finex sends them all back!
-        assertTrue(marketOrderBook.getSellOrders().get(0).getType() == OrderType.SELL);
-        assertTrue(marketOrderBook.getSellOrders().get(0).getPrice().compareTo(sellPrice) == 0);
-        assertTrue(marketOrderBook.getSellOrders().get(0).getQuantity().compareTo(sellQuantity) == 0);
-        assertTrue(marketOrderBook.getSellOrders().get(0).getTotal().compareTo(sellTotal) == 0);
+        assertEquals(984, marketOrderBook.getSellOrders().size()); // 'finex sends them all back!
+        assertSame(marketOrderBook.getSellOrders().get(0).getType(), OrderType.SELL);
+        assertEquals(0, marketOrderBook.getSellOrders().get(0).getPrice().compareTo(sellPrice));
+        assertEquals(0, marketOrderBook.getSellOrders().get(0).getQuantity().compareTo(sellQuantity));
+        assertEquals(0, marketOrderBook.getSellOrders().get(0).getTotal().compareTo(sellTotal));
 
         PowerMock.verifyAll();
     }
@@ -430,16 +430,16 @@ public class TestBitfinexExchangeAdapter extends AbstractExchangeAdapterTest {
         final List<OpenOrder> openOrders = exchangeAdapter.getYourOpenOrders(MARKET_ID);
 
         // assert some key stuff; we're not testing GSON here.
-        assertTrue(openOrders.size() == 2);
-        assertTrue(openOrders.get(0).getMarketId().equals(MARKET_ID));
-        assertTrue(openOrders.get(0).getId().equals("423760243"));
-        assertTrue(openOrders.get(0).getType() == OrderType.SELL);
-        assertTrue(openOrders.get(0).getCreationDate().getTime() == 1442073766);
-        assertTrue(openOrders.get(0).getPrice().compareTo(new BigDecimal("259.38")) == 0);
-        assertTrue(openOrders.get(0).getQuantity().compareTo(new BigDecimal("0.03")) == 0);
-        assertTrue(openOrders.get(0).getOriginalQuantity().compareTo(new BigDecimal("0.03")) == 0);
-        assertTrue(openOrders.get(0).getTotal().compareTo(openOrders.get(0).getPrice().multiply(openOrders.get(0).
-                getOriginalQuantity())) == 0);
+        assertEquals(2, openOrders.size());
+        assertEquals(openOrders.get(0).getMarketId(), MARKET_ID);
+        assertEquals("423760243", openOrders.get(0).getId());
+        assertSame(openOrders.get(0).getType(), OrderType.SELL);
+        assertEquals(1442073766, openOrders.get(0).getCreationDate().getTime());
+        assertEquals(0, openOrders.get(0).getPrice().compareTo(new BigDecimal("259.38")));
+        assertEquals(0, openOrders.get(0).getQuantity().compareTo(new BigDecimal("0.03")));
+        assertEquals(0, openOrders.get(0).getOriginalQuantity().compareTo(new BigDecimal("0.03")));
+        assertEquals(0, openOrders.get(0).getTotal().compareTo(openOrders.get(0).getPrice().multiply(openOrders.get(0).
+                getOriginalQuantity())));
 
         PowerMock.verifyAll();
     }
@@ -500,8 +500,8 @@ public class TestBitfinexExchangeAdapter extends AbstractExchangeAdapterTest {
         PowerMock.replayAll();
         exchangeAdapter.init(exchangeConfig);
 
-        final BigDecimal latestMarketPrice = exchangeAdapter.getLatestMarketPrice(MARKET_ID).setScale(8, BigDecimal.ROUND_HALF_UP);
-        assertTrue(latestMarketPrice.compareTo(new BigDecimal("236.07")) == 0);
+        final BigDecimal latestMarketPrice = exchangeAdapter.getLatestMarketPrice(MARKET_ID).setScale(8, RoundingMode.HALF_UP);
+        assertEquals(0, latestMarketPrice.compareTo(new BigDecimal("236.07")));
 
         PowerMock.verifyAll();
     }
@@ -570,8 +570,8 @@ public class TestBitfinexExchangeAdapter extends AbstractExchangeAdapterTest {
         final BalanceInfo balanceInfo = exchangeAdapter.getBalanceInfo();
 
         // assert some key stuff; we're not testing GSON here.
-        assertTrue(balanceInfo.getBalancesAvailable().get("BTC").compareTo(new BigDecimal("0.1267283")) == 0);
-        assertTrue(balanceInfo.getBalancesAvailable().get("USD").compareTo(new BigDecimal("0")) == 0);
+        assertEquals(0, balanceInfo.getBalancesAvailable().get("BTC").compareTo(new BigDecimal("0.1267283")));
+        assertEquals(0, balanceInfo.getBalancesAvailable().get("USD").compareTo(new BigDecimal("0")));
 
         // Bitfinex does not provide "balances on hold" info.
         assertNull(balanceInfo.getBalancesOnHold().get("BTC"));
@@ -637,7 +637,7 @@ public class TestBitfinexExchangeAdapter extends AbstractExchangeAdapterTest {
         exchangeAdapter.init(exchangeConfig);
 
         final BigDecimal buyPercentageFee = exchangeAdapter.getPercentageOfBuyOrderTakenForExchangeFee(MARKET_ID);
-        assertTrue(buyPercentageFee.compareTo(new BigDecimal("0.0020")) == 0);
+        assertEquals(0, buyPercentageFee.compareTo(new BigDecimal("0.0020")));
 
         PowerMock.verifyAll();
     }
@@ -704,7 +704,7 @@ public class TestBitfinexExchangeAdapter extends AbstractExchangeAdapterTest {
         exchangeAdapter.init(exchangeConfig);
 
         final BigDecimal buyPercentageFee = exchangeAdapter.getPercentageOfSellOrderTakenForExchangeFee(MARKET_ID);
-        assertTrue(buyPercentageFee.compareTo(new BigDecimal("0.0020")) == 0);
+        assertEquals(0, buyPercentageFee.compareTo(new BigDecimal("0.0020")));
 
         PowerMock.verifyAll();
     }
@@ -767,15 +767,15 @@ public class TestBitfinexExchangeAdapter extends AbstractExchangeAdapterTest {
         exchangeAdapter.init(exchangeConfig);
 
         final Ticker ticker = exchangeAdapter.getTicker(MARKET_ID);
-        assertTrue(ticker.getLast().compareTo(new BigDecimal("236.07")) == 0);
-        assertTrue(ticker.getAsk().compareTo(new BigDecimal("236.3")) == 0);
-        assertTrue(ticker.getBid().compareTo(new BigDecimal("236.1")) == 0);
-        assertTrue(ticker.getHigh().compareTo(new BigDecimal("241.59")) == 0);
-        assertTrue(ticker.getLow().compareTo(new BigDecimal("235.51")) == 0);
+        assertEquals(0, ticker.getLast().compareTo(new BigDecimal("236.07")));
+        assertEquals(0, ticker.getAsk().compareTo(new BigDecimal("236.3")));
+        assertEquals(0, ticker.getBid().compareTo(new BigDecimal("236.1")));
+        assertEquals(0, ticker.getHigh().compareTo(new BigDecimal("241.59")));
+        assertEquals(0, ticker.getLow().compareTo(new BigDecimal("235.51")));
         assertNull(ticker.getOpen()); // vwap not supplied by finex
-        assertTrue(ticker.getVolume().compareTo(new BigDecimal("8002.20183869")) == 0);
+        assertEquals(0, ticker.getVolume().compareTo(new BigDecimal("8002.20183869")));
         assertNull(ticker.getVwap()); // vwap not supplied by finex
-        assertTrue(ticker.getTimestamp() == 1442080762L);
+        assertEquals(1442080762L, (long) ticker.getTimestamp());
 
         PowerMock.verifyAll();
     }
@@ -820,12 +820,12 @@ public class TestBitfinexExchangeAdapter extends AbstractExchangeAdapterTest {
     // ------------------------------------------------------------------------------------------------
 
     @Test
-    public void testGettingImplNameIsAsExpected() throws Exception {
+    public void testGettingImplNameIsAsExpected() {
 
         PowerMock.replayAll();
         final BitfinexExchangeAdapter exchangeAdapter = new BitfinexExchangeAdapter();
         exchangeAdapter.init(exchangeConfig);
-        assertTrue(exchangeAdapter.getImplName().equals("Bitfinex API v1"));
+        assertEquals("Bitfinex API v1", exchangeAdapter.getImplName());
         PowerMock.verifyAll();
     }
 
@@ -834,7 +834,7 @@ public class TestBitfinexExchangeAdapter extends AbstractExchangeAdapterTest {
     // ------------------------------------------------------------------------------------------------
 
     @Test
-    public void testExchangeAdapterInitialisesSuccessfully() throws Exception {
+    public void testExchangeAdapterInitialisesSuccessfully() {
 
         PowerMock.replayAll();
         final BitfinexExchangeAdapter exchangeAdapter = new BitfinexExchangeAdapter();
@@ -844,7 +844,7 @@ public class TestBitfinexExchangeAdapter extends AbstractExchangeAdapterTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testExchangeAdapterThrowsExceptionIfPublicKeyConfigIsMissing() throws Exception {
+    public void testExchangeAdapterThrowsExceptionIfPublicKeyConfigIsMissing() {
 
         PowerMock.reset(authenticationConfig);
         expect(authenticationConfig.getItem("key")).andReturn(null);
@@ -856,7 +856,7 @@ public class TestBitfinexExchangeAdapter extends AbstractExchangeAdapterTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testExchangeAdapterThrowsExceptionIfSecretConfigIsMissing() throws Exception {
+    public void testExchangeAdapterThrowsExceptionIfSecretConfigIsMissing() {
 
         PowerMock.reset(authenticationConfig);
         expect(authenticationConfig.getItem("key")).andReturn("your_client_key");
@@ -868,7 +868,7 @@ public class TestBitfinexExchangeAdapter extends AbstractExchangeAdapterTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testExchangeAdapterThrowsExceptionIfTimeoutConfigIsMissing() throws Exception {
+    public void testExchangeAdapterThrowsExceptionIfTimeoutConfigIsMissing() {
 
         PowerMock.reset(networkConfig);
         expect(networkConfig.getConnectionTimeout()).andReturn(0);
@@ -904,7 +904,7 @@ public class TestBitfinexExchangeAdapter extends AbstractExchangeAdapterTest {
         exchangeAdapter.init(exchangeConfig);
 
         final BigDecimal lastMarketPrice = exchangeAdapter.getLatestMarketPrice(MARKET_ID);
-        assertTrue(lastMarketPrice.compareTo(new BigDecimal("236.07")) == 0);
+        assertEquals(0, lastMarketPrice.compareTo(new BigDecimal("236.07")));
 
         PowerMock.verifyAll();
     }
@@ -1003,7 +1003,7 @@ public class TestBitfinexExchangeAdapter extends AbstractExchangeAdapterTest {
         exchangeAdapter.init(exchangeConfig);
 
         final String orderId = exchangeAdapter.createOrder(MARKET_ID, OrderType.SELL, SELL_ORDER_QUANTITY, SELL_ORDER_PRICE);
-        assertTrue(orderId.equals("425116929"));
+        assertEquals("425116929", orderId);
 
         PowerMock.verifyAll();
     }

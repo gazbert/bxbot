@@ -35,14 +35,15 @@ import org.apache.logging.log4j.Logger;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
-import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
@@ -409,7 +410,7 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
                 if (field.getName().startsWith(marketId)) {
                     final BigDecimal fee = (BigDecimal) field.get(balances);
                     // adapt the % into BigDecimal format
-                    return fee.divide(new BigDecimal("100"), 8, BigDecimal.ROUND_HALF_UP);
+                    return fee.divide(new BigDecimal("100"), 8, RoundingMode.HALF_UP);
                 }
             }
 
@@ -443,7 +444,7 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
                 if (field.getName().startsWith(marketId)) {
                     final BigDecimal fee = (BigDecimal) field.get(balances);
                     // adapt the % into BigDecimal format
-                    return fee.divide(new BigDecimal("100"), 8, BigDecimal.ROUND_HALF_UP);
+                    return fee.divide(new BigDecimal("100"), 8, RoundingMode.HALF_UP);
                 }
             }
 
@@ -762,9 +763,9 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
             // Create MAC message for signature
             // message = nonce + client_id + api_key
             mac.reset(); // force reset
-            mac.update(String.valueOf(nonce).getBytes("UTF-8"));
-            mac.update(clientId.getBytes("UTF-8"));
-            mac.update(key.getBytes("UTF-8"));
+            mac.update(String.valueOf(nonce).getBytes(StandardCharsets.UTF_8));
+            mac.update(clientId.getBytes(StandardCharsets.UTF_8));
+            mac.update(key.getBytes(StandardCharsets.UTF_8));
 
             /*
              * Signature is a HMAC-SHA256 encoded message containing: nonce, client ID and API key.
@@ -780,14 +781,14 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
             nonce++;
 
             // Build the URL with query param args in it
-            final StringBuilder postData = new StringBuilder("");
+            final StringBuilder postData = new StringBuilder();
             for (final Map.Entry<String, String> param : params.entrySet()) {
                 if (postData.length() > 0) {
                     postData.append("&");
                 }
                 postData.append(param.getKey());
                 postData.append("=");
-                postData.append(URLEncoder.encode(param.getValue(), "UTF-8"));
+                postData.append(URLEncoder.encode(param.getValue(), StandardCharsets.UTF_8));
             }
 
             // Request headers required by Exchange
@@ -797,7 +798,7 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
             final URL url = new URL(API_BASE_URL + apiMethod + "/"); // MUST have the trailing slash else exchange barfs...
             return makeNetworkRequest(url, "POST", postData.toString(), requestHeaders);
 
-        } catch (MalformedURLException | UnsupportedEncodingException e) {
+        } catch (MalformedURLException e) {
             final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
             LOG.error(errorMsg, e);
             throw new TradingApiException(errorMsg, e);
@@ -828,11 +829,11 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
 
         // Setup the MAC
         try {
-            final SecretKeySpec keyspec = new SecretKeySpec(secret.getBytes("UTF-8"), "HmacSHA256");
+            final SecretKeySpec keyspec = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), "HmacSHA256");
             mac = Mac.getInstance("HmacSHA256");
             mac.init(keyspec);
             initializedMACAuthentication = true;
-        } catch (UnsupportedEncodingException | NoSuchAlgorithmException e) {
+        } catch (NoSuchAlgorithmException e) {
             final String errorMsg = "Failed to setup MAC security. HINT: Is HMAC-SHA256 installed?";
             LOG.error(errorMsg, e);
             throw new IllegalStateException(errorMsg, e);

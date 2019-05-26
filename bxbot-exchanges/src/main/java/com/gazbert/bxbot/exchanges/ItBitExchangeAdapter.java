@@ -38,12 +38,13 @@ import org.apache.logging.log4j.Logger;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import javax.xml.bind.DatatypeConverter;
-import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -614,18 +615,14 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
     }
 
     @Override
-    public BigDecimal getPercentageOfBuyOrderTakenForExchangeFee(String marketId) throws TradingApiException,
-            ExchangeNetworkException {
-
+    public BigDecimal getPercentageOfBuyOrderTakenForExchangeFee(String marketId) {
         // itBit does not provide API call for fetching % buy fee; it only provides the fee monetary value for a
         // given order via /wallets/{walletId}/trades API call. We load the % fee statically from exchange.xml file.
         return buyFeePercentage;
     }
 
     @Override
-    public BigDecimal getPercentageOfSellOrderTakenForExchangeFee(String marketId) throws TradingApiException,
-            ExchangeNetworkException {
-
+    public BigDecimal getPercentageOfSellOrderTakenForExchangeFee(String marketId) {
         // itBit does not provide API call for fetching % sell fee; it only provides the fee monetary value for a
         // given order via/wallets/{walletId}/trades API call. We load the % fee statically from exchange.xml file.
         return sellFeePercentage;
@@ -1022,17 +1019,17 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
             LOG.debug(() -> "Signature params in JSON: " + signatureParamsInJson);
 
             // Prepend the string version of the nonce to the JSON-encoded array string
-            final String noncePrependedToJson = Long.toString(nonce) + signatureParamsInJson;
+            final String noncePrependedToJson = nonce + signatureParamsInJson;
 
             // Construct the SHA-256 hash of the noncePrependedToJson. Call this the message hash.
             final MessageDigest md = MessageDigest.getInstance("SHA-256");
-            md.update(noncePrependedToJson.getBytes("UTF-8"));
+            md.update(noncePrependedToJson.getBytes(StandardCharsets.UTF_8));
             final byte[] messageHash = md.digest();
 
             // Prepend the UTF-8 encoded request URL to the message hash.
             // Generate the SHA-512 HMAC of the prependRequestUrlToMsgHash using your API secret as the key.
             mac.reset(); // force reset
-            mac.update(invocationUrl.getBytes("UTF-8"));
+            mac.update(invocationUrl.getBytes(StandardCharsets.UTF_8));
             mac.update(messageHash);
 
             final String signature = DatatypeConverter.printBase64Binary(mac.doFinal());
@@ -1052,7 +1049,7 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
             final URL url = new URL(invocationUrl);
             return makeNetworkRequest(url, httpMethod, requestBody, requestHeaders);
 
-        } catch (MalformedURLException | UnsupportedEncodingException e) {
+        } catch (MalformedURLException e) {
             final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
             LOG.error(errorMsg, e);
             throw new TradingApiException(errorMsg, e);
@@ -1072,11 +1069,11 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
     private void initSecureMessageLayer() {
 
         try {
-            final SecretKeySpec keyspec = new SecretKeySpec(secret.getBytes("UTF-8"), "HmacSHA512");
+            final SecretKeySpec keyspec = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), "HmacSHA512");
             mac = Mac.getInstance("HmacSHA512");
             mac.init(keyspec);
             initializedMACAuthentication = true;
-        } catch (UnsupportedEncodingException | NoSuchAlgorithmException e) {
+        } catch (NoSuchAlgorithmException e) {
             final String errorMsg = "Failed to setup MAC security. HINT: Is HMAC-SHA512 installed?";
             LOG.error(errorMsg, e);
             throw new IllegalStateException(errorMsg, e);
@@ -1104,11 +1101,11 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
         final OtherConfig otherConfig = getOtherConfig(exchangeConfig);
 
         final String buyFeeInConfig = getOtherConfigItem(otherConfig, BUY_FEE_PROPERTY_NAME);
-        buyFeePercentage = new BigDecimal(buyFeeInConfig).divide(new BigDecimal("100"), 8, BigDecimal.ROUND_HALF_UP);
+        buyFeePercentage = new BigDecimal(buyFeeInConfig).divide(new BigDecimal("100"), 8, RoundingMode.HALF_UP);
         LOG.info(() -> "Buy fee % in BigDecimal format: " + buyFeePercentage);
 
         final String sellFeeInConfig = getOtherConfigItem(otherConfig, SELL_FEE_PROPERTY_NAME);
-        sellFeePercentage = new BigDecimal(sellFeeInConfig).divide(new BigDecimal("100"), 8, BigDecimal.ROUND_HALF_UP);
+        sellFeePercentage = new BigDecimal(sellFeeInConfig).divide(new BigDecimal("100"), 8, RoundingMode.HALF_UP);
         LOG.info(() -> "Sell fee % in BigDecimal format: " + sellFeePercentage);
 
         final String keepAliveDuringMaintenanceConfig = getOtherConfigItem(otherConfig,
@@ -1139,9 +1136,7 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
     private static boolean isExchangeUndergoingMaintenance(ExchangeHttpResponse response) {
         if (response != null) {
             final String payload = response.getPayload();
-            if (payload != null && payload.contains(EXCHANGE_UNDERGOING_MAINTENANCE_RESPONSE)) {
-                return true;
-            }
+            return payload != null && payload.contains(EXCHANGE_UNDERGOING_MAINTENANCE_RESPONSE);
         }
         return false;
     }

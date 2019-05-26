@@ -133,13 +133,12 @@ public final class TestExchangeAdapter extends AbstractExchangeAdapter implement
     }
 
     @Override
-    public List<OpenOrder> getYourOpenOrders(String marketId) throws TradingApiException, ExchangeNetworkException {
+    public List<OpenOrder> getYourOpenOrders(String marketId) {
         return new ArrayList<>();
     }
 
     @Override
-    public String createOrder(String marketId, OrderType orderType, BigDecimal quantity, BigDecimal price) throws
-            TradingApiException, ExchangeNetworkException {
+    public String createOrder(String marketId, OrderType orderType, BigDecimal quantity, BigDecimal price) {
         return "DUMMY_ORDER_ID: " + UUID.randomUUID().toString();
     }
 
@@ -147,7 +146,7 @@ public final class TestExchangeAdapter extends AbstractExchangeAdapter implement
      * marketId is not needed for cancelling orders on this exchange.
      */
     @Override
-    public boolean cancelOrder(String orderId, String marketIdNotNeeded) throws TradingApiException, ExchangeNetworkException {
+    public boolean cancelOrder(String orderId, String marketIdNotNeeded) {
         return true;
     }
 
@@ -170,7 +169,7 @@ public final class TestExchangeAdapter extends AbstractExchangeAdapter implement
     }
 
     @Override
-    public BalanceInfo getBalanceInfo() throws TradingApiException, ExchangeNetworkException {
+    public BalanceInfo getBalanceInfo() {
 
         final Map<String, BigDecimal> balancesAvailable = new HashMap<>();
         balancesAvailable.put("BTC", new BigDecimal("2.0"));
@@ -190,14 +189,12 @@ public final class TestExchangeAdapter extends AbstractExchangeAdapter implement
     }
 
     @Override
-    public BigDecimal getPercentageOfBuyOrderTakenForExchangeFee(String marketId) throws TradingApiException,
-            ExchangeNetworkException {
+    public BigDecimal getPercentageOfBuyOrderTakenForExchangeFee(String marketId) {
         return new BigDecimal("0.025"); // 0.25%
     }
 
     @Override
-    public BigDecimal getPercentageOfSellOrderTakenForExchangeFee(String marketId) throws TradingApiException,
-            ExchangeNetworkException {
+    public BigDecimal getPercentageOfSellOrderTakenForExchangeFee(String marketId) {
         return new BigDecimal("0.025"); // 0.25%
     }
 
