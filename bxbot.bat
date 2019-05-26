@@ -1,8 +1,6 @@
 @echo off
 
 REM
-REM TODO - Work in progress...
-REM
 REM Bare bones script for starting BX-bot on Windows systems.
 REM
 REM Could be made better, but will do for now...

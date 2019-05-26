@@ -38,7 +38,7 @@ public class MarketConfig {
     private String baseCurrency;
     private String counterCurrency;
     private boolean enabled;
-    private String tradingStrategyId; // TODO might change this to ref to StrategyConfig ...
+    private String tradingStrategyId;
 
 
     // required for Jackson

@@ -825,7 +825,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
 
         // field names map to the JSON arg names
         public List<String> error;
-        public T result; // TODO fix up the Generics abuse ;-o
+        public T result;
 
         @Override
         public String toString() {
