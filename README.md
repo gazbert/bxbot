@@ -197,7 +197,8 @@ All fields are mandatory.
 You specify the Exchange Adapter you want BX-bot to use in the 
 [`exchange.yaml`](./config/exchange.yaml) file. 
 
-BX-bot only supports 1 Exchange Adapter per bot, but you could have multiple bots running on the same exchange.
+BX-bot supports 1 exchange per bot. 
+This keeps things simple and helps minimise risk: problems on one exchange should not impact trading on another.
 
 ```yaml
 exchange:
