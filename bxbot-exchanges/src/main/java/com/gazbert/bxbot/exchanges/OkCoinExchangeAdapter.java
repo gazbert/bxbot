@@ -35,12 +35,13 @@ import com.google.gson.GsonBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
@@ -355,16 +356,7 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
 
             // For some reason, OKCoin sorts ask orders in descending order instead of ascending.
             // We need to re-order price ascending - lowest ASK price will be first in list.
-            sellOrders.sort((thisOrder, thatOrder) -> {
-                if (thisOrder.getPrice().compareTo(thatOrder.getPrice()) < 0) {
-                    return -1;
-                } else if (thisOrder.getPrice().compareTo(thatOrder.getPrice()) > 0) {
-                    return 1;
-                } else {
-                    return 0; // same price
-                }
-            });
-
+            sellOrders.sort((thisOrder, thatOrder) -> Integer.compare(thisOrder.getPrice().compareTo(thatOrder.getPrice()), 0));
             return new MarketOrderBookImpl(marketId, sellOrders, buyOrders);
 
         } catch (ExchangeNetworkException | TradingApiException e) {
@@ -433,18 +425,14 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
     }
 
     @Override
-    public BigDecimal getPercentageOfBuyOrderTakenForExchangeFee(String marketId) throws TradingApiException,
-            ExchangeNetworkException {
-
+    public BigDecimal getPercentageOfBuyOrderTakenForExchangeFee(String marketId) {
         // OKCoin does not provide API call for fetching % buy fee; it only provides the fee monetary value for a
         // given order via order_fee.do API call. We load the % fee statically from exchange.xml file
         return buyFeePercentage;
     }
 
     @Override
-    public BigDecimal getPercentageOfSellOrderTakenForExchangeFee(String marketId) throws TradingApiException,
-            ExchangeNetworkException {
-
+    public BigDecimal getPercentageOfSellOrderTakenForExchangeFee(String marketId) {
         // OKCoin does not provide API call for fetching % sell fee; it only provides the fee monetary value for a
         // given order via order_fee.do API call. We load the % fee statically from exchange.xml file
         return sellFeePercentage;
@@ -759,10 +747,9 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
                     if (queryString.length() > 1) {
                         queryString.append("&");
                     }
-                    //noinspection deprecation
                     queryString.append(param.getKey());
                     queryString.append("=");
-                    queryString.append(URLEncoder.encode(param.getValue(), "UTF-8"));
+                    queryString.append(URLEncoder.encode(param.getValue(), StandardCharsets.UTF_8));
                 }
 
                 requestHeaders.put("Content-Type", "application/x-www-form-urlencoded");
@@ -771,7 +758,7 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
             final URL url = new URL(PUBLIC_API_BASE_URL + apiMethod + queryString);
             return makeNetworkRequest(url, "GET", null, requestHeaders);
 
-        } catch (MalformedURLException | UnsupportedEncodingException e) {
+        } catch (MalformedURLException e) {
             final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
             LOG.error(errorMsg, e);
             throw new TradingApiException(errorMsg, e);
@@ -854,10 +841,9 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
                 if (payload.length() > 0) {
                     payload.append("&");
                 }
-                //noinspection deprecation
                 payload.append(param.getKey());
                 payload.append("=");
-                payload.append(URLEncoder.encode(param.getValue(), "UTF-8"));
+                payload.append(URLEncoder.encode(param.getValue(), StandardCharsets.UTF_8));
             }
             LOG.debug(() -> "Using following URL encoded POST payload for API call: " + payload);
 
@@ -867,7 +853,7 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
             final URL url = new URL(AUTHENTICATED_API_URL + apiMethod);
             return makeNetworkRequest(url, "POST", payload.toString(), requestHeaders);
 
-        } catch (MalformedURLException | UnsupportedEncodingException e) {
+        } catch (MalformedURLException e) {
             final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
             LOG.error(errorMsg, e);
             throw new TradingApiException(errorMsg, e);
@@ -880,20 +866,20 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
      * @param stringToHash the string to create the MD5 hash for.
      * @return the MD5 hash as an uppercase string.
      */
-    private String createMd5HashAndReturnAsUpperCaseString(String stringToHash) throws UnsupportedEncodingException {
+    private String createMd5HashAndReturnAsUpperCaseString(String stringToHash) {
 
-        final char HEX_DIGITS[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
+        final char[] HEX_DIGITS = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
 
         if (stringToHash == null || stringToHash.isEmpty()) {
             return "";
         }
 
-        messageDigest.update(stringToHash.getBytes("UTF-8"));
+        messageDigest.update(stringToHash.getBytes(StandardCharsets.UTF_8));
         final byte[] md5HashInBytes = messageDigest.digest();
 
         final StringBuilder md5HashAsUpperCaseString = new StringBuilder();
         for (final byte md5HashByte : md5HashInBytes) {
-            md5HashAsUpperCaseString.append(HEX_DIGITS[(md5HashByte & 0xf0) >> 4]).append("").append(HEX_DIGITS[md5HashByte & 0xf]);
+            md5HashAsUpperCaseString.append(HEX_DIGITS[(md5HashByte & 0xf0) >> 4]).append(HEX_DIGITS[md5HashByte & 0xf]);
         }
         return md5HashAsUpperCaseString.toString();
     }
@@ -931,11 +917,11 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter impleme
         final OtherConfig otherConfig = getOtherConfig(exchangeConfig);
 
         final String buyFeeInConfig = getOtherConfigItem(otherConfig, BUY_FEE_PROPERTY_NAME);
-        buyFeePercentage = new BigDecimal(buyFeeInConfig).divide(new BigDecimal("100"), 8, BigDecimal.ROUND_HALF_UP);
+        buyFeePercentage = new BigDecimal(buyFeeInConfig).divide(new BigDecimal("100"), 8, RoundingMode.HALF_UP);
         LOG.info(() -> "Buy fee % in BigDecimal format: " + buyFeePercentage);
 
         final String sellFeeInConfig = getOtherConfigItem(otherConfig, SELL_FEE_PROPERTY_NAME);
-        sellFeePercentage = new BigDecimal(sellFeeInConfig).divide(new BigDecimal("100"), 8, BigDecimal.ROUND_HALF_UP);
+        sellFeePercentage = new BigDecimal(sellFeeInConfig).divide(new BigDecimal("100"), 8, RoundingMode.HALF_UP);
         LOG.info(() -> "Sell fee % in BigDecimal format: " + sellFeePercentage);
     }
 

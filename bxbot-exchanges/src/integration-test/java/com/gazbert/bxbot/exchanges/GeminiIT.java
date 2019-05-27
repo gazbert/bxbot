@@ -46,7 +46,6 @@ import static org.junit.Assert.assertTrue;
  *
  * @author gazbert
  */
-@Ignore("gazbert 21 Oct 2018 - tmp disable of tests as Travis openjdk10 jvm used in build does not trust Gemini server cert.")
 public class GeminiIT {
 
     // Canned test data
@@ -70,7 +69,7 @@ public class GeminiIT {
      * Create some exchange config - the TradingEngine would normally do this.
      */
     @Before
-    public void setupForEachTest() throws Exception {
+    public void setupForEachTest() {
 
         authenticationConfig = createMock(AuthenticationConfig.class);
         expect(authenticationConfig.getItem("key")).andReturn(KEY);

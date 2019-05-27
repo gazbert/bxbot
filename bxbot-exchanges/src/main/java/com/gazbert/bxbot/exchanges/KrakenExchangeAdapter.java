@@ -37,10 +37,11 @@ import org.apache.logging.log4j.Logger;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
-import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.net.*;
+import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -356,7 +357,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
     @Override
     public List<OpenOrder> getYourOpenOrders(String marketId) throws TradingApiException, ExchangeNetworkException {
 
-        ExchangeHttpResponse response = null;
+        ExchangeHttpResponse response;
 
         try {
 
@@ -453,7 +454,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
     public String createOrder(String marketId, OrderType orderType, BigDecimal quantity, BigDecimal price) throws
             TradingApiException, ExchangeNetworkException {
 
-        ExchangeHttpResponse response = null;
+        ExchangeHttpResponse response;
 
         try {
 
@@ -527,7 +528,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
     @Override
     public boolean cancelOrder(String orderId, String marketIdNotNeeded) throws TradingApiException, ExchangeNetworkException {
 
-        ExchangeHttpResponse response = null;
+        ExchangeHttpResponse response;
 
         try {
             final Map<String, String> params = createRequestParamMap();
@@ -593,7 +594,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
     @Override
     public BigDecimal getLatestMarketPrice(String marketId) throws TradingApiException, ExchangeNetworkException {
 
-        ExchangeHttpResponse response = null;
+        ExchangeHttpResponse response;
 
         try {
 
@@ -650,7 +651,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
     @Override
     public BalanceInfo getBalanceInfo() throws TradingApiException, ExchangeNetworkException {
 
-        ExchangeHttpResponse response = null;
+        ExchangeHttpResponse response;
 
         try {
 
@@ -714,16 +715,14 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
     }
 
     @Override
-    public BigDecimal getPercentageOfBuyOrderTakenForExchangeFee(String marketId) throws TradingApiException,
-            ExchangeNetworkException {
+    public BigDecimal getPercentageOfBuyOrderTakenForExchangeFee(String marketId) {
         // Kraken does not provide API call for fetching % buy fee; it only provides the fee monetary value for a
         // given order via the OpenOrders API call. We load the % fee statically from exchange.xml file.
         return buyFeePercentage;
     }
 
     @Override
-    public BigDecimal getPercentageOfSellOrderTakenForExchangeFee(String marketId) throws TradingApiException,
-            ExchangeNetworkException {
+    public BigDecimal getPercentageOfSellOrderTakenForExchangeFee(String marketId) {
         // Kraken does not provide API call for fetching % sell fee; it only provides the fee monetary value for a
         // given order via the OpenOrders API call. We load the % fee statically from exchange.xml file.
         return sellFeePercentage;
@@ -826,7 +825,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
 
         // field names map to the JSON arg names
         public List<String> error;
-        public T result; // TODO fix up the Generics abuse ;-o
+        public T result;
 
         @Override
         public String toString() {
@@ -1118,10 +1117,9 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
                     if (queryString.length() > 1) {
                         queryString.append("&");
                     }
-                    //noinspection deprecation
                     queryString.append(param.getKey());
                     queryString.append("=");
-                    queryString.append(URLEncoder.encode(param.getValue(), "UTF-8"));
+                    queryString.append(URLEncoder.encode(param.getValue(), StandardCharsets.UTF_8));
                 }
 
                 requestHeaders.put("Content-Type", "application/x-www-form-urlencoded");
@@ -1130,7 +1128,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
             final URL url = new URL(PUBLIC_API_BASE_URL + apiMethod + queryString);
             return makeNetworkRequest(url, "GET", null, requestHeaders);
 
-        } catch (MalformedURLException | UnsupportedEncodingException e) {
+        } catch (MalformedURLException e) {
             final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
             LOG.error(errorMsg, e);
             throw new TradingApiException(errorMsg, e);
@@ -1188,24 +1186,24 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
             // params.put("otp", "false");
 
             // Build the URL with query param args in it - yuk!
-            final StringBuilder postData = new StringBuilder("");
+            final StringBuilder postData = new StringBuilder();
             for (final Map.Entry<String, String> param : params.entrySet()) {
                 if (postData.length() > 0) {
                     postData.append("&");
                 }
                 postData.append(param.getKey());
                 postData.append("=");
-                postData.append(URLEncoder.encode(param.getValue(), "UTF-8"));
+                postData.append(URLEncoder.encode(param.getValue(), StandardCharsets.UTF_8));
             }
 
             // And now the tricky part... ;-o
 
-            final byte[] pathInBytes = ("/" + KRAKEN_API_VERSION + KRAKEN_PRIVATE_PATH + apiMethod).getBytes("UTF-8");
+            final byte[] pathInBytes = ("/" + KRAKEN_API_VERSION + KRAKEN_PRIVATE_PATH + apiMethod).getBytes(StandardCharsets.UTF_8);
             final String noncePrependedToPostData = Long.toString(nonce) + postData;
 
             // Create sha256 hash of nonce and post data:
             final MessageDigest md = MessageDigest.getInstance("SHA-256");
-            md.update(noncePrependedToPostData.getBytes("UTF-8"));
+            md.update(noncePrependedToPostData.getBytes(StandardCharsets.UTF_8));
             final byte[] messageHash = md.digest();
 
             // Create hmac_sha512 digest of path and previous sha256 hash
@@ -1225,7 +1223,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
             final URL url = new URL(AUTHENTICATED_API_URL + apiMethod);
             return makeNetworkRequest(url, "POST", postData.toString(), requestHeaders);
 
-        } catch (MalformedURLException | NoSuchAlgorithmException | UnsupportedEncodingException e) {
+        } catch (MalformedURLException | NoSuchAlgorithmException e) {
 
             final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
             LOG.error(errorMsg, e);
@@ -1274,11 +1272,11 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
         final OtherConfig otherConfig = getOtherConfig(exchangeConfig);
 
         final String buyFeeInConfig = getOtherConfigItem(otherConfig, BUY_FEE_PROPERTY_NAME);
-        buyFeePercentage = new BigDecimal(buyFeeInConfig).divide(new BigDecimal("100"), 8, BigDecimal.ROUND_HALF_UP);
+        buyFeePercentage = new BigDecimal(buyFeeInConfig).divide(new BigDecimal("100"), 8, RoundingMode.HALF_UP);
         LOG.info(() -> "Buy fee % in BigDecimal format: " + buyFeePercentage);
 
         final String sellFeeInConfig = getOtherConfigItem(otherConfig, SELL_FEE_PROPERTY_NAME);
-        sellFeePercentage = new BigDecimal(sellFeeInConfig).divide(new BigDecimal("100"), 8, BigDecimal.ROUND_HALF_UP);
+        sellFeePercentage = new BigDecimal(sellFeeInConfig).divide(new BigDecimal("100"), 8, RoundingMode.HALF_UP);
         LOG.info(() -> "Sell fee % in BigDecimal format: " + sellFeePercentage);
 
         final String keepAliveDuringMaintenanceConfig = getOtherConfigItem(otherConfig,
@@ -1307,9 +1305,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
     private static boolean isExchangeUndergoingMaintenance(ExchangeHttpResponse response) {
         if (response != null) {
             final String payload = response.getPayload();
-            if (payload != null && payload.contains(EXCHANGE_UNDERGOING_MAINTENANCE_RESPONSE)) {
-                return true;
-            }
+            return payload != null && payload.contains(EXCHANGE_UNDERGOING_MAINTENANCE_RESPONSE);
         }
         return false;
     }

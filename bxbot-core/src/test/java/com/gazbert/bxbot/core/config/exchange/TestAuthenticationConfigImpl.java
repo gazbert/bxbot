@@ -42,7 +42,7 @@ public class TestAuthenticationConfigImpl {
 
 
     @Test
-    public void testAddingAndFetchingAuthenticationConfig() throws Exception {
+    public void testAddingAndFetchingAuthenticationConfig() {
 
         final AuthenticationConfigImpl authenticationConfig = new AuthenticationConfigImpl();
         authenticationConfig.getItems().put(API_KEY_CONFIG_ITEM_KEY, API_KEY_CONFIG_ITEM_VALUE);

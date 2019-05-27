@@ -30,6 +30,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 /**
  * Tests the Open Order impl behaves as expected.
@@ -67,14 +68,14 @@ public class TestOpenOrderImpl {
     public void testSettersWorkAsExpected() {
 
         final OpenOrderImpl openOrder = new OpenOrderImpl(null, null, null, null, null, null, null, null);
-        assertEquals(null, openOrder.getId());
-        assertEquals(null, openOrder.getCreationDate());
-        assertEquals(null, openOrder.getMarketId());
-        assertEquals(null, openOrder.getType());
-        assertEquals(null, openOrder.getPrice());
-        assertEquals(null, openOrder.getQuantity());
-        assertEquals(null, openOrder.getOriginalQuantity());
-        assertEquals(null, openOrder.getTotal());
+        assertNull(openOrder.getId());
+        assertNull(openOrder.getCreationDate());
+        assertNull(openOrder.getMarketId());
+        assertNull(openOrder.getType());
+        assertNull(openOrder.getPrice());
+        assertNull(openOrder.getQuantity());
+        assertNull(openOrder.getOriginalQuantity());
+        assertNull(openOrder.getTotal());
 
         openOrder.setId(ID);
         assertEquals(ID, openOrder.getId());

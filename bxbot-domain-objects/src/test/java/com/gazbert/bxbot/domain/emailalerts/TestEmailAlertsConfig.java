@@ -25,7 +25,7 @@ package com.gazbert.bxbot.domain.emailalerts;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 /**
  * Tests a EmailAlertsConfig domain object behaves as expected.
@@ -49,8 +49,8 @@ public class TestEmailAlertsConfig {
     public void testSettersWorkAsExpected() {
 
         final EmailAlertsConfig emailAlertsConfig = new EmailAlertsConfig();
-        assertEquals(false, emailAlertsConfig.isEnabled());
-        assertEquals(null, emailAlertsConfig.getSmtpConfig());
+        assertFalse(emailAlertsConfig.isEnabled());
+        assertNull(emailAlertsConfig.getSmtpConfig());
 
         emailAlertsConfig.setEnabled(ENABLED);
         assertEquals(ENABLED, emailAlertsConfig.isEnabled());

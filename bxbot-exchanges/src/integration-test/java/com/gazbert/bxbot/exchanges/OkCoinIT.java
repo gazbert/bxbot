@@ -66,7 +66,7 @@ public class OkCoinIT {
      * Create some exchange config - the TradingEngine would normally do this.
      */
     @Before
-    public void setupForEachTest() throws Exception {
+    public void setupForEachTest() {
 
         authenticationConfig = createMock(AuthenticationConfig.class);
         expect(authenticationConfig.getItem("key")).andReturn(KEY);
@@ -102,15 +102,15 @@ public class OkCoinIT {
         assertFalse(orderBook.getSellOrders().isEmpty());
 
         final Ticker ticker = exchangeAdapter.getTicker(MARKET_ID);
-        assertTrue(ticker.getLast() != null);
-        assertTrue(ticker.getAsk() != null);
-        assertTrue(ticker.getBid() != null);
-        assertTrue(ticker.getHigh() != null);
-        assertTrue(ticker.getLow() != null);
-        assertTrue(ticker.getOpen() == null); // open not supplied by OKCoin
-        assertTrue(ticker.getVolume() != null);
-        assertTrue(ticker.getVwap() == null); // vwap not supplied by OKCoin
-        assertTrue(ticker.getTimestamp() != null);
+        assertNotNull(ticker.getLast());
+        assertNotNull(ticker.getAsk());
+        assertNotNull(ticker.getBid());
+        assertNotNull(ticker.getHigh());
+        assertNotNull(ticker.getLow());
+        assertNull(ticker.getOpen()); // open not supplied by OKCoin
+        assertNotNull(ticker.getVolume());
+        assertNull(ticker.getVwap()); // vwap not supplied by OKCoin
+        assertNotNull(ticker.getTimestamp());
 
         verify(authenticationConfig, networkConfig, otherConfig, exchangeConfig);
     }

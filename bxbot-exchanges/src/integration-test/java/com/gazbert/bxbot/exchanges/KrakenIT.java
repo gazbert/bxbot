@@ -67,7 +67,7 @@ public class KrakenIT {
      * Create some exchange config - the TradingEngine would normally do this.
      */
     @Before
-    public void setupForEachTest() throws Exception {
+    public void setupForEachTest() {
 
         authenticationConfig = createMock(AuthenticationConfig.class);
         expect(authenticationConfig.getItem("key")).andReturn(KEY);
@@ -104,15 +104,15 @@ public class KrakenIT {
         assertFalse(orderBook.getSellOrders().isEmpty());
 
         final Ticker ticker = exchangeAdapter.getTicker(MARKET_ID);
-        assertTrue(ticker.getLast() != null);
-        assertTrue(ticker.getAsk() != null);
-        assertTrue(ticker.getBid() != null);
-        assertTrue(ticker.getHigh() != null);
-        assertTrue(ticker.getLow() != null);
-        assertTrue(ticker.getOpen() != null);
-        assertTrue(ticker.getVolume() != null);
-        assertTrue(ticker.getVwap() != null);
-        assertTrue(ticker.getTimestamp() == null);  // timestamp not supplied by Kraken
+        assertNotNull(ticker.getLast());
+        assertNotNull(ticker.getAsk());
+        assertNotNull(ticker.getBid());
+        assertNotNull(ticker.getHigh());
+        assertNotNull(ticker.getLow());
+        assertNotNull(ticker.getOpen());
+        assertNotNull(ticker.getVolume());
+        assertNotNull(ticker.getVwap());
+        assertNull(ticker.getTimestamp());  // timestamp not supplied by Kraken
 
         verify(authenticationConfig, networkConfig, otherConfig, exchangeConfig);
     }

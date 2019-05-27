@@ -25,7 +25,7 @@ package com.gazbert.bxbot.domain.market;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 /**
  * Tests a MarketConfig domain object behaves as expected.
@@ -58,12 +58,12 @@ public class TestMarketConfig {
     public void testSettersWorkAsExpected() {
 
         final MarketConfig marketConfig = new MarketConfig();
-        assertEquals(null, marketConfig.getId());
-        assertEquals(null, marketConfig.getName());
-        assertEquals(null, marketConfig.getBaseCurrency());
-        assertEquals(null, marketConfig.getCounterCurrency());
-        assertEquals(false, marketConfig.isEnabled());
-        assertEquals(null, marketConfig.getTradingStrategyId());
+        assertNull(marketConfig.getId());
+        assertNull(marketConfig.getName());
+        assertNull(marketConfig.getBaseCurrency());
+        assertNull(marketConfig.getCounterCurrency());
+        assertFalse(marketConfig.isEnabled());
+        assertNull(marketConfig.getTradingStrategyId());
 
         marketConfig.setId(ID);
         assertEquals(ID, marketConfig.getId());

@@ -45,7 +45,6 @@ public class TestStrategyConfigurationManagement {
     private static final String VALID_YAML_CONFIG_FILENAME = "src/test/config/strategies/valid-strategies.yaml";
     private static final String INVALID_YAML_CONFIG_FILENAME = "src/test/config/strategies/invalid-strategies.yaml";
     private static final String MISSING_YAML_CONFIG_FILENAME = "src/test/config/strategies/missing-strategies.yaml";
-    private static final String INVALID_STRATEGY_INJECTION_CONFIG_FILENAME = "src/test/config/strategies/invalid-strategy-injection.yaml";
     private static final String YAML_CONFIG_TO_SAVE_FILENAME = "src/test/config/strategies/saved-strategies.yaml";
 
     private static final String STRAT_ID_1 = "macd-long-position";
@@ -76,14 +75,13 @@ public class TestStrategyConfigurationManagement {
          * Strat 1
          */
         assertEquals("Basic Scalping Strat", strategyConfig.getStrategies().get(0).getName());
-        assertTrue(strategyConfig.getStrategies().get(0).getDescription().trim().equals(
-                "A simple trend following scalper that buys at the current BID price, holds until current market " +
+        assertEquals(strategyConfig.getStrategies().get(0).getDescription().trim(), "A simple trend following scalper that buys at the current BID price, holds until current market " +
                 "price has reached a configurable minimum percentage gain, and then sells at current ASK price, thereby " +
-                "taking profit from the spread. Don't forget to factor in the exchange fees!"));
+                "taking profit from the spread. Don't forget to factor in the exchange fees!");
         assertEquals("com.gazbert.bxbot.strategies.ExampleScalpingStrategy", strategyConfig.getStrategies().get(0).getClassName());
         assertNull(strategyConfig.getStrategies().get(0).getBeanName());
 
-        assertTrue(2 == strategyConfig.getStrategies().get(0).getConfigItems().size());
+        assertEquals(2, strategyConfig.getStrategies().get(0).getConfigItems().size());
         assertEquals("20", strategyConfig.getStrategies().get(0).getConfigItems().get("counter-currency-buy-order-amount"));
         assertEquals("1", strategyConfig.getStrategies().get(0).getConfigItems().get("minimum-percentage-gain"));
 
@@ -96,7 +94,7 @@ public class TestStrategyConfigurationManagement {
         assertEquals("com.gazbert.bxbot.strategies.YourEmaShortingStrategy", strategyConfig.getStrategies().get(1).getClassName());
         assertNull(strategyConfig.getStrategies().get(0).getBeanName());
 
-        assertTrue(4 == strategyConfig.getStrategies().get(1).getConfigItems().size());
+        assertEquals(4, strategyConfig.getStrategies().get(1).getConfigItems().size());
         assertEquals("0.5", strategyConfig.getStrategies().get(1).getConfigItems().get("btc-sell-order-amount"));
         assertEquals("5", strategyConfig.getStrategies().get(1).getConfigItems().get("shortEmaInterval"));
         assertEquals("10", strategyConfig.getStrategies().get(1).getConfigItems().get("mediumEmaInterval"));
@@ -107,8 +105,7 @@ public class TestStrategyConfigurationManagement {
          */
         assertEquals("macd-strategy", strategyConfig.getStrategies().get(2).getId());
         assertEquals("MACD Based Strat", strategyConfig.getStrategies().get(2).getName());
-        assertTrue(strategyConfig.getStrategies().get(2).getDescription().trim().equals(
-                "Strat uses MACD data to take long position in USD."));
+        assertEquals("Strat uses MACD data to take long position in USD.", strategyConfig.getStrategies().get(2).getDescription().trim());
         assertEquals("myMacdStratBean", strategyConfig.getStrategies().get(2).getBeanName());
         assertNull(strategyConfig.getStrategies().get(2).getClassName());
         assertEquals(new HashMap(), strategyConfig.getStrategies().get(2).getConfigItems()); // optional element check
@@ -123,12 +120,6 @@ public class TestStrategyConfigurationManagement {
     public void testLoadingInvalidYamlConfigFileThrowsException() {
         ConfigurationManager.loadConfig(StrategiesType.class, INVALID_YAML_CONFIG_FILENAME);
     }
-
-    // FIXME - XSD used to validate this; can't with YAML. Needs validating in Repo layer.
-//    @Test(expected = IllegalArgumentException.class)
-//    public void testLoadingInvalidStrategyInjectionConfigFileThrowsException() {
-//        ConfigurationManager.loadConfig(StrategiesType.class, INVALID_STRATEGY_INJECTION_CONFIG_FILENAME);
-//    }
 
     @Test
     public void testSavingConfigToYamlIsSuccessful() throws Exception {

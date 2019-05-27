@@ -28,8 +28,7 @@ import org.junit.Test;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * Tests Network Config exchange API config object behaves as expected.
@@ -47,7 +46,7 @@ public class TestNetworkConfigImpl {
     public void testInitialisationWorksAsExpected() {
 
         final NetworkConfigImpl networkConfig = new NetworkConfigImpl();
-        assertEquals(null, networkConfig.getConnectionTimeout());
+        assertNull(networkConfig.getConnectionTimeout());
         assertTrue(networkConfig.getNonFatalErrorCodes().isEmpty());
         assertTrue(networkConfig.getNonFatalErrorMessages().isEmpty());
     }

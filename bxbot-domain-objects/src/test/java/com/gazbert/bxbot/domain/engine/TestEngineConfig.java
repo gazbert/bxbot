@@ -28,6 +28,7 @@ import org.junit.Test;
 import java.math.BigDecimal;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 /**
  * Tests a EngineConfig domain object behaves as expected.
@@ -59,10 +60,10 @@ public class TestEngineConfig {
     public void testSettersWorkAsExpected() {
 
         final EngineConfig engineConfig = new EngineConfig();
-        assertEquals(null, engineConfig.getBotId());
-        assertEquals(null, engineConfig.getBotName());
-        assertEquals(null, engineConfig.getEmergencyStopCurrency());
-        assertEquals(null, engineConfig.getEmergencyStopBalance());
+        assertNull(engineConfig.getBotId());
+        assertNull(engineConfig.getBotName());
+        assertNull(engineConfig.getEmergencyStopCurrency());
+        assertNull(engineConfig.getEmergencyStopBalance());
         assertEquals(0, engineConfig.getTradeCycleInterval());
 
         engineConfig.setBotId(BOT_ID);

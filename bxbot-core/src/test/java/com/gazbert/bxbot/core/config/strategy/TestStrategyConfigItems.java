@@ -42,7 +42,7 @@ public class TestStrategyConfigItems {
 
 
     @Test
-    public void testAddingAndFetchingConfigItems() throws Exception {
+    public void testAddingAndFetchingConfigItems() {
 
         final StrategyConfigItems strategyConfig = new StrategyConfigItems();
         strategyConfig.getItems().put(BUY_PRICE_CONFIG_ITEM_KEY, BUY_PRICE_CONFIG_ITEM_VALUE);

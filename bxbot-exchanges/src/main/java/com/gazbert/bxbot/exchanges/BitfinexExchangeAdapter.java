@@ -37,11 +37,12 @@ import org.apache.logging.log4j.Logger;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import javax.xml.bind.DatatypeConverter;
-import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
@@ -425,7 +426,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter imple
             final BigDecimal fee = bitfinexAccountInfos.get(0).taker_fees;
 
             // adapt the % into BigDecimal format
-            return fee.divide(new BigDecimal("100"), 8, BigDecimal.ROUND_HALF_UP);
+            return fee.divide(new BigDecimal("100"), 8, RoundingMode.HALF_UP);
 
         } catch (ExchangeNetworkException | TradingApiException e) {
             throw e;
@@ -448,7 +449,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter imple
             final BigDecimal fee = bitfinexAccountInfos.get(0).taker_fees;
 
             // adapt the % into BigDecimal format
-            return fee.divide(new BigDecimal("100"), 8, BigDecimal.ROUND_HALF_UP);
+            return fee.divide(new BigDecimal("100"), 8, RoundingMode.HALF_UP);
 
         } catch (ExchangeNetworkException | TradingApiException e) {
             throw e;
@@ -928,7 +929,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter imple
             final String paramsInJson = gson.toJson(params);
 
             // Need to base64 encode payload as per API
-            final String base64payload = DatatypeConverter.printBase64Binary(paramsInJson.getBytes("UTF-8"));
+            final String base64payload = DatatypeConverter.printBase64Binary(paramsInJson.getBytes(StandardCharsets.UTF_8));
 
             // Request headers required by Exchange
             final Map<String, String> requestHeaders = createHeaderParamMap();
@@ -937,7 +938,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter imple
 
             // Add the signature
             mac.reset(); // force reset
-            mac.update(base64payload.getBytes("UTF-8"));
+            mac.update(base64payload.getBytes(StandardCharsets.UTF_8));
 
             /*
              * signature = HMAC-SHA384(payload, api-secret) as hexadecimal - MUST be in LOWERCASE else signature fails.
@@ -952,7 +953,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter imple
             final URL url = new URL(AUTHENTICATED_API_URL + apiMethod);
             return makeNetworkRequest(url, "POST", paramsInJson, requestHeaders);
 
-        } catch (MalformedURLException | UnsupportedEncodingException e) {
+        } catch (MalformedURLException e) {
 
             final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
             LOG.error(errorMsg, e);
@@ -985,11 +986,11 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter imple
 
         // Setup the MAC
         try {
-            final SecretKeySpec keyspec = new SecretKeySpec(secret.getBytes("UTF-8"), "HmacSHA384");
+            final SecretKeySpec keyspec = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), "HmacSHA384");
             mac = Mac.getInstance("HmacSHA384");
             mac.init(keyspec);
             initializedMACAuthentication = true;
-        } catch (UnsupportedEncodingException | NoSuchAlgorithmException e) {
+        } catch (NoSuchAlgorithmException e) {
             final String errorMsg = "Failed to setup MAC security. HINT: Is HMAC-SHA384 installed?";
             LOG.error(errorMsg, e);
             throw new IllegalStateException(errorMsg, e);

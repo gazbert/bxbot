@@ -42,6 +42,7 @@ public abstract class ConfigurableComponentFactory {
     /*
      * Loads and instantiates a given class and returns it.
      */
+    @SuppressWarnings("unchecked")
     public static <T> T createComponent(String componentClassName) {
         try {
             final Class componentClass = Class.forName(componentClassName);
