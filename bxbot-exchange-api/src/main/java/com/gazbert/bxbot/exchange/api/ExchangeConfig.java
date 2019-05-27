@@ -60,9 +60,9 @@ public interface ExchangeConfig {
     NetworkConfig getNetworkConfig();
 
     /**
-     * Returns the optional config.
+     * Returns the other config.
      *
      * @return other config if present, null otherwise.
      */
-    OptionalConfig getOptionalConfig();
+    OtherConfig getOtherConfig();
 }

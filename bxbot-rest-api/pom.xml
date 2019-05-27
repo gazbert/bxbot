@@ -11,7 +11,7 @@
     <parent>
         <groupId>com.gazbert.bxbot</groupId>
         <artifactId>bxbot-parent</artifactId>
-        <version>0.9.1-SNAPSHOT</version>
+        <version>${revision}</version>
     </parent>
     <dependencies>
         <!--
@@ -71,16 +71,13 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
     <build>
         <defaultGoal>clean install</defaultGoal>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <configuration>
-                    <!-- using -Xdoclint:none means the strict checking of Javadoc will not break build on Java 1.8 -->
-                    <additionalparam>-Xdoclint:none</additionalparam>
-                </configuration>
                 <executions>
                     <execution>
                         <id>attach-javadocs</id>
@@ -89,6 +86,10 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
             </plugin>
         </plugins>
     </build>

@@ -26,9 +26,7 @@ package com.gazbert.bxbot.core.engine;
 import com.gazbert.bxbot.core.mail.EmailAlerter;
 import com.gazbert.bxbot.core.util.ConfigurableComponentFactory;
 import com.gazbert.bxbot.domain.engine.EngineConfig;
-import com.gazbert.bxbot.domain.exchange.AuthenticationConfig;
 import com.gazbert.bxbot.domain.exchange.NetworkConfig;
-import com.gazbert.bxbot.domain.exchange.OptionalConfig;
 import com.gazbert.bxbot.domain.market.MarketConfig;
 import com.gazbert.bxbot.domain.strategy.StrategyConfig;
 import com.gazbert.bxbot.exchange.api.ExchangeAdapter;
@@ -74,7 +72,8 @@ import static org.junit.Assert.assertFalse;
  */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ConfigurableComponentFactory.class, Market.class, BalanceInfo.class})
-@PowerMockIgnore({"javax.management.*"})
+@PowerMockIgnore({"javax.crypto.*", "javax.management.*",
+        "com.sun.org.apache.xerces.*", "javax.xml.parsers.*", "org.xml.sax.*", "org.w3c.dom.*"})
 public class TestTradingEngine {
 
     // Might need to tweak these for diff chips/OS/architectures
@@ -140,7 +139,7 @@ public class TestTradingEngine {
      * Loading multiple markets/strategies is tested in the Configuration subsystem unit tests.
      */
     @Before
-    public void setupForEachTest() throws Exception {
+    public void setupForEachTest() {
 
         exchangeAdapter = PowerMock.createMock(ExchangeAdapter.class);
         tradingStrategy = PowerMock.createMock(TradingStrategy.class);
@@ -155,7 +154,7 @@ public class TestTradingEngine {
     }
 
     @Test
-    public void testEngineInitialisesSuccessfully() throws Exception {
+    public void testEngineInitialisesSuccessfully() {
 
         PowerMock.replayAll();
 
@@ -194,7 +193,7 @@ public class TestTradingEngine {
                 strategyConfigService, marketConfigService, emailAlerter);
         tradingEngine.start();
 
-        waitForEngineStateChange(tradingEngine, EngineState.SHUTDOWN, NUMBER_OF_TRADE_CYCLES);
+        waitForEngineStateChange(tradingEngine, EngineState.SHUTDOWN);
         assertFalse(tradingEngine.isRunning());
 
         PowerMock.verifyAll();
@@ -217,12 +216,12 @@ public class TestTradingEngine {
         final Executor executor = Executors.newSingleThreadExecutor();
         executor.execute(tradingEngine::start);
 
-        waitForEngineStateChange(tradingEngine, EngineState.RUNNING, NUMBER_OF_TRADE_CYCLES);
+        waitForEngineStateChange(tradingEngine, EngineState.RUNNING);
         assertTrue(tradingEngine.isRunning());
 
         tradingEngine.shutdown();
 
-        waitForEngineStateChange(tradingEngine, EngineState.SHUTDOWN, NUMBER_OF_TRADE_CYCLES);
+        waitForEngineStateChange(tradingEngine, EngineState.SHUTDOWN);
         assertFalse(tradingEngine.isRunning());
 
         PowerMock.verifyAll();
@@ -258,12 +257,12 @@ public class TestTradingEngine {
         final Executor executor = Executors.newSingleThreadExecutor();
         executor.execute(tradingEngine::start);
 
-        waitForEngineStateChange(tradingEngine, EngineState.RUNNING, NUMBER_OF_TRADE_CYCLES);
+        waitForEngineStateChange(tradingEngine, EngineState.RUNNING);
         assertTrue(tradingEngine.isRunning());
 
         tradingEngine.shutdown();
 
-        waitForEngineStateChange(tradingEngine, EngineState.SHUTDOWN, NUMBER_OF_TRADE_CYCLES);
+        waitForEngineStateChange(tradingEngine, EngineState.SHUTDOWN);
         assertFalse(tradingEngine.isRunning());
 
         PowerMock.verifyAll();
@@ -306,7 +305,7 @@ public class TestTradingEngine {
 
         tradingEngine.start();
 
-        waitForEngineStateChange(tradingEngine, EngineState.SHUTDOWN, NUMBER_OF_TRADE_CYCLES);
+        waitForEngineStateChange(tradingEngine, EngineState.SHUTDOWN);
         assertFalse(tradingEngine.isRunning());
 
         PowerMock.verifyAll();
@@ -349,7 +348,7 @@ public class TestTradingEngine {
 
         tradingEngine.start();
 
-        waitForEngineStateChange(tradingEngine, EngineState.SHUTDOWN, NUMBER_OF_TRADE_CYCLES);
+        waitForEngineStateChange(tradingEngine, EngineState.SHUTDOWN);
         assertFalse(tradingEngine.isRunning());
 
         PowerMock.verifyAll();
@@ -389,7 +388,7 @@ public class TestTradingEngine {
 
         tradingEngine.start();
 
-        waitForEngineStateChange(tradingEngine, EngineState.SHUTDOWN, NUMBER_OF_TRADE_CYCLES);
+        waitForEngineStateChange(tradingEngine, EngineState.SHUTDOWN);
         assertFalse(tradingEngine.isRunning());
 
         PowerMock.verifyAll();
@@ -429,7 +428,7 @@ public class TestTradingEngine {
 
         tradingEngine.start();
 
-        waitForEngineStateChange(tradingEngine, EngineState.SHUTDOWN, NUMBER_OF_TRADE_CYCLES);
+        waitForEngineStateChange(tradingEngine, EngineState.SHUTDOWN);
         assertFalse(tradingEngine.isRunning());
 
         PowerMock.verifyAll();
@@ -474,12 +473,12 @@ public class TestTradingEngine {
         executor.execute(tradingEngine::start);
 
         Thread.sleep(numberOfTradeCycles * STATE_CHANGE_WAIT_INTERVAL_IN_SECS * 1000);
-        waitForEngineStateChange(tradingEngine, EngineState.RUNNING, NUMBER_OF_TRADE_CYCLES);
+        waitForEngineStateChange(tradingEngine, EngineState.RUNNING);
         assertTrue(tradingEngine.isRunning());
 
         tradingEngine.shutdown();
 
-        waitForEngineStateChange(tradingEngine, EngineState.SHUTDOWN, NUMBER_OF_TRADE_CYCLES);
+        waitForEngineStateChange(tradingEngine, EngineState.SHUTDOWN);
         assertFalse(tradingEngine.isRunning());
 
         PowerMock.verifyAll();
@@ -513,7 +512,7 @@ public class TestTradingEngine {
         final Executor executor = Executors.newSingleThreadExecutor();
         executor.execute(tradingEngine::start);
 
-        waitForEngineStateChange(tradingEngine, EngineState.RUNNING, NUMBER_OF_TRADE_CYCLES);
+        waitForEngineStateChange(tradingEngine, EngineState.RUNNING);
         assertTrue(tradingEngine.isRunning());
 
         // try start the engine again
@@ -562,8 +561,8 @@ public class TestTradingEngine {
 
     private static com.gazbert.bxbot.domain.exchange.ExchangeConfig someExchangeConfig() {
 
-        final AuthenticationConfig authenticationConfig = new AuthenticationConfig();
-        authenticationConfig.getItems().put(EXCHANGE_ADAPTER_AUTHENTICATION_CONFIG_ITEM_NAME,
+        final Map<String, String> authenticationConfig = new HashMap<>();
+        authenticationConfig.put(EXCHANGE_ADAPTER_AUTHENTICATION_CONFIG_ITEM_NAME,
                 EXCHANGE_ADAPTER_AUTHENTICATION_CONFIG_ITEM_VALUE);
 
         final NetworkConfig networkConfig = new NetworkConfig();
@@ -571,15 +570,15 @@ public class TestTradingEngine {
         networkConfig.setNonFatalErrorCodes(EXCHANGE_ADAPTER_NONFATAL_ERROR_CODES);
         networkConfig.setNonFatalErrorMessages(EXCHANGE_ADAPTER_NONFATAL_ERROR_MESSAGES);
 
-        final OptionalConfig optionalConfig = new OptionalConfig();
-        optionalConfig.getItems().put(EXCHANGE_ADAPTER_OTHER_CONFIG_ITEM_NAME, EXCHANGE_ADAPTER_OTHER_CONFIG_ITEM_VALUE);
+        final Map<String, String> otherConfig = new HashMap<>();
+        otherConfig.put(EXCHANGE_ADAPTER_OTHER_CONFIG_ITEM_NAME, EXCHANGE_ADAPTER_OTHER_CONFIG_ITEM_VALUE);
 
         final com.gazbert.bxbot.domain.exchange.ExchangeConfig exchangeConfig = new com.gazbert.bxbot.domain.exchange.ExchangeConfig();
         exchangeConfig.setAuthenticationConfig(authenticationConfig);
-        exchangeConfig.setExchangeName(EXCHANGE_NAME);
-        exchangeConfig.setExchangeAdapter(EXCHANGE_ADAPTER_IMPL_CLASS);
+        exchangeConfig.setName(EXCHANGE_NAME);
+        exchangeConfig.setAdapter(EXCHANGE_ADAPTER_IMPL_CLASS);
         exchangeConfig.setNetworkConfig(networkConfig);
-        exchangeConfig.setOptionalConfig(optionalConfig);
+        exchangeConfig.setOtherConfig(otherConfig);
 
         return exchangeConfig;
     }
@@ -621,8 +620,8 @@ public class TestTradingEngine {
         return allMarkets;
     }
 
-    private static void waitForEngineStateChange(TradingEngine engine, EngineState engineState, int numberOfTradeCycles) {
-        for (int i = 0; i < numberOfTradeCycles; i++) {
+    private static void waitForEngineStateChange(TradingEngine engine, EngineState engineState) {
+        for (int i = 0; i < TestTradingEngine.NUMBER_OF_TRADE_CYCLES; i++) {
             try {
                 Thread.sleep(STATE_CHANGE_WAIT_INTERVAL_IN_SECS * 1000);
             } catch (InterruptedException e) {

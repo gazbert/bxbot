@@ -5,7 +5,7 @@ include ':bxbot-strategy-api'
 include ':bxbot-exchanges'
 include ':bxbot-strategies'
 include ':bxbot-domain-objects'
-include ':bxbot-xml-datastore'
+include ':bxbot-yaml-datastore'
 include ':bxbot-repository'
 include ':bxbot-core'
 include ':bxbot-services'
@@ -18,7 +18,7 @@ project(':bxbot-strategy-api').projectDir = "$rootDir/bxbot-strategy-api" as Fil
 project(':bxbot-exchanges').projectDir = "$rootDir/bxbot-exchanges" as File
 project(':bxbot-strategies').projectDir = "$rootDir/bxbot-strategies" as File
 project(':bxbot-domain-objects').projectDir = "$rootDir/bxbot-domain-objects" as File
-project(':bxbot-xml-datastore').projectDir = "$rootDir/bxbot-xml-datastore" as File
+project(':bxbot-yaml-datastore').projectDir = "$rootDir/bxbot-yaml-datastore" as File
 project(':bxbot-repository').projectDir = "$rootDir/bxbot-repository" as File
 project(':bxbot-core').projectDir = "$rootDir/bxbot-core" as File
 project(':bxbot-services').projectDir = "$rootDir/bxbot-services" as File

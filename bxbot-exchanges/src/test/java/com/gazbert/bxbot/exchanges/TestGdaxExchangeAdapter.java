@@ -35,6 +35,7 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -44,8 +45,7 @@ import java.time.Instant;
 import java.util.*;
 
 import static org.easymock.EasyMock.*;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * Tests the behaviour of the GDAX Exchange Adapter.
@@ -53,7 +53,8 @@ import static org.junit.Assert.assertTrue;
  * @author gazbert
  */
 @RunWith(PowerMockRunner.class)
-@PowerMockIgnore({"javax.crypto.*", "javax.management.*"})
+@PowerMockIgnore({"javax.crypto.*", "javax.management.*",
+        "com.sun.org.apache.xerces.*", "javax.xml.parsers.*", "org.xml.sax.*", "org.w3c.dom.*", "javax.xml.datatype.*"})
 @PrepareForTest(GdaxExchangeAdapter.class)
 public class TestGdaxExchangeAdapter extends AbstractExchangeAdapterTest {
 
@@ -106,14 +107,14 @@ public class TestGdaxExchangeAdapter extends AbstractExchangeAdapterTest {
     private ExchangeConfig exchangeConfig;
     private AuthenticationConfig authenticationConfig;
     private NetworkConfig networkConfig;
-    private OptionalConfig optionalConfig;
+    private OtherConfig otherConfig;
 
 
     /*
      * Create some exchange config - the TradingEngine would normally do this.
      */
     @Before
-    public void setupForEachTest() throws Exception {
+    public void setupForEachTest() {
 
         authenticationConfig = PowerMock.createMock(AuthenticationConfig.class);
         expect(authenticationConfig.getItem("passphrase")).andReturn(PASSPHRASE);
@@ -125,14 +126,14 @@ public class TestGdaxExchangeAdapter extends AbstractExchangeAdapterTest {
         expect(networkConfig.getNonFatalErrorCodes()).andReturn(nonFatalNetworkErrorCodes);
         expect(networkConfig.getNonFatalErrorMessages()).andReturn(nonFatalNetworkErrorMessages);
 
-        optionalConfig = PowerMock.createMock(OptionalConfig.class);
-        expect(optionalConfig.getItem("buy-fee")).andReturn("0.25");
-        expect(optionalConfig.getItem("sell-fee")).andReturn("0.25");
+        otherConfig = PowerMock.createMock(OtherConfig.class);
+        expect(otherConfig.getItem("buy-fee")).andReturn("0.25");
+        expect(otherConfig.getItem("sell-fee")).andReturn("0.25");
 
         exchangeConfig = PowerMock.createMock(ExchangeConfig.class);
         expect(exchangeConfig.getAuthenticationConfig()).andReturn(authenticationConfig);
         expect(exchangeConfig.getNetworkConfig()).andReturn(networkConfig);
-        expect(exchangeConfig.getOptionalConfig()).andReturn(optionalConfig);
+        expect(exchangeConfig.getOtherConfig()).andReturn(otherConfig);
     }
 
     // ------------------------------------------------------------------------------------------------
@@ -168,7 +169,7 @@ public class TestGdaxExchangeAdapter extends AbstractExchangeAdapterTest {
         exchangeAdapter.init(exchangeConfig);
 
         final String orderId = exchangeAdapter.createOrder(MARKET_ID, OrderType.BUY, BUY_ORDER_QUANTITY, BUY_ORDER_PRICE);
-        assertTrue(orderId.equals("193d2ad9-e671-4d66-9211-7f75f6380231"));
+        assertEquals("193d2ad9-e671-4d66-9211-7f75f6380231", orderId);
 
         PowerMock.verifyAll();
     }
@@ -202,7 +203,7 @@ public class TestGdaxExchangeAdapter extends AbstractExchangeAdapterTest {
         exchangeAdapter.init(exchangeConfig);
 
         final String orderId = exchangeAdapter.createOrder(MARKET_ID, OrderType.SELL, SELL_ORDER_QUANTITY, SELL_ORDER_PRICE);
-        assertTrue(orderId.equals("693d7ad9-e671-4d66-9911-7f75f6380134"));
+        assertEquals("693d7ad9-e671-4d66-9911-7f75f6380134", orderId);
 
         PowerMock.verifyAll();
     }
@@ -335,15 +336,15 @@ public class TestGdaxExchangeAdapter extends AbstractExchangeAdapterTest {
         final List<OpenOrder> openOrders = exchangeAdapter.getYourOpenOrders(MARKET_ID);
 
         // assert some key stuff; we're not testing GSON here.
-        assertTrue(openOrders.size() == 2);
-        assertTrue(openOrders.get(0).getMarketId().equals(MARKET_ID));
-        assertTrue(openOrders.get(0).getId().equals("cdad7602-f290-41e5-a64d-42a1a20fd02"));
-        assertTrue(openOrders.get(0).getType() == OrderType.SELL);
-        assertTrue(openOrders.get(0).getCreationDate().equals(Date.from(Instant.parse("2015-10-15T21:10:38.193Z"))));
-        assertTrue(openOrders.get(0).getPrice().compareTo(new BigDecimal("275.00000000")) == 0);
-        assertTrue(openOrders.get(0).getOriginalQuantity().compareTo(new BigDecimal("0.01000000")) == 0);
-        assertTrue(openOrders.get(0).getQuantity().compareTo(new BigDecimal("0.00500000")) == 0);
-        assertTrue(openOrders.get(0).getTotal().compareTo(openOrders.get(0).getPrice().multiply(openOrders.get(0).getOriginalQuantity())) == 0);
+        assertEquals(2, openOrders.size());
+        assertEquals(openOrders.get(0).getMarketId(), MARKET_ID);
+        assertEquals("cdad7602-f290-41e5-a64d-42a1a20fd02", openOrders.get(0).getId());
+        assertSame(openOrders.get(0).getType(), OrderType.SELL);
+        assertEquals(openOrders.get(0).getCreationDate(), Date.from(Instant.parse("2015-10-15T21:10:38.193Z")));
+        assertEquals(0, openOrders.get(0).getPrice().compareTo(new BigDecimal("275.00000000")));
+        assertEquals(0, openOrders.get(0).getOriginalQuantity().compareTo(new BigDecimal("0.01000000")));
+        assertEquals(0, openOrders.get(0).getQuantity().compareTo(new BigDecimal("0.00500000")));
+        assertEquals(0, openOrders.get(0).getTotal().compareTo(openOrders.get(0).getPrice().multiply(openOrders.get(0).getOriginalQuantity())));
 
         PowerMock.verifyAll();
     }
@@ -413,27 +414,27 @@ public class TestGdaxExchangeAdapter extends AbstractExchangeAdapterTest {
         final MarketOrderBook marketOrderBook = exchangeAdapter.getMarketOrders(MARKET_ID);
 
         // assert some key stuff; we're not testing GSON here.
-        assertTrue(marketOrderBook.getMarketId().equals(MARKET_ID));
+        assertEquals(marketOrderBook.getMarketId(), MARKET_ID);
 
         final BigDecimal buyPrice = new BigDecimal("165.87");
         final BigDecimal buyQuantity = new BigDecimal("16.2373");
         final BigDecimal buyTotal = buyPrice.multiply(buyQuantity);
 
-        assertTrue(marketOrderBook.getBuyOrders().size() == 50);
-        assertTrue(marketOrderBook.getBuyOrders().get(0).getType() == OrderType.BUY);
-        assertTrue(marketOrderBook.getBuyOrders().get(0).getPrice().compareTo(buyPrice) == 0);
-        assertTrue(marketOrderBook.getBuyOrders().get(0).getQuantity().compareTo(buyQuantity) == 0);
-        assertTrue(marketOrderBook.getBuyOrders().get(0).getTotal().compareTo(buyTotal) == 0);
+        assertEquals(50, marketOrderBook.getBuyOrders().size());
+        assertSame(marketOrderBook.getBuyOrders().get(0).getType(), OrderType.BUY);
+        assertEquals(0, marketOrderBook.getBuyOrders().get(0).getPrice().compareTo(buyPrice));
+        assertEquals(0, marketOrderBook.getBuyOrders().get(0).getQuantity().compareTo(buyQuantity));
+        assertEquals(0, marketOrderBook.getBuyOrders().get(0).getTotal().compareTo(buyTotal));
 
         final BigDecimal sellPrice = new BigDecimal("165.96");
         final BigDecimal sellQuantity = new BigDecimal("24.31");
         final BigDecimal sellTotal = sellPrice.multiply(sellQuantity);
 
-        assertTrue(marketOrderBook.getSellOrders().size() == 50);
-        assertTrue(marketOrderBook.getSellOrders().get(0).getType() == OrderType.SELL);
-        assertTrue(marketOrderBook.getSellOrders().get(0).getPrice().compareTo(sellPrice) == 0);
-        assertTrue(marketOrderBook.getSellOrders().get(0).getQuantity().compareTo(sellQuantity) == 0);
-        assertTrue(marketOrderBook.getSellOrders().get(0).getTotal().compareTo(sellTotal) == 0);
+        assertEquals(50, marketOrderBook.getSellOrders().size());
+        assertSame(marketOrderBook.getSellOrders().get(0).getType(), OrderType.SELL);
+        assertEquals(0, marketOrderBook.getSellOrders().get(0).getPrice().compareTo(sellPrice));
+        assertEquals(0, marketOrderBook.getSellOrders().get(0).getQuantity().compareTo(sellQuantity));
+        assertEquals(0, marketOrderBook.getSellOrders().get(0).getTotal().compareTo(sellTotal));
 
         PowerMock.verifyAll();
     }
@@ -499,8 +500,8 @@ public class TestGdaxExchangeAdapter extends AbstractExchangeAdapterTest {
         PowerMock.replayAll();
         exchangeAdapter.init(exchangeConfig);
 
-        final BigDecimal latestMarketPrice = exchangeAdapter.getLatestMarketPrice(MARKET_ID).setScale(8, BigDecimal.ROUND_HALF_UP);
-        assertTrue(latestMarketPrice.compareTo(new BigDecimal("14744.9")) == 0);
+        final BigDecimal latestMarketPrice = exchangeAdapter.getLatestMarketPrice(MARKET_ID).setScale(8, RoundingMode.HALF_UP);
+        assertEquals(0, latestMarketPrice.compareTo(new BigDecimal("14744.9")));
 
         PowerMock.verifyAll();
     }
@@ -562,13 +563,13 @@ public class TestGdaxExchangeAdapter extends AbstractExchangeAdapterTest {
         final BalanceInfo balanceInfo = exchangeAdapter.getBalanceInfo();
 
         // assert some key stuff; we're not testing GSON here.
-        assertTrue(balanceInfo.getBalancesAvailable().get("BTC").compareTo(new BigDecimal("100.0000000000000004")) == 0);
-        assertTrue(balanceInfo.getBalancesAvailable().get("GBP").compareTo(new BigDecimal("501.0100000000000001")) == 0);
-        assertTrue(balanceInfo.getBalancesAvailable().get("EUR").compareTo(new BigDecimal("0")) == 0);
+        assertEquals(0, balanceInfo.getBalancesAvailable().get("BTC").compareTo(new BigDecimal("100.0000000000000004")));
+        assertEquals(0, balanceInfo.getBalancesAvailable().get("GBP").compareTo(new BigDecimal("501.0100000000000001")));
+        assertEquals(0, balanceInfo.getBalancesAvailable().get("EUR").compareTo(new BigDecimal("0")));
 
-        assertTrue(balanceInfo.getBalancesOnHold().get("BTC").compareTo(new BigDecimal("100.0000000000000005")) == 0);
-        assertTrue(balanceInfo.getBalancesOnHold().get("GBP").compareTo(new BigDecimal("499.9900000000000002")) == 0);
-        assertTrue(balanceInfo.getBalancesOnHold().get("EUR").compareTo(new BigDecimal("0")) == 0);
+        assertEquals(0, balanceInfo.getBalancesOnHold().get("BTC").compareTo(new BigDecimal("100.0000000000000005")));
+        assertEquals(0, balanceInfo.getBalancesOnHold().get("GBP").compareTo(new BigDecimal("499.9900000000000002")));
+        assertEquals(0, balanceInfo.getBalancesOnHold().get("EUR").compareTo(new BigDecimal("0")));
 
         PowerMock.verifyAll();
     }
@@ -637,15 +638,15 @@ public class TestGdaxExchangeAdapter extends AbstractExchangeAdapterTest {
 
         final Ticker ticker = exchangeAdapter.getTicker(MARKET_ID);
 
-        assertTrue(ticker.getLast().compareTo(new BigDecimal("14744.9")) == 0);
-        assertTrue(ticker.getAsk().compareTo(new BigDecimal("14744.81")) == 0);
-        assertTrue(ticker.getBid().compareTo(new BigDecimal("14744.8")) == 0);
-        assertTrue(ticker.getHigh().compareTo(new BigDecimal("14899.00000000")) == 0);
-        assertTrue(ticker.getLow().compareTo(new BigDecimal("13409.97000000")) == 0);
-        assertTrue(ticker.getOpen().compareTo(new BigDecimal("13609.53000000")) == 0);
-        assertTrue(ticker.getVolume().compareTo(new BigDecimal("607.54445656")) == 0);
-        assertTrue(ticker.getVwap() == null); // not provided by GDAX
-        assertTrue(ticker.getTimestamp() == 1508008776604L);
+        assertEquals(0, ticker.getLast().compareTo(new BigDecimal("14744.9")));
+        assertEquals(0, ticker.getAsk().compareTo(new BigDecimal("14744.81")));
+        assertEquals(0, ticker.getBid().compareTo(new BigDecimal("14744.8")));
+        assertEquals(0, ticker.getHigh().compareTo(new BigDecimal("14899.00000000")));
+        assertEquals(0, ticker.getLow().compareTo(new BigDecimal("13409.97000000")));
+        assertEquals(0, ticker.getOpen().compareTo(new BigDecimal("13609.53000000")));
+        assertEquals(0, ticker.getVolume().compareTo(new BigDecimal("607.54445656")));
+        assertNull(ticker.getVwap()); // not provided by GDAX
+        assertEquals(1508008776604L, (long) ticker.getTimestamp());
 
         PowerMock.verifyAll();
     }
@@ -691,37 +692,37 @@ public class TestGdaxExchangeAdapter extends AbstractExchangeAdapterTest {
     // ------------------------------------------------------------------------------------------------
 
     @Test
-    public void testGettingExchangeSellingFeeIsAsExpected() throws Exception {
+    public void testGettingExchangeSellingFeeIsAsExpected() {
 
         PowerMock.replayAll();
         final GdaxExchangeAdapter exchangeAdapter = new GdaxExchangeAdapter();
         exchangeAdapter.init(exchangeConfig);
 
         final BigDecimal sellPercentageFee = exchangeAdapter.getPercentageOfSellOrderTakenForExchangeFee(MARKET_ID);
-        assertTrue(sellPercentageFee.compareTo(new BigDecimal("0.0025")) == 0);
+        assertEquals(0, sellPercentageFee.compareTo(new BigDecimal("0.0025")));
         PowerMock.verifyAll();
     }
 
     @Test
-    public void testGettingExchangeBuyingFeeIsAsExpected() throws Exception {
+    public void testGettingExchangeBuyingFeeIsAsExpected() {
 
         PowerMock.replayAll();
         final GdaxExchangeAdapter exchangeAdapter = new GdaxExchangeAdapter();
         exchangeAdapter.init(exchangeConfig);
 
         final BigDecimal buyPercentageFee = exchangeAdapter.getPercentageOfBuyOrderTakenForExchangeFee(MARKET_ID);
-        assertTrue(buyPercentageFee.compareTo(new BigDecimal("0.0025")) == 0);
+        assertEquals(0, buyPercentageFee.compareTo(new BigDecimal("0.0025")));
         PowerMock.verifyAll();
     }
 
     @Test
-    public void testGettingImplNameIsAsExpected() throws Exception {
+    public void testGettingImplNameIsAsExpected() {
 
         PowerMock.replayAll();
         final GdaxExchangeAdapter exchangeAdapter = new GdaxExchangeAdapter();
         exchangeAdapter.init(exchangeConfig);
 
-        assertTrue(exchangeAdapter.getImplName().equals("GDAX REST API v1"));
+        assertEquals("GDAX REST API v1", exchangeAdapter.getImplName());
         PowerMock.verifyAll();
     }
 
@@ -730,7 +731,7 @@ public class TestGdaxExchangeAdapter extends AbstractExchangeAdapterTest {
     // ------------------------------------------------------------------------------------------------
 
     @Test
-    public void testExchangeAdapterInitialisesSuccessfully() throws Exception {
+    public void testExchangeAdapterInitialisesSuccessfully() {
 
         PowerMock.replayAll();
 
@@ -742,7 +743,7 @@ public class TestGdaxExchangeAdapter extends AbstractExchangeAdapterTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testExchangeAdapterThrowsExceptionIfPassphraseConfigIsMissing() throws Exception {
+    public void testExchangeAdapterThrowsExceptionIfPassphraseConfigIsMissing() {
 
         PowerMock.reset(authenticationConfig);
         expect(authenticationConfig.getItem("passphrase")).andReturn(null);
@@ -757,7 +758,7 @@ public class TestGdaxExchangeAdapter extends AbstractExchangeAdapterTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testExchangeAdapterThrowsExceptionIfPublicKeyConfigIsMissing() throws Exception {
+    public void testExchangeAdapterThrowsExceptionIfPublicKeyConfigIsMissing() {
 
         PowerMock.reset(authenticationConfig);
         expect(authenticationConfig.getItem("passphrase")).andReturn("your_passphrase");
@@ -772,7 +773,7 @@ public class TestGdaxExchangeAdapter extends AbstractExchangeAdapterTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testExchangeAdapterThrowsExceptionIfSecretConfigIsMissing() throws Exception {
+    public void testExchangeAdapterThrowsExceptionIfSecretConfigIsMissing() {
 
         PowerMock.reset(authenticationConfig);
         expect(authenticationConfig.getItem("passphrase")).andReturn("your_passphrase");
@@ -787,11 +788,11 @@ public class TestGdaxExchangeAdapter extends AbstractExchangeAdapterTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testExchangeAdapterThrowsExceptionIfBuyFeeIsMissing() throws Exception {
+    public void testExchangeAdapterThrowsExceptionIfBuyFeeIsMissing() {
 
-        PowerMock.reset(optionalConfig);
-        expect(optionalConfig.getItem("buy-fee")).andReturn("");
-        expect(optionalConfig.getItem("sell-fee")).andReturn("0.25");
+        PowerMock.reset(otherConfig);
+        expect(otherConfig.getItem("buy-fee")).andReturn("");
+        expect(otherConfig.getItem("sell-fee")).andReturn("0.25");
         PowerMock.replayAll();
 
         final ExchangeAdapter exchangeAdapter = new GdaxExchangeAdapter();
@@ -801,11 +802,11 @@ public class TestGdaxExchangeAdapter extends AbstractExchangeAdapterTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testExchangeAdapterThrowsExceptionIfSellFeeIsMissing() throws Exception {
+    public void testExchangeAdapterThrowsExceptionIfSellFeeIsMissing() {
 
-        PowerMock.reset(optionalConfig);
-        expect(optionalConfig.getItem("buy-fee")).andReturn("0.25");
-        expect(optionalConfig.getItem("sell-fee")).andReturn("");
+        PowerMock.reset(otherConfig);
+        expect(otherConfig.getItem("buy-fee")).andReturn("0.25");
+        expect(otherConfig.getItem("sell-fee")).andReturn("");
 
         PowerMock.replayAll();
         final ExchangeAdapter exchangeAdapter = new GdaxExchangeAdapter();
@@ -815,7 +816,7 @@ public class TestGdaxExchangeAdapter extends AbstractExchangeAdapterTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testExchangeAdapterThrowsExceptionIfTimeoutConfigIsMissing() throws Exception {
+    public void testExchangeAdapterThrowsExceptionIfTimeoutConfigIsMissing() {
 
         PowerMock.reset(networkConfig);
         expect(networkConfig.getConnectionTimeout()).andReturn(0);
@@ -857,7 +858,7 @@ public class TestGdaxExchangeAdapter extends AbstractExchangeAdapterTest {
         exchangeAdapter.init(exchangeConfig);
 
         final BigDecimal lastMarketPrice = exchangeAdapter.getLatestMarketPrice(MARKET_ID);
-        assertTrue(lastMarketPrice.compareTo(new BigDecimal("14744.9")) == 0);
+        assertEquals(0, lastMarketPrice.compareTo(new BigDecimal("14744.9")));
 
         PowerMock.verifyAll();
     }
@@ -944,7 +945,7 @@ public class TestGdaxExchangeAdapter extends AbstractExchangeAdapterTest {
         exchangeAdapter.init(exchangeConfig);
 
         final String orderId = exchangeAdapter.createOrder(MARKET_ID, OrderType.SELL, SELL_ORDER_QUANTITY, SELL_ORDER_PRICE);
-        assertTrue(orderId.equals("693d7ad9-e671-4d66-9911-7f75f6380134"));
+        assertEquals("693d7ad9-e671-4d66-9911-7f75f6380134", orderId);
 
         PowerMock.verifyAll();
     }

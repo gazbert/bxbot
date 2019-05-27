@@ -1,13 +1,11 @@
 @echo off
 
 REM
-REM TODO - Work in progress...
-REM
 REM Bare bones script for starting BX-bot on Windows systems.
 REM
 REM Could be made better, but will do for now...
 REM
-REM You need the Java 8 JRE installed.
+REM You need the Java 11 JDK installed.
 REM
 REM This script expects all the jar files to live in the lib_dir.
 REM
@@ -21,7 +19,7 @@ REM log4j2 config file location
 SET log4j2_config=.\config\log4j2.xml
 
 REM The BX-bot 'fat' jar (Spring Boot app containing all the dependencies)
-SET bxbot_jar=bxbot-app-0.9.1-SNAPSHOT.jar
+SET bxbot_jar=bxbot-app-0.12.1-SNAPSHOT.jar
 
 REM PID file for checking if bot is running
 SET pid_file=.\.bxbot.pid
@@ -37,7 +35,7 @@ IF NOT "%1"=="status" GOTO:invalidArgs
 REM TODO - check if bot is already running before trying to start it!
 SET START_TIME=%time%
 ECHO Starting BX-bot...
-START "BX-bot - %START_TIME%" java -Xmx64m -Xss256k -Dlog4j.configurationFile=%log4j2_config% -jar %lib_dir%\%bxbot_jar%
+START "BX-bot - %START_TIME%" java -Xmx64m -Xss256k -Dlog4j.configurationFile=%log4j2_config% --illegal-access=deny -jar %lib_dir%\%bxbot_jar%
 FOR /F "tokens=2" %%i in ('TASKLIST /NH /FI "WINDOWTITLE eq BX-bot - %START_TIME%"' ) DO (SET PID=%%i)
 ECHO %PID% > %pid_file%
 ECHO BX-bot started with PID: %PID%

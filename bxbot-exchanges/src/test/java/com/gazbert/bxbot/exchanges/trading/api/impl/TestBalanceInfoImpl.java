@@ -31,6 +31,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 /**
  * Test the Balance Info impl behaves as expected.
@@ -90,8 +91,8 @@ public class TestBalanceInfoImpl {
     public void testSettersWorkAsExpected() {
 
         final BalanceInfoImpl balanceInfo = new BalanceInfoImpl(null, null);
-        assertEquals(null, balanceInfo.getBalancesAvailable());
-        assertEquals(null, balanceInfo.getBalancesOnHold());
+        assertNull(balanceInfo.getBalancesAvailable());
+        assertNull(balanceInfo.getBalancesOnHold());
 
         balanceInfo.setBalancesAvailable(balancesAvailable);
         assertEquals(balancesAvailable, balanceInfo.getBalancesAvailable());

@@ -23,6 +23,7 @@ hs_err_pid*
 **/build
 **/dist
 **/logs
+**/out
 
 # Allow maven and gradle wrapper jars - we need these for TravisCI
 !.mvn/wrapper/maven-wrapper.jar
@@ -33,3 +34,6 @@ hs_err_pid*
 
 # Gradle
 .gradle
+
+# IT test output
+bxbot-exchanges/out

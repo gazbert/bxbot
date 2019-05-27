@@ -1,3 +1,26 @@
+/*
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2019 nodueck
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of
+ * this software and associated documentation files (the "Software"), to deal in
+ * the Software without restriction, including without limitation the rights to
+ * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+ * the Software, and to permit persons to whom the Software is furnished to do so,
+ * subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+ * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+ * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
 package com.gazbert.bxbot.exchanges;
 
 import java.io.UnsupportedEncodingException;
@@ -22,6 +45,7 @@ import java.util.Map;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
+import com.gazbert.bxbot.exchange.api.OtherConfig;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.util.StringUtils;
@@ -29,7 +53,6 @@ import org.springframework.util.StringUtils;
 import com.gazbert.bxbot.exchange.api.AuthenticationConfig;
 import com.gazbert.bxbot.exchange.api.ExchangeAdapter;
 import com.gazbert.bxbot.exchange.api.ExchangeConfig;
-import com.gazbert.bxbot.exchange.api.OptionalConfig;
 import com.gazbert.bxbot.exchanges.trading.api.impl.BalanceInfoImpl;
 import com.gazbert.bxbot.exchanges.trading.api.impl.MarketOrderBookImpl;
 import com.gazbert.bxbot.exchanges.trading.api.impl.MarketOrderImpl;
@@ -48,7 +71,12 @@ import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-
+/**
+ * Cryptopia Exchange Adapter.
+ *
+ * @author nodueck
+ */
+@Deprecated // 18 May 2019 : The exchange has gone into liquidation: https://www.cryptopia.co.nz/
 public class CryptopiaExchangeAdapter extends AbstractExchangeAdapter implements ExchangeAdapter {
 	
 	private static final Logger LOG = LogManager.getLogger();
@@ -153,7 +181,7 @@ public class CryptopiaExchangeAdapter extends AbstractExchangeAdapter implements
 		LOG.info(() -> "About to initialise Cryptopia ExchangeConfig: " + config);
         setAuthenticationConfig(config);
         setNetworkConfig(config);
-        setOptionalConfig(config);
+        setOtherConfig(config);
 
         initSecureMessageLayer();
         initGson();
@@ -830,9 +858,9 @@ public class CryptopiaExchangeAdapter extends AbstractExchangeAdapter implements
             //Generate authorization header
             final String nonce = generateNonce();
             final String encodedUrl = URLEncoder.encode(url.toString(),StandardCharsets.UTF_8.toString()).toLowerCase();
-			final String md5Checksum = encodeBase64(md5.digest(paramsInJson.getBytes("UTF-8")));
+			final String md5Checksum = encodeBase64(md5.digest(paramsInJson.getBytes(StandardCharsets.UTF_8)));
             final String requestSignature = publicKey + "POST" + encodedUrl + nonce + md5Checksum;
-            final String encodedAndHashedSignature = encodeBase64(mac.doFinal(requestSignature.getBytes("UTF-8")));
+            final String encodedAndHashedSignature = encodeBase64(mac.doFinal(requestSignature.getBytes(StandardCharsets.UTF_8)));
 			final String authHeader = "amx " + publicKey + ":" + encodedAndHashedSignature + ":" + nonce;
 
 			// Request headers required by Exchange
@@ -859,13 +887,13 @@ public class CryptopiaExchangeAdapter extends AbstractExchangeAdapter implements
         privateKey = getAuthenticationConfigItem(authenticationConfig, PRIVATE_KEY_PROPERTY_NAME);
     }
     
-    private void setOptionalConfig(ExchangeConfig exchangeConfig) {
-    	final OptionalConfig optionalConfig = getOptionalConfig(exchangeConfig);
+    private void setOtherConfig(ExchangeConfig exchangeConfig) {
+    	final OtherConfig otherConfig = getOtherConfig(exchangeConfig);
     	
-    	final String useGlobalTradingFeeConfigItem = getOptionalConfigItem(optionalConfig, USE_GLOBAL_TRADING_FEE_PROPERTY_NAME);
-		useGlobalTradingFee = !StringUtils.isEmpty(useGlobalTradingFeeConfigItem) ? Boolean.parseBoolean(useGlobalTradingFeeConfigItem) : false;
+    	final String useGlobalTradingFeeConfigItem = getOtherConfigItem(otherConfig, USE_GLOBAL_TRADING_FEE_PROPERTY_NAME);
+		useGlobalTradingFee = !StringUtils.isEmpty(useGlobalTradingFeeConfigItem) && Boolean.parseBoolean(useGlobalTradingFeeConfigItem);
     	
-    	final String globalTradingFeeConfigItem = useGlobalTradingFee ? getOptionalConfigItem(optionalConfig, GLOBAL_TRADING_FEE_PROPERTY_NAME) : null;
+    	final String globalTradingFeeConfigItem = useGlobalTradingFee ? getOtherConfigItem(otherConfig, GLOBAL_TRADING_FEE_PROPERTY_NAME) : null;
     	globalTradingFee = !StringUtils.isEmpty(globalTradingFeeConfigItem) ? new BigDecimal(globalTradingFeeConfigItem): DEFAULT_CRYPTOPIA_TRADING_FEE_PERCENT;
     }
     
@@ -882,18 +910,11 @@ public class CryptopiaExchangeAdapter extends AbstractExchangeAdapter implements
         		.setLenient() //since all names in json starts upper case 
         		.create();
     }
-    
-    /**
-     * Conviniece method to generate a new nonce
-     * @return
-     */
+
     private String generateNonce() {
     	return String.valueOf(System.currentTimeMillis());
     }
-    
-    /**
-     * convinience Method
-     */
+
     private String encodeBase64(byte[] bytes) {
     	return Base64.getEncoder().encodeToString(bytes);
     }

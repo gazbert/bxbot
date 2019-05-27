@@ -26,6 +26,7 @@ package com.gazbert.bxbot.domain.emailalerts;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 /**
  * Tests a SmtpConfig domain object behaves as expected.
@@ -57,12 +58,12 @@ public class TestSmtpConfig {
     public void testSettersWorkAsExpected() {
 
         final SmtpConfig emailAlertsConfig = new SmtpConfig();
-        assertEquals(null, emailAlertsConfig.getHost());
+        assertNull(emailAlertsConfig.getHost());
         assertEquals(0, emailAlertsConfig.getTlsPort());
-        assertEquals(null, emailAlertsConfig.getAccountUsername());
-        assertEquals(null, emailAlertsConfig.getAccountPassword());
-        assertEquals(null, emailAlertsConfig.getFromAddress());
-        assertEquals(null, emailAlertsConfig.getToAddress());
+        assertNull(emailAlertsConfig.getAccountUsername());
+        assertNull(emailAlertsConfig.getAccountPassword());
+        assertNull(emailAlertsConfig.getFromAddress());
+        assertNull(emailAlertsConfig.getToAddress());
 
         emailAlertsConfig.setHost(HOST);
         assertEquals(HOST, emailAlertsConfig.getHost());

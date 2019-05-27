@@ -26,6 +26,7 @@ package com.gazbert.bxbot.core.config.market;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 /**
  * Tests Market impl behaves as expected.
@@ -54,10 +55,10 @@ public class TestMarketImpl {
     public void testSettersWorkAsExpected() {
 
         final MarketImpl market = new MarketImpl(null, null, null, null);
-        assertEquals(null, market.getName());
-        assertEquals(null, market.getId());
-        assertEquals(null, market.getBaseCurrency());
-        assertEquals(null, market.getCounterCurrency());
+        assertNull(market.getName());
+        assertNull(market.getId());
+        assertNull(market.getBaseCurrency());
+        assertNull(market.getCounterCurrency());
 
         market.setName(MARKET_NAME);
         assertEquals(MARKET_NAME, market.getName());

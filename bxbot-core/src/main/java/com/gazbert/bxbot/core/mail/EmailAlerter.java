@@ -31,7 +31,6 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Component;
-import org.springframework.util.Assert;
 
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;

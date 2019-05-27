@@ -7,7 +7,7 @@
 #
 # Could be made better, but will do for now...
 #
-# You need the Java 8 JRE installed.
+# You need the Java 11 JDK installed.
 #
 # This script expects all the jar files to live in the lib_dir.
 #
@@ -21,7 +21,7 @@ lib_dir=./libs
 log4j2_config=./config/log4j2.xml
 
 # The BX-bot 'fat' jar (Spring Boot app containing all the dependencies)
-bxbot_jar=bxbot-app-0.9.1-SNAPSHOT.jar
+bxbot_jar=bxbot-app-0.12.1-SNAPSHOT.jar
 
 # PID file for checking if bot is running
 pid_file=./.bxbot.pid
@@ -34,7 +34,7 @@ case "$1" in
           echo "BX-bot is already running with PID: $pid"
        else
           echo "Starting BX-bot..."
-          java -Xmx64m -Xss256k -Dlog4j.configurationFile=file:${log4j2_config} -jar ${lib_dir}/${bxbot_jar} 2>&1 >/dev/null &
+          java -Xmx64m -Xss256k -Dlog4j.configurationFile=file:${log4j2_config} --illegal-access=deny -jar ${lib_dir}/${bxbot_jar} 2>&1 >/dev/null &
 
           echo "BX-bot started with PID: $!"
           echo $! > ${pid_file}

@@ -2,9 +2,7 @@
 
 [![Build Status](https://travis-ci.org/gazbert/bxbot.svg?branch=bxbot-restapi)](https://travis-ci.org/gazbert/bxbot)
 [![Join the chat at https://gitter.im/BX-bot/Lobby](https://badges.gitter.im/BX-bot/Lobby.svg)](https://gitter.im/BX-bot/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)		 	 
- 
-**Note:** This branch is very much work in progress and not safe for production.
- 
+  
 ## What is BX-bot?
 
 <img src="./docs/bxbot-cropped.png" align="right" width="25%" />
@@ -25,9 +23,7 @@ Feel free to improve these or contribute new adapters to the project; that would
 [shiny!](https://en.wikipedia.org/wiki/Firefly_(TV_series))
 
 The Trading API provides support for [limit orders](http://www.investopedia.com/terms/l/limitorder.asp)
-traded at the [spot price](http://www.investopedia.com/terms/s/spotprice.asp);
-it does not support [futures](http://www.investopedia.com/university/beginners-guide-to-trading-futures/) or 
-[margin](http://www.investopedia.com/university/margin/) trading.
+traded at the [spot price](http://www.investopedia.com/terms/s/spotprice.asp).
  
 **Warning:** Trading Bitcoin carries significant financial risk; you could lose money. This software is provided 'as is'
 and released under the [MIT license](http://opensource.org/licenses/MIT).
@@ -42,63 +38,34 @@ and released under the [MIT license](http://opensource.org/licenses/MIT).
   to a given exchange.
 - **Strategy API** - Trading Strategies implement this so the Trading Engine can execute them.
  
-Trading Strategies and Exchange Adapters are injected by the Trading Engine on startup. The bot uses a crude XML based
-dependency injection framework to achieve this; the long term goal is to convert it into a fully configurable 
-[Spring Boot](http://projects.spring.io/spring-boot/) app.
+Trading Strategies and Exchange Adapters are injected by the Trading Engine on startup. The bot uses a simple 
+[YAML](https://en.wikipedia.org/wiki/YAML) backed dependency injection framework to achieve this; the long term goal is
+to convert it into a fully configurable [Spring Boot](http://projects.spring.io/spring-boot/) app.
 
 The bot was designed to fail hard and fast if any unexpected errors occur in the Exchange Adapters or Trading Strategies:
 it will log the error, send an email alert (if configured), and then shut down.
 
 ## Installation Guide
-
-### The Docker way
-If you want to just play around with the 
-[`ExampleScalpingStrategy`](./bxbot-strategies/src/main/java/com/gazbert/bxbot/strategies/ExampleScalpingStrategy.java) 
-and evaluate the bot, Docker is the way to go.
-
-1. Install [Docker](https://docs.docker.com/engine/installation/) on the machine you want to run the bot.
-1. Fetch the BX-bot image from [Docker Hub](https://hub.docker.com/r/gazbert/bxbot/): `docker pull gazbert/bxbot:x.x.x` -
-   replace `x.x.x` with the [Release](https://github.com/gazbert/bxbot/releases) version of the bot you want to run, e.g.
-   `docker pull gazbert/bxbot:0.9.0`
-1. Run the Docker container: `docker container run --name bxbot-x.x.x -it gazbert/bxbot:x.x.x bash`
-1. Change into the bot's directory: `cd bxbot*`
-1. Configure the bot as required - see the main _[Configuration](#configuration-2)_ section. The bot's default 
-   configuration uses the 
-   [`ExampleScalpingStrategy`](./bxbot-strategies/src/main/java/com/gazbert/bxbot/strategies/ExampleScalpingStrategy.java), 
-   but you'll probably want to [code your own](#how-do-i-write-my-own-trading-strategy)! The 
-   [`TestExchangeAdapter`](./bxbot-exchanges/src/main/java/com/gazbert/bxbot/exchanges/TestExchangeAdapter.java) is 
-   configured by default - it makes public API calls to [Bitstamp](https://www.bitstamp.net), but stubs out the private 
-   API (order management) calls; it's good for testing your initial setup without actually sending orders to the exchange.
-1. Usage: `./bxbot.sh [start|stop|status]`
-1. You can detach from the container and leave the bot running using the `CTRL-p` `CTRL-q` key sequence.
-1. To re-attach to the Docker container, run `docker container ls` to get the CONTAINER ID. 
-   Then run: `docker container attach <CONTAINER ID>`
-   
-A Docker image for each release is available on [Docker Hub](https://hub.docker.com/r/gazbert/bxbot/tags/).
   
-### The manual way
-The [Releases](https://github.com/gazbert/bxbot/releases) page has the stable releases, or you can grab the latest code 
-from the head of the master branch.
+The bot runs on Linux, macOS, and Windows.
 
-The bot runs on Linux, macOS, and Windows. The Windows [bxbot.bat](./bxbot.bat) script for starting/stopping the bot is
-elementary and needs further development.
+BX-bot requires a Java 11 JDK ([openjdk-11-jdk](http://openjdk.java.net/projects/jdk/11/) or 
+[Oracle JDK 11](https://www.oracle.com/technetwork/java/javase/downloads/jdk11-downloads-5066655.html))
+to be installed on the machine you are going to use to build and run the bot. 
 
-BX-bot requires a Java 8 JDK ([openjdk-8-jdk](http://openjdk.java.net/install/) or 
-[Oracle JDK 8](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html))
-to be installed on the machine you are going to use to build the bot.     
+You can use [Maven](https://maven.apache.org) or [Gradle](https://gradle.org/) to build the bot.
+The instructions below are for Linux/macOS, but equivalent Windows scripts are included.
 
-You can use [Maven](https://maven.apache.org) or [Gradle](https://gradle.org/) to build the bot and distribution artifact.
-The instructions below are for Linux and macOS, but equivalent Windows scripts are included. 
+Download the latest [Release](https://github.com/gazbert/bxbot/releases) and unzip the bot.
 
 #### Maven
-1. Download the latest [release](https://github.com/gazbert/bxbot/releases). Unzip the bot.
 1. If you plan on using your own Trading Strategies/Exchange Adapters packaged in separate jar files, you'll need to add
    the dependency in the [bxbot-app/pom.xml](./bxbot-app/pom.xml) - see the commented out dependency examples inside it.
 1. From the project root, run `./mvnw clean assembly:assembly` to produce the distribution 
    artifacts `bxbot-app-<version>-dist.tar.gz` and `bxbot-app-<version>-dist.zip` in the `./target` folder.
 1. Copy either the `bxbot-app-<version>-dist.tar.gz` or the `bxbot-app-<version>-dist.zip` onto the machine you 
    want to run the bot and unzip it someplace.
-1. Configure the bot as required - see the main _[Configuration](#configuration-2)_ section.
+1. Configure the bot as required - see the main _[Configuration](#configuration)_ section.
    The bot's default configuration uses the 
    [`ExampleScalpingStrategy`](./bxbot-strategies/src/main/java/com/gazbert/bxbot/strategies/ExampleScalpingStrategy.java), 
    but you'll probably want to [code your own](#how-do-i-write-my-own-trading-strategy)! The 
@@ -108,7 +75,6 @@ The instructions below are for Linux and macOS, but equivalent Windows scripts a
 1. Usage: `./bxbot.sh [start|stop|status]`   
     
 #### Gradle    
-1. Download the latest [release](https://github.com/gazbert/bxbot/releases). Unzip the bot.
 1. If you plan on using your own Trading Strategies/Exchange Adapters packaged in separate jar files, you'll need to add
    the dependency in the [bxbot-app/build.gradle](bxbot-app/build.gradle) - see the commented out dependency examples inside it.
 1. From the project root, run `./gradlew clean build` to build the bot.   
@@ -116,34 +82,40 @@ The instructions below are for Linux and macOS, but equivalent Windows scripts a
    artifact: either `bxbot-app-<version>.tar.gz` or `bxbot-app-<version>.zip` respectively. 
    It will be placed in the `./build/distributions` folder.
 1. Copy the artifact onto the machine you want to run the bot and unzip it someplace.
-1. Configure the bot as required - see the main _[Configuration](#configuration-2)_ section.
-   The bot's default configuration uses the 
-   [`ExampleScalpingStrategy`](./bxbot-strategies/src/main/java/com/gazbert/bxbot/strategies/ExampleScalpingStrategy.java), 
-   but you'll probably want to [code your own](#how-do-i-write-my-own-trading-strategy)! The 
-   [`TestExchangeAdapter`](./bxbot-exchanges/src/main/java/com/gazbert/bxbot/exchanges/TestExchangeAdapter.java) is configured 
-   by default - it makes public API calls to [Bitstamp](https://www.bitstamp.net), but stubs out the private API (order management) 
-   calls; it's good for testing your initial setup without actually sending orders to the exchange.
+1. Configure the bot as described in step 4 of the previous [Maven](#maven) section.
 1. Usage: `./bxbot.sh [start|stop|status]`
 
-**NOTE:** You only need a Java 8 JRE ([openjdk-8-jre](http://openjdk.java.net/install/) or 
-[Oracle JRE 8](http://www.oracle.com/technetwork/java/javase/downloads/jre8-downloads-2133155.html)) to be installed on
-the machine you want to _run_ the bot.
+### Docker
+If you want to just play around with the 
+[`ExampleScalpingStrategy`](./bxbot-strategies/src/main/java/com/gazbert/bxbot/strategies/ExampleScalpingStrategy.java) 
+and evaluate the bot, Docker is the way to go.
+
+1. Install [Docker](https://docs.docker.com/engine/installation/) on the machine you want to run the bot.
+1. Fetch the BX-bot image from [Docker Hub](https://hub.docker.com/r/gazbert/bxbot/): `docker pull gazbert/bxbot:x.x.x` -
+   replace `x.x.x` with the [Release](https://github.com/gazbert/bxbot/releases) version of the bot you want to run, e.g.
+   `docker pull gazbert/bxbot:0.12.0`
+1. Run the Docker container: `docker container run --name bxbot-x.x.x -it gazbert/bxbot:x.x.x bash`
+1. Change into the bot's directory: `cd bxbot*`
+1. Configure the bot as described in step 4 of the previous [Maven](#maven) section.
+1. Usage: `./bxbot.sh [start|stop|status]`
+1. You can detach from the container and leave the bot running using the `CTRL-p` `CTRL-q` key sequence.
+1. To re-attach to the Docker container, run `docker container ls` to get the CONTAINER ID. 
+   Then run: `docker container attach <CONTAINER ID>`   
    
 ## Build Guide
-BX-bot requires a Java 8 JDK ([openjdk-8-jdk](http://openjdk.java.net/install/) or 
-[Oracle JDK 8](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)) for the development
-environment.
+If you plan on developing the bot, you'll need [openjdk-11-jdk](http://openjdk.java.net/projects/jdk/11/) or 
+[Oracle JDK 11](https://www.oracle.com/technetwork/java/javase/downloads/jdk11-downloads-5066655.html) installed on your dev box.
 
-You can use [Maven](https://maven.apache.org) or [Gradle](https://gradle.org/) to build the bot and pull down the dependencies;
-BX-bot depends on [log4j](http://logging.apache.org/log4j), [JavaMail](https://java.net/projects/javamail/pages/Home),
-[Google Gson](https://code.google.com/p/google-gson/), [Google Guava](https://github.com/google/guava), and 
-[Spring Boot](http://projects.spring.io/spring-boot/).
-See the Maven [`pom.xml`](./pom.xml) for details.
+You can use [Maven](https://maven.apache.org) or [Gradle](https://gradle.org/) to build the bot and pull down the dependencies. 
+BX-bot depends on [Spring Boot](http://projects.spring.io/spring-boot/), [log4j](http://logging.apache.org/log4j), 
+[JavaMail](https://java.net/projects/javamail/pages/Home), [Google Gson](https://code.google.com/p/google-gson/), 
+[Google Guava](https://github.com/google/guava), and [Snake YAML](https://bitbucket.org/asomov/snakeyaml).
 
-The instructions below are for Linux and macOS, but equivalent Windows scripts are included.
+The instructions below are for Linux/macOS, but equivalent Windows scripts are included.
+
+Clone the repo locally (master branch).
 
 ### Maven
-1. Clone the repo locally (master branch).
 1. From the project root, run `./mvnw clean install`.
    If you want to run the exchange integration tests, use `./mvnw clean install -Pint`. 
    To execute both unit and integration tests, use `./mvnw clean install -Pall`.
@@ -151,7 +123,6 @@ The instructions below are for Linux and macOS, but equivalent Windows scripts a
    and bxbot-exchange-api modules after the build completes.
    
 ### Gradle
-1. Clone the repo locally (master branch).
 1. From the project root, run `./gradlew build`.
    If you want to run the exchange integration tests, use `./gradlew integrationTests`.
    To execute both unit and integration tests, use `./gradlew build integrationTests`.
@@ -183,291 +154,232 @@ The bot provides a simple plugin framework for:
 * Markets to trade on.
 * Trading Strategies to execute.
 
-It uses XML configuration files. These live in the [`config`](./config) folder. Any config changes require a restart of
-the bot to take effect.
+It uses [YAML](https://en.wikipedia.org/wiki/YAML) configuration files. These live in the [`config`](./config) folder.
+Any config changes require a restart of the bot to take effect.
 
 Sample configurations for running on different exchanges can be found in the 
 [`config/samples`](./config/samples)folder.
 
 ##### Engine
-The [`engine.xml`](./config/engine.xml) file is used to configure the Trading Engine.
+The [`engine.yaml`](./config/engine.yaml) file is used to configure the Trading Engine.
 
-```xml
-<engine>
-    <bot-id>my-bitstamp-bot_1</bot-id>
-    <bot-name>Bitstamp Bot</bot-name>
-    <emergency-stop-currency>BTC</emergency-stop-currency>
-    <emergency-stop-balance>1.0</emergency-stop-balance>
-    <trade-cycle-interval>20</trade-cycle-interval>
-</engine>
+```yaml
+engine:
+  botId: my-bitstamp-bot_1
+  botName: Bitstamp Bot
+  emergencyStopCurrency: BTC
+  emergencyStopBalance: 1.0
+  tradeCycleInterval: 20
 ```
 
-All elements are mandatory.
+All fields are mandatory.
 
-* The `<bot-id>` value is a unique identifier for the bot. This is used by 
-  [BX-bot UI Server](https://github.com/gazbert/bxbot-ui-server) (work in progress) to identify and route configuration 
-  updates and commands to the bot. Value must be an alphanumeric string. Underscores and dashes are also permitted.
+* The `botId` value is a unique identifier for the bot. Value must be an alphanumeric string. 
+  Underscores and dashes are also permitted.
 
-* The `<bot-name>` is a friendly name for the bot. The is used by [BX-bot UI](https://github.com/gazbert/bxbot-ui) 
-  (work in progress) to display the bot's name. Value must be an alphanumeric string. Spaces are allowed.
+* The `botName` is a friendly name for the bot. Value must be an alphanumeric string. Spaces are allowed.
       
-* The `<emergency-stop-currency>` value must be set to prevent catastrophic loss on the exchange. 
+* The `emergencyStopCurrency` value must be set to prevent catastrophic loss on the exchange. 
   This is normally the currency you intend to hold a long position in. It should be set to the currency short code for the
   wallet, e.g. BTC, LTC, USD. This value can be case sensitive for some exchanges - check the Exchange Adapter documentation.
 
-* The `<emergency-stop-balance>` value must be set to prevent catastrophic loss on the exchange. 
-  The Trading Engine checks this value at the start of every trade cycle: if your `<emergency-stop-currency>` wallet balance on
+* The `emergencyStopBalance` value must be set to prevent catastrophic loss on the exchange. 
+  The Trading Engine checks this value at the start of every trade cycle: if your `emergencyStopCurrency` wallet balance on
   the exchange drops below this value, the Trading Engine will log it, send an Email Alert (if configured) and then shut down.
   If you set this value to 0, the bot will bypass the check - be careful.
 
-* The `<trade-cycle-interval>` value is the interval in _seconds_ that the Trading Engine will wait/sleep before executing
+* The `tradeCycleInterval` value is the interval in _seconds_ that the Trading Engine will wait/sleep before executing
   each trade cycle. The minimum value is 1 second. Some exchanges allow you to hit them harder than others. However, while
   their API documentation might say one thing, the reality is you might get socket timeouts and 5xx responses if you hit it
   too hard. You'll need to experiment with the trade cycle interval for different exchanges.
 
 ##### Exchange Adapters
 You specify the Exchange Adapter you want BX-bot to use in the 
-[`exchange.xml`](./config/exchange.xml) file. 
+[`exchange.yaml`](./config/exchange.yaml) file. 
 
 BX-bot only supports 1 Exchange Adapter per bot, but you could have multiple bots running on the same exchange.
 
-```xml
-<exchange>
-    <name>Bitstamp</name>
-    <adapter>com.gazbert.bxbot.exchanges.BitstampExchangeAdapter</adapter>
-    <authentication-config>
-        <config-item>
-            <name>client-id</name>
-            <value>your-client-id</value>
-        </config-item>    
-        <config-item>
-            <name>key</name>
-            <value>your-api-key</value>
-        </config-item>
-        <config-item>
-            <name>secret</name>
-            <value>your-secret-key</value>
-        </config-item>
-    </authentication-config>
-    <network-config>
-        <connection-timeout>30</connection-timeout>
-        <non-fatal-error-codes>
-            <code>502</code>
-            <code>503</code>
-            <code>520</code>
-            <code>522</code>
-            <code>525</code>            
-        </non-fatal-error-codes>
-        <non-fatal-error-messages>
-            <message>Connection reset</message>
-            <message>Connection refused</message>
-            <message>Remote host closed connection during handshake</message>
-            <message>Unexpected end of file from server</message>           
-        </non-fatal-error-messages>
-    </network-config>
-    <optional-config>
-        <config-item>
-            <name>not-needed-on-bitstamp-1</name>
-            <value>here for illustration purposes only</value>
-        </config-item>
-        <config-item>
-            <name>not-needed-on-bitstamp-2</name>
-            <value>here for illustration purposes only</value>
-        </config-item>
-    </optional-config>
-</exchange>
+```yaml
+exchange:
+  name: Bitstamp
+  adapter: com.gazbert.bxbot.exchanges.BitstampExchangeAdapter
+  
+  authenticationConfig:
+    clientId: your-client-id
+    key: your-api-key
+    secret: your-secret-key
+           
+  networkConfig:
+    connectionTimeout: 15
+    nonFatalErrorCodes: [502, 503, 520, 522, 525]            
+    nonFatalErrorMessages:
+      - Connection reset
+      - Connection refused
+      - Remote host closed connection during handshake
+      - Unexpected end of file from server
+      
+  otherConfig:
+    not-needed-on-bitstamp-1: here for illustration purposes only
+    not-needed-on-bitstamp-2: here for illustration purposes again
 ```
 
-All elements are mandatory unless stated otherwise.
+All fields are mandatory unless stated otherwise.
 
-* The `<name>` value is a friendly name for the Exchange. It is used in log statements and by
-  [BX-bot UI](https://github.com/gazbert/bxbot-ui) (work in progress) to display the Exchange's name.
+* The `name` value is a friendly name for the Exchange. It is used in log statements to display the Exchange's name.
   Value must be an alphanumeric string. Spaces are allowed.
 
-* For the `<adapter>` value, you must specify the fully qualified name of the Exchange Adapter class for the Trading Engine
+* For the `adapter` value, you must specify the fully qualified name of the Exchange Adapter class for the Trading Engine
   to inject on startup. The class must be on the runtime classpath. See the 
   _[How do I write my own Exchange Adapter?](#how-do-i-write-my-own-exchange-adapter)_ section for more details.
 
-* The `<authentication-config>` section is optional. If present, at least 1 `<config-item>` must be set - these are repeating
-  key/value pairs. This section is used by the inbuilt Exchange Adapters to configure their exchange trading API credentials - see
-  the sample `exchange.xml` config files for details.
+* The `authenticationConfig` section is used by the inbuilt Exchange Adapters to configure their exchange trading
+  API credentials - see the sample `exchange.yaml` config files for details.
 
-* The `<network-config>` section is optional. If present, the `<connection-timeout>`, `<non-fatal-error-codes>`, and
-  `<non-fatal-error-messages>` sections must be set. This section is used by the inbuilt Exchange Adapters to set
-  their network configuration as detailed below:
+* The `networkConfig` section is optional. It is used by the inbuilt Exchange Adapters to set their network
+  configuration as detailed below:
 
-    * The `<connection-timeout>` is the timeout value that the exchange adapter will wait on socket connect/socket read when
-      communicating with the exchange. Once this threshold has been breached, the exchange adapter will give up and throw an
+    * The `connectionTimeout` field is optional. This is the timeout value that the exchange adapter will wait on socket
+      connect/socket read when communicating with the exchange. Once this threshold has been breached,
+      the exchange adapter will give up and throw an
       [`ExchangeNetworkException`](./bxbot-trading-api/src/main/java/com/gazbert/bxbot/trading/api/ExchangeNetworkException.java).
       The sample Exchange Adapters are single threaded: if a request gets blocked, it will block all subsequent requests from
-      getting to the exchange. This timeout value prevents an indefinite block.
+      getting to the exchange. This timeout value prevents an indefinite block. If not set, it defaults to 30 seconds.
 
-    * The `<non-fatal-error-codes>` section contains a list of HTTP status codes that will trigger the adapter to throw a
-      non-fatal `ExchangeNetworkException`.
-      This allows the bot to recover from temporary network issues. See the sample `exchange.xml` config files for status codes to use.
+    * The `nonFatalErrorCodes` field is optional. It contains a list of HTTP status codes that will trigger the
+      adapter to throw a non-fatal `ExchangeNetworkException`. This allows the bot to recover from temporary network
+      issues. See the sample `exchange.yaml` config files for status codes to use.
 
-    * The `<non-fatal-error-messages>` section contains a list of `java.io` Exception message content that will trigger the 
-      adapter to throw a non-fatal `ExchangeNetworkException`. This allows the bot to recover from temporary network issues.
-      See the sample `exchange.xml` config files for messages to use.
+    * The `nonFatalErrorMessages` field is optional. It contains a list of `java.io` Exception message content that will
+      trigger the adapter to throw a non-fatal `ExchangeNetworkException`. This allows the bot to recover from
+      temporary network issues. See the sample `exchange.yaml` config files for messages to use.
 
-* The `<optional-config>` section is optional. It is not needed for Bitstamp, but shown above for illustration purposes.
-  If present, at least 1 `<config-item>` must be set - these are repeating key/value String pairs.
+* The `otherConfig` section is optional. It is not needed for Bitstamp, but shown above for illustration purposes.
+  If present, at least 1 item must be set - these are repeating key/value String pairs.
   This section is used by the inbuilt Exchange Adapters to set any additional config, e.g. buy/sell fees.
 
 ##### Markets
 You specify which markets you want to trade on in the 
-[`markets.xml`](./config/markets.xml) file.
+[`markets.yaml`](./config/markets.yaml) file.
 
-```xml
-<markets>      
-    <market>
-        <id>btcusd</id>    
-        <name>BTC/USD</name>        
-        <base-currency>BTC</base-currency>
-        <counter-currency>USD</counter-currency>
-        <enabled>true</enabled>
-        <trading-strategy-id>scalping-strategy</trading-strategy-id>
-    </market>
-    <market>
-        <id>ltcusd</id>
-        <name>LTC/BTC</name>
-        <base-currency>LTC</base-currency>
-        <counter-currency>BTC</counter-currency>
-        <enabled>false</enabled>
-        <trading-strategy-id>scalping-strategy</trading-strategy-id>
-    </market>        
-</markets>
+```yaml
+  markets:            
+    - id: btcusd    
+      name: BTC/USD        
+      baseCurrency: BTC
+      counterCurrency: USD
+      enabled: true
+      tradingStrategyId: scalping-strategy
+  
+    - id: ltcusd
+      name: LTC/BTC
+      baseCurrency: LTC
+      counterCurrency: BTC
+      enabled: false
+      tradingStrategyId: scalping-strategy
 ```
 
-All elements are mandatory unless stated otherwise.
+All fields are mandatory unless stated otherwise.
 
-* The `<id>` value is the market id as defined on the exchange. E.g. the BTC/USD market id is `btcusd` on 
+* The `id` value is the market id as defined on the exchange. E.g. the BTC/USD market id is `btcusd` on 
   [Bitstamp](https://www.bitstamp.net/api/) - see `currency_pair` values.
 
-* The `<name>` value is a friendly name for the market. The is used in the logs and by
-  [BX-bot UI](https://github.com/gazbert/bxbot-ui) (work in progress) to display the market's name.
+* The `name` value is a friendly name for the market. The is used in the logs to display the market's name.
   Value must be an alphanumeric string.
 
-* The `<base-currency>` value is the currency short code for the base currency in the currency pair. When you buy or sell a
+* The `baseCurrency` value is the currency short code for the base currency in the currency pair. When you buy or sell a
   currency pair, you are performing that action on the base currency. The base currency is the commodity you are buying or
   selling. E.g. in a BTC/USD market, the first currency (BTC) is the base currency and the second currency (USD) is the
   counter currency.
 
-* The `<counter-currency>` value is the currency short code for the counter currency in the currency pair. This is also known
+* The `counterCurrency` value is the currency short code for the counter currency in the currency pair. This is also known
   as the _quote_ currency.
 
-* The `<enabled>` value allows you to toggle trading on the market. Remember, config changes are only applied on startup.
+* The `enabled` value allows you to toggle trading on the market. Remember, config changes are only applied on startup.
 
-* The `<trading-strategy-id>` value _must_ match a strategy `<id>` defined in your `strategies.xml` config.
-  Currently, BX-bot only supports 1 `<strategy>` per `<market>`.
+* The `tradingStrategyId` value _must_ match a strategy `id` defined in your `strategies.yaml` config.
+  Currently, BX-bot only supports 1 `strategy` per `market`.
 
 ##### Strategies #####
 You specify the Trading Strategies you wish to use in the 
-[`strategies.xml`](./config/strategies.xml) file.
+[`strategies.yaml`](./config/strategies.yaml) file.
 
-```xml
-<trading-strategies>
-    <strategy>
-        <id>scalping-strategy</id>
-        <name>Basic Scalping Strat</name>
-        <description>
-         A simple trend following scalper that buys at the current BID price, holds until current market 
-         price has reached a configurable minimum percentage gain, and then sells at current ASK price, thereby 
-         taking profit from the spread. Don't forget to factor in the exchange fees!
-        </description>
-        <!-- This strategy is injected using the bot's custom injection framework using its class-name -->
-        <class-name>com.gazbert.bxbot.strategies.ExampleScalpingStrategy</class-name>
-        <optional-config>
-            <config-item>
-                <name>counter-currency-buy-order-amount</name>
-                <value>20</value>
-            </config-item>
-            <config-item>
-                <name>minimum-percentage-gain</name>
-                <value>2</value>
-            </config-item>
-        </optional-config>
-    </strategy>
-    <strategy>
-        <id>macd-strategy</id>
-        <name>MACD Based Strat</name>
-        <description>Strat uses MACD data to take long position in USD.</description>
-        <!-- This strategy is injected using a Spring bean-name -->
-        <bean-name>yourMacdStrategyBean</bean-name>
-        <optional-config>
-            <config-item>
-                <name>counter-currency-buy-order-amount</name>
-                <value>20</value>
-            </config-item>
-            <config-item>
-                <name>shortEmaInterval</name>
-                <value>12</value>
-            </config-item>
-            <config-item>
-                <name>longEmaInterval</name>
-                <value>26</value>
-            </config-item>
-        </optional-config>
-    </strategy>
-</trading-strategies>
+```yaml
+strategies:
+  - id: scalping-strategy
+    name: Basic Scalping Strat
+    description: >
+      A simple scalper that buys at the current BID price, holds until current market price has 
+      reached a configurable minimum percentage gain, then sells at current ASK price, thereby
+      taking profit from the spread.       
+    # This strategy is injected using the bot's custom injection framework using its className
+    className: com.gazbert.bxbot.strategies.ExampleScalpingStrategy
+    configItems:
+      counter-currency-buy-order-amount: 20                        
+      minimum-percentage-gain: 2
+            
+  - id: macd-strategy
+    name: MACD Based Strat
+    description: Strat uses MACD data to take long position in USD.    
+    # This strategy is injected using a Spring beanName
+    beanName: yourMacdStrategyBean
+    configItems:
+      counter-currency-buy-order-amount: 20      
+      shortEmaInterval: 12            
+      longEmaInterval: 26            
 ```
 
-All elements are mandatory unless stated otherwise.
+All fields are mandatory unless stated otherwise.
 
-* The `<id>` value is a unique identifier for the strategy. The `markets.xml` `<trading-strategy-id>` entries cross-reference this.
+* The `id` value is a unique identifier for the strategy. The `markets.yaml` `tradingStrategyId` entries cross-reference this.
   Value must be an alphanumeric string. Underscores and dashes are also permitted.
 
-* The `<name>` value is a friendly name for the strategy. The is used in the logs and by
-  [BX-bot UI](https://github.com/gazbert/bxbot-ui) (work in progress) to display the strategy's name.
+* The `name` value is a friendly name for the strategy. The is used in the logs to display the strategy's name.
   Value must be an alphanumeric string. Spaces are allowed.
 
-* The `<description>` value is optional, and used by [BX-bot UI](https://github.com/gazbert/bxbot-ui) (work in progress)
-  to display the strategy's description.
+* The `description` value is optional.
 
-You configure the loading of your strategy using either a `<class-name>` _or_ a `<bean-name>`; you cannot specify both. 
+You configure the loading of your strategy using either a `className` _or_ a `beanName`; you cannot specify both. 
 
-* For the `<class-name>` value, you must specify the fully qualified name of your Strategy class for the Trading Engine
+* For the `className` value, you must specify the fully qualified name of your Strategy class for the Trading Engine
   to load and execute. This will use the bot's custom injection framework. The class must be on the runtime classpath.
-  If you set this value to load your strategy, you cannot set the `<bean-name>` value.
+  If you set this value to load your strategy, you cannot set the `beanName` value.
   
-* For the `<bean-name>` value, you must specify the Spring bean name of you Strategy component class for the Trading Engine
+* For the `beanName` value, you must specify the Spring bean name of you Strategy component class for the Trading Engine
   to load and execute. You will also need to annotate your strategy class with `@Component("yourMacdStrategyBean")` - 
   see the [example strategy](./bxbot-strategies/src/main/java/com/gazbert/bxbot/strategies/ExampleScalpingStrategy.java).
   This results in Spring injecting the bean.
-  If you set this value to load your strategy, you cannot set the `<class-name>` value.        
+  If you set this value to load your strategy, you cannot set the `className` value.        
 
-* The `<optional-config>` section is optional. It allows you to set key/value pair config items. This config is passed
+* The `configItems` section is optional. It allows you to set key/value pair config items. This config is passed
   to your Trading Strategy when the bot starts up; see the 
- _[How do I write my own Trading Strategy?](#how-do-i-write-my-own-trading-strategy)_ section.
+  _[How do I write my own Trading Strategy?](#how-do-i-write-my-own-trading-strategy)_ section.
 
 ##### Email Alerts
 You specify the Email Alerts config in the 
-[`email-alerts.xml`](./config/email-alerts.xml) file.
+[`email-alerts.yaml`](./config/email-alerts.yaml) file.
 
 This config is used to send email alerts when the bot is forced to shut down due to an unexpected error occurring in the 
 Trading Strategies or Exchange Adapters. The email is sent to the SMTP host using TLS.
 
-```xml
-<email-alerts>
-    <enabled>false</enabled>
-    <smtp-config>
-        <smtp-host>smtp.gmail.com</smtp-host>
-        <smtp-tls-port>587</smtp-tls-port>
-        <account-username>your.account.username@gmail.com</account-username>
-        <account-password>your.account.password</account-password>
-        <from-addr>from.addr@gmail.com</from-addr>
-        <to-addr>to.addr@gmail.com</to-addr>
-    </smtp-config>
-</email-alerts>
+```yaml
+emailAlerts:
+  enabled: false
+  smtpConfig:
+    host: smtp.gmail.com
+    tlsPort: 587
+    accountUsername: your.account.username@gmail.com
+    accountPassword: your.account.password
+    fromAddress: from.addr@gmail.com
+    toAddress: to.addr@gmail.com
 ```
 
-All elements are mandatory unless stated otherwise.
+All fields are mandatory unless stated otherwise.
 
-* If `<enabled>` is set to 'true', the bot will send email alerts to the `<to-addr>` if it needs to shut down due to a
+* If `enabled` is set to true, the bot will send email alerts to the `toAddress` if it needs to shut down due to a
   critical error. 
 
-* The `<smtp-config>` config is optional and only required if `<enabled>` is set to 'true'. 
-  Sample SMTP config for using a Gmail account is shown above - all elements within `<smtp-config>` are mandatory. 
+* The `smtpConfig` config is optional and only required if `enabled` is set to true. 
+  Sample SMTP config for using a Gmail account is shown above - all elements within `smtpConfig` are mandatory. 
 
 ### How do I write my own Trading Strategy?
 _"Battle not with monsters, lest ye become a monster, and if you gaze into the abyss, the abyss gazes also into you."_ - Friedrich Nietzsche
@@ -481,11 +393,11 @@ Your strategy must implement the [`TradingStrategy`](./bxbot-strategy-api/src/ma
 interface. This allows the Trading Engine to:
 
 * Inject your strategy on startup.
-* Pass any configuration (set in the `strategies.xml`) to your strategy.
+* Pass any configuration (set in the `strategies.yaml`) to your strategy.
 * Invoke your strategy at each trade cycle.
 
-You load your strategy using either `<class-name>` _or_ `<bean-name>` in the `strategies.xml` file - see the 
-_[Strategies Configuration](#strategies)_ section for full details. The choice is yours, but `<bean-name>` is the way to
+You load your strategy using either `className` _or_ `beanName` in the `strategies.yaml` file - see the 
+_[Strategies Configuration](#strategies)_ section for full details. The choice is yours, but `beanName` is the way to
 go if you want to use other Spring features in your strategy, e.g. a 
 [Repository](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/stereotype/Repository.html) 
 to store your trade data.   
@@ -509,10 +421,10 @@ choose what to do next, e.g. retry the previous Trading API call, or 'swallow' t
 Engine invokes the strategy again at the next trade cycle.
 
 ##### Configuration
-You specify the Trading Strategies you wish to use in the `strategies.xml` file - see the _[Strategies Configuration](#strategies)_ section 
+You specify the Trading Strategies you wish to use in the `strategies.yaml` file - see the _[Strategies Configuration](#strategies)_ section 
 for full details.
 
-The `<optional-config>` section in the `strategies.xml` allows you to set key/value pair config items to pass to your
+The `configItems` section in the `strategies.yaml` allows you to set key/value pair config items to pass to your
 Trading Strategy implementation. On startup, the Trading Engine will pass the config to your Trading Strategy's 
 `init(TradingApi tradingApi, Market market, StrategyConfig config)` method. 
 
@@ -541,7 +453,7 @@ and the [`ExchangeAdapter`](./bxbot-exchange-api/src/main/java/com/gazbert/bxbot
 interfaces. This allows the:
             
 * Trading Engine to inject your adapter on startup.
-* Trading Engine to pass any configuration (set in the `exchange.xml`) to your adapter.
+* Trading Engine to pass any configuration (set in the `exchange.yaml`) to your adapter.
 * Trading Strategies to invoke your adapter's implementation of the `TradingApi` at each trade cycle.
 
 [`AbstractExchangeAdapter`](./bxbot-exchanges/src/main/java/com/gazbert/bxbot/exchanges/AbstractExchangeAdapter.java)
@@ -555,8 +467,8 @@ whenever it breaks; the Trading Strategies should catch this and decide how they
 
 The Trading API provides an [`ExchangeNetworkException`](./bxbot-trading-api/src/main/java/com/gazbert/bxbot/trading/api/ExchangeNetworkException.java)
 for adapters to throw when they cannot connect to the exchange to make Trading API calls. This allows for
-Trading Strategies to recover from temporary network failures. The `exchange.xml` config file has an optional `<network-config>`
-section, which contains `<non-fatal-error-codes>` and `<non-fatal-error-messages>` elements - these can be used to tell the
+Trading Strategies to recover from temporary network failures. The `exchange.yaml` config file has an optional `networkConfig`
+section, which contains `nonFatalErrorCodes` and `nonFatalErrorMessages` elements - these can be used to tell the
 adapter when to throw the exception.
 
 The first release of the bot is _single-threaded_ for simplicity. The downside to this is that if an API call to the 
@@ -566,17 +478,17 @@ connections - see the [`AbstractExchangeAdapter`](./bxbot-exchanges/src/main/jav
 for an example how to do this.
 
 The Trading Engine will also call your adapter directly when performing the _Emergency Stop_ check to see if the 
-`<emergency-stop-currency>` wallet balance on the exchange drops below the configured `<emergency-stop-value>` value.
+`emergencyStopCurrency` wallet balance on the exchange drops below the configured `emergencyStopBalance` value.
 If this call to the [`TradingApi`](./bxbot-trading-api/src/main/java/com/gazbert/bxbot/trading/api/TradingApi.java)
 `getBalanceInfo()` fails and is not due to a `ExchangeNetworkException`, the Trading Engine will log the error, send an 
 Email Alert (if configured), and shut down. If the API call failed due to an `ExchangeNetworkException`, the 
 Trading Engine will log the error and sleep until the next trade cycle.
 
 ##### Configuration
-You provide your Exchange Adapter details in the `exchange.xml` file - see the _[Exchange Adapters Configuration](#exchange-adapters)_ 
+You provide your Exchange Adapter details in the `exchange.yaml` file - see the _[Exchange Adapters Configuration](#exchange-adapters)_ 
 section for full details.
 
-The `<optional-config>` section in the `exchange.xml` allows you to set key/value pair config items to pass to your
+The `otherConfig` section in the `exchange.yaml` allows you to set key/value pair config items to pass to your
 Exchange Adapter implementation. On startup, the Trading Engine will pass the config to your Exchange Adapter's 
 `init(ExchangeConfig config)` method. 
 
@@ -602,14 +514,10 @@ You can change this default logging configuration in the [`config/log4j2.xml`](.
 I recommend running at `info` level, as `debug` level logging will produce a *lot* of
 output from the Exchange Adapters; it's very handy for debugging, but not so good for your disk space!
  
-## Coming Soon
+## Coming Soon... (Definitely Maybe)
 The following features are in the pipeline:
 
-- Java 10 support - the migration work is being done on the [bxbot-java10](https://github.com/gazbert/bxbot/tree/bxbot-java10) branch.
 - A REST API for administering the bot. It's being developed on the [bxbot-restapi](https://github.com/gazbert/bxbot/tree/bxbot-restapi) branch.
-- An [admin server](https://github.com/gazbert/bxbot-ui-server) for proxying commands and config updates to BX-bots in the cloud. 
-  It will consume the bot's REST API.
-- A [Web UI](https://github.com/gazbert/bxbot-ui) written in [Angular](https://angular.io/) for administering multiple
-  bots in the cloud. It will integrate with the admin server. 
+- A UI built with [React](https://reactjs.org/) - it will consume the REST API. 
   
 See the main project [Issue Tracker](https://github.com/gazbert/bxbot/issues) for timescales and progress.

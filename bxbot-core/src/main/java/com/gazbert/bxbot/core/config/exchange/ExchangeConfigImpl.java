@@ -26,7 +26,7 @@ package com.gazbert.bxbot.core.config.exchange;
 import com.gazbert.bxbot.exchange.api.AuthenticationConfig;
 import com.gazbert.bxbot.exchange.api.ExchangeConfig;
 import com.gazbert.bxbot.exchange.api.NetworkConfig;
-import com.gazbert.bxbot.exchange.api.OptionalConfig;
+import com.gazbert.bxbot.exchange.api.OtherConfig;
 import com.google.common.base.MoreObjects;
 
 /**
@@ -40,7 +40,7 @@ public class ExchangeConfigImpl implements ExchangeConfig {
     private String exchangeAdapter;
     private AuthenticationConfig authenticationConfig;
     private NetworkConfig networkConfig;
-    private OptionalConfig optionalConfig;
+    private OtherConfig otherConfig;
 
     @Override
     public String getExchangeName() {
@@ -78,12 +78,12 @@ public class ExchangeConfigImpl implements ExchangeConfig {
         return networkConfig;
     }
 
-    public OptionalConfig getOptionalConfig() {
-        return optionalConfig;
+    public OtherConfig getOtherConfig() {
+        return otherConfig;
     }
 
-    public void setOptionalConfig(OptionalConfig optionalConfig) {
-        this.optionalConfig = optionalConfig;
+    public void setOtherConfig(OtherConfig otherConfig) {
+        this.otherConfig = otherConfig;
     }
 
     @Override
@@ -94,7 +94,7 @@ public class ExchangeConfigImpl implements ExchangeConfig {
                 // WARNING - careful showing this!
                 //.add("authenticationConfig", authenticationConfig)
                 .add("networkConfig", networkConfig)
-                .add("optionalConfig", optionalConfig)
+                .add("otherConfig", otherConfig)
                 .toString();
     }
 }

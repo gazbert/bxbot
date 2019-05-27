@@ -60,13 +60,13 @@ public class OkCoinIT {
     private ExchangeConfig exchangeConfig;
     private AuthenticationConfig authenticationConfig;
     private NetworkConfig networkConfig;
-    private OptionalConfig optionalConfig;
+    private OtherConfig otherConfig;
 
     /*
      * Create some exchange config - the TradingEngine would normally do this.
      */
     @Before
-    public void setupForEachTest() throws Exception {
+    public void setupForEachTest() {
 
         authenticationConfig = createMock(AuthenticationConfig.class);
         expect(authenticationConfig.getItem("key")).andReturn(KEY);
@@ -77,20 +77,20 @@ public class OkCoinIT {
         expect(networkConfig.getNonFatalErrorCodes()).andReturn(nonFatalNetworkErrorCodes);
         expect(networkConfig.getNonFatalErrorMessages()).andReturn(nonFatalNetworkErrorMessages);
 
-        optionalConfig = createMock(OptionalConfig.class);
-        expect(optionalConfig.getItem("buy-fee")).andReturn("0.25");
-        expect(optionalConfig.getItem("sell-fee")).andReturn("0.25");
+        otherConfig = createMock(OtherConfig.class);
+        expect(otherConfig.getItem("buy-fee")).andReturn("0.25");
+        expect(otherConfig.getItem("sell-fee")).andReturn("0.25");
 
         exchangeConfig = createMock(ExchangeConfig.class);
         expect(exchangeConfig.getAuthenticationConfig()).andReturn(authenticationConfig);
         expect(exchangeConfig.getNetworkConfig()).andReturn(networkConfig);
-        expect(exchangeConfig.getOptionalConfig()).andReturn(optionalConfig);
+        expect(exchangeConfig.getOtherConfig()).andReturn(otherConfig);
     }
 
     @Test
     public void testPublicApiCalls() throws Exception {
 
-        replay(authenticationConfig, networkConfig, optionalConfig, exchangeConfig);
+        replay(authenticationConfig, networkConfig, otherConfig, exchangeConfig);
 
         final ExchangeAdapter exchangeAdapter = new OkCoinExchangeAdapter();
         exchangeAdapter.init(exchangeConfig);
@@ -102,17 +102,17 @@ public class OkCoinIT {
         assertFalse(orderBook.getSellOrders().isEmpty());
 
         final Ticker ticker = exchangeAdapter.getTicker(MARKET_ID);
-        assertTrue(ticker.getLast() != null);
-        assertTrue(ticker.getAsk() != null);
-        assertTrue(ticker.getBid() != null);
-        assertTrue(ticker.getHigh() != null);
-        assertTrue(ticker.getLow() != null);
-        assertTrue(ticker.getOpen() == null); // open not supplied by OKCoin
-        assertTrue(ticker.getVolume() != null);
-        assertTrue(ticker.getVwap() == null); // vwap not supplied by OKCoin
-        assertTrue(ticker.getTimestamp() != null);
+        assertNotNull(ticker.getLast());
+        assertNotNull(ticker.getAsk());
+        assertNotNull(ticker.getBid());
+        assertNotNull(ticker.getHigh());
+        assertNotNull(ticker.getLow());
+        assertNull(ticker.getOpen()); // open not supplied by OKCoin
+        assertNotNull(ticker.getVolume());
+        assertNull(ticker.getVwap()); // vwap not supplied by OKCoin
+        assertNotNull(ticker.getTimestamp());
 
-        verify(authenticationConfig, networkConfig, optionalConfig, exchangeConfig);
+        verify(authenticationConfig, networkConfig, otherConfig, exchangeConfig);
     }
 
     /*
@@ -122,7 +122,7 @@ public class OkCoinIT {
     @Test
     public void testAuthenticatedApiCalls() throws Exception {
 
-        replay(authenticationConfig, networkConfig, optionalConfig, exchangeConfig);
+        replay(authenticationConfig, networkConfig, otherConfig, exchangeConfig);
 
         final ExchangeAdapter exchangeAdapter = new OkCoinExchangeAdapter();
         exchangeAdapter.init(exchangeConfig);
@@ -136,6 +136,6 @@ public class OkCoinIT {
 //        assertTrue(openOrders.stream().anyMatch(o -> o.getId().equals(orderId)));
 //        assertTrue(exchangeAdapter.cancelOrder(orderId, MARKET_ID));
 
-        verify(authenticationConfig, networkConfig, optionalConfig, exchangeConfig);
+        verify(authenticationConfig, networkConfig, otherConfig, exchangeConfig);
     }
 }

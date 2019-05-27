@@ -32,8 +32,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * Tests the Market Order Book impl behaves as expected.
@@ -113,9 +112,9 @@ public class TestMarketOrderBookImpl {
     public void testSettersWorkAsExpected() {
 
         final MarketOrderBookImpl marketOrderBook = new MarketOrderBookImpl(null, null, null);
-        assertEquals(null, marketOrderBook.getMarketId());
-        assertEquals(null, marketOrderBook.getSellOrders());
-        assertEquals(null, marketOrderBook.getSellOrders());
+        assertNull(marketOrderBook.getMarketId());
+        assertNull(marketOrderBook.getSellOrders());
+        assertNull(marketOrderBook.getBuyOrders());
 
         marketOrderBook.setMarketId(MARKET_ID);
         assertEquals(MARKET_ID, marketOrderBook.getMarketId());

@@ -26,6 +26,7 @@ package com.gazbert.bxbot.domain.bot;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 /**
  * Tests a BotStatus domain object behaves as expected.
@@ -52,9 +53,9 @@ public class TestBotStatus {
     public void testSettersWorkAsExpected() {
 
         final BotStatus botStatus = new BotStatus();
-        assertEquals(null, botStatus.getId());
-        assertEquals(null, botStatus.getDisplayName());
-        assertEquals(null, botStatus.getStatus());
+        assertNull(botStatus.getId());
+        assertNull(botStatus.getDisplayName());
+        assertNull(botStatus.getStatus());
 
         botStatus.setId(BOT_ID);
         assertEquals(BOT_ID, botStatus.getId());

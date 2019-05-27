@@ -49,7 +49,8 @@ import static org.easymock.EasyMock.expect;
  */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({Transport.class})
-@PowerMockIgnore({"javax.management.*"})
+@PowerMockIgnore({"javax.crypto.*", "javax.management.*",
+        "com.sun.org.apache.xerces.*", "javax.xml.parsers.*", "org.xml.sax.*", "org.w3c.dom.*"})
 public class TestEmailAlerter {
 
     private static final String EMAIL_SUBJECT = "CRITICAL Alert message from BX-bot";
@@ -66,12 +67,12 @@ public class TestEmailAlerter {
 
 
     @Before
-    public void setup() throws Exception {
+    public void setup() {
         emailAlertsConfigService = PowerMock.createMock(EmailAlertsConfigService.class);
     }
 
     @Test
-    public void testEmailAlerterInitialisedSuccessfully() throws Exception {
+    public void testEmailAlerterInitialisedSuccessfully() {
 
         expect(emailAlertsConfigService.getEmailAlertsConfig()).andReturn(someEmailAlertsConfigWithAlertsEnabledAndSmtpConfig());
         PowerMock.replayAll();
@@ -83,7 +84,7 @@ public class TestEmailAlerter {
     }
 
     @Test
-    public void testEmailAlerterInitialisedSuccessfullyWhenAlertsDisabledAndNoSmtpConfigSupplied() throws Exception {
+    public void testEmailAlerterInitialisedSuccessfullyWhenAlertsDisabledAndNoSmtpConfigSupplied() {
 
         expect(emailAlertsConfigService.getEmailAlertsConfig()).andReturn(someEmailAlertsConfigWithAlertsDisabledAndNoSmtpConfig());
         PowerMock.replayAll();
@@ -95,7 +96,7 @@ public class TestEmailAlerter {
     }
 
     @Test(expected = IllegalStateException.class)
-    public void testEmailAlerterInitialisationFailsWhenAlertsEnabledButNoSmtpConfigSupplied() throws Exception {
+    public void testEmailAlerterInitialisationFailsWhenAlertsEnabledButNoSmtpConfigSupplied() {
 
         expect(emailAlertsConfigService.getEmailAlertsConfig()).andReturn(someEmailAlertsConfigWithAlertsEnabledAndNoSmtpConfig());
         PowerMock.replayAll();
@@ -139,7 +140,7 @@ public class TestEmailAlerter {
      * 4. Run this test on its own.
      */
     //@Test
-    public void testEmailAlerterReallySendsMailSuccessfully() throws Exception {
+    public void testEmailAlerterReallySendsMailSuccessfully() {
 
         final EmailAlerter emailAlerter = new EmailAlerter(emailAlertsConfigService);
         emailAlerter.sendMessage(EMAIL_SUBJECT, EMAIL_MSG);
