@@ -20,7 +20,6 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-
 package com.gazbert.bxbot.rest.api.v1;
 
 import org.junit.Assert;
@@ -36,6 +35,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 /**
@@ -98,9 +98,9 @@ public abstract class AbstractControllerTest {
     // Shared utils
     // ------------------------------------------------------------------------------------------------
 
-    protected String buildAuthorizationHeaderValue(String username, String password) throws Exception {
+    protected String buildAuthorizationHeaderValue(String username, String password) {
         return "Basic " + new String(Base64Utils.encode(
-                (username + ":" + password).getBytes("UTF-8")), Charset.forName("UTF-8"));
+                (username + ":" + password).getBytes(StandardCharsets.UTF_8)), Charset.forName("UTF-8"));
     }
 
     /*

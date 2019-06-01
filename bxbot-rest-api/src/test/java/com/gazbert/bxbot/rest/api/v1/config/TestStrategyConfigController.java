@@ -20,7 +20,6 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-
 package com.gazbert.bxbot.rest.api.v1.config;
 
 import com.gazbert.bxbot.core.engine.TradingEngine;
@@ -71,13 +70,11 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
     private static final String STRAT_1_NAME = "MACD Strat Algo";
     private static final String STRAT_1_DESCRIPTION = "Uses MACD as indicator and takes long position in base currency.";
     private static final String STRAT_1_CLASSNAME = "com.gazbert.nova.algos.MacdLongBase";
-    private static final String STRAT_1_BEANNAME = "macdLongBase";
 
     private static final String STRAT_2_ID = "long-scalper";
     private static final String STRAT_2_NAME = "Long Position Scalper Algo";
     private static final String STRAT_2_DESCRIPTION = "Scalps and goes long...";
-    private static final String STRAT_2_CLASSNAME = "com.gazbert.nova.algos.LongScalper";
-    private static final String STRAT_2_BEANNAME = "longScalper";
+    private static final String STRAT_2_BEAN_NAME = "longScalper";
 
     private static final String BUY_PRICE_CONFIG_ITEM_KEY = "buy-price";
     private static final String BUY_PRICE_CONFIG_ITEM_VALUE = "671.15";
@@ -85,7 +82,7 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
     private static final String AMOUNT_TO_BUY_CONFIG_ITEM_VALUE = "0.5";
 
     @MockBean
-    StrategyConfigService strategyConfigService;
+    private StrategyConfigService strategyConfigService;
 
     // Need this even though not used in the test directly because Spring loads it on startup...
     @MockBean
@@ -114,13 +111,15 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
                 .andExpect(jsonPath("$.[0].name").value(STRAT_1_NAME))
                 .andExpect(jsonPath("$.[0].description").value(STRAT_1_DESCRIPTION))
                 .andExpect(jsonPath("$.[0].className").value(STRAT_1_CLASSNAME))
+                .andExpect(jsonPath("$.[0].beanName").isEmpty())
                 .andExpect(jsonPath("$.[0].configItems.buy-price").value(BUY_PRICE_CONFIG_ITEM_VALUE))
                 .andExpect(jsonPath("$.[0].configItems.buy-amount").value(AMOUNT_TO_BUY_CONFIG_ITEM_VALUE))
 
                 .andExpect(jsonPath("$.[1].id").value(STRAT_2_ID))
                 .andExpect(jsonPath("$.[1].name").value(STRAT_2_NAME))
                 .andExpect(jsonPath("$.[1].description").value(STRAT_2_DESCRIPTION))
-                .andExpect(jsonPath("$.[1].className").value(STRAT_2_CLASSNAME))
+                .andExpect(jsonPath("$.[1].className").isEmpty())
+                .andExpect(jsonPath("$.[1].beanName").value(STRAT_2_BEAN_NAME))
                 .andExpect(jsonPath("$.[1].configItems.buy-price").value(BUY_PRICE_CONFIG_ITEM_VALUE))
                 .andExpect(jsonPath("$.[1].configItems.buy-amount").value(AMOUNT_TO_BUY_CONFIG_ITEM_VALUE));
 
@@ -158,6 +157,7 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
                 .andExpect(jsonPath("$.name").value(STRAT_1_NAME))
                 .andExpect(jsonPath("$.description").value(STRAT_1_DESCRIPTION))
                 .andExpect(jsonPath("$.className").value(STRAT_1_CLASSNAME))
+                .andExpect(jsonPath("$.beanName").isEmpty())
                 .andExpect(jsonPath("$.configItems.buy-price").value(BUY_PRICE_CONFIG_ITEM_VALUE))
                 .andExpect(jsonPath("$.configItems.buy-amount").value(AMOUNT_TO_BUY_CONFIG_ITEM_VALUE));
 
@@ -343,8 +343,8 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
         configItems.put(BUY_PRICE_CONFIG_ITEM_KEY, BUY_PRICE_CONFIG_ITEM_VALUE);
         configItems.put(AMOUNT_TO_BUY_CONFIG_ITEM_KEY, AMOUNT_TO_BUY_CONFIG_ITEM_VALUE);
 
-        final StrategyConfig strategyConfig1 = new StrategyConfig(STRAT_1_ID, STRAT_1_NAME, STRAT_1_DESCRIPTION, STRAT_1_CLASSNAME, STRAT_1_BEANNAME, configItems);
-        final StrategyConfig strategyConfig2 = new StrategyConfig(STRAT_2_ID, STRAT_2_NAME, STRAT_2_DESCRIPTION, STRAT_2_CLASSNAME, STRAT_2_BEANNAME, configItems);
+        final StrategyConfig strategyConfig1 = new StrategyConfig(STRAT_1_ID, STRAT_1_NAME, STRAT_1_DESCRIPTION, STRAT_1_CLASSNAME, null, configItems);
+        final StrategyConfig strategyConfig2 = new StrategyConfig(STRAT_2_ID, STRAT_2_NAME, STRAT_2_DESCRIPTION, null, STRAT_2_BEAN_NAME, configItems);
 
         final List<StrategyConfig> allStrategies = new ArrayList<>();
         allStrategies.add(strategyConfig1);
@@ -356,20 +356,20 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
         final Map<String, String> configItems = new HashMap<>();
         configItems.put(BUY_PRICE_CONFIG_ITEM_KEY, BUY_PRICE_CONFIG_ITEM_VALUE);
         configItems.put(AMOUNT_TO_BUY_CONFIG_ITEM_KEY, AMOUNT_TO_BUY_CONFIG_ITEM_VALUE);
-        return new StrategyConfig(STRAT_1_ID, STRAT_1_NAME, STRAT_1_DESCRIPTION, STRAT_1_CLASSNAME, STRAT_1_BEANNAME, configItems);
+        return new StrategyConfig(STRAT_1_ID, STRAT_1_NAME, STRAT_1_DESCRIPTION, STRAT_1_CLASSNAME, null, configItems);
     }
 
     private static StrategyConfig someStrategyConfigWithMissingId() {
         final Map<String, String> configItems = new HashMap<>();
         configItems.put(BUY_PRICE_CONFIG_ITEM_KEY, BUY_PRICE_CONFIG_ITEM_VALUE);
         configItems.put(AMOUNT_TO_BUY_CONFIG_ITEM_KEY, AMOUNT_TO_BUY_CONFIG_ITEM_VALUE);
-        return new StrategyConfig(null, STRAT_1_NAME, STRAT_1_DESCRIPTION, STRAT_1_CLASSNAME, STRAT_1_BEANNAME, configItems);
+        return new StrategyConfig(null, STRAT_1_NAME, STRAT_1_DESCRIPTION, STRAT_1_CLASSNAME, null, configItems);
     }
 
     private static StrategyConfig unrecognizedStrategyConfig() {
         final Map<String, String> configItems = new HashMap<>();
         configItems.put(BUY_PRICE_CONFIG_ITEM_KEY, BUY_PRICE_CONFIG_ITEM_VALUE);
         configItems.put(AMOUNT_TO_BUY_CONFIG_ITEM_KEY, AMOUNT_TO_BUY_CONFIG_ITEM_VALUE);
-        return new StrategyConfig(UNKNOWN_STRAT_ID, STRAT_1_NAME, STRAT_1_DESCRIPTION, STRAT_1_CLASSNAME, STRAT_1_BEANNAME, configItems);
+        return new StrategyConfig(UNKNOWN_STRAT_ID, STRAT_1_NAME, STRAT_1_DESCRIPTION, STRAT_1_CLASSNAME, null, configItems);
     }
 }

@@ -20,7 +20,6 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-
 package com.gazbert.bxbot.rest.api.v1.config;
 
 import com.gazbert.bxbot.core.engine.TradingEngine;
@@ -80,7 +79,7 @@ public class TestMarketConfigController extends AbstractConfigControllerTest {
     private static final String MARKET_2_STRATEGY_ID = "macd-strategy";
 
     @MockBean
-    MarketConfigService marketConfigService;
+    private MarketConfigService marketConfigService;
 
     // Need this even though not used in the test directly because Spring loads it on startup...
     @MockBean

@@ -20,7 +20,6 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-
 package com.gazbert.bxbot.rest.api.v1.config;
 
 import com.gazbert.bxbot.core.engine.TradingEngine;
@@ -68,7 +67,7 @@ public class TestEmailAlertsConfigController extends AbstractConfigControllerTes
     private static final String TO_ADDRESS = "darth.vader@deathstar.com";
 
     @MockBean
-    EmailAlertsConfigService emailAlertsConfigService;
+    private EmailAlertsConfigService emailAlertsConfigService;
 
     // Need this even though not used in the test directly because Spring loads it on startup...
     @MockBean

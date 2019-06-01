@@ -20,7 +20,6 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-
 package com.gazbert.bxbot.rest.api.v1.config;
 
 import com.gazbert.bxbot.core.engine.TradingEngine;
@@ -86,8 +85,7 @@ public class TestExchangeConfigController extends AbstractConfigControllerTest {
     private static final String SELL_FEE_CONFIG_ITEM_KEY = "sell-fee";
     private static final String SELL_FEE_CONFIG_ITEM_VALUE = "0.25";
 
-    @MockBean
-    ExchangeConfigService exchangeConfigService;
+    @MockBean private ExchangeConfigService exchangeConfigService;
 
     // Need this even though not used in the test directly because Spring loads it on startup...
     @MockBean

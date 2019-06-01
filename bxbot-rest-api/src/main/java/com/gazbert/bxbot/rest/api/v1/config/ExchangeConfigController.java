@@ -20,7 +20,6 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-
 package com.gazbert.bxbot.rest.api.v1.config;
 
 import com.gazbert.bxbot.domain.exchange.ExchangeConfig;
@@ -65,7 +64,7 @@ public class ExchangeConfigController extends AbstractConfigController {
      * Returns the Exchange configuration for the bot.
      * <p>
      * The AuthenticationConfig is stripped out and not exposed for remote consumption.
-     * The API keys/credentials should not leave the bot's local machine via the REST API.
+     * The API keys/credentials will not leave the bot's local machine via the REST API.
      *
      * @param user the authenticated user making the request.
      * @return the Exchange configuration.
@@ -76,7 +75,7 @@ public class ExchangeConfigController extends AbstractConfigController {
         LOG.info("GET " + EXCHANGE_RESOURCE_PATH + " - getExchange() - caller: " + user.getUsername());
 
         final ExchangeConfig exchangeConfig = exchangeConfigService.getExchangeConfig();
-        exchangeConfig.setAuthenticationConfig(null);
+        exchangeConfig.setAuthenticationConfig(null); // authentication config removed by design
 
         LOG.info("Response: " + exchangeConfig);
         return exchangeConfig;
@@ -86,7 +85,7 @@ public class ExchangeConfigController extends AbstractConfigController {
      * Updates the Exchange configuration for the bot.
      * <p>
      * Any AuthenticationConfig is stripped out and not updated.
-     * The API keys/credentials should not enter the bot's local machine via the REST API.
+     * The API keys/credentials will not land on the bot's local machine via the REST API.
      *
      * @param user   the authenticated user making the request.
      * @param config the Exchange config to update.
