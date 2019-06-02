@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2015 Gareth Jon Lynch
+ * Copyright (c) 2019 gazbert
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -20,35 +20,35 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.gazbert.bxbot;
+package com.gazbert.bxbot.services.runtime.impl;
 
-import com.gazbert.bxbot.core.engine.TradingEngine;
+import com.gazbert.bxbot.services.runtime.BotRestartService;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.context.restart.RestartEndpoint;
+import org.springframework.stereotype.Service;
 
 /**
- * The BX-bot application.
+ * Implementation of the Bot restart service.
  *
  * @author gazbert
  */
-@SpringBootApplication
-public class BXBot implements CommandLineRunner {
+@Service("botRestartService")
+public class BotRestartServiceImpl implements BotRestartService {
 
-    private final TradingEngine tradingEngine;
+    private static final Logger LOG = LogManager.getLogger();
+
+    private RestartEndpoint restartEndpoint;
 
     @Autowired
-    public BXBot(TradingEngine tradingEngine) {
-        this.tradingEngine = tradingEngine;
-    }
-
-    public static void main(String[] args) {
-        SpringApplication.run(BXBot.class, args);
+    public BotRestartServiceImpl(RestartEndpoint restartEndpoint) {
+        this.restartEndpoint = restartEndpoint;
     }
 
     @Override
-    public void run(String... strings) {
-        tradingEngine.start();
+    public void restart() {
+        final Object result = restartEndpoint.restart();
+        LOG.info(() -> "Restart result: " + result);
     }
 }

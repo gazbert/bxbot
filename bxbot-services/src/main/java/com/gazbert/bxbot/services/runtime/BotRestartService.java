@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2015 Gareth Jon Lynch
+ * Copyright (c) 2019 gazbert
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -20,35 +20,14 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.gazbert.bxbot;
-
-import com.gazbert.bxbot.core.engine.TradingEngine;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+package com.gazbert.bxbot.services.runtime;
 
 /**
- * The BX-bot application.
+ * The Bot restart service.
  *
  * @author gazbert
  */
-@SpringBootApplication
-public class BXBot implements CommandLineRunner {
+public interface BotRestartService {
 
-    private final TradingEngine tradingEngine;
-
-    @Autowired
-    public BXBot(TradingEngine tradingEngine) {
-        this.tradingEngine = tradingEngine;
-    }
-
-    public static void main(String[] args) {
-        SpringApplication.run(BXBot.class, args);
-    }
-
-    @Override
-    public void run(String... strings) {
-        tradingEngine.start();
-    }
+    void restart();
 }
