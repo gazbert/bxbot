@@ -38,10 +38,13 @@ import static org.junit.Assert.assertNotNull;
 public class TestExchangeAdapterCreation {
 
   private static final String VALID_EXCHANGE_ADAPTER_IMPL = "com.gazbert.bxbot.core.util.adapters.ValidExchangeAdapter";
+
   private static final String INVALID_EXCHANGE_ADAPTER_NOT_IMPL_TRADING_API =
       "com.gazbert.bxbot.core.util.adapters.InvalidExchangeAdapterNotImplTradingApi";
+
   private static final String INVALID_EXCHANGE_ADAPTER_NOT_IMPL_EXCHANGE_ADAPTER =
       "com.gazbert.bxbot.core.util.adapters.InvalidExchangeAdapterNotImplExchangeAdapter";
+
   private static final String NONEXISTENT_EXCHANGE_ADAPTER_IMPL =
       "com.gazbert.bxbot.core.util.adapters.MuhInvalidExchangeAdapter";
 

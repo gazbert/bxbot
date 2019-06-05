@@ -1,6 +1,6 @@
 # BX-bot
 
-[![Build Status](https://travis-ci.org/gazbert/bxbot.svg?branch=master)](https://travis-ci.org/gazbert/bxbot)
+[![Build Status](https://travis-ci.org/gazbert/bxbot.svg?branch=bxbot-google-java-style)](https://travis-ci.org/gazbert/bxbot)
 [![Join the chat at https://gitter.im/BX-bot/Lobby](https://badges.gitter.im/BX-bot/Lobby.svg)](https://gitter.im/BX-bot/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)		 	 
  
 ## What is BX-bot?

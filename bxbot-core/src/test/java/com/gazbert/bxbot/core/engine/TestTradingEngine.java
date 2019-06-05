@@ -284,8 +284,8 @@ public class TestTradingEngine {
     expectLastCall().andThrow(new StrategyException(exceptionErrorMsg));
 
     // expect Email Alert to be sent
-    emailAlerter.sendMessage(eq(CRITICAL_EMAIL_ALERT_SUBJECT), contains("A FATAL error has occurred in Trading" +
-                                                                            " Strategy! Details: " + exceptionErrorMsg));
+    emailAlerter.sendMessage(eq(CRITICAL_EMAIL_ALERT_SUBJECT),
+        contains("A FATAL error has occurred in Trading Strategy! Details: " + exceptionErrorMsg));
     PowerMock.replayAll();
 
     final TradingEngine tradingEngine = new TradingEngine(exchangeConfigService, engineConfigService,
@@ -427,7 +427,8 @@ public class TestTradingEngine {
   /*
    * Tests the engine continues to execute next trade cycle if it receives a ExchangeNetworkException.
    * Scenario is 1 successful trade cycle, 2nd cycle Exchange Adapter throws ExchangeNetworkException, engine stays
-   * alive and Emergency Stop Check MUST run at start of every trade cycle.successfully executes subsequent trade cycles.
+   * alive and Emergency Stop Check MUST run at start of every trade cycle.successfully executes subsequent trade
+   * cycles.
    */
   @Test
   public void testEngineExecutesNextTradeCyclesAfterReceivingExchangeNetworkException() throws Exception {

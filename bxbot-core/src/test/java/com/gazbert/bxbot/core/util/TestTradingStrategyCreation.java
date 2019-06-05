@@ -36,9 +36,14 @@ import static org.junit.Assert.assertNotNull;
  */
 public class TestTradingStrategyCreation {
 
-  private static final String VALID_TRADING_STRATEGY_IMPL = "com.gazbert.bxbot.core.util.strategies.ValidTradingStrategy";
-  private static final String INVALID_TRADING_STRATEGY_IMPL = "com.gazbert.bxbot.core.util.strategies.InvalidTradingStrategy";
-  private static final String MISSING_TRADING_STRATEGY_IMPL = "com.gazbert.bxbot.core.util.strategies.MissingInvalidTradingStrategy";
+  private static final String VALID_TRADING_STRATEGY_IMPL =
+      "com.gazbert.bxbot.core.util.strategies.ValidTradingStrategy";
+
+  private static final String INVALID_TRADING_STRATEGY_IMPL =
+      "com.gazbert.bxbot.core.util.strategies.InvalidTradingStrategy";
+
+  private static final String MISSING_TRADING_STRATEGY_IMPL =
+      "com.gazbert.bxbot.core.util.strategies.MissingInvalidTradingStrategy";
 
   @Test
   public void testCreationOfValidTradingStrategyImpl() {

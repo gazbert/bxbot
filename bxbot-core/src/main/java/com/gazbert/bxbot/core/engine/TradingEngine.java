@@ -245,7 +245,8 @@ public class TradingEngine {
          * A serious and *unexpected* issue has occurred in the Exchange Adapter or Trading Strategy.
          * Current policy is to log it, send email alert if required, and shutdown bot.
          */
-        final String FATAL_ERROR_MSG = "An unexpected FATAL error has occurred in Exchange Adapter or Trading Strategy!";
+        final String FATAL_ERROR_MSG = "An unexpected FATAL error has occurred in Exchange Adapter or " +
+                                           "Trading Strategy!";
         LOG.fatal(FATAL_ERROR_MSG, e);
         emailAlerter.sendMessage(CRITICAL_EMAIL_ALERT_SUBJECT,
             buildCriticalEmailAlertMsgContent(FATAL_ERROR_MSG +
@@ -311,9 +312,9 @@ public class TradingEngine {
     final BigDecimal currentBalance = balancesAvailable.get(emergencyStopCurrency);
     if (currentBalance == null) {
       final String errorMsg =
-          "Emergency stop check: Failed to get current Emergency Stop Currency balance as '"
-              + emergencyStopCurrency + "' key into Balances map "
-              + "returned null. Balances returned: " + balancesAvailable;
+          "Emergency stop check: Failed to get current Emergency Stop Currency balance as '" +
+              emergencyStopCurrency + "' key into Balances map " +
+              "returned null. Balances returned: " + balancesAvailable;
       LOG.error(errorMsg);
       throw new IllegalStateException(errorMsg);
     } else {
@@ -328,10 +329,10 @@ public class TradingEngine {
 
       if (currentBalance.compareTo(emergencyStopBalance) < 0) {
         final String balanceBlownErrorMsg =
-            "EMERGENCY STOP triggered! - Current Emergency Stop Currency [" + emergencyStopCurrency + "] wallet balance ["
-                + new DecimalFormat("#.########").format(currentBalance) + "] on exchange "
-                + "is lower than configured Emergency Stop balance ["
-                + new DecimalFormat("#.########").format(emergencyStopBalance) + "] " + emergencyStopCurrency;
+            "EMERGENCY STOP triggered! - Current Emergency Stop Currency [" + emergencyStopCurrency + "] wallet " +
+                "balance [" + new DecimalFormat("#.########").format(currentBalance) + "] on exchange " +
+                "is lower than configured Emergency Stop balance [" +
+                new DecimalFormat("#.########").format(emergencyStopBalance) + "] " + emergencyStopCurrency;
 
         LOG.fatal(balanceBlownErrorMsg);
         emailAlerter.sendMessage(CRITICAL_EMAIL_ALERT_SUBJECT,
