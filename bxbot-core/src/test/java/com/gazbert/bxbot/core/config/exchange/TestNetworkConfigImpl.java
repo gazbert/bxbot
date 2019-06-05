@@ -37,32 +37,32 @@ import static org.junit.Assert.*;
  */
 public class TestNetworkConfigImpl {
 
-    private static final Integer CONNECTION_TIMEOUT = 30;
-    private static final List<Integer> NON_FATAL_ERROR_CODES = Arrays.asList(502, 503, 504);
-    private static final List<String> NON_FATAL_ERROR_MESSAGES = Arrays.asList(
-            "Connection refused", "Connection reset", "Remote host closed connection during handshake");
+  private static final Integer CONNECTION_TIMEOUT = 30;
+  private static final List<Integer> NON_FATAL_ERROR_CODES = Arrays.asList(502, 503, 504);
+  private static final List<String> NON_FATAL_ERROR_MESSAGES = Arrays.asList(
+      "Connection refused", "Connection reset", "Remote host closed connection during handshake");
 
-    @Test
-    public void testInitialisationWorksAsExpected() {
+  @Test
+  public void testInitialisationWorksAsExpected() {
 
-        final NetworkConfigImpl networkConfig = new NetworkConfigImpl();
-        assertNull(networkConfig.getConnectionTimeout());
-        assertTrue(networkConfig.getNonFatalErrorCodes().isEmpty());
-        assertTrue(networkConfig.getNonFatalErrorMessages().isEmpty());
-    }
+    final NetworkConfigImpl networkConfig = new NetworkConfigImpl();
+    assertNull(networkConfig.getConnectionTimeout());
+    assertTrue(networkConfig.getNonFatalErrorCodes().isEmpty());
+    assertTrue(networkConfig.getNonFatalErrorMessages().isEmpty());
+  }
 
-    @Test
-    public void testSettersWorkAsExpected() {
+  @Test
+  public void testSettersWorkAsExpected() {
 
-        final NetworkConfigImpl networkConfig = new NetworkConfigImpl();
+    final NetworkConfigImpl networkConfig = new NetworkConfigImpl();
 
-        networkConfig.setConnectionTimeout(CONNECTION_TIMEOUT);
-        assertEquals(CONNECTION_TIMEOUT, networkConfig.getConnectionTimeout());
+    networkConfig.setConnectionTimeout(CONNECTION_TIMEOUT);
+    assertEquals(CONNECTION_TIMEOUT, networkConfig.getConnectionTimeout());
 
-        networkConfig.setNonFatalErrorCodes(NON_FATAL_ERROR_CODES);
-        assertEquals(NON_FATAL_ERROR_CODES, networkConfig.getNonFatalErrorCodes());
+    networkConfig.setNonFatalErrorCodes(NON_FATAL_ERROR_CODES);
+    assertEquals(NON_FATAL_ERROR_CODES, networkConfig.getNonFatalErrorCodes());
 
-        networkConfig.setNonFatalErrorMessages(NON_FATAL_ERROR_MESSAGES);
-        assertEquals(NON_FATAL_ERROR_MESSAGES, networkConfig.getNonFatalErrorMessages());
-    }
+    networkConfig.setNonFatalErrorMessages(NON_FATAL_ERROR_MESSAGES);
+    assertEquals(NON_FATAL_ERROR_MESSAGES, networkConfig.getNonFatalErrorMessages());
+  }
 }

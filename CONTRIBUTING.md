@@ -80,3 +80,4 @@ These convention should (ideally!) be followed:
 * Add some Javadocs.
 * In general commits should be atomic and diffs should be easy to read. For this reason do not mix any formatting fixes 
   or code moves with actual code changes.
+* We use the [Google Java Style Guide](https://google.github.io/styleguide/javaguide.html) with one exception: max column size is 120.

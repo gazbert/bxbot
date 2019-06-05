@@ -34,27 +34,26 @@ import org.apache.logging.log4j.Logger;
  */
 public abstract class ConfigurableComponentFactory {
 
-    private static final Logger LOG = LogManager.getLogger();
+  private static final Logger LOG = LogManager.getLogger();
 
-    private ConfigurableComponentFactory() {
+  private ConfigurableComponentFactory() {
+  }
+
+  /*
+   * Loads and instantiates a given class and returns it.
+   */
+  @SuppressWarnings("unchecked")
+  public static <T> T createComponent(String componentClassName) {
+    try {
+      final Class componentClass = Class.forName(componentClassName);
+      final Object rawComponentObject = componentClass.newInstance();
+      LOG.info(() -> "Successfully created the Component class for: " + componentClassName);
+      return (T) rawComponentObject;
+
+    } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+      final String errorMsg = "Failed to load and initialise Component class.";
+      LOG.error(errorMsg, e);
+      throw new IllegalStateException(errorMsg, e);
     }
-
-    /*
-     * Loads and instantiates a given class and returns it.
-     */
-    @SuppressWarnings("unchecked")
-    public static <T> T createComponent(String componentClassName) {
-        try {
-            final Class componentClass = Class.forName(componentClassName);
-            final Object rawComponentObject = componentClass.newInstance();
-            LOG.info(() -> "Successfully created the Component class for: " + componentClassName);
-
-            // should be one of ours
-            return (T) rawComponentObject;
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-            final String errorMsg = "Failed to load and initialise Component class.";
-            LOG.error(errorMsg, e);
-            throw new IllegalStateException(errorMsg, e);
-        }
-    }
+  }
 }

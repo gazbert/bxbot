@@ -34,22 +34,20 @@ import static org.junit.Assert.assertEquals;
  */
 public class TestStrategyConfigItems {
 
-    private static final String BUY_PRICE_CONFIG_ITEM_KEY = "buyPrice";
-    private static final String BUY_PRICE_CONFIG_ITEM_VALUE = "671.15";
+  private static final String BUY_PRICE_CONFIG_ITEM_KEY = "buyPrice";
+  private static final String BUY_PRICE_CONFIG_ITEM_VALUE = "671.15";
 
-    private static final String AMOUNT_TO_BUY_CONFIG_ITEM_KEY = "amountToBuy";
-    private static final String AMOUNT_TO_BUY_CONFIG_ITEM_VALUE = "0.5";
+  private static final String AMOUNT_TO_BUY_CONFIG_ITEM_KEY = "amountToBuy";
+  private static final String AMOUNT_TO_BUY_CONFIG_ITEM_VALUE = "0.5";
 
+  @Test
+  public void testAddingAndFetchingConfigItems() {
+    final StrategyConfigItems strategyConfig = new StrategyConfigItems();
+    strategyConfig.getItems().put(BUY_PRICE_CONFIG_ITEM_KEY, BUY_PRICE_CONFIG_ITEM_VALUE);
+    strategyConfig.getItems().put(AMOUNT_TO_BUY_CONFIG_ITEM_KEY, AMOUNT_TO_BUY_CONFIG_ITEM_VALUE);
 
-    @Test
-    public void testAddingAndFetchingConfigItems() {
-
-        final StrategyConfigItems strategyConfig = new StrategyConfigItems();
-        strategyConfig.getItems().put(BUY_PRICE_CONFIG_ITEM_KEY, BUY_PRICE_CONFIG_ITEM_VALUE);
-        strategyConfig.getItems().put(AMOUNT_TO_BUY_CONFIG_ITEM_KEY, AMOUNT_TO_BUY_CONFIG_ITEM_VALUE);
-
-        assertEquals(2, strategyConfig.getItems().size());
-        assertEquals(BUY_PRICE_CONFIG_ITEM_VALUE, strategyConfig.getItems().get(BUY_PRICE_CONFIG_ITEM_KEY));
-        assertEquals(AMOUNT_TO_BUY_CONFIG_ITEM_VALUE, strategyConfig.getItems().get(AMOUNT_TO_BUY_CONFIG_ITEM_KEY));
-    }
+    assertEquals(2, strategyConfig.getItems().size());
+    assertEquals(BUY_PRICE_CONFIG_ITEM_VALUE, strategyConfig.getItems().get(BUY_PRICE_CONFIG_ITEM_KEY));
+    assertEquals(AMOUNT_TO_BUY_CONFIG_ITEM_VALUE, strategyConfig.getItems().get(AMOUNT_TO_BUY_CONFIG_ITEM_KEY));
+  }
 }
