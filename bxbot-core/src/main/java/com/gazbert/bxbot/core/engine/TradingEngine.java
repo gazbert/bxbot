@@ -267,7 +267,7 @@ public class TradingEngine {
    * Might be called from a different thread.
    * TODO currently not used - but will eventually be called from BX-bot UI
    */
-  public void shutdown() {
+  void shutdown() {
     LOG.info(() -> "Shutdown request received!");
     LOG.info(() -> "Engine originally started in thread: " + engineThread);
     keepAlive = false;
@@ -450,8 +450,7 @@ public class TradingEngine {
       adapterExchangeConfig.setAuthenticationConfig(adapterAuthenticationConfig);
 
       // WARNING - careful when you log this
-//            LOG.info(() ->
-//                    "AuthenticationConfiguration has been set: " + adapterAuthenticationConfig);
+      // LOG.info(() -> "AuthenticationConfiguration has been set: " + adapterAuthenticationConfig);
 
     } else {
       LOG.info(() -> "No (optional) AuthenticationConfiguration has been set for Exchange Adapter: " +
