@@ -39,7 +39,6 @@ public class TestEmailAlertsConfig {
 
     @Test
     public void testInitialisationWorksAsExpected() {
-
         final EmailAlertsConfig emailAlertsConfig = new EmailAlertsConfig(ENABLED, SMTP_CONFIG);
         assertEquals(ENABLED, emailAlertsConfig.isEnabled());
         assertEquals(SMTP_CONFIG, emailAlertsConfig.getSmtpConfig());
@@ -47,7 +46,6 @@ public class TestEmailAlertsConfig {
 
     @Test
     public void testSettersWorkAsExpected() {
-
         final EmailAlertsConfig emailAlertsConfig = new EmailAlertsConfig();
         assertFalse(emailAlertsConfig.isEnabled());
         assertNull(emailAlertsConfig.getSmtpConfig());

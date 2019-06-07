@@ -87,8 +87,7 @@ public class ExchangeConfig {
         return MoreObjects.toStringHelper(this)
                 .add("name", name)
                 .add("adapter", adapter)
-                // WARNING - careful showing this!
-                //.add("authenticationConfig", authenticationConfig)
+                // authenticationConfig is not included
                 .add("networkConfig", networkConfig)
                 .add("otherConfig", otherConfig)
                 .toString();

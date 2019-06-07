@@ -41,10 +41,8 @@ public class TestMarketConfig {
     private static final boolean IS_ENABLED = true;
     private static final String TRADING_STRATEGY = "macd_trend_follower";
 
-
     @Test
     public void testInitialisationWorksAsExpected() {
-
         final MarketConfig marketConfig = new MarketConfig(ID, NAME, BASE_CURRENCY, COUNTER_CURRENCY, IS_ENABLED, TRADING_STRATEGY);
         assertEquals(NAME, marketConfig.getName());
         assertEquals(ID, marketConfig.getId());
@@ -56,7 +54,6 @@ public class TestMarketConfig {
 
     @Test
     public void testSettersWorkAsExpected() {
-
         final MarketConfig marketConfig = new MarketConfig();
         assertNull(marketConfig.getId());
         assertNull(marketConfig.getName());

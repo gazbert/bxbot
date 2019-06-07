@@ -106,8 +106,7 @@ public class SmtpConfig {
                 .add("host", host)
                 .add("tlsPort", tlsPort)
                 .add("accountUsername", accountUsername)
-                // Careful with the password!
-//                .add("accountPassword", accountPassword)
+                // accountPassword is not included
                 .add("fromAddress", fromAddress)
                 .add("toAddress", toAddress)
                 .toString();

@@ -43,7 +43,6 @@ public class StrategyConfig {
     private String beanName;
     private Map<String, String> configItems = new HashMap<>();
 
-
     // required for Jackson
     public StrategyConfig() {
     }
@@ -57,7 +56,8 @@ public class StrategyConfig {
         this.configItems = other.configItems;
     }
 
-    public StrategyConfig(String id, String name, String description, String className, String beanName, Map<String, String> configItems) {
+    public StrategyConfig(String id, String name, String description, String className, String beanName,
+                          Map<String, String> configItems) {
         this.id = id;
         this.name = name;
         this.description = description;

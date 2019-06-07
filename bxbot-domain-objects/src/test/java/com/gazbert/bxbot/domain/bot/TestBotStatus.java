@@ -41,9 +41,7 @@ public class TestBotStatus {
 
     @Test
     public void testInitialisationWorksAsExpected() {
-
         final BotStatus botStatus = new BotStatus(BOT_ID, DISPLAY_NAME, STATUS);
-
         assertEquals(BOT_ID, botStatus.getBotId());
         assertEquals(DISPLAY_NAME, botStatus.getDisplayName());
         assertEquals(STATUS, botStatus.getStatus());
@@ -51,7 +49,6 @@ public class TestBotStatus {
 
     @Test
     public void testSettersWorkAsExpected() {
-
         final BotStatus botStatus = new BotStatus();
         assertNull(botStatus.getBotId());
         assertNull(botStatus.getDisplayName());

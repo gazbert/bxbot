@@ -449,8 +449,8 @@ public class TradingEngine {
       adapterAuthenticationConfig.setItems(authenticationConfig);
       adapterExchangeConfig.setAuthenticationConfig(adapterAuthenticationConfig);
 
-      // WARNING - careful when you log this
-      // LOG.info(() -> "AuthenticationConfiguration has been set: " + adapterAuthenticationConfig);
+      // We don't log the creds!
+      LOG.info(() -> "AuthenticationConfiguration has been set successfully.");
 
     } else {
       LOG.info(() -> "No (optional) AuthenticationConfiguration has been set for Exchange Adapter: " +

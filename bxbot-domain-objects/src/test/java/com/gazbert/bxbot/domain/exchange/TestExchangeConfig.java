@@ -47,7 +47,6 @@ public class TestExchangeConfig {
 
     @Test
     public void testInitialisationWorksAsExpected() {
-
         final ExchangeConfig exchangeConfig = new ExchangeConfig();
         assertNull(exchangeConfig.getName());
         assertNull(exchangeConfig.getAdapter());
@@ -58,7 +57,6 @@ public class TestExchangeConfig {
 
     @Test
     public void testSettersWorkAsExpected() {
-
         final ExchangeConfig exchangeConfig = new ExchangeConfig();
 
         exchangeConfig.setName(EXCHANGE_NAME);

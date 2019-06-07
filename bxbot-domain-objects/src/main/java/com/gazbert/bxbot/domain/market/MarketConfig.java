@@ -40,7 +40,6 @@ public class MarketConfig {
     private boolean enabled;
     private String tradingStrategyId;
 
-
     // required for Jackson
     public MarketConfig() {
     }
@@ -54,7 +53,8 @@ public class MarketConfig {
         this.tradingStrategyId = other.tradingStrategyId;
     }
 
-    public MarketConfig(String id, String name, String baseCurrency, String counterCurrency, boolean enabled, String tradingStrategyId) {
+    public MarketConfig(String id, String name, String baseCurrency, String counterCurrency, boolean enabled,
+                        String tradingStrategyId) {
         this.id = id;
         this.name = name;
         this.baseCurrency = baseCurrency;

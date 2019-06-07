@@ -44,7 +44,6 @@ public class TestNetworkConfig {
 
     @Test
     public void testInitialisationWorksAsExpected() {
-
         final NetworkConfig networkConfig = new NetworkConfig();
         assertNull(networkConfig.getConnectionTimeout());
         assertTrue(networkConfig.getNonFatalErrorCodes().isEmpty());
@@ -53,7 +52,6 @@ public class TestNetworkConfig {
 
     @Test
     public void testSettersWorkAsExpected() {
-
         final NetworkConfig networkConfig = new NetworkConfig();
 
         networkConfig.setConnectionTimeout(CONNECTION_TIMEOUT);

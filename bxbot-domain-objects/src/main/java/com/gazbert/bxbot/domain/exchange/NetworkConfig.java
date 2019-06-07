@@ -39,7 +39,6 @@ public class NetworkConfig {
     private List<Integer> nonFatalErrorCodes;
     private List<String> nonFatalErrorMessages;
 
-
     public NetworkConfig() {
         nonFatalErrorCodes = new ArrayList<>();
         nonFatalErrorMessages = new ArrayList<>();

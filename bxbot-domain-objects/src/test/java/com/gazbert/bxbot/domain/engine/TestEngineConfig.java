@@ -45,7 +45,6 @@ public class TestEngineConfig {
 
     @Test
     public void testInitialisationWorksAsExpected() {
-
         final EngineConfig engineConfig = new EngineConfig(BOT_ID, BOT_NAME, EMERGENCY_STOP_CURRENCY,
                 EMERGENCY_STOP_BALANCE, TRADE_CYCLE_INTERVAL);
 
@@ -58,7 +57,6 @@ public class TestEngineConfig {
 
     @Test
     public void testSettersWorkAsExpected() {
-
         final EngineConfig engineConfig = new EngineConfig();
         assertNull(engineConfig.getBotId());
         assertNull(engineConfig.getBotName());
