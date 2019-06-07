@@ -37,46 +37,46 @@ import static org.junit.Assert.assertNull;
  */
 public class TestEngineConfig {
 
-    private static final String BOT_ID = "avro-707_1";
-    private static final String BOT_NAME = "Avro 707";
-    private static final String EMERGENCY_STOP_CURRENCY = "BTC";
-    private static final BigDecimal EMERGENCY_STOP_BALANCE = new BigDecimal("1.5");
-    private static final int TRADE_CYCLE_INTERVAL = 30;
+  private static final String BOT_ID = "avro-707_1";
+  private static final String BOT_NAME = "Avro 707";
+  private static final String EMERGENCY_STOP_CURRENCY = "BTC";
+  private static final BigDecimal EMERGENCY_STOP_BALANCE = new BigDecimal("1.5");
+  private static final int TRADE_CYCLE_INTERVAL = 30;
 
-    @Test
-    public void testInitialisationWorksAsExpected() {
-        final EngineConfig engineConfig = new EngineConfig(BOT_ID, BOT_NAME, EMERGENCY_STOP_CURRENCY,
-                EMERGENCY_STOP_BALANCE, TRADE_CYCLE_INTERVAL);
+  @Test
+  public void testInitialisationWorksAsExpected() {
+    final EngineConfig engineConfig = new EngineConfig(BOT_ID, BOT_NAME, EMERGENCY_STOP_CURRENCY,
+        EMERGENCY_STOP_BALANCE, TRADE_CYCLE_INTERVAL);
 
-        assertEquals(BOT_ID, engineConfig.getBotId());
-        assertEquals(BOT_NAME, engineConfig.getBotName());
-        assertEquals(EMERGENCY_STOP_CURRENCY, engineConfig.getEmergencyStopCurrency());
-        assertEquals(EMERGENCY_STOP_BALANCE, engineConfig.getEmergencyStopBalance());
-        assertEquals(TRADE_CYCLE_INTERVAL, engineConfig.getTradeCycleInterval());
-    }
+    assertEquals(BOT_ID, engineConfig.getBotId());
+    assertEquals(BOT_NAME, engineConfig.getBotName());
+    assertEquals(EMERGENCY_STOP_CURRENCY, engineConfig.getEmergencyStopCurrency());
+    assertEquals(EMERGENCY_STOP_BALANCE, engineConfig.getEmergencyStopBalance());
+    assertEquals(TRADE_CYCLE_INTERVAL, engineConfig.getTradeCycleInterval());
+  }
 
-    @Test
-    public void testSettersWorkAsExpected() {
-        final EngineConfig engineConfig = new EngineConfig();
-        assertNull(engineConfig.getBotId());
-        assertNull(engineConfig.getBotName());
-        assertNull(engineConfig.getEmergencyStopCurrency());
-        assertNull(engineConfig.getEmergencyStopBalance());
-        assertEquals(0, engineConfig.getTradeCycleInterval());
+  @Test
+  public void testSettersWorkAsExpected() {
+    final EngineConfig engineConfig = new EngineConfig();
+    assertNull(engineConfig.getBotId());
+    assertNull(engineConfig.getBotName());
+    assertNull(engineConfig.getEmergencyStopCurrency());
+    assertNull(engineConfig.getEmergencyStopBalance());
+    assertEquals(0, engineConfig.getTradeCycleInterval());
 
-        engineConfig.setBotId(BOT_ID);
-        assertEquals(BOT_ID, engineConfig.getBotId());
+    engineConfig.setBotId(BOT_ID);
+    assertEquals(BOT_ID, engineConfig.getBotId());
 
-        engineConfig.setBotName(BOT_NAME);
-        assertEquals(BOT_NAME, engineConfig.getBotName());
+    engineConfig.setBotName(BOT_NAME);
+    assertEquals(BOT_NAME, engineConfig.getBotName());
 
-        engineConfig.setEmergencyStopCurrency(EMERGENCY_STOP_CURRENCY);
-        assertEquals(EMERGENCY_STOP_CURRENCY, engineConfig.getEmergencyStopCurrency());
+    engineConfig.setEmergencyStopCurrency(EMERGENCY_STOP_CURRENCY);
+    assertEquals(EMERGENCY_STOP_CURRENCY, engineConfig.getEmergencyStopCurrency());
 
-        engineConfig.setEmergencyStopBalance(EMERGENCY_STOP_BALANCE);
-        assertEquals(EMERGENCY_STOP_BALANCE, engineConfig.getEmergencyStopBalance());
+    engineConfig.setEmergencyStopBalance(EMERGENCY_STOP_BALANCE);
+    assertEquals(EMERGENCY_STOP_BALANCE, engineConfig.getEmergencyStopBalance());
 
-        engineConfig.setTradeCycleInterval(TRADE_CYCLE_INTERVAL);
-        assertEquals(TRADE_CYCLE_INTERVAL, engineConfig.getTradeCycleInterval());
-    }
+    engineConfig.setTradeCycleInterval(TRADE_CYCLE_INTERVAL);
+    assertEquals(TRADE_CYCLE_INTERVAL, engineConfig.getTradeCycleInterval());
+  }
 }

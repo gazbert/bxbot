@@ -38,40 +38,39 @@ import static org.junit.Assert.assertNull;
  */
 public class TestExchangeConfig {
 
-    private static final String EXCHANGE_NAME = "Bitstamp";
-    private static final String EXCHANGE_ADAPTER = "com.gazbert.bxbot.exchanges.TestExchangeAdapter";
-    private static final Map<String, String> AUTHENTICATION_CONFIG = new HashMap<>();
-    private static final NetworkConfig NETWORK_CONFIG = new NetworkConfig();
-    private static final Map<String, String> OTHER_CONFIG = new HashMap<>();
+  private static final String EXCHANGE_NAME = "Bitstamp";
+  private static final String EXCHANGE_ADAPTER = "com.gazbert.bxbot.exchanges.TestExchangeAdapter";
+  private static final Map<String, String> AUTHENTICATION_CONFIG = new HashMap<>();
+  private static final NetworkConfig NETWORK_CONFIG = new NetworkConfig();
+  private static final Map<String, String> OTHER_CONFIG = new HashMap<>();
 
+  @Test
+  public void testInitialisationWorksAsExpected() {
+    final ExchangeConfig exchangeConfig = new ExchangeConfig();
+    assertNull(exchangeConfig.getName());
+    assertNull(exchangeConfig.getAdapter());
+    assertNull(exchangeConfig.getAuthenticationConfig());
+    assertNull(exchangeConfig.getNetworkConfig());
+    assertNull(exchangeConfig.getOtherConfig());
+  }
 
-    @Test
-    public void testInitialisationWorksAsExpected() {
-        final ExchangeConfig exchangeConfig = new ExchangeConfig();
-        assertNull(exchangeConfig.getName());
-        assertNull(exchangeConfig.getAdapter());
-        assertNull(exchangeConfig.getAuthenticationConfig());
-        assertNull(exchangeConfig.getNetworkConfig());
-        assertNull(exchangeConfig.getOtherConfig());
-    }
+  @Test
+  public void testSettersWorkAsExpected() {
+    final ExchangeConfig exchangeConfig = new ExchangeConfig();
 
-    @Test
-    public void testSettersWorkAsExpected() {
-        final ExchangeConfig exchangeConfig = new ExchangeConfig();
+    exchangeConfig.setName(EXCHANGE_NAME);
+    assertEquals(EXCHANGE_NAME, exchangeConfig.getName());
 
-        exchangeConfig.setName(EXCHANGE_NAME);
-        assertEquals(EXCHANGE_NAME, exchangeConfig.getName());
+    exchangeConfig.setAdapter(EXCHANGE_ADAPTER);
+    assertEquals(EXCHANGE_ADAPTER, exchangeConfig.getAdapter());
 
-        exchangeConfig.setAdapter(EXCHANGE_ADAPTER);
-        assertEquals(EXCHANGE_ADAPTER, exchangeConfig.getAdapter());
+    exchangeConfig.setAuthenticationConfig(AUTHENTICATION_CONFIG);
+    assertEquals(AUTHENTICATION_CONFIG, exchangeConfig.getAuthenticationConfig());
 
-        exchangeConfig.setAuthenticationConfig(AUTHENTICATION_CONFIG);
-        assertEquals(AUTHENTICATION_CONFIG, exchangeConfig.getAuthenticationConfig());
+    exchangeConfig.setNetworkConfig(NETWORK_CONFIG);
+    assertEquals(NETWORK_CONFIG, exchangeConfig.getNetworkConfig());
 
-        exchangeConfig.setNetworkConfig(NETWORK_CONFIG);
-        assertEquals(NETWORK_CONFIG, exchangeConfig.getNetworkConfig());
-
-        exchangeConfig.setOtherConfig(OTHER_CONFIG);
-        assertEquals(OTHER_CONFIG, exchangeConfig.getOtherConfig());
-    }
+    exchangeConfig.setOtherConfig(OTHER_CONFIG);
+    assertEquals(OTHER_CONFIG, exchangeConfig.getOtherConfig());
+  }
 }

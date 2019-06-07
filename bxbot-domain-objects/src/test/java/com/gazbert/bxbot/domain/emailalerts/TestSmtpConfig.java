@@ -35,50 +35,51 @@ import static org.junit.Assert.assertNull;
  */
 public class TestSmtpConfig {
 
-    private static final String HOST = "mail.google.com";
-    private static final int TLS_PORT = 587;
-    private static final String ACCOUNT_USERNAME = "user@google.com";
-    private static final String ACCOUNT_PASSWORD = "myPass";
-    private static final String FROM_ADDRESS = "from.me@google.com";
-    private static final String TO_ADDRESS = "to.them@google.com";
+  private static final String HOST = "mail.google.com";
+  private static final int TLS_PORT = 587;
+  private static final String ACCOUNT_USERNAME = "user@google.com";
+  private static final String ACCOUNT_PASSWORD = "myPass";
+  private static final String FROM_ADDRESS = "from.me@google.com";
+  private static final String TO_ADDRESS = "to.them@google.com";
 
-    @Test
-    public void testInitialisationWorksAsExpected() {
-        final SmtpConfig emailAlertsConfig = new SmtpConfig(HOST, TLS_PORT, ACCOUNT_USERNAME, ACCOUNT_PASSWORD, FROM_ADDRESS, TO_ADDRESS);
-        assertEquals(HOST, emailAlertsConfig.getHost());
-        assertEquals(TLS_PORT, emailAlertsConfig.getTlsPort());
-        assertEquals(ACCOUNT_USERNAME, emailAlertsConfig.getAccountUsername());
-        assertEquals(ACCOUNT_PASSWORD, emailAlertsConfig.getAccountPassword());
-        assertEquals(FROM_ADDRESS, emailAlertsConfig.getFromAddress());
-        assertEquals(TO_ADDRESS, emailAlertsConfig.getToAddress());
-    }
+  @Test
+  public void testInitialisationWorksAsExpected() {
+    final SmtpConfig emailAlertsConfig = new SmtpConfig(HOST, TLS_PORT, ACCOUNT_USERNAME, ACCOUNT_PASSWORD,
+        FROM_ADDRESS, TO_ADDRESS);
+    assertEquals(HOST, emailAlertsConfig.getHost());
+    assertEquals(TLS_PORT, emailAlertsConfig.getTlsPort());
+    assertEquals(ACCOUNT_USERNAME, emailAlertsConfig.getAccountUsername());
+    assertEquals(ACCOUNT_PASSWORD, emailAlertsConfig.getAccountPassword());
+    assertEquals(FROM_ADDRESS, emailAlertsConfig.getFromAddress());
+    assertEquals(TO_ADDRESS, emailAlertsConfig.getToAddress());
+  }
 
-    @Test
-    public void testSettersWorkAsExpected() {
-        final SmtpConfig emailAlertsConfig = new SmtpConfig();
-        assertNull(emailAlertsConfig.getHost());
-        assertEquals(0, emailAlertsConfig.getTlsPort());
-        assertNull(emailAlertsConfig.getAccountUsername());
-        assertNull(emailAlertsConfig.getAccountPassword());
-        assertNull(emailAlertsConfig.getFromAddress());
-        assertNull(emailAlertsConfig.getToAddress());
+  @Test
+  public void testSettersWorkAsExpected() {
+    final SmtpConfig emailAlertsConfig = new SmtpConfig();
+    assertNull(emailAlertsConfig.getHost());
+    assertEquals(0, emailAlertsConfig.getTlsPort());
+    assertNull(emailAlertsConfig.getAccountUsername());
+    assertNull(emailAlertsConfig.getAccountPassword());
+    assertNull(emailAlertsConfig.getFromAddress());
+    assertNull(emailAlertsConfig.getToAddress());
 
-        emailAlertsConfig.setHost(HOST);
-        assertEquals(HOST, emailAlertsConfig.getHost());
+    emailAlertsConfig.setHost(HOST);
+    assertEquals(HOST, emailAlertsConfig.getHost());
 
-        emailAlertsConfig.setTlsPort(TLS_PORT);
-        assertEquals(TLS_PORT, emailAlertsConfig.getTlsPort());
+    emailAlertsConfig.setTlsPort(TLS_PORT);
+    assertEquals(TLS_PORT, emailAlertsConfig.getTlsPort());
 
-        emailAlertsConfig.setAccountUsername(ACCOUNT_USERNAME);
-        assertEquals(ACCOUNT_USERNAME, emailAlertsConfig.getAccountUsername());
+    emailAlertsConfig.setAccountUsername(ACCOUNT_USERNAME);
+    assertEquals(ACCOUNT_USERNAME, emailAlertsConfig.getAccountUsername());
 
-        emailAlertsConfig.setAccountPassword(ACCOUNT_PASSWORD);
-        assertEquals(ACCOUNT_PASSWORD, emailAlertsConfig.getAccountPassword());
+    emailAlertsConfig.setAccountPassword(ACCOUNT_PASSWORD);
+    assertEquals(ACCOUNT_PASSWORD, emailAlertsConfig.getAccountPassword());
 
-        emailAlertsConfig.setFromAddress(FROM_ADDRESS);
-        assertEquals(FROM_ADDRESS, emailAlertsConfig.getFromAddress());
+    emailAlertsConfig.setFromAddress(FROM_ADDRESS);
+    assertEquals(FROM_ADDRESS, emailAlertsConfig.getFromAddress());
 
-        emailAlertsConfig.setToAddress(TO_ADDRESS);
-        assertEquals(TO_ADDRESS, emailAlertsConfig.getToAddress());
-    }
+    emailAlertsConfig.setToAddress(TO_ADDRESS);
+    assertEquals(TO_ADDRESS, emailAlertsConfig.getToAddress());
+  }
 }

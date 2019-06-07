@@ -34,62 +34,61 @@ import java.util.Map;
  */
 public class ExchangeConfig {
 
-    private String name;
-    private String adapter;
-    private Map<String, String> authenticationConfig;
+  private String name;
+  private String adapter;
+  private Map<String, String> authenticationConfig;
 
-    private NetworkConfig networkConfig;
-    private Map<String, String> otherConfig;
+  private NetworkConfig networkConfig;
+  private Map<String, String> otherConfig;
 
+  public String getName() {
+    return name;
+  }
 
-    public String getName() {
-        return name;
-    }
+  public void setName(String name) {
+    this.name = name;
+  }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+  public String getAdapter() {
+    return adapter;
+  }
 
-    public String getAdapter() {
-        return adapter;
-    }
+  public void setAdapter(String adapter) {
+    this.adapter = adapter;
+  }
 
-    public void setAdapter(String adapter) {
-        this.adapter = adapter;
-    }
+  public Map<String, String> getAuthenticationConfig() {
+    return authenticationConfig;
+  }
 
-    public Map<String, String> getAuthenticationConfig() {
-        return authenticationConfig;
-    }
+  public void setAuthenticationConfig(Map<String, String> authenticationConfig) {
+    this.authenticationConfig = authenticationConfig;
+  }
 
-    public void setAuthenticationConfig(Map<String, String> authenticationConfig) {
-        this.authenticationConfig = authenticationConfig;
-    }
+  public void setNetworkConfig(NetworkConfig networkConfig) {
+    this.networkConfig = networkConfig;
+  }
 
-    public void setNetworkConfig(NetworkConfig networkConfig) {
-        this.networkConfig = networkConfig;
-    }
+  public NetworkConfig getNetworkConfig() {
+    return networkConfig;
+  }
 
-    public NetworkConfig getNetworkConfig() {
-        return networkConfig;
-    }
+  public Map<String, String> getOtherConfig() {
+    return otherConfig;
+  }
 
-    public Map<String, String> getOtherConfig() {
-        return otherConfig;
-    }
+  public void setOtherConfig(Map<String, String> otherConfig) {
+    this.otherConfig = otherConfig;
+  }
 
-    public void setOtherConfig(Map<String, String> otherConfig) {
-        this.otherConfig = otherConfig;
-    }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-                .add("name", name)
-                .add("adapter", adapter)
-                // authenticationConfig is not included
-                .add("networkConfig", networkConfig)
-                .add("otherConfig", otherConfig)
-                .toString();
-    }
+  @Override
+  public String toString() {
+    return MoreObjects.toStringHelper(this)
+               .add("name", name)
+               .add("adapter", adapter)
+               // authenticationConfig is not included
+               .add("networkConfig", networkConfig)
+               .add("otherConfig", otherConfig)
+               .toString();
+  }
 }

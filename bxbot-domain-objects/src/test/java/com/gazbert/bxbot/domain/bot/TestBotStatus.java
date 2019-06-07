@@ -35,32 +35,32 @@ import static org.junit.Assert.assertNull;
  */
 public class TestBotStatus {
 
-    private static final String BOT_ID = "avro-707_1";
-    private static final String DISPLAY_NAME = "Avro 707";
-    private static final String STATUS = "running";
+  private static final String BOT_ID = "avro-707_1";
+  private static final String DISPLAY_NAME = "Avro 707";
+  private static final String STATUS = "running";
 
-    @Test
-    public void testInitialisationWorksAsExpected() {
-        final BotStatus botStatus = new BotStatus(BOT_ID, DISPLAY_NAME, STATUS);
-        assertEquals(BOT_ID, botStatus.getBotId());
-        assertEquals(DISPLAY_NAME, botStatus.getDisplayName());
-        assertEquals(STATUS, botStatus.getStatus());
-    }
+  @Test
+  public void testInitialisationWorksAsExpected() {
+    final BotStatus botStatus = new BotStatus(BOT_ID, DISPLAY_NAME, STATUS);
+    assertEquals(BOT_ID, botStatus.getBotId());
+    assertEquals(DISPLAY_NAME, botStatus.getDisplayName());
+    assertEquals(STATUS, botStatus.getStatus());
+  }
 
-    @Test
-    public void testSettersWorkAsExpected() {
-        final BotStatus botStatus = new BotStatus();
-        assertNull(botStatus.getBotId());
-        assertNull(botStatus.getDisplayName());
-        assertNull(botStatus.getStatus());
+  @Test
+  public void testSettersWorkAsExpected() {
+    final BotStatus botStatus = new BotStatus();
+    assertNull(botStatus.getBotId());
+    assertNull(botStatus.getDisplayName());
+    assertNull(botStatus.getStatus());
 
-        botStatus.setBotId(BOT_ID);
-        assertEquals(BOT_ID, botStatus.getBotId());
+    botStatus.setBotId(BOT_ID);
+    assertEquals(BOT_ID, botStatus.getBotId());
 
-        botStatus.setDisplayName(DISPLAY_NAME);
-        assertEquals(DISPLAY_NAME, botStatus.getDisplayName());
+    botStatus.setDisplayName(DISPLAY_NAME);
+    assertEquals(DISPLAY_NAME, botStatus.getDisplayName());
 
-        botStatus.setStatus(STATUS);
-        assertEquals(STATUS, botStatus.getStatus());
-    }
+    botStatus.setStatus(STATUS);
+    assertEquals(STATUS, botStatus.getStatus());
+  }
 }

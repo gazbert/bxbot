@@ -37,54 +37,54 @@ import static org.junit.Assert.*;
  */
 public class TestStrategyConfig {
 
-    private static final String ID = "macd-long-position";
-    private static final String LABEL = "MACD Long Position Algo";
-    private static final String DESCRIPTION = "Uses MACD as indicator and takes long position in base currency.";
-    private static final String CLASSNAME = "com.gazbert.nova.algos.MacdLongBase";
-    private static final String BEAN_NAME = "macdLongBase";
-    private static final Map<String, String> CONFIG_ITEMS = new HashMap<>();
+  private static final String ID = "macd-long-position";
+  private static final String LABEL = "MACD Long Position Algo";
+  private static final String DESCRIPTION = "Uses MACD as indicator and takes long position in base currency.";
+  private static final String CLASSNAME = "com.gazbert.nova.algos.MacdLongBase";
+  private static final String BEAN_NAME = "macdLongBase";
+  private static final Map<String, String> CONFIG_ITEMS = new HashMap<>();
 
-    @Test
-    public void testInitialisationWorksAsExpected() {
-        final StrategyConfig strategyConfig = new StrategyConfig(ID, LABEL, DESCRIPTION, CLASSNAME, BEAN_NAME,
-            CONFIG_ITEMS);
-        assertEquals(ID, strategyConfig.getId());
-        assertEquals(LABEL, strategyConfig.getName());
-        assertEquals(DESCRIPTION, strategyConfig.getDescription());
-        assertEquals(CLASSNAME, strategyConfig.getClassName());
-        assertEquals(CONFIG_ITEMS, strategyConfig.getConfigItems());
-    }
+  @Test
+  public void testInitialisationWorksAsExpected() {
+    final StrategyConfig strategyConfig = new StrategyConfig(ID, LABEL, DESCRIPTION, CLASSNAME, BEAN_NAME,
+        CONFIG_ITEMS);
+    assertEquals(ID, strategyConfig.getId());
+    assertEquals(LABEL, strategyConfig.getName());
+    assertEquals(DESCRIPTION, strategyConfig.getDescription());
+    assertEquals(CLASSNAME, strategyConfig.getClassName());
+    assertEquals(CONFIG_ITEMS, strategyConfig.getConfigItems());
+  }
 
-    @Test
-    public void testSettersWorkAsExpected() {
-        final StrategyConfig strategyConfig = new StrategyConfig();
-        assertNull(strategyConfig.getId());
-        assertNull(strategyConfig.getName());
-        assertNull(strategyConfig.getDescription());
-        assertNull(strategyConfig.getClassName());
-        assertTrue(strategyConfig.getConfigItems().isEmpty());
+  @Test
+  public void testSettersWorkAsExpected() {
+    final StrategyConfig strategyConfig = new StrategyConfig();
+    assertNull(strategyConfig.getId());
+    assertNull(strategyConfig.getName());
+    assertNull(strategyConfig.getDescription());
+    assertNull(strategyConfig.getClassName());
+    assertTrue(strategyConfig.getConfigItems().isEmpty());
 
-        strategyConfig.setId(ID);
-        assertEquals(ID, strategyConfig.getId());
+    strategyConfig.setId(ID);
+    assertEquals(ID, strategyConfig.getId());
 
-        strategyConfig.setName(LABEL);
-        assertEquals(LABEL, strategyConfig.getName());
+    strategyConfig.setName(LABEL);
+    assertEquals(LABEL, strategyConfig.getName());
 
-        strategyConfig.setDescription(DESCRIPTION);
-        assertEquals(DESCRIPTION, strategyConfig.getDescription());
+    strategyConfig.setDescription(DESCRIPTION);
+    assertEquals(DESCRIPTION, strategyConfig.getDescription());
 
-        strategyConfig.setClassName(CLASSNAME);
-        assertEquals(CLASSNAME, strategyConfig.getClassName());
+    strategyConfig.setClassName(CLASSNAME);
+    assertEquals(CLASSNAME, strategyConfig.getClassName());
 
-        strategyConfig.setConfigItems(CONFIG_ITEMS);
-        assertEquals(CONFIG_ITEMS, strategyConfig.getConfigItems());
-    }
+    strategyConfig.setConfigItems(CONFIG_ITEMS);
+    assertEquals(CONFIG_ITEMS, strategyConfig.getConfigItems());
+  }
 
-    @Test
-    public void testCloningWorksAsExpected() {
-        final StrategyConfig strategyConfig = new StrategyConfig(ID, LABEL, DESCRIPTION, CLASSNAME, BEAN_NAME,
-            CONFIG_ITEMS);
-        final StrategyConfig clonedStrategyConfig = new StrategyConfig(strategyConfig);
-        assertEquals(clonedStrategyConfig, strategyConfig);
-    }
+  @Test
+  public void testCloningWorksAsExpected() {
+    final StrategyConfig strategyConfig = new StrategyConfig(ID, LABEL, DESCRIPTION, CLASSNAME, BEAN_NAME,
+        CONFIG_ITEMS);
+    final StrategyConfig clonedStrategyConfig = new StrategyConfig(strategyConfig);
+    assertEquals(clonedStrategyConfig, strategyConfig);
+  }
 }
