@@ -31,7 +31,8 @@ import com.gazbert.bxbot.trading.api.TradingApi;
  * adapter its configuration on startup.
  * </p>
  * <p>
- * The Trading Engine will send only 1 thread through the Exchange Adapter code at a time - you do not have to code for concurrency.
+ * The Trading Engine will send only 1 thread through the Exchange Adapter code at a time - you do not have to code for
+ * concurrency.
  * </p>
  *
  * @author gazbert
