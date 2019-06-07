@@ -31,38 +31,38 @@ package com.gazbert.bxbot.exchange.api;
  */
 public interface ExchangeConfig {
 
-    /**
-     * Returns the name of the exchange.
-     *
-     * @return the exchange name.
-     */
-    String getExchangeName();
+  /**
+   * Returns the name of the exchange.
+   *
+   * @return the exchange name.
+   */
+  String getExchangeName();
 
-    /**
-     * Returns the fully qualified class name of the Exchange Adapter.
-     *
-     * @return the full class name (includes packages) of the Exchange Adapter.
-     */
-    String getExchangeAdapter();
+  /**
+   * Returns the fully qualified class name of the Exchange Adapter.
+   *
+   * @return the full class name (includes packages) of the Exchange Adapter.
+   */
+  String getExchangeAdapter();
 
-    /**
-     * Returns the authentication config.
-     *
-     * @return authentication config if present, null otherwise.
-     */
-    AuthenticationConfig getAuthenticationConfig();
+  /**
+   * Returns the authentication config.
+   *
+   * @return authentication config if present, null otherwise.
+   */
+  AuthenticationConfig getAuthenticationConfig();
 
-    /**
-     * Returns the network config.
-     *
-     * @return network config if present, null otherwise.
-     */
-    NetworkConfig getNetworkConfig();
+  /**
+   * Returns the network config.
+   *
+   * @return network config if present, null otherwise.
+   */
+  NetworkConfig getNetworkConfig();
 
-    /**
-     * Returns the other config.
-     *
-     * @return other config if present, null otherwise.
-     */
-    OtherConfig getOtherConfig();
+  /**
+   * Returns the other config.
+   *
+   * @return other config if present, null otherwise.
+   */
+  OtherConfig getOtherConfig();
 }

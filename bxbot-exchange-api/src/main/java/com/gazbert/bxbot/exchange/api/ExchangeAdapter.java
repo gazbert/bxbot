@@ -40,10 +40,10 @@ import com.gazbert.bxbot.trading.api.TradingApi;
  */
 public interface ExchangeAdapter extends TradingApi {
 
-    /**
-     * Called once by the Trading Engine when it starts up.
-     *
-     * @param config configuration for the Exchange Adapter.
-     */
-    void init(ExchangeConfig config);
+  /**
+   * Called once by the Trading Engine when it starts up.
+   *
+   * @param config configuration for the Exchange Adapter.
+   */
+  void init(ExchangeConfig config);
 }
