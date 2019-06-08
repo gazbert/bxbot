@@ -36,6 +36,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 /**
@@ -45,70 +46,54 @@ import java.util.Arrays;
  */
 public abstract class AbstractControllerTest {
 
-    protected static final String API_ENDPOINT_BASE_URI = "/api/v1";
+  protected static final String API_ENDPOINT_BASE_URI = "/api/v1";
+  protected static final String INVALID_USER_PASSWORD = "not-valid-password";
 
-    /**
-     * This must match security.user.name in the src/test/resources/application.properties file.
-     */
-    protected static final String VALID_USER_LOGINID = "unit-test-user";
+  // This must match security.user.name in the src/test/resources/application.properties file.
+  protected static final String VALID_USER_LOGINID = "unit-test-user";
 
-    /**
-     * This must match a security.user.password in the src/test/resources/application.properties file.
-     */
-    protected static final String VALID_USER_PASSWORD = "unit-test-password";
+  // This must match a security.user.password in the src/test/resources/application.properties file.
+  protected static final String VALID_USER_PASSWORD = "unit-test-password";
 
-    /**
-     * Used for bad credentials tests.
-     */
-    protected static final String INVALID_USER_PASSWORD = "not-valid-password";
+  // We'll always be sending/receiving JSON content in REST API.
+  protected static final MediaType CONTENT_TYPE = new MediaType(MediaType.APPLICATION_JSON.getType(),
+      MediaType.APPLICATION_JSON.getSubtype(), Charset.forName("utf8"));
 
-    /**
-     * We'll always be sending/receiving JSON content in REST API.
-     */
-    protected static final MediaType CONTENT_TYPE = new MediaType(MediaType.APPLICATION_JSON.getType(),
-            MediaType.APPLICATION_JSON.getSubtype(), Charset.forName("utf8"));
+  // Used to convert Java objects into JSON - roll on Java 9... ;-)
+  private HttpMessageConverter mappingJackson2HttpMessageConverter;
 
-    /**
-     * Used to convert Java objects into JSON - roll on Java 9... ;-)
-     */
-    private HttpMessageConverter mappingJackson2HttpMessageConverter;
+  @Autowired
+  protected WebApplicationContext ctx;
 
-    @Autowired
-    protected WebApplicationContext ctx;
+  @Autowired
+  protected FilterChainProxy springSecurityFilterChain;
 
-    @Autowired
-    protected FilterChainProxy springSecurityFilterChain;
+  protected MockMvc mockMvc;
 
-    protected MockMvc mockMvc;
+  @Autowired
+  protected void setConverters(HttpMessageConverter<?>[] converters) {
+    mappingJackson2HttpMessageConverter =
+        Arrays.stream(converters)
+            .filter(converter -> converter instanceof MappingJackson2HttpMessageConverter)
+            .findAny()
+            .orElse(null);
 
+    Assert.assertNotNull("The JSON message converter must not be null",
+        mappingJackson2HttpMessageConverter);
+  }
 
-    @Autowired
-    protected void setConverters(HttpMessageConverter<?>[] converters) {
-        mappingJackson2HttpMessageConverter =
-                Arrays.stream(converters)
-                        .filter(converter -> converter instanceof MappingJackson2HttpMessageConverter)
-                        .findAny()
-                        .orElse(null);
+  // ------------------------------------------------------------------------------------------------
+  // Shared utils
+  // ------------------------------------------------------------------------------------------------
 
-        Assert.assertNotNull("The JSON message converter must not be null",
-                mappingJackson2HttpMessageConverter);
-    }
+  protected String buildAuthorizationHeaderValue(String username, String password) {
+    return "Basic " + new String(Base64Utils.encode(
+        (username + ":" + password).getBytes(StandardCharsets.UTF_8)), Charset.forName("UTF-8"));
+  }
 
-    // ------------------------------------------------------------------------------------------------
-    // Shared utils
-    // ------------------------------------------------------------------------------------------------
-
-    protected String buildAuthorizationHeaderValue(String username, String password) throws Exception {
-        return "Basic " + new String(Base64Utils.encode(
-                (username + ":" + password).getBytes("UTF-8")), Charset.forName("UTF-8"));
-    }
-
-    /*
-     * Converts an object into its JSON string representation.
-     */
-    protected String jsonify(Object objectToJsonify) throws IOException {
-        final MockHttpOutputMessage mockHttpOutputMessage = new MockHttpOutputMessage();
-        mappingJackson2HttpMessageConverter.write(objectToJsonify, MediaType.APPLICATION_JSON, mockHttpOutputMessage);
-        return mockHttpOutputMessage.getBodyAsString();
-    }
+  protected String jsonify(Object objectToJsonify) throws IOException {
+    final MockHttpOutputMessage mockHttpOutputMessage = new MockHttpOutputMessage();
+    mappingJackson2HttpMessageConverter.write(objectToJsonify, MediaType.APPLICATION_JSON, mockHttpOutputMessage);
+    return mockHttpOutputMessage.getBodyAsString();
+  }
 }

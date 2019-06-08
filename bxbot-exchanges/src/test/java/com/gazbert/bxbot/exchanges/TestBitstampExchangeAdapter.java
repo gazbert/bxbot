@@ -114,9 +114,7 @@ public class TestBitstampExchangeAdapter extends AbstractExchangeAdapter {
 
   private static final String API_BASE_URL = "https://www.bitstamp.net/api/v2/";
 
-  /*
-   * Bitstamp exchange Date format: 2015-01-09 21:14:50
-   */
+  // Bitstamp exchange Date format: 2015-01-09 21:14:50
   private final SimpleDateFormat bitstampExchangeDateFormat = new SimpleDateFormat("y-M-d H:m:s");
 
   private ExchangeConfig exchangeConfig;

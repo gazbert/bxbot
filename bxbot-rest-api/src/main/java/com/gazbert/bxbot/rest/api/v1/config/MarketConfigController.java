@@ -103,7 +103,6 @@ public class MarketConfigController extends AbstractConfigController {
     @RequestMapping(value = MARKETS_RESOURCE_PATH + "/{marketId}", method = RequestMethod.PUT)
     public ResponseEntity<?> updateMarket(@AuthenticationPrincipal User user, @PathVariable String marketId,
                                           @RequestBody MarketConfig config) {
-
         LOG.info("PUT " + MARKETS_RESOURCE_PATH + "/" + marketId + " - updateMarket() - caller: " + user.getUsername());
         LOG.info("Request: " + config);
 

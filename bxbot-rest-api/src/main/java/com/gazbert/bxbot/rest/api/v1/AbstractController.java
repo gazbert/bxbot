@@ -36,12 +36,12 @@ import org.springframework.http.ResponseEntity;
  */
 public abstract class AbstractController {
 
-    private static final Logger LOG = LogManager.getLogger();
-    protected static final String API_ENDPOINT_BASE_URI = "/api/v1";
+  private static final Logger LOG = LogManager.getLogger();
+  protected static final String API_ENDPOINT_BASE_URI = "/api/v1";
 
-    protected ResponseEntity<?> buildResponseEntity(Object entity, HttpStatus httpStatus) {
-        LOG.info("Response: " + entity);
-        return new ResponseEntity<>(entity, null, httpStatus);
-    }
+  protected ResponseEntity<?> buildResponseEntity(Object entity, HttpStatus httpStatus) {
+    LOG.info("Response: " + entity);
+    return new ResponseEntity<>(entity, null, httpStatus);
+  }
 }
 

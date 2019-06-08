@@ -57,77 +57,74 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebAppConfiguration
 public class TestBotStatusController extends AbstractRuntimeControllerTest {
 
-    private static final String STATUS_ENDPOINT_URI = RUNTIME_ENDPOINT_BASE_URI + "/status";
+  private static final String STATUS_ENDPOINT_URI = RUNTIME_ENDPOINT_BASE_URI + "/status";
 
-    private static final String BOT_ID = "avro-707_1";
-    private static final String BOT_NAME = "Avro 707";
-    private static final String BOT_STATUS = "running";
+  private static final String BOT_ID = "avro-707_1";
+  private static final String BOT_NAME = "Avro 707";
+  private static final String BOT_STATUS = "running";
 
-    private static final String ENGINE_EMERGENCY_STOP_CURRENCY = "BTC";
-    private static final BigDecimal ENGINE_EMERGENCY_STOP_BALANCE = new BigDecimal("0.9232320");
-    private static final int ENGINE_TRADE_CYCLE_INTERVAL = 60;
+  private static final String ENGINE_EMERGENCY_STOP_CURRENCY = "BTC";
+  private static final BigDecimal ENGINE_EMERGENCY_STOP_BALANCE = new BigDecimal("0.9232320");
+  private static final int ENGINE_TRADE_CYCLE_INTERVAL = 60;
 
-    @MockBean
-    private EngineConfigService engineConfigService;
+  @MockBean
+  private EngineConfigService engineConfigService;
 
-    // Need this even though not used in the test directly because Spring loads it on startup...
-    @MockBean
-    private TradingEngine tradingEngine;
+  // Need this even though not used in the test directly because Spring loads it on startup...
+  @MockBean
+  private TradingEngine tradingEngine;
 
-    // Need this even though not used in the test directly because Spring loads it on startup...
-    @MockBean
-    private EmailAlerter emailAlerter;
+  // Need this even though not used in the test directly because Spring loads it on startup...
+  @MockBean
+  private EmailAlerter emailAlerter;
 
-    @Before
-    public void setupBeforeEachTest() {
-        mockMvc = MockMvcBuilders.webAppContextSetup(ctx).addFilter(springSecurityFilterChain).build();
-    }
+  @Before
+  public void setupBeforeEachTest() {
+    mockMvc = MockMvcBuilders.webAppContextSetup(ctx).addFilter(springSecurityFilterChain).build();
+  }
 
-    @Test
-    public void testGetBotStatus() throws Exception {
+  @Test
+  public void testGetBotStatus() throws Exception {
+    given(engineConfigService.getEngineConfig()).willReturn(someEngineConfig());
 
-        given(engineConfigService.getEngineConfig()).willReturn(someEngineConfig());
+    mockMvc.perform(get(STATUS_ENDPOINT_URI)
+        .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD)))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.botId").value(BOT_ID))
+        .andExpect(jsonPath("$.displayName").value(BOT_NAME))
+        .andExpect(jsonPath("$.status").value(BOT_STATUS));
 
-        mockMvc.perform(get(STATUS_ENDPOINT_URI)
-                .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD)))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.botId").value(BOT_ID))
-                .andExpect(jsonPath("$.displayName").value(BOT_NAME))
-                .andExpect(jsonPath("$.status").value(BOT_STATUS));
+    verify(engineConfigService, times(1)).getEngineConfig();
+  }
 
-        verify(engineConfigService, times(1)).getEngineConfig();
-    }
+  @Test
+  public void testGetBotStatusWhenUnauthorizedWithBadCredentials() throws Exception {
+    mockMvc.perform(get(STATUS_ENDPOINT_URI)
+        .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, INVALID_USER_PASSWORD))
+        .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isUnauthorized());
+  }
 
-    @Test
-    public void testGetBotStatusWhenUnauthorizedWithBadCredentials() throws Exception {
+  @Test
+  public void testGetBotStatusWhenUnauthorizedWithMissingCredentials() throws Exception {
+    mockMvc.perform(get(STATUS_ENDPOINT_URI)
+        .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, INVALID_USER_PASSWORD))
+        .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isUnauthorized());
+  }
 
-        mockMvc.perform(get(STATUS_ENDPOINT_URI)
-                .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, INVALID_USER_PASSWORD))
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isUnauthorized());
-    }
+  // ------------------------------------------------------------------------------------------------
+  // Private utils
+  // ------------------------------------------------------------------------------------------------
 
-    @Test
-    public void testGetBotStatusWhenUnauthorizedWithMissingCredentials() throws Exception {
-
-        mockMvc.perform(get(STATUS_ENDPOINT_URI)
-                .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, INVALID_USER_PASSWORD))
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isUnauthorized());
-    }
-
-    // ------------------------------------------------------------------------------------------------
-    // Private utils
-    // ------------------------------------------------------------------------------------------------
-
-    private static EngineConfig someEngineConfig() {
-        final EngineConfig engineConfig = new EngineConfig();
-        engineConfig.setBotId(BOT_ID);
-        engineConfig.setBotName(BOT_NAME);
-        engineConfig.setEmergencyStopCurrency(ENGINE_EMERGENCY_STOP_CURRENCY);
-        engineConfig.setEmergencyStopBalance(ENGINE_EMERGENCY_STOP_BALANCE);
-        engineConfig.setTradeCycleInterval(ENGINE_TRADE_CYCLE_INTERVAL);
-        return engineConfig;
-    }
+  private static EngineConfig someEngineConfig() {
+    final EngineConfig engineConfig = new EngineConfig();
+    engineConfig.setBotId(BOT_ID);
+    engineConfig.setBotName(BOT_NAME);
+    engineConfig.setEmergencyStopCurrency(ENGINE_EMERGENCY_STOP_CURRENCY);
+    engineConfig.setEmergencyStopBalance(ENGINE_EMERGENCY_STOP_BALANCE);
+    engineConfig.setTradeCycleInterval(ENGINE_TRADE_CYCLE_INTERVAL);
+    return engineConfig;
+  }
 }

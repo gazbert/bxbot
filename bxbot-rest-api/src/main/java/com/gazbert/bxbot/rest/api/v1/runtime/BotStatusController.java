@@ -47,36 +47,36 @@ import static com.gazbert.bxbot.rest.api.v1.runtime.AbstractRuntimeController.RU
 @RequestMapping(RUNTIME_ENDPOINT_BASE_URI)
 public class BotStatusController extends AbstractRuntimeController {
 
-    private static final Logger LOG = LogManager.getLogger();
-    private static final String STATUS_RESOURCE_PATH = "/status";
-    private final EngineConfigService engineConfigService;
+  private static final Logger LOG = LogManager.getLogger();
+  private static final String STATUS_RESOURCE_PATH = "/status";
+  private final EngineConfigService engineConfigService;
 
-    @Autowired
-    public BotStatusController(EngineConfigService engineConfigService) {
-        this.engineConfigService = engineConfigService;
-    }
+  @Autowired
+  public BotStatusController(EngineConfigService engineConfigService) {
+    this.engineConfigService = engineConfigService;
+  }
 
-    /**
-     * Returns the process status for the bot.
-     *
-     * @param user the authenticated user making the request.
-     * @return the process status.
-     */
-    @RequestMapping(value = STATUS_RESOURCE_PATH, method = RequestMethod.GET)
-    public BotStatus getStatus(@AuthenticationPrincipal User user) {
+  /**
+   * Returns the process status for the bot.
+   *
+   * @param user the authenticated user making the request.
+   * @return the process status.
+   */
+  @RequestMapping(value = STATUS_RESOURCE_PATH, method = RequestMethod.GET)
+  public BotStatus getStatus(@AuthenticationPrincipal User user) {
 
-        LOG.info("GET " + STATUS_RESOURCE_PATH + " - getStatus() - caller: " + user.getUsername());
+    LOG.info("GET " + STATUS_RESOURCE_PATH + " - getStatus() - caller: " + user.getUsername());
 
-        final EngineConfig engineConfig = engineConfigService.getEngineConfig();
+    final EngineConfig engineConfig = engineConfigService.getEngineConfig();
 
-        // TODO - hacked up for now until work properly starts on runtime features ;-)
-        final BotStatus botStatus = new BotStatus();
-        botStatus.setBotId(engineConfig.getBotId());
-        botStatus.setDisplayName(engineConfig.getBotName());
-        botStatus.setStatus("running"); // use enum for defining states at some point
+    // TODO - hacked up for now until work properly starts on runtime features ;-)
+    final BotStatus botStatus = new BotStatus();
+    botStatus.setBotId(engineConfig.getBotId());
+    botStatus.setDisplayName(engineConfig.getBotName());
+    botStatus.setStatus("running"); // use enum for defining states at some point
 
-        LOG.info("Response: " + botStatus);
-        return botStatus;
-    }
+    LOG.info("Response: " + botStatus);
+    return botStatus;
+  }
 }
 

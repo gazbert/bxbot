@@ -34,8 +34,10 @@ import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 
 /**
  * Web security config for protecting the REST API.
- *
+ * <p>
  * WARNING: This is not safe for Production yet!
+ *
+ * TODO: Replace this with JWT impl...
  *
  * @author gazbert
  */
@@ -43,39 +45,39 @@ import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    @Autowired
-    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+  @Autowired
+  public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
 
-        // TODO - get from application.properties file and bcrypt em!
-        auth.inMemoryAuthentication()
-                .withUser("unit-test-user").password("unit-test-password")
-                .authorities("ROLE_USER");
-    }
+    // TODO - get from application.properties file and bcrypt em!
+    auth.inMemoryAuthentication()
+        .withUser("unit-test-user").password("unit-test-password")
+        .authorities("ROLE_USER");
+  }
 
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        http.authorizeRequests()
-                .antMatchers("/nothingWillBeUnsecured").permitAll()
-                .anyRequest().authenticated()
-                .and()
-                .httpBasic();
+  @Override
+  protected void configure(HttpSecurity http) throws Exception {
+    http.authorizeRequests()
+        .antMatchers("/nothingWillBeUnsecured").permitAll()
+        .anyRequest().authenticated()
+        .and()
+        .httpBasic();
 
-        // Default behaviour is to enable CSRF protection.
-        // Need to override this behaviour for our stateless (no cookies used!) REST endpoints.
-        // https://security.stackexchange.com/questions/166724/should-i-use-csrf-protection-on-rest-api-endpoints
-        // https://stackoverflow.com/questions/27390407/post-request-to-spring-server-returns-403-forbidden
-        http.csrf().disable();
-    }
+    // Default behaviour is to enable CSRF protection.
+    // Need to override this behaviour for our stateless (no cookies used!) REST endpoints.
+    // https://security.stackexchange.com/questions/166724/should-i-use-csrf-protection-on-rest-api-endpoints
+    // https://stackoverflow.com/questions/27390407/post-request-to-spring-server-returns-403-forbidden
+    http.csrf().disable();
+  }
 
-    // https://docs.spring.io/spring-security/site/docs/5.0.5.RELEASE/reference/htmlsingle/#troubleshooting
-    // Tmp patch for backwards compatibility pre Spring 5
-    @SuppressWarnings("deprecation")
-    @Bean
-    public static NoOpPasswordEncoder passwordEncoder() {
-        return (NoOpPasswordEncoder) NoOpPasswordEncoder.getInstance();
-    }
+  // https://docs.spring.io/spring-security/site/docs/5.0.5.RELEASE/reference/htmlsingle/#troubleshooting
+  // Tmp patch for backwards compatibility pre Spring 5
+  @SuppressWarnings("deprecation")
+  @Bean
+  public static NoOpPasswordEncoder passwordEncoder() {
+    return (NoOpPasswordEncoder) NoOpPasswordEncoder.getInstance();
+  }
 
-    // TODO - https://docs.spring.io/spring-security/site/docs/5.0.5.RELEASE/reference/htmlsingle/#pe-bcpe
+  // TODO - https://docs.spring.io/spring-security/site/docs/5.0.5.RELEASE/reference/htmlsingle/#pe-bcpe
 //    @Bean
 //    public static BCryptPasswordEncoder bCryptPasswordEncoder() {
 //        return new BCryptPasswordEncoder(16);
