@@ -36,10 +36,7 @@ import java.util.List;
 public interface StrategyConfigRepository {
 
   List<StrategyConfig> findAll();
-
   StrategyConfig findById(String id);
-
   StrategyConfig save(StrategyConfig config);
-
   StrategyConfig delete(String id);
 }

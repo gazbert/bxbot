@@ -34,13 +34,9 @@ import java.util.List;
  */
 public interface MarketConfigService {
 
-    List<MarketConfig> getAllMarketConfig();
-
-    MarketConfig getMarketConfig(String id);
-
-    MarketConfig createMarketConfig(MarketConfig config);
-
-    MarketConfig updateMarketConfig(MarketConfig config);
-
-    MarketConfig deleteMarketConfig(String id);
+  List<MarketConfig> getAllMarketConfig();
+  MarketConfig getMarketConfig(String id);
+  MarketConfig createMarketConfig(MarketConfig config);
+  MarketConfig updateMarketConfig(MarketConfig config);
+  MarketConfig deleteMarketConfig(String id);
 }

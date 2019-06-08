@@ -32,6 +32,5 @@ import com.gazbert.bxbot.domain.exchange.ExchangeConfig;
 public interface ExchangeConfigRepository {
 
   ExchangeConfig get();
-
   ExchangeConfig save(ExchangeConfig config);
 }

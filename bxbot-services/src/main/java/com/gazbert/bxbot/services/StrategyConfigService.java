@@ -35,13 +35,9 @@ import java.util.List;
  */
 public interface StrategyConfigService {
 
-    List<StrategyConfig> getAllStrategyConfig();
-
-    StrategyConfig getStrategyConfig(String id);
-
-    StrategyConfig updateStrategyConfig(StrategyConfig config);
-
-    StrategyConfig createStrategyConfig(StrategyConfig config);
-
-    StrategyConfig deleteStrategyConfig(String id);
+  List<StrategyConfig> getAllStrategyConfig();
+  StrategyConfig getStrategyConfig(String id);
+  StrategyConfig updateStrategyConfig(StrategyConfig config);
+  StrategyConfig createStrategyConfig(StrategyConfig config);
+  StrategyConfig deleteStrategyConfig(String id);
 }
