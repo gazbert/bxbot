@@ -97,7 +97,8 @@ public class TestExampleScalpingStrategy {
     marketSellOrders.add(marketSellOrder);
 
     // expect config to be loaded
-    expect(config.getConfigItem("counter-currency-buy-order-amount")).andReturn(CONFIG_ITEM_COUNTER_CURRENCY_BUY_ORDER_AMOUNT);
+    expect(config.getConfigItem("counter-currency-buy-order-amount")).
+        andReturn(CONFIG_ITEM_COUNTER_CURRENCY_BUY_ORDER_AMOUNT);
     expect(config.getConfigItem("minimum-percentage-gain")).andReturn(CONFIG_ITEM_MINIMUM_PERCENTAGE_GAIN);
 
     // expect Market name to be logged zero or more times. Loose mock behaviour here; name is cosmetic.
@@ -178,7 +179,8 @@ public class TestExampleScalpingStrategy {
 
     // expect to send new sell order to exchange
     final BigDecimal requiredProfitInPercent = new BigDecimal("0.02");
-    final BigDecimal newAskPrice = lastOrderPrice.multiply(requiredProfitInPercent).add(lastOrderPrice).setScale(8, RoundingMode.HALF_UP);
+    final BigDecimal newAskPrice = lastOrderPrice.multiply(requiredProfitInPercent).add(lastOrderPrice).
+        setScale(8, RoundingMode.HALF_UP);
     final String orderId = "4239407234";
     expect(market.getId()).andReturn(MARKET_ID).atLeastOnce();
     expect(tradingApi.createOrder(MARKET_ID, OrderType.SELL, lastOrderAmount, newAskPrice)).andReturn(orderId);
