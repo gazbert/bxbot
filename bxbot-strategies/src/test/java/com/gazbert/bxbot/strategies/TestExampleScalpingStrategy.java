@@ -51,7 +51,7 @@ import static org.easymock.EasyMock.verify;
  * <p>
  * Tests the behaviour of the example Scalping Strategy.
  * </p>
- * Some fairly decent coverage here, but we've not tested all the exception handling conditions - You will want to do a
+ * Some fairly decent coverage here, but we've not tested all the exception handling conditions - you will want to do a
  * much more thorough job than this with your own strategies :-)
  * </p>
  *
