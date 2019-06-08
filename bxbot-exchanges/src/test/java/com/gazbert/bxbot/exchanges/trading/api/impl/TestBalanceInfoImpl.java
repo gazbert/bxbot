@@ -40,68 +40,64 @@ import static org.junit.Assert.assertNull;
  */
 public class TestBalanceInfoImpl {
 
-    private static final String BTC_CURRENCY_ID = "BTC";
-    private static final BigDecimal BTC_BALANCE_AVAILABLE = new BigDecimal("1000.24546282");
-    private static final BigDecimal BTC_BALANCE_ON_HOLD = new BigDecimal("100.63825573");
+  private static final String BTC_CURRENCY_ID = "BTC";
+  private static final BigDecimal BTC_BALANCE_AVAILABLE = new BigDecimal("1000.24546282");
+  private static final BigDecimal BTC_BALANCE_ON_HOLD = new BigDecimal("100.63825573");
 
-    private static final String USD_CURRENCY_ID = "USD";
-    private static final BigDecimal USD_BALANCE_AVAILABLE = new BigDecimal("2000.57573495");
-    private static final BigDecimal USD_BALANCE_ON_HOLD = new BigDecimal("200.45834593");
+  private static final String USD_CURRENCY_ID = "USD";
+  private static final BigDecimal USD_BALANCE_AVAILABLE = new BigDecimal("2000.57573495");
+  private static final BigDecimal USD_BALANCE_ON_HOLD = new BigDecimal("200.45834593");
 
-    /*
-     * Map of wallet balances <em>available</em> to trade.
-     * Key is currency id, e.g. BTC, USD
-     */
-    private Map<String, BigDecimal> balancesAvailable;
+  /*
+   * Map of wallet balances available to trade.
+   * Key is currency id, e.g. BTC, USD
+   */
+  private Map<String, BigDecimal> balancesAvailable;
 
-    /*
-     * Map of wallet balances currently <em>on hold</em> for open orders.
-     * Key is currency id, e.g. BTC, USD
-     */
-    private Map<String, BigDecimal> balancesOnHold;
+  /*
+   * Map of wallet balances currently on-hold for open orders.
+   * Key is currency id, e.g. BTC, USD
+   */
+  private Map<String, BigDecimal> balancesOnHold;
 
+  @Before
+  public void setupBalancesBeforeEachTest() {
+    balancesAvailable = new HashMap<>();
+    balancesAvailable.put(BTC_CURRENCY_ID, BTC_BALANCE_AVAILABLE);
+    balancesAvailable.put(USD_CURRENCY_ID, USD_BALANCE_AVAILABLE);
 
-    @Before
-    public void setupBalancesBeforeEachTest() {
+    balancesOnHold = new HashMap<>();
+    balancesOnHold.put(BTC_CURRENCY_ID, BTC_BALANCE_ON_HOLD);
+    balancesOnHold.put(USD_CURRENCY_ID, USD_BALANCE_ON_HOLD);
+  }
 
-        balancesAvailable = new HashMap<>();
-        balancesAvailable.put(BTC_CURRENCY_ID, BTC_BALANCE_AVAILABLE);
-        balancesAvailable.put(USD_CURRENCY_ID, USD_BALANCE_AVAILABLE);
+  @Test
+  public void testBalanceInfoIsInitialisedAsExpected() {
+    final BalanceInfoImpl balanceInfo = new BalanceInfoImpl(balancesAvailable, balancesOnHold);
 
-        balancesOnHold = new HashMap<>();
-        balancesOnHold.put(BTC_CURRENCY_ID, BTC_BALANCE_ON_HOLD);
-        balancesOnHold.put(USD_CURRENCY_ID, USD_BALANCE_ON_HOLD);
-    }
+    assertEquals(balancesAvailable, balanceInfo.getBalancesAvailable());
+    assertEquals(BTC_BALANCE_AVAILABLE, balancesAvailable.get(BTC_CURRENCY_ID));
+    assertEquals(USD_BALANCE_AVAILABLE, balancesAvailable.get(USD_CURRENCY_ID));
 
-    @Test
-    public void testBalanceInfoIsInitialisedAsExpected() {
+    assertEquals(balancesOnHold, balanceInfo.getBalancesOnHold());
+    assertEquals(BTC_BALANCE_ON_HOLD, balancesOnHold.get(BTC_CURRENCY_ID));
+    assertEquals(USD_BALANCE_ON_HOLD, balancesOnHold.get(USD_CURRENCY_ID));
+  }
 
-        final BalanceInfoImpl balanceInfo = new BalanceInfoImpl(balancesAvailable, balancesOnHold);
+  @Test
+  public void testSettersWorkAsExpected() {
+    final BalanceInfoImpl balanceInfo = new BalanceInfoImpl(null, null);
+    assertNull(balanceInfo.getBalancesAvailable());
+    assertNull(balanceInfo.getBalancesOnHold());
 
-        assertEquals(balancesAvailable, balanceInfo.getBalancesAvailable());
-        assertEquals(BTC_BALANCE_AVAILABLE, balancesAvailable.get(BTC_CURRENCY_ID));
-        assertEquals(USD_BALANCE_AVAILABLE, balancesAvailable.get(USD_CURRENCY_ID));
+    balanceInfo.setBalancesAvailable(balancesAvailable);
+    assertEquals(balancesAvailable, balanceInfo.getBalancesAvailable());
+    assertEquals(BTC_BALANCE_AVAILABLE, balancesAvailable.get(BTC_CURRENCY_ID));
+    assertEquals(USD_BALANCE_AVAILABLE, balancesAvailable.get(USD_CURRENCY_ID));
 
-        assertEquals(balancesOnHold, balanceInfo.getBalancesOnHold());
-        assertEquals(BTC_BALANCE_ON_HOLD, balancesOnHold.get(BTC_CURRENCY_ID));
-        assertEquals(USD_BALANCE_ON_HOLD, balancesOnHold.get(USD_CURRENCY_ID));
-    }
-
-    @Test
-    public void testSettersWorkAsExpected() {
-
-        final BalanceInfoImpl balanceInfo = new BalanceInfoImpl(null, null);
-        assertNull(balanceInfo.getBalancesAvailable());
-        assertNull(balanceInfo.getBalancesOnHold());
-
-        balanceInfo.setBalancesAvailable(balancesAvailable);
-        assertEquals(balancesAvailable, balanceInfo.getBalancesAvailable());
-        assertEquals(BTC_BALANCE_AVAILABLE, balancesAvailable.get(BTC_CURRENCY_ID));
-        assertEquals(USD_BALANCE_AVAILABLE, balancesAvailable.get(USD_CURRENCY_ID));
-
-        balanceInfo.setBalancesOnHold(balancesOnHold);
-        assertEquals(balancesOnHold, balanceInfo.getBalancesOnHold());
-        assertEquals(BTC_BALANCE_ON_HOLD, balancesOnHold.get(BTC_CURRENCY_ID));
-        assertEquals(USD_BALANCE_ON_HOLD, balancesOnHold.get(USD_CURRENCY_ID));
-    }
+    balanceInfo.setBalancesOnHold(balancesOnHold);
+    assertEquals(balancesOnHold, balanceInfo.getBalancesOnHold());
+    assertEquals(BTC_BALANCE_ON_HOLD, balancesOnHold.get(BTC_CURRENCY_ID));
+    assertEquals(USD_BALANCE_ON_HOLD, balancesOnHold.get(USD_CURRENCY_ID));
+  }
 }

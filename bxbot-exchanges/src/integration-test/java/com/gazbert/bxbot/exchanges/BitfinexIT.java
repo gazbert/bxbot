@@ -27,7 +27,9 @@ import com.gazbert.bxbot.exchange.api.AuthenticationConfig;
 import com.gazbert.bxbot.exchange.api.ExchangeAdapter;
 import com.gazbert.bxbot.exchange.api.ExchangeConfig;
 import com.gazbert.bxbot.exchange.api.NetworkConfig;
-import com.gazbert.bxbot.trading.api.*;
+import com.gazbert.bxbot.trading.api.BalanceInfo;
+import com.gazbert.bxbot.trading.api.MarketOrderBook;
+import com.gazbert.bxbot.trading.api.Ticker;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -36,8 +38,13 @@ import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.easymock.EasyMock.*;
-import static org.junit.Assert.*;
+import static org.easymock.EasyMock.createMock;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.verify;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 /**
  * Basic integration testing with Bitfinex exchange.
@@ -46,12 +53,10 @@ import static org.junit.Assert.*;
  */
 public class BitfinexIT {
 
-  // Canned test data
   private static final String MARKET_ID = "btcusd";
   private static final BigDecimal SELL_ORDER_PRICE = new BigDecimal("10000.176");
   private static final BigDecimal SELL_ORDER_QUANTITY = new BigDecimal("0.01");
 
-  // Exchange Adapter config for the tests
   private static final String KEY = "key123";
   private static final String SECRET = "notGonnaTellYa";
   private static final List<Integer> nonFatalNetworkErrorCodes = Arrays.asList(502, 503, 504);
@@ -128,11 +133,11 @@ public class BitfinexIT {
     final BalanceInfo balanceInfo = exchangeAdapter.getBalanceInfo();
     assertNotNull(balanceInfo.getBalancesAvailable().get("BTC"));
 
-    // Careful here - make sure the SELL_ORDER_PRICE is sensible!
-    final String orderId = exchangeAdapter.createOrder(MARKET_ID, OrderType.SELL, SELL_ORDER_QUANTITY, SELL_ORDER_PRICE);
-    final List<OpenOrder> openOrders = exchangeAdapter.getYourOpenOrders(MARKET_ID);
-    assertTrue(openOrders.stream().anyMatch(o -> o.getId().equals(orderId)));
-    assertTrue(exchangeAdapter.cancelOrder(orderId, MARKET_ID));
+    // Careful here: make sure the SELL_ORDER_PRICE is sensible!
+    // final String orderId = exchangeAdapter.createOrder(MARKET_ID, OrderType.SELL, SELL_ORDER_QUANTITY, SELL_ORDER_PRICE);
+    // final List<OpenOrder> openOrders = exchangeAdapter.getYourOpenOrders(MARKET_ID);
+    // assertTrue(openOrders.stream().anyMatch(o -> o.getId().equals(orderId)));
+    // assertTrue(exchangeAdapter.cancelOrder(orderId, MARKET_ID));
 
     verify(authenticationConfig, networkConfig, exchangeConfig);
   }

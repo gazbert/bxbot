@@ -511,7 +511,7 @@ is created. BX-bot will create up to 7 archives on the same day; these are store
 year and month. Only the last 90 archives are kept. Each archive is compressed using gzip. The logging level is set at `info`. 
 You can change this default logging configuration in the [`config/log4j2.xml`](./config/log4j2.xml) file.
 
-I recommend running at `info` level, as `debug` level logging will produce a *lot* of
+We recommend running at `info` level, as `debug` level logging will produce a *lot* of
 output from the Exchange Adapters; it's very handy for debugging, but not so good for your disk space!
  
 ## Coming Soon... (Definitely Maybe)

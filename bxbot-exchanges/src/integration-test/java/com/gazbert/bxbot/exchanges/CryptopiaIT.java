@@ -39,115 +39,113 @@ import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.easymock.EasyMock.*;
-import static org.junit.Assert.*;
+import static org.easymock.EasyMock.createMock;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.verify;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 /**
  * Basic integration testing with Cryptopia exchange.
  *
  * @author nodueck
  */
-@Ignore("18 May 2019 : Disabling test - the exchange has gone into liquidation: https://www.cryptopia.co.nz/")
+@Ignore("18 May 2019: Disabling test as the exchange has gone into liquidation: https://www.cryptopia.co.nz/")
 @Deprecated
 public class CryptopiaIT {
 
-    // Canned test data
-    private static final String MARKET_ID = "btc_usdt";
-    private static final BigDecimal SELL_ORDER_PRICE = new BigDecimal("10000.176");
-    private static final BigDecimal SELL_ORDER_QUANTITY = new BigDecimal("0.01");
+  private static final String MARKET_ID = "btc_usdt";
+  private static final BigDecimal SELL_ORDER_PRICE = new BigDecimal("10000.176");
+  private static final BigDecimal SELL_ORDER_QUANTITY = new BigDecimal("0.01");
 
-    // Exchange Adapter config for the tests
-    private static final String PUBLIC_KEY = "key123";
-    private static final String PRIVATE_KEY = "notGonnaTellYa";
-    private static final List<Integer> nonFatalNetworkErrorCodes = Arrays.asList(502, 503, 504);
-    private static final List<String> nonFatalNetworkErrorMessages = Arrays.asList(
-            "Connection refused", "Connection reset", "Remote host closed connection during handshake");
+  private static final String PUBLIC_KEY = "key123";
+  private static final String PRIVATE_KEY = "notGonnaTellYa";
+  private static final List<Integer> nonFatalNetworkErrorCodes = Arrays.asList(502, 503, 504);
+  private static final List<String> nonFatalNetworkErrorMessages = Arrays.asList(
+      "Connection refused", "Connection reset", "Remote host closed connection during handshake");
 
-    private ExchangeConfig exchangeConfig;
-    private AuthenticationConfig authenticationConfig;
-    private NetworkConfig networkConfig;
-    private OtherConfig otherConfig;
+  private ExchangeConfig exchangeConfig;
+  private AuthenticationConfig authenticationConfig;
+  private NetworkConfig networkConfig;
+  private OtherConfig otherConfig;
 
+  /*
+   * Create some exchange config - the TradingEngine would normally do this.
+   */
+  @Before
+  public void setupForEachTest() {
+    authenticationConfig = createMock(AuthenticationConfig.class);
+    expect(authenticationConfig.getItem("public_key")).andReturn(PUBLIC_KEY);
+    expect(authenticationConfig.getItem("private_key")).andReturn(PRIVATE_KEY);
 
-    /*
-     * Create some exchange config - the TradingEngine would normally do this.
-     */
-    @Before
-    public void setupForEachTest() {
+    networkConfig = createMock(NetworkConfig.class);
+    expect(networkConfig.getConnectionTimeout()).andReturn(30);
+    expect(networkConfig.getNonFatalErrorCodes()).andReturn(nonFatalNetworkErrorCodes);
+    expect(networkConfig.getNonFatalErrorMessages()).andReturn(nonFatalNetworkErrorMessages);
 
-    	otherConfig = createMock(OtherConfig.class);
-    	expect(otherConfig.getItem("use_global_trading_fee")).andReturn("false");
-    	expect(otherConfig.getItem("global_trading_fee")).andReturn("0.20");
-    	
-        authenticationConfig = createMock(AuthenticationConfig.class);
-        expect(authenticationConfig.getItem("public_key")).andReturn(PUBLIC_KEY);
-        expect(authenticationConfig.getItem("private_key")).andReturn(PRIVATE_KEY);
+    exchangeConfig = createMock(ExchangeConfig.class);
+    expect(exchangeConfig.getAuthenticationConfig()).andReturn(authenticationConfig);
+    expect(exchangeConfig.getNetworkConfig()).andReturn(networkConfig);
+    expect(exchangeConfig.getOtherConfig()).andReturn(otherConfig);
 
-        networkConfig = createMock(NetworkConfig.class);
-        expect(networkConfig.getConnectionTimeout()).andReturn(30);
-        expect(networkConfig.getNonFatalErrorCodes()).andReturn(nonFatalNetworkErrorCodes);
-        expect(networkConfig.getNonFatalErrorMessages()).andReturn(nonFatalNetworkErrorMessages);
+    otherConfig = createMock(OtherConfig.class);
+    expect(otherConfig.getItem("use_global_trading_fee")).andReturn("false");
+    expect(otherConfig.getItem("global_trading_fee")).andReturn("0.20");
+  }
 
-        exchangeConfig = createMock(ExchangeConfig.class);
-        expect(exchangeConfig.getAuthenticationConfig()).andReturn(authenticationConfig);
-        expect(exchangeConfig.getNetworkConfig()).andReturn(networkConfig);
-        expect(exchangeConfig.getOtherConfig()).andReturn(otherConfig);
-        
-    }
+  @Test
+  public void testPublicApiCalls() throws Exception {
+    replay(authenticationConfig, networkConfig, otherConfig, exchangeConfig);
 
-    @Test
-    public void testPublicApiCalls() throws Exception {
+    final ExchangeAdapter exchangeAdapter = new CryptopiaExchangeAdapter();
+    exchangeAdapter.init(exchangeConfig);
 
-        replay(authenticationConfig, networkConfig, otherConfig, exchangeConfig);
+    assertNotNull(exchangeAdapter.getLatestMarketPrice(MARKET_ID));
+    assertNotNull(exchangeAdapter.getLatestMarketPrice(MARKET_ID));
 
-        final ExchangeAdapter exchangeAdapter = new CryptopiaExchangeAdapter();
-        exchangeAdapter.init(exchangeConfig);
+    final MarketOrderBook orderBook = exchangeAdapter.getMarketOrders(MARKET_ID);
+    assertFalse(orderBook.getBuyOrders().isEmpty());
+    assertFalse(orderBook.getSellOrders().isEmpty());
 
-        assertNotNull(exchangeAdapter.getLatestMarketPrice(MARKET_ID));
-        assertNotNull(exchangeAdapter.getLatestMarketPrice(MARKET_ID));
+    final Ticker ticker = exchangeAdapter.getTicker(MARKET_ID);
+    assertNotNull(ticker.getLast());
+    assertNotNull(ticker.getAsk());
+    assertNotNull(ticker.getBid());
+    assertNotNull(ticker.getHigh());
+    assertNotNull(ticker.getLow());
+    assertNotNull(ticker.getOpen());
+    assertNotNull(ticker.getVolume());
+    assertNull(ticker.getVwap()); // vwap not supplied by finex
+    assertNotNull(ticker.getTimestamp());
 
-        final MarketOrderBook orderBook = exchangeAdapter.getMarketOrders(MARKET_ID);
-        assertFalse(orderBook.getBuyOrders().isEmpty());
-        assertFalse(orderBook.getSellOrders().isEmpty());
+    verify(authenticationConfig, networkConfig, exchangeConfig);
+  }
 
-        final Ticker ticker = exchangeAdapter.getTicker(MARKET_ID);
-        assertNotNull(ticker.getLast());
-        assertNotNull(ticker.getAsk());
-        assertNotNull(ticker.getBid());
-        assertNotNull(ticker.getHigh());
-        assertNotNull(ticker.getLow());
-        assertNotNull(ticker.getOpen());
-        assertNotNull(ticker.getVolume());
-        assertNull(ticker.getVwap()); // vwap not supplied by finex
-        assertNotNull(ticker.getTimestamp());
+  /*
+   * You'll need to change the KEY, SECRET, constants to real-world values.
+   */
+  @Ignore("Disabled. Integration testing authenticated API calls requires your secret credentials!")
+  @Test
+  public void testAuthenticatedApiCalls() throws Exception {
+    replay(authenticationConfig, networkConfig, otherConfig, exchangeConfig);
 
-        verify(authenticationConfig, networkConfig, exchangeConfig);
-    }
+    final ExchangeAdapter exchangeAdapter = new CryptopiaExchangeAdapter();
+    exchangeAdapter.init(exchangeConfig);
 
-    /*
-     * You'll need to change the KEY, SECRET, constants to real-world values.
-     */
-    @Ignore("Disabled. Integration testing authenticated API calls requires your secret credentials!")
-    @Test
-    public void testAuthenticatedApiCalls() throws Exception {
+    assertNotNull(exchangeAdapter.getPercentageOfBuyOrderTakenForExchangeFee(MARKET_ID));
+    assertNotNull(exchangeAdapter.getPercentageOfSellOrderTakenForExchangeFee(MARKET_ID));
 
-        replay(authenticationConfig, networkConfig, otherConfig, exchangeConfig);
+    final BalanceInfo balanceInfo = exchangeAdapter.getBalanceInfo();
+    assertNotNull(balanceInfo.getBalancesAvailable().get("BTC"));
 
-        final ExchangeAdapter exchangeAdapter = new CryptopiaExchangeAdapter();
-        exchangeAdapter.init(exchangeConfig);
+    // Careful here: make sure the SELL_ORDER_PRICE is sensible!
+    // final String orderId = exchangeAdapter.createOrder(MARKET_ID, OrderType.SELL, SELL_ORDER_QUANTITY, SELL_ORDER_PRICE);
+    // final List<OpenOrder> openOrders = exchangeAdapter.getYourOpenOrders(MARKET_ID);
+    // assertTrue(openOrders.stream().anyMatch(o -> o.getId().equals(orderId)));
+    // assertTrue(exchangeAdapter.cancelOrder(orderId, MARKET_ID));
 
-        assertNotNull(exchangeAdapter.getPercentageOfBuyOrderTakenForExchangeFee(MARKET_ID));
-        assertNotNull(exchangeAdapter.getPercentageOfSellOrderTakenForExchangeFee(MARKET_ID));
-
-        final BalanceInfo balanceInfo = exchangeAdapter.getBalanceInfo();
-        assertNotNull(balanceInfo.getBalancesAvailable().get("BTC"));
-
-        // Careful here - make sure the SELL_ORDER_PRICE is sensible!
-//        final String orderId = exchangeAdapter.createOrder(MARKET_ID, OrderType.SELL, SELL_ORDER_QUANTITY, SELL_ORDER_PRICE);
-//        final List<OpenOrder> openOrders = exchangeAdapter.getYourOpenOrders(MARKET_ID);
-//        assertTrue(openOrders.stream().anyMatch(o -> o.getId().equals(orderId)));
-//        assertTrue(exchangeAdapter.cancelOrder(orderId, MARKET_ID));
-
-        verify(authenticationConfig, networkConfig, exchangeConfig);
-    }
+    verify(authenticationConfig, networkConfig, exchangeConfig);
+  }
 }

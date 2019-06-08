@@ -7,7 +7,8 @@ If you find a bug, please submit an [issue](https://github.com/gazbert/bxbot/iss
 for someone else to reproduce it. Equally, submit an issue if you want to create a new feature or enhance an
 existing one - refactoring, improving Javadoc, and boosting test coverage is always welcome!
 
-One of the project's maintainers should respond to your issue within 48 hours... if not, bump the issue and request that it be reviewed.
+One of the project's maintainers should respond to your issue within 48 hours... if not, bump the issue and request 
+that it be reviewed.
 
 ## Contributor workflow
 
@@ -35,7 +36,8 @@ To work on something, whether a new feature or a bug fix:
   git remote add upstream https://github.com/gazbert/bxbot.git
   ```
   
-  Make sure you keep your forked repo [up-to-date](https://help.github.com/articles/syncing-a-fork/) with the upstream repository.
+  Make sure you keep your forked repo [up-to-date](https://help.github.com/articles/syncing-a-fork/) with the upstream 
+  repository.
   
   4. Create a meaningful-named branch off of your cloned fork - full details [here](https://git-scm.com/docs/git-checkout).
   
@@ -49,10 +51,11 @@ To work on something, whether a new feature or a bug fix:
 
   Commit messages must have a short description no longer than 50 characters followed by a blank line and a longer,
   more descriptive message that includes reference to issue(s) being addressed so that they will be automatically closed
-  on a merge e.g. ```Closes #1234``` or ```Fixes #1234``` - see [here](https://help.github.com/articles/closing-issues-via-commit-messages/)
-  for more details.
+  on a merge e.g. ```Closes #1234``` or ```Fixes #1234``` - s
+  ee [here](https://help.github.com/articles/closing-issues-via-commit-messages/) for more details.
   
-  When writing a commit message please follow [these conventions](http://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html).
+  When writing a commit message please follow 
+  [these conventions](http://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html).
 
   6. Pull Request (PR)
 
@@ -70,14 +73,15 @@ After your Pull Request (PR) has been reviewed and signed off, a maintainer will
 
 ### Code conventions and housekeeping
 
-These convention should (ideally!) be followed:
+The following conventions should be followed:
 
 * Make sure all new `.java` files to have a simple Javadoc class comment with at least an
   `@author` tag identifying you, and preferably at least a paragraph on what the class is for.
+  All public API methods should also have Javadoc describing the contract and what they do.
 * Add the MIT license header comment to all new `.java` files - copy from existing files in the project.
 * Did we mention tests? All code changes should be accompanied by new or modified tests.
 * Add yourself as an `@author` to the `.java` files that you modify substantially (more than cosmetic changes).
-* Add some Javadocs.
 * In general commits should be atomic and diffs should be easy to read. For this reason do not mix any formatting fixes 
   or code moves with actual code changes.
-* We use the [Google Java Style Guide](https://google.github.io/styleguide/javaguide.html) with one exception: max column size is 120.
+* We use the [Google Java Style Guide](https://google.github.io/styleguide/javaguide.html) with following exceptions:
+  max column size is 120, Javadoc is only needed for class/interface headers and public API methods.

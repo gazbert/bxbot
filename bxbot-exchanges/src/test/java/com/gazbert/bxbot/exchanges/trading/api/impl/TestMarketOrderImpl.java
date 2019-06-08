@@ -42,10 +42,8 @@ public class TestMarketOrderImpl {
     private static final BigDecimal QUANTITY = new BigDecimal("0.01345453");
     private static final BigDecimal TOTAL = PRICE.multiply(QUANTITY);
 
-
     @Test
     public void testMarketOrderIsInitialisedAsExpected() {
-
         final MarketOrderImpl marketOrder = new MarketOrderImpl(OrderType.BUY, PRICE, QUANTITY, TOTAL);
 
         assertEquals(OrderType.BUY, marketOrder.getType());
@@ -56,7 +54,6 @@ public class TestMarketOrderImpl {
 
     @Test
     public void testSettersWorkAsExpected() {
-
         final MarketOrderImpl marketOrder = new MarketOrderImpl(null, null, null, null);
         assertNull(marketOrder.getType());
         assertNull(marketOrder.getPrice());

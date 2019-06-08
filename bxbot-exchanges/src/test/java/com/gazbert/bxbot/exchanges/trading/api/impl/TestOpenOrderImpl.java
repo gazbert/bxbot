@@ -39,66 +39,64 @@ import static org.junit.Assert.assertNull;
  */
 public class TestOpenOrderImpl {
 
-    private static final String ID = "abc_123_def_456_ghi_789";
-    private static final Date CREATION_DATE = new Date();
-    private static final String MARKET_ID = "BTC_USD";
-    private static final BigDecimal PRICE = new BigDecimal("671.91");
-    private static final BigDecimal ORIGINAL_QUANTITY = new BigDecimal("0.01433434");
-    private static final BigDecimal TOTAL = PRICE.multiply(ORIGINAL_QUANTITY);
-    private static final BigDecimal QUANTITY = ORIGINAL_QUANTITY.subtract(new BigDecimal("0.00112112"));
+  private static final String ID = "abc_123_def_456_ghi_789";
+  private static final Date CREATION_DATE = new Date();
+  private static final String MARKET_ID = "BTC_USD";
+  private static final BigDecimal PRICE = new BigDecimal("671.91");
+  private static final BigDecimal ORIGINAL_QUANTITY = new BigDecimal("0.01433434");
+  private static final BigDecimal TOTAL = PRICE.multiply(ORIGINAL_QUANTITY);
+  private static final BigDecimal QUANTITY = ORIGINAL_QUANTITY.subtract(new BigDecimal("0.00112112"));
 
+  @Test
+  public void testOpenOrderIsInitialisedAsExpected() {
+    final OpenOrderImpl openOrder = new OpenOrderImpl(ID, CREATION_DATE, MARKET_ID, OrderType.SELL, PRICE, QUANTITY,
+        ORIGINAL_QUANTITY, TOTAL);
 
-    @Test
-    public void testOpenOrderIsInitialisedAsExpected() {
+    assertEquals(ID, openOrder.getId());
+    assertEquals(CREATION_DATE, openOrder.getCreationDate());
+    assertEquals(MARKET_ID, openOrder.getMarketId());
+    assertEquals(OrderType.SELL, openOrder.getType());
+    assertEquals(PRICE, openOrder.getPrice());
+    assertEquals(QUANTITY, openOrder.getQuantity());
+    assertEquals(ORIGINAL_QUANTITY, openOrder.getOriginalQuantity());
+    assertEquals(TOTAL, openOrder.getTotal());
+  }
 
-        final OpenOrderImpl openOrder = new OpenOrderImpl(ID, CREATION_DATE, MARKET_ID, OrderType.SELL, PRICE, QUANTITY,
-                ORIGINAL_QUANTITY, TOTAL);
+  @Test
+  public void testSettersWorkAsExpected() {
+    final OpenOrderImpl openOrder = new OpenOrderImpl(null, null, null, null, null,
+        null, null, null);
+    assertNull(openOrder.getId());
+    assertNull(openOrder.getCreationDate());
+    assertNull(openOrder.getMarketId());
+    assertNull(openOrder.getType());
+    assertNull(openOrder.getPrice());
+    assertNull(openOrder.getQuantity());
+    assertNull(openOrder.getOriginalQuantity());
+    assertNull(openOrder.getTotal());
 
-        assertEquals(ID, openOrder.getId());
-        assertEquals(CREATION_DATE, openOrder.getCreationDate());
-        assertEquals(MARKET_ID, openOrder.getMarketId());
-        assertEquals(OrderType.SELL, openOrder.getType());
-        assertEquals(PRICE, openOrder.getPrice());
-        assertEquals(QUANTITY, openOrder.getQuantity());
-        assertEquals(ORIGINAL_QUANTITY, openOrder.getOriginalQuantity());
-        assertEquals(TOTAL, openOrder.getTotal());
-    }
+    openOrder.setId(ID);
+    assertEquals(ID, openOrder.getId());
 
-    @Test
-    public void testSettersWorkAsExpected() {
+    openOrder.setCreationDate(CREATION_DATE);
+    assertEquals(CREATION_DATE, openOrder.getCreationDate());
 
-        final OpenOrderImpl openOrder = new OpenOrderImpl(null, null, null, null, null, null, null, null);
-        assertNull(openOrder.getId());
-        assertNull(openOrder.getCreationDate());
-        assertNull(openOrder.getMarketId());
-        assertNull(openOrder.getType());
-        assertNull(openOrder.getPrice());
-        assertNull(openOrder.getQuantity());
-        assertNull(openOrder.getOriginalQuantity());
-        assertNull(openOrder.getTotal());
+    openOrder.setMarketId(MARKET_ID);
+    assertEquals(MARKET_ID, openOrder.getMarketId());
 
-        openOrder.setId(ID);
-        assertEquals(ID, openOrder.getId());
+    openOrder.setType(OrderType.BUY);
+    assertEquals(OrderType.BUY, openOrder.getType());
 
-        openOrder.setCreationDate(CREATION_DATE);
-        assertEquals(CREATION_DATE, openOrder.getCreationDate());
+    openOrder.setPrice(PRICE);
+    assertEquals(PRICE, openOrder.getPrice());
 
-        openOrder.setMarketId(MARKET_ID);
-        assertEquals(MARKET_ID, openOrder.getMarketId());
+    openOrder.setQuantity(QUANTITY);
+    assertEquals(QUANTITY, openOrder.getQuantity());
 
-        openOrder.setType(OrderType.BUY);
-        assertEquals(OrderType.BUY, openOrder.getType());
+    openOrder.setOriginalQuantity(ORIGINAL_QUANTITY);
+    assertEquals(ORIGINAL_QUANTITY, openOrder.getOriginalQuantity());
 
-        openOrder.setPrice(PRICE);
-        assertEquals(PRICE, openOrder.getPrice());
-
-        openOrder.setQuantity(QUANTITY);
-        assertEquals(QUANTITY, openOrder.getQuantity());
-
-        openOrder.setOriginalQuantity(ORIGINAL_QUANTITY);
-        assertEquals(ORIGINAL_QUANTITY, openOrder.getOriginalQuantity());
-
-        openOrder.setTotal(TOTAL);
-        assertEquals(TOTAL, openOrder.getTotal());
-    }
+    openOrder.setTotal(TOTAL);
+    assertEquals(TOTAL, openOrder.getTotal());
+  }
 }
