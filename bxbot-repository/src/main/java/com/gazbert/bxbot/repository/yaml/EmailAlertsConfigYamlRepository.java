@@ -44,23 +44,22 @@ import static com.gazbert.bxbot.datastore.yaml.FileLocations.EMAIL_ALERTS_CONFIG
 @Transactional
 public class EmailAlertsConfigYamlRepository implements EmailAlertsConfigRepository {
 
-    private static final Logger LOG = LogManager.getLogger();
+  private static final Logger LOG = LogManager.getLogger();
 
-    @Override
-    public EmailAlertsConfig get() {
-        LOG.info(() -> "Fetching EmailAlertsConfig...");
-        return ConfigurationManager.loadConfig(EmailAlertsType.class, EMAIL_ALERTS_CONFIG_YAML_FILENAME).getEmailAlerts();
-    }
+  @Override
+  public EmailAlertsConfig get() {
+    LOG.info(() -> "Fetching EmailAlertsConfig...");
+    return ConfigurationManager.loadConfig(EmailAlertsType.class, EMAIL_ALERTS_CONFIG_YAML_FILENAME).getEmailAlerts();
+  }
 
-    @Override
-    public EmailAlertsConfig save(EmailAlertsConfig config) {
+  @Override
+  public EmailAlertsConfig save(EmailAlertsConfig config) {
+    LOG.info(() -> "About to save EmailAlertsConfig: " + config);
 
-        LOG.info(() -> "About to save EmailAlertsConfig: " + config);
+    final EmailAlertsType emailAlertsType = new EmailAlertsType();
+    emailAlertsType.setEmailAlerts(config);
+    ConfigurationManager.saveConfig(EmailAlertsType.class, emailAlertsType, EMAIL_ALERTS_CONFIG_YAML_FILENAME);
 
-        final EmailAlertsType emailAlertsType = new EmailAlertsType();
-        emailAlertsType.setEmailAlerts(config);
-        ConfigurationManager.saveConfig(EmailAlertsType.class, emailAlertsType, EMAIL_ALERTS_CONFIG_YAML_FILENAME);
-
-        return ConfigurationManager.loadConfig(EmailAlertsType.class, EMAIL_ALERTS_CONFIG_YAML_FILENAME).getEmailAlerts();
-    }
+    return ConfigurationManager.loadConfig(EmailAlertsType.class, EMAIL_ALERTS_CONFIG_YAML_FILENAME).getEmailAlerts();
+  }
 }

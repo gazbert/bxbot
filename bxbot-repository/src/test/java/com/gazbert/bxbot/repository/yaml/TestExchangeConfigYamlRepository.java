@@ -43,7 +43,9 @@ import java.util.Map;
 
 import static com.gazbert.bxbot.datastore.yaml.FileLocations.EXCHANGE_CONFIG_YAML_FILENAME;
 import static org.assertj.core.api.Java6Assertions.assertThat;
-import static org.easymock.EasyMock.*;
+import static org.easymock.EasyMock.anyObject;
+import static org.easymock.EasyMock.eq;
+import static org.easymock.EasyMock.expect;
 
 /**
  * Tests YAML backed Exchange configuration repository behaves as expected.
@@ -53,145 +55,141 @@ import static org.easymock.EasyMock.*;
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ConfigurationManager.class})
 @PowerMockIgnore({"javax.crypto.*", "javax.management.*",
-        "com.sun.org.apache.xerces.*", "javax.xml.parsers.*", "org.xml.sax.*", "org.w3c.dom.*"})
+    "com.sun.org.apache.xerces.*", "javax.xml.parsers.*", "org.xml.sax.*", "org.w3c.dom.*"})
 public class TestExchangeConfigYamlRepository {
 
-    private static final String EXCHANGE_NAME = "Bitstamp";
-    private static final String EXCHANGE_ADAPTER = "com.gazbert.bxbot.exchanges.TestExchangeAdapter";
+  private static final String EXCHANGE_NAME = "Bitstamp";
+  private static final String EXCHANGE_ADAPTER = "com.gazbert.bxbot.exchanges.TestExchangeAdapter";
 
-    private static final String API_KEY_CONFIG_ITEM_KEY = "api-key";
-    private static final String API_KEY_CONFIG_ITEM_VALUE = "apiKey--123";
+  private static final String API_KEY_CONFIG_ITEM_KEY = "api-key";
+  private static final String API_KEY_CONFIG_ITEM_VALUE = "apiKey--123";
 
-    private static final String SECRET_CONFIG_ITEM_KEY = "secret";
-    private static final String SECRET_CONFIG_ITEM_VALUE = "secret-key";
+  private static final String SECRET_CONFIG_ITEM_KEY = "secret";
+  private static final String SECRET_CONFIG_ITEM_VALUE = "secret-key";
 
-    private static final Integer CONNECTION_TIMEOUT = 30;
-    private static final List<Integer> NON_FATAL_ERROR_CODES = Arrays.asList(502, 503, 504);
-    private static final List<String> NON_FATAL_ERROR_MESSAGES = Arrays.asList(
-            "Connection refused", "Connection reset", "Remote host closed connection during handshake");
+  private static final Integer CONNECTION_TIMEOUT = 30;
+  private static final List<Integer> NON_FATAL_ERROR_CODES = Arrays.asList(502, 503, 504);
+  private static final List<String> NON_FATAL_ERROR_MESSAGES = Arrays.asList(
+      "Connection refused", "Connection reset", "Remote host closed connection during handshake");
 
-    private static final String BUY_FEE_CONFIG_ITEM_KEY = "buy-fee";
-    private static final String BUY_FEE_CONFIG_ITEM_VALUE = "0.20";
-    private static final String SELL_FEE_CONFIG_ITEM_KEY = "sell-fee";
-    private static final String SELL_FEE_CONFIG_ITEM_VALUE = "0.25";
+  private static final String BUY_FEE_CONFIG_ITEM_KEY = "buy-fee";
+  private static final String BUY_FEE_CONFIG_ITEM_VALUE = "0.20";
+  private static final String SELL_FEE_CONFIG_ITEM_KEY = "sell-fee";
+  private static final String SELL_FEE_CONFIG_ITEM_VALUE = "0.25";
 
+  @Before
+  public void setup() {
+    PowerMock.mockStatic(ConfigurationManager.class);
+  }
 
-    @Before
-    public void setup() {
-        PowerMock.mockStatic(ConfigurationManager.class);
-    }
+  @Test
+  public void whenGetCalledThenReturnExchangeConfig() {
+    expect(ConfigurationManager.loadConfig(
+        eq(ExchangeType.class),
+        eq(EXCHANGE_CONFIG_YAML_FILENAME))).
+        andReturn(someInternalExchangeConfig());
 
-    @Test
-    public void whenGetCalledThenReturnExchangeConfig() {
+    PowerMock.replayAll();
 
-        expect(ConfigurationManager.loadConfig(
-                eq(ExchangeType.class),
-                eq(EXCHANGE_CONFIG_YAML_FILENAME))).
-                andReturn(someInternalExchangeConfig());
+    final ExchangeConfigRepository exchangeConfigRepository = new ExchangeConfigYamlRepository();
+    final ExchangeConfig exchangeConfig = exchangeConfigRepository.get();
 
-        PowerMock.replayAll();
+    assertThat(exchangeConfig.getName()).isEqualTo(EXCHANGE_NAME);
+    assertThat(exchangeConfig.getAdapter()).isEqualTo(EXCHANGE_ADAPTER);
 
-        final ExchangeConfigRepository exchangeConfigRepository = new ExchangeConfigYamlRepository();
-        final ExchangeConfig exchangeConfig = exchangeConfigRepository.get();
+    assertThat(exchangeConfig.getAuthenticationConfig().get(API_KEY_CONFIG_ITEM_KEY)).isEqualTo(API_KEY_CONFIG_ITEM_VALUE);
+    assertThat(exchangeConfig.getAuthenticationConfig().get(SECRET_CONFIG_ITEM_KEY)).isEqualTo(SECRET_CONFIG_ITEM_VALUE);
 
-        assertThat(exchangeConfig.getName()).isEqualTo(EXCHANGE_NAME);
-        assertThat(exchangeConfig.getAdapter()).isEqualTo(EXCHANGE_ADAPTER);
+    assertThat(exchangeConfig.getNetworkConfig().getConnectionTimeout()).isEqualTo(CONNECTION_TIMEOUT);
+    assertThat(exchangeConfig.getNetworkConfig().getNonFatalErrorCodes()).isEqualTo(NON_FATAL_ERROR_CODES);
+    assertThat(exchangeConfig.getNetworkConfig().getNonFatalErrorMessages()).isEqualTo(NON_FATAL_ERROR_MESSAGES);
+    assertThat(exchangeConfig.getOtherConfig().get(BUY_FEE_CONFIG_ITEM_KEY)).isEqualTo(BUY_FEE_CONFIG_ITEM_VALUE);
+    assertThat(exchangeConfig.getOtherConfig().get(SELL_FEE_CONFIG_ITEM_KEY)).isEqualTo(SELL_FEE_CONFIG_ITEM_VALUE);
 
-        assertThat(exchangeConfig.getAuthenticationConfig().get(API_KEY_CONFIG_ITEM_KEY)).isEqualTo(API_KEY_CONFIG_ITEM_VALUE);
-        assertThat(exchangeConfig.getAuthenticationConfig().get(SECRET_CONFIG_ITEM_KEY)).isEqualTo(SECRET_CONFIG_ITEM_VALUE);
+    PowerMock.verifyAll();
+  }
 
-        assertThat(exchangeConfig.getNetworkConfig().getConnectionTimeout()).isEqualTo(CONNECTION_TIMEOUT);
-        assertThat(exchangeConfig.getNetworkConfig().getNonFatalErrorCodes()).isEqualTo(NON_FATAL_ERROR_CODES);
-        assertThat(exchangeConfig.getNetworkConfig().getNonFatalErrorMessages()).isEqualTo(NON_FATAL_ERROR_MESSAGES);
-        assertThat(exchangeConfig.getOtherConfig().get(BUY_FEE_CONFIG_ITEM_KEY)).isEqualTo(BUY_FEE_CONFIG_ITEM_VALUE);
-        assertThat(exchangeConfig.getOtherConfig().get(SELL_FEE_CONFIG_ITEM_KEY)).isEqualTo(SELL_FEE_CONFIG_ITEM_VALUE);
+  @Test
+  public void whenSaveCalledThenExpectRepositoryToSaveItAndReturnSavedExchangeConfig() {
+    ConfigurationManager.saveConfig(eq(ExchangeType.class), anyObject(ExchangeType.class),
+        eq(EXCHANGE_CONFIG_YAML_FILENAME));
 
-        PowerMock.verifyAll();
-    }
+    expect(ConfigurationManager.loadConfig(
+        eq(ExchangeType.class),
+        eq(EXCHANGE_CONFIG_YAML_FILENAME))).
+        andReturn(someInternalExchangeConfig());
 
-    @Test
-    public void whenSaveCalledThenExpectRepositoryToSaveItAndReturnSavedExchangeConfig() {
+    PowerMock.replayAll();
 
-        ConfigurationManager.saveConfig(eq(ExchangeType.class), anyObject(ExchangeType.class), eq(EXCHANGE_CONFIG_YAML_FILENAME));
+    final ExchangeConfigRepository exchangeConfigRepository = new ExchangeConfigYamlRepository();
+    final ExchangeConfig savedExchangeConfig = exchangeConfigRepository.save(someExternalExchangeConfig());
 
-        expect(ConfigurationManager.loadConfig(
-                eq(ExchangeType.class),
-                eq(EXCHANGE_CONFIG_YAML_FILENAME))).
-                andReturn(someInternalExchangeConfig());
+    assertThat(savedExchangeConfig.getName()).isEqualTo(EXCHANGE_NAME);
+    assertThat(savedExchangeConfig.getAdapter()).isEqualTo(EXCHANGE_ADAPTER);
 
-        PowerMock.replayAll();
+    assertThat(savedExchangeConfig.getAuthenticationConfig().get(API_KEY_CONFIG_ITEM_KEY)).isEqualTo(API_KEY_CONFIG_ITEM_VALUE);
+    assertThat(savedExchangeConfig.getAuthenticationConfig().get(SECRET_CONFIG_ITEM_KEY)).isEqualTo(SECRET_CONFIG_ITEM_VALUE);
 
-        final ExchangeConfigRepository exchangeConfigRepository = new ExchangeConfigYamlRepository();
-        final ExchangeConfig savedExchangeConfig = exchangeConfigRepository.save(someExternalExchangeConfig());
+    assertThat(savedExchangeConfig.getNetworkConfig().getConnectionTimeout()).isEqualTo(CONNECTION_TIMEOUT);
+    assertThat(savedExchangeConfig.getNetworkConfig().getNonFatalErrorCodes()).isEqualTo(NON_FATAL_ERROR_CODES);
+    assertThat(savedExchangeConfig.getNetworkConfig().getNonFatalErrorMessages()).isEqualTo(NON_FATAL_ERROR_MESSAGES);
+    assertThat(savedExchangeConfig.getOtherConfig().get(BUY_FEE_CONFIG_ITEM_KEY)).isEqualTo(BUY_FEE_CONFIG_ITEM_VALUE);
+    assertThat(savedExchangeConfig.getOtherConfig().get(SELL_FEE_CONFIG_ITEM_KEY)).isEqualTo(SELL_FEE_CONFIG_ITEM_VALUE);
 
-        assertThat(savedExchangeConfig.getName()).isEqualTo(EXCHANGE_NAME);
-        assertThat(savedExchangeConfig.getAdapter()).isEqualTo(EXCHANGE_ADAPTER);
+    PowerMock.verifyAll();
+  }
 
-        assertThat(savedExchangeConfig.getAuthenticationConfig().get(API_KEY_CONFIG_ITEM_KEY)).isEqualTo(API_KEY_CONFIG_ITEM_VALUE);
-        assertThat(savedExchangeConfig.getAuthenticationConfig().get(SECRET_CONFIG_ITEM_KEY)).isEqualTo(SECRET_CONFIG_ITEM_VALUE);
+  // ------------------------------------------------------------------------------------------------
+  // Private utils
+  // ------------------------------------------------------------------------------------------------
 
-        assertThat(savedExchangeConfig.getNetworkConfig().getConnectionTimeout()).isEqualTo(CONNECTION_TIMEOUT);
-        assertThat(savedExchangeConfig.getNetworkConfig().getNonFatalErrorCodes()).isEqualTo(NON_FATAL_ERROR_CODES);
-        assertThat(savedExchangeConfig.getNetworkConfig().getNonFatalErrorMessages()).isEqualTo(NON_FATAL_ERROR_MESSAGES);
-        assertThat(savedExchangeConfig.getOtherConfig().get(BUY_FEE_CONFIG_ITEM_KEY)).isEqualTo(BUY_FEE_CONFIG_ITEM_VALUE);
-        assertThat(savedExchangeConfig.getOtherConfig().get(SELL_FEE_CONFIG_ITEM_KEY)).isEqualTo(SELL_FEE_CONFIG_ITEM_VALUE);
+  private static ExchangeType someInternalExchangeConfig() {
+    final Map<String, String> authenticationConfig = new HashMap<>();
+    authenticationConfig.put(API_KEY_CONFIG_ITEM_KEY, API_KEY_CONFIG_ITEM_VALUE);
+    authenticationConfig.put(SECRET_CONFIG_ITEM_KEY, SECRET_CONFIG_ITEM_VALUE);
 
-        PowerMock.verifyAll();
-    }
+    final NetworkConfig networkConfig = new NetworkConfig();
+    networkConfig.setConnectionTimeout(CONNECTION_TIMEOUT);
+    networkConfig.setNonFatalErrorCodes(NON_FATAL_ERROR_CODES);
+    networkConfig.setNonFatalErrorMessages(NON_FATAL_ERROR_MESSAGES);
 
-    // ------------------------------------------------------------------------------------------------
-    // Private utils
-    // ------------------------------------------------------------------------------------------------
+    final Map<String, String> otherConfig = new HashMap<>();
+    otherConfig.put(BUY_FEE_CONFIG_ITEM_KEY, BUY_FEE_CONFIG_ITEM_VALUE);
+    otherConfig.put(SELL_FEE_CONFIG_ITEM_KEY, SELL_FEE_CONFIG_ITEM_VALUE);
 
-    private static ExchangeType someInternalExchangeConfig() {
+    final ExchangeConfig exchangeConfig = new ExchangeConfig();
+    exchangeConfig.setName(EXCHANGE_NAME);
+    exchangeConfig.setAdapter(EXCHANGE_ADAPTER);
+    exchangeConfig.setAuthenticationConfig(authenticationConfig);
+    exchangeConfig.setNetworkConfig(networkConfig);
+    exchangeConfig.setOtherConfig(otherConfig);
 
-        final Map<String, String> authenticationConfig = new HashMap<>();
-        authenticationConfig.put(API_KEY_CONFIG_ITEM_KEY, API_KEY_CONFIG_ITEM_VALUE);
-        authenticationConfig.put(SECRET_CONFIG_ITEM_KEY, SECRET_CONFIG_ITEM_VALUE);
+    final ExchangeType exchangeType = new ExchangeType();
+    exchangeType.setExchange(exchangeConfig);
+    return exchangeType;
+  }
 
-        final NetworkConfig networkConfig = new NetworkConfig();
-        networkConfig.setConnectionTimeout(CONNECTION_TIMEOUT);
-        networkConfig.setNonFatalErrorCodes(NON_FATAL_ERROR_CODES);
-        networkConfig.setNonFatalErrorMessages(NON_FATAL_ERROR_MESSAGES);
+  private static ExchangeConfig someExternalExchangeConfig() {
+    final Map<String, String> authenticationConfig = new HashMap<>();
+    authenticationConfig.put(API_KEY_CONFIG_ITEM_KEY, API_KEY_CONFIG_ITEM_VALUE);
+    authenticationConfig.put(SECRET_CONFIG_ITEM_KEY, SECRET_CONFIG_ITEM_VALUE);
 
-        final Map<String, String> otherConfig = new HashMap<>();
-        otherConfig.put(BUY_FEE_CONFIG_ITEM_KEY, BUY_FEE_CONFIG_ITEM_VALUE);
-        otherConfig.put(SELL_FEE_CONFIG_ITEM_KEY, SELL_FEE_CONFIG_ITEM_VALUE);
+    final NetworkConfig networkConfig = new NetworkConfig();
+    networkConfig.setConnectionTimeout(CONNECTION_TIMEOUT);
+    networkConfig.setNonFatalErrorCodes(NON_FATAL_ERROR_CODES);
+    networkConfig.setNonFatalErrorMessages(NON_FATAL_ERROR_MESSAGES);
 
-        final ExchangeConfig exchangeConfig = new ExchangeConfig();
-        exchangeConfig.setName(EXCHANGE_NAME);
-        exchangeConfig.setAdapter(EXCHANGE_ADAPTER);
-        exchangeConfig.setAuthenticationConfig(authenticationConfig);
-        exchangeConfig.setNetworkConfig(networkConfig);
-        exchangeConfig.setOtherConfig(otherConfig);
+    final Map<String, String> optionalConfig = new HashMap<>();
+    optionalConfig.put(BUY_FEE_CONFIG_ITEM_KEY, BUY_FEE_CONFIG_ITEM_VALUE);
+    optionalConfig.put(SELL_FEE_CONFIG_ITEM_KEY, SELL_FEE_CONFIG_ITEM_VALUE);
 
-        final ExchangeType exchangeType = new ExchangeType();
-        exchangeType.setExchange(exchangeConfig);
-        return exchangeType;
-    }
+    final ExchangeConfig exchangeConfig = new ExchangeConfig();
+    exchangeConfig.setName(EXCHANGE_NAME);
+    exchangeConfig.setAdapter(EXCHANGE_ADAPTER);
+    exchangeConfig.setAuthenticationConfig(authenticationConfig);
+    exchangeConfig.setNetworkConfig(networkConfig);
+    exchangeConfig.setOtherConfig(optionalConfig);
 
-    private static ExchangeConfig someExternalExchangeConfig() {
-
-        final Map<String, String> authenticationConfig = new HashMap<>();
-        authenticationConfig.put(API_KEY_CONFIG_ITEM_KEY, API_KEY_CONFIG_ITEM_VALUE);
-        authenticationConfig.put(SECRET_CONFIG_ITEM_KEY, SECRET_CONFIG_ITEM_VALUE);
-
-        final NetworkConfig networkConfig = new NetworkConfig();
-        networkConfig.setConnectionTimeout(CONNECTION_TIMEOUT);
-        networkConfig.setNonFatalErrorCodes(NON_FATAL_ERROR_CODES);
-        networkConfig.setNonFatalErrorMessages(NON_FATAL_ERROR_MESSAGES);
-
-        final Map<String, String> optionalConfig = new HashMap<>();
-        optionalConfig.put(BUY_FEE_CONFIG_ITEM_KEY, BUY_FEE_CONFIG_ITEM_VALUE);
-        optionalConfig.put(SELL_FEE_CONFIG_ITEM_KEY, SELL_FEE_CONFIG_ITEM_VALUE);
-
-        final ExchangeConfig exchangeConfig = new ExchangeConfig();
-        exchangeConfig.setName(EXCHANGE_NAME);
-        exchangeConfig.setAdapter(EXCHANGE_ADAPTER);
-        exchangeConfig.setAuthenticationConfig(authenticationConfig);
-        exchangeConfig.setNetworkConfig(networkConfig);
-        exchangeConfig.setOtherConfig(optionalConfig);
-
-        return exchangeConfig;
-    }
+    return exchangeConfig;
+  }
 }

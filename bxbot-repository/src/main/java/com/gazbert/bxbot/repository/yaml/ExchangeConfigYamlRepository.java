@@ -43,23 +43,22 @@ import static com.gazbert.bxbot.datastore.yaml.FileLocations.EXCHANGE_CONFIG_YAM
 @Transactional
 public class ExchangeConfigYamlRepository implements ExchangeConfigRepository {
 
-    private static final Logger LOG = LogManager.getLogger();
+  private static final Logger LOG = LogManager.getLogger();
 
-    @Override
-    public ExchangeConfig get() {
-        LOG.info(() -> "Fetching ExchangeConfig...");
-        return ConfigurationManager.loadConfig(ExchangeType.class, EXCHANGE_CONFIG_YAML_FILENAME).getExchange();
-    }
+  @Override
+  public ExchangeConfig get() {
+    LOG.info(() -> "Fetching ExchangeConfig...");
+    return ConfigurationManager.loadConfig(ExchangeType.class, EXCHANGE_CONFIG_YAML_FILENAME).getExchange();
+  }
 
-    @Override
-    public ExchangeConfig save(ExchangeConfig config) {
+  @Override
+  public ExchangeConfig save(ExchangeConfig config) {
+    LOG.info(() -> "About to save ExchangeConfig: " + config);
 
-        LOG.info(() -> "About to save ExchangeConfig: " + config);
+    final ExchangeType exchangeType = new ExchangeType();
+    exchangeType.setExchange(config);
+    ConfigurationManager.saveConfig(ExchangeType.class, exchangeType, EXCHANGE_CONFIG_YAML_FILENAME);
 
-        final ExchangeType exchangeType = new ExchangeType();
-        exchangeType.setExchange(config);
-        ConfigurationManager.saveConfig(ExchangeType.class, exchangeType, EXCHANGE_CONFIG_YAML_FILENAME);
-
-        return ConfigurationManager.loadConfig(ExchangeType.class, EXCHANGE_CONFIG_YAML_FILENAME).getExchange();
-    }
+    return ConfigurationManager.loadConfig(ExchangeType.class, EXCHANGE_CONFIG_YAML_FILENAME).getExchange();
+  }
 }

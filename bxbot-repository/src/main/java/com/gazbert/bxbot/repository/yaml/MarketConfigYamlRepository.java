@@ -40,7 +40,7 @@ import java.util.stream.Collectors;
 import static com.gazbert.bxbot.datastore.yaml.FileLocations.MARKETS_CONFIG_YAML_FILENAME;
 
 /**
- *  A Market config repo that uses a YAML backed datastore.
+ * A Market config repo that uses a YAML backed datastore.
  *
  * @author gazbert
  */
@@ -48,138 +48,129 @@ import static com.gazbert.bxbot.datastore.yaml.FileLocations.MARKETS_CONFIG_YAML
 @Transactional
 public class MarketConfigYamlRepository implements MarketConfigRepository {
 
-    private static final Logger LOG = LogManager.getLogger();
+  private static final Logger LOG = LogManager.getLogger();
 
-    @Override
-    public List<MarketConfig> findAll() {
-        LOG.info(() -> "Fetching all Market configs...");
-        return ConfigurationManager.loadConfig(MarketsType.class, MARKETS_CONFIG_YAML_FILENAME).getMarkets();
-    }
+  @Override
+  public List<MarketConfig> findAll() {
+    LOG.info(() -> "Fetching all Market configs...");
+    return ConfigurationManager.loadConfig(MarketsType.class, MARKETS_CONFIG_YAML_FILENAME).getMarkets();
+  }
 
-    @Override
-    public MarketConfig findById(String id) {
+  @Override
+  public MarketConfig findById(String id) {
+    LOG.info(() -> "Fetching Market config for id: " + id);
 
-        LOG.info(() -> "Fetching Market config for id: " + id);
+    final MarketsType marketsType = ConfigurationManager.loadConfig(MarketsType.class, MARKETS_CONFIG_YAML_FILENAME);
 
-        final MarketsType marketsType = ConfigurationManager.loadConfig(MarketsType.class, MARKETS_CONFIG_YAML_FILENAME);
+    return adaptInternalToExternalConfig(
+        marketsType.getMarkets()
+            .stream()
+            .filter((item) -> item.getId().equals(id))
+            .distinct()
+            .collect(Collectors.toList()));
+  }
+
+  @Override
+  public MarketConfig save(MarketConfig config) {
+    final MarketsType marketsType = ConfigurationManager.loadConfig(MarketsType.class, MARKETS_CONFIG_YAML_FILENAME);
+
+    final List<MarketConfig> marketConfigs = marketsType.getMarkets()
+        .stream()
+        .filter((item) -> item.getId().equals(config.getId()))
+        .distinct()
+        .collect(Collectors.toList());
+
+    if (config.getId() == null || config.getId().isEmpty()) {
+      LOG.info(() -> "About to create MarketConfig: " + config);
+
+      if (marketConfigs.isEmpty()) {
+        final MarketConfig newMarketConfig = new MarketConfig(config);
+        newMarketConfig.setId(generateUuid());
+
+        marketsType.getMarkets().add(newMarketConfig);
+        ConfigurationManager.saveConfig(MarketsType.class, marketsType, MARKETS_CONFIG_YAML_FILENAME);
+
+        final MarketsType updatedInternalMarketsConfig = ConfigurationManager.loadConfig(MarketsType.class,
+            MARKETS_CONFIG_YAML_FILENAME);
 
         return adaptInternalToExternalConfig(
-                marketsType.getMarkets()
-                        .stream()
-                        .filter((item) -> item.getId().equals(id))
-                        .distinct()
-                        .collect(Collectors.toList()));
-    }
+            updatedInternalMarketsConfig.getMarkets()
+                .stream()
+                .filter((item) -> item.getId().equals(newMarketConfig.getId()))
+                .distinct()
+                .collect(Collectors.toList()));
+      } else {
+        throw new IllegalStateException("Trying to create new MarketConfig but null/empty id already exists. " +
+            "MarketConfig: " + config + " Existing MarketConfig: "
+            + marketsType.getMarkets());
+      }
+    } else {
+      LOG.info(() -> "About to update MarketConfig: " + config);
 
-    @Override
-    public MarketConfig save(MarketConfig config) {
+      if (!marketConfigs.isEmpty()) {
 
-        final MarketsType marketsType = ConfigurationManager.loadConfig(MarketsType.class, MARKETS_CONFIG_YAML_FILENAME);
+        marketsType.getMarkets().remove(marketConfigs.get(0)); // will only be 1 unique strat
+        marketsType.getMarkets().add(config);
+        ConfigurationManager.saveConfig(MarketsType.class, marketsType, MARKETS_CONFIG_YAML_FILENAME);
 
-        final List<MarketConfig> marketConfigs = marketsType.getMarkets()
+        final MarketsType updatedMarketsType = ConfigurationManager.loadConfig(
+            MarketsType.class, MARKETS_CONFIG_YAML_FILENAME);
+
+        return adaptInternalToExternalConfig(
+            updatedMarketsType.getMarkets()
                 .stream()
                 .filter((item) -> item.getId().equals(config.getId()))
                 .distinct()
-                .collect(Collectors.toList());
-
-        if (config.getId() == null || config.getId().isEmpty()) {
-
-            LOG.info(() -> "About to create MarketConfig: " + config);
-
-            if (marketConfigs.isEmpty()) {
-
-                final MarketConfig newMarketConfig = new MarketConfig(config);
-                newMarketConfig.setId(generateUuid());
-
-                marketsType.getMarkets().add(newMarketConfig);
-                ConfigurationManager.saveConfig(MarketsType.class, marketsType, MARKETS_CONFIG_YAML_FILENAME);
-
-                final MarketsType updatedInternalMarketsConfig = ConfigurationManager.loadConfig(MarketsType.class,
-                        MARKETS_CONFIG_YAML_FILENAME);
-
-                return adaptInternalToExternalConfig(
-                        updatedInternalMarketsConfig.getMarkets()
-                                .stream()
-                                .filter((item) -> item.getId().equals(newMarketConfig.getId()))
-                                .distinct()
-                                .collect(Collectors.toList()));
-            } else {
-                throw new IllegalStateException("Trying to create new MarketConfig but null/empty id already exists. " +
-                        "MarketConfig: " + config + " Existing MarketConfig: "
-                        + marketsType.getMarkets());
-            }
-
-        } else {
-
-            LOG.info(() -> "About to update MarketConfig: " + config);
-
-            if (!marketConfigs.isEmpty()) {
-
-                marketsType.getMarkets().remove(marketConfigs.get(0)); // will only be 1 unique strat
-                marketsType.getMarkets().add(config);
-                ConfigurationManager.saveConfig(MarketsType.class, marketsType, MARKETS_CONFIG_YAML_FILENAME);
-
-                final MarketsType updatedMarketsType = ConfigurationManager.loadConfig(
-                        MarketsType.class, MARKETS_CONFIG_YAML_FILENAME);
-
-                return adaptInternalToExternalConfig(
-                        updatedMarketsType.getMarkets()
-                                .stream()
-                                .filter((item) -> item.getId().equals(config.getId()))
-                                .distinct()
-                                .collect(Collectors.toList()));
-            } else {
-                LOG.warn("Trying to update MarketConfig but id does not exist MarketConfig: " + config +
-                        " Existing MarketConfig: " + marketsType.getMarkets());
-                return null;
-            }
-        }
-    }
-
-    @Override
-    public MarketConfig delete(String id) {
-
-        LOG.info(() -> "Deleting Market config for id: " + id);
-
-        final MarketsType marketsType = ConfigurationManager.loadConfig(MarketsType.class, MARKETS_CONFIG_YAML_FILENAME);
-
-        final List<MarketConfig> marketConfigs = marketsType.getMarkets()
-                .stream()
-                .filter((item) -> item.getId().equals(id))
-                .distinct()
-                .collect(Collectors.toList());
-
-        if (!marketConfigs.isEmpty()) {
-
-            final MarketConfig marketToRemove = marketConfigs.get(0); // will only be 1 unique strat
-            marketsType.getMarkets().remove(marketToRemove);
-            ConfigurationManager.saveConfig(MarketsType.class, marketsType, MARKETS_CONFIG_YAML_FILENAME);
-
-            return adaptInternalToExternalConfig(Collections.singletonList(marketToRemove));
-        } else {
-            LOG.warn("Trying to delete MarketConfig but id does not exist. MarketConfig id: " + id
-                    + " Existing MarketConfig: " + marketsType.getMarkets());
-            return null;
-        }
-    }
-
-    // ------------------------------------------------------------------------------------------------
-    // Adapter methods
-    // ------------------------------------------------------------------------------------------------
-
-    private static MarketConfig adaptInternalToExternalConfig(List<MarketConfig> internalMarketConfigItems) {
-        if (!internalMarketConfigItems.isEmpty()) {
-            // Should only ever be 1 unique Market id
-            return internalMarketConfigItems.get(0);
-        }
+                .collect(Collectors.toList()));
+      } else {
+        LOG.warn("Trying to update MarketConfig but id does not exist MarketConfig: " + config +
+            " Existing MarketConfig: " + marketsType.getMarkets());
         return null;
+      }
     }
+  }
 
-    // ------------------------------------------------------------------------------------------------
-    // Util methods
-    // ------------------------------------------------------------------------------------------------
+  @Override
+  public MarketConfig delete(String id) {
+    LOG.info(() -> "Deleting Market config for id: " + id);
 
-    private String generateUuid() {
-        return UUID.randomUUID().toString();
+    final MarketsType marketsType = ConfigurationManager.loadConfig(MarketsType.class, MARKETS_CONFIG_YAML_FILENAME);
+
+    final List<MarketConfig> marketConfigs = marketsType.getMarkets()
+        .stream()
+        .filter((item) -> item.getId().equals(id))
+        .distinct()
+        .collect(Collectors.toList());
+
+    if (!marketConfigs.isEmpty()) {
+      final MarketConfig marketToRemove = marketConfigs.get(0); // will only be 1 unique strat
+      marketsType.getMarkets().remove(marketToRemove);
+      ConfigurationManager.saveConfig(MarketsType.class, marketsType, MARKETS_CONFIG_YAML_FILENAME);
+      return adaptInternalToExternalConfig(Collections.singletonList(marketToRemove));
+    } else {
+      LOG.warn("Trying to delete MarketConfig but id does not exist. MarketConfig id: " + id
+          + " Existing MarketConfig: " + marketsType.getMarkets());
+      return null;
     }
+  }
+
+  // ------------------------------------------------------------------------------------------------
+  // Adapter methods
+  // ------------------------------------------------------------------------------------------------
+
+  private static MarketConfig adaptInternalToExternalConfig(List<MarketConfig> internalMarketConfigItems) {
+    if (!internalMarketConfigItems.isEmpty()) {
+      // Should only ever be 1 unique Market id
+      return internalMarketConfigItems.get(0);
+    }
+    return null;
+  }
+
+  // ------------------------------------------------------------------------------------------------
+  // Util methods
+  // ------------------------------------------------------------------------------------------------
+
+  private String generateUuid() {
+    return UUID.randomUUID().toString();
+  }
 }

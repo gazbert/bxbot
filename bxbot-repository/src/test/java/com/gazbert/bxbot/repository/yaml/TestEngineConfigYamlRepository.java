@@ -39,7 +39,9 @@ import java.math.BigDecimal;
 
 import static com.gazbert.bxbot.datastore.yaml.FileLocations.ENGINE_CONFIG_YAML_FILENAME;
 import static org.assertj.core.api.Java6Assertions.assertThat;
-import static org.easymock.EasyMock.*;
+import static org.easymock.EasyMock.anyObject;
+import static org.easymock.EasyMock.eq;
+import static org.easymock.EasyMock.expect;
 
 /**
  * Tests YAML backed Engine configuration repository behaves as expected.
@@ -49,90 +51,88 @@ import static org.easymock.EasyMock.*;
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ConfigurationManager.class})
 @PowerMockIgnore({"javax.crypto.*", "javax.management.*",
-        "com.sun.org.apache.xerces.*", "javax.xml.parsers.*", "org.xml.sax.*", "org.w3c.dom.*"})
+    "com.sun.org.apache.xerces.*", "javax.xml.parsers.*", "org.xml.sax.*", "org.w3c.dom.*"})
 public class TestEngineConfigYamlRepository {
 
-    private static final String BOT_ID = "avro-707_1";
-    private static final String BOT_NAME = "Avro 707";
-    private static final String ENGINE_EMERGENCY_STOP_CURRENCY = "BTC";
-    private static final BigDecimal ENGINE_EMERGENCY_STOP_BALANCE = new BigDecimal("0.5");
-    private static final int ENGINE_TRADE_CYCLE_INTERVAL = 60;
+  private static final String BOT_ID = "avro-707_1";
+  private static final String BOT_NAME = "Avro 707";
+  private static final String ENGINE_EMERGENCY_STOP_CURRENCY = "BTC";
+  private static final BigDecimal ENGINE_EMERGENCY_STOP_BALANCE = new BigDecimal("0.5");
+  private static final int ENGINE_TRADE_CYCLE_INTERVAL = 60;
 
+  @Before
+  public void setup() {
+    PowerMock.mockStatic(ConfigurationManager.class);
+  }
 
-    @Before
-    public void setup() {
-        PowerMock.mockStatic(ConfigurationManager.class);
-    }
+  @Test
+  public void whenGetCalledThenExpectEngineConfigToBeReturned() {
+    expect(ConfigurationManager.loadConfig(
+        eq(EngineType.class),
+        eq(ENGINE_CONFIG_YAML_FILENAME))).
+        andReturn(someInternalEngineConfig());
 
-    @Test
-    public void whenGetCalledThenExpectEngineConfigToBeReturned() {
+    PowerMock.replayAll();
 
-        expect(ConfigurationManager.loadConfig(
-                eq(EngineType.class),
-                eq(ENGINE_CONFIG_YAML_FILENAME))).
-                andReturn(someInternalEngineConfig());
+    final EngineConfigRepository engineConfigRepository = new EngineConfigYamlRepository();
+    final EngineConfig engineConfig = engineConfigRepository.get();
+    assertThat(engineConfig.getBotId()).isEqualTo(BOT_ID);
+    assertThat(engineConfig.getBotName()).isEqualTo(BOT_NAME);
+    assertThat(engineConfig.getEmergencyStopCurrency()).isEqualTo(ENGINE_EMERGENCY_STOP_CURRENCY);
+    assertThat(engineConfig.getEmergencyStopBalance()).isEqualTo(ENGINE_EMERGENCY_STOP_BALANCE);
+    assertThat(engineConfig.getTradeCycleInterval()).isEqualTo(ENGINE_TRADE_CYCLE_INTERVAL);
 
-        PowerMock.replayAll();
+    PowerMock.verifyAll();
+  }
 
-        final EngineConfigRepository engineConfigRepository = new EngineConfigYamlRepository();
-        final EngineConfig engineConfig = engineConfigRepository.get();
-        assertThat(engineConfig.getBotId()).isEqualTo(BOT_ID);
-        assertThat(engineConfig.getBotName()).isEqualTo(BOT_NAME);
-        assertThat(engineConfig.getEmergencyStopCurrency()).isEqualTo(ENGINE_EMERGENCY_STOP_CURRENCY);
-        assertThat(engineConfig.getEmergencyStopBalance()).isEqualTo(ENGINE_EMERGENCY_STOP_BALANCE);
-        assertThat(engineConfig.getTradeCycleInterval()).isEqualTo(ENGINE_TRADE_CYCLE_INTERVAL);
+  @Test
+  public void whenSaveCalledThenExpectRepositoryToSaveItAndReturnSavedEngineConfig() {
+    ConfigurationManager.saveConfig(eq(EngineType.class), anyObject(EngineType.class),
+        eq(ENGINE_CONFIG_YAML_FILENAME));
 
-        PowerMock.verifyAll();
-    }
+    expect(ConfigurationManager.loadConfig(
+        eq(EngineType.class),
+        eq(ENGINE_CONFIG_YAML_FILENAME))).
+        andReturn(someInternalEngineConfig());
 
-    @Test
-    public void whenSaveCalledThenExpectRepositoryToSaveItAndReturnSavedEngineConfig() {
+    PowerMock.replayAll();
 
-        ConfigurationManager.saveConfig(eq(EngineType.class), anyObject(EngineType.class), eq(ENGINE_CONFIG_YAML_FILENAME));
+    final EngineConfigRepository engineConfigRepository = new EngineConfigYamlRepository();
+    final EngineConfig savedConfig = engineConfigRepository.save(someExternalEngineConfig());
 
-        expect(ConfigurationManager.loadConfig(
-                eq(EngineType.class),
-                eq(ENGINE_CONFIG_YAML_FILENAME))).
-                andReturn(someInternalEngineConfig());
+    assertThat(savedConfig.getBotId()).isEqualTo(BOT_ID);
+    assertThat(savedConfig.getBotName()).isEqualTo(BOT_NAME);
+    assertThat(savedConfig.getEmergencyStopCurrency()).isEqualTo(ENGINE_EMERGENCY_STOP_CURRENCY);
+    assertThat(savedConfig.getEmergencyStopBalance()).isEqualTo(ENGINE_EMERGENCY_STOP_BALANCE);
+    assertThat(savedConfig.getTradeCycleInterval()).isEqualTo(ENGINE_TRADE_CYCLE_INTERVAL);
 
-        PowerMock.replayAll();
+    PowerMock.verifyAll();
+  }
 
-        final EngineConfigRepository engineConfigRepository = new EngineConfigYamlRepository();
-        final EngineConfig savedConfig = engineConfigRepository.save(someExternalEngineConfig());
+  // ------------------------------------------------------------------------------------------------
+  // Private utils
+  // ------------------------------------------------------------------------------------------------
 
-        assertThat(savedConfig.getBotId()).isEqualTo(BOT_ID);
-        assertThat(savedConfig.getBotName()).isEqualTo(BOT_NAME);
-        assertThat(savedConfig.getEmergencyStopCurrency()).isEqualTo(ENGINE_EMERGENCY_STOP_CURRENCY);
-        assertThat(savedConfig.getEmergencyStopBalance()).isEqualTo(ENGINE_EMERGENCY_STOP_BALANCE);
-        assertThat(savedConfig.getTradeCycleInterval()).isEqualTo(ENGINE_TRADE_CYCLE_INTERVAL);
+  private static EngineType someInternalEngineConfig() {
+    final EngineConfig engineConfig = new EngineConfig();
+    engineConfig.setBotId(BOT_ID);
+    engineConfig.setBotName(BOT_NAME);
+    engineConfig.setEmergencyStopBalance(ENGINE_EMERGENCY_STOP_BALANCE);
+    engineConfig.setEmergencyStopCurrency(ENGINE_EMERGENCY_STOP_CURRENCY);
+    engineConfig.setTradeCycleInterval(ENGINE_TRADE_CYCLE_INTERVAL);
 
-        PowerMock.verifyAll();
-    }
+    final EngineType internalConfig = new EngineType();
+    internalConfig.setEngine(engineConfig);
+    return internalConfig;
+  }
 
-    // ------------------------------------------------------------------------------------------------
-    // Private utils
-    // ------------------------------------------------------------------------------------------------
-
-    private static EngineType someInternalEngineConfig() {
-        final EngineConfig engineConfig = new EngineConfig();
-        engineConfig.setBotId(BOT_ID);
-        engineConfig.setBotName(BOT_NAME);
-        engineConfig.setEmergencyStopBalance(ENGINE_EMERGENCY_STOP_BALANCE);
-        engineConfig.setEmergencyStopCurrency(ENGINE_EMERGENCY_STOP_CURRENCY);
-        engineConfig.setTradeCycleInterval(ENGINE_TRADE_CYCLE_INTERVAL);
-
-        final EngineType internalConfig = new EngineType();
-        internalConfig.setEngine(engineConfig);
-        return internalConfig;
-    }
-
-    private static EngineConfig someExternalEngineConfig() {
-        final EngineConfig externalConfig = new EngineConfig();
-        externalConfig.setBotId(BOT_ID);
-        externalConfig.setBotName(BOT_NAME);
-        externalConfig.setEmergencyStopBalance(ENGINE_EMERGENCY_STOP_BALANCE);
-        externalConfig.setEmergencyStopCurrency(ENGINE_EMERGENCY_STOP_CURRENCY);
-        externalConfig.setTradeCycleInterval(ENGINE_TRADE_CYCLE_INTERVAL);
-        return externalConfig;
-    }
+  private static EngineConfig someExternalEngineConfig() {
+    final EngineConfig externalConfig = new EngineConfig();
+    externalConfig.setBotId(BOT_ID);
+    externalConfig.setBotName(BOT_NAME);
+    externalConfig.setEmergencyStopBalance(ENGINE_EMERGENCY_STOP_BALANCE);
+    externalConfig.setEmergencyStopCurrency(ENGINE_EMERGENCY_STOP_CURRENCY);
+    externalConfig.setTradeCycleInterval(ENGINE_TRADE_CYCLE_INTERVAL);
+    return externalConfig;
+  }
 }
