@@ -389,8 +389,8 @@ All fields are mandatory unless stated otherwise.
   Sample SMTP config for using a Gmail account is shown above - all elements within `smtpConfig` are mandatory. 
 
 ### How do I write my own Trading Strategy?
-_"Battle not with monsters, lest ye become a monster, and if you gaze into the abyss, the abyss gazes also into you."_ 
-- Friedrich Nietzsche
+_"Battle not with monsters, lest ye become a monster, and if you gaze into the abyss, the abyss gazes also into you."_ -
+Friedrich Nietzsche
 
 The best place to start is with the
 [`ExampleScalpingStrategy`](./bxbot-strategies/src/main/java/com/gazbert/bxbot/strategies/ExampleScalpingStrategy.java) -
