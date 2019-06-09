@@ -23,6 +23,11 @@
 
 package com.gazbert.bxbot.strategies;
 
+import static org.easymock.EasyMock.createMock;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.verify;
+
 import com.gazbert.bxbot.strategy.api.StrategyConfig;
 import com.gazbert.bxbot.strategy.api.StrategyException;
 import com.gazbert.bxbot.trading.api.ExchangeNetworkException;
@@ -33,19 +38,13 @@ import com.gazbert.bxbot.trading.api.OpenOrder;
 import com.gazbert.bxbot.trading.api.OrderType;
 import com.gazbert.bxbot.trading.api.TradingApi;
 import com.gazbert.bxbot.trading.api.TradingApiException;
-import org.junit.Before;
-import org.junit.Test;
-import org.powermock.reflect.Whitebox;
-
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
-
-import static org.easymock.EasyMock.createMock;
-import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.replay;
-import static org.easymock.EasyMock.verify;
+import org.junit.Before;
+import org.junit.Test;
+import org.powermock.reflect.Whitebox;
 
 /**
  * <p>
@@ -59,9 +58,9 @@ import static org.easymock.EasyMock.verify;
  */
 public class TestExampleScalpingStrategy {
 
-  private final static String MARKET_ID = "btc_usd";
-  private final static String BASE_CURRENCY = "BTC";
-  private final static String COUNTER_CURRENCY = "USD";
+  private static final String MARKET_ID = "btc_usd";
+  private static final String BASE_CURRENCY = "BTC";
+  private static final String COUNTER_CURRENCY = "USD";
 
   private TradingApi tradingApi;
   private Market market;
@@ -97,8 +96,8 @@ public class TestExampleScalpingStrategy {
     marketSellOrders.add(marketSellOrder);
 
     // expect config to be loaded
-    expect(config.getConfigItem("counter-currency-buy-order-amount")).
-        andReturn(CONFIG_ITEM_COUNTER_CURRENCY_BUY_ORDER_AMOUNT);
+    expect(config.getConfigItem("counter-currency-buy-order-amount"))
+        .andReturn(CONFIG_ITEM_COUNTER_CURRENCY_BUY_ORDER_AMOUNT);
     expect(config.getConfigItem("minimum-percentage-gain")).andReturn(CONFIG_ITEM_MINIMUM_PERCENTAGE_GAIN);
 
     // expect Market name to be logged zero or more times. Loose mock behaviour here; name is cosmetic.
@@ -179,8 +178,8 @@ public class TestExampleScalpingStrategy {
 
     // expect to send new sell order to exchange
     final BigDecimal requiredProfitInPercent = new BigDecimal("0.02");
-    final BigDecimal newAskPrice = lastOrderPrice.multiply(requiredProfitInPercent).add(lastOrderPrice).
-        setScale(8, RoundingMode.HALF_UP);
+    final BigDecimal newAskPrice = lastOrderPrice.multiply(requiredProfitInPercent).add(lastOrderPrice)
+        .setScale(8, RoundingMode.HALF_UP);
     final String orderId = "4239407234";
     expect(market.getId()).andReturn(MARKET_ID).atLeastOnce();
     expect(tradingApi.createOrder(MARKET_ID, OrderType.SELL, lastOrderAmount, newAskPrice)).andReturn(orderId);
@@ -484,8 +483,8 @@ public class TestExampleScalpingStrategy {
 
     // expect to send new sell order to exchange and receive timeout exception
     final BigDecimal requiredProfitInPercent = new BigDecimal("0.02");
-    final BigDecimal newAskPrice = lastOrderPrice.multiply(requiredProfitInPercent).add(lastOrderPrice).
-        setScale(8, RoundingMode.HALF_UP);
+    final BigDecimal newAskPrice = lastOrderPrice.multiply(requiredProfitInPercent).add(lastOrderPrice)
+        .setScale(8, RoundingMode.HALF_UP);
     expect(market.getId()).andReturn(MARKET_ID).atLeastOnce();
     expect(tradingApi.createOrder(MARKET_ID, OrderType.SELL, lastOrderAmount, newAskPrice)).andThrow(
         new ExchangeNetworkException("Timeout waiting for exchange!"));
@@ -635,8 +634,8 @@ public class TestExampleScalpingStrategy {
 
     // expect to send new sell order to exchange and receive timeout exception
     final BigDecimal requiredProfitInPercent = new BigDecimal("0.02");
-    final BigDecimal newAskPrice = lastOrderPrice.multiply(requiredProfitInPercent).add(lastOrderPrice).
-        setScale(8, RoundingMode.HALF_UP);
+    final BigDecimal newAskPrice = lastOrderPrice.multiply(requiredProfitInPercent).add(lastOrderPrice)
+        .setScale(8, RoundingMode.HALF_UP);
     expect(market.getId()).andReturn(MARKET_ID).atLeastOnce();
     expect(tradingApi.createOrder(MARKET_ID, OrderType.SELL, lastOrderAmount, newAskPrice)).andThrow(
         new TradingApiException("Exchange returned a 500 status code!"));

@@ -35,42 +35,40 @@ import com.gazbert.bxbot.trading.api.OrderType;
 import com.gazbert.bxbot.trading.api.TradingApi;
 import com.gazbert.bxbot.trading.api.TradingApiException;
 import com.google.common.base.MoreObjects;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.springframework.stereotype.Component;
-
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.List;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.stereotype.Component;
 
 /**
  * <p>
- * This is a very simple <a href="http://www.investopedia.com/articles/trading/02/081902.asp">scalping strategy</a>
- * to show how to use the Trading API; you will want to code a much better algorithm!
- * It trades using <a href="http://www.investopedia.com/terms/l/limitorder.asp">limit orders</a> at the
+ * This is a very simple <a href="http://www.investopedia.com/articles/trading/02/081902.asp">scalping strategy</a> to
+ * show how to use the Trading API; you will want to code a much better algorithm! It trades using <a
+ * href="http://www.investopedia.com/terms/l/limitorder.asp">limit orders</a> at the
  * <a href="http://www.investopedia.com/terms/s/spotprice.asp">spot price</a>.
  * </p>
  * <p>
  * <strong>
- * DISCLAIMER:
- * This algorithm is provided as-is; it might have bugs in it and you could lose money. Use it at our own risk!
+ * DISCLAIMER: This algorithm is provided as-is; it might have bugs in it and you could lose money. Use it at our own
+ * risk!
  * </strong>
  * </p>
  * <p>
- * It was originally written to trade on <a href="https://btc-e.com">BTC-e</a>, but should work for any exchange.
- * The algorithm will start by buying the base currency (BTC in this example) using the counter currency
- * (USD in this example),and then sell the base currency (BTC) at a higher price to take profit from the spread.
- * The algorithm expects you to have deposited sufficient counter currency (USD) into your exchange wallet in order to
- * buy the base currency (BTC).
+ * It was originally written to trade on <a href="https://btc-e.com">BTC-e</a>, but should work for any exchange. The
+ * algorithm will start by buying the base currency (BTC in this example) using the counter currency (USD in this
+ * example),and then sell the base currency (BTC) at a higher price to take profit from the spread. The algorithm
+ * expects you to have deposited sufficient counter currency (USD) into your exchange wallet in order to buy the base
+ * currency (BTC).
  * </p>
  * <p>
  * When it starts up, it places an order at the current BID price and uses x amount of counter currency (USD) to 'buy'
  * the base currency (BTC). The value of x comes from the sample {project-root}/config/strategies.xml
  * 'counter-currency-buy-order-amount' config-item, currently set to 20 USD. Make sure that the value you use for x is
- * large enough to be able to meet the minimum BTC order size for the exchange you are trading on,
- * e.g. the Bitfinex min order size is 0.01 BTC as of 3 May 2017.
- * The algorithm then waits for the buy order to fill...
+ * large enough to be able to meet the minimum BTC order size for the exchange you are trading on, e.g. the Bitfinex min
+ * order size is 0.01 BTC as of 3 May 2017. The algorithm then waits for the buy order to fill...
  * </p>
  * <p>
  * Once the buy order fills, it then waits until the ASK price is at least y % higher than the previous buy fill price.
@@ -79,37 +77,37 @@ import java.util.List;
  * price. It then waits for the sell order to fill... and the cycle repeats.
  * </p>
  * <p>
- * The algorithm does not factor in being outbid when placing buy orders, i.e. it does not cancel the current order
- * and place a new order at a higher price; it simply holds until the current BID price falls again. Likewise, the
- * algorithm does not factor in being undercut when placing sell orders; it does not cancel the current order and place
- * a new order at a lower price.
+ * The algorithm does not factor in being outbid when placing buy orders, i.e. it does not cancel the current order and
+ * place a new order at a higher price; it simply holds until the current BID price falls again. Likewise, the algorithm
+ * does not factor in being undercut when placing sell orders; it does not cancel the current order and place a new
+ * order at a lower price.
  * </p>
  * <p>
- * Chances are you will either get a stuck buy order if the market is going up, or a stuck sell order if the market
- * goes down. You could manually execute the trades on the exchange and restart the bot to get going again... but a
- * much better solution would be to modify this code to deal with it: cancel your current buy order and place a
- * new order matching the current BID price, or cancel your current sell order and place a new order matching the
- * current ASK price. The {@link TradingApi} allows you to add this behaviour.
+ * Chances are you will either get a stuck buy order if the market is going up, or a stuck sell order if the market goes
+ * down. You could manually execute the trades on the exchange and restart the bot to get going again... but a much
+ * better solution would be to modify this code to deal with it: cancel your current buy order and place a new order
+ * matching the current BID price, or cancel your current sell order and place a new order matching the current ASK
+ * price. The {@link TradingApi} allows you to add this behaviour.
  * </p>
  * <p>
- * Remember to include the correct exchange fees (both buy and sell) in your buy/sell calculations when you write
- * your own algorithm. Otherwise, you'll end up bleeding fiat/crypto to the exchange...
+ * Remember to include the correct exchange fees (both buy and sell) in your buy/sell calculations when you write your
+ * own algorithm. Otherwise, you'll end up bleeding fiat/crypto to the exchange...
  * </p>
- * <p>This demo algorithm relies on the {project-root}/config/strategies.xml 'minimum-percentage-gain' config-item value
- * being high enough to make a profit and cover the exchange fees. You could tweak the algo to call the
- * {@link com.gazbert.bxbot.trading.api.TradingApi#getPercentageOfBuyOrderTakenForExchangeFee(String)} and
- * {@link com.gazbert.bxbot.trading.api.TradingApi#getPercentageOfSellOrderTakenForExchangeFee(String)} when calculating
- * the order to send to the exchange... See the sample {project-root}/config/samples/{exchange}/exchange.xml files for
- * info on the different exchange fees.
+ * <p>This demo algorithm relies on the {project-root}/config/strategies.xml 'minimum-percentage-gain' config-item
+ * value being high enough to make a profit and cover the exchange fees. You could tweak the algo to call the {@link
+ * com.gazbert.bxbot.trading.api.TradingApi#getPercentageOfBuyOrderTakenForExchangeFee(String)} and {@link
+ * com.gazbert.bxbot.trading.api.TradingApi#getPercentageOfSellOrderTakenForExchangeFee(String)} when calculating the
+ * order to send to the exchange... See the sample {project-root}/config/samples/{exchange}/exchange.xml files for info
+ * on the different exchange fees.
  * </p>
  * <p>
  * You configure the loading of your strategy using either a class-name OR a bean-name in the
  * {project-root}/config/strategies.xml config file. This example strategy is configured using the bean-name and by
- * setting the @Component("exampleScalpingStrategy") annotation - this results in Spring injecting the bean
- * - see <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/stereotype/Component.html">
+ * setting the @Component("exampleScalpingStrategy") annotation - this results in Spring injecting the bean - see <a
+ * href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/stereotype/Component.html">
  * Spring docs</a> for more details. Alternatively, you can load your strategy using class-name - this will use the
- * bot's custom injection framework. The choice is yours, but bean-name is the way to go if you want to use other
- * Spring features in your strategy, e.g. a
+ * bot's custom injection framework. The choice is yours, but bean-name is the way to go if you want to use other Spring
+ * features in your strategy, e.g. a
  * <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/stereotype/Repository.html">
  * Repository</a> to store your trade data.
  * </p>
@@ -142,36 +140,42 @@ public class ExampleScalpingStrategy implements TradingStrategy {
 
   private static final Logger LOG = LogManager.getLogger();
 
-  /** Reference to the main Trading API.*/
+  /**
+   * Reference to the main Trading API.
+   */
   private TradingApi tradingApi;
 
-  /** The market this strategy is trading on. */
+  /**
+   * The market this strategy is trading on.
+   */
   private Market market;
 
-  /** The state of the order. */
+  /**
+   * The state of the order.
+   */
   private OrderState lastOrder;
 
   /**
-   * The counter currency amount to use when placing the buy order.
-   * This was loaded from the strategy entry in the {project-root}/config/strategies.xml config file.
+   * The counter currency amount to use when placing the buy order. This was loaded from the strategy entry in the
+   * {project-root}/config/strategies.xml config file.
    */
   private BigDecimal counterCurrencyBuyOrderAmount;
 
   /**
-   * The minimum % gain was to achieve before placing a SELL oder.
-   * This was loaded from the strategy entry in the {project-root}/config/strategies.xml config file.
+   * The minimum % gain was to achieve before placing a SELL oder. This was loaded from the strategy entry in the
+   * {project-root}/config/strategies.xml config file.
    */
   private BigDecimal minimumPercentageGain;
 
   /**
-   * Initialises the Trading Strategy.
-   * Called once by the Trading Engine when the bot starts up; it's a bit like a servlet init() method.
+   * Initialises the Trading Strategy. Called once by the Trading Engine when the bot starts up; it's a bit like a
+   * servlet init() method.
    *
    * @param tradingApi the Trading API. Use this to make trades and stuff.
-   * @param market     the market for this strategy. This is the market the strategy is currently running on - you wire
-   *                   this up in the markets.xml and strategies.xml files.
-   * @param config     configuration for the strategy. Contains any (optional) config you set up in the
-   *                   strategies.xml file.
+   * @param market the market for this strategy. This is the market the strategy is currently running on - you wire this
+   * up in the markets.xml and strategies.xml files.
+   * @param config configuration for the strategy. Contains any (optional) config you set up in the strategies.xml
+   * file.
    */
   @Override
   public void init(TradingApi tradingApi, Market market, StrategyConfig config) {
@@ -187,12 +191,12 @@ public class ExampleScalpingStrategy implements TradingStrategy {
    * This is the main execution method of the Trading Strategy. It is where your algorithm lives.
    * </p>
    * <p>
-   * It is called by the Trading Engine during each trade cycle, e.g. every 60s. The trade cycle is configured in
-   * the {project-root}/config/engine.xml file.
+   * It is called by the Trading Engine during each trade cycle, e.g. every 60s. The trade cycle is configured in the
+   * {project-root}/config/engine.xml file.
    * </p>
    *
    * @throws StrategyException if something unexpected occurs. This tells the Trading Engine to shutdown the bot
-   *                           immediately to help prevent unexpected losses.
+   * immediately to help prevent unexpected losses.
    */
   @Override
   public void execute() throws StrategyException {
@@ -218,16 +222,16 @@ public class ExampleScalpingStrategy implements TradingStrategy {
       final BigDecimal currentBidPrice = buyOrders.get(0).getPrice();
       final BigDecimal currentAskPrice = sellOrders.get(0).getPrice();
 
-      LOG.info(() -> market.getName() + " Current BID price=" +
-          new DecimalFormat("#.########").format(currentBidPrice));
-      LOG.info(() -> market.getName() + " Current ASK price=" +
-          new DecimalFormat("#.########").format(currentAskPrice));
+      LOG.info(() -> market.getName() + " Current BID price="
+          + new DecimalFormat("#.########").format(currentBidPrice));
+      LOG.info(() -> market.getName() + " Current ASK price="
+          + new DecimalFormat("#.########").format(currentAskPrice));
 
       // Is this the first time the Strategy has been called? If yes, we initialise the OrderState so we can keep
       // track of orders during later trace cycles.
       if (lastOrder == null) {
-        LOG.info(() -> market.getName() +
-            " First time Strategy has been called - creating new OrderState object.");
+        LOG.info(() -> market.getName()
+            + " First time Strategy has been called - creating new OrderState object.");
         lastOrder = new OrderState();
       }
 
@@ -248,25 +252,25 @@ public class ExampleScalpingStrategy implements TradingStrategy {
     } catch (ExchangeNetworkException e) {
       // Your timeout handling code could go here.
       // We are just going to log it and swallow it, and wait for next trade cycle.
-      LOG.error(market.getName() + " Failed to get market orders because Exchange threw network exception. " +
-          "Waiting until next trade cycle.", e);
+      LOG.error(market.getName() + " Failed to get market orders because Exchange threw network exception. "
+          + "Waiting until next trade cycle.", e);
 
     } catch (TradingApiException e) {
       // Your error handling code could go here...
       // We are just going to re-throw as StrategyException for engine to deal with - it will shutdown the bot.
-      LOG.error(market.getName() + " Failed to get market orders because Exchange threw TradingApi exception. " +
-          "Telling Trading Engine to shutdown bot!", e);
+      LOG.error(market.getName() + " Failed to get market orders because Exchange threw TradingApi exception. "
+          + "Telling Trading Engine to shutdown bot!", e);
       throw new StrategyException(e);
     }
   }
 
   /**
-   * Algo for executing when the Trading Strategy is invoked for the first time.
-   * We start off with a buy order at current BID price.
+   * Algo for executing when the Trading Strategy is invoked for the first time. We start off with a buy order at
+   * current BID price.
    *
    * @param currentBidPrice the current market BID price.
-   * @throws StrategyException if an unexpected exception is received from the Exchange Adapter.
-   *                           Throwing this exception indicates we want the Trading Engine to shutdown the bot.
+   * @throws StrategyException if an unexpected exception is received from the Exchange Adapter. Throwing this exception
+   * indicates we want the Trading Engine to shutdown the bot.
    */
   private void executeAlgoForWhenLastOrderWasNone(BigDecimal currentBidPrice) throws StrategyException {
     LOG.info(() -> market.getName() + " OrderType is NONE - placing new BUY order at ["
@@ -293,16 +297,16 @@ public class ExampleScalpingStrategy implements TradingStrategy {
       // Your timeout handling code could go here, e.g. you might want to check if the order actually
       // made it to the exchange? And if not, resend it...
       // We are just going to log it and swallow it, and wait for next trade cycle.
-      LOG.error(market.getName() +
-          " Initial order to BUY base currency failed because Exchange threw network exception. " +
-          "Waiting until next trade cycle.", e);
+      LOG.error(market.getName()
+          + " Initial order to BUY base currency failed because Exchange threw network exception. "
+          + "Waiting until next trade cycle.", e);
 
     } catch (TradingApiException e) {
       // Your error handling code could go here...
       // We are just going to re-throw as StrategyException for engine to deal with - it will shutdown the bot.
-      LOG.error(market.getName() +
-          " Initial order to BUY base currency failed because Exchange threw TradingApi exception. " +
-          "Telling Trading Engine to shutdown bot!", e);
+      LOG.error(market.getName()
+          + " Initial order to BUY base currency failed because Exchange threw TradingApi exception. "
+          + "Telling Trading Engine to shutdown bot!", e);
       throw new StrategyException(e);
     }
   }
@@ -315,8 +319,8 @@ public class ExampleScalpingStrategy implements TradingStrategy {
    * If last buy order filled, we try and sell at a profit.
    * </p>
    *
-   * @throws StrategyException if an unexpected exception is received from the Exchange Adapter.
-   *                           Throwing this exception indicates we want the Trading Engine to shutdown the bot.
+   * @throws StrategyException if an unexpected exception is received from the Exchange Adapter. Throwing this exception
+   * indicates we want the Trading Engine to shutdown the bot.
    */
   private void executeAlgoForWhenLastOrderWasBuy() throws StrategyException {
     try {
@@ -332,8 +336,8 @@ public class ExampleScalpingStrategy implements TradingStrategy {
 
       // If the order is not there, it must have all filled.
       if (!lastOrderFound) {
-        LOG.info(() -> market.getName() +
-            " ^^^ Yay!!! Last BUY Order Id [" + lastOrder.id + "] filled at [" + lastOrder.price + "]");
+        LOG.info(() -> market.getName()
+            + " ^^^ Yay!!! Last BUY Order Id [" + lastOrder.id + "] filled at [" + lastOrder.price + "]");
 
         /*
          * The last buy order was filled, so lets see if we can send a new sell order.
@@ -362,8 +366,8 @@ public class ExampleScalpingStrategy implements TradingStrategy {
         // Most exchanges (if not all) use 8 decimal places.
         // It's usually best to round up the ASK price in your calculations to maximise gains.
         final BigDecimal newAskPrice = lastOrder.price.add(amountToAdd).setScale(8, RoundingMode.HALF_UP);
-        LOG.info(() -> market.getName() + " Placing new SELL order at ask price [" +
-            new DecimalFormat("#.########").format(newAskPrice) + "]");
+        LOG.info(() -> market.getName() + " Placing new SELL order at ask price ["
+            + new DecimalFormat("#.########").format(newAskPrice) + "]");
 
         LOG.info(() -> market.getName() + " Sending new SELL order to exchange --->");
 
@@ -391,16 +395,16 @@ public class ExampleScalpingStrategy implements TradingStrategy {
       // Your timeout handling code could go here, e.g. you might want to check if the order actually
       // made it to the exchange? And if not, resend it...
       // We are just going to log it and swallow it, and wait for next trade cycle.
-      LOG.error(market.getName() +
-          " New Order to SELL base currency failed because Exchange threw network exception. " +
-          "Waiting until next trade cycle. Last Order: " + lastOrder, e);
+      LOG.error(market.getName()
+          + " New Order to SELL base currency failed because Exchange threw network exception. "
+          + "Waiting until next trade cycle. Last Order: " + lastOrder, e);
 
     } catch (TradingApiException e) {
       // Your error handling code could go here...
       // We are just going to re-throw as StrategyException for engine to deal with - it will shutdown the bot.
-      LOG.error(market.getName() +
-          " New order to SELL base currency failed because Exchange threw TradingApi exception. " +
-          "Telling Trading Engine to shutdown bot! Last Order: " + lastOrder, e);
+      LOG.error(market.getName()
+          + " New order to SELL base currency failed because Exchange threw TradingApi exception. "
+          + "Telling Trading Engine to shutdown bot! Last Order: " + lastOrder, e);
       throw new StrategyException(e);
     }
   }
@@ -415,11 +419,11 @@ public class ExampleScalpingStrategy implements TradingStrategy {
    *
    * @param currentBidPrice the current market BID price.
    * @param currentAskPrice the current market ASK price.
-   * @throws StrategyException if an unexpected exception is received from the Exchange Adapter.
-   *                           Throwing this exception indicates we want the Trading Engine to shutdown the bot.
+   * @throws StrategyException if an unexpected exception is received from the Exchange Adapter. Throwing this exception
+   * indicates we want the Trading Engine to shutdown the bot.
    */
   private void executeAlgoForWhenLastOrderWasSell(BigDecimal currentBidPrice, BigDecimal currentAskPrice) throws
-                                                                                                    StrategyException {
+      StrategyException {
     try {
       final List<OpenOrder> myOrders = tradingApi.getYourOpenOrders(market.getId());
       boolean lastOrderFound = false;
@@ -432,20 +436,21 @@ public class ExampleScalpingStrategy implements TradingStrategy {
 
       // If the order is not there, it must have all filled.
       if (!lastOrderFound) {
-        LOG.info(() -> market.getName() +
-            " ^^^ Yay!!! Last SELL Order Id [" + lastOrder.id + "] filled at [" + lastOrder.price + "]");
+        LOG.info(() -> market.getName()
+            + " ^^^ Yay!!! Last SELL Order Id [" + lastOrder.id + "] filled at [" + lastOrder.price + "]");
 
         // Get amount of base currency (BTC) we can buy for given counter currency (USD) amount.
         final BigDecimal amountOfBaseCurrencyToBuy =
             getAmountOfBaseCurrencyToBuyForGivenCounterCurrencyAmount(counterCurrencyBuyOrderAmount);
 
-        LOG.info(() -> market.getName() + " Placing new BUY order at bid price [" +
-            new DecimalFormat("#.########").format(currentBidPrice) + "]");
+        LOG.info(() -> market.getName() + " Placing new BUY order at bid price ["
+            + new DecimalFormat("#.########").format(currentBidPrice) + "]");
 
         LOG.info(() -> market.getName() + " Sending new BUY order to exchange --->");
 
         // Send the buy order to the exchange.
-        lastOrder.id = tradingApi.createOrder(market.getId(), OrderType.BUY, amountOfBaseCurrencyToBuy, currentBidPrice);
+        lastOrder.id = tradingApi
+            .createOrder(market.getId(), OrderType.BUY, amountOfBaseCurrencyToBuy, currentBidPrice);
         LOG.info(() -> market.getName() + " New BUY Order sent successfully. ID: " + lastOrder.id);
 
         // update last order details
@@ -481,41 +486,42 @@ public class ExampleScalpingStrategy implements TradingStrategy {
       // Your timeout handling code could go here, e.g. you might want to check if the order actually
       // made it to the exchange? And if not, resend it...
       // We are just going to log it and swallow it, and wait for next trade cycle.
-      LOG.error(market.getName() +
-          " New Order to BUY base currency failed because Exchange threw network exception. " +
-          "Waiting until next trade cycle. Last Order: " + lastOrder, e);
+      LOG.error(market.getName()
+          + " New Order to BUY base currency failed because Exchange threw network exception. "
+          + "Waiting until next trade cycle. Last Order: " + lastOrder, e);
 
     } catch (TradingApiException e) {
       // Your error handling code could go here...
       // We are just going to re-throw as StrategyException for engine to deal with - it will shutdown the bot.
-      LOG.error(market.getName() +
-          " New order to BUY base currency failed because Exchange threw TradingApi exception. " +
-          "Telling Trading Engine to shutdown bot! Last Order: " + lastOrder, e);
+      LOG.error(market.getName()
+          + " New order to BUY base currency failed because Exchange threw TradingApi exception. "
+          + "Telling Trading Engine to shutdown bot! Last Order: " + lastOrder, e);
       throw new StrategyException(e);
     }
   }
 
   /**
-   * Returns amount of base currency (BTC) to buy for a given amount of counter currency (USD) based on last
-   * market trade price.
+   * Returns amount of base currency (BTC) to buy for a given amount of counter currency (USD) based on last market
+   * trade price.
    *
    * @param amountOfCounterCurrencyToTrade the amount of counter currency (USD) we have to trade (buy) with.
    * @return the amount of base currency (BTC) we can buy for the given counter currency (USD) amount.
-   * @throws TradingApiException      if an unexpected error occurred contacting the exchange.
+   * @throws TradingApiException if an unexpected error occurred contacting the exchange.
    * @throws ExchangeNetworkException if a request to the exchange has timed out.
    */
   private BigDecimal getAmountOfBaseCurrencyToBuyForGivenCounterCurrencyAmount(
       BigDecimal amountOfCounterCurrencyToTrade) throws TradingApiException, ExchangeNetworkException {
 
-    LOG.info(() -> market.getName() +
-        " Calculating amount of base currency (BTC) to buy for amount of counter currency " +
-        new DecimalFormat("#.########").format(amountOfCounterCurrencyToTrade) + " " +
-        market.getCounterCurrency());
+    LOG.info(() -> market.getName()
+        + " Calculating amount of base currency (BTC) to buy for amount of counter currency "
+        + new DecimalFormat("#.########").format(amountOfCounterCurrencyToTrade) + " "
+        + market.getCounterCurrency());
 
     // Fetch the last trade price
     final BigDecimal lastTradePriceInUsdForOneBtc = tradingApi.getLatestMarketPrice(market.getId());
-    LOG.info(() -> market.getName() + " Last trade price for 1 " + market.getBaseCurrency() + " was: " +
-        new DecimalFormat("#.########").format(lastTradePriceInUsdForOneBtc) + " " + market.getCounterCurrency());
+    LOG.info(() -> market.getName() + " Last trade price for 1 " + market.getBaseCurrency() + " was: "
+        + new DecimalFormat("#.########").format(lastTradePriceInUsdForOneBtc) + " "
+        + market.getCounterCurrency());
 
     /*
      * Most exchanges (if not all) use 8 decimal places and typically round in favour of the exchange.
@@ -525,8 +531,8 @@ public class ExampleScalpingStrategy implements TradingStrategy {
         lastTradePriceInUsdForOneBtc, 8, RoundingMode.HALF_DOWN);
 
     LOG.info(() -> market.getName() + " Amount of base currency (" + market.getBaseCurrency() + ") to BUY for "
-        + new DecimalFormat("#.########").format(amountOfCounterCurrencyToTrade) +
-        " " + market.getCounterCurrency() + " based on last market trade price: " + amountOfBaseCurrencyToBuy);
+        + new DecimalFormat("#.########").format(amountOfCounterCurrencyToTrade)
+        + " " + market.getCounterCurrency() + " based on last market trade price: " + amountOfBaseCurrencyToBuy);
 
     return amountOfBaseCurrencyToBuy;
   }
@@ -548,8 +554,8 @@ public class ExampleScalpingStrategy implements TradingStrategy {
       throw new IllegalArgumentException(
           "Mandatory counter-currency-buy-order-amount value missing in strategy.xml config.");
     }
-    LOG.info(() -> "<counter-currency-buy-order-amount> from config is: " +
-        counterCurrencyBuyOrderAmountFromConfigAsString);
+    LOG.info(() -> "<counter-currency-buy-order-amount> from config is: "
+        + counterCurrencyBuyOrderAmountFromConfigAsString);
 
     // Will fail fast if value is not a number
     counterCurrencyBuyOrderAmount = new BigDecimal(counterCurrencyBuyOrderAmountFromConfigAsString);
@@ -582,16 +588,24 @@ public class ExampleScalpingStrategy implements TradingStrategy {
    */
   private static class OrderState {
 
-    /** Id - default to null. */
+    /**
+     * Id - default to null.
+     */
     private String id = null;
 
-    /** Type: buy/sell. We default to null which means no order has been placed yet, i.e. we've just started! */
+    /**
+     * Type: buy/sell. We default to null which means no order has been placed yet, i.e. we've just started!
+     */
     private OrderType type = null;
 
-    /** Price to buy/sell at - default to zero. */
+    /**
+     * Price to buy/sell at - default to zero.
+     */
     private BigDecimal price = BigDecimal.ZERO;
 
-    /** Number of units to buy/sell - default to zero. */
+    /**
+     * Number of units to buy/sell - default to zero.
+     */
     private BigDecimal amount = BigDecimal.ZERO;
 
     @Override
