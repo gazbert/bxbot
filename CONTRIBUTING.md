@@ -77,13 +77,15 @@ The following conventions should be followed:
 
 * Make sure all new `.java` files to have a simple Javadoc class comment with at least an
   `@author` tag identifying you, and preferably at least a paragraph on what the class is for.
-  All public API methods should also have detailed Javadoc describing the contract and what they do.
+  All public API methods should have detailed Javadoc describing the contract and what they do.
 * Add the MIT license header comment to all new `.java` files - copy from existing files in the project.
 * Did we mention tests? All code changes should be accompanied by new or modified tests.
 * Add yourself as an `@author` to the `.java` files that you modify substantially (more than cosmetic changes).
 * In general commits should be atomic and diffs should be easy to read. For this reason do not mix any formatting fixes 
   or code moves with actual code changes.
 * We use the [Google Java Style Guide](https://google.github.io/styleguide/javaguide.html) for formatting our code. You
-  can download the style template for your IDE from [here](https://github.com/google/styleguide).
+  can download the style template for your IDE from [here](https://github.com/google/styleguide). 
+  If you use IntelliJ, there's also a handy [Google plugin](https://plugins.jetbrains.com/plugin/8527-google-java-format)
+  for formatting your code.
 * We use [Sonorcloud](https://sonarcloud.io/dashboard?id=gazbert_bxbot) for analysing and maintaining the quality of
   our code. Please maintain this, or better still, help improve it! 

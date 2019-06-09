@@ -24,19 +24,15 @@
 package com.gazbert.bxbot.trading.api;
 
 /**
- * <p>
- * This exception is thrown from Exchange Adapter implementations when there is a problem making an API call to the
- * exchange.
- * </p>
- * <p>
- * If your Trading Strategy receives this exception, this means something bad as happened; you would probably want to
- * wrap this exception in a StrategyException and let the Trading Engine shutdown the bot immediately to prevent
- * unexpected losses.
- * </p>
- * <p>
- * If the Trading Engine receives one of these exceptions from directly calling an Exchange Adapter method,
- * it shuts down the bot immediately.
- * </p>
+ * This exception is thrown from Exchange Adapter implementations when there is a problem making an
+ * API call to the exchange.
+ *
+ * <p>If your Trading Strategy receives this exception, this means something bad as happened; you
+ * would probably want to wrap this exception in a StrategyException and let the Trading Engine
+ * shutdown the bot immediately to prevent unexpected losses.
+ *
+ * <p>If the Trading Engine receives one of these exceptions from directly calling an Exchange
+ * Adapter method, it shuts down the bot immediately.
  *
  * @author gazbert
  * @since 1.0
@@ -58,7 +54,7 @@ public class TradingApiException extends Exception {
    * Constructor builds exception with error message and original throwable.
    *
    * @param msg the error message.
-   * @param e   the original exception.
+   * @param e the original exception.
    */
   public TradingApiException(String msg, Throwable e) {
     super(msg, e);

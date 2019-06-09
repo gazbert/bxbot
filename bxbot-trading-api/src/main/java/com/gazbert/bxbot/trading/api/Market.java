@@ -53,14 +53,11 @@ public interface Market {
   String getId();
 
   /**
-   * <p>
    * Returns the base currency for the market currency pair.
-   * </p>
-   * <p>
-   * When you buy or sell a currency pair, you are performing that action on the base currency.
-   * E.g. in a LTC/BTC market, the first currency (LTC) is the base currency and the second currency (BTC) is the
-   * counter currency.
-   * </p>
+   *
+   * <p>When you buy or sell a currency pair, you are performing that action on the base currency.
+   * E.g. in a LTC/BTC market, the first currency (LTC) is the base currency and the second currency
+   * (BTC) is the counter currency.
    *
    * @return the base currency short code, e.g. LTC
    */
@@ -68,8 +65,8 @@ public interface Market {
 
   /**
    * Returns the counter currency for the market currency pair. Also known as the quote currency.
-   * E.g. in a LTC/BTC market, the first currency (LTC) is the base currency and the second currency (BTC) is the
-   * counter currency.
+   * E.g. in a LTC/BTC market, the first currency (LTC) is the base currency and the second currency
+   * (BTC) is the counter currency.
    *
    * @return the counter currency short code, e.g. LTC
    */

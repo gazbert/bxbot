@@ -26,12 +26,9 @@ package com.gazbert.bxbot.trading.api;
 import java.math.BigDecimal;
 
 /**
- * <p>
  * Represents a Market Order on the exchange.
- * </p>
- * <p>
- * The type of order (buy/sell) is determined by the {@link OrderType}.
- * </p>
+ *
+ * <p>The type of order (buy/sell) is determined by the {@link OrderType}.
  *
  * @author gazbert
  * @since 1.0
@@ -53,7 +50,8 @@ public interface MarketOrder {
   BigDecimal getPrice();
 
   /**
-   * Returns the quantity of the order. This is usually the amount of the other currency you want to trade for BTC/USD.
+   * Returns the quantity of the order. This is usually the amount of the other currency you want to
+   * trade for BTC/USD.
    *
    * @return Quantity of the order.
    */
