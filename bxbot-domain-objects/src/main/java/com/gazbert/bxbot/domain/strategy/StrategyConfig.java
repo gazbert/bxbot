@@ -25,7 +25,6 @@ package com.gazbert.bxbot.domain.strategy;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -57,7 +56,7 @@ public class StrategyConfig {
   }
 
   public StrategyConfig(String id, String name, String description, String className, String beanName,
-                        Map<String, String> configItems) {
+      Map<String, String> configItems) {
     this.id = id;
     this.name = name;
     this.description = description;
@@ -116,8 +115,12 @@ public class StrategyConfig {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
     StrategyConfig that = (StrategyConfig) o;
     return Objects.equal(id, that.id);
   }
@@ -130,12 +133,12 @@ public class StrategyConfig {
   @Override
   public String toString() {
     return MoreObjects.toStringHelper(this)
-               .add("id", id)
-               .add("name", name)
-               .add("description", description)
-               .add("className", className)
-               .add("beanName", beanName)
-               .add("configItems", configItems)
-               .toString();
+        .add("id", id)
+        .add("name", name)
+        .add("description", description)
+        .add("className", className)
+        .add("beanName", beanName)
+        .add("configItems", configItems)
+        .toString();
   }
 }

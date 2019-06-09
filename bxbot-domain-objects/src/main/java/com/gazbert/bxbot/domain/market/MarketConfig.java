@@ -54,7 +54,7 @@ public class MarketConfig {
   }
 
   public MarketConfig(String id, String name, String baseCurrency, String counterCurrency, boolean enabled,
-                      String tradingStrategyId) {
+      String tradingStrategyId) {
     this.id = id;
     this.name = name;
     this.baseCurrency = baseCurrency;
@@ -113,8 +113,12 @@ public class MarketConfig {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
     MarketConfig that = (MarketConfig) o;
     return Objects.equal(id, that.id);
   }
@@ -127,12 +131,12 @@ public class MarketConfig {
   @Override
   public String toString() {
     return MoreObjects.toStringHelper(this)
-               .add("id", id)
-               .add("name", name)
-               .add("baseCurrency", baseCurrency)
-               .add("counterCurrency", counterCurrency)
-               .add("enabled", enabled)
-               .add("tradingStrategyId", tradingStrategyId)
-               .toString();
+        .add("id", id)
+        .add("name", name)
+        .add("baseCurrency", baseCurrency)
+        .add("counterCurrency", counterCurrency)
+        .add("enabled", enabled)
+        .add("tradingStrategyId", tradingStrategyId)
+        .toString();
   }
 }

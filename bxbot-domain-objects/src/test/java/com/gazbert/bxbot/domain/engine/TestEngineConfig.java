@@ -23,12 +23,11 @@
 
 package com.gazbert.bxbot.domain.engine;
 
-import org.junit.Test;
-
-import java.math.BigDecimal;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+
+import java.math.BigDecimal;
+import org.junit.Test;
 
 /**
  * Tests a EngineConfig domain object behaves as expected.
