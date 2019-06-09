@@ -49,7 +49,7 @@ public class EmailAlertsConfigServiceImpl implements EmailAlertsConfigService {
 
   @Autowired
   public EmailAlertsConfigServiceImpl(@Qualifier("emailAlertsConfigYamlRepository")
-                                            EmailAlertsConfigRepository emailAlertsConfigRepository) {
+      EmailAlertsConfigRepository emailAlertsConfigRepository) {
     this.emailAlertsConfigRepository = emailAlertsConfigRepository;
   }
 

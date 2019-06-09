@@ -23,10 +23,10 @@
 
 package com.gazbert.bxbot.services.impl;
 
-
 import com.gazbert.bxbot.domain.market.MarketConfig;
 import com.gazbert.bxbot.repository.MarketConfigRepository;
 import com.gazbert.bxbot.services.MarketConfigService;
+import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,8 +34,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 /**
  * Implementation of the Market config service.
@@ -52,7 +50,7 @@ public class MarketConfigServiceImpl implements MarketConfigService {
 
   @Autowired
   public MarketConfigServiceImpl(@Qualifier("marketConfigYamlRepository")
-                                       MarketConfigRepository marketConfigRepository) {
+      MarketConfigRepository marketConfigRepository) {
     this.marketConfigRepository = marketConfigRepository;
   }
 

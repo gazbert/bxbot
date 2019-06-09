@@ -49,7 +49,7 @@ public class ExchangeConfigServiceImpl implements ExchangeConfigService {
 
   @Autowired
   public ExchangeConfigServiceImpl(@Qualifier("exchangeConfigYamlRepository")
-                                         ExchangeConfigRepository exchangeConfigRepository) {
+      ExchangeConfigRepository exchangeConfigRepository) {
     this.exchangeConfigRepository = exchangeConfigRepository;
   }
 

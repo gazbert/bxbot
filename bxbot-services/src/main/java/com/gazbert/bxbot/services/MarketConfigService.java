@@ -24,7 +24,6 @@
 package com.gazbert.bxbot.services;
 
 import com.gazbert.bxbot.domain.market.MarketConfig;
-
 import java.util.List;
 
 /**
@@ -35,8 +34,12 @@ import java.util.List;
 public interface MarketConfigService {
 
   List<MarketConfig> getAllMarketConfig();
+
   MarketConfig getMarketConfig(String id);
+
   MarketConfig createMarketConfig(MarketConfig config);
+
   MarketConfig updateMarketConfig(MarketConfig config);
+
   MarketConfig deleteMarketConfig(String id);
 }
