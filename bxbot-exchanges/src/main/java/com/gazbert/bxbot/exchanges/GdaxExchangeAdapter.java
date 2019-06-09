@@ -44,12 +44,6 @@ import com.gazbert.bxbot.trading.api.TradingApiException;
 import com.google.common.base.MoreObjects;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
-import javax.xml.bind.DatatypeConverter;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.HttpURLConnection;
@@ -67,43 +61,47 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+import javax.xml.bind.DatatypeConverter;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * <p>
- * Exchange Adapter for integrating with the GDAX (formerly Coinbase) exchange.
- * The GDAX API is documented <a href="https://www.gdax.com/">here</a>.
+ * Exchange Adapter for integrating with the GDAX (formerly Coinbase) exchange. The GDAX API is documented <a
+ * href="https://www.gdax.com/">here</a>.
  * </p>
  * <p>
  * <strong>
- * DISCLAIMER:
- * This Exchange Adapter is provided as-is; it might have bugs in it and you could lose money. Despite running live
- * on GDAX, it has only been unit tested up until the point of calling the
- * {@link #sendPublicRequestToExchange(String, Map)} and
- * {@link #sendAuthenticatedRequestToExchange(String, String, Map)} methods. Use it at our own risk!
+ * DISCLAIMER: This Exchange Adapter is provided as-is; it might have bugs in it and you could lose money. Despite
+ * running live on GDAX, it has only been unit tested up until the point of calling the {@link
+ * #sendPublicRequestToExchange(String, Map)} and {@link #sendAuthenticatedRequestToExchange(String, String, Map)}
+ * methods. Use it at our own risk!
  * </strong>
  * </p>
  * <p>
- * This adapter only supports the GDAX <a href="https://docs.gdax.com/#api">REST API</a>. The design
- * of the API and documentation is excellent.
+ * This adapter only supports the GDAX <a href="https://docs.gdax.com/#api">REST API</a>. The design of the API and
+ * documentation is excellent.
  * </p>
  * <p>
- * The adapter currently only supports <a href="https://docs.gdax.com/#place-a-new-order">Limit Orders</a>.
- * It was originally developed and tested for BTC-GBP market, but it should work for BTC-USD.
+ * The adapter currently only supports <a href="https://docs.gdax.com/#place-a-new-order">Limit Orders</a>. It was
+ * originally developed and tested for BTC-GBP market, but it should work for BTC-USD.
  * </p>
  * <p>
- * Exchange fees are loaded from the exchange.xml file on startup; they are not fetched from the exchange
- * at runtime as the GDAX REST API does not support this. The fees are used across all markets. Make sure you keep
- * an eye on the <a href="https://docs.gdax.com/#fees">exchange fees</a> and update the config accordingly.
+ * Exchange fees are loaded from the exchange.xml file on startup; they are not fetched from the exchange at runtime as
+ * the GDAX REST API does not support this. The fees are used across all markets. Make sure you keep an eye on the <a
+ * href="https://docs.gdax.com/#fees">exchange fees</a> and update the config accordingly.
  * </p>
  * <p>
- * NOTE: GDAX requires all price values to be limited to 2 decimal places when creating orders.
- * This adapter truncates any prices with more than 2 decimal places and rounds using
- * {@link java.math.RoundingMode#HALF_EVEN}, E.g. 250.176 would be sent to the exchange as 250.18.
+ * NOTE: GDAX requires all price values to be limited to 2 decimal places when creating orders. This adapter truncates
+ * any prices with more than 2 decimal places and rounds using {@link java.math.RoundingMode#HALF_EVEN}, E.g. 250.176
+ * would be sent to the exchange as 250.18.
  * </p>
  * <p>
- * The Exchange Adapter is <em>not</em> thread safe. It expects to be called using a single thread in order to
- * preserve trade execution order. The {@link URLConnection} achieves this by blocking/waiting on the input stream
- * (response) for each API call.
+ * The Exchange Adapter is <em>not</em> thread safe. It expects to be called using a single thread in order to preserve
+ * trade execution order. The {@link URLConnection} achieves this by blocking/waiting on the input stream (response) for
+ * each API call.
  * </p>
  * <p>
  * The {@link TradingApi} calls will throw a {@link ExchangeNetworkException} if a network error occurs trying to
@@ -160,7 +158,7 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
 
   @Override
   public String createOrder(String marketId, OrderType orderType, BigDecimal quantity, BigDecimal price)
-                                                                  throws TradingApiException, ExchangeNetworkException {
+      throws TradingApiException, ExchangeNetworkException {
     try {
       /*
        * Build Limit Order: https://docs.gdax.com/#place-a-new-order
@@ -178,9 +176,9 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
         params.put("side", "sell");
       } else {
         final String errorMsg = "Invalid order type: " + orderType
-                                    + " - Can only be "
-                                    + OrderType.BUY.getStringValue() + " or "
-                                    + OrderType.SELL.getStringValue();
+            + " - Can only be "
+            + OrderType.BUY.getStringValue() + " or "
+            + OrderType.SELL.getStringValue();
         LOG.error(errorMsg);
         throw new IllegalArgumentException(errorMsg);
       }
@@ -199,8 +197,8 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
 
       if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
         final GdaxOrder createOrderResponse = gson.fromJson(response.getPayload(), GdaxOrder.class);
-        if (createOrderResponse != null && (createOrderResponse.id != null &&
-                                                !createOrderResponse.id.isEmpty())) {
+        if (createOrderResponse != null && (createOrderResponse.id != null
+            && !createOrderResponse.id.isEmpty())) {
           return createOrderResponse.id;
         } else {
           final String errorMsg = "Failed to place order on exchange. Error response: " + response;
@@ -227,7 +225,7 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
    */
   @Override
   public boolean cancelOrder(String orderId, String marketIdNotNeeded) throws TradingApiException,
-                                                                                  ExchangeNetworkException {
+      ExchangeNetworkException {
     try {
       final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange(
           "DELETE", "orders/" + orderId, null);
@@ -527,21 +525,21 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
     @Override
     public String toString() {
       return MoreObjects.toStringHelper(this)
-                 .add("id", id)
-                 .add("price", price)
-                 .add("size", size)
-                 .add("product_id", product_id)
-                 .add("side", side)
-                 .add("stp", stp)
-                 .add("type", type)
-                 .add("time_in_force", time_in_force)
-                 .add("post_only", post_only)
-                 .add("created_at", created_at)
-                 .add("fill_fees", fill_fees)
-                 .add("filled_size", filled_size)
-                 .add("status", status)
-                 .add("settled", settled)
-                 .toString();
+          .add("id", id)
+          .add("price", price)
+          .add("size", size)
+          .add("product_id", product_id)
+          .add("side", side)
+          .add("stp", stp)
+          .add("type", type)
+          .add("time_in_force", time_in_force)
+          .add("post_only", post_only)
+          .add("created_at", created_at)
+          .add("fill_fees", fill_fees)
+          .add("filled_size", filled_size)
+          .add("status", status)
+          .add("settled", settled)
+          .toString();
     }
   }
 
@@ -557,18 +555,19 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
     @Override
     public String toString() {
       return MoreObjects.toStringHelper(this)
-                 .add("sequence", sequence)
-                 .add("bids", bids)
-                 .add("asks", asks)
-                 .toString();
+          .add("sequence", sequence)
+          .add("bids", bids)
+          .add("asks", asks)
+          .toString();
     }
   }
 
   /**
-   * GSON class for holding Market Orders. First element in array is price, second element is amount, third is number
-   * of orders.
+   * GSON class for holding Market Orders. First element in array is price, second element is amount, third is number of
+   * orders.
    */
   private static class GdaxMarketOrder extends ArrayList<BigDecimal> {
+
     private static final long serialVersionUID = -4919711220797077759L;
   }
 
@@ -588,14 +587,14 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
     @Override
     public String toString() {
       return MoreObjects.toStringHelper(this)
-                 .add("trade_id", trade_id)
-                 .add("price", price)
-                 .add("size", size)
-                 .add("bid", bid)
-                 .add("ask", ask)
-                 .add("volume", volume)
-                 .add("time", time)
-                 .toString();
+          .add("trade_id", trade_id)
+          .add("price", price)
+          .add("size", size)
+          .add("bid", bid)
+          .add("ask", ask)
+          .add("volume", volume)
+          .add("time", time)
+          .toString();
     }
   }
 
@@ -614,13 +613,13 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
     @Override
     public String toString() {
       return MoreObjects.toStringHelper(this)
-                 .add("open", open)
-                 .add("high", high)
-                 .add("low", low)
-                 .add("volume", volume)
-                 .add("last", last)
-                 .add("volume_30day", volume_30day)
-                 .toString();
+          .add("open", open)
+          .add("high", high)
+          .add("low", low)
+          .add("volume", volume)
+          .add("last", last)
+          .add("volume_30day", volume_30day)
+          .toString();
     }
   }
 
@@ -639,13 +638,13 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
     @Override
     public String toString() {
       return MoreObjects.toStringHelper(this)
-                 .add("id", id)
-                 .add("currency", currency)
-                 .add("balance", balance)
-                 .add("hold", hold)
-                 .add("available", available)
-                 .add("profile_id", profile_id)
-                 .toString();
+          .add("id", id)
+          .add("currency", currency)
+          .add("balance", balance)
+          .add("hold", hold)
+          .add("available", available)
+          .add("profile_id", profile_id)
+          .toString();
     }
   }
 
@@ -654,7 +653,7 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
   // ------------------------------------------------------------------------------------------------
 
   private ExchangeHttpResponse sendPublicRequestToExchange(String apiMethod, Map<String, String> params)
-                                                           throws ExchangeNetworkException, TradingApiException {
+      throws ExchangeNetworkException, TradingApiException {
     if (params == null) {
       params = createRequestParamMap(); // no params, so empty query string
     }
@@ -786,10 +785,8 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
       }
 
       // Build the signature string
-      final String signatureBuilder = timestamp + httpMethod.toUpperCase() +
-                                          "/" +
-                                          apiMethod +
-                                          requestBody;
+      final String signatureBuilder = timestamp + httpMethod.toUpperCase()
+          + "/" + apiMethod + requestBody;
 
       // Sign the signature string and Base64 encode it
       mac.reset();

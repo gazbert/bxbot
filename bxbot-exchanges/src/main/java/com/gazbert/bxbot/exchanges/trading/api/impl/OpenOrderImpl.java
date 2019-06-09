@@ -27,7 +27,6 @@ import com.gazbert.bxbot.trading.api.OpenOrder;
 import com.gazbert.bxbot.trading.api.OrderType;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
-
 import java.math.BigDecimal;
 import java.util.Date;
 
@@ -48,8 +47,8 @@ public final class OpenOrderImpl implements OpenOrder {
   private BigDecimal total;
 
   public OpenOrderImpl(String id, Date creationDate, String marketId, OrderType type,
-                       BigDecimal price, BigDecimal quantity, BigDecimal originalQuantity,
-                       BigDecimal total) {
+      BigDecimal price, BigDecimal quantity, BigDecimal originalQuantity,
+      BigDecimal total) {
     this.id = id;
     if (creationDate != null) {
       this.creationDate = new Date(creationDate.getTime());
@@ -133,12 +132,16 @@ public final class OpenOrderImpl implements OpenOrder {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
     OpenOrderImpl openOrder = (OpenOrderImpl) o;
-    return Objects.equal(id, openOrder.id) &&
-               Objects.equal(marketId, openOrder.marketId) &&
-               type == openOrder.type;
+    return Objects.equal(id, openOrder.id)
+        && Objects.equal(marketId, openOrder.marketId)
+        && type == openOrder.type;
   }
 
   @Override
@@ -149,14 +152,14 @@ public final class OpenOrderImpl implements OpenOrder {
   @Override
   public String toString() {
     return MoreObjects.toStringHelper(this)
-               .add("id", id)
-               .add("creationDate", creationDate)
-               .add("marketId", marketId)
-               .add("type", type)
-               .add("price", price)
-               .add("quantity", quantity)
-               .add("originalQuantity", originalQuantity)
-               .add("total", total)
-               .toString();
+        .add("id", id)
+        .add("creationDate", creationDate)
+        .add("marketId", marketId)
+        .add("type", type)
+        .add("price", price)
+        .add("quantity", quantity)
+        .add("originalQuantity", originalQuantity)
+        .add("total", total)
+        .toString();
   }
 }

@@ -25,7 +25,6 @@ package com.gazbert.bxbot.exchanges.trading.api.impl;
 
 import com.gazbert.bxbot.trading.api.Ticker;
 import com.google.common.base.MoreObjects;
-
 import java.math.BigDecimal;
 
 /**
@@ -46,7 +45,7 @@ public final class TickerImpl implements Ticker {
   private Long timestamp;
 
   public TickerImpl(BigDecimal last, BigDecimal bid, BigDecimal ask, BigDecimal low, BigDecimal high,
-                    BigDecimal open, BigDecimal volume, BigDecimal vwap, Long timestamp) {
+      BigDecimal open, BigDecimal volume, BigDecimal vwap, Long timestamp) {
     this.last = last;
     this.bid = bid;
     this.ask = ask;
@@ -142,15 +141,15 @@ public final class TickerImpl implements Ticker {
   @Override
   public String toString() {
     return MoreObjects.toStringHelper(this)
-               .add("last", last)
-               .add("bid", bid)
-               .add("ask", ask)
-               .add("low", low)
-               .add("high", high)
-               .add("open", open)
-               .add("volume", volume)
-               .add("vwap", vwap)
-               .add("timestamp", timestamp)
-               .toString();
+        .add("last", last)
+        .add("bid", bid)
+        .add("ask", ask)
+        .add("low", low)
+        .add("high", high)
+        .add("open", open)
+        .add("volume", volume)
+        .add("vwap", vwap)
+        .add("timestamp", timestamp)
+        .toString();
   }
 }

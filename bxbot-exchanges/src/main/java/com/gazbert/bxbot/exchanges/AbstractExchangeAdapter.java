@@ -20,6 +20,7 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+
 package com.gazbert.bxbot.exchanges;
 
 import com.gazbert.bxbot.exchange.api.AuthenticationConfig;
@@ -29,9 +30,6 @@ import com.gazbert.bxbot.exchange.api.OtherConfig;
 import com.gazbert.bxbot.trading.api.ExchangeNetworkException;
 import com.gazbert.bxbot.trading.api.TradingApiException;
 import com.google.common.base.MoreObjects;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -53,6 +51,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Base class for common Exchange Adapter functionality.
@@ -73,8 +73,8 @@ abstract class AbstractExchangeAdapter {
   private static final String AUTHENTICATION_CONFIG_MISSING = "authenticationConfig is missing in exchange.yaml file.";
   private static final String NETWORK_CONFIG_MISSING = "networkConfig is missing in exchange.yaml file.";
   private static final String OTHER_CONFIG_MISSING = "otherConfig is missing in exchange.yaml file.";
-  private static final String CONFIG_IS_NULL_OR_ZERO_LENGTH = " cannot be null or zero length! " +
-                                                                  "HINT: is the value set in the ";
+  private static final String CONFIG_IS_NULL_OR_ZERO_LENGTH = " cannot be null or zero length! "
+      + "HINT: is the value set in the ";
 
   private static final String CONNECTION_TIMEOUT_PROPERTY_NAME = "connection-timeout";
   private static final String NON_FATAL_ERROR_CODES_PROPERTY_NAME = "non-fatal-error-codes";
@@ -102,17 +102,18 @@ abstract class AbstractExchangeAdapter {
   /**
    * Makes a request to the Exchange.
    *
-   * @param url            the URL to invoke.
-   * @param postData       optional post data to send. This can be null.
-   * @param httpMethod     the HTTP method to use, e.g. GET, POST, DELETE
+   * @param url the URL to invoke.
+   * @param postData optional post data to send. This can be null.
+   * @param httpMethod the HTTP method to use, e.g. GET, POST, DELETE
    * @param requestHeaders optional request headers to set on the {@link URLConnection} used to invoke the Exchange.
    * @return the response from the Exchange.
-   * @throws ExchangeNetworkException if a network error occurred trying to connect to the exchange.
-   *                                  This exception allows for recovery from temporary network issues.
-   * @throws TradingApiException      if the API call failed for any reason other than a network error. This means something
-   *                                  really bad as happened.
+   * @throws ExchangeNetworkException if a network error occurred trying to connect to the exchange. This exception
+   * allows for recovery from temporary network issues.
+   * @throws TradingApiException if the API call failed for any reason other than a network error. This means something
+   * really bad as happened.
    */
-  ExchangeHttpResponse sendNetworkRequest(URL url, String httpMethod, String postData, Map<String, String> requestHeaders)
+  ExchangeHttpResponse sendNetworkRequest(URL url, String httpMethod, String postData,
+      Map<String, String> requestHeaders)
       throws TradingApiException, ExchangeNetworkException {
 
     HttpURLConnection exchangeConnection = null;
@@ -190,7 +191,8 @@ abstract class AbstractExchangeAdapter {
           LOG.error(errorMsg, e);
           throw new ExchangeNetworkException(errorMsg, e);
 
-        } else if (exchangeConnection != null && nonFatalNetworkErrorCodes.contains(exchangeConnection.getResponseCode())) {
+        } else if (exchangeConnection != null && nonFatalNetworkErrorCodes
+            .contains(exchangeConnection.getResponseCode())) {
 
           final String errorMsg = IO_5XX_TIMEOUT_ERROR_MSG;
           LOG.error(errorMsg, e);
@@ -304,7 +306,7 @@ abstract class AbstractExchangeAdapter {
    * Fetches an authentication item value from the adapter config.
    *
    * @param authenticationConfig the authentication config for the adapter.
-   * @param itemName             the config item name, e.g. key. secret, client-id
+   * @param itemName the config item name, e.g. key. secret, client-id
    * @return the config item value.
    * @throws IllegalArgumentException if authentication item is not set.
    */
@@ -317,7 +319,7 @@ abstract class AbstractExchangeAdapter {
    * Fetches an other config item value from the adapter config.
    *
    * @param otherConfig other config for the adapter.
-   * @param itemName    the config item name, e.g. buy-fee, sell-fee
+   * @param itemName the config item name, e.g. buy-fee, sell-fee
    * @return the config item value.
    * @throws IllegalArgumentException if authentication item is not set.
    */
@@ -350,8 +352,8 @@ abstract class AbstractExchangeAdapter {
   }
 
   /**
-   * Returns the decimal format symbols for using with BigDecimals with the exchanges. Specifically, the decimal
-   * point symbol is set to a '.'
+   * Returns the decimal format symbols for using with BigDecimals with the exchanges. Specifically, the decimal point
+   * symbol is set to a '.'
    *
    * @return the decimal format symbols.
    */
@@ -389,10 +391,10 @@ abstract class AbstractExchangeAdapter {
     @Override
     public String toString() {
       return MoreObjects.toStringHelper(this)
-                 .add("statusCode", statusCode)
-                 .add("reasonPhrase", reasonPhrase)
-                 .add("payload", payload)
-                 .toString();
+          .add("statusCode", statusCode)
+          .add("reasonPhrase", reasonPhrase)
+          .add("payload", payload)
+          .toString();
     }
   }
 

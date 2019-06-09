@@ -26,7 +26,6 @@ package com.gazbert.bxbot.exchanges.trading.api.impl;
 import com.gazbert.bxbot.trading.api.MarketOrder;
 import com.gazbert.bxbot.trading.api.MarketOrderBook;
 import com.google.common.base.MoreObjects;
-
 import java.util.List;
 
 /**
@@ -73,9 +72,9 @@ public final class MarketOrderBookImpl implements MarketOrderBook {
   @Override
   public String toString() {
     return MoreObjects.toStringHelper(this)
-               .add("marketId", marketId)
-               .add("sellOrders", sellOrders)
-               .add("buyOrders", buyOrders)
-               .toString();
+        .add("marketId", marketId)
+        .add("sellOrders", sellOrders)
+        .add("buyOrders", buyOrders)
+        .toString();
   }
 }

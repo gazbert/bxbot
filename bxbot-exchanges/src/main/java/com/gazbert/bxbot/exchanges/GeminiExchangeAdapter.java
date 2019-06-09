@@ -42,12 +42,6 @@ import com.gazbert.bxbot.trading.api.TradingApiException;
 import com.google.common.base.MoreObjects;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
-import javax.xml.bind.DatatypeConverter;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.MalformedURLException;
@@ -63,23 +57,28 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+import javax.xml.bind.DatatypeConverter;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * <p>
- * Exchange Adapter for integrating with the Gemini exchange.
- * The Gemini API is documented <a href="https://docs.gemini.com/rest-api/">here</a>.
+ * Exchange Adapter for integrating with the Gemini exchange. The Gemini API is documented <a
+ * href="https://docs.gemini.com/rest-api/">here</a>.
  * </p>
  * <p>
  * <strong>
- * DISCLAIMER:
- * This Exchange Adapter is provided as-is; it might have bugs in it and you could lose money. Despite running live
- * on Gemini, it has only been unit tested up until the point of calling the
- * {@link #sendPublicRequestToExchange(String)} and {@link #sendAuthenticatedRequestToExchange(String, Map)}
- * methods. Use it at our own risk!
+ * DISCLAIMER: This Exchange Adapter is provided as-is; it might have bugs in it and you could lose money. Despite
+ * running live on Gemini, it has only been unit tested up until the point of calling the {@link
+ * #sendPublicRequestToExchange(String)} and {@link #sendAuthenticatedRequestToExchange(String, Map)} methods. Use it at
+ * our own risk!
  * </strong>
  * </p>
  * <p>
- * The adapter only supports the REST implementation of the <a href="https://docs.gemini.com/rest-api/">Trading API</a>.
+ * The adapter only supports the REST implementation of the <a href="https://docs.gemini.com/rest-api/">Trading
+ * API</a>.
  * </p>
  * <p>
  * Gemini operates <a href="https://docs.gemini.com/rest-api/#rate-limits">rate limits</a>:
@@ -90,21 +89,20 @@ import java.util.Map;
  * and recommend that you not exceed 5 requests per second.</li>
  * </ul>
  * <p>
- * Exchange fees are loaded from the exchange.xml file on startup; they are not fetched from the exchange
- * at runtime as the Gemini REST API does not support this. The fees are used across all markets. Make sure you keep
- * an eye on the <a href="https://gemini.com/fee-schedule/">exchange fees</a> and update the config accordingly.
+ * Exchange fees are loaded from the exchange.xml file on startup; they are not fetched from the exchange at runtime as
+ * the Gemini REST API does not support this. The fees are used across all markets. Make sure you keep an eye on the <a
+ * href="https://gemini.com/fee-schedule/">exchange fees</a> and update the config accordingly.
  * </p>
  * <p>
  * NOTE: Gemini requires "btcusd" and "ethusd" market price currency (USD) values to be limited to 2 decimal places when
- * creating orders - the adapter truncates any prices with more than 2 decimal places and rounds using
- * {@link java.math.RoundingMode#HALF_EVEN}, E.g. 250.176 would be sent to the exchange as 250.18.
- * For the "ethbtc" market, price currency (BTC) values are limited to 5 decimal places - the adapter will truncate and
- * round accordingly.
+ * creating orders - the adapter truncates any prices with more than 2 decimal places and rounds using {@link
+ * java.math.RoundingMode#HALF_EVEN}, E.g. 250.176 would be sent to the exchange as 250.18. For the "ethbtc" market,
+ * price currency (BTC) values are limited to 5 decimal places - the adapter will truncate and round accordingly.
  * </p>
  * <p>
- * The Exchange Adapter is <em>not</em> thread safe. It expects to be called using a single thread in order to
- * preserve trade execution order. The {@link URLConnection} achieves this by blocking/waiting on the input stream
- * (response) for each API call.
+ * The Exchange Adapter is <em>not</em> thread safe. It expects to be called using a single thread in order to preserve
+ * trade execution order. The {@link URLConnection} achieves this by blocking/waiting on the input stream (response) for
+ * each API call.
  * </p>
  * <p>
  * The {@link TradingApi} calls will throw a {@link ExchangeNetworkException} if a network error occurs trying to
@@ -180,7 +178,7 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter impleme
 
   @Override
   public String createOrder(String marketId, OrderType orderType, BigDecimal quantity, BigDecimal price)
-                                                                  throws TradingApiException, ExchangeNetworkException {
+      throws TradingApiException, ExchangeNetworkException {
     try {
       final Map<String, String> params = createRequestParamMap();
 
@@ -196,10 +194,10 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter impleme
         params.put("price", new DecimalFormat("#.#####", getDecimalFormatSymbols()).format(price));
       } else {
         final String errorMsg = "Invalid market id: " + marketId
-                                    + " - Can only be "
-                                    + MarketId.BTC_USD.getStringValue() + " or "
-                                    + MarketId.ETH_USD.getStringValue() + " or "
-                                    + MarketId.ETH_BTC.getStringValue();
+            + " - Can only be "
+            + MarketId.BTC_USD.getStringValue() + " or "
+            + MarketId.ETH_USD.getStringValue() + " or "
+            + MarketId.ETH_BTC.getStringValue();
         LOG.error(errorMsg);
         throw new IllegalArgumentException(errorMsg);
       }
@@ -210,9 +208,9 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter impleme
         params.put("side", "sell");
       } else {
         final String errorMsg = "Invalid order type: " + orderType
-                                    + " - Can only be "
-                                    + OrderType.BUY.getStringValue() + " or "
-                                    + OrderType.SELL.getStringValue();
+            + " - Can only be "
+            + OrderType.BUY.getStringValue() + " or "
+            + OrderType.SELL.getStringValue();
         LOG.error(errorMsg);
         throw new IllegalArgumentException(errorMsg);
       }
@@ -248,7 +246,7 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter impleme
 
   @Override
   public boolean cancelOrder(String orderId, String marketIdNotNeeded) throws TradingApiException,
-                                                                                    ExchangeNetworkException {
+      ExchangeNetworkException {
     try {
       final Map<String, String> params = createRequestParamMap();
       params.put("order_id", orderId);
@@ -451,9 +449,9 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter impleme
     @Override
     public String toString() {
       return MoreObjects.toStringHelper(this)
-                 .add("bids", bids)
-                 .add("asks", asks)
-                 .toString();
+          .add("bids", bids)
+          .add("asks", asks)
+          .toString();
     }
   }
 
@@ -469,9 +467,9 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter impleme
     @Override
     public String toString() {
       return MoreObjects.toStringHelper(this)
-                 .add("price", price)
-                 .add("amount", amount)
-                 .toString();
+          .add("price", price)
+          .add("amount", amount)
+          .toString();
     }
   }
 
@@ -479,12 +477,12 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter impleme
    * GSON class for Balances API call response.
    */
   private static class GeminiBalances extends ArrayList<GeminiAccountBalance> {
+
     private static final long serialVersionUID = 5516523141993401253L;
   }
 
   /**
-   * GSON class for holding account type balance info.
-   * This adapter only supports type 'exchange'.
+   * GSON class for holding account type balance info. This adapter only supports type 'exchange'.
    */
   private static class GeminiAccountBalance {
 
@@ -497,12 +495,12 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter impleme
     @Override
     public String toString() {
       return MoreObjects.toStringHelper(this)
-                 .add("type", type)
-                 .add("currency", currency)
-                 .add("amount", amount)
-                 .add("available", available)
-                 .add("availableForWithdrawal", availableForWithdrawal)
-                 .toString();
+          .add("type", type)
+          .add("currency", currency)
+          .add("amount", amount)
+          .add("available", available)
+          .add("availableForWithdrawal", availableForWithdrawal)
+          .toString();
     }
   }
 
@@ -520,12 +518,12 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter impleme
     @Override
     public String toString() {
       return MoreObjects.toStringHelper(this)
-                 .add("bid", bid)
-                 .add("ask", ask)
-                 .add("last", last)
-                 .add("low", low)
-                 .add("volume", volume)
-                 .toString();
+          .add("bid", bid)
+          .add("ask", ask)
+          .add("last", last)
+          .add("low", low)
+          .add("volume", volume)
+          .toString();
     }
   }
 
@@ -541,10 +539,10 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter impleme
     @Override
     public String toString() {
       return MoreObjects.toStringHelper(this)
-                 .add("BTC", BTC)
-                 .add("USD", USD)
-                 .add("timestamp", timestamp)
-                 .toString();
+          .add("BTC", BTC)
+          .add("USD", USD)
+          .add("timestamp", timestamp)
+          .toString();
     }
   }
 
@@ -552,6 +550,7 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter impleme
    * GSON class for holding an active orders API call response.
    */
   private static class GeminiOpenOrders extends ArrayList<GeminiOpenOrder> {
+
     private static final long serialVersionUID = 5516523611153405953L;
   }
 
@@ -581,23 +580,23 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter impleme
     @Override
     public String toString() {
       return MoreObjects.toStringHelper(this)
-                 .add("order_id", order_id)
-                 .add("id", id)
-                 .add("symbol", symbol)
-                 .add("exchange", exchange)
-                 .add("price", price)
-                 .add("avg_execution_price", avg_execution_price)
-                 .add("side", side)
-                 .add("type", type)
-                 .add("timestamp", timestamp)
-                 .add("timestampms", timestampms)
-                 .add("is_live", is_live)
-                 .add("is_cancelled", is_cancelled)
-                 .add("is_hidden", is_hidden)
-                 .add("remaining_amount", remaining_amount)
-                 .add("executed_amount", executed_amount)
-                 .add("original_amount", original_amount)
-                 .toString();
+          .add("order_id", order_id)
+          .add("id", id)
+          .add("symbol", symbol)
+          .add("exchange", exchange)
+          .add("price", price)
+          .add("avg_execution_price", avg_execution_price)
+          .add("side", side)
+          .add("type", type)
+          .add("timestamp", timestamp)
+          .add("timestampms", timestampms)
+          .add("is_live", is_live)
+          .add("is_cancelled", is_cancelled)
+          .add("is_hidden", is_hidden)
+          .add("remaining_amount", remaining_amount)
+          .add("executed_amount", executed_amount)
+          .add("original_amount", original_amount)
+          .toString();
     }
   }
 
@@ -606,7 +605,7 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter impleme
   // ------------------------------------------------------------------------------------------------
 
   private ExchangeHttpResponse sendPublicRequestToExchange(String apiMethod) throws ExchangeNetworkException,
-                                                                                        TradingApiException {
+      TradingApiException {
     try {
       final URL url = new URL(PUBLIC_API_BASE_URL + apiMethod);
       return makeNetworkRequest(url, "GET", null, createRequestParamMap());
@@ -660,7 +659,7 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter impleme
    * X-GEMINI-SIGNATURE: 337cc8b4ea692cfe65b4a85fcc9f042b2e3f
    */
   private ExchangeHttpResponse sendAuthenticatedRequestToExchange(String apiMethod, Map<String, String> params)
-                                                                  throws ExchangeNetworkException, TradingApiException {
+      throws ExchangeNetworkException, TradingApiException {
     if (!initializedMACAuthentication) {
       final String errorMsg = "MAC Message security layer has not been initialized.";
       LOG.error(errorMsg);

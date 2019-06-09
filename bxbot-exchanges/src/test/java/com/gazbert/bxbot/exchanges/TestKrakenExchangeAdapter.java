@@ -23,6 +23,16 @@
 
 package com.gazbert.bxbot.exchanges;
 
+import static org.easymock.EasyMock.anyObject;
+import static org.easymock.EasyMock.anyString;
+import static org.easymock.EasyMock.eq;
+import static org.easymock.EasyMock.expect;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+
 import com.gazbert.bxbot.exchange.api.AuthenticationConfig;
 import com.gazbert.bxbot.exchange.api.ExchangeAdapter;
 import com.gazbert.bxbot.exchange.api.ExchangeConfig;
@@ -35,14 +45,6 @@ import com.gazbert.bxbot.trading.api.OpenOrder;
 import com.gazbert.bxbot.trading.api.OrderType;
 import com.gazbert.bxbot.trading.api.Ticker;
 import com.gazbert.bxbot.trading.api.TradingApiException;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.powermock.api.easymock.PowerMock;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
-
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.URL;
@@ -54,16 +56,13 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import static org.easymock.EasyMock.anyObject;
-import static org.easymock.EasyMock.anyString;
-import static org.easymock.EasyMock.eq;
-import static org.easymock.EasyMock.expect;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.powermock.api.easymock.PowerMock;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 /**
  * Tests the behaviour of the Kraken Exchange Adapter.
@@ -300,7 +299,8 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
     assertEquals(1469653618L, openOrders.get(0).getCreationDate().getTime());
     assertEquals(0, openOrders.get(0).getPrice().compareTo(new BigDecimal("699.100")));
     assertEquals(0, openOrders.get(0).getQuantity().compareTo(new BigDecimal("0.006")));
-    assertEquals(0, openOrders.get(0).getTotal().compareTo(openOrders.get(0).getPrice().multiply(openOrders.get(0).getOriginalQuantity())));
+    assertEquals(0, openOrders.get(0).getTotal()
+        .compareTo(openOrders.get(0).getPrice().multiply(openOrders.get(0).getOriginalQuantity())));
     assertEquals(0, openOrders.get(0).getOriginalQuantity().compareTo(new BigDecimal("0.01000000")));
 
     PowerMock.verifyAll();
@@ -421,7 +421,8 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
     PowerMock.replayAll();
     exchangeAdapter.init(exchangeConfig);
 
-    final String orderId = exchangeAdapter.createOrder(MARKET_ID, OrderType.SELL, SELL_ORDER_QUANTITY, SELL_ORDER_PRICE);
+    final String orderId = exchangeAdapter
+        .createOrder(MARKET_ID, OrderType.SELL, SELL_ORDER_QUANTITY, SELL_ORDER_PRICE);
     assertEquals("OLD2Z4-L4C7H-MKH5BW", orderId);
 
     PowerMock.verifyAll();
@@ -625,7 +626,7 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
         KrakenExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
     PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD, eq(BALANCE),
         eq(null)).andThrow(new ExchangeNetworkException(
-            "All the gods, all the heavens, all the hells, are within you."));
+        "All the gods, all the heavens, all the hells, are within you."));
 
     PowerMock.replayAll();
     exchangeAdapter.init(exchangeConfig);
@@ -1042,7 +1043,8 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
     PowerMock.replayAll();
     exchangeAdapter.init(exchangeConfig);
 
-    final String orderId = exchangeAdapter.createOrder(MARKET_ID, OrderType.SELL, SELL_ORDER_QUANTITY, SELL_ORDER_PRICE);
+    final String orderId = exchangeAdapter
+        .createOrder(MARKET_ID, OrderType.SELL, SELL_ORDER_QUANTITY, SELL_ORDER_PRICE);
     assertEquals("OLD2Z4-L4C7H-MKH5BW", orderId);
 
     PowerMock.verifyAll();

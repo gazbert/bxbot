@@ -44,12 +44,6 @@ import com.gazbert.bxbot.trading.api.TradingApiException;
 import com.google.common.base.MoreObjects;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
-import javax.xml.bind.DatatypeConverter;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.HttpURLConnection;
@@ -67,19 +61,23 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+import javax.xml.bind.DatatypeConverter;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * <p>
- * Exchange Adapter for integrating with the itBit exchange.
- * The itBit API is documented <a href="https://www.itbit.com/h/api">here</a>.
+ * Exchange Adapter for integrating with the itBit exchange. The itBit API is documented <a
+ * href="https://www.itbit.com/h/api">here</a>.
  * </p>
  * <p>
  * <strong>
- * DISCLAIMER:
- * This Exchange Adapter is provided as-is; it might have bugs in it and you could lose money. Despite running live
- * on itBit, it has only been unit tested up until the point of calling the
- * {@link #sendPublicRequestToExchange(String)} and {@link #sendAuthenticatedRequestToExchange(String, String, Map)}
- * methods. Use it at our own risk!
+ * DISCLAIMER: This Exchange Adapter is provided as-is; it might have bugs in it and you could lose money. Despite
+ * running live on itBit, it has only been unit tested up until the point of calling the {@link
+ * #sendPublicRequestToExchange(String)} and {@link #sendAuthenticatedRequestToExchange(String, String, Map)} methods.
+ * Use it at our own risk!
  * </strong>
  * </p>
  * <p>
@@ -89,15 +87,15 @@ import java.util.Map;
  * {@link #getBalanceInfo()}, you would need to use XBT (instead of BTC) as the key when fetching your Bitcoin balance
  * info from the returned maps.</p>
  * <p>
- * The adapter also assumes that only 1 exchange account wallet has been created on the exchange. If there is more
- * than 1, it will use the first one it finds when performing the {@link #getBalanceInfo()} call.
+ * The adapter also assumes that only 1 exchange account wallet has been created on the exchange. If there is more than
+ * 1, it will use the first one it finds when performing the {@link #getBalanceInfo()} call.
  * </p>
  * <p>
- * Exchange fees are loaded from the exchange.xml file on startup; they are not fetched from the exchange at
- * runtime as the itBit REST API v1 does not support this. The fees are used across all markets. Make sure you keep an
- * eye on the <a href="https://www.itbit.com/h/fees">exchange fees</a> and update the config accordingly.
- * There are different exchange fees for <a href="https://www.itbit.com/h/fees-maker-taker-model">Takers and Makers</a>
- * - this adapter will use the <em>Taker</em> fees to keep things simple for now.
+ * Exchange fees are loaded from the exchange.xml file on startup; they are not fetched from the exchange at runtime as
+ * the itBit REST API v1 does not support this. The fees are used across all markets. Make sure you keep an eye on the
+ * <a href="https://www.itbit.com/h/fees">exchange fees</a> and update the config accordingly. There are different
+ * exchange fees for <a href="https://www.itbit.com/h/fees-maker-taker-model">Takers and Makers</a> - this adapter will
+ * use the <em>Taker</em> fees to keep things simple for now.
  * </p>
  * <p>
  * NOTE: ItBit requires all price values to be limited to 2 decimal places and amount values to be limited to 4 decimal
@@ -106,13 +104,13 @@ import java.util.Map;
  * the order amount, but to 4 decimal places.
  * </p>
  * <p>
- * The exchange regularly goes down for maintenance. If the keep-alive-during-maintenance config-item is set to true
- * in the exchange.xml config file, the bot will stay alive and wait until the next trade cycle.
+ * The exchange regularly goes down for maintenance. If the keep-alive-during-maintenance config-item is set to true in
+ * the exchange.xml config file, the bot will stay alive and wait until the next trade cycle.
  * </p>
  * <p>
- * The Exchange Adapter is <em>not</em> thread safe. It expects to be called using a single thread in order to
- * preserve trade execution order. The {@link URLConnection} achieves this by blocking/waiting on the input stream
- * (response) for each API call.
+ * The Exchange Adapter is <em>not</em> thread safe. It expects to be called using a single thread in order to preserve
+ * trade execution order. The {@link URLConnection} achieves this by blocking/waiting on the input stream (response) for
+ * each API call.
  * </p>
  * <p>
  * The {@link TradingApi} calls will throw a {@link ExchangeNetworkException} if a network error occurs trying to
@@ -132,8 +130,8 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
 
   private static final String UNEXPECTED_ERROR_MSG = "Unexpected error has occurred in itBit Exchange Adapter. ";
   private static final String UNEXPECTED_IO_ERROR_MSG = "Failed to connect to Exchange due to unexpected IO error.";
-  private static final String UNDER_MAINTENANCE_WARNING_MESSAGE = "Exchange is undergoing maintenance - keep alive " +
-                                                                      "is true.";
+  private static final String UNDER_MAINTENANCE_WARNING_MESSAGE = "Exchange is undergoing maintenance - keep alive "
+      + "is true.";
   private static final String USER_ID_PROPERTY_NAME = "userId";
   private static final String KEY_PROPERTY_NAME = "key";
   private static final String SECRET_PROPERTY_NAME = "secret";
@@ -142,8 +140,8 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
   private static final String SELL_FEE_PROPERTY_NAME = "sell-fee";
 
   private static final String KEEP_ALIVE_DURING_MAINTENANCE_PROPERTY_NAME = "keep-alive-during-maintenance";
-  private static final String EXCHANGE_UNDERGOING_MAINTENANCE_RESPONSE = "The itBit API is currently undergoing " +
-                                                                             "maintenance";
+  private static final String EXCHANGE_UNDERGOING_MAINTENANCE_RESPONSE = "The itBit API is currently undergoing "
+      + "maintenance";
   private BigDecimal buyFeePercentage;
   private BigDecimal sellFeePercentage;
 
@@ -179,7 +177,7 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
 
   @Override
   public String createOrder(String marketId, OrderType orderType, BigDecimal quantity, BigDecimal price)
-                                                                  throws TradingApiException, ExchangeNetworkException {
+      throws TradingApiException, ExchangeNetworkException {
     ExchangeHttpResponse response = null;
 
     try {
@@ -213,9 +211,9 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
         params.put("side", "sell");
       } else {
         final String errorMsg = "Invalid order type: " + orderType
-                                    + " - Can only be "
-                                    + OrderType.BUY.getStringValue() + " or "
-                                    + OrderType.SELL.getStringValue();
+            + " - Can only be "
+            + OrderType.BUY.getStringValue() + " or "
+            + OrderType.SELL.getStringValue();
         LOG.error(errorMsg);
         throw new IllegalArgumentException(errorMsg);
       }
@@ -260,7 +258,7 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
    */
   @Override
   public boolean cancelOrder(String orderId, String marketIdNotNeeded) throws TradingApiException,
-                                                                                  ExchangeNetworkException {
+      ExchangeNetworkException {
     ExchangeHttpResponse response = null;
 
     try {
@@ -604,8 +602,7 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
 
   /**
    * <p>
-   * GSON class for holding itBit order returned from:
-   * "Cancel Order" /wallets/{walletId}/orders/{orderId} API call.
+   * GSON class for holding itBit order returned from: "Cancel Order" /wallets/{walletId}/orders/{orderId} API call.
    * </p>
    * <p>
    * <p>
@@ -613,12 +610,12 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
    * </p>
    */
   private static class ItBitCancelOrderResponse {
+
   }
 
   /**
    * <p>
-   * GSON class for holding itBit new order response from:
-   * "Create New Order" POST /wallets/{walletId}/orders API call.
+   * GSON class for holding itBit new order response from: "Create New Order" POST /wallets/{walletId}/orders API call.
    * </p>
    * <p>
    * <p>
@@ -626,11 +623,12 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
    * </p>
    */
   private static class ItBitNewOrderResponse extends ItBitYourOrder {
+
   }
 
   /**
-   * GSON class for holding itBit order returned from:
-   * "Get Orders" /wallets/{walletId}/orders{?instrument,page,perPage,status} API call.
+   * GSON class for holding itBit order returned from: "Get Orders" /wallets/{walletId}/orders{?instrument,page,perPage,status}
+   * API call.
    */
   private static class ItBitYourOrder {
 
@@ -652,21 +650,21 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
     @Override
     public String toString() {
       return MoreObjects.toStringHelper(this)
-                 .add("id", id)
-                 .add("walletId", walletId)
-                 .add("side", side)
-                 .add("instrument", instrument)
-                 .add("type", type)
-                 .add("amount", amount)
-                 .add("displayAmount", displayAmount)
-                 .add("price", price)
-                 .add("volumeWeightedAveragePrice", volumeWeightedAveragePrice)
-                 .add("amountFilled", amountFilled)
-                 .add("createdTime", createdTime)
-                 .add("status", status)
-                 .add("metadata", metadata)
-                 .add("clientOrderIdentifier", clientOrderIdentifier)
-                 .toString();
+          .add("id", id)
+          .add("walletId", walletId)
+          .add("side", side)
+          .add("instrument", instrument)
+          .add("type", type)
+          .add("amount", amount)
+          .add("displayAmount", displayAmount)
+          .add("price", price)
+          .add("volumeWeightedAveragePrice", volumeWeightedAveragePrice)
+          .add("amountFilled", amountFilled)
+          .add("createdTime", createdTime)
+          .add("status", status)
+          .add("metadata", metadata)
+          .add("clientOrderIdentifier", clientOrderIdentifier)
+          .toString();
     }
   }
 
@@ -674,11 +672,11 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
    * GSON class for holding Your Order metadata. No idea what this is / or gonna be...
    */
   private static class ItBitOrderMetadata {
+
   }
 
   /**
-   * GSON class for holding itBit ticker returned from:
-   * "Get Order Book" /markets/{tickerSymbol}/order_book API call.
+   * GSON class for holding itBit ticker returned from: "Get Order Book" /markets/{tickerSymbol}/order_book API call.
    */
   private static class ItBitOrderBookWrapper {
 
@@ -688,9 +686,9 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
     @Override
     public String toString() {
       return MoreObjects.toStringHelper(this)
-                 .add("bids", bids)
-                 .add("asks", asks)
-                 .toString();
+          .add("bids", bids)
+          .add("asks", asks)
+          .toString();
     }
   }
 
@@ -698,12 +696,12 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
    * GSON class for holding Market Orders. First element in array is price, second element is amount.
    */
   private static class ItBitMarketOrder extends ArrayList<BigDecimal> {
+
     private static final long serialVersionUID = -4959711260747077759L;
   }
 
   /**
-   * GSON class for holding itBit ticker returned from:
-   * "Get Ticker" /markets/{tickerSymbol}/ticker API call.
+   * GSON class for holding itBit ticker returned from: "Get Ticker" /markets/{tickerSymbol}/ticker API call.
    */
   private static class ItBitTicker {
 
@@ -728,30 +726,29 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
     @Override
     public String toString() {
       return MoreObjects.toStringHelper(this)
-                 .add("pair", pair)
-                 .add("bid", bid)
-                 .add("bidAmt", bidAmt)
-                 .add("ask", ask)
-                 .add("askAmt", askAmt)
-                 .add("lastPrice", lastPrice)
-                 .add("lastAmt", lastAmt)
-                 .add("volume24h", volume24h)
-                 .add("volumeToday", volumeToday)
-                 .add("high24h", high24h)
-                 .add("low24h", low24h)
-                 .add("highToday", highToday)
-                 .add("lowToday", lowToday)
-                 .add("openToday", openToday)
-                 .add("vwapToday", vwapToday)
-                 .add("vwap24h", vwap24h)
-                 .add("serverTimeUTC", serverTimeUTC)
-                 .toString();
+          .add("pair", pair)
+          .add("bid", bid)
+          .add("bidAmt", bidAmt)
+          .add("ask", ask)
+          .add("askAmt", askAmt)
+          .add("lastPrice", lastPrice)
+          .add("lastAmt", lastAmt)
+          .add("volume24h", volume24h)
+          .add("volumeToday", volumeToday)
+          .add("high24h", high24h)
+          .add("low24h", low24h)
+          .add("highToday", highToday)
+          .add("lowToday", lowToday)
+          .add("openToday", openToday)
+          .add("vwapToday", vwapToday)
+          .add("vwap24h", vwap24h)
+          .add("serverTimeUTC", serverTimeUTC)
+          .toString();
     }
   }
 
   /**
-   * GSON class for holding itBit wallets returned from:
-   * "Get All Wallets" /wallets{?userId,page,perPage} API call.
+   * GSON class for holding itBit wallets returned from: "Get All Wallets" /wallets{?userId,page,perPage} API call.
    */
   private static class ItBitWallet {
 
@@ -763,11 +760,11 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
     @Override
     public String toString() {
       return MoreObjects.toStringHelper(this)
-                 .add("id", id)
-                 .add("userId", userId)
-                 .add("name", name)
-                 .add("balances", balances)
-                 .toString();
+          .add("id", id)
+          .add("userId", userId)
+          .add("name", name)
+          .add("balances", balances)
+          .toString();
     }
   }
 
@@ -783,10 +780,10 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
     @Override
     public String toString() {
       return MoreObjects.toStringHelper(this)
-                 .add("availableBalance", availableBalance)
-                 .add("totalBalance", totalBalance)
-                 .add("currency", currency)
-                 .toString();
+          .add("availableBalance", availableBalance)
+          .add("totalBalance", totalBalance)
+          .add("currency", currency)
+          .toString();
     }
   }
 
@@ -795,7 +792,7 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
   // ------------------------------------------------------------------------------------------------
 
   private ExchangeHttpResponse sendPublicRequestToExchange(String apiMethod) throws ExchangeNetworkException,
-                                                                                        TradingApiException {
+      TradingApiException {
     try {
       final URL url = new URL(PUBLIC_API_BASE_URL + apiMethod);
       return makeNetworkRequest(url, "GET", null, createHeaderParamMap());

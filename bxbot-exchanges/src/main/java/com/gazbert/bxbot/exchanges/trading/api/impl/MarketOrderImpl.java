@@ -26,7 +26,6 @@ package com.gazbert.bxbot.exchanges.trading.api.impl;
 import com.gazbert.bxbot.trading.api.MarketOrder;
 import com.gazbert.bxbot.trading.api.OrderType;
 import com.google.common.base.MoreObjects;
-
 import java.math.BigDecimal;
 
 /**
@@ -83,10 +82,10 @@ public final class MarketOrderImpl implements MarketOrder {
   @Override
   public String toString() {
     return MoreObjects.toStringHelper(this)
-               .add("type", type)
-               .add("price", price)
-               .add("quantity", quantity)
-               .add("total", total)
-               .toString();
+        .add("type", type)
+        .add("price", price)
+        .add("quantity", quantity)
+        .add("total", total)
+        .toString();
   }
 }

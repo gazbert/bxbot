@@ -517,9 +517,9 @@ public class TestOkcoinExchangeAdapter extends AbstractExchangeAdapterTest {
     final OkCoinExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
         OkCoinExchangeAdapter.class, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD);
     PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD, eq(DEPTH),
-        anyObject(Map.class)).
-        andThrow(new ExchangeNetworkException("All we have to decide is what to do with the time that is given" +
-            " to us."));
+        anyObject(Map.class))
+        .andThrow(new ExchangeNetworkException("All we have to decide is what to do with the time that is given"
+            + " to us."));
 
     PowerMock.replayAll();
     exchangeAdapter.init(exchangeConfig);
@@ -533,9 +533,9 @@ public class TestOkcoinExchangeAdapter extends AbstractExchangeAdapterTest {
     final OkCoinExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
         OkCoinExchangeAdapter.class, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD);
     PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD, eq(DEPTH),
-        anyObject(Map.class)).
-        andThrow(new IllegalArgumentException("The board is set, the pieces are moving. We come to it at last, " +
-            "the great battle of our time."));
+        anyObject(Map.class))
+        .andThrow(new IllegalArgumentException("The board is set, the pieces are moving. We come to it at last, "
+            + "the great battle of our time."));
 
     PowerMock.replayAll();
     exchangeAdapter.init(exchangeConfig);
@@ -570,8 +570,8 @@ public class TestOkcoinExchangeAdapter extends AbstractExchangeAdapterTest {
     PowerMock.replayAll();
     exchangeAdapter.init(exchangeConfig);
 
-    final BigDecimal latestMarketPrice = exchangeAdapter.getLatestMarketPrice(MARKET_ID).
-        setScale(8, RoundingMode.HALF_UP);
+    final BigDecimal latestMarketPrice = exchangeAdapter.getLatestMarketPrice(MARKET_ID)
+        .setScale(8, RoundingMode.HALF_UP);
     assertEquals(0, latestMarketPrice.compareTo(new BigDecimal("231.35")));
     PowerMock.verifyAll();
   }
@@ -581,9 +581,9 @@ public class TestOkcoinExchangeAdapter extends AbstractExchangeAdapterTest {
     final OkCoinExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
         OkCoinExchangeAdapter.class, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD);
     PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD, eq(TICKER),
-        anyObject(Map.class)).
-        andThrow(new ExchangeNetworkException("I would rather share one lifetime with you than face all the" +
-            " Ages of this world alone."));
+        anyObject(Map.class))
+        .andThrow(new ExchangeNetworkException("I would rather share one lifetime with you than face all the"
+            + " Ages of this world alone."));
 
     PowerMock.replayAll();
     exchangeAdapter.init(exchangeConfig);
@@ -597,12 +597,12 @@ public class TestOkcoinExchangeAdapter extends AbstractExchangeAdapterTest {
     final OkCoinExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
         OkCoinExchangeAdapter.class, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD);
     PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD, eq(TICKER),
-        anyObject(Map.class)).
-        andThrow(new IllegalArgumentException("What has happened before will happen again. What has been done " +
-            "before will be done again. There is nothing new in the whole world. \"Look,\" they say, " +
-            "\"here is something new!\" But no, it has all happened before, long before we were born." +
-            " No one remembers what has happened in the past, and no one in days to come will remember what" +
-            " happens between now and then."));
+        anyObject(Map.class))
+        .andThrow(new IllegalArgumentException("What has happened before will happen again. What has been done "
+            + "before will be done again. There is nothing new in the whole world. \"Look,\" they say, "
+            + "\"here is something new!\" But no, it has all happened before, long before we were born."
+            + " No one remembers what has happened in the past, and no one in days to come will remember what"
+            + " happens between now and then."));
 
     PowerMock.replayAll();
     exchangeAdapter.init(exchangeConfig);
@@ -737,8 +737,8 @@ public class TestOkcoinExchangeAdapter extends AbstractExchangeAdapterTest {
     final OkCoinExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
         OkCoinExchangeAdapter.class, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD);
     PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD, eq(TICKER),
-        anyObject(Map.class)).
-        andThrow(new ExchangeNetworkException("Where the hell can I get eyes like that?"));
+        anyObject(Map.class))
+        .andThrow(new ExchangeNetworkException("Where the hell can I get eyes like that?"));
 
     PowerMock.replayAll();
     exchangeAdapter.init(exchangeConfig);
@@ -752,9 +752,9 @@ public class TestOkcoinExchangeAdapter extends AbstractExchangeAdapterTest {
     final OkCoinExchangeAdapter exchangeAdapter = PowerMock.createPartialMockAndInvokeDefaultConstructor(
         OkCoinExchangeAdapter.class, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD);
     PowerMock.expectPrivate(exchangeAdapter, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD, eq(TICKER),
-        anyObject(Map.class)).
-        andThrow(new IllegalArgumentException("All you people are so scared of me. " +
-            "Most days I'd take that as a compliment. But it ain't me you gotta worry about now."));
+        anyObject(Map.class))
+        .andThrow(new IllegalArgumentException("All you people are so scared of me. "
+            + "Most days I'd take that as a compliment. But it ain't me you gotta worry about now."));
 
     PowerMock.replayAll();
     exchangeAdapter.init(exchangeConfig);

@@ -25,7 +25,6 @@ package com.gazbert.bxbot.exchanges.trading.api.impl;
 
 import com.gazbert.bxbot.trading.api.BalanceInfo;
 import com.google.common.base.MoreObjects;
-
 import java.math.BigDecimal;
 import java.util.Map;
 
@@ -63,9 +62,9 @@ public final class BalanceInfoImpl implements BalanceInfo {
   @Override
   public String toString() {
     return MoreObjects.toStringHelper(this)
-               .add("balancesAvailable", balancesAvailable)
-               .add("balancesOnHold", balancesOnHold)
-               .toString();
+        .add("balancesAvailable", balancesAvailable)
+        .add("balancesOnHold", balancesOnHold)
+        .toString();
   }
 }
 

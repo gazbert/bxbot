@@ -23,14 +23,13 @@
 
 package com.gazbert.bxbot.exchanges.trading.api.impl;
 
-import com.gazbert.bxbot.trading.api.OrderType;
-import org.junit.Test;
-
-import java.math.BigDecimal;
-import java.util.Date;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+
+import com.gazbert.bxbot.trading.api.OrderType;
+import java.math.BigDecimal;
+import java.util.Date;
+import org.junit.Test;
 
 /**
  * Tests the Open Order impl behaves as expected.

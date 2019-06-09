@@ -44,12 +44,6 @@ import com.google.common.base.MoreObjects;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.springframework.util.StringUtils;
-
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
@@ -68,6 +62,11 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.util.StringUtils;
 
 /**
  * Cryptopia Exchange Adapter.
@@ -130,7 +129,7 @@ public class CryptopiaExchangeAdapter extends AbstractExchangeAdapter implements
   public MarketOrderBook getMarketOrders(String marketId) throws ExchangeNetworkException, TradingApiException {
     try {
       final ExchangeHttpResponse response = sendPublicRequestToExchange("GetMarketOrders/"
-                                                                            + marketId.toUpperCase());
+          + marketId.toUpperCase());
       LOG.debug(() -> "Market Orders response: " + response);
 
       Type responseApiType = new TypeToken<CryptopiaPublicApiResponse<CryptopiaOrderBook>>() {
@@ -349,7 +348,6 @@ public class CryptopiaExchangeAdapter extends AbstractExchangeAdapter implements
             responseApiType);
         final CryptopiaTradePairs cryptopiaTradePairs = cryptopiaResponse.Data;
 
-
         for (CryptopiaTradePair tradePair : cryptopiaTradePairs) {
           if (tradePair.Symbol.equalsIgnoreCase(marketId.split("_")[0])) {
             return tradePair.TradeFee;
@@ -381,7 +379,6 @@ public class CryptopiaExchangeAdapter extends AbstractExchangeAdapter implements
         final CryptopiaPrivateApiResponse<CryptopiaTradePairs> cryptopiaResponse = gson.fromJson(response.getPayload(),
             responseApiType);
         final CryptopiaTradePairs cryptopiaTradePairs = cryptopiaResponse.Data;
-
 
         for (CryptopiaTradePair tradePair : cryptopiaTradePairs) {
           if (tradePair.Symbol.equalsIgnoreCase(marketId.split("_")[0])) {
@@ -460,23 +457,23 @@ public class CryptopiaExchangeAdapter extends AbstractExchangeAdapter implements
     @Override
     public String toString() {
       return MoreObjects.toStringHelper(this)
-                 .add("tradePairId", TradePairId)
-                 .add("label", Label)
-                 .add("askPrice", AskPrice)
-                 .add("bidPrice", BidPrice)
-                 .add("low", Low)
-                 .add("high", High)
-                 .add("volume", Volume)
-                 .add("lastPrice", LastPrice)
-                 .add("buyVolume", BuyVolume)
-                 .add("sellVolume", SellVolume)
-                 .add("change", Change)
-                 .add("open", Open)
-                 .add("close", Close)
-                 .add("baseVolume", BaseVolume)
-                 .add("baseBuyVolume", BaseBuyVolume)
-                 .add("baseSellVolume", BaseSellVolume)
-                 .toString();
+          .add("tradePairId", TradePairId)
+          .add("label", Label)
+          .add("askPrice", AskPrice)
+          .add("bidPrice", BidPrice)
+          .add("low", Low)
+          .add("high", High)
+          .add("volume", Volume)
+          .add("lastPrice", LastPrice)
+          .add("buyVolume", BuyVolume)
+          .add("sellVolume", SellVolume)
+          .add("change", Change)
+          .add("open", Open)
+          .add("close", Close)
+          .add("baseVolume", BaseVolume)
+          .add("baseBuyVolume", BaseBuyVolume)
+          .add("baseSellVolume", BaseSellVolume)
+          .toString();
     }
   }
 
@@ -484,6 +481,7 @@ public class CryptopiaExchangeAdapter extends AbstractExchangeAdapter implements
    * GSON class for receiving your open orders in 'orders' API call response.
    */
   private static class CryptopiaOpenOrders extends ArrayList<CryptopiaOpenOrder> {
+
     private static final long serialVersionUID = 5516523641153401953L;
   }
 
@@ -505,16 +503,16 @@ public class CryptopiaExchangeAdapter extends AbstractExchangeAdapter implements
     @Override
     public String toString() {
       return MoreObjects.toStringHelper(this)
-                 .add("orderId", OrderId)
-                 .add("tradePairId", TradePairId)
-                 .add("market", Market)
-                 .add("type", Type)
-                 .add("rate", Rate)
-                 .add("amount", Amount)
-                 .add("total", Total)
-                 .add("remaining", Remaining)
-                 .add("timeStamp", TimeStamp)
-                 .toString();
+          .add("orderId", OrderId)
+          .add("tradePairId", TradePairId)
+          .add("market", Market)
+          .add("type", Type)
+          .add("rate", Rate)
+          .add("amount", Amount)
+          .add("total", Total)
+          .add("remaining", Remaining)
+          .add("timeStamp", TimeStamp)
+          .toString();
     }
   }
 
@@ -522,15 +520,16 @@ public class CryptopiaExchangeAdapter extends AbstractExchangeAdapter implements
    * GSON class for a market Order Book.
    */
   private static class CryptopiaOrderBook {
+
     CryptopiaOrder[] Buy;
     CryptopiaOrder[] Sell;
 
     @Override
     public String toString() {
       return MoreObjects.toStringHelper(this)
-                 .add("buy", Buy)
-                 .add("sell", Sell)
-                 .toString();
+          .add("buy", Buy)
+          .add("sell", Sell)
+          .toString();
     }
   }
 
@@ -538,6 +537,7 @@ public class CryptopiaExchangeAdapter extends AbstractExchangeAdapter implements
    * GSON class for a Market Order.
    */
   private static class CryptopiaOrder {
+
     public Integer TradePairId;
     public String Label;
     public BigDecimal Price;
@@ -547,12 +547,12 @@ public class CryptopiaExchangeAdapter extends AbstractExchangeAdapter implements
     @Override
     public String toString() {
       return MoreObjects.toStringHelper(this)
-                 .add("tradePairId", TradePairId)
-                 .add("label", Label)
-                 .add("price", Price)
-                 .add("volume", Volume)
-                 .add("total", Total)
-                 .toString();
+          .add("tradePairId", TradePairId)
+          .add("label", Label)
+          .add("price", Price)
+          .add("volume", Volume)
+          .add("total", Total)
+          .toString();
     }
   }
 
@@ -560,6 +560,7 @@ public class CryptopiaExchangeAdapter extends AbstractExchangeAdapter implements
    * GSON class for receiving your balances in 'GetBalance' API call response.
    */
   private static class CryptopiaBalances extends ArrayList<CryptopiaBalance> {
+
     private static final long serialVersionUID = -5454933973151400131L;
   }
 
@@ -567,6 +568,7 @@ public class CryptopiaExchangeAdapter extends AbstractExchangeAdapter implements
    * GSON class for Balance.
    */
   private static class CryptopiaBalance {
+
     public long CurrencyId;
     public String Symbol;
     public BigDecimal Total;
@@ -582,18 +584,18 @@ public class CryptopiaExchangeAdapter extends AbstractExchangeAdapter implements
     @Override
     public String toString() {
       return MoreObjects.toStringHelper(this)
-                 .add("currencyId", CurrencyId)
-                 .add("symbol", Symbol)
-                 .add("total", Total)
-                 .add("available", Available)
-                 .add("unconfirmed", Unconfirmed)
-                 .add("heldForTrades", HeldForTrades)
-                 .add("pendingWithdraw", PendingWithdraw)
-                 .add("address", Address)
-                 .add("baseAddress", BaseAddress)
-                 .add("status", Status)
-                 .add("statusMessage", StatusMessage)
-                 .toString();
+          .add("currencyId", CurrencyId)
+          .add("symbol", Symbol)
+          .add("total", Total)
+          .add("available", Available)
+          .add("unconfirmed", Unconfirmed)
+          .add("heldForTrades", HeldForTrades)
+          .add("pendingWithdraw", PendingWithdraw)
+          .add("address", Address)
+          .add("baseAddress", BaseAddress)
+          .add("status", Status)
+          .add("statusMessage", StatusMessage)
+          .toString();
     }
   }
 
@@ -601,15 +603,16 @@ public class CryptopiaExchangeAdapter extends AbstractExchangeAdapter implements
    * GSON class for receiving a response when putting a new order.
    */
   private static class CryptopiaNewOrderResponse {
+
     long OrderId;
     long[] FilledOrders;
 
     @Override
     public String toString() {
       return MoreObjects.toStringHelper(this)
-                 .add("orderId", OrderId)
-                 .add("filledOrders", FilledOrders)
-                 .toString();
+          .add("orderId", OrderId)
+          .add("filledOrders", FilledOrders)
+          .toString();
     }
   }
 
@@ -617,12 +620,13 @@ public class CryptopiaExchangeAdapter extends AbstractExchangeAdapter implements
    * GSON class for receiving a response when cancelling an order.
    */
   private static class CryptopiaCancelOrderResponse extends ArrayList<Long> {
+
     private static final long serialVersionUID = 1285853976415626644L;
 
     @Override
     public String toString() {
       return MoreObjects.toStringHelper(this)
-                 .toString();
+          .toString();
     }
   }
 
@@ -630,10 +634,12 @@ public class CryptopiaExchangeAdapter extends AbstractExchangeAdapter implements
    * GSON class for receiving your trade pairs in 'GetTradePair' API call response.
    */
   private static class CryptopiaTradePairs extends ArrayList<CryptopiaTradePair> {
+
     private static final long serialVersionUID = -6787427618355089266L;
   }
 
   private static class CryptopiaTradePair {
+
     public long Id;
     public String Label;
     public String Currency;
@@ -653,30 +659,30 @@ public class CryptopiaExchangeAdapter extends AbstractExchangeAdapter implements
     @Override
     public String toString() {
       return MoreObjects.toStringHelper(this)
-                 .add("id", Id)
-                 .add("label", Label)
-                 .add("currency", Currency)
-                 .add("symbol", Symbol)
-                 .add("baseCurrency", BaseCurrency)
-                 .add("baseSymbol", BaseSymbol)
-                 .add("status", Status)
-                 .add("statusMessage", StatusMessage)
-                 .add("tradeFee", TradeFee)
-                 .add("minimumTrade", MinimumTrade)
-                 .add("maximumTrade", MaximumTrade)
-                 .add("minimumBaseTrade", MinimumBaseTrade)
-                 .add("maximumBaseTrade", MaximumBaseTrade)
-                 .add("minimumPrice", MinimumPrice)
-                 .add("maximumPrice", MaximumPrice)
-                 .toString();
+          .add("id", Id)
+          .add("label", Label)
+          .add("currency", Currency)
+          .add("symbol", Symbol)
+          .add("baseCurrency", BaseCurrency)
+          .add("baseSymbol", BaseSymbol)
+          .add("status", Status)
+          .add("statusMessage", StatusMessage)
+          .add("tradeFee", TradeFee)
+          .add("minimumTrade", MinimumTrade)
+          .add("maximumTrade", MaximumTrade)
+          .add("minimumBaseTrade", MinimumBaseTrade)
+          .add("maximumBaseTrade", MaximumBaseTrade)
+          .add("minimumPrice", MinimumPrice)
+          .add("maximumPrice", MaximumPrice)
+          .toString();
     }
   }
 
   /**
-   * GSON class which wraps all other objects as data attribute
-   * Differs slightly for public and private api calls.
+   * GSON class which wraps all other objects as data attribute Differs slightly for public and private api calls.
    */
   private static class CryptopiaPublicApiResponse<T> {
+
     public boolean Success;
     public String Message;
     public T Data;
@@ -684,18 +690,18 @@ public class CryptopiaExchangeAdapter extends AbstractExchangeAdapter implements
     @Override
     public String toString() {
       return MoreObjects.toStringHelper(this)
-                 .add("success", Success)
-                 .add("message", Message)
-                 .add("data", Data)
-                 .toString();
+          .add("success", Success)
+          .add("message", Message)
+          .add("data", Data)
+          .toString();
     }
   }
 
   /**
-   * GSON class which wraps all other objects as data attribute
-   * Differs slightly for public and private api calls.
+   * GSON class which wraps all other objects as data attribute Differs slightly for public and private api calls.
    */
   private static class CryptopiaPrivateApiResponse<T> {
+
     public boolean Success;
     public String Error;
     public T Data;
@@ -703,10 +709,10 @@ public class CryptopiaExchangeAdapter extends AbstractExchangeAdapter implements
     @Override
     public String toString() {
       return MoreObjects.toStringHelper(this)
-                 .add("success", Success)
-                 .add("error", Error)
-                 .add("data", Data)
-                 .toString();
+          .add("success", Success)
+          .add("error", Error)
+          .add("data", Data)
+          .toString();
     }
   }
 
@@ -740,7 +746,7 @@ public class CryptopiaExchangeAdapter extends AbstractExchangeAdapter implements
   }
 
   private ExchangeHttpResponse sendPublicRequestToExchange(String apiMethod) throws ExchangeNetworkException,
-                                                                                        TradingApiException {
+      TradingApiException {
     try {
       final URL url = new URL(PUBLIC_API_BASE_URL + apiMethod);
       return makeNetworkRequest(url, "GET", null, createHeaderParamMap());
@@ -794,7 +800,8 @@ public class CryptopiaExchangeAdapter extends AbstractExchangeAdapter implements
       final String encodedUrl = URLEncoder.encode(url.toString(), StandardCharsets.UTF_8.toString()).toLowerCase();
       final String md5Checksum = encodeBase64(md5.digest(paramsInJson.getBytes(StandardCharsets.UTF_8)));
       final String requestSignature = publicKey + "POST" + encodedUrl + nonce + md5Checksum;
-      final String encodedAndHashedSignature = encodeBase64(mac.doFinal(requestSignature.getBytes(StandardCharsets.UTF_8)));
+      final String encodedAndHashedSignature = encodeBase64(
+          mac.doFinal(requestSignature.getBytes(StandardCharsets.UTF_8)));
       final String authHeader = "amx " + publicKey + ":" + encodedAndHashedSignature + ":" + nonce;
 
       // Request headers required by Exchange
@@ -825,13 +832,13 @@ public class CryptopiaExchangeAdapter extends AbstractExchangeAdapter implements
     final OtherConfig otherConfig = getOtherConfig(exchangeConfig);
 
     final String useGlobalTradingFeeConfigItem = getOtherConfigItem(otherConfig, USE_GLOBAL_TRADING_FEE_PROPERTY_NAME);
-    useGlobalTradingFee = !StringUtils.isEmpty(useGlobalTradingFeeConfigItem) &&
-                              Boolean.parseBoolean(useGlobalTradingFeeConfigItem);
+    useGlobalTradingFee = !StringUtils.isEmpty(useGlobalTradingFeeConfigItem)
+        && Boolean.parseBoolean(useGlobalTradingFeeConfigItem);
 
     final String globalTradingFeeConfigItem = useGlobalTradingFee ? getOtherConfigItem(otherConfig,
         GLOBAL_TRADING_FEE_PROPERTY_NAME) : null;
     globalTradingFee = !StringUtils.isEmpty(globalTradingFeeConfigItem) ? new BigDecimal(globalTradingFeeConfigItem) :
-                           DEFAULT_CRYPTOPIA_TRADING_FEE_PERCENT;
+        DEFAULT_CRYPTOPIA_TRADING_FEE_PERCENT;
   }
 
   // ------------------------------------------------------------------------------------------------
@@ -840,8 +847,8 @@ public class CryptopiaExchangeAdapter extends AbstractExchangeAdapter implements
 
   private void initGson() {
     gson = new GsonBuilder()
-               .setLenient() //since all names in json starts upper case
-               .create();
+        .setLenient() //since all names in json starts upper case
+        .create();
   }
 
   private String generateNonce() {

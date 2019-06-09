@@ -20,8 +20,8 @@ abstract class AbstractExchangeAdapterTest {
   }
 
   /**
-   * Returns the decimal format symbols for using with BigDecimals with the exchanges. Specifically, the decimal
-   * point symbol is set to a '.'
+   * Returns the decimal format symbols for using with BigDecimals with the exchanges. Specifically, the decimal point
+   * symbol is set to a '.'
    *
    * @return the decimal format symbols.
    */

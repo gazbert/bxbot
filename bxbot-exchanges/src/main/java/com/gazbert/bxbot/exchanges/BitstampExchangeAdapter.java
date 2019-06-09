@@ -47,11 +47,6 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
@@ -71,19 +66,22 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * <p>
- * Exchange Adapter for integrating with the Bitstamp exchange. It uses v2 of the Bitstamp API;
- * it is documented <a href="https://www.bitstamp.net/api/">here</a>.
+ * Exchange Adapter for integrating with the Bitstamp exchange. It uses v2 of the Bitstamp API; it is documented <a
+ * href="https://www.bitstamp.net/api/">here</a>.
  * </p>
  * <p>
  * <strong>
- * DISCLAIMER:
- * This Exchange Adapter is provided as-is; it might have bugs in it and you could lose money. Despite running live
- * on Bitstamp, it has only been unit tested up until the point of calling the
- * {@link #sendPublicRequestToExchange(String)} and {@link #sendAuthenticatedRequestToExchange(String, Map)}
- * methods. Use it at our own risk!
+ * DISCLAIMER: This Exchange Adapter is provided as-is; it might have bugs in it and you could lose money. Despite
+ * running live on Bitstamp, it has only been unit tested up until the point of calling the {@link
+ * #sendPublicRequestToExchange(String)} and {@link #sendAuthenticatedRequestToExchange(String, Map)} methods. Use it at
+ * our own risk!
  * </strong>
  * </p>
  * <p>
@@ -93,9 +91,9 @@ import java.util.Map;
  * </pre>
  * </p>
  * <p>
- * This Exchange Adapter is <em>not</em> thread safe. It expects to be called using a single thread in order to
- * preserve trade execution order. The {@link URLConnection} achieves this by blocking/waiting on the input stream
- * (response) for each API call.
+ * This Exchange Adapter is <em>not</em> thread safe. It expects to be called using a single thread in order to preserve
+ * trade execution order. The {@link URLConnection} achieves this by blocking/waiting on the input stream (response) for
+ * each API call.
  * </p>
  * <p>
  * The {@link TradingApi} calls will throw a {@link ExchangeNetworkException} if a network error occurs trying to
@@ -103,8 +101,8 @@ import java.util.Map;
  * </p>
  * <p>
  * NOTE: Bitstamp requires all price values to be limited to 2 decimal places when creating orders. This adapter
- * truncates any prices with more than 2 decimal places and rounds using {@link java.math.RoundingMode#HALF_EVEN},
- * E.g. 250.176 would be sent to the exchange as 250.18.
+ * truncates any prices with more than 2 decimal places and rounds using {@link java.math.RoundingMode#HALF_EVEN}, E.g.
+ * 250.176 would be sent to the exchange as 250.18.
  * </p>
  *
  * @author gazbert
@@ -237,7 +235,7 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
 
   @Override
   public String createOrder(String marketId, OrderType orderType, BigDecimal quantity, BigDecimal price)
-                                                                  throws TradingApiException, ExchangeNetworkException {
+      throws TradingApiException, ExchangeNetworkException {
     try {
       final Map<String, String> params = createRequestParamMap();
 
@@ -256,9 +254,9 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
         response = sendAuthenticatedRequestToExchange("sell/" + marketId, params);
       } else {
         final String errorMsg = "Invalid order type: " + orderType
-                                    + " - Can only be "
-                                    + OrderType.BUY.getStringValue() + " or "
-                                    + OrderType.SELL.getStringValue();
+            + " - Can only be "
+            + OrderType.BUY.getStringValue() + " or "
+            + OrderType.SELL.getStringValue();
         LOG.error(errorMsg);
         throw new IllegalArgumentException(errorMsg);
       }
@@ -290,7 +288,7 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
    */
   @Override
   public boolean cancelOrder(String orderId, String marketIdNotNeeded) throws TradingApiException,
-                                                                                    ExchangeNetworkException {
+      ExchangeNetworkException {
     try {
       final Map<String, String> params = createRequestParamMap();
       params.put("id", orderId);
@@ -298,7 +296,8 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
       final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("cancel_order", params);
       LOG.debug(() -> "Cancel Order response: " + response);
 
-      final BitstampCancelOrderResponse cancelOrderResponse = gson.fromJson(response.getPayload(), BitstampCancelOrderResponse.class);
+      final BitstampCancelOrderResponse cancelOrderResponse = gson
+          .fromJson(response.getPayload(), BitstampCancelOrderResponse.class);
       if (!orderId.equals(String.valueOf(cancelOrderResponse.id))) {
         final String errorMsg = "Failed to cancel order on exchange. Error response: " + response;
         LOG.error(errorMsg);
@@ -369,7 +368,7 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
 
   @Override
   public BigDecimal getPercentageOfBuyOrderTakenForExchangeFee(String marketId) throws TradingApiException,
-                                                                                           ExchangeNetworkException {
+      ExchangeNetworkException {
     try {
       final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("balance", null);
       LOG.debug(() -> "Buy Fee response: " + response);
@@ -388,7 +387,7 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
       }
 
       final String errorMsg = "Unable to map marketId to currency balances returned from the Exchange. "
-                                  + "MarketId: " + marketId + " BitstampBalances: " + balances;
+          + "MarketId: " + marketId + " BitstampBalances: " + balances;
       LOG.error(errorMsg);
       throw new IllegalArgumentException(errorMsg);
 
@@ -403,7 +402,7 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
 
   @Override
   public BigDecimal getPercentageOfSellOrderTakenForExchangeFee(String marketId) throws TradingApiException,
-                                                                                            ExchangeNetworkException {
+      ExchangeNetworkException {
     try {
       final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("balance", null);
       LOG.debug(() -> "Sell Fee response: " + response);
@@ -422,7 +421,7 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
       }
 
       final String errorMsg = "Unable to map marketId to currency balances returned from the Exchange. "
-                                  + "MarketId: " + marketId + " BitstampBalances: " + balances;
+          + "MarketId: " + marketId + " BitstampBalances: " + balances;
       LOG.error(errorMsg);
       throw new IllegalArgumentException(errorMsg);
 
@@ -474,9 +473,8 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
   // ------------------------------------------------------------------------------------------------
 
   /**
-   * GSON class for holding Bitstamp Balance response from balance API call.
-   * Updated for v2 API - markets correct as of 25 June 2017.
-   * Well this is fun - why not return a map of reserved, map of available, etc... ;-(
+   * GSON class for holding Bitstamp Balance response from balance API call. Updated for v2 API - markets correct as of
+   * 25 June 2017. Well this is fun - why not return a map of reserved, map of available, etc... ;-(
    */
   private static class BitstampBalance {
 
@@ -512,31 +510,31 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
     @Override
     public String toString() {
       return MoreObjects.toStringHelper(this)
-                 .add("btc_available", btc_available)
-                 .add("btc_balance", btc_balance)
-                 .add("btc_reserved", btc_reserved)
-                 .add("btceur_fee", btceur_fee)
-                 .add("btcusd_fee", btcusd_fee)
-                 .add("eur_available", eur_available)
-                 .add("eur_balance", eur_balance)
-                 .add("eur_reserved", eur_reserved)
-                 .add("eurusd_fee", eurusd_fee)
-                 .add("ltc_available", ltc_available)
-                 .add("ltc_balance", ltc_balance)
-                 .add("ltc_reserved", ltc_reserved)
-                 .add("ltcbtc_fee", ltcbtc_fee)
-                 .add("ltceur_fee", ltceur_fee)
-                 .add("ltcusd_fee", ltcusd_fee)
-                 .add("usd_available", usd_available)
-                 .add("usd_balance", usd_balance)
-                 .add("usd_reserved", usd_reserved)
-                 .add("xrp_available", xrp_available)
-                 .add("xrp_balance", xrp_balance)
-                 .add("xrp_reserved", xrp_reserved)
-                 .add("xrpbtc_fee", xrpbtc_fee)
-                 .add("xrpeur_fee", xrpeur_fee)
-                 .add("xrpusd_fee", xrpusd_fee)
-                 .toString();
+          .add("btc_available", btc_available)
+          .add("btc_balance", btc_balance)
+          .add("btc_reserved", btc_reserved)
+          .add("btceur_fee", btceur_fee)
+          .add("btcusd_fee", btcusd_fee)
+          .add("eur_available", eur_available)
+          .add("eur_balance", eur_balance)
+          .add("eur_reserved", eur_reserved)
+          .add("eurusd_fee", eurusd_fee)
+          .add("ltc_available", ltc_available)
+          .add("ltc_balance", ltc_balance)
+          .add("ltc_reserved", ltc_reserved)
+          .add("ltcbtc_fee", ltcbtc_fee)
+          .add("ltceur_fee", ltceur_fee)
+          .add("ltcusd_fee", ltcusd_fee)
+          .add("usd_available", usd_available)
+          .add("usd_balance", usd_balance)
+          .add("usd_reserved", usd_reserved)
+          .add("xrp_available", xrp_available)
+          .add("xrp_balance", xrp_balance)
+          .add("xrp_reserved", xrp_reserved)
+          .add("xrpbtc_fee", xrpbtc_fee)
+          .add("xrpeur_fee", xrpeur_fee)
+          .add("xrpusd_fee", xrpusd_fee)
+          .toString();
     }
   }
 
@@ -566,10 +564,10 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
     @Override
     public String toString() {
       return MoreObjects.toStringHelper(this)
-                 .add("timestamp", timestamp)
-                 .add("bids", bids)
-                 .add("asks", asks)
-                 .toString();
+          .add("timestamp", timestamp)
+          .add("bids", bids)
+          .add("asks", asks)
+          .toString();
     }
   }
 
@@ -591,16 +589,16 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
     @Override
     public String toString() {
       return MoreObjects.toStringHelper(this)
-                 .add("high", high)
-                 .add("last", last)
-                 .add("timestamp", timestamp)
-                 .add("bid", bid)
-                 .add("vwap", vwap)
-                 .add("volume", volume)
-                 .add("low", low)
-                 .add("ask", ask)
-                 .add("open", open)
-                 .toString();
+          .add("high", high)
+          .add("last", last)
+          .add("timestamp", timestamp)
+          .add("bid", bid)
+          .add("vwap", vwap)
+          .add("volume", volume)
+          .add("low", low)
+          .add("ask", ask)
+          .add("open", open)
+          .toString();
     }
   }
 
@@ -618,12 +616,12 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
     @Override
     public String toString() {
       return MoreObjects.toStringHelper(this)
-                 .add("id", id)
-                 .add("datetime", datetime)
-                 .add("type", type)
-                 .add("price", price)
-                 .add("amount", amount)
-                 .toString();
+          .add("id", id)
+          .add("datetime", datetime)
+          .add("type", type)
+          .add("price", price)
+          .add("amount", amount)
+          .toString();
     }
   }
 
@@ -640,11 +638,11 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
     @Override
     public String toString() {
       return MoreObjects.toStringHelper(this)
-                 .add("id", id)
-                 .add("price", price)
-                 .add("amount", amount)
-                 .add("type", type)
-                 .toString();
+          .add("id", id)
+          .add("price", price)
+          .add("amount", amount)
+          .add("type", type)
+          .toString();
     }
   }
 
@@ -661,6 +659,7 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
    * </pre>
    */
   private static class BitstampDateDeserializer implements JsonDeserializer<Date> {
+
     private final SimpleDateFormat bitstampDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     BitstampDateDeserializer() {
@@ -687,7 +686,7 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
   // ------------------------------------------------------------------------------------------------
 
   private ExchangeHttpResponse sendPublicRequestToExchange(String apiMethod) throws ExchangeNetworkException,
-                                                                                        TradingApiException {
+      TradingApiException {
     try {
       final URL url = new URL(API_BASE_URL + apiMethod);
       return makeNetworkRequest(url, "GET", null, createHeaderParamMap());
@@ -700,7 +699,7 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter imple
   }
 
   private ExchangeHttpResponse sendAuthenticatedRequestToExchange(String apiMethod, Map<String, String> params)
-                                                                  throws ExchangeNetworkException, TradingApiException {
+      throws ExchangeNetworkException, TradingApiException {
     if (!initializedMACAuthentication) {
       final String errorMsg = "MAC Message security layer has not been initialized.";
       LOG.error(errorMsg);
