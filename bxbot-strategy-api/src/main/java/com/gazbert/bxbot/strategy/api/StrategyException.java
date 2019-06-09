@@ -24,8 +24,8 @@
 package com.gazbert.bxbot.strategy.api;
 
 /**
- * Trading Strategy implementations should throw this exception if they want the Trading Engine to shutdown the bot
- * immediately.
+ * Trading Strategy implementations should throw this exception if they want the Trading Engine to
+ * shutdown the bot immediately.
  *
  * @author gazbert
  * @since 1.0
@@ -56,7 +56,7 @@ public final class StrategyException extends Exception {
    * Constructor builds exception with error message and original throwable.
    *
    * @param msg the error message.
-   * @param e   the original exception.
+   * @param e the original exception.
    */
   public StrategyException(String msg, Throwable e) {
     super(msg, e);

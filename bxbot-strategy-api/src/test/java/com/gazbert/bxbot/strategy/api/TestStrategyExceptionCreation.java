@@ -34,7 +34,8 @@ import org.junit.Test;
  */
 public class TestStrategyExceptionCreation {
 
-  private static final String ERROR_MSG = "Received unknown order id in current active orders API call";
+  private static final String ERROR_MSG =
+      "Received unknown order id in current active orders API call";
   private static final RuntimeException CAUSE = new RuntimeException("The cause of the exception");
 
   @Test
