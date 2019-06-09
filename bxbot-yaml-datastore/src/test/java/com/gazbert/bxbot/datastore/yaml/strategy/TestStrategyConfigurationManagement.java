@@ -65,7 +65,6 @@ public class TestStrategyConfigurationManagement {
 
   @Test
   public void testLoadingValidYamlConfigFileIsSuccessful() {
-
     final StrategiesType strategyConfig = ConfigurationManager.loadConfig(StrategiesType.class,
         VALID_YAML_CONFIG_FILENAME);
 
