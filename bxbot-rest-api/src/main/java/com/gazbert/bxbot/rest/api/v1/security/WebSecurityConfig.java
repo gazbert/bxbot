@@ -34,10 +34,10 @@ import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 
 /**
  * Web security config for protecting the REST API.
- * <p>
- * WARNING: This is not safe for Production yet!
  *
- * TODO: Replace this with JWT impl...
+ * <p>WARNING: This is not safe for Production yet!
+ *
+ * <p>TODO: Replace this with JWT impl...
  *
  * @author gazbert
  */
@@ -45,20 +45,26 @@ import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
+  /**
+   * Configures the Authentication manager.
+   */
   @Autowired
   public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
 
     // TODO - get from application.properties file and bcrypt em!
     auth.inMemoryAuthentication()
-        .withUser("unit-test-user").password("unit-test-password")
+        .withUser("unit-test-user")
+        .password("unit-test-password")
         .authorities("ROLE_USER");
   }
 
   @Override
   protected void configure(HttpSecurity http) throws Exception {
     http.authorizeRequests()
-        .antMatchers("/nothingWillBeUnsecured").permitAll()
-        .anyRequest().authenticated()
+        .antMatchers("/nothingWillBeUnsecured")
+        .permitAll()
+        .anyRequest()
+        .authenticated()
         .and()
         .httpBasic();
 
@@ -77,9 +83,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     return (NoOpPasswordEncoder) NoOpPasswordEncoder.getInstance();
   }
 
-  // TODO - https://docs.spring.io/spring-security/site/docs/5.0.5.RELEASE/reference/htmlsingle/#pe-bcpe
-//    @Bean
-//    public static BCryptPasswordEncoder bCryptPasswordEncoder() {
-//        return new BCryptPasswordEncoder(16);
-//    }
+  // TODO -
+  // https://docs.spring.io/spring-security/site/docs/5.0.5.RELEASE/reference/htmlsingle/#pe-bcpe
+  //    @Bean
+  //    public static BCryptPasswordEncoder bCryptPasswordEncoder() {
+  //        return new BCryptPasswordEncoder(16);
+  //    }
 }

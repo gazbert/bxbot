@@ -66,16 +66,13 @@ public class TestBotStatusController extends AbstractRuntimeControllerTest {
   private static final BigDecimal ENGINE_EMERGENCY_STOP_BALANCE = new BigDecimal("0.9232320");
   private static final int ENGINE_TRADE_CYCLE_INTERVAL = 60;
 
-  @MockBean
-  private EngineConfigService engineConfigService;
+  @MockBean private EngineConfigService engineConfigService;
 
   // Need this even though not used in the test directly because Spring loads it on startup...
-  @MockBean
-  private TradingEngine tradingEngine;
+  @MockBean private TradingEngine tradingEngine;
 
   // Need this even though not used in the test directly because Spring loads it on startup...
-  @MockBean
-  private EmailAlerter emailAlerter;
+  @MockBean private EmailAlerter emailAlerter;
 
   @Before
   public void setupBeforeEachTest() {
@@ -86,8 +83,12 @@ public class TestBotStatusController extends AbstractRuntimeControllerTest {
   public void testGetBotStatus() throws Exception {
     given(engineConfigService.getEngineConfig()).willReturn(someEngineConfig());
 
-    mockMvc.perform(get(STATUS_ENDPOINT_URI)
-        .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD)))
+    mockMvc
+        .perform(
+            get(STATUS_ENDPOINT_URI)
+                .header(
+                    "Authorization",
+                    buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD)))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.botId").value(BOT_ID))
@@ -99,23 +100,31 @@ public class TestBotStatusController extends AbstractRuntimeControllerTest {
 
   @Test
   public void testGetBotStatusWhenUnauthorizedWithBadCredentials() throws Exception {
-    mockMvc.perform(get(STATUS_ENDPOINT_URI)
-        .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, INVALID_USER_PASSWORD))
-        .accept(MediaType.APPLICATION_JSON))
+    mockMvc
+        .perform(
+            get(STATUS_ENDPOINT_URI)
+                .header(
+                    "Authorization",
+                    buildAuthorizationHeaderValue(VALID_USER_LOGINID, INVALID_USER_PASSWORD))
+                .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isUnauthorized());
   }
 
   @Test
   public void testGetBotStatusWhenUnauthorizedWithMissingCredentials() throws Exception {
-    mockMvc.perform(get(STATUS_ENDPOINT_URI)
-        .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, INVALID_USER_PASSWORD))
-        .accept(MediaType.APPLICATION_JSON))
+    mockMvc
+        .perform(
+            get(STATUS_ENDPOINT_URI)
+                .header(
+                    "Authorization",
+                    buildAuthorizationHeaderValue(VALID_USER_LOGINID, INVALID_USER_PASSWORD))
+                .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isUnauthorized());
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   // Private utils
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   private static EngineConfig someEngineConfig() {
     final EngineConfig engineConfig = new EngineConfig();

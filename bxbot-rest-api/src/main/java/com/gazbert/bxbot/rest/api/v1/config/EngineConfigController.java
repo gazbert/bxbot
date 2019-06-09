@@ -41,10 +41,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 /**
  * Controller for directing Engine config requests.
- * <p>
- * Engine config can only be fetched and updated - it cannot be deleted or created.
- * <p>
- * There is only 1 Trading Engine per bot.
+ *
+ * <p>Engine config can only be fetched and updated - it cannot be deleted or created.
+ *
+ * <p>There is only 1 Trading Engine per bot.
  *
  * @author gazbert
  * @since 1.0
@@ -83,11 +83,12 @@ public class EngineConfigController extends AbstractConfigController {
    *
    * @param user the authenticated user making the request.
    * @param config the Engine config to update.
-   * @return 200 'OK' HTTP status code and updated Engine config in the response body if update successful, some other
-   * HTTP status code otherwise.
+   * @return 200 'OK' HTTP status code and updated Engine config in the response body if update
+   *     successful, some other HTTP status code otherwise.
    */
   @RequestMapping(value = ENGINE_RESOURCE_PATH, method = RequestMethod.PUT)
-  public ResponseEntity<?> updateEngine(@AuthenticationPrincipal User user, @RequestBody EngineConfig config) {
+  public ResponseEntity<?> updateEngine(
+      @AuthenticationPrincipal User user, @RequestBody EngineConfig config) {
 
     LOG.info("PUT " + ENGINE_RESOURCE_PATH + " - updateEngine() - caller: " + user.getUsername());
     LOG.info("Request: " + config);
@@ -96,4 +97,3 @@ public class EngineConfigController extends AbstractConfigController {
     return buildResponseEntity(updatedConfig, HttpStatus.OK);
   }
 }
-

@@ -57,7 +57,8 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 @WebAppConfiguration
 public class TestEmailAlertsConfigController extends AbstractConfigControllerTest {
 
-  private static final String EMAIL_ALERTS_CONFIG_ENDPOINT_URI = CONFIG_ENDPOINT_BASE_URI + "/email-alerts";
+  private static final String EMAIL_ALERTS_CONFIG_ENDPOINT_URI =
+      CONFIG_ENDPOINT_BASE_URI + "/email-alerts";
 
   private static final boolean ENABLED = true;
   private static final String HOST = "smtp.host.deathstar.com";
@@ -67,12 +68,10 @@ public class TestEmailAlertsConfigController extends AbstractConfigControllerTes
   private static final String FROM_ADDRESS = "boba.fett@Mandalore.com";
   private static final String TO_ADDRESS = "darth.vader@deathstar.com";
 
-  @MockBean
-  EmailAlertsConfigService emailAlertsConfigService;
+  @MockBean EmailAlertsConfigService emailAlertsConfigService;
 
   // Need this even though not used in the test directly because Spring loads it on startup...
-  @MockBean
-  private TradingEngine tradingEngine;
+  @MockBean private TradingEngine tradingEngine;
 
   @Before
   public void setupBeforeEachTest() {
@@ -83,8 +82,12 @@ public class TestEmailAlertsConfigController extends AbstractConfigControllerTes
   public void testGetEmailAlertsConfig() throws Exception {
     given(emailAlertsConfigService.getEmailAlertsConfig()).willReturn(someEmailAlertsConfig());
 
-    mockMvc.perform(get(EMAIL_ALERTS_CONFIG_ENDPOINT_URI)
-        .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD)))
+    mockMvc
+        .perform(
+            get(EMAIL_ALERTS_CONFIG_ENDPOINT_URI)
+                .header(
+                    "Authorization",
+                    buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD)))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.smtpConfig.host").value(HOST))
@@ -100,30 +103,38 @@ public class TestEmailAlertsConfigController extends AbstractConfigControllerTes
 
   @Test
   public void testGetEmailAlertsConfigWhenUnauthorizedWithMissingCredentials() throws Exception {
-    mockMvc.perform(get(EMAIL_ALERTS_CONFIG_ENDPOINT_URI)
-        .accept(MediaType.APPLICATION_JSON))
+    mockMvc
+        .perform(get(EMAIL_ALERTS_CONFIG_ENDPOINT_URI).accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isUnauthorized());
   }
 
   @Test
   public void testGetEmailAlertsConfigWhenUnauthorizedWithInvalidCredentials() throws Exception {
-    mockMvc.perform(get(EMAIL_ALERTS_CONFIG_ENDPOINT_URI)
-        .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, INVALID_USER_PASSWORD))
-        .accept(MediaType.APPLICATION_JSON))
+    mockMvc
+        .perform(
+            get(EMAIL_ALERTS_CONFIG_ENDPOINT_URI)
+                .header(
+                    "Authorization",
+                    buildAuthorizationHeaderValue(VALID_USER_LOGINID, INVALID_USER_PASSWORD))
+                .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isUnauthorized());
   }
 
   @Test
   public void testUpdateEmailAlertsConfig() throws Exception {
-    given(emailAlertsConfigService.updateEmailAlertsConfig(any())).willReturn(someEmailAlertsConfig());
+    given(emailAlertsConfigService.updateEmailAlertsConfig(any()))
+        .willReturn(someEmailAlertsConfig());
 
-    mockMvc.perform(put(EMAIL_ALERTS_CONFIG_ENDPOINT_URI)
-        .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD))
-        .contentType(CONTENT_TYPE)
-        .content(jsonify(someEmailAlertsConfig())))
+    mockMvc
+        .perform(
+            put(EMAIL_ALERTS_CONFIG_ENDPOINT_URI)
+                .header(
+                    "Authorization",
+                    buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD))
+                .contentType(CONTENT_TYPE)
+                .content(jsonify(someEmailAlertsConfig())))
         .andDo(print())
         .andExpect(status().isOk())
-
         .andExpect(jsonPath("$.smtpConfig.host").value(HOST))
         .andExpect(jsonPath("$.smtpConfig.tlsPort").value(TLS_PORT))
         .andExpect(jsonPath("$.enabled").value(ENABLED))
@@ -137,27 +148,32 @@ public class TestEmailAlertsConfigController extends AbstractConfigControllerTes
 
   @Test
   public void testUpdateEmailAlertsConfigWhenUnauthorizedWithMissingCredentials() throws Exception {
-    mockMvc.perform(put(EMAIL_ALERTS_CONFIG_ENDPOINT_URI)
-        .accept(MediaType.APPLICATION_JSON))
+    mockMvc
+        .perform(put(EMAIL_ALERTS_CONFIG_ENDPOINT_URI).accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isUnauthorized());
   }
 
   @Test
   public void testUpdateEmailAlertsConfigWhenUnauthorizedWithInvalidCredentials() throws Exception {
-    mockMvc.perform(put(EMAIL_ALERTS_CONFIG_ENDPOINT_URI)
-        .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, INVALID_USER_PASSWORD))
-        .accept(MediaType.APPLICATION_JSON))
+    mockMvc
+        .perform(
+            put(EMAIL_ALERTS_CONFIG_ENDPOINT_URI)
+                .header(
+                    "Authorization",
+                    buildAuthorizationHeaderValue(VALID_USER_LOGINID, INVALID_USER_PASSWORD))
+                .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isUnauthorized());
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   // Private utils
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   private static EmailAlertsConfig someEmailAlertsConfig() {
     final EmailAlertsConfig emailAlertsConfig = new EmailAlertsConfig();
-    final SmtpConfig smtpConfig = new SmtpConfig(
-        HOST, TLS_PORT, ACCOUNT_USERNAME, ACCOUNT_PASSWORD, FROM_ADDRESS, TO_ADDRESS);
+    final SmtpConfig smtpConfig =
+        new SmtpConfig(
+            HOST, TLS_PORT, ACCOUNT_USERNAME, ACCOUNT_PASSWORD, FROM_ADDRESS, TO_ADDRESS);
     emailAlertsConfig.setSmtpConfig(smtpConfig);
     emailAlertsConfig.setEnabled(true);
     return emailAlertsConfig;

@@ -68,7 +68,11 @@ public class StrategyConfigController extends AbstractConfigController {
    */
   @RequestMapping(value = STRATEGIES_RESOURCE_PATH, method = RequestMethod.GET)
   public List<StrategyConfig> getAllStrategies(@AuthenticationPrincipal User user) {
-    LOG.info("GET " + STRATEGIES_RESOURCE_PATH + " - getAllStrategies() - caller: " + user.getUsername());
+    LOG.info(
+        "GET "
+            + STRATEGIES_RESOURCE_PATH
+            + " - getAllStrategies() - caller: "
+            + user.getUsername());
 
     final List<StrategyConfig> strategyConfigs = strategyConfigService.getAllStrategyConfig();
 
@@ -84,8 +88,15 @@ public class StrategyConfigController extends AbstractConfigController {
    * @return the Strategy configuration.
    */
   @RequestMapping(value = STRATEGIES_RESOURCE_PATH + "/{strategyId}", method = RequestMethod.GET)
-  public ResponseEntity<?> getStrategy(@AuthenticationPrincipal User user, @PathVariable String strategyId) {
-    LOG.info("GET " + STRATEGIES_RESOURCE_PATH + "/" + strategyId + " - getStrategy() - caller: " + user.getUsername());
+  public ResponseEntity<?> getStrategy(
+      @AuthenticationPrincipal User user, @PathVariable String strategyId) {
+    LOG.info(
+        "GET "
+            + STRATEGIES_RESOURCE_PATH
+            + "/"
+            + strategyId
+            + " - getStrategy() - caller: "
+            + user.getUsername());
 
     final StrategyConfig strategyConfig = strategyConfigService.getStrategyConfig(strategyId);
     return strategyConfig == null
@@ -99,15 +110,22 @@ public class StrategyConfigController extends AbstractConfigController {
    * @param user the authenticated user.
    * @param strategyId id of the Strategy config to update.
    * @param config the updated Strategy config.
-   * @return 200 'OK' HTTP status code and updated Strategy config in the body if update successful, 404 'Not Found'
-   * HTTP status code if Strategy config not found.
+   * @return 200 'OK' HTTP status code and updated Strategy config in the body if update successful,
+   *     404 'Not Found' HTTP status code if Strategy config not found.
    */
   @RequestMapping(value = STRATEGIES_RESOURCE_PATH + "/{strategyId}", method = RequestMethod.PUT)
-  public ResponseEntity<?> updateStrategy(@AuthenticationPrincipal User user, @PathVariable String strategyId,
+  public ResponseEntity<?> updateStrategy(
+      @AuthenticationPrincipal User user,
+      @PathVariable String strategyId,
       @RequestBody StrategyConfig config) {
 
     LOG.info(
-        "PUT " + STRATEGIES_RESOURCE_PATH + "/" + strategyId + " - updateStrategy() - caller: " + user.getUsername());
+        "PUT "
+            + STRATEGIES_RESOURCE_PATH
+            + "/"
+            + strategyId
+            + " - updateStrategy() - caller: "
+            + user.getUsername());
     LOG.info("Request: " + config);
 
     if (config.getId() == null || !strategyId.equals(config.getId())) {
@@ -125,13 +143,15 @@ public class StrategyConfigController extends AbstractConfigController {
    *
    * @param user the authenticated user.
    * @param config the new Strategy config.
-   * @return 201 'Created' HTTP status code and created Strategy config in response body if create successful, some
-   * other status code otherwise.
+   * @return 201 'Created' HTTP status code and created Strategy config in response body if create
+   *     successful, some other status code otherwise.
    */
   @RequestMapping(value = STRATEGIES_RESOURCE_PATH, method = RequestMethod.POST)
-  public ResponseEntity<?> createStrategy(@AuthenticationPrincipal User user, @RequestBody StrategyConfig config) {
+  public ResponseEntity<?> createStrategy(
+      @AuthenticationPrincipal User user, @RequestBody StrategyConfig config) {
 
-    LOG.info("POST " + STRATEGIES_RESOURCE_PATH + " - createStrategy() - caller: " + user.getUsername());
+    LOG.info(
+        "POST " + STRATEGIES_RESOURCE_PATH + " - createStrategy() - caller: " + user.getUsername());
     LOG.info("Request: " + config);
 
     final StrategyConfig createdConfig = strategyConfigService.createStrategyConfig(config);
@@ -145,14 +165,20 @@ public class StrategyConfigController extends AbstractConfigController {
    *
    * @param user the authenticated user.
    * @param strategyId the id of the Strategy configuration to delete.
-   * @return 204 'No Content' HTTP status code if delete successful, 404 'Not Found' HTTP status code if Strategy config
-   * not found.
+   * @return 204 'No Content' HTTP status code if delete successful, 404 'Not Found' HTTP status
+   *     code if Strategy config not found.
    */
   @RequestMapping(value = STRATEGIES_RESOURCE_PATH + "/{strategyId}", method = RequestMethod.DELETE)
-  public ResponseEntity<?> deleteStrategy(@AuthenticationPrincipal User user, @PathVariable String strategyId) {
+  public ResponseEntity<?> deleteStrategy(
+      @AuthenticationPrincipal User user, @PathVariable String strategyId) {
 
-    LOG.info("DELETE " + STRATEGIES_RESOURCE_PATH + "/" + strategyId + " - deleteStrategy() - caller: " + user
-        .getUsername());
+    LOG.info(
+        "DELETE "
+            + STRATEGIES_RESOURCE_PATH
+            + "/"
+            + strategyId
+            + " - deleteStrategy() - caller: "
+            + user.getUsername());
 
     final StrategyConfig deletedConfig = strategyConfigService.deleteStrategyConfig(strategyId);
     return deletedConfig == null
@@ -160,4 +186,3 @@ public class StrategyConfigController extends AbstractConfigController {
         : new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }
 }
-

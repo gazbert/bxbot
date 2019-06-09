@@ -84,9 +84,16 @@ public class MarketConfigController extends AbstractConfigController {
    * @return the Market configuration.
    */
   @RequestMapping(value = MARKETS_RESOURCE_PATH + "/{marketId}", method = RequestMethod.GET)
-  public ResponseEntity<?> getMarket(@AuthenticationPrincipal User user, @PathVariable String marketId) {
+  public ResponseEntity<?> getMarket(
+      @AuthenticationPrincipal User user, @PathVariable String marketId) {
 
-    LOG.info("GET " + MARKETS_RESOURCE_PATH + "/" + marketId + " - getMarket() - caller: " + user.getUsername());
+    LOG.info(
+        "GET "
+            + MARKETS_RESOURCE_PATH
+            + "/"
+            + marketId
+            + " - getMarket() - caller: "
+            + user.getUsername());
 
     final MarketConfig marketConfig = marketConfigService.getMarketConfig(marketId);
     return marketConfig == null
@@ -100,13 +107,21 @@ public class MarketConfigController extends AbstractConfigController {
    * @param user the authenticated user.
    * @param marketId id of the Market config to update.
    * @param config the updated Market config.
-   * @return 204 'No Content' HTTP status code if update successful, 404 'Not Found' HTTP status code if Market config
-   * not found.
+   * @return 204 'No Content' HTTP status code if update successful, 404 'Not Found' HTTP status
+   *     code if Market config not found.
    */
   @RequestMapping(value = MARKETS_RESOURCE_PATH + "/{marketId}", method = RequestMethod.PUT)
-  public ResponseEntity<?> updateMarket(@AuthenticationPrincipal User user, @PathVariable String marketId,
+  public ResponseEntity<?> updateMarket(
+      @AuthenticationPrincipal User user,
+      @PathVariable String marketId,
       @RequestBody MarketConfig config) {
-    LOG.info("PUT " + MARKETS_RESOURCE_PATH + "/" + marketId + " - updateMarket() - caller: " + user.getUsername());
+    LOG.info(
+        "PUT "
+            + MARKETS_RESOURCE_PATH
+            + "/"
+            + marketId
+            + " - updateMarket() - caller: "
+            + user.getUsername());
     LOG.info("Request: " + config);
 
     if (config.getId() == null || !marketId.equals(config.getId())) {
@@ -124,11 +139,12 @@ public class MarketConfigController extends AbstractConfigController {
    *
    * @param user the authenticated user.
    * @param config the new Market config.
-   * @return 201 'Created' HTTP status code and created Market config in response body if create successful, some other
-   * HTTP status code otherwise.
+   * @return 201 'Created' HTTP status code and created Market config in response body if create
+   *     successful, some other HTTP status code otherwise.
    */
   @RequestMapping(value = MARKETS_RESOURCE_PATH, method = RequestMethod.POST)
-  public ResponseEntity<?> createMarket(@AuthenticationPrincipal User user, @RequestBody MarketConfig config) {
+  public ResponseEntity<?> createMarket(
+      @AuthenticationPrincipal User user, @RequestBody MarketConfig config) {
 
     LOG.info("POST " + MARKETS_RESOURCE_PATH + " - createMarket() - caller: " + user.getUsername());
     LOG.info("Request: " + config);
@@ -144,13 +160,20 @@ public class MarketConfigController extends AbstractConfigController {
    *
    * @param user the authenticated user.
    * @param marketId the id of the Market configuration to delete.
-   * @return 204 'No Content' HTTP status code if delete successful, 404 'Not Found' HTTP status code if Market config
-   * not found.
+   * @return 204 'No Content' HTTP status code if delete successful, 404 'Not Found' HTTP status
+   *     code if Market config not found.
    */
   @RequestMapping(value = MARKETS_RESOURCE_PATH + "/{marketId}", method = RequestMethod.DELETE)
-  public ResponseEntity<?> deleteMarket(@AuthenticationPrincipal User user, @PathVariable String marketId) {
+  public ResponseEntity<?> deleteMarket(
+      @AuthenticationPrincipal User user, @PathVariable String marketId) {
 
-    LOG.info("DELETE " + MARKETS_RESOURCE_PATH + "/" + marketId + " - deleteMarket() - caller: " + user.getUsername());
+    LOG.info(
+        "DELETE "
+            + MARKETS_RESOURCE_PATH
+            + "/"
+            + marketId
+            + " - deleteMarket() - caller: "
+            + user.getUsername());
 
     final MarketConfig deletedConfig = marketConfigService.deleteMarketConfig(marketId);
     return deletedConfig == null
@@ -158,4 +181,3 @@ public class MarketConfigController extends AbstractConfigController {
         : new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }
 }
-

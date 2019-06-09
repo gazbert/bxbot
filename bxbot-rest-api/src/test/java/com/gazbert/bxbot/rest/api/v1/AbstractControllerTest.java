@@ -55,17 +55,18 @@ public abstract class AbstractControllerTest {
   protected static final String VALID_USER_PASSWORD = "unit-test-password";
 
   // We'll always be sending/receiving JSON content in REST API.
-  protected static final MediaType CONTENT_TYPE = new MediaType(MediaType.APPLICATION_JSON.getType(),
-      MediaType.APPLICATION_JSON.getSubtype(), Charset.forName("utf8"));
+  protected static final MediaType CONTENT_TYPE =
+      new MediaType(
+          MediaType.APPLICATION_JSON.getType(),
+          MediaType.APPLICATION_JSON.getSubtype(),
+          Charset.forName("utf8"));
 
   // Used to convert Java objects into JSON - roll on Java 9... ;-)
   private HttpMessageConverter mappingJackson2HttpMessageConverter;
 
-  @Autowired
-  protected WebApplicationContext ctx;
+  @Autowired protected WebApplicationContext ctx;
 
-  @Autowired
-  protected FilterChainProxy springSecurityFilterChain;
+  @Autowired protected FilterChainProxy springSecurityFilterChain;
 
   protected MockMvc mockMvc;
 
@@ -77,22 +78,25 @@ public abstract class AbstractControllerTest {
             .findAny()
             .orElse(null);
 
-    Assert.assertNotNull("The JSON message converter must not be null",
-        mappingJackson2HttpMessageConverter);
+    Assert.assertNotNull(
+        "The JSON message converter must not be null", mappingJackson2HttpMessageConverter);
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   // Shared utils
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   protected String buildAuthorizationHeaderValue(String username, String password) {
-    return "Basic " + new String(Base64Utils.encode(
-        (username + ":" + password).getBytes(StandardCharsets.UTF_8)), Charset.forName("UTF-8"));
+    return "Basic "
+        + new String(
+            Base64Utils.encode((username + ":" + password).getBytes(StandardCharsets.UTF_8)),
+            Charset.forName("UTF-8"));
   }
 
   protected String jsonify(Object objectToJsonify) throws IOException {
     final MockHttpOutputMessage mockHttpOutputMessage = new MockHttpOutputMessage();
-    mappingJackson2HttpMessageConverter.write(objectToJsonify, MediaType.APPLICATION_JSON, mockHttpOutputMessage);
+    mappingJackson2HttpMessageConverter.write(
+        objectToJsonify, MediaType.APPLICATION_JSON, mockHttpOutputMessage);
     return mockHttpOutputMessage.getBodyAsString();
   }
 }

@@ -72,30 +72,28 @@ public class TestExchangeConfigController extends AbstractConfigControllerTest {
   private static final int HTTP_STATUS_502 = 502;
   private static final int HTTP_STATUS_503 = 503;
   private static final int HTTP_STATUS_504 = 504;
-  private static final List<Integer> NON_FATAL_ERROR_CODES = Arrays
-      .asList(HTTP_STATUS_502, HTTP_STATUS_503, HTTP_STATUS_504);
+  private static final List<Integer> NON_FATAL_ERROR_CODES =
+      Arrays.asList(HTTP_STATUS_502, HTTP_STATUS_503, HTTP_STATUS_504);
 
   private static final String ERROR_MESSAGE_REFUSED = "Connection refused";
   private static final String ERROR_MESSAGE_RESET = "Connection reset";
-  private static final String ERROR_MESSAGE_CLOSED = "Remote host closed connection during handshake";
-  private static final List<String> NON_FATAL_ERROR_MESSAGES = Arrays.asList(
-      ERROR_MESSAGE_REFUSED, ERROR_MESSAGE_RESET, ERROR_MESSAGE_CLOSED);
+  private static final String ERROR_MESSAGE_CLOSED =
+      "Remote host closed connection during handshake";
+  private static final List<String> NON_FATAL_ERROR_MESSAGES =
+      Arrays.asList(ERROR_MESSAGE_REFUSED, ERROR_MESSAGE_RESET, ERROR_MESSAGE_CLOSED);
 
   private static final String BUY_FEE_CONFIG_ITEM_KEY = "buy-fee";
   private static final String BUY_FEE_CONFIG_ITEM_VALUE = "0.20";
   private static final String SELL_FEE_CONFIG_ITEM_KEY = "sell-fee";
   private static final String SELL_FEE_CONFIG_ITEM_VALUE = "0.25";
 
-  @MockBean
-  ExchangeConfigService exchangeConfigService;
+  @MockBean ExchangeConfigService exchangeConfigService;
 
   // Need this even though not used in the test directly because Spring loads it on startup...
-  @MockBean
-  private TradingEngine tradingEngine;
+  @MockBean private TradingEngine tradingEngine;
 
   // Need this even though not used in the test directly because Spring loads it on startup...
-  @MockBean
-  private EmailAlerter emailAlerter;
+  @MockBean private EmailAlerter emailAlerter;
 
   @Before
   public void setupBeforeEachTest() {
@@ -106,25 +104,27 @@ public class TestExchangeConfigController extends AbstractConfigControllerTest {
   public void testGetExchangeConfig() throws Exception {
     given(exchangeConfigService.getExchangeConfig()).willReturn(someExchangeConfig());
 
-    mockMvc.perform(get(EXCHANGE_CONFIG_ENDPOINT_URI)
-        .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD)))
+    mockMvc
+        .perform(
+            get(EXCHANGE_CONFIG_ENDPOINT_URI)
+                .header(
+                    "Authorization",
+                    buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD)))
         .andDo(print())
         .andExpect(status().isOk())
-
         .andExpect(jsonPath("$.name").value(EXCHANGE_NAME))
         .andExpect(jsonPath("$.adapter").value(EXCHANGE_ADAPTER))
 
         // REST API does not expose AuthenticationConfig by design.
         .andExpect(jsonPath("$.authenticationConfig").doesNotExist())
-
         .andExpect(jsonPath("$.networkConfig.connectionTimeout").value(CONNECTION_TIMEOUT))
         .andExpect(jsonPath("$.networkConfig.nonFatalErrorCodes[0]").value(HTTP_STATUS_502))
         .andExpect(jsonPath("$.networkConfig.nonFatalErrorCodes[1]").value(HTTP_STATUS_503))
         .andExpect(jsonPath("$.networkConfig.nonFatalErrorCodes[2]").value(HTTP_STATUS_504))
-        .andExpect(jsonPath("$.networkConfig.nonFatalErrorMessages[0]").value(ERROR_MESSAGE_REFUSED))
+        .andExpect(
+            jsonPath("$.networkConfig.nonFatalErrorMessages[0]").value(ERROR_MESSAGE_REFUSED))
         .andExpect(jsonPath("$.networkConfig.nonFatalErrorMessages[1]").value(ERROR_MESSAGE_RESET))
         .andExpect(jsonPath("$.networkConfig.nonFatalErrorMessages[2]").value(ERROR_MESSAGE_CLOSED))
-
         .andExpect(jsonPath("$.otherConfig.buy-fee").value(BUY_FEE_CONFIG_ITEM_VALUE))
         .andExpect(jsonPath("$.otherConfig.sell-fee").value(SELL_FEE_CONFIG_ITEM_VALUE));
 
@@ -133,16 +133,20 @@ public class TestExchangeConfigController extends AbstractConfigControllerTest {
 
   @Test
   public void testGetExchangeConfigWhenUnauthorizedWithMissingCredentials() throws Exception {
-    mockMvc.perform(get(EXCHANGE_CONFIG_ENDPOINT_URI)
-        .accept(MediaType.APPLICATION_JSON))
+    mockMvc
+        .perform(get(EXCHANGE_CONFIG_ENDPOINT_URI).accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isUnauthorized());
   }
 
   @Test
   public void testGetExchangeConfigWhenUnauthorizedWithInvalidCredentials() throws Exception {
-    mockMvc.perform(get(EXCHANGE_CONFIG_ENDPOINT_URI)
-        .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, INVALID_USER_PASSWORD))
-        .accept(MediaType.APPLICATION_JSON))
+    mockMvc
+        .perform(
+            get(EXCHANGE_CONFIG_ENDPOINT_URI)
+                .header(
+                    "Authorization",
+                    buildAuthorizationHeaderValue(VALID_USER_LOGINID, INVALID_USER_PASSWORD))
+                .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isUnauthorized());
   }
 
@@ -151,26 +155,28 @@ public class TestExchangeConfigController extends AbstractConfigControllerTest {
     given(exchangeConfigService.getExchangeConfig()).willReturn(someExchangeConfig());
     given(exchangeConfigService.updateExchangeConfig(any())).willReturn(someExchangeConfig());
 
-    mockMvc.perform(put(EXCHANGE_CONFIG_ENDPOINT_URI)
-        .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD))
-        .contentType(CONTENT_TYPE)
-        .content(jsonify(someExchangeConfig())))
+    mockMvc
+        .perform(
+            put(EXCHANGE_CONFIG_ENDPOINT_URI)
+                .header(
+                    "Authorization",
+                    buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD))
+                .contentType(CONTENT_TYPE)
+                .content(jsonify(someExchangeConfig())))
         .andExpect(status().isOk())
-
         .andExpect(jsonPath("$.name").value(EXCHANGE_NAME))
         .andExpect(jsonPath("$.adapter").value(EXCHANGE_ADAPTER))
 
         // REST API does not expose AuthenticationConfig by design.
         .andExpect(jsonPath("$.authenticationConfig").doesNotExist())
-
         .andExpect(jsonPath("$.networkConfig.connectionTimeout").value(CONNECTION_TIMEOUT))
         .andExpect(jsonPath("$.networkConfig.nonFatalErrorCodes[0]").value(HTTP_STATUS_502))
         .andExpect(jsonPath("$.networkConfig.nonFatalErrorCodes[1]").value(HTTP_STATUS_503))
         .andExpect(jsonPath("$.networkConfig.nonFatalErrorCodes[2]").value(HTTP_STATUS_504))
-        .andExpect(jsonPath("$.networkConfig.nonFatalErrorMessages[0]").value(ERROR_MESSAGE_REFUSED))
+        .andExpect(
+            jsonPath("$.networkConfig.nonFatalErrorMessages[0]").value(ERROR_MESSAGE_REFUSED))
         .andExpect(jsonPath("$.networkConfig.nonFatalErrorMessages[1]").value(ERROR_MESSAGE_RESET))
         .andExpect(jsonPath("$.networkConfig.nonFatalErrorMessages[2]").value(ERROR_MESSAGE_CLOSED))
-
         .andExpect(jsonPath("$.otherConfig.buy-fee").value(BUY_FEE_CONFIG_ITEM_VALUE))
         .andExpect(jsonPath("$.otherConfig.sell-fee").value(SELL_FEE_CONFIG_ITEM_VALUE));
 
@@ -180,22 +186,26 @@ public class TestExchangeConfigController extends AbstractConfigControllerTest {
 
   @Test
   public void testUpdateExchangeConfigWhenUnauthorizedWithMissingCredentials() throws Exception {
-    mockMvc.perform(put(EXCHANGE_CONFIG_ENDPOINT_URI)
-        .accept(MediaType.APPLICATION_JSON))
+    mockMvc
+        .perform(put(EXCHANGE_CONFIG_ENDPOINT_URI).accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isUnauthorized());
   }
 
   @Test
   public void testUpdateExchangeConfigWhenUnauthorizedWithInvalidCredentials() throws Exception {
-    mockMvc.perform(put(EXCHANGE_CONFIG_ENDPOINT_URI)
-        .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, INVALID_USER_PASSWORD))
-        .accept(MediaType.APPLICATION_JSON))
+    mockMvc
+        .perform(
+            put(EXCHANGE_CONFIG_ENDPOINT_URI)
+                .header(
+                    "Authorization",
+                    buildAuthorizationHeaderValue(VALID_USER_LOGINID, INVALID_USER_PASSWORD))
+                .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isUnauthorized());
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   // Private utils
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   private static ExchangeConfig someExchangeConfig() {
     final NetworkConfig networkConfig = new NetworkConfig();

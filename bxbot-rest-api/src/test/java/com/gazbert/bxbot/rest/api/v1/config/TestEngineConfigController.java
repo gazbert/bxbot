@@ -66,16 +66,13 @@ public class TestEngineConfigController extends AbstractConfigControllerTest {
   private static final BigDecimal ENGINE_EMERGENCY_STOP_BALANCE = new BigDecimal("0.9232320");
   private static final int ENGINE_TRADE_CYCLE_INTERVAL = 60;
 
-  @MockBean
-  private EngineConfigService engineConfigService;
+  @MockBean private EngineConfigService engineConfigService;
 
   // Need this even though not used in the test directly because Spring loads it on startup...
-  @MockBean
-  private TradingEngine tradingEngine;
+  @MockBean private TradingEngine tradingEngine;
 
   // Need this even though not used in the test directly because Spring loads it on startup...
-  @MockBean
-  private EmailAlerter emailAlerter;
+  @MockBean private EmailAlerter emailAlerter;
 
   @Before
   public void setupBeforeEachTest() {
@@ -86,14 +83,19 @@ public class TestEngineConfigController extends AbstractConfigControllerTest {
   public void testGetEngineConfig() throws Exception {
     given(engineConfigService.getEngineConfig()).willReturn(someEngineConfig());
 
-    mockMvc.perform(get(ENGINE_CONFIG_ENDPOINT_URI)
-        .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD)))
+    mockMvc
+        .perform(
+            get(ENGINE_CONFIG_ENDPOINT_URI)
+                .header(
+                    "Authorization",
+                    buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD)))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.botId").value(BOT_ID))
         .andExpect(jsonPath("$.botName").value(BOT_NAME))
         .andExpect(jsonPath("$.emergencyStopCurrency").value(ENGINE_EMERGENCY_STOP_CURRENCY))
-        .andExpect(jsonPath("$.emergencyStopBalance").value(ENGINE_EMERGENCY_STOP_BALANCE.doubleValue()))
+        .andExpect(
+            jsonPath("$.emergencyStopBalance").value(ENGINE_EMERGENCY_STOP_BALANCE.doubleValue()))
         .andExpect(jsonPath("$.tradeCycleInterval").value(ENGINE_TRADE_CYCLE_INTERVAL));
 
     verify(engineConfigService, times(1)).getEngineConfig();
@@ -101,17 +103,25 @@ public class TestEngineConfigController extends AbstractConfigControllerTest {
 
   @Test
   public void testGetEngineConfigWhenUnauthorizedWithBadCredentials() throws Exception {
-    mockMvc.perform(get(ENGINE_CONFIG_ENDPOINT_URI)
-        .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, INVALID_USER_PASSWORD))
-        .accept(MediaType.APPLICATION_JSON))
+    mockMvc
+        .perform(
+            get(ENGINE_CONFIG_ENDPOINT_URI)
+                .header(
+                    "Authorization",
+                    buildAuthorizationHeaderValue(VALID_USER_LOGINID, INVALID_USER_PASSWORD))
+                .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isUnauthorized());
   }
 
   @Test
   public void testGetEngineConfigWhenUnauthorizedWithMissingCredentials() throws Exception {
-    mockMvc.perform(get(ENGINE_CONFIG_ENDPOINT_URI)
-        .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, INVALID_USER_PASSWORD))
-        .accept(MediaType.APPLICATION_JSON))
+    mockMvc
+        .perform(
+            get(ENGINE_CONFIG_ENDPOINT_URI)
+                .header(
+                    "Authorization",
+                    buildAuthorizationHeaderValue(VALID_USER_LOGINID, INVALID_USER_PASSWORD))
+                .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isUnauthorized());
   }
 
@@ -119,16 +129,21 @@ public class TestEngineConfigController extends AbstractConfigControllerTest {
   public void testUpdateEngineConfig() throws Exception {
     given(engineConfigService.updateEngineConfig(any())).willReturn(someEngineConfig());
 
-    mockMvc.perform(put(ENGINE_CONFIG_ENDPOINT_URI)
-        .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD))
-        .contentType(CONTENT_TYPE)
-        .content(jsonify(someEngineConfig())))
+    mockMvc
+        .perform(
+            put(ENGINE_CONFIG_ENDPOINT_URI)
+                .header(
+                    "Authorization",
+                    buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD))
+                .contentType(CONTENT_TYPE)
+                .content(jsonify(someEngineConfig())))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.botId").value(BOT_ID))
         .andExpect(jsonPath("$.botName").value(BOT_NAME))
         .andExpect(jsonPath("$.emergencyStopCurrency").value(ENGINE_EMERGENCY_STOP_CURRENCY))
-        .andExpect(jsonPath("$.emergencyStopBalance").value(ENGINE_EMERGENCY_STOP_BALANCE.doubleValue()))
+        .andExpect(
+            jsonPath("$.emergencyStopBalance").value(ENGINE_EMERGENCY_STOP_BALANCE.doubleValue()))
         .andExpect(jsonPath("$.tradeCycleInterval").value(ENGINE_TRADE_CYCLE_INTERVAL));
 
     verify(engineConfigService, times(1)).updateEngineConfig(any());
@@ -136,22 +151,26 @@ public class TestEngineConfigController extends AbstractConfigControllerTest {
 
   @Test
   public void testUpdateEngineConfigWhenUnauthorizedWithMissingCredentials() throws Exception {
-    mockMvc.perform(put(ENGINE_CONFIG_ENDPOINT_URI)
-        .accept(MediaType.APPLICATION_JSON))
+    mockMvc
+        .perform(put(ENGINE_CONFIG_ENDPOINT_URI).accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isUnauthorized());
   }
 
   @Test
   public void testUpdateEngineConfigWhenUnauthorizedWithInvalidCredentials() throws Exception {
-    mockMvc.perform(put(ENGINE_CONFIG_ENDPOINT_URI)
-        .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, INVALID_USER_PASSWORD))
-        .accept(MediaType.APPLICATION_JSON))
+    mockMvc
+        .perform(
+            put(ENGINE_CONFIG_ENDPOINT_URI)
+                .header(
+                    "Authorization",
+                    buildAuthorizationHeaderValue(VALID_USER_LOGINID, INVALID_USER_PASSWORD))
+                .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isUnauthorized());
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   // Private utils
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   private static EngineConfig someEngineConfig() {
     final EngineConfig engineConfig = new EngineConfig();

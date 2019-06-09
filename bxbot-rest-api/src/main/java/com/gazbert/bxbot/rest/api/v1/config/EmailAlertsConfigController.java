@@ -40,12 +40,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * <p>
  * Controller for directing Email Alerts config requests.
- * <p>
- * Email Alerts config can only be fetched and updated - it cannot be deleted or created.
- * <p>
- * There is only 1 Email Alerter per bot.
+ *
+ * <p>Email Alerts config can only be fetched and updated - it cannot be deleted or created.
+ *
+ * <p>There is only 1 Email Alerter per bot.
  *
  * @author gazbert
  * @since 1.0
@@ -72,7 +71,11 @@ public class EmailAlertsConfigController extends AbstractConfigController {
   @RequestMapping(value = EMAIL_ALERTS_RESOURCE_PATH, method = RequestMethod.GET)
   public EmailAlertsConfig getEmailAlerts(@AuthenticationPrincipal User user) {
 
-    LOG.info("GET " + EMAIL_ALERTS_RESOURCE_PATH + " - getEmailAlerts() - caller: " + user.getUsername());
+    LOG.info(
+        "GET "
+            + EMAIL_ALERTS_RESOURCE_PATH
+            + " - getEmailAlerts() - caller: "
+            + user.getUsername());
 
     final EmailAlertsConfig emailAlertsConfig = emailAlertsConfigService.getEmailAlertsConfig();
     LOG.info("Response: " + emailAlertsConfig);
@@ -84,18 +87,22 @@ public class EmailAlertsConfigController extends AbstractConfigController {
    *
    * @param user the authenticated user making the request.
    * @param config the Email Alerts config to update.
-   * @return 200 'OK' HTTP status code and Email Alerts config in response body if update successful, some other HTTP
-   * status code otherwise.
+   * @return 200 'OK' HTTP status code and Email Alerts config in response body if update
+   *     successful, some other HTTP status code otherwise.
    */
   @RequestMapping(value = EMAIL_ALERTS_RESOURCE_PATH, method = RequestMethod.PUT)
-  public ResponseEntity<?> updateEmailAlerts(@AuthenticationPrincipal User user,
-      @RequestBody EmailAlertsConfig config) {
+  public ResponseEntity<?> updateEmailAlerts(
+      @AuthenticationPrincipal User user, @RequestBody EmailAlertsConfig config) {
 
-    LOG.info("PUT " + EMAIL_ALERTS_RESOURCE_PATH + " - updateEmailAlerts() - caller: " + user.getUsername());
+    LOG.info(
+        "PUT "
+            + EMAIL_ALERTS_RESOURCE_PATH
+            + " - updateEmailAlerts() - caller: "
+            + user.getUsername());
     LOG.info("Request: " + config);
 
-    final EmailAlertsConfig updatedConfig = emailAlertsConfigService.updateEmailAlertsConfig(config);
+    final EmailAlertsConfig updatedConfig =
+        emailAlertsConfigService.updateEmailAlertsConfig(config);
     return buildResponseEntity(updatedConfig, HttpStatus.OK);
   }
 }
-
