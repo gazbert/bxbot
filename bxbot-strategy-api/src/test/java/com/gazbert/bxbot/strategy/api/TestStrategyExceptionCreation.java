@@ -23,9 +23,9 @@
 
 package com.gazbert.bxbot.strategy.api;
 
-import org.junit.Test;
-
 import static org.junit.Assert.assertEquals;
+
+import org.junit.Test;
 
 /**
  * Tests Strategy Exception is created as expected.
