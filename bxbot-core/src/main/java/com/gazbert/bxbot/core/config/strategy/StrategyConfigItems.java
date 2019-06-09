@@ -25,7 +25,6 @@ package com.gazbert.bxbot.core.config.strategy;
 
 import com.gazbert.bxbot.strategy.api.StrategyConfig;
 import com.google.common.base.MoreObjects;
-
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -66,7 +65,7 @@ public final class StrategyConfigItems implements StrategyConfig {
   @Override
   public String toString() {
     return MoreObjects.toStringHelper(this)
-               .add("items", items)
-               .toString();
+        .add("items", items)
+        .toString();
   }
 }

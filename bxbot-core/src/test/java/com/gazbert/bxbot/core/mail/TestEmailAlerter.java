@@ -23,9 +23,14 @@
 
 package com.gazbert.bxbot.core.mail;
 
+import static junit.framework.TestCase.assertNotNull;
+import static org.easymock.EasyMock.expect;
+
 import com.gazbert.bxbot.domain.emailalerts.EmailAlertsConfig;
 import com.gazbert.bxbot.domain.emailalerts.SmtpConfig;
 import com.gazbert.bxbot.services.EmailAlertsConfigService;
+import javax.mail.Message;
+import javax.mail.Transport;
 import org.easymock.EasyMock;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,12 +39,6 @@ import org.powermock.api.easymock.PowerMock;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-
-import javax.mail.Message;
-import javax.mail.Transport;
-
-import static junit.framework.TestCase.assertNotNull;
-import static org.easymock.EasyMock.expect;
 
 /**
  * Test the Email Alerter behaves as expected.

@@ -27,8 +27,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * Factory for creating user components defined in the bot configuration files. These are currently the
- * Exchange Adapters and Trading Strategies.
+ * Factory for creating user components defined in the bot configuration files. These are currently the Exchange
+ * Adapters and Trading Strategies.
  *
  * @author gazbert
  */

@@ -23,9 +23,9 @@
 
 package com.gazbert.bxbot.core.config.strategy;
 
-import org.junit.Test;
-
 import static org.junit.Assert.assertEquals;
+
+import org.junit.Test;
 
 /**
  * Test the StrategyConfigItems behaves as expected.

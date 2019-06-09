@@ -80,8 +80,12 @@ public final class MarketImpl implements Market {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
     MarketImpl market = (MarketImpl) o;
     return Objects.equal(id, market.id);
   }
@@ -94,10 +98,10 @@ public final class MarketImpl implements Market {
   @Override
   public String toString() {
     return MoreObjects.toStringHelper(this)
-               .add("name", name)
-               .add("id", id)
-               .add("baseCurrency", baseCurrency)
-               .add("counterCurrency", counterCurrency)
-               .toString();
+        .add("name", name)
+        .add("id", id)
+        .add("baseCurrency", baseCurrency)
+        .add("counterCurrency", counterCurrency)
+        .toString();
   }
 }

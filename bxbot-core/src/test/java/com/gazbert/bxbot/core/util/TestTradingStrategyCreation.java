@@ -23,11 +23,11 @@
 
 package com.gazbert.bxbot.core.util;
 
-import com.gazbert.bxbot.strategy.api.TradingStrategy;
-import org.junit.Test;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+
+import com.gazbert.bxbot.strategy.api.TradingStrategy;
+import org.junit.Test;
 
 /**
  * Tests Trading Strategies are created as expected.

@@ -47,13 +47,6 @@ import com.gazbert.bxbot.trading.api.BalanceInfo;
 import com.gazbert.bxbot.trading.api.ExchangeNetworkException;
 import com.gazbert.bxbot.trading.api.Market;
 import com.gazbert.bxbot.trading.api.TradingApiException;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.stereotype.Component;
-
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.math.BigDecimal;
@@ -65,20 +58,24 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.stereotype.Component;
 
 /**
  * The main Trading Engine.
  * <p>
- * The engine has been coded to fail *hard and fast* whenever something unexpected happens. If Email
- * Alerts are enabled, a message will be sent with details of the problem before the bot is shutdown.
+ * The engine has been coded to fail *hard and fast* whenever something unexpected happens. If Email Alerts are enabled,
+ * a message will be sent with details of the problem before the bot is shutdown.
  * <p>
  * The only time the bot does not fail hard and fast is for network issues connecting to the exchange - it logs the
  * error and retries at next trade cycle.
  * <p>
- * To keep things simple:
- * - The engine is single threaded.
- * - The engine only supports trading on 1 exchange per instance of the bot, i.e. 1 Exchange Adapter per process.
- * - The engine only supports 1 Trading Strategy per Market.
+ * To keep things simple: - The engine is single threaded. - The engine only supports trading on 1 exchange per instance
+ * of the bot, i.e. 1 Exchange Adapter per process. - The engine only supports 1 Trading Strategy per Market.
  *
  * @author gazbert
  */
@@ -123,8 +120,8 @@ public class TradingEngine {
 
   @Autowired
   public TradingEngine(ExchangeConfigService exchangeConfigService, EngineConfigService engineConfigService,
-                       StrategyConfigService strategyConfigService, MarketConfigService marketConfigService,
-                       EmailAlerter emailAlerter) {
+      StrategyConfigService strategyConfigService, MarketConfigService marketConfigService,
+      EmailAlerter emailAlerter) {
 
     LOG.info(() -> "Initialising Trading Engine...");
 
@@ -203,8 +200,8 @@ public class TradingEngine {
          * We have a network connection issue reported by Exchange Adapter when called directly from
          * Trading Engine. Current policy is to log it and sleep until next trade cycle.
          */
-        final String WARNING_MSG = "A network error has occurred in Exchange Adapter! " +
-                                       "BX-bot will try again in " + tradeExecutionInterval + "s...";
+        final String WARNING_MSG = "A network error has occurred in Exchange Adapter! "
+            + "BX-bot will try again in " + tradeExecutionInterval + "s...";
         LOG.error(WARNING_MSG, e);
 
         try {
@@ -222,9 +219,9 @@ public class TradingEngine {
         final String FATAL_ERROR_MSG = "A FATAL error has occurred in Exchange Adapter!";
         LOG.fatal(FATAL_ERROR_MSG, e);
         emailAlerter.sendMessage(CRITICAL_EMAIL_ALERT_SUBJECT,
-            buildCriticalEmailAlertMsgContent(FATAL_ERROR_MSG +
-                                                  DETAILS_ERROR_MSG_LABEL + e.getMessage() +
-                                                  CAUSE_ERROR_MSG_LABEL + e.getCause(), e));
+            buildCriticalEmailAlertMsgContent(FATAL_ERROR_MSG
+                + DETAILS_ERROR_MSG_LABEL + e.getMessage()
+                + CAUSE_ERROR_MSG_LABEL + e.getCause(), e));
         keepAlive = false;
 
       } catch (StrategyException e) {
@@ -235,9 +232,9 @@ public class TradingEngine {
         final String FATAL_ERROR_MSG = "A FATAL error has occurred in Trading Strategy!";
         LOG.fatal(FATAL_ERROR_MSG, e);
         emailAlerter.sendMessage(CRITICAL_EMAIL_ALERT_SUBJECT,
-            buildCriticalEmailAlertMsgContent(FATAL_ERROR_MSG +
-                                                  DETAILS_ERROR_MSG_LABEL + e.getMessage() +
-                                                  CAUSE_ERROR_MSG_LABEL + e.getCause(), e));
+            buildCriticalEmailAlertMsgContent(FATAL_ERROR_MSG
+                + DETAILS_ERROR_MSG_LABEL + e.getMessage()
+                + CAUSE_ERROR_MSG_LABEL + e.getCause(), e));
         keepAlive = false;
 
       } catch (Exception e) {
@@ -245,13 +242,13 @@ public class TradingEngine {
          * A serious and *unexpected* issue has occurred in the Exchange Adapter or Trading Strategy.
          * Current policy is to log it, send email alert if required, and shutdown bot.
          */
-        final String FATAL_ERROR_MSG = "An unexpected FATAL error has occurred in Exchange Adapter or " +
-                                           "Trading Strategy!";
+        final String FATAL_ERROR_MSG = "An unexpected FATAL error has occurred in Exchange Adapter or "
+            + "Trading Strategy!";
         LOG.fatal(FATAL_ERROR_MSG, e);
         emailAlerter.sendMessage(CRITICAL_EMAIL_ALERT_SUBJECT,
-            buildCriticalEmailAlertMsgContent(FATAL_ERROR_MSG +
-                                                  DETAILS_ERROR_MSG_LABEL + e.getMessage() +
-                                                  CAUSE_ERROR_MSG_LABEL + e.getCause(), e));
+            buildCriticalEmailAlertMsgContent(FATAL_ERROR_MSG
+                + DETAILS_ERROR_MSG_LABEL + e.getMessage()
+                + CAUSE_ERROR_MSG_LABEL + e.getCause(), e));
         keepAlive = false;
       }
     }
@@ -302,7 +299,7 @@ public class TradingEngine {
       balanceInfo = exchangeAdapter.getBalanceInfo();
     } catch (TradingApiException e) {
       final String errorMsg = "Failed to get Balance info from exchange to perform Emergency Stop check - letting"
-                                  + " Trade Engine error policy decide what to do next...";
+          + " Trade Engine error policy decide what to do next...";
       LOG.error(errorMsg, e);
       // re-throw to main loop - might only be connection issue and it will retry...
       throw e;
@@ -312,27 +309,27 @@ public class TradingEngine {
     final BigDecimal currentBalance = balancesAvailable.get(emergencyStopCurrency);
     if (currentBalance == null) {
       final String errorMsg =
-          "Emergency stop check: Failed to get current Emergency Stop Currency balance as '" +
-              emergencyStopCurrency + "' key into Balances map " +
-              "returned null. Balances returned: " + balancesAvailable;
+          "Emergency stop check: Failed to get current Emergency Stop Currency balance as '"
+              + emergencyStopCurrency + "' key into Balances map "
+              + "returned null. Balances returned: " + balancesAvailable;
       LOG.error(errorMsg);
       throw new IllegalStateException(errorMsg);
     } else {
 
       LOG.info(() -> "Emergency Stop Currency balance available on exchange is ["
-                         + new DecimalFormat("#.########").format(currentBalance) + "] "
-                         + emergencyStopCurrency);
+          + new DecimalFormat("#.########").format(currentBalance) + "] "
+          + emergencyStopCurrency);
 
       LOG.info(() -> "Balance that will stop ALL trading across ALL markets is ["
-                         + new DecimalFormat("#.########").format(emergencyStopBalance) + "] " +
-                         emergencyStopCurrency);
+          + new DecimalFormat("#.########").format(emergencyStopBalance) + "] "
+          + emergencyStopCurrency);
 
       if (currentBalance.compareTo(emergencyStopBalance) < 0) {
         final String balanceBlownErrorMsg =
-            "EMERGENCY STOP triggered! - Current Emergency Stop Currency [" + emergencyStopCurrency + "] wallet " +
-                "balance [" + new DecimalFormat("#.########").format(currentBalance) + "] on exchange " +
-                "is lower than configured Emergency Stop balance [" +
-                new DecimalFormat("#.########").format(emergencyStopBalance) + "] " + emergencyStopCurrency;
+            "EMERGENCY STOP triggered! - Current Emergency Stop Currency [" + emergencyStopCurrency + "] wallet "
+                + "balance [" + new DecimalFormat("#.########").format(currentBalance) + "] on exchange "
+                + "is lower than configured Emergency Stop balance ["
+                + new DecimalFormat("#.########").format(emergencyStopBalance) + "] " + emergencyStopCurrency;
 
         LOG.fatal(balanceBlownErrorMsg);
         emailAlerter.sendMessage(CRITICAL_EMAIL_ALERT_SUBJECT,
@@ -420,8 +417,8 @@ public class TradingEngine {
         adapterNetworkConfig.setNonFatalErrorCodes(nonFatalErrorCodes);
       } else {
         LOG.info(() ->
-                     "No (optional) NetworkConfiguration NonFatalErrorCodes have been set for Exchange Adapter: "
-                         + exchangeAdapter.getImplName());
+            "No (optional) NetworkConfiguration NonFatalErrorCodes have been set for Exchange Adapter: "
+                + exchangeAdapter.getImplName());
       }
 
       // Grab optional non-fatal error messages
@@ -430,16 +427,16 @@ public class TradingEngine {
         adapterNetworkConfig.setNonFatalErrorMessages(nonFatalErrorMessages);
       } else {
         LOG.info(() ->
-                     "No (optional) NetworkConfiguration NonFatalErrorMessages have been set for Exchange Adapter: "
-                         + exchangeAdapter.getImplName());
+            "No (optional) NetworkConfiguration NonFatalErrorMessages have been set for Exchange Adapter: "
+                + exchangeAdapter.getImplName());
       }
 
       adapterExchangeConfig.setNetworkConfig(adapterNetworkConfig);
       LOG.info(() -> "NetworkConfiguration has been set: " + adapterNetworkConfig);
 
     } else {
-      LOG.info(() -> "No (optional) NetworkConfiguration has been set for Exchange Adapter: " +
-                         exchangeAdapter.getImplName());
+      LOG.info(() -> "No (optional) NetworkConfiguration has been set for Exchange Adapter: "
+          + exchangeAdapter.getImplName());
     }
 
     // Fetch optional authentication config
@@ -453,8 +450,8 @@ public class TradingEngine {
       LOG.info(() -> "AuthenticationConfiguration has been set successfully.");
 
     } else {
-      LOG.info(() -> "No (optional) AuthenticationConfiguration has been set for Exchange Adapter: " +
-                         exchangeAdapter.getImplName());
+      LOG.info(() -> "No (optional) AuthenticationConfiguration has been set for Exchange Adapter: "
+          + exchangeAdapter.getImplName());
     }
 
     // Fetch optional config
@@ -539,15 +536,15 @@ public class TradingEngine {
         strategyImpl.init(exchangeAdapter, tradingMarket, tradingStrategyConfig);
 
         LOG.info(() -> "Initialized trading strategy successfully. Name: [" + tradingStrategy.getName()
-                           + "] Class: " + tradingStrategy.getClassName());
+            + "] Class: " + tradingStrategy.getClassName());
 
         tradingStrategiesToExecute.add(strategyImpl);
       } else {
 
         // Game over. Config integrity blown - we can't find strat.
         final String errorMsg = "Failed to find matching Strategy for Market " + market
-                                    + " - The Strategy " + "[" + strategyToUse + "] cannot be found in the "
-                                    + " Strategy Descriptions map: " + strategyDescriptions;
+            + " - The Strategy " + "[" + strategyToUse + "] cannot be found in the "
+            + " Strategy Descriptions map: " + strategyDescriptions;
         LOG.error(errorMsg);
         throw new IllegalArgumentException(errorMsg);
       }

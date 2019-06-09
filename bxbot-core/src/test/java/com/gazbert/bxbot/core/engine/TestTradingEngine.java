@@ -23,6 +23,14 @@
 
 package com.gazbert.bxbot.core.engine;
 
+import static junit.framework.TestCase.assertTrue;
+import static org.easymock.EasyMock.anyObject;
+import static org.easymock.EasyMock.contains;
+import static org.easymock.EasyMock.eq;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.expectLastCall;
+import static org.junit.Assert.assertFalse;
+
 import com.gazbert.bxbot.core.mail.EmailAlerter;
 import com.gazbert.bxbot.core.util.ConfigurableComponentFactory;
 import com.gazbert.bxbot.domain.engine.EngineConfig;
@@ -41,14 +49,6 @@ import com.gazbert.bxbot.trading.api.BalanceInfo;
 import com.gazbert.bxbot.trading.api.ExchangeNetworkException;
 import com.gazbert.bxbot.trading.api.Market;
 import com.gazbert.bxbot.trading.api.TradingApiException;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.powermock.api.easymock.PowerMock;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
-
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -58,14 +58,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
-
-import static junit.framework.TestCase.assertTrue;
-import static org.easymock.EasyMock.anyObject;
-import static org.easymock.EasyMock.contains;
-import static org.easymock.EasyMock.eq;
-import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.expectLastCall;
-import static org.junit.Assert.assertFalse;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.powermock.api.easymock.PowerMock;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 /**
  * Tests the behaviour of the Trading Engine is as expected.
@@ -182,10 +181,10 @@ public class TestTradingEngine {
 
     // expect Email Alert to be sent
     emailAlerter.sendMessage(eq(CRITICAL_EMAIL_ALERT_SUBJECT),
-        contains("EMERGENCY STOP triggered! - Current Emergency Stop Currency [BTC] wallet balance [" +
-                     new DecimalFormat("#.########").format(btcBalance)) +
-            "] on exchange is lower than configured Emergency Stop balance [" +
-            new DecimalFormat("#.########").format(ENGINE_EMERGENCY_STOP_BALANCE) + "] BTC");
+        contains("EMERGENCY STOP triggered! - Current Emergency Stop Currency [BTC] wallet balance ["
+            + new DecimalFormat("#.########").format(btcBalance))
+            + "] on exchange is lower than configured Emergency Stop balance ["
+            + new DecimalFormat("#.########").format(ENGINE_EMERGENCY_STOP_BALANCE) + "] BTC");
 
     PowerMock.replayAll();
 
@@ -334,8 +333,8 @@ public class TestTradingEngine {
 
     // expect Email Alert to be sent
     emailAlerter.sendMessage(eq(CRITICAL_EMAIL_ALERT_SUBJECT),
-        contains("An unexpected FATAL error has occurred in Exchange Adapter or Trading Strategy! Details: " +
-                     exceptionErrorMsg));
+        contains("An unexpected FATAL error has occurred in Exchange Adapter or Trading Strategy! Details: "
+            + exceptionErrorMsg));
 
     PowerMock.replayAll();
 
@@ -359,8 +358,8 @@ public class TestTradingEngine {
 
     setupConfigLoadingExpectations();
 
-    final String exceptionErrorMsg = "I had to rewire the grav thrust because somebody won't replace that crappy " +
-                                         "compression coil.";
+    final String exceptionErrorMsg = "I had to rewire the grav thrust because somebody won't replace that crappy "
+        + "compression coil.";
     final Map<String, BigDecimal> balancesAvailable = new HashMap<>();
     // balance limit NOT breached for BTC
     balancesAvailable.put(ENGINE_EMERGENCY_STOP_CURRENCY, new BigDecimal("0.5"));
@@ -376,8 +375,8 @@ public class TestTradingEngine {
 
     // expect Email Alert to be sent
     emailAlerter.sendMessage(eq(CRITICAL_EMAIL_ALERT_SUBJECT),
-        contains("An unexpected FATAL error has occurred in Exchange Adapter or Trading Strategy! Details: " +
-                     exceptionErrorMsg));
+        contains("An unexpected FATAL error has occurred in Exchange Adapter or Trading Strategy! Details: "
+            + exceptionErrorMsg));
 
     PowerMock.replayAll();
 
@@ -400,8 +399,8 @@ public class TestTradingEngine {
   public void testEngineShutsDownWhenItReceivesTradingApiExceptionFromExchangeAdapter() throws Exception {
     setupConfigLoadingExpectations();
 
-    final String exceptionErrorMsg = "Ten percent of nothin' is ... let me do the math here ... nothin' into nothin'" +
-                                         " ... carry the nothin' ...";
+    final String exceptionErrorMsg = "Ten percent of nothin' is ... let me do the math here ... nothin' into nothin'"
+        + " ... carry the nothin' ...";
     final Map<String, BigDecimal> balancesAvailable = new HashMap<>();
     // balance limit NOT breached for BTC
     balancesAvailable.put(ENGINE_EMERGENCY_STOP_CURRENCY, new BigDecimal("0.5"));
@@ -416,8 +415,8 @@ public class TestTradingEngine {
     expect(exchangeAdapter.getBalanceInfo()).andThrow(new TradingApiException(exceptionErrorMsg));
 
     // expect Email Alert to be sent
-    emailAlerter.sendMessage(eq(CRITICAL_EMAIL_ALERT_SUBJECT), contains("A FATAL error has occurred in Exchange" +
-                                                                            " Adapter! Details: " + exceptionErrorMsg));
+    emailAlerter.sendMessage(eq(CRITICAL_EMAIL_ALERT_SUBJECT), contains("A FATAL error has occurred in Exchange"
+        + " Adapter! Details: " + exceptionErrorMsg));
 
     PowerMock.replayAll();
 
@@ -442,8 +441,8 @@ public class TestTradingEngine {
   public void testEngineExecutesNextTradeCyclesAfterReceivingExchangeNetworkException() throws Exception {
     setupConfigLoadingExpectations();
 
-    final String exceptionErrorMsg = "Man walks down the street in a hat like that, you know he's not afraid of " +
-                                         "anything...";
+    final String exceptionErrorMsg = "Man walks down the street in a hat like that, you know he's not afraid of "
+        + "anything...";
     final int numberOfTradeCycles = 3;
     final BalanceInfo balanceInfo = PowerMock.createMock(BalanceInfo.class);
     final Map<String, BigDecimal> balancesAvailable = new HashMap<>();

@@ -26,12 +26,7 @@ package com.gazbert.bxbot.core.mail;
 import com.gazbert.bxbot.domain.emailalerts.EmailAlertsConfig;
 import com.gazbert.bxbot.domain.emailalerts.SmtpConfig;
 import com.gazbert.bxbot.services.EmailAlertsConfigService;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.stereotype.Component;
-
+import java.util.Properties;
 import javax.mail.Authenticator;
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -40,7 +35,11 @@ import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-import java.util.Properties;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.stereotype.Component;
 
 /**
  * A simple mail sender using SMTP and TLS. It sends plain/text email only.
@@ -89,7 +88,7 @@ public class EmailAlerter {
       }
     } else {
       LOG.warn("Email Alerts are disabled. Not sending the following message: Subject: "
-                   + subject + " Content: " + msgContent);
+          + subject + " Content: " + msgContent);
     }
   }
 
@@ -107,8 +106,8 @@ public class EmailAlerter {
         smtpConfig = emailAlertsConfig.getSmtpConfig();
 
         if (smtpConfig == null) {
-          final String errorMsg = "Failed to initialise Email Alerter. " +
-                                      "Alerts are enabled but no SMTP Config has been supplied in config.";
+          final String errorMsg = "Failed to initialise Email Alerter. "
+              + "Alerts are enabled but no SMTP Config has been supplied in config.";
           throw new IllegalStateException(errorMsg);
         }
 
