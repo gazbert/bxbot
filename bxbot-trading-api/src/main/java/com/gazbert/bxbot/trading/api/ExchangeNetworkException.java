@@ -12,7 +12,7 @@
  *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
  * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
@@ -47,24 +47,24 @@ package com.gazbert.bxbot.trading.api;
  */
 public final class ExchangeNetworkException extends Exception {
 
-    private static final long serialVersionUID = 1090595894948829893L;
+  private static final long serialVersionUID = 1090595894948829893L;
 
-    /**
-     * Constructor builds exception with error message.
-     *
-     * @param msg the error message.
-     */
-    public ExchangeNetworkException(String msg) {
-        super(msg);
-    }
+  /**
+   * Constructor builds exception with error message.
+   *
+   * @param msg the error message.
+   */
+  public ExchangeNetworkException(String msg) {
+    super(msg);
+  }
 
-    /**
-     * Constructor builds exception with error message and original throwable.
-     *
-     * @param msg the error message.
-     * @param e   the original exception.
-     */
-    public ExchangeNetworkException(String msg, Throwable e) {
-        super(msg, e);
-    }
+  /**
+   * Constructor builds exception with error message and original throwable.
+   *
+   * @param msg the error message.
+   * @param e   the original exception.
+   */
+  public ExchangeNetworkException(String msg, Throwable e) {
+    super(msg, e);
+  }
 }

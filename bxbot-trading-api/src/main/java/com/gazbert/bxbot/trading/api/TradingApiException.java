@@ -12,7 +12,7 @@
  *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
  * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
@@ -25,7 +25,8 @@ package com.gazbert.bxbot.trading.api;
 
 /**
  * <p>
- * This exception is thrown from Exchange Adapter implementations when there is a problem making an API call to the exchange.
+ * This exception is thrown from Exchange Adapter implementations when there is a problem making an API call to the
+ * exchange.
  * </p>
  * <p>
  * If your Trading Strategy receives this exception, this means something bad as happened; you would probably want to
@@ -42,24 +43,24 @@ package com.gazbert.bxbot.trading.api;
  */
 public class TradingApiException extends Exception {
 
-    private static final long serialVersionUID = -8279304672615688060L;
+  private static final long serialVersionUID = -8279304672615688060L;
 
-    /**
-     * Constructor builds exception with error message.
-     *
-     * @param msg the error message.
-     */
-    public TradingApiException(String msg) {
-        super(msg);
-    }
+  /**
+   * Constructor builds exception with error message.
+   *
+   * @param msg the error message.
+   */
+  public TradingApiException(String msg) {
+    super(msg);
+  }
 
-    /**
-     * Constructor builds exception with error message and original throwable.
-     *
-     * @param msg the error message.
-     * @param e   the original exception.
-     */
-    public TradingApiException(String msg, Throwable e) {
-        super(msg, e);
-    }
+  /**
+   * Constructor builds exception with error message and original throwable.
+   *
+   * @param msg the error message.
+   * @param e   the original exception.
+   */
+  public TradingApiException(String msg, Throwable e) {
+    super(msg, e);
+  }
 }

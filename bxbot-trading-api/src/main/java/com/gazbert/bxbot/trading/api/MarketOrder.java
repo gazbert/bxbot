@@ -12,7 +12,7 @@
  *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
  * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
@@ -38,31 +38,31 @@ import java.math.BigDecimal;
  */
 public interface MarketOrder {
 
-    /**
-     * Returns the type of order. Value will be {@link OrderType#BUY} or {@link OrderType#SELL}.
-     *
-     * @return the type of order.
-     */
-    OrderType getType();
+  /**
+   * Returns the type of order. Value will be {@link OrderType#BUY} or {@link OrderType#SELL}.
+   *
+   * @return the type of order.
+   */
+  OrderType getType();
 
-    /**
-     * Returns the price of the order. This is usually in BTC or USD.
-     *
-     * @return Price of the order.
-     */
-    BigDecimal getPrice();
+  /**
+   * Returns the price of the order. This is usually in BTC or USD.
+   *
+   * @return Price of the order.
+   */
+  BigDecimal getPrice();
 
-    /**
-     * Returns the quantity of the order. This is usually the amount of the other currency you want to trade for BTC/USD.
-     *
-     * @return Quantity of the order.
-     */
-    BigDecimal getQuantity();
+  /**
+   * Returns the quantity of the order. This is usually the amount of the other currency you want to trade for BTC/USD.
+   *
+   * @return Quantity of the order.
+   */
+  BigDecimal getQuantity();
 
-    /**
-     * Returns the total value of order (price * quantity). This is usually in BTC or USD.
-     *
-     * @return Total value of order (price * quantity).
-     */
-    BigDecimal getTotal();
+  /**
+   * Returns the total value of order (price * quantity). This is usually in BTC or USD.
+   *
+   * @return Total value of order (price * quantity).
+   */
+  BigDecimal getTotal();
 }

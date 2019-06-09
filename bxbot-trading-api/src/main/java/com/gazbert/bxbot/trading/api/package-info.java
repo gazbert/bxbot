@@ -7,8 +7,9 @@
  * Every Exchange Adapter must implement the {@link com.gazbert.bxbot.trading.api.TradingApi} interface.
  * </p>
  * <p>
- * The current version of the Trading API only supports <a href="http://www.investopedia.com/terms/l/limitorder.asp">limit orders</a>
- * traded at the <a href="http://www.investopedia.com/terms/s/spotprice.asp">spot price</a>.
+ * The current version of the Trading API only supports
+ * <a href="http://www.investopedia.com/terms/l/limitorder.asp">limit orders</a> traded at the
+ * <a href="http://www.investopedia.com/terms/s/spotprice.asp">spot price</a>.
  * It does not support futures or margin trading.
  * </p>
  * <p>
