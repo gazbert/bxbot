@@ -23,6 +23,8 @@
 
 package com.gazbert.bxbot.rest.api.v1.config;
 
+import static com.gazbert.bxbot.rest.api.v1.config.AbstractConfigController.CONFIG_ENDPOINT_BASE_URI;
+
 import com.gazbert.bxbot.domain.engine.EngineConfig;
 import com.gazbert.bxbot.services.EngineConfigService;
 import org.apache.logging.log4j.LogManager;
@@ -36,8 +38,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-
-import static com.gazbert.bxbot.rest.api.v1.config.AbstractConfigController.CONFIG_ENDPOINT_BASE_URI;
 
 /**
  * Controller for directing Engine config requests.
@@ -81,10 +81,10 @@ public class EngineConfigController extends AbstractConfigController {
   /**
    * Updates the Engine configuration for the bot.
    *
-   * @param user   the authenticated user making the request.
+   * @param user the authenticated user making the request.
    * @param config the Engine config to update.
-   * @return 200 'OK' HTTP status code and updated Engine config in the response body if update successful,
-   * some other HTTP status code otherwise.
+   * @return 200 'OK' HTTP status code and updated Engine config in the response body if update successful, some other
+   * HTTP status code otherwise.
    */
   @RequestMapping(value = ENGINE_RESOURCE_PATH, method = RequestMethod.PUT)
   public ResponseEntity<?> updateEngine(@AuthenticationPrincipal User user, @RequestBody EngineConfig config) {

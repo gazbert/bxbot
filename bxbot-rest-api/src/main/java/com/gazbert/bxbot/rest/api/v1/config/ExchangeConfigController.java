@@ -23,6 +23,8 @@
 
 package com.gazbert.bxbot.rest.api.v1.config;
 
+import static com.gazbert.bxbot.rest.api.v1.config.AbstractConfigController.CONFIG_ENDPOINT_BASE_URI;
+
 import com.gazbert.bxbot.domain.exchange.ExchangeConfig;
 import com.gazbert.bxbot.services.ExchangeConfigService;
 import org.apache.logging.log4j.LogManager;
@@ -35,8 +37,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-
-import static com.gazbert.bxbot.rest.api.v1.config.AbstractConfigController.CONFIG_ENDPOINT_BASE_URI;
 
 /**
  * <p>
@@ -64,8 +64,8 @@ public class ExchangeConfigController extends AbstractConfigController {
   /**
    * Returns the Exchange configuration for the bot.
    * <p>
-   * The AuthenticationConfig is stripped out and not exposed for remote consumption.
-   * The API keys/credentials should not leave the bot's local machine via the REST API.
+   * The AuthenticationConfig is stripped out and not exposed for remote consumption. The API keys/credentials should
+   * not leave the bot's local machine via the REST API.
    *
    * @param user the authenticated user making the request.
    * @return the Exchange configuration.
@@ -84,13 +84,13 @@ public class ExchangeConfigController extends AbstractConfigController {
   /**
    * Updates the Exchange configuration for the bot.
    * <p>
-   * Any AuthenticationConfig is stripped out and not updated.
-   * The API keys/credentials should not enter the bot's local machine via the REST API.
+   * Any AuthenticationConfig is stripped out and not updated. The API keys/credentials should not enter the bot's local
+   * machine via the REST API.
    *
-   * @param user   the authenticated user making the request.
+   * @param user the authenticated user making the request.
    * @param config the Exchange config to update.
-   * @return 200 'OK' HTTP status code with updated Exchange config in the body if update successful, some other
-   * HTTP status code otherwise.
+   * @return 200 'OK' HTTP status code with updated Exchange config in the body if update successful, some other HTTP
+   * status code otherwise.
    */
   @RequestMapping(value = EXCHANGE_RESOURCE_PATH, method = RequestMethod.PUT)
   public ResponseEntity<?> updateExchange(@AuthenticationPrincipal User user, @RequestBody ExchangeConfig config) {

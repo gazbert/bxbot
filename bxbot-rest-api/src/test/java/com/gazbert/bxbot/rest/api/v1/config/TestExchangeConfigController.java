@@ -23,26 +23,6 @@
 
 package com.gazbert.bxbot.rest.api.v1.config;
 
-import com.gazbert.bxbot.core.engine.TradingEngine;
-import com.gazbert.bxbot.core.mail.EmailAlerter;
-import com.gazbert.bxbot.domain.exchange.ExchangeConfig;
-import com.gazbert.bxbot.domain.exchange.NetworkConfig;
-import com.gazbert.bxbot.services.ExchangeConfigService;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.times;
@@ -52,6 +32,25 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import com.gazbert.bxbot.core.engine.TradingEngine;
+import com.gazbert.bxbot.core.mail.EmailAlerter;
+import com.gazbert.bxbot.domain.exchange.ExchangeConfig;
+import com.gazbert.bxbot.domain.exchange.NetworkConfig;
+import com.gazbert.bxbot.services.ExchangeConfigService;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 /**
  * Tests the Exchange config controller behaviour.
@@ -73,7 +72,8 @@ public class TestExchangeConfigController extends AbstractConfigControllerTest {
   private static final int HTTP_STATUS_502 = 502;
   private static final int HTTP_STATUS_503 = 503;
   private static final int HTTP_STATUS_504 = 504;
-  private static final List<Integer> NON_FATAL_ERROR_CODES = Arrays.asList(HTTP_STATUS_502, HTTP_STATUS_503, HTTP_STATUS_504);
+  private static final List<Integer> NON_FATAL_ERROR_CODES = Arrays
+      .asList(HTTP_STATUS_502, HTTP_STATUS_503, HTTP_STATUS_504);
 
   private static final String ERROR_MESSAGE_REFUSED = "Connection refused";
   private static final String ERROR_MESSAGE_RESET = "Connection reset";
