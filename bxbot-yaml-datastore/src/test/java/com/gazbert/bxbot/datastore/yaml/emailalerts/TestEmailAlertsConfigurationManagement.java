@@ -23,18 +23,17 @@
 
 package com.gazbert.bxbot.datastore.yaml.emailalerts;
 
-import com.gazbert.bxbot.datastore.yaml.ConfigurationManager;
-import com.gazbert.bxbot.domain.emailalerts.EmailAlertsConfig;
-import com.gazbert.bxbot.domain.emailalerts.SmtpConfig;
-import org.junit.Test;
-
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
-
 import static junit.framework.TestCase.assertEquals;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+
+import com.gazbert.bxbot.datastore.yaml.ConfigurationManager;
+import com.gazbert.bxbot.domain.emailalerts.EmailAlertsConfig;
+import com.gazbert.bxbot.domain.emailalerts.SmtpConfig;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import org.junit.Test;
 
 /**
  * Tests the Email Alerts configuration is loaded as expected.

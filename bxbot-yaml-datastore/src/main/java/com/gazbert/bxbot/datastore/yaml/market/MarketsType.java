@@ -24,7 +24,6 @@
 package com.gazbert.bxbot.datastore.yaml.market;
 
 import com.gazbert.bxbot.domain.market.MarketConfig;
-
 import java.util.ArrayList;
 import java.util.List;
 

@@ -23,20 +23,19 @@
 
 package com.gazbert.bxbot.datastore.yaml.exchange;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertTrue;
+
 import com.gazbert.bxbot.datastore.yaml.ConfigurationManager;
 import com.gazbert.bxbot.domain.exchange.ExchangeConfig;
 import com.gazbert.bxbot.domain.exchange.NetworkConfig;
-import org.junit.Test;
-
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertTrue;
+import org.junit.Test;
 
 /**
  * Tests the Exchange Adapter configuration is loaded as expected.
@@ -80,22 +79,23 @@ public class TestExchangeConfigurationManagement {
     assertThat(exchangeType.getExchange().getName()).isEqualTo(EXCHANGE_NAME);
     assertThat(exchangeType.getExchange().getAdapter()).isEqualTo(EXCHANGE_ADAPTER);
 
-    assertThat(exchangeType.getExchange().getAuthenticationConfig().get(CLIENT_ID_CONFIG_ITEM_KEY)).
-        isEqualTo(CLIENT_ID_CONFIG_ITEM_VALUE);
-    assertThat(exchangeType.getExchange().getAuthenticationConfig().get(API_KEY_CONFIG_ITEM_KEY)).
-        isEqualTo(API_KEY_CONFIG_ITEM_VALUE);
-    assertThat(exchangeType.getExchange().getAuthenticationConfig().get(SECRET_CONFIG_ITEM_KEY)).
-        isEqualTo(SECRET_CONFIG_ITEM_VALUE);
+    assertThat(exchangeType.getExchange().getAuthenticationConfig().get(CLIENT_ID_CONFIG_ITEM_KEY))
+        .isEqualTo(CLIENT_ID_CONFIG_ITEM_VALUE);
+    assertThat(exchangeType.getExchange().getAuthenticationConfig().get(API_KEY_CONFIG_ITEM_KEY))
+        .isEqualTo(API_KEY_CONFIG_ITEM_VALUE);
+    assertThat(exchangeType.getExchange().getAuthenticationConfig().get(SECRET_CONFIG_ITEM_KEY))
+        .isEqualTo(SECRET_CONFIG_ITEM_VALUE);
 
     assertThat(exchangeType.getExchange().getNetworkConfig().getConnectionTimeout()).isEqualTo(CONNECTION_TIMEOUT);
-    assertTrue(exchangeType.getExchange().getNetworkConfig().getNonFatalErrorCodes().containsAll(NON_FATAL_ERROR_CODES));
-    assertTrue(exchangeType.getExchange().getNetworkConfig().getNonFatalErrorMessages().
-        containsAll(NON_FATAL_ERROR_MESSAGES));
+    assertTrue(
+        exchangeType.getExchange().getNetworkConfig().getNonFatalErrorCodes().containsAll(NON_FATAL_ERROR_CODES));
+    assertTrue(exchangeType.getExchange().getNetworkConfig().getNonFatalErrorMessages()
+        .containsAll(NON_FATAL_ERROR_MESSAGES));
 
-    assertThat(exchangeType.getExchange().getOtherConfig().get(BUY_FEE_CONFIG_ITEM_KEY)).
-        isEqualTo(BUY_FEE_CONFIG_ITEM_VALUE);
-    assertThat(exchangeType.getExchange().getOtherConfig().get(SELL_FEE_CONFIG_ITEM_KEY)).
-        isEqualTo(SELL_FEE_CONFIG_ITEM_VALUE);
+    assertThat(exchangeType.getExchange().getOtherConfig().get(BUY_FEE_CONFIG_ITEM_KEY))
+        .isEqualTo(BUY_FEE_CONFIG_ITEM_VALUE);
+    assertThat(exchangeType.getExchange().getOtherConfig().get(SELL_FEE_CONFIG_ITEM_KEY))
+        .isEqualTo(SELL_FEE_CONFIG_ITEM_VALUE);
   }
 
   @Test(expected = IllegalStateException.class)
@@ -143,21 +143,21 @@ public class TestExchangeConfigurationManagement {
     assertThat(exchangeReloaded.getExchange().getName()).isEqualTo(EXCHANGE_NAME);
     assertThat(exchangeReloaded.getExchange().getAdapter()).isEqualTo(EXCHANGE_ADAPTER);
 
-    assertThat(exchangeReloaded.getExchange().getAuthenticationConfig().get(API_KEY_CONFIG_ITEM_KEY)).
-        isEqualTo(API_KEY_CONFIG_ITEM_VALUE);
-    assertThat(exchangeReloaded.getExchange().getAuthenticationConfig().get(SECRET_CONFIG_ITEM_KEY)).
-        isEqualTo(SECRET_CONFIG_ITEM_VALUE);
+    assertThat(exchangeReloaded.getExchange().getAuthenticationConfig().get(API_KEY_CONFIG_ITEM_KEY))
+        .isEqualTo(API_KEY_CONFIG_ITEM_VALUE);
+    assertThat(exchangeReloaded.getExchange().getAuthenticationConfig().get(SECRET_CONFIG_ITEM_KEY))
+        .isEqualTo(SECRET_CONFIG_ITEM_VALUE);
 
     assertThat(exchangeReloaded.getExchange().getNetworkConfig().getConnectionTimeout()).isEqualTo(CONNECTION_TIMEOUT);
-    assertTrue(exchangeReloaded.getExchange().getNetworkConfig().getNonFatalErrorCodes().
-        containsAll(NON_FATAL_ERROR_CODES));
-    assertTrue(exchangeReloaded.getExchange().getNetworkConfig().getNonFatalErrorMessages().
-        containsAll(NON_FATAL_ERROR_MESSAGES));
+    assertTrue(exchangeReloaded.getExchange().getNetworkConfig().getNonFatalErrorCodes()
+        .containsAll(NON_FATAL_ERROR_CODES));
+    assertTrue(exchangeReloaded.getExchange().getNetworkConfig().getNonFatalErrorMessages()
+        .containsAll(NON_FATAL_ERROR_MESSAGES));
 
-    assertThat(exchangeReloaded.getExchange().getOtherConfig().get(BUY_FEE_CONFIG_ITEM_KEY)).
-        isEqualTo(BUY_FEE_CONFIG_ITEM_VALUE);
-    assertThat(exchangeReloaded.getExchange().getOtherConfig().get(SELL_FEE_CONFIG_ITEM_KEY)).
-        isEqualTo(SELL_FEE_CONFIG_ITEM_VALUE);
+    assertThat(exchangeReloaded.getExchange().getOtherConfig().get(BUY_FEE_CONFIG_ITEM_KEY))
+        .isEqualTo(BUY_FEE_CONFIG_ITEM_VALUE);
+    assertThat(exchangeReloaded.getExchange().getOtherConfig().get(SELL_FEE_CONFIG_ITEM_KEY))
+        .isEqualTo(SELL_FEE_CONFIG_ITEM_VALUE);
 
     // cleanup
     Files.delete(FileSystems.getDefault().getPath(YAML_CONFIG_TO_SAVE_FILENAME));

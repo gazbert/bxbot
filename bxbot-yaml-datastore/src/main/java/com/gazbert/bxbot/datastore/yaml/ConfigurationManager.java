@@ -23,6 +23,13 @@
 
 package com.gazbert.bxbot.datastore.yaml;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Collections;
+import java.util.Set;
+import java.util.TreeSet;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.yaml.snakeyaml.DumperOptions;
@@ -34,14 +41,6 @@ import org.yaml.snakeyaml.introspector.PropertyUtils;
 import org.yaml.snakeyaml.nodes.NodeTuple;
 import org.yaml.snakeyaml.nodes.Tag;
 import org.yaml.snakeyaml.representer.Representer;
-
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.Collections;
-import java.util.Set;
-import java.util.TreeSet;
 
 /**
  * The generic configuration manager loads config from a given YAML config file.
@@ -56,9 +55,10 @@ public final class ConfigurationManager {
   private ConfigurationManager() {
   }
 
-  public synchronized static <T> T loadConfig(final Class<T> configClass, String yamlConfigFile) {
+  public static synchronized <T> T loadConfig(final Class<T> configClass, String yamlConfigFile) {
 
-    LOG.info(() -> "Loading configuration for [" + configClass + "] from: " + yamlConfigFile + " ...");
+    LOG.info(
+        () -> "Loading configuration for [" + configClass + "] from: " + yamlConfigFile + " ...");
 
     try {
       final Yaml yaml = new Yaml(new Constructor(configClass));
@@ -75,18 +75,20 @@ public final class ConfigurationManager {
       throw new IllegalStateException(errorMsg, e);
 
     } catch (Exception e) {
-      final String errorMsg = "Failed to load [" + yamlConfigFile + "] file. Details: " + e.getMessage();
+      final String errorMsg =
+          "Failed to load [" + yamlConfigFile + "] file. Details: " + e.getMessage();
       LOG.error(errorMsg, e);
       throw new IllegalArgumentException(errorMsg, e);
     }
   }
 
-  public synchronized static <T> void saveConfig(Class<T> configClass, T config, String yamlConfigFile) {
+  public static synchronized <T> void saveConfig(Class<T> configClass, T config,
+      String yamlConfigFile) {
 
     LOG.info(() -> "Saving configuration for [" + configClass + "] to: " + yamlConfigFile + " ...");
 
     try (final FileOutputStream fileOutputStream = new FileOutputStream(yamlConfigFile);
-         final PrintWriter writer = new PrintWriter(fileOutputStream)) {
+        final PrintWriter writer = new PrintWriter(fileOutputStream)) {
 
       // Skip null fields and order the YAML fields
       final Representer representer = new SkipNullFieldRepresenter();
@@ -105,7 +107,8 @@ public final class ConfigurationManager {
       throw new IllegalStateException(errorMsg, e);
 
     } catch (Exception e) {
-      final String errorMsg = "Failed to save config to [" + yamlConfigFile + "] file. Details: " + e.getMessage();
+      final String errorMsg =
+          "Failed to save config to [" + yamlConfigFile + "] file. Details: " + e.getMessage();
       LOG.error(errorMsg, e);
       throw new IllegalArgumentException(errorMsg, e);
     }
@@ -115,9 +118,10 @@ public final class ConfigurationManager {
    * Stops null fields from getting written out to YAML.
    */
   private static class SkipNullFieldRepresenter extends Representer {
+
     @Override
     protected NodeTuple representJavaBeanProperty(Object javaBean, Property property,
-                                                  Object propertyValue, Tag customTag) {
+        Object propertyValue, Tag customTag) {
       if (propertyValue == null) {
         return null;
       } else {
@@ -130,6 +134,7 @@ public final class ConfigurationManager {
    * Orders properties before dumping out YAML.
    */
   private static class ReversedPropertyUtils extends PropertyUtils {
+
     @Override
     protected Set<Property> createPropertySet(Class<?> type, BeanAccess beanAccess) {
       final Set<Property> result = new TreeSet<>(Collections.reverseOrder());

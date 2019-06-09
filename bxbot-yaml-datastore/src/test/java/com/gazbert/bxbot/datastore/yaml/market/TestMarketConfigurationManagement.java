@@ -23,17 +23,16 @@
 
 package com.gazbert.bxbot.datastore.yaml.market;
 
-import com.gazbert.bxbot.datastore.yaml.ConfigurationManager;
-import com.gazbert.bxbot.domain.market.MarketConfig;
-import org.junit.Test;
-
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
-
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+
+import com.gazbert.bxbot.datastore.yaml.ConfigurationManager;
+import com.gazbert.bxbot.domain.market.MarketConfig;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import org.junit.Test;
 
 /**
  * Tests the Market configuration is loaded as expected.
@@ -117,7 +116,8 @@ public class TestMarketConfigurationManagement {
     ConfigurationManager.saveConfig(MarketsType.class, marketsConfig, YAML_CONFIG_TO_SAVE_FILENAME);
 
     // Read it back in
-    final MarketsType marketsReloaded = ConfigurationManager.loadConfig(MarketsType.class, YAML_CONFIG_TO_SAVE_FILENAME);
+    final MarketsType marketsReloaded = ConfigurationManager
+        .loadConfig(MarketsType.class, YAML_CONFIG_TO_SAVE_FILENAME);
 
     assertThat(marketsReloaded.getMarkets().get(0).isEnabled()).isEqualTo(MARKET_1_IS_ENABLED);
     assertThat(marketsReloaded.getMarkets().get(0).getId()).isEqualTo(MARKET_1_ID);

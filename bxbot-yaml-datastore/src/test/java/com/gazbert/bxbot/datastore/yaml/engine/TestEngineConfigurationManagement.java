@@ -23,15 +23,14 @@
 
 package com.gazbert.bxbot.datastore.yaml.engine;
 
+import static org.junit.Assert.assertEquals;
+
 import com.gazbert.bxbot.datastore.yaml.ConfigurationManager;
 import com.gazbert.bxbot.domain.engine.EngineConfig;
-import org.junit.Test;
-
 import java.math.BigDecimal;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
-
-import static org.junit.Assert.assertEquals;
+import org.junit.Test;
 
 /**
  * Tests the Trading Engine configuration is loaded as expected.
@@ -53,11 +52,13 @@ public class TestEngineConfigurationManagement {
 
   @Test
   public void testLoadingValidYamlConfigFileIsSuccessful() {
-    final EngineType engineType = ConfigurationManager.loadConfig(EngineType.class, VALID_YAML_CONFIG_FILENAME);
+    final EngineType engineType = ConfigurationManager
+        .loadConfig(EngineType.class, VALID_YAML_CONFIG_FILENAME);
     assertEquals(BOT_ID, engineType.getEngine().getBotId());
     assertEquals(BOT_NAME, engineType.getEngine().getBotName());
     assertEquals(EMERGENCY_STOP_CURRENCY, engineType.getEngine().getEmergencyStopCurrency());
-    assertEquals(0, EMERGENCY_STOP_BALANCE.compareTo(engineType.getEngine().getEmergencyStopBalance()));
+    assertEquals(0,
+        EMERGENCY_STOP_BALANCE.compareTo(engineType.getEngine().getEmergencyStopBalance()));
     assertEquals(TRADE_CYCLE_INTERVAL, engineType.getEngine().getTradeCycleInterval());
   }
 
@@ -86,12 +87,15 @@ public class TestEngineConfigurationManagement {
     ConfigurationManager.saveConfig(EngineType.class, engineType, YAML_CONFIG_TO_SAVE_FILENAME);
 
     // Read it back in
-    final EngineType engineTypeReloaded = ConfigurationManager.loadConfig(EngineType.class, YAML_CONFIG_TO_SAVE_FILENAME);
+    final EngineType engineTypeReloaded = ConfigurationManager
+        .loadConfig(EngineType.class, YAML_CONFIG_TO_SAVE_FILENAME);
 
     assertEquals(BOT_ID, engineTypeReloaded.getEngine().getBotId());
     assertEquals(BOT_NAME, engineTypeReloaded.getEngine().getBotName());
-    assertEquals(EMERGENCY_STOP_CURRENCY, engineTypeReloaded.getEngine().getEmergencyStopCurrency());
-    assertEquals(0, EMERGENCY_STOP_BALANCE.compareTo(engineTypeReloaded.getEngine().getEmergencyStopBalance()));
+    assertEquals(EMERGENCY_STOP_CURRENCY,
+        engineTypeReloaded.getEngine().getEmergencyStopCurrency());
+    assertEquals(0,
+        EMERGENCY_STOP_BALANCE.compareTo(engineTypeReloaded.getEngine().getEmergencyStopBalance()));
     assertEquals(TRADE_CYCLE_INTERVAL, engineTypeReloaded.getEngine().getTradeCycleInterval());
 
     // cleanup
