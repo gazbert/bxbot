@@ -23,9 +23,9 @@
 
 package com.gazbert.bxbot.trading.api;
 
-import org.junit.Test;
-
 import static org.junit.Assert.assertEquals;
+
+import org.junit.Test;
 
 /**
  * Tests Exchange Network created is created as expected.

@@ -28,8 +28,8 @@ import java.math.BigDecimal;
 /**
  * Holds Exchange Ticker information.
  * <p>
- * Not all exchanges provide the information returned in the Ticker methods - you'll need to check the relevant
- * Exchange Adapter code/Javadoc and online Exchange API documentation.
+ * Not all exchanges provide the information returned in the Ticker methods - you'll need to check the relevant Exchange
+ * Adapter code/Javadoc and online Exchange API documentation.
  * <p>
  * If the exchange does not provide the information, a null value is returned.
  *
