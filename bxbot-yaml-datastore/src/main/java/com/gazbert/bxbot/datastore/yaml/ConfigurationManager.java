@@ -50,99 +50,91 @@ import java.util.TreeSet;
  */
 public final class ConfigurationManager {
 
-    private static final Logger LOG = LogManager.getLogger();
-    private final static Object MUTEX = new Object();
-    private final static String YAML_HEADER = "---" + System.getProperty("line.separator");
+  private static final Logger LOG = LogManager.getLogger();
+  private static final String YAML_HEADER = "---" + System.getProperty("line.separator");
 
-    private ConfigurationManager() {
+  private ConfigurationManager() {
+  }
+
+  public synchronized static <T> T loadConfig(final Class<T> configClass, String yamlConfigFile) {
+
+    LOG.info(() -> "Loading configuration for [" + configClass + "] from: " + yamlConfigFile + " ...");
+
+    try {
+      final Yaml yaml = new Yaml(new Constructor(configClass));
+
+      final FileInputStream fileInputStream = new FileInputStream(yamlConfigFile);
+      final T requestedConfig = yaml.load(fileInputStream);
+
+      LOG.info(() -> "Loaded and set configuration for [" + configClass + "] successfully!");
+      return requestedConfig;
+
+    } catch (IOException e) {
+      final String errorMsg = "Failed to find or read [" + yamlConfigFile + "] config";
+      LOG.error(errorMsg, e);
+      throw new IllegalStateException(errorMsg, e);
+
+    } catch (Exception e) {
+      final String errorMsg = "Failed to load [" + yamlConfigFile + "] file. Details: " + e.getMessage();
+      LOG.error(errorMsg, e);
+      throw new IllegalArgumentException(errorMsg, e);
     }
+  }
 
-    public static <T> T loadConfig(final Class<T> configClass, String yamlConfigFile) {
+  public synchronized static <T> void saveConfig(Class<T> configClass, T config, String yamlConfigFile) {
 
-        LOG.info(() -> "Loading configuration for [" + configClass + "] from: " + yamlConfigFile + " ...");
+    LOG.info(() -> "Saving configuration for [" + configClass + "] to: " + yamlConfigFile + " ...");
 
-        try {
+    try (final FileOutputStream fileOutputStream = new FileOutputStream(yamlConfigFile);
+         final PrintWriter writer = new PrintWriter(fileOutputStream)) {
 
-            final Yaml yaml = new Yaml(new Constructor(configClass));
+      // Skip null fields and order the YAML fields
+      final Representer representer = new SkipNullFieldRepresenter();
+      representer.setPropertyUtils(new ReversedPropertyUtils());
 
-            synchronized (MUTEX) {
-                final FileInputStream fileInputStream = new FileInputStream(yamlConfigFile);
-                final T requestedConfig = yaml.load(fileInputStream);
-                LOG.info(() -> "Loaded and set configuration for [" + configClass + "] successfully!");
-                return requestedConfig;
-            }
+      final Yaml yaml = new Yaml(representer);
+      final StringBuilder sb = new StringBuilder(YAML_HEADER);
+      sb.append(yaml.dumpAs(config, Tag.MAP, DumperOptions.FlowStyle.BLOCK));
 
-        } catch (IOException e) {
-            final String errorMsg = "Failed to find or read [" + yamlConfigFile + "] config";
-            LOG.error(errorMsg, e);
-            throw new IllegalStateException(errorMsg, e);
+      LOG.debug(() -> "YAML file content:\n" + sb);
+      writer.print(sb);
 
-        } catch (Exception e) {
-            final String errorMsg = "Failed to load [" + yamlConfigFile + "] file. Details: " + e.getMessage();
-            LOG.error(errorMsg, e);
-            throw new IllegalArgumentException(errorMsg, e);
-        }
+    } catch (IOException e) {
+      final String errorMsg = "Failed to find or read [" + yamlConfigFile + "] config";
+      LOG.error(errorMsg, e);
+      throw new IllegalStateException(errorMsg, e);
+
+    } catch (Exception e) {
+      final String errorMsg = "Failed to save config to [" + yamlConfigFile + "] file. Details: " + e.getMessage();
+      LOG.error(errorMsg, e);
+      throw new IllegalArgumentException(errorMsg, e);
     }
+  }
 
-    public static <T> void saveConfig(Class<T> configClass, T config, String yamlConfigFile) {
-
-        LOG.info(() -> "Saving configuration for [" + configClass + "] to: " + yamlConfigFile + " ...");
-
-        try {
-
-            // Skip null fields and order the YAML fields
-            final Representer representer = new SkipNullFieldRepresenter();
-            representer.setPropertyUtils(new ReversedPropertyUtils());
-
-            final Yaml yaml = new Yaml(representer);
-            final StringBuilder sb = new StringBuilder(YAML_HEADER);
-            sb.append(yaml.dumpAs(config, Tag.MAP, DumperOptions.FlowStyle.BLOCK));
-
-            LOG.debug(() -> "YAML file content:\n" + sb);
-
-            synchronized (MUTEX) {
-                final FileOutputStream fileOutputStream = new FileOutputStream(yamlConfigFile);
-                final PrintWriter writer = new PrintWriter(fileOutputStream);
-                writer.print(sb);
-                writer.close();
-            }
-
-        } catch (IOException e) {
-            final String errorMsg = "Failed to find or read [" + yamlConfigFile + "] config";
-            LOG.error(errorMsg, e);
-            throw new IllegalStateException(errorMsg, e);
-
-        } catch (Exception e) {
-            final String errorMsg = "Failed to save config to [" + yamlConfigFile + "] file. Details: " + e.getMessage();
-            LOG.error(errorMsg, e);
-            throw new IllegalArgumentException(errorMsg, e);
-        }
+  /**
+   * Stops null fields from getting written out to YAML.
+   */
+  private static class SkipNullFieldRepresenter extends Representer {
+    @Override
+    protected NodeTuple representJavaBeanProperty(Object javaBean, Property property,
+                                                  Object propertyValue, Tag customTag) {
+      if (propertyValue == null) {
+        return null;
+      } else {
+        return super.representJavaBeanProperty(javaBean, property, propertyValue, customTag);
+      }
     }
+  }
 
-    /**
-     * Stops null fields from getting written out to YAML.
-     */
-    private static class SkipNullFieldRepresenter extends Representer {
-        @Override
-        protected NodeTuple representJavaBeanProperty(Object javaBean, Property property,
-                                                      Object propertyValue, Tag customTag) {
-            if (propertyValue == null) {
-                return null;
-            } else {
-                return super.representJavaBeanProperty(javaBean, property, propertyValue, customTag);
-            }
-        }
+  /**
+   * Orders properties before dumping out YAML.
+   */
+  private static class ReversedPropertyUtils extends PropertyUtils {
+    @Override
+    protected Set<Property> createPropertySet(Class<?> type, BeanAccess beanAccess) {
+      final Set<Property> result = new TreeSet<>(Collections.reverseOrder());
+      result.addAll(super.createPropertySet(type, beanAccess));
+      return result;
     }
-
-    /**
-     * Orders properties before dumping out YAML.
-     */
-    private static class ReversedPropertyUtils extends PropertyUtils {
-        @Override
-        protected Set<Property> createPropertySet(Class<?> type, BeanAccess beanAccess) {
-            final Set<Property> result = new TreeSet<>(Collections.reverseOrder());
-            result.addAll(super.createPropertySet(type, beanAccess));
-            return result;
-        }
-    }
+  }
 }
