@@ -34,7 +34,6 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-
 /**
  * An Email Alerts config repo that uses a YAML backed datastore.
  *
@@ -49,7 +48,8 @@ public class EmailAlertsConfigYamlRepository implements EmailAlertsConfigReposit
   @Override
   public EmailAlertsConfig get() {
     LOG.info(() -> "Fetching EmailAlertsConfig...");
-    return ConfigurationManager.loadConfig(EmailAlertsType.class, EMAIL_ALERTS_CONFIG_YAML_FILENAME).getEmailAlerts();
+    return ConfigurationManager.loadConfig(EmailAlertsType.class, EMAIL_ALERTS_CONFIG_YAML_FILENAME)
+        .getEmailAlerts();
   }
 
   @Override
@@ -58,8 +58,10 @@ public class EmailAlertsConfigYamlRepository implements EmailAlertsConfigReposit
 
     final EmailAlertsType emailAlertsType = new EmailAlertsType();
     emailAlertsType.setEmailAlerts(config);
-    ConfigurationManager.saveConfig(EmailAlertsType.class, emailAlertsType, EMAIL_ALERTS_CONFIG_YAML_FILENAME);
+    ConfigurationManager.saveConfig(
+        EmailAlertsType.class, emailAlertsType, EMAIL_ALERTS_CONFIG_YAML_FILENAME);
 
-    return ConfigurationManager.loadConfig(EmailAlertsType.class, EMAIL_ALERTS_CONFIG_YAML_FILENAME).getEmailAlerts();
+    return ConfigurationManager.loadConfig(EmailAlertsType.class, EMAIL_ALERTS_CONFIG_YAML_FILENAME)
+        .getEmailAlerts();
   }
 }

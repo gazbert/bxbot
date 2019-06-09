@@ -52,18 +52,19 @@ public class MarketConfigYamlRepository implements MarketConfigRepository {
   @Override
   public List<MarketConfig> findAll() {
     LOG.info(() -> "Fetching all Market configs...");
-    return ConfigurationManager.loadConfig(MarketsType.class, MARKETS_CONFIG_YAML_FILENAME).getMarkets();
+    return ConfigurationManager.loadConfig(MarketsType.class, MARKETS_CONFIG_YAML_FILENAME)
+        .getMarkets();
   }
 
   @Override
   public MarketConfig findById(String id) {
     LOG.info(() -> "Fetching Market config for id: " + id);
 
-    final MarketsType marketsType = ConfigurationManager.loadConfig(MarketsType.class, MARKETS_CONFIG_YAML_FILENAME);
+    final MarketsType marketsType =
+        ConfigurationManager.loadConfig(MarketsType.class, MARKETS_CONFIG_YAML_FILENAME);
 
     return adaptInternalToExternalConfig(
-        marketsType.getMarkets()
-            .stream()
+        marketsType.getMarkets().stream()
             .filter((item) -> item.getId().equals(id))
             .distinct()
             .collect(Collectors.toList()));
@@ -71,13 +72,14 @@ public class MarketConfigYamlRepository implements MarketConfigRepository {
 
   @Override
   public MarketConfig save(MarketConfig config) {
-    final MarketsType marketsType = ConfigurationManager.loadConfig(MarketsType.class, MARKETS_CONFIG_YAML_FILENAME);
+    final MarketsType marketsType =
+        ConfigurationManager.loadConfig(MarketsType.class, MARKETS_CONFIG_YAML_FILENAME);
 
-    final List<MarketConfig> marketConfigs = marketsType.getMarkets()
-        .stream()
-        .filter((item) -> item.getId().equals(config.getId()))
-        .distinct()
-        .collect(Collectors.toList());
+    final List<MarketConfig> marketConfigs =
+        marketsType.getMarkets().stream()
+            .filter((item) -> item.getId().equals(config.getId()))
+            .distinct()
+            .collect(Collectors.toList());
 
     if (config.getId() == null || config.getId().isEmpty()) {
       LOG.info(() -> "About to create MarketConfig: " + config);
@@ -87,21 +89,24 @@ public class MarketConfigYamlRepository implements MarketConfigRepository {
         newMarketConfig.setId(generateUuid());
 
         marketsType.getMarkets().add(newMarketConfig);
-        ConfigurationManager.saveConfig(MarketsType.class, marketsType, MARKETS_CONFIG_YAML_FILENAME);
+        ConfigurationManager.saveConfig(
+            MarketsType.class, marketsType, MARKETS_CONFIG_YAML_FILENAME);
 
-        final MarketsType updatedInternalMarketsConfig = ConfigurationManager.loadConfig(MarketsType.class,
-            MARKETS_CONFIG_YAML_FILENAME);
+        final MarketsType updatedInternalMarketsConfig =
+            ConfigurationManager.loadConfig(MarketsType.class, MARKETS_CONFIG_YAML_FILENAME);
 
         return adaptInternalToExternalConfig(
-            updatedInternalMarketsConfig.getMarkets()
-                .stream()
+            updatedInternalMarketsConfig.getMarkets().stream()
                 .filter((item) -> item.getId().equals(newMarketConfig.getId()))
                 .distinct()
                 .collect(Collectors.toList()));
       } else {
-        throw new IllegalStateException("Trying to create new MarketConfig but null/empty id already exists. "
-            + "MarketConfig: " + config + " Existing MarketConfig: "
-            + marketsType.getMarkets());
+        throw new IllegalStateException(
+            "Trying to create new MarketConfig but null/empty id already exists. "
+                + "MarketConfig: "
+                + config
+                + " Existing MarketConfig: "
+                + marketsType.getMarkets());
       }
     } else {
       LOG.info(() -> "About to update MarketConfig: " + config);
@@ -110,20 +115,23 @@ public class MarketConfigYamlRepository implements MarketConfigRepository {
 
         marketsType.getMarkets().remove(marketConfigs.get(0)); // will only be 1 unique strat
         marketsType.getMarkets().add(config);
-        ConfigurationManager.saveConfig(MarketsType.class, marketsType, MARKETS_CONFIG_YAML_FILENAME);
+        ConfigurationManager.saveConfig(
+            MarketsType.class, marketsType, MARKETS_CONFIG_YAML_FILENAME);
 
-        final MarketsType updatedMarketsType = ConfigurationManager.loadConfig(
-            MarketsType.class, MARKETS_CONFIG_YAML_FILENAME);
+        final MarketsType updatedMarketsType =
+            ConfigurationManager.loadConfig(MarketsType.class, MARKETS_CONFIG_YAML_FILENAME);
 
         return adaptInternalToExternalConfig(
-            updatedMarketsType.getMarkets()
-                .stream()
+            updatedMarketsType.getMarkets().stream()
                 .filter((item) -> item.getId().equals(config.getId()))
                 .distinct()
                 .collect(Collectors.toList()));
       } else {
-        LOG.warn("Trying to update MarketConfig but id does not exist MarketConfig: " + config
-            + " Existing MarketConfig: " + marketsType.getMarkets());
+        LOG.warn(
+            "Trying to update MarketConfig but id does not exist MarketConfig: "
+                + config
+                + " Existing MarketConfig: "
+                + marketsType.getMarkets());
         return null;
       }
     }
@@ -133,13 +141,14 @@ public class MarketConfigYamlRepository implements MarketConfigRepository {
   public MarketConfig delete(String id) {
     LOG.info(() -> "Deleting Market config for id: " + id);
 
-    final MarketsType marketsType = ConfigurationManager.loadConfig(MarketsType.class, MARKETS_CONFIG_YAML_FILENAME);
+    final MarketsType marketsType =
+        ConfigurationManager.loadConfig(MarketsType.class, MARKETS_CONFIG_YAML_FILENAME);
 
-    final List<MarketConfig> marketConfigs = marketsType.getMarkets()
-        .stream()
-        .filter((item) -> item.getId().equals(id))
-        .distinct()
-        .collect(Collectors.toList());
+    final List<MarketConfig> marketConfigs =
+        marketsType.getMarkets().stream()
+            .filter((item) -> item.getId().equals(id))
+            .distinct()
+            .collect(Collectors.toList());
 
     if (!marketConfigs.isEmpty()) {
       final MarketConfig marketToRemove = marketConfigs.get(0); // will only be 1 unique strat
@@ -147,17 +156,21 @@ public class MarketConfigYamlRepository implements MarketConfigRepository {
       ConfigurationManager.saveConfig(MarketsType.class, marketsType, MARKETS_CONFIG_YAML_FILENAME);
       return adaptInternalToExternalConfig(Collections.singletonList(marketToRemove));
     } else {
-      LOG.warn("Trying to delete MarketConfig but id does not exist. MarketConfig id: " + id
-          + " Existing MarketConfig: " + marketsType.getMarkets());
+      LOG.warn(
+          "Trying to delete MarketConfig but id does not exist. MarketConfig id: "
+              + id
+              + " Existing MarketConfig: "
+              + marketsType.getMarkets());
       return null;
     }
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   // Adapter methods
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
-  private static MarketConfig adaptInternalToExternalConfig(List<MarketConfig> internalMarketConfigItems) {
+  private static MarketConfig adaptInternalToExternalConfig(
+      List<MarketConfig> internalMarketConfigItems) {
     if (!internalMarketConfigItems.isEmpty()) {
       // Should only ever be 1 unique Market id
       return internalMarketConfigItems.get(0);
@@ -165,9 +178,9 @@ public class MarketConfigYamlRepository implements MarketConfigRepository {
     return null;
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   // Util methods
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   private String generateUuid() {
     return UUID.randomUUID().toString();

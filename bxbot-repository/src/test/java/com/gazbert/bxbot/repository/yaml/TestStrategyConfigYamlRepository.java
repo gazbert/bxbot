@@ -51,8 +51,14 @@ import org.powermock.modules.junit4.PowerMockRunner;
  */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ConfigurationManager.class, StrategyConfigYamlRepository.class})
-@PowerMockIgnore({"javax.crypto.*", "javax.management.*",
-    "com.sun.org.apache.xerces.*", "javax.xml.parsers.*", "org.xml.sax.*", "org.w3c.dom.*"})
+@PowerMockIgnore({
+  "javax.crypto.*",
+  "javax.management.*",
+  "com.sun.org.apache.xerces.*",
+  "javax.xml.parsers.*",
+  "org.xml.sax.*",
+  "org.w3c.dom.*"
+})
 public class TestStrategyConfigYamlRepository {
 
   private static final String MOCKED_GENERATE_UUID_METHOD = "generateUuid";
@@ -62,7 +68,8 @@ public class TestStrategyConfigYamlRepository {
 
   private static final String STRAT_ID_1 = "macd-long-position";
   private static final String STRAT_NAME_1 = "MACD Long Position Algo";
-  private static final String STRAT_DESCRIPTION_1 = "Uses MACD as indicator and takes long position in base currency.";
+  private static final String STRAT_DESCRIPTION_1 =
+      "Uses MACD as indicator and takes long position in base currency.";
   private static final String STRAT_CLASSNAME_1 = "com.gazbert.nova.algos.MacdLongBase";
   private static final String STRAT_BEANAME_1 = "macdLongBase";
 
@@ -88,9 +95,9 @@ public class TestStrategyConfigYamlRepository {
 
   @Test
   public void whenFindAllCalledThenExpectServiceToReturnAllStrategyConfigs() {
-    expect(ConfigurationManager.loadConfig(
-        eq(StrategiesType.class),
-        eq(STRATEGIES_CONFIG_YAML_FILENAME)))
+    expect(
+            ConfigurationManager.loadConfig(
+                eq(StrategiesType.class), eq(STRATEGIES_CONFIG_YAML_FILENAME)))
         .andReturn(allTheInternalStrategiesConfig());
 
     PowerMock.replayAll();
@@ -104,28 +111,48 @@ public class TestStrategyConfigYamlRepository {
     assertThat(strategyConfigItems.get(0).getName()).isEqualTo(STRAT_NAME_1);
     assertThat(strategyConfigItems.get(0).getDescription()).isEqualTo(STRAT_DESCRIPTION_1);
     assertThat(strategyConfigItems.get(0).getClassName()).isEqualTo(STRAT_CLASSNAME_1);
-    assertThat(strategyConfigItems.get(0).getConfigItems().containsKey(BUY_PRICE_CONFIG_ITEM_KEY)).isTrue();
-    assertThat(strategyConfigItems.get(0).getConfigItems().containsValue(BUY_PRICE_CONFIG_ITEM_VALUE)).isTrue();
-    assertThat(strategyConfigItems.get(0).getConfigItems().containsKey(AMOUNT_TO_BUY_CONFIG_ITEM_KEY)).isTrue();
-    assertThat(strategyConfigItems.get(0).getConfigItems().containsValue(AMOUNT_TO_BUY_CONFIG_ITEM_VALUE)).isTrue();
+    assertThat(strategyConfigItems.get(0).getConfigItems().containsKey(BUY_PRICE_CONFIG_ITEM_KEY))
+        .isTrue();
+    assertThat(
+            strategyConfigItems.get(0).getConfigItems().containsValue(BUY_PRICE_CONFIG_ITEM_VALUE))
+        .isTrue();
+    assertThat(
+            strategyConfigItems.get(0).getConfigItems().containsKey(AMOUNT_TO_BUY_CONFIG_ITEM_KEY))
+        .isTrue();
+    assertThat(
+            strategyConfigItems
+                .get(0)
+                .getConfigItems()
+                .containsValue(AMOUNT_TO_BUY_CONFIG_ITEM_VALUE))
+        .isTrue();
 
     assertThat(strategyConfigItems.get(1).getId()).isEqualTo(STRAT_ID_2);
     assertThat(strategyConfigItems.get(1).getName()).isEqualTo(STRAT_NAME_2);
     assertThat(strategyConfigItems.get(1).getDescription()).isEqualTo(STRAT_DESCRIPTION_2);
     assertThat(strategyConfigItems.get(1).getClassName()).isEqualTo(STRAT_CLASSNAME_2);
-    assertThat(strategyConfigItems.get(1).getConfigItems().containsKey(BUY_PRICE_CONFIG_ITEM_KEY)).isTrue();
-    assertThat(strategyConfigItems.get(1).getConfigItems().containsValue(BUY_PRICE_CONFIG_ITEM_VALUE)).isTrue();
-    assertThat(strategyConfigItems.get(1).getConfigItems().containsKey(AMOUNT_TO_BUY_CONFIG_ITEM_KEY)).isTrue();
-    assertThat(strategyConfigItems.get(1).getConfigItems().containsValue(AMOUNT_TO_BUY_CONFIG_ITEM_VALUE)).isTrue();
+    assertThat(strategyConfigItems.get(1).getConfigItems().containsKey(BUY_PRICE_CONFIG_ITEM_KEY))
+        .isTrue();
+    assertThat(
+            strategyConfigItems.get(1).getConfigItems().containsValue(BUY_PRICE_CONFIG_ITEM_VALUE))
+        .isTrue();
+    assertThat(
+            strategyConfigItems.get(1).getConfigItems().containsKey(AMOUNT_TO_BUY_CONFIG_ITEM_KEY))
+        .isTrue();
+    assertThat(
+            strategyConfigItems
+                .get(1)
+                .getConfigItems()
+                .containsValue(AMOUNT_TO_BUY_CONFIG_ITEM_VALUE))
+        .isTrue();
 
     PowerMock.verifyAll();
   }
 
   @Test
   public void whenFindByIdCalledWithKnownIdThenReturnMatchingStrategyConfig() {
-    expect(ConfigurationManager.loadConfig(
-        eq(StrategiesType.class),
-        eq(STRATEGIES_CONFIG_YAML_FILENAME)))
+    expect(
+            ConfigurationManager.loadConfig(
+                eq(StrategiesType.class), eq(STRATEGIES_CONFIG_YAML_FILENAME)))
         .andReturn(allTheInternalStrategiesConfig());
 
     PowerMock.replayAll();
@@ -140,16 +167,17 @@ public class TestStrategyConfigYamlRepository {
     assertThat(strategyConfig.getConfigItems().containsKey(BUY_PRICE_CONFIG_ITEM_KEY)).isTrue();
     assertThat(strategyConfig.getConfigItems().containsValue(BUY_PRICE_CONFIG_ITEM_VALUE)).isTrue();
     assertThat(strategyConfig.getConfigItems().containsKey(AMOUNT_TO_BUY_CONFIG_ITEM_KEY)).isTrue();
-    assertThat(strategyConfig.getConfigItems().containsValue(AMOUNT_TO_BUY_CONFIG_ITEM_VALUE)).isTrue();
+    assertThat(strategyConfig.getConfigItems().containsValue(AMOUNT_TO_BUY_CONFIG_ITEM_VALUE))
+        .isTrue();
 
     PowerMock.verifyAll();
   }
 
   @Test
   public void whenFindByIdCalledWithUnknownIdThenReturnNullStrategyConfig() {
-    expect(ConfigurationManager.loadConfig(
-        eq(StrategiesType.class),
-        eq(STRATEGIES_CONFIG_YAML_FILENAME)))
+    expect(
+            ConfigurationManager.loadConfig(
+                eq(StrategiesType.class), eq(STRATEGIES_CONFIG_YAML_FILENAME)))
         .andReturn(allTheInternalStrategiesConfig());
 
     PowerMock.replayAll();
@@ -163,9 +191,9 @@ public class TestStrategyConfigYamlRepository {
 
   @Test
   public void whenSaveCalledWithKnownIdThenReturnUpdatedStrategyConfig() {
-    expect(ConfigurationManager.loadConfig(
-        eq(StrategiesType.class),
-        eq(STRATEGIES_CONFIG_YAML_FILENAME)))
+    expect(
+            ConfigurationManager.loadConfig(
+                eq(StrategiesType.class), eq(STRATEGIES_CONFIG_YAML_FILENAME)))
         .andReturn(allTheInternalStrategiesConfig());
 
     ConfigurationManager.saveConfig(
@@ -173,15 +201,16 @@ public class TestStrategyConfigYamlRepository {
         anyObject(StrategiesType.class),
         eq(STRATEGIES_CONFIG_YAML_FILENAME));
 
-    expect(ConfigurationManager.loadConfig(
-        eq(StrategiesType.class),
-        eq(STRATEGIES_CONFIG_YAML_FILENAME)))
+    expect(
+            ConfigurationManager.loadConfig(
+                eq(StrategiesType.class), eq(STRATEGIES_CONFIG_YAML_FILENAME)))
         .andReturn(allTheInternalStrategiesConfig());
 
     PowerMock.replayAll();
 
     final StrategyConfigRepository strategyConfigRepository = new StrategyConfigYamlRepository();
-    final StrategyConfig strategyConfig = strategyConfigRepository.save(someExternalStrategyConfig());
+    final StrategyConfig strategyConfig =
+        strategyConfigRepository.save(someExternalStrategyConfig());
 
     assertThat(strategyConfig.getId()).isEqualTo(STRAT_ID_1);
     assertThat(strategyConfig.getName()).isEqualTo(STRAT_NAME_1);
@@ -190,32 +219,35 @@ public class TestStrategyConfigYamlRepository {
     assertThat(strategyConfig.getConfigItems().containsKey(BUY_PRICE_CONFIG_ITEM_KEY)).isTrue();
     assertThat(strategyConfig.getConfigItems().containsValue(BUY_PRICE_CONFIG_ITEM_VALUE)).isTrue();
     assertThat(strategyConfig.getConfigItems().containsKey(AMOUNT_TO_BUY_CONFIG_ITEM_KEY)).isTrue();
-    assertThat(strategyConfig.getConfigItems().containsValue(AMOUNT_TO_BUY_CONFIG_ITEM_VALUE)).isTrue();
+    assertThat(strategyConfig.getConfigItems().containsValue(AMOUNT_TO_BUY_CONFIG_ITEM_VALUE))
+        .isTrue();
 
     PowerMock.verifyAll();
   }
 
   @Test
   public void whenSaveCalledWithUnknownIdThenReturnEmptyStrategyConfig() {
-    expect(ConfigurationManager.loadConfig(
-        eq(StrategiesType.class),
-        eq(STRATEGIES_CONFIG_YAML_FILENAME)))
+    expect(
+            ConfigurationManager.loadConfig(
+                eq(StrategiesType.class), eq(STRATEGIES_CONFIG_YAML_FILENAME)))
         .andReturn(allTheInternalStrategiesConfig());
 
     PowerMock.replayAll();
 
     final StrategyConfigRepository strategyConfigRepository = new StrategyConfigYamlRepository();
-    final StrategyConfig strategyConfig = strategyConfigRepository.save(someExternalStrategyConfigWithUnknownId());
+    final StrategyConfig strategyConfig =
+        strategyConfigRepository.save(someExternalStrategyConfigWithUnknownId());
 
     assertThat(strategyConfig).isEqualTo(null);
     PowerMock.verifyAll();
   }
 
   @Test
-  public void whenSaveCalledWithEmptyIdThenExpectCreatedStrategyConfigToBeReturned() throws Exception {
-    expect(ConfigurationManager.loadConfig(
-        eq(StrategiesType.class),
-        eq(STRATEGIES_CONFIG_YAML_FILENAME)))
+  public void whenSaveCalledWithEmptyIdThenExpectCreatedStrategyConfigToBeReturned()
+      throws Exception {
+    expect(
+            ConfigurationManager.loadConfig(
+                eq(StrategiesType.class), eq(STRATEGIES_CONFIG_YAML_FILENAME)))
         .andReturn(allTheInternalStrategiesConfig());
 
     ConfigurationManager.saveConfig(
@@ -223,18 +255,21 @@ public class TestStrategyConfigYamlRepository {
         anyObject(StrategiesType.class),
         eq(STRATEGIES_CONFIG_YAML_FILENAME));
 
-    expect(ConfigurationManager.loadConfig(
-        eq(StrategiesType.class),
-        eq(STRATEGIES_CONFIG_YAML_FILENAME)))
+    expect(
+            ConfigurationManager.loadConfig(
+                eq(StrategiesType.class), eq(STRATEGIES_CONFIG_YAML_FILENAME)))
         .andReturn(allTheInternalStrategiesConfigPlusNewOne());
 
-    final StrategyConfigRepository strategyConfigRepository = PowerMock.createPartialMock(
-        StrategyConfigYamlRepository.class, MOCKED_GENERATE_UUID_METHOD);
-    PowerMock.expectPrivate(strategyConfigRepository, MOCKED_GENERATE_UUID_METHOD).andReturn(GENERATED_STRAT_ID);
+    final StrategyConfigRepository strategyConfigRepository =
+        PowerMock.createPartialMock(
+            StrategyConfigYamlRepository.class, MOCKED_GENERATE_UUID_METHOD);
+    PowerMock.expectPrivate(strategyConfigRepository, MOCKED_GENERATE_UUID_METHOD)
+        .andReturn(GENERATED_STRAT_ID);
 
     PowerMock.replayAll();
 
-    final StrategyConfig strategyConfig = strategyConfigRepository.save(someNewExternalStrategyConfig());
+    final StrategyConfig strategyConfig =
+        strategyConfigRepository.save(someNewExternalStrategyConfig());
 
     assertThat(strategyConfig.getId()).isEqualTo(GENERATED_STRAT_ID);
     assertThat(strategyConfig.getName()).isEqualTo(NEW_STRAT_NAME);
@@ -243,16 +278,17 @@ public class TestStrategyConfigYamlRepository {
     assertThat(strategyConfig.getConfigItems().containsKey(BUY_PRICE_CONFIG_ITEM_KEY)).isTrue();
     assertThat(strategyConfig.getConfigItems().containsValue(BUY_PRICE_CONFIG_ITEM_VALUE)).isTrue();
     assertThat(strategyConfig.getConfigItems().containsKey(AMOUNT_TO_BUY_CONFIG_ITEM_KEY)).isTrue();
-    assertThat(strategyConfig.getConfigItems().containsValue(AMOUNT_TO_BUY_CONFIG_ITEM_VALUE)).isTrue();
+    assertThat(strategyConfig.getConfigItems().containsValue(AMOUNT_TO_BUY_CONFIG_ITEM_VALUE))
+        .isTrue();
 
     PowerMock.verifyAll();
   }
 
   @Test
   public void whenDeleteCalledWithKnownIdThenReturnDeletedStrategyConfig() {
-    expect(ConfigurationManager.loadConfig(
-        eq(StrategiesType.class),
-        eq(STRATEGIES_CONFIG_YAML_FILENAME)))
+    expect(
+            ConfigurationManager.loadConfig(
+                eq(StrategiesType.class), eq(STRATEGIES_CONFIG_YAML_FILENAME)))
         .andReturn(allTheInternalStrategiesConfig());
 
     ConfigurationManager.saveConfig(
@@ -272,16 +308,17 @@ public class TestStrategyConfigYamlRepository {
     assertThat(strategyConfig.getConfigItems().containsKey(BUY_PRICE_CONFIG_ITEM_KEY)).isTrue();
     assertThat(strategyConfig.getConfigItems().containsValue(BUY_PRICE_CONFIG_ITEM_VALUE)).isTrue();
     assertThat(strategyConfig.getConfigItems().containsKey(AMOUNT_TO_BUY_CONFIG_ITEM_KEY)).isTrue();
-    assertThat(strategyConfig.getConfigItems().containsValue(AMOUNT_TO_BUY_CONFIG_ITEM_VALUE)).isTrue();
+    assertThat(strategyConfig.getConfigItems().containsValue(AMOUNT_TO_BUY_CONFIG_ITEM_VALUE))
+        .isTrue();
 
     PowerMock.verifyAll();
   }
 
   @Test
   public void whenDeleteCalledWithUnknownIdThenReturnEmptyStrategyConfig() {
-    expect(ConfigurationManager.loadConfig(
-        eq(StrategiesType.class),
-        eq(STRATEGIES_CONFIG_YAML_FILENAME)))
+    expect(
+            ConfigurationManager.loadConfig(
+                eq(StrategiesType.class), eq(STRATEGIES_CONFIG_YAML_FILENAME)))
         .andReturn(allTheInternalStrategiesConfig());
 
     PowerMock.replayAll();
@@ -293,9 +330,9 @@ public class TestStrategyConfigYamlRepository {
     PowerMock.verifyAll();
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   // Private utils
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   private static StrategiesType allTheInternalStrategiesConfig() {
     final Map<String, String> configItems = new HashMap<>();
@@ -344,7 +381,12 @@ public class TestStrategyConfigYamlRepository {
     final Map<String, String> configItems = new HashMap<>();
     configItems.put(BUY_PRICE_CONFIG_ITEM_KEY, BUY_PRICE_CONFIG_ITEM_VALUE);
     configItems.put(AMOUNT_TO_BUY_CONFIG_ITEM_KEY, AMOUNT_TO_BUY_CONFIG_ITEM_VALUE);
-    return new StrategyConfig(STRAT_ID_1, STRAT_NAME_1, STRAT_DESCRIPTION_1, STRAT_CLASSNAME_1, STRAT_BEANAME_1,
+    return new StrategyConfig(
+        STRAT_ID_1,
+        STRAT_NAME_1,
+        STRAT_DESCRIPTION_1,
+        STRAT_CLASSNAME_1,
+        STRAT_BEANAME_1,
         configItems);
   }
 
@@ -352,7 +394,12 @@ public class TestStrategyConfigYamlRepository {
     final Map<String, String> configItems = new HashMap<>();
     configItems.put(BUY_PRICE_CONFIG_ITEM_KEY, BUY_PRICE_CONFIG_ITEM_VALUE);
     configItems.put(AMOUNT_TO_BUY_CONFIG_ITEM_KEY, AMOUNT_TO_BUY_CONFIG_ITEM_VALUE);
-    return new StrategyConfig(null, NEW_STRAT_NAME, NEW_STRAT_DESCRIPTION, NEW_STRAT_CLASSNAME, STRAT_BEANAME_2,
+    return new StrategyConfig(
+        null,
+        NEW_STRAT_NAME,
+        NEW_STRAT_DESCRIPTION,
+        NEW_STRAT_CLASSNAME,
+        STRAT_BEANAME_2,
         configItems);
   }
 
@@ -360,7 +407,12 @@ public class TestStrategyConfigYamlRepository {
     final Map<String, String> configItems = new HashMap<>();
     configItems.put(BUY_PRICE_CONFIG_ITEM_KEY, BUY_PRICE_CONFIG_ITEM_VALUE);
     configItems.put(AMOUNT_TO_BUY_CONFIG_ITEM_KEY, AMOUNT_TO_BUY_CONFIG_ITEM_VALUE);
-    return new StrategyConfig(UNKNOWN_STRAT_ID, STRAT_NAME_1, STRAT_DESCRIPTION_1, STRAT_CLASSNAME_1, STRAT_BEANAME_1,
+    return new StrategyConfig(
+        UNKNOWN_STRAT_ID,
+        STRAT_NAME_1,
+        STRAT_DESCRIPTION_1,
+        STRAT_CLASSNAME_1,
+        STRAT_BEANAME_1,
         configItems);
   }
 }

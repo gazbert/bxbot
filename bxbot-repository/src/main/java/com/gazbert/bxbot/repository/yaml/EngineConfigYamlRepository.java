@@ -48,7 +48,8 @@ public class EngineConfigYamlRepository implements EngineConfigRepository {
   @Override
   public EngineConfig get() {
     LOG.info(() -> "Fetching EngineConfig...");
-    return ConfigurationManager.loadConfig(EngineType.class, ENGINE_CONFIG_YAML_FILENAME).getEngine();
+    return ConfigurationManager.loadConfig(EngineType.class, ENGINE_CONFIG_YAML_FILENAME)
+        .getEngine();
   }
 
   @Override
@@ -59,6 +60,7 @@ public class EngineConfigYamlRepository implements EngineConfigRepository {
     engineType.setEngine(config);
     ConfigurationManager.saveConfig(EngineType.class, engineType, ENGINE_CONFIG_YAML_FILENAME);
 
-    return ConfigurationManager.loadConfig(EngineType.class, ENGINE_CONFIG_YAML_FILENAME).getEngine();
+    return ConfigurationManager.loadConfig(EngineType.class, ENGINE_CONFIG_YAML_FILENAME)
+        .getEngine();
   }
 }

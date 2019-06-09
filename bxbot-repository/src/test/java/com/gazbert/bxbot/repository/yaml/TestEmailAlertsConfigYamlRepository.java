@@ -49,8 +49,14 @@ import org.powermock.modules.junit4.PowerMockRunner;
  */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ConfigurationManager.class})
-@PowerMockIgnore({"javax.crypto.*", "javax.management.*",
-    "com.sun.org.apache.xerces.*", "javax.xml.parsers.*", "org.xml.sax.*", "org.w3c.dom.*"})
+@PowerMockIgnore({
+  "javax.crypto.*",
+  "javax.management.*",
+  "com.sun.org.apache.xerces.*",
+  "javax.xml.parsers.*",
+  "org.xml.sax.*",
+  "org.w3c.dom.*"
+})
 public class TestEmailAlertsConfigYamlRepository {
 
   private static final boolean ENABLED = true;
@@ -75,14 +81,15 @@ public class TestEmailAlertsConfigYamlRepository {
 
   @Test
   public void whenGetCalledThenExpectEmailAlertsConfigToBeReturned() {
-    expect(ConfigurationManager.loadConfig(
-        eq(EmailAlertsType.class),
-        eq(EMAIL_ALERTS_CONFIG_YAML_FILENAME)))
+    expect(
+            ConfigurationManager.loadConfig(
+                eq(EmailAlertsType.class), eq(EMAIL_ALERTS_CONFIG_YAML_FILENAME)))
         .andReturn(someEmailAlertsConfig());
 
     PowerMock.replayAll();
 
-    final EmailAlertsConfigRepository emailAlertsConfigRepository = new EmailAlertsConfigYamlRepository();
+    final EmailAlertsConfigRepository emailAlertsConfigRepository =
+        new EmailAlertsConfigYamlRepository();
     final EmailAlertsConfig emailAlertsConfig = emailAlertsConfigRepository.get();
     assertThat(emailAlertsConfig.isEnabled()).isEqualTo(ENABLED);
     assertThat(emailAlertsConfig.getSmtpConfig().getHost()).isEqualTo(HOST);
@@ -97,33 +104,39 @@ public class TestEmailAlertsConfigYamlRepository {
 
   @Test
   public void whenSaveCalledThenExpectRepositoryToSaveItAndReturnSavedEmailAlertsConfig() {
-    ConfigurationManager.saveConfig(eq(EmailAlertsType.class), anyObject(EmailAlertsType.class),
+    ConfigurationManager.saveConfig(
+        eq(EmailAlertsType.class),
+        anyObject(EmailAlertsType.class),
         eq(EMAIL_ALERTS_CONFIG_YAML_FILENAME));
 
-    expect(ConfigurationManager.loadConfig(
-        eq(EmailAlertsType.class),
-        eq(EMAIL_ALERTS_CONFIG_YAML_FILENAME)))
+    expect(
+            ConfigurationManager.loadConfig(
+                eq(EmailAlertsType.class), eq(EMAIL_ALERTS_CONFIG_YAML_FILENAME)))
         .andReturn(adaptExternalToInternalConfig(someUpdatedEmailAlertsConfig()));
 
     PowerMock.replayAll();
 
-    final EmailAlertsConfigRepository emailAlertsConfigRepository = new EmailAlertsConfigYamlRepository();
-    final EmailAlertsConfig savedConfig = emailAlertsConfigRepository.save(someUpdatedEmailAlertsConfig());
+    final EmailAlertsConfigRepository emailAlertsConfigRepository =
+        new EmailAlertsConfigYamlRepository();
+    final EmailAlertsConfig savedConfig =
+        emailAlertsConfigRepository.save(someUpdatedEmailAlertsConfig());
 
     assertThat(savedConfig.isEnabled()).isEqualTo(ENABLED);
     assertThat(savedConfig.getSmtpConfig().getHost()).isEqualTo(UPDATED_HOST);
     assertThat(savedConfig.getSmtpConfig().getTlsPort()).isEqualTo(UPDATED_PORT);
     assertThat(savedConfig.getSmtpConfig().getFromAddress()).isEqualTo(UPDATED_FROM_ADDRESS);
     assertThat(savedConfig.getSmtpConfig().getToAddress()).isEqualTo(UPDATED_TO_ADDRESS);
-    assertThat(savedConfig.getSmtpConfig().getAccountUsername()).isEqualTo(UPDATED_ACCOUNT_USERNAME);
-    assertThat(savedConfig.getSmtpConfig().getAccountPassword()).isEqualTo(UPDATED_ACCOUNT_PASSWORD);
+    assertThat(savedConfig.getSmtpConfig().getAccountUsername())
+        .isEqualTo(UPDATED_ACCOUNT_USERNAME);
+    assertThat(savedConfig.getSmtpConfig().getAccountPassword())
+        .isEqualTo(UPDATED_ACCOUNT_PASSWORD);
 
     PowerMock.verifyAll();
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   // Private utils
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   private static EmailAlertsType someEmailAlertsConfig() {
     final SmtpConfig smtpConfig = new SmtpConfig();
@@ -147,14 +160,21 @@ public class TestEmailAlertsConfigYamlRepository {
     final EmailAlertsConfig emailAlertsConfig = new EmailAlertsConfig();
     emailAlertsConfig.setEnabled(true);
 
-    final SmtpConfig smtpConfig = new SmtpConfig(UPDATED_HOST, UPDATED_PORT, UPDATED_ACCOUNT_USERNAME,
-        UPDATED_ACCOUNT_PASSWORD, UPDATED_FROM_ADDRESS, UPDATED_TO_ADDRESS);
+    final SmtpConfig smtpConfig =
+        new SmtpConfig(
+            UPDATED_HOST,
+            UPDATED_PORT,
+            UPDATED_ACCOUNT_USERNAME,
+            UPDATED_ACCOUNT_PASSWORD,
+            UPDATED_FROM_ADDRESS,
+            UPDATED_TO_ADDRESS);
     emailAlertsConfig.setSmtpConfig(smtpConfig);
 
     return emailAlertsConfig;
   }
 
-  private static EmailAlertsType adaptExternalToInternalConfig(EmailAlertsConfig externalEmailAlertsConfig) {
+  private static EmailAlertsType adaptExternalToInternalConfig(
+      EmailAlertsConfig externalEmailAlertsConfig) {
     final EmailAlertsType emailAlertsType = new EmailAlertsType();
     emailAlertsType.setEmailAlerts(externalEmailAlertsConfig);
     return emailAlertsType;

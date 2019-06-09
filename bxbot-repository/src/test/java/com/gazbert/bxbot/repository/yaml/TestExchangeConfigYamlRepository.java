@@ -53,8 +53,14 @@ import org.powermock.modules.junit4.PowerMockRunner;
  */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ConfigurationManager.class})
-@PowerMockIgnore({"javax.crypto.*", "javax.management.*",
-    "com.sun.org.apache.xerces.*", "javax.xml.parsers.*", "org.xml.sax.*", "org.w3c.dom.*"})
+@PowerMockIgnore({
+  "javax.crypto.*",
+  "javax.management.*",
+  "com.sun.org.apache.xerces.*",
+  "javax.xml.parsers.*",
+  "org.xml.sax.*",
+  "org.w3c.dom.*"
+})
 public class TestExchangeConfigYamlRepository {
 
   private static final String EXCHANGE_NAME = "Bitstamp";
@@ -68,8 +74,11 @@ public class TestExchangeConfigYamlRepository {
 
   private static final Integer CONNECTION_TIMEOUT = 30;
   private static final List<Integer> NON_FATAL_ERROR_CODES = Arrays.asList(502, 503, 504);
-  private static final List<String> NON_FATAL_ERROR_MESSAGES = Arrays.asList(
-      "Connection refused", "Connection reset", "Remote host closed connection during handshake");
+  private static final List<String> NON_FATAL_ERROR_MESSAGES =
+      Arrays.asList(
+          "Connection refused",
+          "Connection reset",
+          "Remote host closed connection during handshake");
 
   private static final String BUY_FEE_CONFIG_ITEM_KEY = "buy-fee";
   private static final String BUY_FEE_CONFIG_ITEM_VALUE = "0.20";
@@ -83,9 +92,9 @@ public class TestExchangeConfigYamlRepository {
 
   @Test
   public void whenGetCalledThenReturnExchangeConfig() {
-    expect(ConfigurationManager.loadConfig(
-        eq(ExchangeType.class),
-        eq(EXCHANGE_CONFIG_YAML_FILENAME)))
+    expect(
+            ConfigurationManager.loadConfig(
+                eq(ExchangeType.class), eq(EXCHANGE_CONFIG_YAML_FILENAME)))
         .andReturn(someInternalExchangeConfig());
 
     PowerMock.replayAll();
@@ -101,29 +110,35 @@ public class TestExchangeConfigYamlRepository {
     assertThat(exchangeConfig.getAuthenticationConfig().get(SECRET_CONFIG_ITEM_KEY))
         .isEqualTo(SECRET_CONFIG_ITEM_VALUE);
 
-    assertThat(exchangeConfig.getNetworkConfig().getConnectionTimeout()).isEqualTo(CONNECTION_TIMEOUT);
-    assertThat(exchangeConfig.getNetworkConfig().getNonFatalErrorCodes()).isEqualTo(NON_FATAL_ERROR_CODES);
-    assertThat(exchangeConfig.getNetworkConfig().getNonFatalErrorMessages()).isEqualTo(NON_FATAL_ERROR_MESSAGES);
-    assertThat(exchangeConfig.getOtherConfig().get(BUY_FEE_CONFIG_ITEM_KEY)).isEqualTo(BUY_FEE_CONFIG_ITEM_VALUE);
-    assertThat(exchangeConfig.getOtherConfig().get(SELL_FEE_CONFIG_ITEM_KEY)).isEqualTo(SELL_FEE_CONFIG_ITEM_VALUE);
+    assertThat(exchangeConfig.getNetworkConfig().getConnectionTimeout())
+        .isEqualTo(CONNECTION_TIMEOUT);
+    assertThat(exchangeConfig.getNetworkConfig().getNonFatalErrorCodes())
+        .isEqualTo(NON_FATAL_ERROR_CODES);
+    assertThat(exchangeConfig.getNetworkConfig().getNonFatalErrorMessages())
+        .isEqualTo(NON_FATAL_ERROR_MESSAGES);
+    assertThat(exchangeConfig.getOtherConfig().get(BUY_FEE_CONFIG_ITEM_KEY))
+        .isEqualTo(BUY_FEE_CONFIG_ITEM_VALUE);
+    assertThat(exchangeConfig.getOtherConfig().get(SELL_FEE_CONFIG_ITEM_KEY))
+        .isEqualTo(SELL_FEE_CONFIG_ITEM_VALUE);
 
     PowerMock.verifyAll();
   }
 
   @Test
   public void whenSaveCalledThenExpectRepositoryToSaveItAndReturnSavedExchangeConfig() {
-    ConfigurationManager.saveConfig(eq(ExchangeType.class), anyObject(ExchangeType.class),
-        eq(EXCHANGE_CONFIG_YAML_FILENAME));
+    ConfigurationManager.saveConfig(
+        eq(ExchangeType.class), anyObject(ExchangeType.class), eq(EXCHANGE_CONFIG_YAML_FILENAME));
 
-    expect(ConfigurationManager.loadConfig(
-        eq(ExchangeType.class),
-        eq(EXCHANGE_CONFIG_YAML_FILENAME)))
+    expect(
+            ConfigurationManager.loadConfig(
+                eq(ExchangeType.class), eq(EXCHANGE_CONFIG_YAML_FILENAME)))
         .andReturn(someInternalExchangeConfig());
 
     PowerMock.replayAll();
 
     final ExchangeConfigRepository exchangeConfigRepository = new ExchangeConfigYamlRepository();
-    final ExchangeConfig savedExchangeConfig = exchangeConfigRepository.save(someExternalExchangeConfig());
+    final ExchangeConfig savedExchangeConfig =
+        exchangeConfigRepository.save(someExternalExchangeConfig());
 
     assertThat(savedExchangeConfig.getName()).isEqualTo(EXCHANGE_NAME);
     assertThat(savedExchangeConfig.getAdapter()).isEqualTo(EXCHANGE_ADAPTER);
@@ -133,19 +148,23 @@ public class TestExchangeConfigYamlRepository {
     assertThat(savedExchangeConfig.getAuthenticationConfig().get(SECRET_CONFIG_ITEM_KEY))
         .isEqualTo(SECRET_CONFIG_ITEM_VALUE);
 
-    assertThat(savedExchangeConfig.getNetworkConfig().getConnectionTimeout()).isEqualTo(CONNECTION_TIMEOUT);
-    assertThat(savedExchangeConfig.getNetworkConfig().getNonFatalErrorCodes()).isEqualTo(NON_FATAL_ERROR_CODES);
-    assertThat(savedExchangeConfig.getNetworkConfig().getNonFatalErrorMessages()).isEqualTo(NON_FATAL_ERROR_MESSAGES);
-    assertThat(savedExchangeConfig.getOtherConfig().get(BUY_FEE_CONFIG_ITEM_KEY)).isEqualTo(BUY_FEE_CONFIG_ITEM_VALUE);
+    assertThat(savedExchangeConfig.getNetworkConfig().getConnectionTimeout())
+        .isEqualTo(CONNECTION_TIMEOUT);
+    assertThat(savedExchangeConfig.getNetworkConfig().getNonFatalErrorCodes())
+        .isEqualTo(NON_FATAL_ERROR_CODES);
+    assertThat(savedExchangeConfig.getNetworkConfig().getNonFatalErrorMessages())
+        .isEqualTo(NON_FATAL_ERROR_MESSAGES);
+    assertThat(savedExchangeConfig.getOtherConfig().get(BUY_FEE_CONFIG_ITEM_KEY))
+        .isEqualTo(BUY_FEE_CONFIG_ITEM_VALUE);
     assertThat(savedExchangeConfig.getOtherConfig().get(SELL_FEE_CONFIG_ITEM_KEY))
         .isEqualTo(SELL_FEE_CONFIG_ITEM_VALUE);
 
     PowerMock.verifyAll();
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   // Private utils
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   private static ExchangeType someInternalExchangeConfig() {
     final Map<String, String> authenticationConfig = new HashMap<>();
