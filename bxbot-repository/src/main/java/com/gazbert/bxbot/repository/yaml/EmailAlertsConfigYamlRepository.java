@@ -23,6 +23,8 @@
 
 package com.gazbert.bxbot.repository.yaml;
 
+import static com.gazbert.bxbot.datastore.yaml.FileLocations.EMAIL_ALERTS_CONFIG_YAML_FILENAME;
+
 import com.gazbert.bxbot.datastore.yaml.ConfigurationManager;
 import com.gazbert.bxbot.datastore.yaml.emailalerts.EmailAlertsType;
 import com.gazbert.bxbot.domain.emailalerts.EmailAlertsConfig;
@@ -31,8 +33,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-
-import static com.gazbert.bxbot.datastore.yaml.FileLocations.EMAIL_ALERTS_CONFIG_YAML_FILENAME;
 
 
 /**

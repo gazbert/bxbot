@@ -23,21 +23,20 @@
 
 package com.gazbert.bxbot.repository.yaml;
 
+import static com.gazbert.bxbot.datastore.yaml.FileLocations.MARKETS_CONFIG_YAML_FILENAME;
+
 import com.gazbert.bxbot.datastore.yaml.ConfigurationManager;
 import com.gazbert.bxbot.datastore.yaml.market.MarketsType;
 import com.gazbert.bxbot.domain.market.MarketConfig;
 import com.gazbert.bxbot.repository.MarketConfigRepository;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
-
-import static com.gazbert.bxbot.datastore.yaml.FileLocations.MARKETS_CONFIG_YAML_FILENAME;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * A Market config repo that uses a YAML backed datastore.
@@ -100,8 +99,8 @@ public class MarketConfigYamlRepository implements MarketConfigRepository {
                 .distinct()
                 .collect(Collectors.toList()));
       } else {
-        throw new IllegalStateException("Trying to create new MarketConfig but null/empty id already exists. " +
-            "MarketConfig: " + config + " Existing MarketConfig: "
+        throw new IllegalStateException("Trying to create new MarketConfig but null/empty id already exists. "
+            + "MarketConfig: " + config + " Existing MarketConfig: "
             + marketsType.getMarkets());
       }
     } else {
@@ -123,8 +122,8 @@ public class MarketConfigYamlRepository implements MarketConfigRepository {
                 .distinct()
                 .collect(Collectors.toList()));
       } else {
-        LOG.warn("Trying to update MarketConfig but id does not exist MarketConfig: " + config +
-            " Existing MarketConfig: " + marketsType.getMarkets());
+        LOG.warn("Trying to update MarketConfig but id does not exist MarketConfig: " + config
+            + " Existing MarketConfig: " + marketsType.getMarkets());
         return null;
       }
     }

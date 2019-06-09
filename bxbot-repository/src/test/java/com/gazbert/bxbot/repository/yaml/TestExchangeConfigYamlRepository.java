@@ -23,11 +23,21 @@
 
 package com.gazbert.bxbot.repository.yaml;
 
+import static com.gazbert.bxbot.datastore.yaml.FileLocations.EXCHANGE_CONFIG_YAML_FILENAME;
+import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.easymock.EasyMock.anyObject;
+import static org.easymock.EasyMock.eq;
+import static org.easymock.EasyMock.expect;
+
 import com.gazbert.bxbot.datastore.yaml.ConfigurationManager;
 import com.gazbert.bxbot.datastore.yaml.exchange.ExchangeType;
 import com.gazbert.bxbot.domain.exchange.ExchangeConfig;
 import com.gazbert.bxbot.domain.exchange.NetworkConfig;
 import com.gazbert.bxbot.repository.ExchangeConfigRepository;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,17 +45,6 @@ import org.powermock.api.easymock.PowerMock;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static com.gazbert.bxbot.datastore.yaml.FileLocations.EXCHANGE_CONFIG_YAML_FILENAME;
-import static org.assertj.core.api.Java6Assertions.assertThat;
-import static org.easymock.EasyMock.anyObject;
-import static org.easymock.EasyMock.eq;
-import static org.easymock.EasyMock.expect;
 
 /**
  * Tests YAML backed Exchange configuration repository behaves as expected.
@@ -86,8 +85,8 @@ public class TestExchangeConfigYamlRepository {
   public void whenGetCalledThenReturnExchangeConfig() {
     expect(ConfigurationManager.loadConfig(
         eq(ExchangeType.class),
-        eq(EXCHANGE_CONFIG_YAML_FILENAME))).
-        andReturn(someInternalExchangeConfig());
+        eq(EXCHANGE_CONFIG_YAML_FILENAME)))
+        .andReturn(someInternalExchangeConfig());
 
     PowerMock.replayAll();
 
@@ -97,8 +96,10 @@ public class TestExchangeConfigYamlRepository {
     assertThat(exchangeConfig.getName()).isEqualTo(EXCHANGE_NAME);
     assertThat(exchangeConfig.getAdapter()).isEqualTo(EXCHANGE_ADAPTER);
 
-    assertThat(exchangeConfig.getAuthenticationConfig().get(API_KEY_CONFIG_ITEM_KEY)).isEqualTo(API_KEY_CONFIG_ITEM_VALUE);
-    assertThat(exchangeConfig.getAuthenticationConfig().get(SECRET_CONFIG_ITEM_KEY)).isEqualTo(SECRET_CONFIG_ITEM_VALUE);
+    assertThat(exchangeConfig.getAuthenticationConfig().get(API_KEY_CONFIG_ITEM_KEY))
+        .isEqualTo(API_KEY_CONFIG_ITEM_VALUE);
+    assertThat(exchangeConfig.getAuthenticationConfig().get(SECRET_CONFIG_ITEM_KEY))
+        .isEqualTo(SECRET_CONFIG_ITEM_VALUE);
 
     assertThat(exchangeConfig.getNetworkConfig().getConnectionTimeout()).isEqualTo(CONNECTION_TIMEOUT);
     assertThat(exchangeConfig.getNetworkConfig().getNonFatalErrorCodes()).isEqualTo(NON_FATAL_ERROR_CODES);
@@ -116,8 +117,8 @@ public class TestExchangeConfigYamlRepository {
 
     expect(ConfigurationManager.loadConfig(
         eq(ExchangeType.class),
-        eq(EXCHANGE_CONFIG_YAML_FILENAME))).
-        andReturn(someInternalExchangeConfig());
+        eq(EXCHANGE_CONFIG_YAML_FILENAME)))
+        .andReturn(someInternalExchangeConfig());
 
     PowerMock.replayAll();
 
@@ -127,14 +128,17 @@ public class TestExchangeConfigYamlRepository {
     assertThat(savedExchangeConfig.getName()).isEqualTo(EXCHANGE_NAME);
     assertThat(savedExchangeConfig.getAdapter()).isEqualTo(EXCHANGE_ADAPTER);
 
-    assertThat(savedExchangeConfig.getAuthenticationConfig().get(API_KEY_CONFIG_ITEM_KEY)).isEqualTo(API_KEY_CONFIG_ITEM_VALUE);
-    assertThat(savedExchangeConfig.getAuthenticationConfig().get(SECRET_CONFIG_ITEM_KEY)).isEqualTo(SECRET_CONFIG_ITEM_VALUE);
+    assertThat(savedExchangeConfig.getAuthenticationConfig().get(API_KEY_CONFIG_ITEM_KEY))
+        .isEqualTo(API_KEY_CONFIG_ITEM_VALUE);
+    assertThat(savedExchangeConfig.getAuthenticationConfig().get(SECRET_CONFIG_ITEM_KEY))
+        .isEqualTo(SECRET_CONFIG_ITEM_VALUE);
 
     assertThat(savedExchangeConfig.getNetworkConfig().getConnectionTimeout()).isEqualTo(CONNECTION_TIMEOUT);
     assertThat(savedExchangeConfig.getNetworkConfig().getNonFatalErrorCodes()).isEqualTo(NON_FATAL_ERROR_CODES);
     assertThat(savedExchangeConfig.getNetworkConfig().getNonFatalErrorMessages()).isEqualTo(NON_FATAL_ERROR_MESSAGES);
     assertThat(savedExchangeConfig.getOtherConfig().get(BUY_FEE_CONFIG_ITEM_KEY)).isEqualTo(BUY_FEE_CONFIG_ITEM_VALUE);
-    assertThat(savedExchangeConfig.getOtherConfig().get(SELL_FEE_CONFIG_ITEM_KEY)).isEqualTo(SELL_FEE_CONFIG_ITEM_VALUE);
+    assertThat(savedExchangeConfig.getOtherConfig().get(SELL_FEE_CONFIG_ITEM_KEY))
+        .isEqualTo(SELL_FEE_CONFIG_ITEM_VALUE);
 
     PowerMock.verifyAll();
   }

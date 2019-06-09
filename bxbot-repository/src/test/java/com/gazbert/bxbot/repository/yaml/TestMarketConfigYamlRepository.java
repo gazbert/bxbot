@@ -23,10 +23,17 @@
 
 package com.gazbert.bxbot.repository.yaml;
 
+import static com.gazbert.bxbot.datastore.yaml.FileLocations.MARKETS_CONFIG_YAML_FILENAME;
+import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.easymock.EasyMock.anyObject;
+import static org.easymock.EasyMock.eq;
+import static org.easymock.EasyMock.expect;
+
 import com.gazbert.bxbot.datastore.yaml.ConfigurationManager;
 import com.gazbert.bxbot.datastore.yaml.market.MarketsType;
 import com.gazbert.bxbot.domain.market.MarketConfig;
 import com.gazbert.bxbot.repository.MarketConfigRepository;
+import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,14 +41,6 @@ import org.powermock.api.easymock.PowerMock;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-
-import java.util.List;
-
-import static com.gazbert.bxbot.datastore.yaml.FileLocations.MARKETS_CONFIG_YAML_FILENAME;
-import static org.assertj.core.api.Java6Assertions.assertThat;
-import static org.easymock.EasyMock.anyObject;
-import static org.easymock.EasyMock.eq;
-import static org.easymock.EasyMock.expect;
 
 /**
  * Tests YAML backed Market configuration repository behaves as expected.
@@ -89,8 +88,8 @@ public class TestMarketConfigYamlRepository {
   public void whenFindAllCalledThenExpectServiceToReturnAllMarketConfigs() {
     expect(ConfigurationManager.loadConfig(
         eq(MarketsType.class),
-        eq(MARKETS_CONFIG_YAML_FILENAME))).
-        andReturn(allTheInternalMarketsConfig());
+        eq(MARKETS_CONFIG_YAML_FILENAME)))
+        .andReturn(allTheInternalMarketsConfig());
 
     PowerMock.replayAll();
 
@@ -120,8 +119,8 @@ public class TestMarketConfigYamlRepository {
   public void whenFindByIdCalledWithKnownIdThenReturnMatchingMarketConfig() {
     expect(ConfigurationManager.loadConfig(
         eq(MarketsType.class),
-        eq(MARKETS_CONFIG_YAML_FILENAME))).
-        andReturn(allTheInternalMarketsConfig());
+        eq(MARKETS_CONFIG_YAML_FILENAME)))
+        .andReturn(allTheInternalMarketsConfig());
 
     PowerMock.replayAll();
 
@@ -142,8 +141,8 @@ public class TestMarketConfigYamlRepository {
   public void whenFindByIdCalledWithUnknownIdThenReturnNullMarketConfig() {
     expect(ConfigurationManager.loadConfig(
         eq(MarketsType.class),
-        eq(MARKETS_CONFIG_YAML_FILENAME))).
-        andReturn(allTheInternalMarketsConfig());
+        eq(MARKETS_CONFIG_YAML_FILENAME)))
+        .andReturn(allTheInternalMarketsConfig());
 
     PowerMock.replayAll();
 
@@ -158,8 +157,8 @@ public class TestMarketConfigYamlRepository {
   public void whenSaveCalledWithKnownIdThenReturnUpdatedMarketConfig() {
     expect(ConfigurationManager.loadConfig(
         eq(MarketsType.class),
-        eq(MARKETS_CONFIG_YAML_FILENAME))).
-        andReturn(allTheInternalMarketsConfig());
+        eq(MARKETS_CONFIG_YAML_FILENAME)))
+        .andReturn(allTheInternalMarketsConfig());
 
     ConfigurationManager.saveConfig(
         eq(MarketsType.class),
@@ -168,8 +167,8 @@ public class TestMarketConfigYamlRepository {
 
     expect(ConfigurationManager.loadConfig(
         eq(MarketsType.class),
-        eq(MARKETS_CONFIG_YAML_FILENAME))).
-        andReturn(allTheInternalMarketsConfig());
+        eq(MARKETS_CONFIG_YAML_FILENAME)))
+        .andReturn(allTheInternalMarketsConfig());
 
     PowerMock.replayAll();
 
@@ -190,8 +189,8 @@ public class TestMarketConfigYamlRepository {
   public void whenSaveCalledWithUnknownIdThenReturnEmptyMarketConfig() {
     expect(ConfigurationManager.loadConfig(
         eq(MarketsType.class),
-        eq(MARKETS_CONFIG_YAML_FILENAME))).
-        andReturn(allTheInternalMarketsConfig());
+        eq(MARKETS_CONFIG_YAML_FILENAME)))
+        .andReturn(allTheInternalMarketsConfig());
 
     PowerMock.replayAll();
 
@@ -206,8 +205,8 @@ public class TestMarketConfigYamlRepository {
   public void whenSaveCalledWithEmptyIdThenExpectCreatedMarketConfigToBeReturned() throws Exception {
     expect(ConfigurationManager.loadConfig(
         eq(MarketsType.class),
-        eq(MARKETS_CONFIG_YAML_FILENAME))).
-        andReturn(allTheInternalMarketsConfig());
+        eq(MARKETS_CONFIG_YAML_FILENAME)))
+        .andReturn(allTheInternalMarketsConfig());
 
     ConfigurationManager.saveConfig(
         eq(MarketsType.class),
@@ -216,8 +215,8 @@ public class TestMarketConfigYamlRepository {
 
     expect(ConfigurationManager.loadConfig(
         eq(MarketsType.class),
-        eq(MARKETS_CONFIG_YAML_FILENAME))).
-        andReturn(allTheInternalMarketsConfigPlusNewOne());
+        eq(MARKETS_CONFIG_YAML_FILENAME)))
+        .andReturn(allTheInternalMarketsConfigPlusNewOne());
 
     final MarketConfigRepository marketConfigRepository = PowerMock.createPartialMock(
         MarketConfigYamlRepository.class, MOCKED_GENERATE_UUID_METHOD);
@@ -241,8 +240,8 @@ public class TestMarketConfigYamlRepository {
   public void whenDeleteCalledWithKnownIdThenReturnMatchingMarketConfig() {
     expect(ConfigurationManager.loadConfig(
         eq(MarketsType.class),
-        eq(MARKETS_CONFIG_YAML_FILENAME))).
-        andReturn(allTheInternalMarketsConfig());
+        eq(MARKETS_CONFIG_YAML_FILENAME)))
+        .andReturn(allTheInternalMarketsConfig());
 
     ConfigurationManager.saveConfig(
         eq(MarketsType.class),
@@ -268,8 +267,8 @@ public class TestMarketConfigYamlRepository {
   public void whenDeleteCalledWithUnknownIdThenReturnEmptyMarket() {
     expect(ConfigurationManager.loadConfig(
         eq(MarketsType.class),
-        eq(MARKETS_CONFIG_YAML_FILENAME))).
-        andReturn(allTheInternalMarketsConfig());
+        eq(MARKETS_CONFIG_YAML_FILENAME)))
+        .andReturn(allTheInternalMarketsConfig());
 
     PowerMock.replayAll();
 

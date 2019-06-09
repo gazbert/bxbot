@@ -23,10 +23,17 @@
 
 package com.gazbert.bxbot.repository.yaml;
 
+import static com.gazbert.bxbot.datastore.yaml.FileLocations.ENGINE_CONFIG_YAML_FILENAME;
+import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.easymock.EasyMock.anyObject;
+import static org.easymock.EasyMock.eq;
+import static org.easymock.EasyMock.expect;
+
 import com.gazbert.bxbot.datastore.yaml.ConfigurationManager;
 import com.gazbert.bxbot.datastore.yaml.engine.EngineType;
 import com.gazbert.bxbot.domain.engine.EngineConfig;
 import com.gazbert.bxbot.repository.EngineConfigRepository;
+import java.math.BigDecimal;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,14 +41,6 @@ import org.powermock.api.easymock.PowerMock;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-
-import java.math.BigDecimal;
-
-import static com.gazbert.bxbot.datastore.yaml.FileLocations.ENGINE_CONFIG_YAML_FILENAME;
-import static org.assertj.core.api.Java6Assertions.assertThat;
-import static org.easymock.EasyMock.anyObject;
-import static org.easymock.EasyMock.eq;
-import static org.easymock.EasyMock.expect;
 
 /**
  * Tests YAML backed Engine configuration repository behaves as expected.
@@ -69,8 +68,8 @@ public class TestEngineConfigYamlRepository {
   public void whenGetCalledThenExpectEngineConfigToBeReturned() {
     expect(ConfigurationManager.loadConfig(
         eq(EngineType.class),
-        eq(ENGINE_CONFIG_YAML_FILENAME))).
-        andReturn(someInternalEngineConfig());
+        eq(ENGINE_CONFIG_YAML_FILENAME)))
+        .andReturn(someInternalEngineConfig());
 
     PowerMock.replayAll();
 
@@ -92,8 +91,8 @@ public class TestEngineConfigYamlRepository {
 
     expect(ConfigurationManager.loadConfig(
         eq(EngineType.class),
-        eq(ENGINE_CONFIG_YAML_FILENAME))).
-        andReturn(someInternalEngineConfig());
+        eq(ENGINE_CONFIG_YAML_FILENAME)))
+        .andReturn(someInternalEngineConfig());
 
     PowerMock.replayAll();
 

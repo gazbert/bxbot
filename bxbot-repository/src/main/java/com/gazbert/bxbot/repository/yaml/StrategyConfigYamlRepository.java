@@ -23,21 +23,20 @@
 
 package com.gazbert.bxbot.repository.yaml;
 
+import static com.gazbert.bxbot.datastore.yaml.FileLocations.STRATEGIES_CONFIG_YAML_FILENAME;
+
 import com.gazbert.bxbot.datastore.yaml.ConfigurationManager;
 import com.gazbert.bxbot.datastore.yaml.strategy.StrategiesType;
 import com.gazbert.bxbot.domain.strategy.StrategyConfig;
 import com.gazbert.bxbot.repository.StrategyConfigRepository;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
-
-import static com.gazbert.bxbot.datastore.yaml.FileLocations.STRATEGIES_CONFIG_YAML_FILENAME;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * A Strategy config repo that uses a YAML backed datastore.
@@ -102,8 +101,8 @@ public class StrategyConfigYamlRepository implements StrategyConfigRepository {
                 .distinct()
                 .collect(Collectors.toList()));
       } else {
-        throw new IllegalStateException("Trying to create new StrategyConfig but null/empty id already exists. " +
-            "StrategyConfig: " + config + " Existing StrategyConfigs: "
+        throw new IllegalStateException("Trying to create new StrategyConfig but null/empty id already exists. "
+            + "StrategyConfig: " + config + " Existing StrategyConfigs: "
             + strategiesType.getStrategies());
       }
     } else {
@@ -124,8 +123,8 @@ public class StrategyConfigYamlRepository implements StrategyConfigRepository {
                 .distinct()
                 .collect(Collectors.toList()));
       } else {
-        LOG.warn("Trying to update StrategyConfig but id does not exist StrategyConfig: " + config +
-            " Existing StrategyConfig: " + strategiesType.getStrategies());
+        LOG.warn("Trying to update StrategyConfig but id does not exist StrategyConfig: " + config
+            + " Existing StrategyConfig: " + strategiesType.getStrategies());
         return null;
       }
     }

@@ -23,6 +23,12 @@
 
 package com.gazbert.bxbot.repository.yaml;
 
+import static com.gazbert.bxbot.datastore.yaml.FileLocations.EMAIL_ALERTS_CONFIG_YAML_FILENAME;
+import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.easymock.EasyMock.anyObject;
+import static org.easymock.EasyMock.eq;
+import static org.easymock.EasyMock.expect;
+
 import com.gazbert.bxbot.datastore.yaml.ConfigurationManager;
 import com.gazbert.bxbot.datastore.yaml.emailalerts.EmailAlertsType;
 import com.gazbert.bxbot.domain.emailalerts.EmailAlertsConfig;
@@ -35,12 +41,6 @@ import org.powermock.api.easymock.PowerMock;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-
-import static com.gazbert.bxbot.datastore.yaml.FileLocations.EMAIL_ALERTS_CONFIG_YAML_FILENAME;
-import static org.assertj.core.api.Java6Assertions.assertThat;
-import static org.easymock.EasyMock.anyObject;
-import static org.easymock.EasyMock.eq;
-import static org.easymock.EasyMock.expect;
 
 /**
  * Tests YAML backed Email Alerts configuration repository behaves as expected.
@@ -77,8 +77,8 @@ public class TestEmailAlertsConfigYamlRepository {
   public void whenGetCalledThenExpectEmailAlertsConfigToBeReturned() {
     expect(ConfigurationManager.loadConfig(
         eq(EmailAlertsType.class),
-        eq(EMAIL_ALERTS_CONFIG_YAML_FILENAME))).
-        andReturn(someEmailAlertsConfig());
+        eq(EMAIL_ALERTS_CONFIG_YAML_FILENAME)))
+        .andReturn(someEmailAlertsConfig());
 
     PowerMock.replayAll();
 
@@ -102,8 +102,8 @@ public class TestEmailAlertsConfigYamlRepository {
 
     expect(ConfigurationManager.loadConfig(
         eq(EmailAlertsType.class),
-        eq(EMAIL_ALERTS_CONFIG_YAML_FILENAME))).
-        andReturn(adaptExternalToInternalConfig(someUpdatedEmailAlertsConfig()));
+        eq(EMAIL_ALERTS_CONFIG_YAML_FILENAME)))
+        .andReturn(adaptExternalToInternalConfig(someUpdatedEmailAlertsConfig()));
 
     PowerMock.replayAll();
 
