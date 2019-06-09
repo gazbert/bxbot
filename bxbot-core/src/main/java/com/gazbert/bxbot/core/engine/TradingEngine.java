@@ -192,7 +192,7 @@ public class TradingEngine {
         LOG.info(() -> "*** Sleeping " + tradeExecutionInterval + "s til next trade cycle... ***");
 
         try {
-          Thread.sleep(tradeExecutionInterval * 1000);
+          Thread.sleep(tradeExecutionInterval * 1000L);
         } catch (InterruptedException e) {
           LOG.warn("Control Loop thread interrupted when sleeping before next trade cycle");
           Thread.currentThread().interrupt();
@@ -208,7 +208,7 @@ public class TradingEngine {
         LOG.error(WARNING_MSG, e);
 
         try {
-          Thread.sleep(tradeExecutionInterval * 1000);
+          Thread.sleep(tradeExecutionInterval * 1000L);
         } catch (InterruptedException e1) {
           LOG.warn("Control Loop thread interrupted when sleeping before next trade cycle");
           Thread.currentThread().interrupt();

@@ -74,6 +74,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -223,30 +224,37 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter impleme
 
           // Assume we'll always get something here if errors array is empty; else blow fast wih NPE
           final KrakenMarketOrderBookResult krakenOrderBookResult = (KrakenMarketOrderBookResult) krakenResponse.result;
+          final Optional<KrakenOrderBook> first = krakenOrderBookResult.values().stream().findFirst();
+          if (first.isPresent()) {
+            final KrakenOrderBook krakenOrderBook = first.get();
 
-          final KrakenOrderBook krakenOrderBook = krakenOrderBookResult.values().stream().findFirst().get();
+            final List<MarketOrder> buyOrders = new ArrayList<>();
+            for (KrakenMarketOrder krakenBuyOrder : krakenOrderBook.bids) {
+              final MarketOrder buyOrder = new MarketOrderImpl(
+                  OrderType.BUY,
+                  krakenBuyOrder.get(0),
+                  krakenBuyOrder.get(1),
+                  krakenBuyOrder.get(0).multiply(krakenBuyOrder.get(1)));
+              buyOrders.add(buyOrder);
+            }
 
-          final List<MarketOrder> buyOrders = new ArrayList<>();
-          for (KrakenMarketOrder krakenBuyOrder : krakenOrderBook.bids) {
-            final MarketOrder buyOrder = new MarketOrderImpl(
-                OrderType.BUY,
-                krakenBuyOrder.get(0),
-                krakenBuyOrder.get(1),
-                krakenBuyOrder.get(0).multiply(krakenBuyOrder.get(1)));
-            buyOrders.add(buyOrder);
+            final List<MarketOrder> sellOrders = new ArrayList<>();
+            for (KrakenMarketOrder krakenSellOrder : krakenOrderBook.asks) {
+              final MarketOrder sellOrder = new MarketOrderImpl(
+                  OrderType.SELL,
+                  krakenSellOrder.get(0),
+                  krakenSellOrder.get(1),
+                  krakenSellOrder.get(0).multiply(krakenSellOrder.get(1)));
+              sellOrders.add(sellOrder);
+            }
+
+            return new MarketOrderBookImpl(marketId, sellOrders, buyOrders);
+
+          } else {
+            final String errorMsg = FAILED_TO_GET_MARKET_ORDERS + response;
+            LOG.error(errorMsg);
+            throw new TradingApiException(errorMsg);
           }
-
-          final List<MarketOrder> sellOrders = new ArrayList<>();
-          for (KrakenMarketOrder krakenSellOrder : krakenOrderBook.asks) {
-            final MarketOrder sellOrder = new MarketOrderImpl(
-                OrderType.SELL,
-                krakenSellOrder.get(0),
-                krakenSellOrder.get(1),
-                krakenSellOrder.get(0).multiply(krakenSellOrder.get(1)));
-            sellOrders.add(sellOrder);
-          }
-
-          return new MarketOrderBookImpl(marketId, sellOrders, buyOrders);
 
         } else {
           if (isExchangeUndergoingMaintenance(response) && keepAliveDuringMaintenance) {
