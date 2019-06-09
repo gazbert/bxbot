@@ -42,12 +42,16 @@ import org.junit.Test;
  */
 public class TestEmailAlertsConfigurationManagement {
 
-  private static final String VALID_YAML_CONFIG_FILENAME = "src/test/config/emailalerts/valid-email-alerts.yaml";
-  private static final String INVALID_YAML_CONFIG_FILENAME = "src/test/config/emailalerts/invalid-email-alerts.yaml";
+  private static final String VALID_YAML_CONFIG_FILENAME =
+      "src/test/config/emailalerts/valid-email-alerts.yaml";
+  private static final String INVALID_YAML_CONFIG_FILENAME =
+      "src/test/config/emailalerts/invalid-email-alerts.yaml";
   private static final String VALID_YAML_CONFIG_WITHOUT_EMAIL_ALERTS_FILENAME =
       "src/test/config/emailalerts/valid-email-alerts-without-smtp-config.yaml";
-  private static final String MISSING_YAML_CONFIG_FILENAME = "src/test/config/emailalerts/missing-email-alerts.yaml";
-  private static final String YAML_CONFIG_TO_SAVE_FILENAME = "src/test/config/emailalerts/saved-email-alerts.yaml";
+  private static final String MISSING_YAML_CONFIG_FILENAME =
+      "src/test/config/emailalerts/missing-email-alerts.yaml";
+  private static final String YAML_CONFIG_TO_SAVE_FILENAME =
+      "src/test/config/emailalerts/saved-email-alerts.yaml";
 
   private static final String HOST = "mail.google.com";
   private static final int TLS_PORT = 587;
@@ -58,8 +62,8 @@ public class TestEmailAlertsConfigurationManagement {
 
   @Test
   public void testLoadingValidYamlConfigFileIsSuccessful() {
-    final EmailAlertsType emailAlertsType = ConfigurationManager.loadConfig(EmailAlertsType.class,
-        VALID_YAML_CONFIG_FILENAME);
+    final EmailAlertsType emailAlertsType =
+        ConfigurationManager.loadConfig(EmailAlertsType.class, VALID_YAML_CONFIG_FILENAME);
 
     assertTrue(emailAlertsType.getEmailAlerts().isEnabled());
 
@@ -74,8 +78,9 @@ public class TestEmailAlertsConfigurationManagement {
 
   @Test
   public void testLoadingValidYamlConfigFileWithoutSmtpConfigIsSuccessful() {
-    final EmailAlertsType emailAlertsType = ConfigurationManager.loadConfig(EmailAlertsType.class,
-        VALID_YAML_CONFIG_WITHOUT_EMAIL_ALERTS_FILENAME);
+    final EmailAlertsType emailAlertsType =
+        ConfigurationManager.loadConfig(
+            EmailAlertsType.class, VALID_YAML_CONFIG_WITHOUT_EMAIL_ALERTS_FILENAME);
     assertFalse(emailAlertsType.getEmailAlerts().isEnabled());
   }
 
@@ -106,19 +111,25 @@ public class TestEmailAlertsConfigurationManagement {
     final EmailAlertsType emailAlertsType = new EmailAlertsType();
     emailAlertsType.setEmailAlerts(emailAlertsConfig);
 
-    ConfigurationManager.saveConfig(EmailAlertsType.class, emailAlertsType, YAML_CONFIG_TO_SAVE_FILENAME);
+    ConfigurationManager.saveConfig(
+        EmailAlertsType.class, emailAlertsType, YAML_CONFIG_TO_SAVE_FILENAME);
 
     // Read it back in
-    final EmailAlertsType emailAlertsReloaded = ConfigurationManager.loadConfig(EmailAlertsType.class,
-        YAML_CONFIG_TO_SAVE_FILENAME);
+    final EmailAlertsType emailAlertsReloaded =
+        ConfigurationManager.loadConfig(EmailAlertsType.class, YAML_CONFIG_TO_SAVE_FILENAME);
 
     assertThat(emailAlertsReloaded.getEmailAlerts().isEnabled()).isEqualTo(true);
-    assertThat(emailAlertsReloaded.getEmailAlerts().getSmtpConfig().getAccountUsername()).isEqualTo(ACCOUNT_USERNAME);
-    assertThat(emailAlertsReloaded.getEmailAlerts().getSmtpConfig().getAccountPassword()).isEqualTo(ACCOUNT_PASSWORD);
+    assertThat(emailAlertsReloaded.getEmailAlerts().getSmtpConfig().getAccountUsername())
+        .isEqualTo(ACCOUNT_USERNAME);
+    assertThat(emailAlertsReloaded.getEmailAlerts().getSmtpConfig().getAccountPassword())
+        .isEqualTo(ACCOUNT_PASSWORD);
     assertThat(emailAlertsReloaded.getEmailAlerts().getSmtpConfig().getHost()).isEqualTo(HOST);
-    assertThat(emailAlertsReloaded.getEmailAlerts().getSmtpConfig().getTlsPort()).isEqualTo(TLS_PORT);
-    assertThat(emailAlertsReloaded.getEmailAlerts().getSmtpConfig().getFromAddress()).isEqualTo(FROM_ADDRESS);
-    assertThat(emailAlertsReloaded.getEmailAlerts().getSmtpConfig().getToAddress()).isEqualTo(TO_ADDRESS);
+    assertThat(emailAlertsReloaded.getEmailAlerts().getSmtpConfig().getTlsPort())
+        .isEqualTo(TLS_PORT);
+    assertThat(emailAlertsReloaded.getEmailAlerts().getSmtpConfig().getFromAddress())
+        .isEqualTo(FROM_ADDRESS);
+    assertThat(emailAlertsReloaded.getEmailAlerts().getSmtpConfig().getToAddress())
+        .isEqualTo(TO_ADDRESS);
 
     // cleanup
     Files.delete(FileSystems.getDefault().getPath(YAML_CONFIG_TO_SAVE_FILENAME));

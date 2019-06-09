@@ -41,10 +41,14 @@ import org.junit.Test;
  */
 public class TestMarketConfigurationManagement {
 
-  private static final String VALID_YAML_CONFIG_FILENAME = "src/test/config/markets/valid-markets.yaml";
-  private static final String INVALID_YAML_CONFIG_FILENAME = "src/test/config/markets/invalid-markets.yaml";
-  private static final String MISSING_YAML_CONFIG_FILENAME = "src/test/config/markets/missing-markets.yaml";
-  private static final String YAML_CONFIG_TO_SAVE_FILENAME = "src/test/config/markets/saved-markets.yaml";
+  private static final String VALID_YAML_CONFIG_FILENAME =
+      "src/test/config/markets/valid-markets.yaml";
+  private static final String INVALID_YAML_CONFIG_FILENAME =
+      "src/test/config/markets/invalid-markets.yaml";
+  private static final String MISSING_YAML_CONFIG_FILENAME =
+      "src/test/config/markets/missing-markets.yaml";
+  private static final String YAML_CONFIG_TO_SAVE_FILENAME =
+      "src/test/config/markets/saved-markets.yaml";
 
   private static final String MARKET_1_ID = "gemini_usd/btc";
   private static final String MARKET_1_NAME = "BTC/USD";
@@ -62,7 +66,8 @@ public class TestMarketConfigurationManagement {
 
   @Test
   public void testLoadingValidYamlConfigFileIsSuccessful() {
-    final MarketsType marketsType = ConfigurationManager.loadConfig(MarketsType.class, VALID_YAML_CONFIG_FILENAME);
+    final MarketsType marketsType =
+        ConfigurationManager.loadConfig(MarketsType.class, VALID_YAML_CONFIG_FILENAME);
 
     assertEquals(2, marketsType.getMarkets().size());
 
@@ -116,22 +121,28 @@ public class TestMarketConfigurationManagement {
     ConfigurationManager.saveConfig(MarketsType.class, marketsConfig, YAML_CONFIG_TO_SAVE_FILENAME);
 
     // Read it back in
-    final MarketsType marketsReloaded = ConfigurationManager
-        .loadConfig(MarketsType.class, YAML_CONFIG_TO_SAVE_FILENAME);
+    final MarketsType marketsReloaded =
+        ConfigurationManager.loadConfig(MarketsType.class, YAML_CONFIG_TO_SAVE_FILENAME);
 
     assertThat(marketsReloaded.getMarkets().get(0).isEnabled()).isEqualTo(MARKET_1_IS_ENABLED);
     assertThat(marketsReloaded.getMarkets().get(0).getId()).isEqualTo(MARKET_1_ID);
     assertThat(marketsReloaded.getMarkets().get(0).getName()).isEqualTo(MARKET_1_NAME);
-    assertThat(marketsReloaded.getMarkets().get(0).getBaseCurrency()).isEqualTo(MARKET_1_BASE_CURRENCY);
-    assertThat(marketsReloaded.getMarkets().get(0).getCounterCurrency()).isEqualTo(MARKET_1_COUNTER_CURRENCY);
-    assertThat(marketsReloaded.getMarkets().get(0).getTradingStrategyId()).isEqualTo(MARKET_1_TRADING_STRATEGY_ID);
+    assertThat(marketsReloaded.getMarkets().get(0).getBaseCurrency())
+        .isEqualTo(MARKET_1_BASE_CURRENCY);
+    assertThat(marketsReloaded.getMarkets().get(0).getCounterCurrency())
+        .isEqualTo(MARKET_1_COUNTER_CURRENCY);
+    assertThat(marketsReloaded.getMarkets().get(0).getTradingStrategyId())
+        .isEqualTo(MARKET_1_TRADING_STRATEGY_ID);
 
     assertThat(marketsReloaded.getMarkets().get(1).isEnabled()).isEqualTo(MARKET_2_IS_ENABLED);
     assertThat(marketsReloaded.getMarkets().get(1).getId()).isEqualTo(MARKET_2_ID);
     assertThat(marketsReloaded.getMarkets().get(1).getName()).isEqualTo(MARKET_2_NAME);
-    assertThat(marketsReloaded.getMarkets().get(1).getBaseCurrency()).isEqualTo(MARKET_2_BASE_CURRENCY);
-    assertThat(marketsReloaded.getMarkets().get(1).getCounterCurrency()).isEqualTo(MARKET_2_COUNTER_CURRENCY);
-    assertThat(marketsReloaded.getMarkets().get(1).getTradingStrategyId()).isEqualTo(MARKET_2_TRADING_STRATEGY_ID);
+    assertThat(marketsReloaded.getMarkets().get(1).getBaseCurrency())
+        .isEqualTo(MARKET_2_BASE_CURRENCY);
+    assertThat(marketsReloaded.getMarkets().get(1).getCounterCurrency())
+        .isEqualTo(MARKET_2_COUNTER_CURRENCY);
+    assertThat(marketsReloaded.getMarkets().get(1).getTradingStrategyId())
+        .isEqualTo(MARKET_2_TRADING_STRATEGY_ID);
 
     // cleanup
     Files.delete(FileSystems.getDefault().getPath(YAML_CONFIG_TO_SAVE_FILENAME));

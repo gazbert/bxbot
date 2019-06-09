@@ -36,6 +36,9 @@ public class MarketsType {
 
   private List<MarketConfig> markets;
 
+  /**
+   * Returns the Market configs.
+   */
   public List<MarketConfig> getMarkets() {
     if (markets == null) {
       markets = new ArrayList<>();

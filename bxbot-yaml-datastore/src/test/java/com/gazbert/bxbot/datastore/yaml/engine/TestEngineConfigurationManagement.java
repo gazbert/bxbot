@@ -39,10 +39,14 @@ import org.junit.Test;
  */
 public class TestEngineConfigurationManagement {
 
-  private static final String VALID_YAML_CONFIG_FILENAME = "src/test/config/engine/valid-engine.yaml";
-  private static final String INVALID_YAML_CONFIG_FILENAME = "src/test/config/engine/invalid-engine.yaml";
-  private static final String MISSING_YAML_CONFIG_FILENAME = "src/test/config/engine/missing-engine.yaml";
-  private static final String YAML_CONFIG_TO_SAVE_FILENAME = "src/test/config/engine/saved-engine.yaml";
+  private static final String VALID_YAML_CONFIG_FILENAME =
+      "src/test/config/engine/valid-engine.yaml";
+  private static final String INVALID_YAML_CONFIG_FILENAME =
+      "src/test/config/engine/invalid-engine.yaml";
+  private static final String MISSING_YAML_CONFIG_FILENAME =
+      "src/test/config/engine/missing-engine.yaml";
+  private static final String YAML_CONFIG_TO_SAVE_FILENAME =
+      "src/test/config/engine/saved-engine.yaml";
 
   private static final String BOT_ID = "avro-707_1";
   private static final String BOT_NAME = "Avro 707";
@@ -52,13 +56,13 @@ public class TestEngineConfigurationManagement {
 
   @Test
   public void testLoadingValidYamlConfigFileIsSuccessful() {
-    final EngineType engineType = ConfigurationManager
-        .loadConfig(EngineType.class, VALID_YAML_CONFIG_FILENAME);
+    final EngineType engineType =
+        ConfigurationManager.loadConfig(EngineType.class, VALID_YAML_CONFIG_FILENAME);
     assertEquals(BOT_ID, engineType.getEngine().getBotId());
     assertEquals(BOT_NAME, engineType.getEngine().getBotName());
     assertEquals(EMERGENCY_STOP_CURRENCY, engineType.getEngine().getEmergencyStopCurrency());
-    assertEquals(0,
-        EMERGENCY_STOP_BALANCE.compareTo(engineType.getEngine().getEmergencyStopBalance()));
+    assertEquals(
+        0, EMERGENCY_STOP_BALANCE.compareTo(engineType.getEngine().getEmergencyStopBalance()));
     assertEquals(TRADE_CYCLE_INTERVAL, engineType.getEngine().getTradeCycleInterval());
   }
 
@@ -87,14 +91,15 @@ public class TestEngineConfigurationManagement {
     ConfigurationManager.saveConfig(EngineType.class, engineType, YAML_CONFIG_TO_SAVE_FILENAME);
 
     // Read it back in
-    final EngineType engineTypeReloaded = ConfigurationManager
-        .loadConfig(EngineType.class, YAML_CONFIG_TO_SAVE_FILENAME);
+    final EngineType engineTypeReloaded =
+        ConfigurationManager.loadConfig(EngineType.class, YAML_CONFIG_TO_SAVE_FILENAME);
 
     assertEquals(BOT_ID, engineTypeReloaded.getEngine().getBotId());
     assertEquals(BOT_NAME, engineTypeReloaded.getEngine().getBotName());
-    assertEquals(EMERGENCY_STOP_CURRENCY,
-        engineTypeReloaded.getEngine().getEmergencyStopCurrency());
-    assertEquals(0,
+    assertEquals(
+        EMERGENCY_STOP_CURRENCY, engineTypeReloaded.getEngine().getEmergencyStopCurrency());
+    assertEquals(
+        0,
         EMERGENCY_STOP_BALANCE.compareTo(engineTypeReloaded.getEngine().getEmergencyStopBalance()));
     assertEquals(TRADE_CYCLE_INTERVAL, engineTypeReloaded.getEngine().getTradeCycleInterval());
 

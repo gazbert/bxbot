@@ -44,13 +44,18 @@ import org.junit.Test;
  */
 public class TestExchangeConfigurationManagement {
 
-  private static final String VALID_YAML_CONFIG_FILENAME = "src/test/config/exchange/valid-exchange.yaml";
-  private static final String INVALID_YAML_CONFIG_FILENAME = "src/test/config/exchange/invalid-exchange.yaml";
-  private static final String MISSING_XML_CONFIG_FILENAME = "src/test/config/exchange-/missing-exchange.xml";
-  private static final String YAML_CONFIG_TO_SAVE_FILENAME = "src/test/config/exchange/saved-exchange.yaml";
+  private static final String VALID_YAML_CONFIG_FILENAME =
+      "src/test/config/exchange/valid-exchange.yaml";
+  private static final String INVALID_YAML_CONFIG_FILENAME =
+      "src/test/config/exchange/invalid-exchange.yaml";
+  private static final String MISSING_XML_CONFIG_FILENAME =
+      "src/test/config/exchange-/missing-exchange.xml";
+  private static final String YAML_CONFIG_TO_SAVE_FILENAME =
+      "src/test/config/exchange/saved-exchange.yaml";
 
   private static final String EXCHANGE_NAME = "Bitstamp";
-  private static final String EXCHANGE_ADAPTER = "com.gazbert.bxbot.exchanges.BitstampExchangeAdapter";
+  private static final String EXCHANGE_ADAPTER =
+      "com.gazbert.bxbot.exchanges.BitstampExchangeAdapter";
 
   private static final String CLIENT_ID_CONFIG_ITEM_KEY = "client-id";
   private static final String CLIENT_ID_CONFIG_ITEM_VALUE = "your-client-id";
@@ -60,12 +65,14 @@ public class TestExchangeConfigurationManagement {
   private static final String SECRET_CONFIG_ITEM_VALUE = "your-secret-key";
 
   private static final Integer CONNECTION_TIMEOUT = 30;
-  private static final List<Integer> NON_FATAL_ERROR_CODES = Arrays.asList(502, 503, 504, 520, 522, 525);
-  private static final List<String> NON_FATAL_ERROR_MESSAGES = Arrays.asList(
-      "Connection refused",
-      "Connection reset",
-      "Remote host closed connection during handshake",
-      "Unexpected end of file from server");
+  private static final List<Integer> NON_FATAL_ERROR_CODES =
+      Arrays.asList(502, 503, 504, 520, 522, 525);
+  private static final List<String> NON_FATAL_ERROR_MESSAGES =
+      Arrays.asList(
+          "Connection refused",
+          "Connection reset",
+          "Remote host closed connection during handshake",
+          "Unexpected end of file from server");
 
   private static final String BUY_FEE_CONFIG_ITEM_KEY = "buy-fee";
   private static final String BUY_FEE_CONFIG_ITEM_VALUE = "0.5";
@@ -74,7 +81,8 @@ public class TestExchangeConfigurationManagement {
 
   @Test
   public void testLoadingValidYamlConfigFileIsSuccessful() {
-    final ExchangeType exchangeType = ConfigurationManager.loadConfig(ExchangeType.class, VALID_YAML_CONFIG_FILENAME);
+    final ExchangeType exchangeType =
+        ConfigurationManager.loadConfig(ExchangeType.class, VALID_YAML_CONFIG_FILENAME);
 
     assertThat(exchangeType.getExchange().getName()).isEqualTo(EXCHANGE_NAME);
     assertThat(exchangeType.getExchange().getAdapter()).isEqualTo(EXCHANGE_ADAPTER);
@@ -86,11 +94,20 @@ public class TestExchangeConfigurationManagement {
     assertThat(exchangeType.getExchange().getAuthenticationConfig().get(SECRET_CONFIG_ITEM_KEY))
         .isEqualTo(SECRET_CONFIG_ITEM_VALUE);
 
-    assertThat(exchangeType.getExchange().getNetworkConfig().getConnectionTimeout()).isEqualTo(CONNECTION_TIMEOUT);
+    assertThat(exchangeType.getExchange().getNetworkConfig().getConnectionTimeout())
+        .isEqualTo(CONNECTION_TIMEOUT);
     assertTrue(
-        exchangeType.getExchange().getNetworkConfig().getNonFatalErrorCodes().containsAll(NON_FATAL_ERROR_CODES));
-    assertTrue(exchangeType.getExchange().getNetworkConfig().getNonFatalErrorMessages()
-        .containsAll(NON_FATAL_ERROR_MESSAGES));
+        exchangeType
+            .getExchange()
+            .getNetworkConfig()
+            .getNonFatalErrorCodes()
+            .containsAll(NON_FATAL_ERROR_CODES));
+    assertTrue(
+        exchangeType
+            .getExchange()
+            .getNetworkConfig()
+            .getNonFatalErrorMessages()
+            .containsAll(NON_FATAL_ERROR_MESSAGES));
 
     assertThat(exchangeType.getExchange().getOtherConfig().get(BUY_FEE_CONFIG_ITEM_KEY))
         .isEqualTo(BUY_FEE_CONFIG_ITEM_VALUE);
@@ -137,22 +154,32 @@ public class TestExchangeConfigurationManagement {
     ConfigurationManager.saveConfig(ExchangeType.class, exchangeType, YAML_CONFIG_TO_SAVE_FILENAME);
 
     // Read it back in
-    final ExchangeType exchangeReloaded = ConfigurationManager.loadConfig(ExchangeType.class,
-        YAML_CONFIG_TO_SAVE_FILENAME);
+    final ExchangeType exchangeReloaded =
+        ConfigurationManager.loadConfig(ExchangeType.class, YAML_CONFIG_TO_SAVE_FILENAME);
 
     assertThat(exchangeReloaded.getExchange().getName()).isEqualTo(EXCHANGE_NAME);
     assertThat(exchangeReloaded.getExchange().getAdapter()).isEqualTo(EXCHANGE_ADAPTER);
 
-    assertThat(exchangeReloaded.getExchange().getAuthenticationConfig().get(API_KEY_CONFIG_ITEM_KEY))
+    assertThat(
+            exchangeReloaded.getExchange().getAuthenticationConfig().get(API_KEY_CONFIG_ITEM_KEY))
         .isEqualTo(API_KEY_CONFIG_ITEM_VALUE);
     assertThat(exchangeReloaded.getExchange().getAuthenticationConfig().get(SECRET_CONFIG_ITEM_KEY))
         .isEqualTo(SECRET_CONFIG_ITEM_VALUE);
 
-    assertThat(exchangeReloaded.getExchange().getNetworkConfig().getConnectionTimeout()).isEqualTo(CONNECTION_TIMEOUT);
-    assertTrue(exchangeReloaded.getExchange().getNetworkConfig().getNonFatalErrorCodes()
-        .containsAll(NON_FATAL_ERROR_CODES));
-    assertTrue(exchangeReloaded.getExchange().getNetworkConfig().getNonFatalErrorMessages()
-        .containsAll(NON_FATAL_ERROR_MESSAGES));
+    assertThat(exchangeReloaded.getExchange().getNetworkConfig().getConnectionTimeout())
+        .isEqualTo(CONNECTION_TIMEOUT);
+    assertTrue(
+        exchangeReloaded
+            .getExchange()
+            .getNetworkConfig()
+            .getNonFatalErrorCodes()
+            .containsAll(NON_FATAL_ERROR_CODES));
+    assertTrue(
+        exchangeReloaded
+            .getExchange()
+            .getNetworkConfig()
+            .getNonFatalErrorMessages()
+            .containsAll(NON_FATAL_ERROR_MESSAGES));
 
     assertThat(exchangeReloaded.getExchange().getOtherConfig().get(BUY_FEE_CONFIG_ITEM_KEY))
         .isEqualTo(BUY_FEE_CONFIG_ITEM_VALUE);
