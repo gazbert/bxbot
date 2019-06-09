@@ -35,16 +35,16 @@ import java.util.List;
  */
 public class MarketsType {
 
-    private List<MarketConfig> markets;
+  private List<MarketConfig> markets;
 
-    public List<MarketConfig> getMarkets() {
-        if (markets == null) {
-            markets = new ArrayList<>();
-        }
-        return markets;
+  public List<MarketConfig> getMarkets() {
+    if (markets == null) {
+      markets = new ArrayList<>();
     }
+    return markets;
+  }
 
-    public void setMarkets(List<MarketConfig> markets) {
-        this.markets = markets;
-    }
+  public void setMarkets(List<MarketConfig> markets) {
+    this.markets = markets;
+  }
 }
