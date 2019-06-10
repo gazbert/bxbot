@@ -45,8 +45,8 @@ public class TestMarketConfig {
 
   @Test
   public void testInitialisationWorksAsExpected() {
-    final MarketConfig marketConfig = new MarketConfig(ID, NAME, BASE_CURRENCY, COUNTER_CURRENCY, IS_ENABLED,
-        TRADING_STRATEGY);
+    final MarketConfig marketConfig =
+        new MarketConfig(ID, NAME, BASE_CURRENCY, COUNTER_CURRENCY, IS_ENABLED, TRADING_STRATEGY);
     assertEquals(NAME, marketConfig.getName());
     assertEquals(ID, marketConfig.getId());
     assertEquals(BASE_CURRENCY, marketConfig.getBaseCurrency());
@@ -86,8 +86,8 @@ public class TestMarketConfig {
 
   @Test
   public void testCloningWorksAsExpected() {
-    final MarketConfig marketConfig = new MarketConfig(
-        ID, NAME, BASE_CURRENCY, COUNTER_CURRENCY, IS_ENABLED, TRADING_STRATEGY);
+    final MarketConfig marketConfig =
+        new MarketConfig(ID, NAME, BASE_CURRENCY, COUNTER_CURRENCY, IS_ENABLED, TRADING_STRATEGY);
     final MarketConfig clonedMarketConfig = new MarketConfig(marketConfig);
     assertEquals(clonedMarketConfig, marketConfig);
   }

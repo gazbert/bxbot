@@ -37,9 +37,9 @@ public class BotStatus {
   private String status;
 
   // required for jackson
-  public BotStatus() {
-  }
+  public BotStatus() {}
 
+  /** Creates a new BotStatus. */
   public BotStatus(String botId, String displayName, String status) {
     this.botId = botId;
     this.displayName = displayName;
@@ -73,9 +73,9 @@ public class BotStatus {
   @Override
   public String toString() {
     return MoreObjects.toStringHelper(this)
-               .add("botId", botId)
-               .add("displayName", displayName)
-               .add("status", status)
-               .toString();
+        .add("botId", botId)
+        .add("displayName", displayName)
+        .add("status", status)
+        .toString();
   }
 }

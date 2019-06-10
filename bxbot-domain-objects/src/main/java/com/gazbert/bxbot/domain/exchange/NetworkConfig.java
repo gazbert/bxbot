@@ -24,7 +24,6 @@
 package com.gazbert.bxbot.domain.exchange;
 
 import com.google.common.base.MoreObjects;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -71,9 +70,9 @@ public class NetworkConfig {
   @Override
   public String toString() {
     return MoreObjects.toStringHelper(this)
-               .add("connectionTimeout", connectionTimeout)
-               .add("nonFatalErrorCodes", nonFatalErrorCodes)
-               .add("nonFatalErrorMessages", nonFatalErrorMessages)
-               .toString();
+        .add("connectionTimeout", connectionTimeout)
+        .add("nonFatalErrorCodes", nonFatalErrorCodes)
+        .add("nonFatalErrorMessages", nonFatalErrorMessages)
+        .toString();
   }
 }

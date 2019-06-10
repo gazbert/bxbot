@@ -36,9 +36,9 @@ public class EmailAlertsConfig {
   private SmtpConfig smtpConfig;
 
   // required for jackson
-  public EmailAlertsConfig() {
-  }
+  public EmailAlertsConfig() {}
 
+  /** Creates a new EmailAlertsConfig. */
   public EmailAlertsConfig(boolean enabled, SmtpConfig smtpConfig) {
     this.enabled = enabled;
     this.smtpConfig = smtpConfig;
@@ -63,8 +63,8 @@ public class EmailAlertsConfig {
   @Override
   public String toString() {
     return MoreObjects.toStringHelper(this)
-               .add("enabled", enabled)
-               .add("smtpConfig", smtpConfig)
-               .toString();
+        .add("enabled", enabled)
+        .add("smtpConfig", smtpConfig)
+        .toString();
   }
 }

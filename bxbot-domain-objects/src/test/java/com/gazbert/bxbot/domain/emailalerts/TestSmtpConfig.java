@@ -44,8 +44,9 @@ public class TestSmtpConfig {
 
   @Test
   public void testInitialisationWorksAsExpected() {
-    final SmtpConfig emailAlertsConfig = new SmtpConfig(HOST, TLS_PORT, ACCOUNT_USERNAME, ACCOUNT_PASSWORD,
-        FROM_ADDRESS, TO_ADDRESS);
+    final SmtpConfig emailAlertsConfig =
+        new SmtpConfig(
+            HOST, TLS_PORT, ACCOUNT_USERNAME, ACCOUNT_PASSWORD, FROM_ADDRESS, TO_ADDRESS);
     assertEquals(HOST, emailAlertsConfig.getHost());
     assertEquals(TLS_PORT, emailAlertsConfig.getTlsPort());
     assertEquals(ACCOUNT_USERNAME, emailAlertsConfig.getAccountUsername());

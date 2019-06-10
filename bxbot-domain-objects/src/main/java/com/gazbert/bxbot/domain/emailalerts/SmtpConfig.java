@@ -40,11 +40,19 @@ public class SmtpConfig {
   private String toAddress;
 
   // required for jackson
-  public SmtpConfig() {
-  }
+  public SmtpConfig() {}
 
-  public SmtpConfig(String host, int tlsPort, String accountUsername, String accountPassword, String fromAddress,
-                    String toAddress) {
+  /**
+   * Creates a new SmtpConfig.
+   */
+  public SmtpConfig(
+      String host,
+      int tlsPort,
+      String accountUsername,
+      String accountPassword,
+      String fromAddress,
+      String toAddress) {
+
     this.host = host;
     this.tlsPort = tlsPort;
     this.accountUsername = accountUsername;
@@ -104,12 +112,12 @@ public class SmtpConfig {
   @Override
   public String toString() {
     return MoreObjects.toStringHelper(this)
-               .add("host", host)
-               .add("tlsPort", tlsPort)
-               .add("accountUsername", accountUsername)
-               // accountPassword is not included
-               .add("fromAddress", fromAddress)
-               .add("toAddress", toAddress)
-               .toString();
+        .add("host", host)
+        .add("tlsPort", tlsPort)
+        .add("accountUsername", accountUsername)
+        // accountPassword is not included
+        .add("fromAddress", fromAddress)
+        .add("toAddress", toAddress)
+        .toString();
   }
 }

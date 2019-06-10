@@ -24,7 +24,6 @@
 package com.gazbert.bxbot.domain.exchange;
 
 import com.google.common.base.MoreObjects;
-
 import java.util.Map;
 
 /**
@@ -84,11 +83,11 @@ public class ExchangeConfig {
   @Override
   public String toString() {
     return MoreObjects.toStringHelper(this)
-               .add("name", name)
-               .add("adapter", adapter)
-               // authenticationConfig is not included
-               .add("networkConfig", networkConfig)
-               .add("otherConfig", otherConfig)
-               .toString();
+        .add("name", name)
+        .add("adapter", adapter)
+        // authenticationConfig is not included
+        .add("networkConfig", networkConfig)
+        .add("otherConfig", otherConfig)
+        .toString();
   }
 }

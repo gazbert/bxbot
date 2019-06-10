@@ -24,7 +24,6 @@
 package com.gazbert.bxbot.domain.engine;
 
 import com.google.common.base.MoreObjects;
-
 import java.math.BigDecimal;
 
 /**
@@ -41,11 +40,16 @@ public class EngineConfig {
   private int tradeCycleInterval;
 
   // required for jackson
-  public EngineConfig() {
-  }
+  public EngineConfig() {}
 
-  public EngineConfig(String botId, String botName, String emergencyStopCurrency, BigDecimal emergencyStopBalance,
-                      int tradeCycleInterval) {
+  /** Creates an EngineConfig. */
+  public EngineConfig(
+      String botId,
+      String botName,
+      String emergencyStopCurrency,
+      BigDecimal emergencyStopBalance,
+      int tradeCycleInterval) {
+
     this.botId = botId;
     this.botName = botName;
     this.emergencyStopCurrency = emergencyStopCurrency;
@@ -96,11 +100,11 @@ public class EngineConfig {
   @Override
   public String toString() {
     return MoreObjects.toStringHelper(this)
-               .add("botId", botId)
-               .add("botName", botName)
-               .add("emergencyStopCurrency", emergencyStopCurrency)
-               .add("emergencyStopBalance", emergencyStopBalance)
-               .add("tradeCycleInterval", tradeCycleInterval)
-               .toString();
+        .add("botId", botId)
+        .add("botName", botName)
+        .add("emergencyStopCurrency", emergencyStopCurrency)
+        .add("emergencyStopBalance", emergencyStopBalance)
+        .add("tradeCycleInterval", tradeCycleInterval)
+        .toString();
   }
 }
