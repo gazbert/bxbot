@@ -40,8 +40,11 @@ public class TestNetworkConfigImpl {
 
   private static final Integer CONNECTION_TIMEOUT = 30;
   private static final List<Integer> NON_FATAL_ERROR_CODES = Arrays.asList(502, 503, 504);
-  private static final List<String> NON_FATAL_ERROR_MESSAGES = Arrays.asList(
-      "Connection refused", "Connection reset", "Remote host closed connection during handshake");
+  private static final List<String> NON_FATAL_ERROR_MESSAGES =
+      Arrays.asList(
+          "Connection refused",
+          "Connection reset",
+          "Remote host closed connection during handshake");
 
   @Test
   public void testInitialisationWorksAsExpected() {

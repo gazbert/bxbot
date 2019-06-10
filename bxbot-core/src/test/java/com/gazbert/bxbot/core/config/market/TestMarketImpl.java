@@ -42,7 +42,8 @@ public class TestMarketImpl {
 
   @Test
   public void testMarketIsInitialisedAsExpected() {
-    final MarketImpl market = new MarketImpl(MARKET_NAME, MARKET_ID, BASE_CURRENCY, COUNTER_CURRENCY);
+    final MarketImpl market =
+        new MarketImpl(MARKET_NAME, MARKET_ID, BASE_CURRENCY, COUNTER_CURRENCY);
     assertEquals(MARKET_NAME, market.getName());
     assertEquals(MARKET_ID, market.getId());
     assertEquals(BASE_CURRENCY, market.getBaseCurrency());

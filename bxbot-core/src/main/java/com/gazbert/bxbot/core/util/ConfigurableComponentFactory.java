@@ -27,8 +27,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * Factory for creating user components defined in the bot configuration files. These are currently the Exchange
- * Adapters and Trading Strategies.
+ * Factory for creating user components defined in the bot configuration files. These are currently
+ * the Exchange Adapters and Trading Strategies.
  *
  * @author gazbert
  */
@@ -36,12 +36,9 @@ public abstract class ConfigurableComponentFactory {
 
   private static final Logger LOG = LogManager.getLogger();
 
-  private ConfigurableComponentFactory() {
-  }
+  private ConfigurableComponentFactory() {}
 
-  /*
-   * Loads and instantiates a given class and returns it.
-   */
+  /** Loads and instantiates a given class and returns it. */
   @SuppressWarnings("unchecked")
   public static <T> T createComponent(String componentClassName) {
     try {

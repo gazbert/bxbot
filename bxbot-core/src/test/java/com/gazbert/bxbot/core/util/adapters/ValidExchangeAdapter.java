@@ -54,7 +54,8 @@ public class ValidExchangeAdapter implements TradingApi, ExchangeAdapter {
   }
 
   @Override
-  public String createOrder(String marketId, OrderType orderType, BigDecimal quantity, BigDecimal price) {
+  public String createOrder(
+      String marketId, OrderType orderType, BigDecimal quantity, BigDecimal price) {
     return null;
   }
 
@@ -84,6 +85,5 @@ public class ValidExchangeAdapter implements TradingApi, ExchangeAdapter {
   }
 
   @Override
-  public void init(ExchangeConfig config) {
-  }
+  public void init(ExchangeConfig config) {}
 }

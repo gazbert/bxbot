@@ -53,7 +53,8 @@ public class InvalidExchangeAdapterNotImplExchangeAdapter implements TradingApi 
   }
 
   @Override
-  public String createOrder(String marketId, OrderType orderType, BigDecimal quantity, BigDecimal price) {
+  public String createOrder(
+      String marketId, OrderType orderType, BigDecimal quantity, BigDecimal price) {
     return null;
   }
 

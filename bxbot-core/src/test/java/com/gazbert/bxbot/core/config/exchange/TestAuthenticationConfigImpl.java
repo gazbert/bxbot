@@ -47,7 +47,9 @@ public class TestAuthenticationConfigImpl {
     authenticationConfig.getItems().put(SECRET_CONFIG_ITEM_KEY, SECRET_FEE_CONFIG_ITEM_VALUE);
 
     assertEquals(2, authenticationConfig.getItems().size());
-    assertEquals(API_KEY_CONFIG_ITEM_VALUE, authenticationConfig.getItems().get(API_KEY_CONFIG_ITEM_KEY));
-    assertEquals(SECRET_FEE_CONFIG_ITEM_VALUE, authenticationConfig.getItems().get(SECRET_CONFIG_ITEM_KEY));
+    assertEquals(
+        API_KEY_CONFIG_ITEM_VALUE, authenticationConfig.getItems().get(API_KEY_CONFIG_ITEM_KEY));
+    assertEquals(
+        SECRET_FEE_CONFIG_ITEM_VALUE, authenticationConfig.getItems().get(SECRET_CONFIG_ITEM_KEY));
   }
 }

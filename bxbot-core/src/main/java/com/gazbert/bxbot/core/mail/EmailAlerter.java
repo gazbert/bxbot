@@ -64,18 +64,24 @@ public class EmailAlerter {
     initialise();
   }
 
+  /** Sends an email message. */
   public void sendMessage(String subject, String msgContent) {
     if (sendEmailAlertsEnabled) {
-      final Session session = Session.getInstance(smtpProps, new Authenticator() {
-        protected PasswordAuthentication getPasswordAuthentication() {
-          return new PasswordAuthentication(smtpConfig.getAccountUsername(), smtpConfig.getAccountPassword());
-        }
-      });
+      final Session session =
+          Session.getInstance(
+              smtpProps,
+              new Authenticator() {
+                protected PasswordAuthentication getPasswordAuthentication() {
+                  return new PasswordAuthentication(
+                      smtpConfig.getAccountUsername(), smtpConfig.getAccountPassword());
+                }
+              });
 
       try {
         final Message message = new MimeMessage(session);
         message.setFrom(new InternetAddress(smtpConfig.getFromAddress()));
-        message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(smtpConfig.getToAddress()));
+        message.setRecipients(
+            Message.RecipientType.TO, InternetAddress.parse(smtpConfig.getToAddress()));
         message.setSubject(subject);
         message.setText(msgContent);
 
@@ -83,12 +89,16 @@ public class EmailAlerter {
         Transport.send(message);
 
       } catch (MessagingException e) {
-        // not much we can do here, especially if the alert was critical - the bot is shutting down; just log it.
+        // not much we can do here, especially if the alert was critical - the bot is shutting down;
+        // just log it.
         LOG.error("Failed to send Email Alert. Details: " + e.getMessage(), e);
       }
     } else {
-      LOG.warn("Email Alerts are disabled. Not sending the following message: Subject: "
-          + subject + " Content: " + msgContent);
+      LOG.warn(
+          "Email Alerts are disabled. Not sending the following message: Subject: "
+              + subject
+              + " Content: "
+              + msgContent);
     }
   }
 
@@ -106,8 +116,9 @@ public class EmailAlerter {
         smtpConfig = emailAlertsConfig.getSmtpConfig();
 
         if (smtpConfig == null) {
-          final String errorMsg = "Failed to initialise Email Alerter. "
-              + "Alerts are enabled but no SMTP Config has been supplied in config.";
+          final String errorMsg =
+              "Failed to initialise Email Alerter. "
+                  + "Alerts are enabled but no SMTP Config has been supplied in config.";
           throw new IllegalStateException(errorMsg);
         }
 

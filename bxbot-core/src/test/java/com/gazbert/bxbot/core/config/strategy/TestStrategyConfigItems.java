@@ -47,7 +47,10 @@ public class TestStrategyConfigItems {
     strategyConfig.getItems().put(AMOUNT_TO_BUY_CONFIG_ITEM_KEY, AMOUNT_TO_BUY_CONFIG_ITEM_VALUE);
 
     assertEquals(2, strategyConfig.getItems().size());
-    assertEquals(BUY_PRICE_CONFIG_ITEM_VALUE, strategyConfig.getItems().get(BUY_PRICE_CONFIG_ITEM_KEY));
-    assertEquals(AMOUNT_TO_BUY_CONFIG_ITEM_VALUE, strategyConfig.getItems().get(AMOUNT_TO_BUY_CONFIG_ITEM_KEY));
+    assertEquals(
+        BUY_PRICE_CONFIG_ITEM_VALUE, strategyConfig.getItems().get(BUY_PRICE_CONFIG_ITEM_KEY));
+    assertEquals(
+        AMOUNT_TO_BUY_CONFIG_ITEM_VALUE,
+        strategyConfig.getItems().get(AMOUNT_TO_BUY_CONFIG_ITEM_KEY));
   }
 }

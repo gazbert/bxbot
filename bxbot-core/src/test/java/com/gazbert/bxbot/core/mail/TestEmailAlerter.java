@@ -47,8 +47,14 @@ import org.powermock.modules.junit4.PowerMockRunner;
  */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({Transport.class})
-@PowerMockIgnore({"javax.crypto.*", "javax.management.*",
-    "com.sun.org.apache.xerces.*", "javax.xml.parsers.*", "org.xml.sax.*", "org.w3c.dom.*"})
+@PowerMockIgnore({
+  "javax.crypto.*",
+  "javax.management.*",
+  "com.sun.org.apache.xerces.*",
+  "javax.xml.parsers.*",
+  "org.xml.sax.*",
+  "org.w3c.dom.*"
+})
 public class TestEmailAlerter {
 
   private static final String EMAIL_SUBJECT = "CRITICAL Alert message from BX-bot";
@@ -70,8 +76,8 @@ public class TestEmailAlerter {
 
   @Test
   public void testEmailAlerterInitialisedSuccessfully() {
-    expect(emailAlertsConfigService.getEmailAlertsConfig()).andReturn(
-        someEmailAlertsConfigWithAlertsEnabledAndSmtpConfig());
+    expect(emailAlertsConfigService.getEmailAlertsConfig())
+        .andReturn(someEmailAlertsConfigWithAlertsEnabledAndSmtpConfig());
     PowerMock.replayAll();
 
     final EmailAlerter emailAlerter = new EmailAlerter(emailAlertsConfigService);
@@ -82,8 +88,8 @@ public class TestEmailAlerter {
 
   @Test
   public void testEmailAlerterInitialisedSuccessfullyWhenAlertsDisabledAndNoSmtpConfigSupplied() {
-    expect(emailAlertsConfigService.getEmailAlertsConfig()).andReturn(
-        someEmailAlertsConfigWithAlertsDisabledAndNoSmtpConfig());
+    expect(emailAlertsConfigService.getEmailAlertsConfig())
+        .andReturn(someEmailAlertsConfigWithAlertsDisabledAndNoSmtpConfig());
     PowerMock.replayAll();
 
     final EmailAlerter emailAlerter = new EmailAlerter(emailAlertsConfigService);
@@ -94,8 +100,8 @@ public class TestEmailAlerter {
 
   @Test(expected = IllegalStateException.class)
   public void testEmailAlerterInitialisationFailsWhenAlertsEnabledButNoSmtpConfigSupplied() {
-    expect(emailAlertsConfigService.getEmailAlertsConfig()).andReturn(
-        someEmailAlertsConfigWithAlertsEnabledAndNoSmtpConfig());
+    expect(emailAlertsConfigService.getEmailAlertsConfig())
+        .andReturn(someEmailAlertsConfigWithAlertsEnabledAndNoSmtpConfig());
     PowerMock.replayAll();
 
     final EmailAlerter emailAlerter = new EmailAlerter(emailAlertsConfigService);
@@ -111,8 +117,8 @@ public class TestEmailAlerter {
    */
   @Test
   public void testEmailAlerterSendsMailSuccessfullyUsingMockTransport() throws Exception {
-    expect(emailAlertsConfigService.getEmailAlertsConfig()).andReturn(
-        someEmailAlertsConfigWithAlertsEnabledAndSmtpConfig());
+    expect(emailAlertsConfigService.getEmailAlertsConfig())
+        .andReturn(someEmailAlertsConfigWithAlertsEnabledAndSmtpConfig());
 
     PowerMock.mockStatic(Transport.class);
     Transport.send(EasyMock.anyObject(Message.class));
@@ -125,18 +131,20 @@ public class TestEmailAlerter {
     PowerMock.verifyAll();
   }
 
-  /*
-   * Requires real credentials to run test. Will actually send email out.
-   * Good for testing that you're all setup before deployment.
+  /**
+   * Requires real credentials to run test. Will actually send email out. Good for testing that
+   * you're all setup before deployment.
    *
-   * 1. Uncomment @Test.
-   * 2. Change the <project-root>/config/email-alerts.xml to use your account SMTP settings.
-   * 3. Comment out @RunWith(PowerMockRunner.class) and @PrepareForTest(Transport.class) at top of class - they mess
-   *    with the SSLContext and the test will fail - no time to debug why but related to:
-   *    https://code.google.com/p/powermock/issues/detail?id=288
-   * 4. Run this test on its own.
+   * <ol>
+   *   <li>Uncomment @Test.
+   *   <li>Change the [project-root]/config/email-alerts.xml to use your account SMTP settings.
+   *   <li>Comment out @RunWith(PowerMockRunner.class) and @PrepareForTest(Transport.class) at top
+   *       of class - they mess with the SSLContext and the test will fail - no time to debug why
+   *       but related to: https://code.google.com/p/powermock/issues/detail?id=288
+   *   <li>Run this test on its own.
+   * </ol>
    */
-  //@Test
+  // @Test
   public void testEmailAlerterReallySendsMailSuccessfully() {
     final EmailAlerter emailAlerter = new EmailAlerter(emailAlertsConfigService);
     emailAlerter.sendMessage(EMAIL_SUBJECT, EMAIL_MSG);
@@ -149,8 +157,9 @@ public class TestEmailAlerter {
   // ------------------------------------------------------------------------
 
   private static EmailAlertsConfig someEmailAlertsConfigWithAlertsEnabledAndSmtpConfig() {
-    final SmtpConfig smtpConfig = new SmtpConfig(
-        SMTP_HOST, SMTP_TLS_PORT, ACCOUNT_USERNAME, ACCOUNT_PASSWORD, FROM_ADDRESS, TO_ADDRESS);
+    final SmtpConfig smtpConfig =
+        new SmtpConfig(
+            SMTP_HOST, SMTP_TLS_PORT, ACCOUNT_USERNAME, ACCOUNT_PASSWORD, FROM_ADDRESS, TO_ADDRESS);
 
     final EmailAlertsConfig emailAlertsConfig = new EmailAlertsConfig();
     emailAlertsConfig.setEnabled(true);

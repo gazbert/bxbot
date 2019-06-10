@@ -25,7 +25,6 @@ package com.gazbert.bxbot.core.util.adapters;
 
 import com.gazbert.bxbot.trading.api.MarketOrderBook;
 import com.gazbert.bxbot.trading.api.OpenOrder;
-
 import java.util.List;
 
 /*
