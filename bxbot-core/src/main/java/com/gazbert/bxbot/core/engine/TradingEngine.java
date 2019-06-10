@@ -75,9 +75,14 @@ import org.springframework.stereotype.Component;
  * <p>The only time the bot does not fail hard and fast is for network issues connecting to the
  * exchange - it logs the error and retries at next trade cycle.
  *
- * <p>To keep things simple: - The engine is single threaded. - The engine only supports trading on
- * 1 exchange per instance of the bot, i.e. 1 Exchange Adapter per process. - The engine only
- * supports 1 Trading Strategy per Market.
+ * <p>To keep things simple:
+ *
+ * <ul>
+ *   <li>The engine is single threaded.
+ *   <li>The engine only supports trading on 1 exchange per instance of the bot, i.e. 1 Exchange
+ *       Adapter per process.
+ *   <li>The engine only supports 1 Trading Strategy per Market.
+ * </ul>
  *
  * @author gazbert
  */
