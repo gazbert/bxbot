@@ -920,6 +920,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter
   private ExchangeHttpResponse sendAuthenticatedRequestToExchange(
       String apiMethod, Map<String, Object> params)
       throws ExchangeNetworkException, TradingApiException {
+
     if (!initializedMacAuthentication) {
       final String errorMsg = "MAC Message security layer has not been initialized.";
       LOG.error(errorMsg);

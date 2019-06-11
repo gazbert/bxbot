@@ -723,8 +723,7 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter
 
     private final SimpleDateFormat bitstampDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-    BitstampDateDeserializer() {
-    }
+    BitstampDateDeserializer() {}
 
     public Date deserialize(JsonElement json, Type type, JsonDeserializationContext context)
         throws JsonParseException {
@@ -762,6 +761,7 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter
   private ExchangeHttpResponse sendAuthenticatedRequestToExchange(
       String apiMethod, Map<String, String> params)
       throws ExchangeNetworkException, TradingApiException {
+
     if (!initializedMacAuthentication) {
       final String errorMsg = "MAC Message security layer has not been initialized.";
       LOG.error(errorMsg);
