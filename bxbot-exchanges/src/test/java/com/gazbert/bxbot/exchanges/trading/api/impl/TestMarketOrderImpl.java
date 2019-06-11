@@ -37,38 +37,38 @@ import org.junit.Test;
  */
 public class TestMarketOrderImpl {
 
-    private static final BigDecimal PRICE = new BigDecimal("671.91");
-    private static final BigDecimal QUANTITY = new BigDecimal("0.01345453");
-    private static final BigDecimal TOTAL = PRICE.multiply(QUANTITY);
+  private static final BigDecimal PRICE = new BigDecimal("671.91");
+  private static final BigDecimal QUANTITY = new BigDecimal("0.01345453");
+  private static final BigDecimal TOTAL = PRICE.multiply(QUANTITY);
 
-    @Test
-    public void testMarketOrderIsInitialisedAsExpected() {
-        final MarketOrderImpl marketOrder = new MarketOrderImpl(OrderType.BUY, PRICE, QUANTITY, TOTAL);
+  @Test
+  public void testMarketOrderIsInitialisedAsExpected() {
+    final MarketOrderImpl marketOrder = new MarketOrderImpl(OrderType.BUY, PRICE, QUANTITY, TOTAL);
 
-        assertEquals(OrderType.BUY, marketOrder.getType());
-        assertEquals(PRICE, marketOrder.getPrice());
-        assertEquals(QUANTITY, marketOrder.getQuantity());
-        assertEquals(TOTAL, marketOrder.getTotal());
-    }
+    assertEquals(OrderType.BUY, marketOrder.getType());
+    assertEquals(PRICE, marketOrder.getPrice());
+    assertEquals(QUANTITY, marketOrder.getQuantity());
+    assertEquals(TOTAL, marketOrder.getTotal());
+  }
 
-    @Test
-    public void testSettersWorkAsExpected() {
-        final MarketOrderImpl marketOrder = new MarketOrderImpl(null, null, null, null);
-        assertNull(marketOrder.getType());
-        assertNull(marketOrder.getPrice());
-        assertNull(marketOrder.getQuantity());
-        assertNull(marketOrder.getTotal());
+  @Test
+  public void testSettersWorkAsExpected() {
+    final MarketOrderImpl marketOrder = new MarketOrderImpl(null, null, null, null);
+    assertNull(marketOrder.getType());
+    assertNull(marketOrder.getPrice());
+    assertNull(marketOrder.getQuantity());
+    assertNull(marketOrder.getTotal());
 
-        marketOrder.setType(OrderType.BUY);
-        assertEquals(OrderType.BUY, marketOrder.getType());
+    marketOrder.setType(OrderType.BUY);
+    assertEquals(OrderType.BUY, marketOrder.getType());
 
-        marketOrder.setPrice(PRICE);
-        assertEquals(PRICE, marketOrder.getPrice());
+    marketOrder.setPrice(PRICE);
+    assertEquals(PRICE, marketOrder.getPrice());
 
-        marketOrder.setQuantity(QUANTITY);
-        assertEquals(QUANTITY, marketOrder.getQuantity());
+    marketOrder.setQuantity(QUANTITY);
+    assertEquals(QUANTITY, marketOrder.getQuantity());
 
-        marketOrder.setTotal(TOTAL);
-        assertEquals(TOTAL, marketOrder.getTotal());
-    }
+    marketOrder.setTotal(TOTAL);
+    assertEquals(TOTAL, marketOrder.getTotal());
+  }
 }

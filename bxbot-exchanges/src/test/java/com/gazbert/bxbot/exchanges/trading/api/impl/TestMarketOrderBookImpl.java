@@ -67,11 +67,15 @@ public class TestMarketOrderBookImpl {
   private MarketOrder buyOrder2;
   private MarketOrder buyOrder3;
 
+  /** Sets up some MarketOrders for the tests. */
   @Before
   public void setupOrdersBeforeEachTest() {
-    sellOrder1 = new MarketOrderImpl(OrderType.SELL, ORDER_1_PRICE, ORDER_1_QUANTITY, ORDER_1_TOTAL);
-    sellOrder2 = new MarketOrderImpl(OrderType.SELL, ORDER_2_PRICE, ORDER_2_QUANTITY, ORDER_2_TOTAL);
-    sellOrder3 = new MarketOrderImpl(OrderType.SELL, ORDER_3_PRICE, ORDER_3_QUANTITY, ORDER_3_TOTAL);
+    sellOrder1 =
+        new MarketOrderImpl(OrderType.SELL, ORDER_1_PRICE, ORDER_1_QUANTITY, ORDER_1_TOTAL);
+    sellOrder2 =
+        new MarketOrderImpl(OrderType.SELL, ORDER_2_PRICE, ORDER_2_QUANTITY, ORDER_2_TOTAL);
+    sellOrder3 =
+        new MarketOrderImpl(OrderType.SELL, ORDER_3_PRICE, ORDER_3_QUANTITY, ORDER_3_TOTAL);
 
     sellOrders = new ArrayList<>();
     sellOrders.add(sellOrder1);
@@ -90,7 +94,8 @@ public class TestMarketOrderBookImpl {
 
   @Test
   public void testMarketOrderBookIsInitialisedAsExpected() {
-    final MarketOrderBookImpl marketOrderBook = new MarketOrderBookImpl(MARKET_ID, sellOrders, buyOrders);
+    final MarketOrderBookImpl marketOrderBook =
+        new MarketOrderBookImpl(MARKET_ID, sellOrders, buyOrders);
     assertEquals(MARKET_ID, marketOrderBook.getMarketId());
 
     assertEquals(sellOrders, marketOrderBook.getSellOrders());

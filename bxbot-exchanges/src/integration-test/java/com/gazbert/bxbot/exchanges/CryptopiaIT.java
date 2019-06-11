@@ -51,7 +51,8 @@ import org.junit.Test;
  *
  * @author nodueck
  */
-@Ignore("18 May 2019: Disabling test as the exchange has gone into liquidation: https://www.cryptopia.co.nz/")
+@Ignore(
+    "18 May 2019: Disabling test as the exchange has gone into liquidation: https://www.cryptopia.co.nz/")
 @Deprecated
 public class CryptopiaIT {
 
@@ -62,17 +63,18 @@ public class CryptopiaIT {
   private static final String PUBLIC_KEY = "key123";
   private static final String PRIVATE_KEY = "notGonnaTellYa";
   private static final List<Integer> nonFatalNetworkErrorCodes = Arrays.asList(502, 503, 504);
-  private static final List<String> nonFatalNetworkErrorMessages = Arrays.asList(
-      "Connection refused", "Connection reset", "Remote host closed connection during handshake");
+  private static final List<String> nonFatalNetworkErrorMessages =
+      Arrays.asList(
+          "Connection refused",
+          "Connection reset",
+          "Remote host closed connection during handshake");
 
   private ExchangeConfig exchangeConfig;
   private AuthenticationConfig authenticationConfig;
   private NetworkConfig networkConfig;
   private OtherConfig otherConfig;
 
-  /*
-   * Create some exchange config - the TradingEngine would normally do this.
-   */
+  /** Create some exchange config - the TradingEngine would normally do this. */
   @Before
   public void setupForEachTest() {
     authenticationConfig = createMock(AuthenticationConfig.class);
@@ -140,7 +142,8 @@ public class CryptopiaIT {
     assertNotNull(balanceInfo.getBalancesAvailable().get("BTC"));
 
     // Careful here: make sure the SELL_ORDER_PRICE is sensible!
-    // final String orderId = exchangeAdapter.createOrder(MARKET_ID, OrderType.SELL, SELL_ORDER_QUANTITY, SELL_ORDER_PRICE);
+    // final String orderId = exchangeAdapter.createOrder(MARKET_ID, OrderType.SELL,
+    // SELL_ORDER_QUANTITY, SELL_ORDER_PRICE);
     // final List<OpenOrder> openOrders = exchangeAdapter.getYourOpenOrders(MARKET_ID);
     // assertTrue(openOrders.stream().anyMatch(o -> o.getId().equals(orderId)));
     // assertTrue(exchangeAdapter.cancelOrder(orderId, MARKET_ID));

@@ -71,10 +71,11 @@ public class EngineConfigController extends AbstractConfigController {
   @RequestMapping(value = ENGINE_RESOURCE_PATH, method = RequestMethod.GET)
   public EngineConfig getEngine(@AuthenticationPrincipal User user) {
 
-    LOG.info("GET " + ENGINE_RESOURCE_PATH + " - getEngine() - caller: " + user.getUsername());
+    LOG.info(
+        () -> "GET " + ENGINE_RESOURCE_PATH + " - getEngine() - caller: " + user.getUsername());
 
     final EngineConfig engineConfig = engineConfigService.getEngineConfig();
-    LOG.info("Response: " + engineConfig);
+    LOG.info(() -> "Response: " + engineConfig);
     return engineConfig;
   }
 

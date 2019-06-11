@@ -68,54 +68,50 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * <p>
  * Exchange Adapter for integrating with the itBit exchange. The itBit API is documented <a
  * href="https://www.itbit.com/h/api">here</a>.
- * </p>
- * <p>
- * <strong>
- * DISCLAIMER: This Exchange Adapter is provided as-is; it might have bugs in it and you could lose money. Despite
- * running live on itBit, it has only been unit tested up until the point of calling the {@link
- * #sendPublicRequestToExchange(String)} and {@link #sendAuthenticatedRequestToExchange(String, String, Map)} methods.
- * Use it at our own risk!
+ *
+ * <p><strong> DISCLAIMER: This Exchange Adapter is provided as-is; it might have bugs in it and you
+ * could lose money. Despite running live on itBit, it has only been unit tested up until the point
+ * of calling the {@link #sendPublicRequestToExchange(String)} and {@link
+ * #sendAuthenticatedRequestToExchange(String, String, Map)} methods. Use it at our own risk!
  * </strong>
- * </p>
- * <p>
- * The adapter only supports the REST implementation of the <a href="https://api.itbit.com/docs">Trading API</a>.
- * </p>
- * <p>The itBit exchange uses XBT for the Bitcoin currency code instead of the usual BTC. So, if you were to call
- * {@link #getBalanceInfo()}, you would need to use XBT (instead of BTC) as the key when fetching your Bitcoin balance
- * info from the returned maps.</p>
- * <p>
- * The adapter also assumes that only 1 exchange account wallet has been created on the exchange. If there is more than
- * 1, it will use the first one it finds when performing the {@link #getBalanceInfo()} call.
- * </p>
- * <p>
- * Exchange fees are loaded from the exchange.xml file on startup; they are not fetched from the exchange at runtime as
- * the itBit REST API v1 does not support this. The fees are used across all markets. Make sure you keep an eye on the
- * <a href="https://www.itbit.com/h/fees">exchange fees</a> and update the config accordingly. There are different
- * exchange fees for <a href="https://www.itbit.com/h/fees-maker-taker-model">Takers and Makers</a> - this adapter will
+ *
+ * <p>The adapter only supports the REST implementation of the <a
+ * href="https://api.itbit.com/docs">Trading API</a>.
+ *
+ * <p>The itBit exchange uses XBT for the Bitcoin currency code instead of the usual BTC. So, if you
+ * were to call {@link #getBalanceInfo()}, you would need to use XBT (instead of BTC) as the key
+ * when fetching your Bitcoin balance info from the returned maps.
+ *
+ * <p>The adapter also assumes that only 1 exchange account wallet has been created on the exchange.
+ * If there is more than 1, it will use the first one it finds when performing the {@link
+ * #getBalanceInfo()} call.
+ *
+ * <p>Exchange fees are loaded from the exchange.xml file on startup; they are not fetched from the
+ * exchange at runtime as the itBit REST API v1 does not support this. The fees are used across all
+ * markets. Make sure you keep an eye on the <a href="https://www.itbit.com/h/fees">exchange
+ * fees</a> and update the config accordingly. There are different exchange fees for <a
+ * href="https://www.itbit.com/h/fees-maker-taker-model">Takers and Makers</a> - this adapter will
  * use the <em>Taker</em> fees to keep things simple for now.
- * </p>
- * <p>
- * NOTE: ItBit requires all price values to be limited to 2 decimal places and amount values to be limited to 4 decimal
- * places when creating orders. This adapter truncates any prices with more than 2 decimal places and rounds using
- * {@link java.math.RoundingMode#HALF_EVEN}, E.g. 250.176 would be sent to the exchange as 250.18. The same is done for
- * the order amount, but to 4 decimal places.
- * </p>
- * <p>
- * The exchange regularly goes down for maintenance. If the keep-alive-during-maintenance config-item is set to true in
- * the exchange.xml config file, the bot will stay alive and wait until the next trade cycle.
- * </p>
- * <p>
- * The Exchange Adapter is <em>not</em> thread safe. It expects to be called using a single thread in order to preserve
- * trade execution order. The {@link URLConnection} achieves this by blocking/waiting on the input stream (response) for
- * each API call.
- * </p>
- * <p>
- * The {@link TradingApi} calls will throw a {@link ExchangeNetworkException} if a network error occurs trying to
- * connect to the exchange. A {@link TradingApiException} is thrown for <em>all</em> other failures.
- * </p>
+ *
+ * <p>NOTE: ItBit requires all price values to be limited to 2 decimal places and amount values to
+ * be limited to 4 decimal places when creating orders. This adapter truncates any prices with more
+ * than 2 decimal places and rounds using {@link java.math.RoundingMode#HALF_EVEN}, E.g. 250.176
+ * would be sent to the exchange as 250.18. The same is done for the order amount, but to 4 decimal
+ * places.
+ *
+ * <p>The exchange regularly goes down for maintenance. If the keep-alive-during-maintenance
+ * config-item is set to true in the exchange.xml config file, the bot will stay alive and wait
+ * until the next trade cycle.
+ *
+ * <p>The Exchange Adapter is <em>not</em> thread safe. It expects to be called using a single
+ * thread in order to preserve trade execution order. The {@link URLConnection} achieves this by
+ * blocking/waiting on the input stream (response) for each API call.
+ *
+ * <p>The {@link TradingApi} calls will throw a {@link ExchangeNetworkException} if a network error
+ * occurs trying to connect to the exchange. A {@link TradingApiException} is thrown for
+ * <em>all</em> other failures.
  *
  * @author gazbert
  * @since 1.0
@@ -125,13 +121,16 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
   private static final Logger LOG = LogManager.getLogger();
 
   private static final String ITBIT_API_VERSION = "v1";
-  private static final String PUBLIC_API_BASE_URL = "https://api.itbit.com/" + ITBIT_API_VERSION + "/";
+  private static final String PUBLIC_API_BASE_URL =
+      "https://api.itbit.com/" + ITBIT_API_VERSION + "/";
   private static final String AUTHENTICATED_API_URL = PUBLIC_API_BASE_URL;
 
-  private static final String UNEXPECTED_ERROR_MSG = "Unexpected error has occurred in itBit Exchange Adapter. ";
-  private static final String UNEXPECTED_IO_ERROR_MSG = "Failed to connect to Exchange due to unexpected IO error.";
-  private static final String UNDER_MAINTENANCE_WARNING_MESSAGE = "Exchange is undergoing maintenance - keep alive "
-      + "is true.";
+  private static final String UNEXPECTED_ERROR_MSG =
+      "Unexpected error has occurred in itBit Exchange Adapter. ";
+  private static final String UNEXPECTED_IO_ERROR_MSG =
+      "Failed to connect to Exchange due to unexpected IO error.";
+  private static final String UNDER_MAINTENANCE_WARNING_MESSAGE =
+      "Exchange is undergoing maintenance - keep alive " + "is true.";
   private static final String USER_ID_PROPERTY_NAME = "userId";
   private static final String KEY_PROPERTY_NAME = "key";
   private static final String SECRET_PROPERTY_NAME = "secret";
@@ -139,9 +138,10 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
   private static final String BUY_FEE_PROPERTY_NAME = "buy-fee";
   private static final String SELL_FEE_PROPERTY_NAME = "sell-fee";
 
-  private static final String KEEP_ALIVE_DURING_MAINTENANCE_PROPERTY_NAME = "keep-alive-during-maintenance";
-  private static final String EXCHANGE_UNDERGOING_MAINTENANCE_RESPONSE = "The itBit API is currently undergoing "
-      + "maintenance";
+  private static final String KEEP_ALIVE_DURING_MAINTENANCE_PROPERTY_NAME =
+      "keep-alive-during-maintenance";
+  private static final String EXCHANGE_UNDERGOING_MAINTENANCE_RESPONSE =
+      "The itBit API is currently undergoing " + "maintenance";
   private BigDecimal buyFeePercentage;
   private BigDecimal sellFeePercentage;
 
@@ -176,7 +176,8 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
   // ------------------------------------------------------------------------------------------------
 
   @Override
-  public String createOrder(String marketId, OrderType orderType, BigDecimal quantity, BigDecimal price)
+  public String createOrder(
+      String marketId, OrderType orderType, BigDecimal quantity, BigDecimal price)
       throws TradingApiException, ExchangeNetworkException {
     ExchangeHttpResponse response = null;
 
@@ -194,7 +195,8 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
 
       // Display param seems to be optional as per the itBit sample code:
       // https://github.com/itbit/itbit-restapi-python/blob/master/itbit_api.py - def create_order
-      // params.put("display", new DecimalFormat("#.####", getDecimalFormatSymbols()).format(quantity)); // use the same as amount
+      // params.put("display", new DecimalFormat("#.####",
+      // getDecimalFormatSymbols()).format(quantity)); // use the same as amount
 
       // note we need to limit price to 2 decimal places else exchange will barf
       params.put("price", new DecimalFormat("#.##", getDecimalFormatSymbols()).format(price));
@@ -210,10 +212,13 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
       } else if (orderType == OrderType.SELL) {
         params.put("side", "sell");
       } else {
-        final String errorMsg = "Invalid order type: " + orderType
-            + " - Can only be "
-            + OrderType.BUY.getStringValue() + " or "
-            + OrderType.SELL.getStringValue();
+        final String errorMsg =
+            "Invalid order type: "
+                + orderType
+                + " - Can only be "
+                + OrderType.BUY.getStringValue()
+                + " or "
+                + OrderType.SELL.getStringValue();
         LOG.error(errorMsg);
         throw new IllegalArgumentException(errorMsg);
       }
@@ -222,15 +227,15 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
       // params.put("metadata", "{}");
       // params.put("clientOrderIdentifier", "id_123");
 
-      response = sendAuthenticatedRequestToExchange(
-          "POST", "wallets/" + walletId + "/orders", params);
+      response =
+          sendAuthenticatedRequestToExchange("POST", "wallets/" + walletId + "/orders", params);
       if (LOG.isDebugEnabled()) {
         LOG.debug("Create Order response: " + response);
       }
 
       if (response.getStatusCode() == HttpURLConnection.HTTP_CREATED) {
-        final ItBitNewOrderResponse itBitNewOrderResponse = gson.fromJson(response.getPayload(),
-            ItBitNewOrderResponse.class);
+        final ItBitNewOrderResponse itBitNewOrderResponse =
+            gson.fromJson(response.getPayload(), ItBitNewOrderResponse.class);
         return itBitNewOrderResponse.id;
       } else {
         final String errorMsg = "Failed to create order on exchange. Details: " + response;
@@ -247,7 +252,8 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
         throw new ExchangeNetworkException(UNDER_MAINTENANCE_WARNING_MESSAGE);
       }
 
-      final String unexpectedErrorMsg = UNEXPECTED_ERROR_MSG + (response == null ? "NULL RESPONSE" : response);
+      final String unexpectedErrorMsg =
+          UNEXPECTED_ERROR_MSG + (response == null ? "NULL RESPONSE" : response);
       LOG.error(unexpectedErrorMsg, e);
       throw new TradingApiException(unexpectedErrorMsg, e);
     }
@@ -257,8 +263,8 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
    * marketId is not needed for cancelling orders on this exchange.
    */
   @Override
-  public boolean cancelOrder(String orderId, String marketIdNotNeeded) throws TradingApiException,
-      ExchangeNetworkException {
+  public boolean cancelOrder(String orderId, String marketIdNotNeeded)
+      throws TradingApiException, ExchangeNetworkException {
     ExchangeHttpResponse response = null;
 
     try {
@@ -267,8 +273,9 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
         getBalanceInfo();
       }
 
-      response = sendAuthenticatedRequestToExchange(
-          "DELETE", "wallets/" + walletId + "/orders/" + orderId, null);
+      response =
+          sendAuthenticatedRequestToExchange(
+              "DELETE", "wallets/" + walletId + "/orders/" + orderId, null);
       if (LOG.isDebugEnabled()) {
         LOG.debug("Cancel Order response: " + response);
       }
@@ -287,19 +294,22 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
 
     } catch (Exception e) {
       if (isExchangeUndergoingMaintenance(response) && keepAliveDuringMaintenance) {
-        final String underMaintenanceMsg = "Exchange is undergoing maintenance - keep alive is true.";
+        final String underMaintenanceMsg =
+            "Exchange is undergoing maintenance - keep alive is true.";
         LOG.warn(() -> underMaintenanceMsg);
         throw new ExchangeNetworkException(underMaintenanceMsg);
       }
 
-      final String unexpectedErrorMsg = UNEXPECTED_ERROR_MSG + (response == null ? "NULL RESPONSE" : response);
+      final String unexpectedErrorMsg =
+          UNEXPECTED_ERROR_MSG + (response == null ? "NULL RESPONSE" : response);
       LOG.error(unexpectedErrorMsg, e);
       throw new TradingApiException(unexpectedErrorMsg, e);
     }
   }
 
   @Override
-  public List<OpenOrder> getYourOpenOrders(String marketId) throws TradingApiException, ExchangeNetworkException {
+  public List<OpenOrder> getYourOpenOrders(String marketId)
+      throws TradingApiException, ExchangeNetworkException {
 
     ExchangeHttpResponse response = null;
 
@@ -312,14 +322,15 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
       final Map<String, String> params = createRequestParamMap();
       params.put("status", "open"); // we only want open orders
 
-      response = sendAuthenticatedRequestToExchange(
-          "GET", "wallets/" + walletId + "/orders", params);
+      response =
+          sendAuthenticatedRequestToExchange("GET", "wallets/" + walletId + "/orders", params);
       if (LOG.isDebugEnabled()) {
         LOG.debug("Open Orders response: " + response);
       }
 
       if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
-        final ItBitYourOrder[] itBitOpenOrders = gson.fromJson(response.getPayload(), ItBitYourOrder[].class);
+        final ItBitYourOrder[] itBitOpenOrders =
+            gson.fromJson(response.getPayload(), ItBitYourOrder[].class);
 
         // adapt
         final List<OpenOrder> ordersToReturn = new ArrayList<>();
@@ -339,24 +350,31 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
               break;
             default:
               throw new TradingApiException(
-                  "Unrecognised order type received in getYourOpenOrders(). Value: " + itBitOpenOrder.side);
+                  "Unrecognised order type received in getYourOpenOrders(). Value: "
+                      + itBitOpenOrder.side);
           }
 
-          final OpenOrder order = new OpenOrderImpl(
-              itBitOpenOrder.id,
-              Date.from(Instant.parse(itBitOpenOrder.createdTime)), // format: 2015-10-01T18:10:39.3930000Z
-              marketId,
-              orderType,
-              itBitOpenOrder.price,
-              itBitOpenOrder.amount.subtract(itBitOpenOrder.amountFilled), // remaining - not provided by itBit
-              itBitOpenOrder.amount,
-              itBitOpenOrder.price.multiply(itBitOpenOrder.amount)); // total - not provided by itBit
+          final OpenOrder order =
+              new OpenOrderImpl(
+                  itBitOpenOrder.id,
+                  Date.from(
+                      Instant.parse(
+                          itBitOpenOrder.createdTime)), // format: 2015-10-01T18:10:39.3930000Z
+                  marketId,
+                  orderType,
+                  itBitOpenOrder.price,
+                  itBitOpenOrder.amount.subtract(
+                      itBitOpenOrder.amountFilled), // remaining - not provided by itBit
+                  itBitOpenOrder.amount,
+                  itBitOpenOrder.price.multiply(
+                      itBitOpenOrder.amount)); // total - not provided by itBit
 
           ordersToReturn.add(order);
         }
         return ordersToReturn;
       } else {
-        final String errorMsg = "Failed to get your open orders from exchange. Details: " + response;
+        final String errorMsg =
+            "Failed to get your open orders from exchange. Details: " + response;
         LOG.error(errorMsg);
         throw new TradingApiException(errorMsg);
       }
@@ -370,14 +388,16 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
         throw new ExchangeNetworkException(UNDER_MAINTENANCE_WARNING_MESSAGE);
       }
 
-      final String unexpectedErrorMsg = UNEXPECTED_ERROR_MSG + (response == null ? "NULL RESPONSE" : response);
+      final String unexpectedErrorMsg =
+          UNEXPECTED_ERROR_MSG + (response == null ? "NULL RESPONSE" : response);
       LOG.error(unexpectedErrorMsg, e);
       throw new TradingApiException(unexpectedErrorMsg, e);
     }
   }
 
   @Override
-  public MarketOrderBook getMarketOrders(String marketId) throws TradingApiException, ExchangeNetworkException {
+  public MarketOrderBook getMarketOrders(String marketId)
+      throws TradingApiException, ExchangeNetworkException {
 
     ExchangeHttpResponse response = null;
 
@@ -389,31 +409,35 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
 
       if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
 
-        final ItBitOrderBookWrapper orderBook = gson.fromJson(response.getPayload(), ItBitOrderBookWrapper.class);
+        final ItBitOrderBookWrapper orderBook =
+            gson.fromJson(response.getPayload(), ItBitOrderBookWrapper.class);
 
         final List<MarketOrder> buyOrders = new ArrayList<>();
         for (ItBitMarketOrder itBitBuyOrder : orderBook.bids) {
-          final MarketOrder buyOrder = new MarketOrderImpl(
-              OrderType.BUY,
-              itBitBuyOrder.get(0),
-              itBitBuyOrder.get(1),
-              itBitBuyOrder.get(0).multiply(itBitBuyOrder.get(1)));
+          final MarketOrder buyOrder =
+              new MarketOrderImpl(
+                  OrderType.BUY,
+                  itBitBuyOrder.get(0),
+                  itBitBuyOrder.get(1),
+                  itBitBuyOrder.get(0).multiply(itBitBuyOrder.get(1)));
           buyOrders.add(buyOrder);
         }
 
         final List<MarketOrder> sellOrders = new ArrayList<>();
         for (ItBitMarketOrder itBitSellOrder : orderBook.asks) {
-          final MarketOrder sellOrder = new MarketOrderImpl(
-              OrderType.SELL,
-              itBitSellOrder.get(0),
-              itBitSellOrder.get(1),
-              itBitSellOrder.get(0).multiply(itBitSellOrder.get(1)));
+          final MarketOrder sellOrder =
+              new MarketOrderImpl(
+                  OrderType.SELL,
+                  itBitSellOrder.get(0),
+                  itBitSellOrder.get(1),
+                  itBitSellOrder.get(0).multiply(itBitSellOrder.get(1)));
           sellOrders.add(sellOrder);
         }
 
         return new MarketOrderBookImpl(marketId, sellOrders, buyOrders);
       } else {
-        final String errorMsg = "Failed to get market order book from exchange. Details: " + response;
+        final String errorMsg =
+            "Failed to get market order book from exchange. Details: " + response;
         LOG.error(errorMsg);
         throw new TradingApiException(errorMsg);
       }
@@ -428,14 +452,16 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
         throw new ExchangeNetworkException(UNDER_MAINTENANCE_WARNING_MESSAGE);
       }
 
-      final String unexpectedErrorMsg = UNEXPECTED_ERROR_MSG + (response == null ? "NULL RESPONSE" : response);
+      final String unexpectedErrorMsg =
+          UNEXPECTED_ERROR_MSG + (response == null ? "NULL RESPONSE" : response);
       LOG.error(unexpectedErrorMsg, e);
       throw new TradingApiException(unexpectedErrorMsg, e);
     }
   }
 
   @Override
-  public BigDecimal getLatestMarketPrice(String marketId) throws TradingApiException, ExchangeNetworkException {
+  public BigDecimal getLatestMarketPrice(String marketId)
+      throws TradingApiException, ExchangeNetworkException {
 
     ExchangeHttpResponse response = null;
 
@@ -464,7 +490,8 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
         throw new ExchangeNetworkException(UNDER_MAINTENANCE_WARNING_MESSAGE);
       }
 
-      final String unexpectedErrorMsg = UNEXPECTED_ERROR_MSG + (response == null ? "NULL RESPONSE" : response);
+      final String unexpectedErrorMsg =
+          UNEXPECTED_ERROR_MSG + (response == null ? "NULL RESPONSE" : response);
       LOG.error(unexpectedErrorMsg, e);
       throw new TradingApiException(unexpectedErrorMsg, e);
     }
@@ -485,7 +512,8 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
       }
 
       if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
-        final ItBitWallet[] itBitWallets = gson.fromJson(response.getPayload(), ItBitWallet[].class);
+        final ItBitWallet[] itBitWallets =
+            gson.fromJson(response.getPayload(), ItBitWallet[].class);
 
         // assume only 1 trading account wallet being used on exchange
         final ItBitWallet exchangeWallet = itBitWallets[0];
@@ -508,10 +536,12 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
           }
         }
 
-        // 2nd arg of BalanceInfo constructor for reserved/on-hold balances is not provided by exchange.
+        // 2nd arg of BalanceInfo constructor for reserved/on-hold balances is not provided by
+        // exchange.
         return new BalanceInfoImpl(balancesAvailable, new HashMap<>());
       } else {
-        final String errorMsg = "Failed to get your wallet balance info from exchange. Details: " + response;
+        final String errorMsg =
+            "Failed to get your wallet balance info from exchange. Details: " + response;
         LOG.error(errorMsg);
         throw new TradingApiException(errorMsg);
       }
@@ -525,7 +555,8 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
         throw new ExchangeNetworkException(UNDER_MAINTENANCE_WARNING_MESSAGE);
       }
 
-      final String unexpectedErrorMsg = UNEXPECTED_ERROR_MSG + (response == null ? "NULL RESPONSE" : response);
+      final String unexpectedErrorMsg =
+          UNEXPECTED_ERROR_MSG + (response == null ? "NULL RESPONSE" : response);
       LOG.error(unexpectedErrorMsg, e);
       throw new TradingApiException(unexpectedErrorMsg, e);
     }
@@ -533,15 +564,19 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
 
   @Override
   public BigDecimal getPercentageOfBuyOrderTakenForExchangeFee(String marketId) {
-    // itBit does not provide API call for fetching % buy fee; it only provides the fee monetary value for a
-    // given order via /wallets/{walletId}/trades API call. We load the % fee statically from exchange.xml file.
+    // itBit does not provide API call for fetching % buy fee; it only provides the fee monetary
+    // value for a
+    // given order via /wallets/{walletId}/trades API call. We load the % fee statically from
+    // exchange.xml file.
     return buyFeePercentage;
   }
 
   @Override
   public BigDecimal getPercentageOfSellOrderTakenForExchangeFee(String marketId) {
-    // itBit does not provide API call for fetching % sell fee; it only provides the fee monetary value for a
-    // given order via/wallets/{walletId}/trades API call. We load the % fee statically from exchange.xml file.
+    // itBit does not provide API call for fetching % sell fee; it only provides the fee monetary
+    // value for a
+    // given order via/wallets/{walletId}/trades API call. We load the % fee statically from
+    // exchange.xml file.
     return sellFeePercentage;
   }
 
@@ -549,7 +584,6 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
   public String getImplName() {
     return "itBit REST API v1";
   }
-
 
   @Override
   public Ticker getTicker(String marketId) throws TradingApiException, ExchangeNetworkException {
@@ -589,7 +623,8 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
         throw new ExchangeNetworkException(UNDER_MAINTENANCE_WARNING_MESSAGE);
       }
 
-      final String unexpectedErrorMsg = UNEXPECTED_ERROR_MSG + (response == null ? "NULL RESPONSE" : response);
+      final String unexpectedErrorMsg =
+          UNEXPECTED_ERROR_MSG + (response == null ? "NULL RESPONSE" : response);
       LOG.error(unexpectedErrorMsg, e);
       throw new TradingApiException(unexpectedErrorMsg, e);
     }
@@ -601,34 +636,28 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
   // ------------------------------------------------------------------------------------------------
 
   /**
+   * GSON class for holding itBit order returned from: "Cancel Order"
+   * /wallets/{walletId}/orders/{orderId} API call.
+   *
    * <p>
-   * GSON class for holding itBit order returned from: "Cancel Order" /wallets/{walletId}/orders/{orderId} API call.
-   * </p>
-   * <p>
-   * <p>
-   * No payload returned by exchange on success.
-   * </p>
+   *
+   * <p>No payload returned by exchange on success.
    */
-  private static class ItBitCancelOrderResponse {
-
-  }
+  private static class ItBitCancelOrderResponse {}
 
   /**
+   * GSON class for holding itBit new order response from: "Create New Order" POST
+   * /wallets/{walletId}/orders API call.
+   *
    * <p>
-   * GSON class for holding itBit new order response from: "Create New Order" POST /wallets/{walletId}/orders API call.
-   * </p>
-   * <p>
-   * <p>
-   * It is exactly the same as order returned in Get Orders response.
-   * </p>
+   *
+   * <p>It is exactly the same as order returned in Get Orders response.
    */
-  private static class ItBitNewOrderResponse extends ItBitYourOrder {
-
-  }
+  private static class ItBitNewOrderResponse extends ItBitYourOrder {}
 
   /**
-   * GSON class for holding itBit order returned from: "Get Orders" /wallets/{walletId}/orders{?instrument,page,perPage,status}
-   * API call.
+   * GSON class for holding itBit order returned from: "Get Orders"
+   * /wallets/{walletId}/orders{?instrument,page,perPage,status} API call.
    */
   private static class ItBitYourOrder {
 
@@ -668,15 +697,12 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
     }
   }
 
-  /**
-   * GSON class for holding Your Order metadata. No idea what this is / or gonna be...
-   */
-  private static class ItBitOrderMetadata {
-
-  }
+  /** GSON class for holding Your Order metadata. No idea what this is / or gonna be... */
+  private static class ItBitOrderMetadata {}
 
   /**
-   * GSON class for holding itBit ticker returned from: "Get Order Book" /markets/{tickerSymbol}/order_book API call.
+   * GSON class for holding itBit ticker returned from: "Get Order Book"
+   * /markets/{tickerSymbol}/order_book API call.
    */
   private static class ItBitOrderBookWrapper {
 
@@ -685,15 +711,13 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
 
     @Override
     public String toString() {
-      return MoreObjects.toStringHelper(this)
-          .add("bids", bids)
-          .add("asks", asks)
-          .toString();
+      return MoreObjects.toStringHelper(this).add("bids", bids).add("asks", asks).toString();
     }
   }
 
   /**
-   * GSON class for holding Market Orders. First element in array is price, second element is amount.
+   * GSON class for holding Market Orders. First element in array is price, second element is
+   * amount.
    */
   private static class ItBitMarketOrder extends ArrayList<BigDecimal> {
 
@@ -701,7 +725,8 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
   }
 
   /**
-   * GSON class for holding itBit ticker returned from: "Get Ticker" /markets/{tickerSymbol}/ticker API call.
+   * GSON class for holding itBit ticker returned from: "Get Ticker" /markets/{tickerSymbol}/ticker
+   * API call.
    */
   private static class ItBitTicker {
 
@@ -748,7 +773,8 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
   }
 
   /**
-   * GSON class for holding itBit wallets returned from: "Get All Wallets" /wallets{?userId,page,perPage} API call.
+   * GSON class for holding itBit wallets returned from: "Get All Wallets"
+   * /wallets{?userId,page,perPage} API call.
    */
   private static class ItBitWallet {
 
@@ -768,9 +794,7 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
     }
   }
 
-  /**
-   * GSON class for holding itBit wallet balances.
-   */
+  /** GSON class for holding itBit wallet balances. */
   private static class ItBitBalance {
 
     public BigDecimal availableBalance;
@@ -791,8 +815,8 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
   //  Transport layer
   // ------------------------------------------------------------------------------------------------
 
-  private ExchangeHttpResponse sendPublicRequestToExchange(String apiMethod) throws ExchangeNetworkException,
-      TradingApiException {
+  private ExchangeHttpResponse sendPublicRequestToExchange(String apiMethod)
+      throws ExchangeNetworkException, TradingApiException {
     try {
       final URL url = new URL(PUBLIC_API_BASE_URL + apiMethod);
       return makeNetworkRequest(url, "GET", null, createHeaderParamMap());
@@ -810,8 +834,8 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
    * Quite complex, but well documented: https://api.itbit.com/docs#faq-2.-how-do-i-sign-a-request
    */
   private ExchangeHttpResponse sendAuthenticatedRequestToExchange(
-      String httpMethod, String apiMethod, Map<String, String> params) throws
-      ExchangeNetworkException, TradingApiException {
+      String httpMethod, String apiMethod, Map<String, String> params)
+      throws ExchangeNetworkException, TradingApiException {
 
     if (!initializedMACAuthentication) {
       final String errorMsg = "MAC Message security layer has not been initialized.";
@@ -844,7 +868,6 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
       signatureParamList.add(httpMethod);
 
       switch (httpMethod) {
-
         case "GET":
           LOG.debug(() -> "Building secure GET request...");
 
@@ -855,7 +878,7 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
               queryParamBuilder.append("&");
             }
             // Don't URL encode as it messed up the UUID params, e.g. wallet id
-            //queryParams += param + "=" + URLEncoder.encode(params.get(param));
+            // queryParams += param + "=" + URLEncoder.encode(params.get(param));
             queryParamBuilder.append(param.getKey());
             queryParamBuilder.append("=");
             queryParamBuilder.append(param.getValue());
@@ -872,7 +895,8 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
             signatureParamList.add(invocationUrl);
           }
 
-          signatureParamList.add(requestBodyForSignature); // request body is empty JSON string for a GET
+          signatureParamList.add(
+              requestBodyForSignature); // request body is empty JSON string for a GET
           break;
 
         case "POST":
@@ -890,11 +914,13 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
 
           invocationUrl = AUTHENTICATED_API_URL + apiMethod;
           signatureParamList.add(invocationUrl);
-          signatureParamList.add(requestBodyForSignature); // request body is empty JSON string for a DELETE
+          signatureParamList.add(
+              requestBodyForSignature); // request body is empty JSON string for a DELETE
           break;
 
         default:
-          throw new IllegalArgumentException("Don't know how to build secure [" + httpMethod + "] request!");
+          throw new IllegalArgumentException(
+              "Don't know how to build secure [" + httpMethod + "] request!");
       }
 
       // Add the nonce
@@ -920,7 +946,8 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
       final byte[] messageHash = md.digest();
 
       // Prepend the UTF-8 encoded request URL to the message hash.
-      // Generate the SHA-512 HMAC of the prependRequestUrlToMsgHash using your API secret as the key.
+      // Generate the SHA-512 HMAC of the prependRequestUrlToMsgHash using your API secret as the
+      // key.
       mac.reset(); // force reset
       mac.update(invocationUrl.getBytes(StandardCharsets.UTF_8));
       mac.update(messageHash);
@@ -932,7 +959,8 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
       requestHeaders.put("Content-Type", "application/json");
 
       // Add Authorization header
-      // Generate the authorization header by concatenating the client key with a colon separator (‘:’)
+      // Generate the authorization header by concatenating the client key with a colon separator
+      // (‘:’)
       // and the signature. The resulting string should look like "clientkey:signature".
       requestHeaders.put("Authorization", key + ":" + signature);
 
@@ -962,7 +990,8 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
    */
   private void initSecureMessageLayer() {
     try {
-      final SecretKeySpec keyspec = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), "HmacSHA512");
+      final SecretKeySpec keyspec =
+          new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), "HmacSHA512");
       mac = Mac.getInstance("HmacSHA512");
       mac.init(keyspec);
       initializedMACAuthentication = true;
@@ -992,15 +1021,17 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
     final OtherConfig otherConfig = getOtherConfig(exchangeConfig);
 
     final String buyFeeInConfig = getOtherConfigItem(otherConfig, BUY_FEE_PROPERTY_NAME);
-    buyFeePercentage = new BigDecimal(buyFeeInConfig).divide(new BigDecimal("100"), 8, RoundingMode.HALF_UP);
+    buyFeePercentage =
+        new BigDecimal(buyFeeInConfig).divide(new BigDecimal("100"), 8, RoundingMode.HALF_UP);
     LOG.info(() -> "Buy fee % in BigDecimal format: " + buyFeePercentage);
 
     final String sellFeeInConfig = getOtherConfigItem(otherConfig, SELL_FEE_PROPERTY_NAME);
-    sellFeePercentage = new BigDecimal(sellFeeInConfig).divide(new BigDecimal("100"), 8, RoundingMode.HALF_UP);
+    sellFeePercentage =
+        new BigDecimal(sellFeeInConfig).divide(new BigDecimal("100"), 8, RoundingMode.HALF_UP);
     LOG.info(() -> "Sell fee % in BigDecimal format: " + sellFeePercentage);
 
-    final String keepAliveDuringMaintenanceConfig = getOtherConfigItem(otherConfig,
-        KEEP_ALIVE_DURING_MAINTENANCE_PROPERTY_NAME);
+    final String keepAliveDuringMaintenanceConfig =
+        getOtherConfigItem(otherConfig, KEEP_ALIVE_DURING_MAINTENANCE_PROPERTY_NAME);
     if (keepAliveDuringMaintenanceConfig != null && !keepAliveDuringMaintenanceConfig.isEmpty()) {
       keepAliveDuringMaintenance = Boolean.valueOf(keepAliveDuringMaintenanceConfig);
       LOG.info(() -> "Keep Alive During Maintenance: " + keepAliveDuringMaintenance);
@@ -1014,8 +1045,10 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
   // ------------------------------------------------------------------------------------------------
 
   private void initGson() {
-    // We need to disable HTML escaping for this adapter else GSON will change = to unicode for query strings, e.g.
-    // https://api.itbit.com/v1/wallets?userId=56DA621F --> https://api.itbit.com/v1/wallets?userId\u003d56DA621F
+    // We need to disable HTML escaping for this adapter else GSON will change = to unicode for
+    // query strings, e.g.
+    // https://api.itbit.com/v1/wallets?userId=56DA621F -->
+    // https://api.itbit.com/v1/wallets?userId\u003d56DA621F
     final GsonBuilder gsonBuilder = new GsonBuilder().disableHtmlEscaping();
     gson = gsonBuilder.create();
   }
@@ -1046,8 +1079,8 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
    * Hack for unit-testing transport layer.
    */
   private ExchangeHttpResponse makeNetworkRequest(
-      URL url, String httpMethod, String postData, Map<String, String> requestHeaders) throws
-      TradingApiException, ExchangeNetworkException {
+      URL url, String httpMethod, String postData, Map<String, String> requestHeaders)
+      throws TradingApiException, ExchangeNetworkException {
     return super.sendNetworkRequest(url, httpMethod, postData, requestHeaders);
   }
 }

@@ -69,14 +69,15 @@ public class StrategyConfigController extends AbstractConfigController {
   @RequestMapping(value = STRATEGIES_RESOURCE_PATH, method = RequestMethod.GET)
   public List<StrategyConfig> getAllStrategies(@AuthenticationPrincipal User user) {
     LOG.info(
-        "GET "
-            + STRATEGIES_RESOURCE_PATH
-            + " - getAllStrategies() - caller: "
-            + user.getUsername());
+        () ->
+            "GET "
+                + STRATEGIES_RESOURCE_PATH
+                + " - getAllStrategies() - caller: "
+                + user.getUsername());
 
     final List<StrategyConfig> strategyConfigs = strategyConfigService.getAllStrategyConfig();
 
-    LOG.info("Response: " + strategyConfigs);
+    LOG.info(() -> "Response: " + strategyConfigs);
     return strategyConfigs;
   }
 
@@ -91,12 +92,13 @@ public class StrategyConfigController extends AbstractConfigController {
   public ResponseEntity<?> getStrategy(
       @AuthenticationPrincipal User user, @PathVariable String strategyId) {
     LOG.info(
-        "GET "
-            + STRATEGIES_RESOURCE_PATH
-            + "/"
-            + strategyId
-            + " - getStrategy() - caller: "
-            + user.getUsername());
+        () ->
+            "GET "
+                + STRATEGIES_RESOURCE_PATH
+                + "/"
+                + strategyId
+                + " - getStrategy() - caller: "
+                + user.getUsername());
 
     final StrategyConfig strategyConfig = strategyConfigService.getStrategyConfig(strategyId);
     return strategyConfig == null
@@ -120,13 +122,14 @@ public class StrategyConfigController extends AbstractConfigController {
       @RequestBody StrategyConfig config) {
 
     LOG.info(
-        "PUT "
-            + STRATEGIES_RESOURCE_PATH
-            + "/"
-            + strategyId
-            + " - updateStrategy() - caller: "
-            + user.getUsername());
-    LOG.info("Request: " + config);
+        () ->
+            "PUT "
+                + STRATEGIES_RESOURCE_PATH
+                + "/"
+                + strategyId
+                + " - updateStrategy() - caller: "
+                + user.getUsername());
+    LOG.info(() -> "Request: " + config);
 
     if (config.getId() == null || !strategyId.equals(config.getId())) {
       return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

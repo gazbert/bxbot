@@ -73,7 +73,8 @@ import org.springframework.util.StringUtils;
  *
  * @author nodueck
  */
-@Deprecated // 18 May 2019 : The exchange has gone into liquidation. See notice on: https://www.cryptopia.co.nz/
+@Deprecated // 18 May 2019 : The exchange has gone into liquidation. See notice on:
+            // https://www.cryptopia.co.nz/
 public class CryptopiaExchangeAdapter extends AbstractExchangeAdapter implements ExchangeAdapter {
 
   private static final Logger LOG = LogManager.getLogger();
@@ -81,8 +82,10 @@ public class CryptopiaExchangeAdapter extends AbstractExchangeAdapter implements
   private static final String PUBLIC_API_BASE_URL = "https://www.cryptopia.co.nz/api/";
   private static final String AUTHENTICATED_API_URL = PUBLIC_API_BASE_URL;
 
-  private static final String UNEXPECTED_ERROR_MSG = "Unexpected error has occurred in Cryptopia Exchange Adapter. ";
-  private static final String UNEXPECTED_IO_ERROR_MSG = "Failed to connect to Exchange due to unexpected IO error.";
+  private static final String UNEXPECTED_ERROR_MSG =
+      "Unexpected error has occurred in Cryptopia Exchange Adapter. ";
+  private static final String UNEXPECTED_IO_ERROR_MSG =
+      "Failed to connect to Exchange due to unexpected IO error.";
 
   private static final String PUBLIC_KEY_PROPERTY_NAME = "public_key";
   private static final String PRIVATE_KEY_PROPERTY_NAME = "private_key";
@@ -126,35 +129,38 @@ public class CryptopiaExchangeAdapter extends AbstractExchangeAdapter implements
   }
 
   @Override
-  public MarketOrderBook getMarketOrders(String marketId) throws ExchangeNetworkException, TradingApiException {
+  public MarketOrderBook getMarketOrders(String marketId)
+      throws ExchangeNetworkException, TradingApiException {
     try {
-      final ExchangeHttpResponse response = sendPublicRequestToExchange("GetMarketOrders/"
-          + marketId.toUpperCase());
+      final ExchangeHttpResponse response =
+          sendPublicRequestToExchange("GetMarketOrders/" + marketId.toUpperCase());
       LOG.debug(() -> "Market Orders response: " + response);
 
-      Type responseApiType = new TypeToken<CryptopiaPublicApiResponse<CryptopiaOrderBook>>() {
-      }.getType();
-      final CryptopiaPublicApiResponse<CryptopiaOrderBook> cryptopiaResponse = gson.fromJson(response.getPayload(),
-          responseApiType);
+      Type responseApiType =
+          new TypeToken<CryptopiaPublicApiResponse<CryptopiaOrderBook>>() {}.getType();
+      final CryptopiaPublicApiResponse<CryptopiaOrderBook> cryptopiaResponse =
+          gson.fromJson(response.getPayload(), responseApiType);
       final CryptopiaOrderBook cryptopiaMarket = cryptopiaResponse.Data;
 
       final List<MarketOrder> buyOrders = new ArrayList<>();
       for (CryptopiaOrder cryptopiaBuyOrder : cryptopiaMarket.Buy) {
-        final MarketOrder buyOrder = new MarketOrderImpl(
-            OrderType.BUY,
-            cryptopiaBuyOrder.Price,
-            cryptopiaBuyOrder.Volume,
-            cryptopiaBuyOrder.Total);
+        final MarketOrder buyOrder =
+            new MarketOrderImpl(
+                OrderType.BUY,
+                cryptopiaBuyOrder.Price,
+                cryptopiaBuyOrder.Volume,
+                cryptopiaBuyOrder.Total);
         buyOrders.add(buyOrder);
       }
 
       final List<MarketOrder> sellOrders = new ArrayList<>();
       for (CryptopiaOrder cryptopiaSellOrder : cryptopiaMarket.Sell) {
-        final MarketOrder sellOrder = new MarketOrderImpl(
-            OrderType.SELL,
-            cryptopiaSellOrder.Price,
-            cryptopiaSellOrder.Volume,
-            cryptopiaSellOrder.Total);
+        final MarketOrder sellOrder =
+            new MarketOrderImpl(
+                OrderType.SELL,
+                cryptopiaSellOrder.Price,
+                cryptopiaSellOrder.Volume,
+                cryptopiaSellOrder.Total);
         sellOrders.add(sellOrder);
       }
       return new MarketOrderBookImpl(marketId, sellOrders, buyOrders);
@@ -167,24 +173,26 @@ public class CryptopiaExchangeAdapter extends AbstractExchangeAdapter implements
   }
 
   @Override
-  public List<OpenOrder> getYourOpenOrders(String marketId) throws ExchangeNetworkException, TradingApiException {
+  public List<OpenOrder> getYourOpenOrders(String marketId)
+      throws ExchangeNetworkException, TradingApiException {
     try {
       final Map<String, Object> params = createRequestParamMap();
       params.put("Market", marketId);
-      params.put("Count", Long.parseLong("100")); //show up to 100 open orders
-      final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("GetOpenOrders", params);
+      params.put("Count", Long.parseLong("100")); // show up to 100 open orders
+      final ExchangeHttpResponse response =
+          sendAuthenticatedRequestToExchange("GetOpenOrders", params);
       LOG.debug(() -> "Open Orders response: " + response);
 
-      Type responseApiType = new TypeToken<CryptopiaPrivateApiResponse<CryptopiaOpenOrders>>() {
-      }.getType();
-      final CryptopiaPrivateApiResponse<CryptopiaOpenOrders> cryptopiaResponse = gson.fromJson(response.getPayload(),
-          responseApiType);
+      Type responseApiType =
+          new TypeToken<CryptopiaPrivateApiResponse<CryptopiaOpenOrders>>() {}.getType();
+      final CryptopiaPrivateApiResponse<CryptopiaOpenOrders> cryptopiaResponse =
+          gson.fromJson(response.getPayload(), responseApiType);
       final CryptopiaOpenOrders cryptopiaOpenOrders = cryptopiaResponse.Data;
 
       final List<OpenOrder> ordersToReturn = new ArrayList<>();
       for (final CryptopiaOpenOrder cryptopiaOpenOrder : cryptopiaOpenOrders) {
 
-        //e.g. Market: DOT/BTC, but we need dot_btc
+        // e.g. Market: DOT/BTC, but we need dot_btc
         if (!marketId.equalsIgnoreCase(cryptopiaOpenOrder.Market.replace("/", "_"))) {
           continue;
         }
@@ -199,18 +207,20 @@ public class CryptopiaExchangeAdapter extends AbstractExchangeAdapter implements
             break;
           default:
             throw new TradingApiException(
-                "Unrecognised order type received in getYourOpenOrders(). Value: " + cryptopiaOpenOrder.Type);
+                "Unrecognised order type received in getYourOpenOrders(). Value: "
+                    + cryptopiaOpenOrder.Type);
         }
 
-        final OpenOrder order = new OpenOrderImpl(
-            Long.toString(cryptopiaOpenOrder.OrderId),
-            dateFormat.parse(cryptopiaOpenOrder.TimeStamp.split("\\.")[0]),
-            marketId,
-            orderType,
-            cryptopiaOpenOrder.Rate,
-            cryptopiaOpenOrder.Amount,
-            cryptopiaOpenOrder.Amount.add(cryptopiaOpenOrder.Remaining),
-            cryptopiaOpenOrder.Total);
+        final OpenOrder order =
+            new OpenOrderImpl(
+                Long.toString(cryptopiaOpenOrder.OrderId),
+                dateFormat.parse(cryptopiaOpenOrder.TimeStamp.split("\\.")[0]),
+                marketId,
+                orderType,
+                cryptopiaOpenOrder.Rate,
+                cryptopiaOpenOrder.Amount,
+                cryptopiaOpenOrder.Amount.add(cryptopiaOpenOrder.Remaining),
+                cryptopiaOpenOrder.Total);
 
         ordersToReturn.add(order);
       }
@@ -225,7 +235,8 @@ public class CryptopiaExchangeAdapter extends AbstractExchangeAdapter implements
   }
 
   @Override
-  public String createOrder(String marketId, OrderType orderType, BigDecimal quantity, BigDecimal price)
+  public String createOrder(
+      String marketId, OrderType orderType, BigDecimal quantity, BigDecimal price)
       throws ExchangeNetworkException, TradingApiException {
 
     try {
@@ -237,15 +248,17 @@ public class CryptopiaExchangeAdapter extends AbstractExchangeAdapter implements
       params.put("type", orderType.getStringValue());
       // note we need to limit amount and price to 8 decimal places else exchange will barf
       params.put("rate", new DecimalFormat("#.########", getDecimalFormatSymbols()).format(price));
-      params.put("amount", new DecimalFormat("#.########", getDecimalFormatSymbols()).format(quantity));
+      params.put(
+          "amount", new DecimalFormat("#.########", getDecimalFormatSymbols()).format(quantity));
 
-      final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("SubmitTrade", params);
+      final ExchangeHttpResponse response =
+          sendAuthenticatedRequestToExchange("SubmitTrade", params);
       LOG.debug(() -> "Create Order response: " + response);
 
-      Type responseApiType = new TypeToken<CryptopiaPrivateApiResponse<CryptopiaNewOrderResponse>>() {
-      }.getType();
-      final CryptopiaPrivateApiResponse<CryptopiaNewOrderResponse> cryptopiaResponse = gson.fromJson(
-          response.getPayload(), responseApiType);
+      Type responseApiType =
+          new TypeToken<CryptopiaPrivateApiResponse<CryptopiaNewOrderResponse>>() {}.getType();
+      final CryptopiaPrivateApiResponse<CryptopiaNewOrderResponse> cryptopiaResponse =
+          gson.fromJson(response.getPayload(), responseApiType);
       final CryptopiaNewOrderResponse createOrderResponse = cryptopiaResponse.Data;
 
       final long id = createOrderResponse.OrderId;
@@ -266,18 +279,20 @@ public class CryptopiaExchangeAdapter extends AbstractExchangeAdapter implements
   }
 
   @Override
-  public boolean cancelOrder(String orderId, String marketId) throws ExchangeNetworkException, TradingApiException {
+  public boolean cancelOrder(String orderId, String marketId)
+      throws ExchangeNetworkException, TradingApiException {
     try {
       final Map<String, Object> params = createRequestParamMap();
       params.put("Type", "Trade"); // to cancel a single Trade by order id
       params.put("OrderId", Long.parseLong(orderId));
-      final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("CancelTrade", params);
+      final ExchangeHttpResponse response =
+          sendAuthenticatedRequestToExchange("CancelTrade", params);
       LOG.debug(() -> "Cancel Order response: " + response);
 
-      final Type responseApiType = new TypeToken<CryptopiaPrivateApiResponse<CryptopiaCancelOrderResponse>>() {
-      }.getType();
-      final CryptopiaPrivateApiResponse<CryptopiaCancelOrderResponse> cryptopiaResponse = gson.fromJson(
-          response.getPayload(), responseApiType);
+      final Type responseApiType =
+          new TypeToken<CryptopiaPrivateApiResponse<CryptopiaCancelOrderResponse>>() {}.getType();
+      final CryptopiaPrivateApiResponse<CryptopiaCancelOrderResponse> cryptopiaResponse =
+          gson.fromJson(response.getPayload(), responseApiType);
       return cryptopiaResponse.Success;
     } catch (ExchangeNetworkException | TradingApiException e) {
       throw e;
@@ -288,15 +303,17 @@ public class CryptopiaExchangeAdapter extends AbstractExchangeAdapter implements
   }
 
   @Override
-  public BigDecimal getLatestMarketPrice(String marketId) throws ExchangeNetworkException, TradingApiException {
+  public BigDecimal getLatestMarketPrice(String marketId)
+      throws ExchangeNetworkException, TradingApiException {
     try {
-      final ExchangeHttpResponse response = sendPublicRequestToExchange("GetMarket/" + marketId.toUpperCase());
+      final ExchangeHttpResponse response =
+          sendPublicRequestToExchange("GetMarket/" + marketId.toUpperCase());
       LOG.debug(() -> "Market response: " + response);
 
-      final Type responseApiType = new TypeToken<CryptopiaPublicApiResponse<CryptopiaMarket>>() {
-      }.getType();
-      final CryptopiaPublicApiResponse<CryptopiaMarket> cryptopiaResponse = gson.fromJson(response.getPayload(),
-          responseApiType);
+      final Type responseApiType =
+          new TypeToken<CryptopiaPublicApiResponse<CryptopiaMarket>>() {}.getType();
+      final CryptopiaPublicApiResponse<CryptopiaMarket> cryptopiaResponse =
+          gson.fromJson(response.getPayload(), responseApiType);
       return cryptopiaResponse.Data.LastPrice;
     } catch (ExchangeNetworkException | TradingApiException e) {
       throw e;
@@ -312,10 +329,10 @@ public class CryptopiaExchangeAdapter extends AbstractExchangeAdapter implements
       final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("GetBalance", null);
       LOG.debug(() -> "Balance response: " + response);
 
-      final Type responseApiType = new TypeToken<CryptopiaPrivateApiResponse<CryptopiaBalances>>() {
-      }.getType();
-      final CryptopiaPrivateApiResponse<CryptopiaBalances> cryptopiaResponse = gson.fromJson(response.getPayload(),
-          responseApiType);
+      final Type responseApiType =
+          new TypeToken<CryptopiaPrivateApiResponse<CryptopiaBalances>>() {}.getType();
+      final CryptopiaPrivateApiResponse<CryptopiaBalances> cryptopiaResponse =
+          gson.fromJson(response.getPayload(), responseApiType);
       final CryptopiaBalances cryptopiaBalances = cryptopiaResponse.Data;
 
       final Map<String, BigDecimal> availableBalances = new HashMap<>();
@@ -342,10 +359,10 @@ public class CryptopiaExchangeAdapter extends AbstractExchangeAdapter implements
       } else {
         final ExchangeHttpResponse response = sendPublicRequestToExchange("GetTradePairs");
         LOG.debug(() -> "Buy Fee response: " + response);
-        final Type responseApiType = new TypeToken<CryptopiaPrivateApiResponse<CryptopiaTradePairs>>() {
-        }.getType();
-        final CryptopiaPrivateApiResponse<CryptopiaTradePairs> cryptopiaResponse = gson.fromJson(response.getPayload(),
-            responseApiType);
+        final Type responseApiType =
+            new TypeToken<CryptopiaPrivateApiResponse<CryptopiaTradePairs>>() {}.getType();
+        final CryptopiaPrivateApiResponse<CryptopiaTradePairs> cryptopiaResponse =
+            gson.fromJson(response.getPayload(), responseApiType);
         final CryptopiaTradePairs cryptopiaTradePairs = cryptopiaResponse.Data;
 
         for (CryptopiaTradePair tradePair : cryptopiaTradePairs) {
@@ -374,10 +391,10 @@ public class CryptopiaExchangeAdapter extends AbstractExchangeAdapter implements
       } else {
         final ExchangeHttpResponse response = sendPublicRequestToExchange("GetTradePairs");
         LOG.debug(() -> "Buy Fee response: " + response);
-        final Type responseApiType = new TypeToken<CryptopiaPrivateApiResponse<CryptopiaTradePairs>>() {
-        }.getType();
-        final CryptopiaPrivateApiResponse<CryptopiaTradePairs> cryptopiaResponse = gson.fromJson(response.getPayload(),
-            responseApiType);
+        final Type responseApiType =
+            new TypeToken<CryptopiaPrivateApiResponse<CryptopiaTradePairs>>() {}.getType();
+        final CryptopiaPrivateApiResponse<CryptopiaTradePairs> cryptopiaResponse =
+            gson.fromJson(response.getPayload(), responseApiType);
         final CryptopiaTradePairs cryptopiaTradePairs = cryptopiaResponse.Data;
 
         for (CryptopiaTradePair tradePair : cryptopiaTradePairs) {
@@ -400,13 +417,14 @@ public class CryptopiaExchangeAdapter extends AbstractExchangeAdapter implements
   @Override
   public Ticker getTicker(String marketId) throws TradingApiException, ExchangeNetworkException {
     try {
-      final ExchangeHttpResponse response = sendPublicRequestToExchange("GetMarket/" + marketId.toUpperCase());
+      final ExchangeHttpResponse response =
+          sendPublicRequestToExchange("GetMarket/" + marketId.toUpperCase());
       LOG.debug(() -> "Latest Market Price response: " + response);
 
-      final Type responseApiType = new TypeToken<CryptopiaPublicApiResponse<CryptopiaMarket>>() {
-      }.getType();
-      final CryptopiaPublicApiResponse<CryptopiaMarket> cryptopiaResponse = gson.fromJson(response.getPayload(),
-          responseApiType);
+      final Type responseApiType =
+          new TypeToken<CryptopiaPublicApiResponse<CryptopiaMarket>>() {}.getType();
+      final CryptopiaPublicApiResponse<CryptopiaMarket> cryptopiaResponse =
+          gson.fromJson(response.getPayload(), responseApiType);
       final CryptopiaMarket cryptopiaMarket = cryptopiaResponse.Data;
       return new TickerImpl(
           cryptopiaMarket.LastPrice,
@@ -429,12 +447,11 @@ public class CryptopiaExchangeAdapter extends AbstractExchangeAdapter implements
 
   // ------------------------------------------------------------------------------------------------
   //  GSON classes for JSON responses.
-  //  See https://www.cryptopia.co.nz/Forum/Thread/255 and https://www.cryptopia.co.nz/Forum/Thread/256
+  //  See https://www.cryptopia.co.nz/Forum/Thread/255 and
+  // https://www.cryptopia.co.nz/Forum/Thread/256
   // ------------------------------------------------------------------------------------------------
 
-  /**
-   * GSON class for mapping returned order from 'GetMarket' API call response.
-   */
+  /** GSON class for mapping returned order from 'GetMarket' API call response. */
   private static class CryptopiaMarket {
 
     public long TradePairId;
@@ -477,17 +494,13 @@ public class CryptopiaExchangeAdapter extends AbstractExchangeAdapter implements
     }
   }
 
-  /**
-   * GSON class for receiving your open orders in 'orders' API call response.
-   */
+  /** GSON class for receiving your open orders in 'orders' API call response. */
   private static class CryptopiaOpenOrders extends ArrayList<CryptopiaOpenOrder> {
 
     private static final long serialVersionUID = 5516523641153401953L;
   }
 
-  /**
-   * GSON class for mapping returned order from 'orders' API call response.
-   */
+  /** GSON class for mapping returned order from 'orders' API call response. */
   private static class CryptopiaOpenOrder {
 
     public long OrderId;
@@ -516,9 +529,7 @@ public class CryptopiaExchangeAdapter extends AbstractExchangeAdapter implements
     }
   }
 
-  /**
-   * GSON class for a market Order Book.
-   */
+  /** GSON class for a market Order Book. */
   private static class CryptopiaOrderBook {
 
     CryptopiaOrder[] Buy;
@@ -526,16 +537,11 @@ public class CryptopiaExchangeAdapter extends AbstractExchangeAdapter implements
 
     @Override
     public String toString() {
-      return MoreObjects.toStringHelper(this)
-          .add("buy", Buy)
-          .add("sell", Sell)
-          .toString();
+      return MoreObjects.toStringHelper(this).add("buy", Buy).add("sell", Sell).toString();
     }
   }
 
-  /**
-   * GSON class for a Market Order.
-   */
+  /** GSON class for a Market Order. */
   private static class CryptopiaOrder {
 
     public Integer TradePairId;
@@ -556,17 +562,13 @@ public class CryptopiaExchangeAdapter extends AbstractExchangeAdapter implements
     }
   }
 
-  /**
-   * GSON class for receiving your balances in 'GetBalance' API call response.
-   */
+  /** GSON class for receiving your balances in 'GetBalance' API call response. */
   private static class CryptopiaBalances extends ArrayList<CryptopiaBalance> {
 
     private static final long serialVersionUID = -5454933973151400131L;
   }
 
-  /**
-   * GSON class for Balance.
-   */
+  /** GSON class for Balance. */
   private static class CryptopiaBalance {
 
     public long CurrencyId;
@@ -599,9 +601,7 @@ public class CryptopiaExchangeAdapter extends AbstractExchangeAdapter implements
     }
   }
 
-  /**
-   * GSON class for receiving a response when putting a new order.
-   */
+  /** GSON class for receiving a response when putting a new order. */
   private static class CryptopiaNewOrderResponse {
 
     long OrderId;
@@ -616,23 +616,18 @@ public class CryptopiaExchangeAdapter extends AbstractExchangeAdapter implements
     }
   }
 
-  /**
-   * GSON class for receiving a response when cancelling an order.
-   */
+  /** GSON class for receiving a response when cancelling an order. */
   private static class CryptopiaCancelOrderResponse extends ArrayList<Long> {
 
     private static final long serialVersionUID = 1285853976415626644L;
 
     @Override
     public String toString() {
-      return MoreObjects.toStringHelper(this)
-          .toString();
+      return MoreObjects.toStringHelper(this).toString();
     }
   }
 
-  /**
-   * GSON class for receiving your trade pairs in 'GetTradePair' API call response.
-   */
+  /** GSON class for receiving your trade pairs in 'GetTradePair' API call response. */
   private static class CryptopiaTradePairs extends ArrayList<CryptopiaTradePair> {
 
     private static final long serialVersionUID = -6787427618355089266L;
@@ -679,7 +674,8 @@ public class CryptopiaExchangeAdapter extends AbstractExchangeAdapter implements
   }
 
   /**
-   * GSON class which wraps all other objects as data attribute Differs slightly for public and private api calls.
+   * GSON class which wraps all other objects as data attribute Differs slightly for public and
+   * private api calls.
    */
   private static class CryptopiaPublicApiResponse<T> {
 
@@ -698,7 +694,8 @@ public class CryptopiaExchangeAdapter extends AbstractExchangeAdapter implements
   }
 
   /**
-   * GSON class which wraps all other objects as data attribute Differs slightly for public and private api calls.
+   * GSON class which wraps all other objects as data attribute Differs slightly for public and
+   * private api calls.
    */
   private static class CryptopiaPrivateApiResponse<T> {
 
@@ -735,18 +732,20 @@ public class CryptopiaExchangeAdapter extends AbstractExchangeAdapter implements
       initializedAuthentication = true;
 
     } catch (NoSuchAlgorithmException e) {
-      final String errorMsg = "Failed to setup MAC or MessageDigest security. HINT: Is HmacSHA256/MD5 installed?";
+      final String errorMsg =
+          "Failed to setup MAC or MessageDigest security. HINT: Is HmacSHA256/MD5 installed?";
       LOG.error(errorMsg, e);
       throw new IllegalStateException(errorMsg, e);
     } catch (InvalidKeyException e) {
-      final String errorMsg = "Failed to setup MAC/MessageDigest security. Secret key seems invalid!";
+      final String errorMsg =
+          "Failed to setup MAC/MessageDigest security. Secret key seems invalid!";
       LOG.error(errorMsg, e);
       throw new IllegalArgumentException(errorMsg, e);
     }
   }
 
-  private ExchangeHttpResponse sendPublicRequestToExchange(String apiMethod) throws ExchangeNetworkException,
-      TradingApiException {
+  private ExchangeHttpResponse sendPublicRequestToExchange(String apiMethod)
+      throws ExchangeNetworkException, TradingApiException {
     try {
       final URL url = new URL(PUBLIC_API_BASE_URL + apiMethod);
       return makeNetworkRequest(url, "GET", null, createHeaderParamMap());
@@ -778,7 +777,8 @@ public class CryptopiaExchangeAdapter extends AbstractExchangeAdapter implements
    * HASHED_POST_PARAMS: Base64 encoded MD5 hash of the post parameters
    * NONCE: unique indicator for each request.
    */
-  private ExchangeHttpResponse sendAuthenticatedRequestToExchange(String apiMethod, Map<String, Object> params)
+  private ExchangeHttpResponse sendAuthenticatedRequestToExchange(
+      String apiMethod, Map<String, Object> params)
       throws ExchangeNetworkException, TradingApiException {
 
     if (!initializedAuthentication) {
@@ -795,13 +795,15 @@ public class CryptopiaExchangeAdapter extends AbstractExchangeAdapter implements
       final URL url = new URL(AUTHENTICATED_API_URL + apiMethod);
       final String paramsInJson = gson.toJson(params);
 
-      //Generate authorization header
+      // Generate authorization header
       final String nonce = generateNonce();
-      final String encodedUrl = URLEncoder.encode(url.toString(), StandardCharsets.UTF_8.toString()).toLowerCase();
-      final String md5Checksum = encodeBase64(md5.digest(paramsInJson.getBytes(StandardCharsets.UTF_8)));
+      final String encodedUrl =
+          URLEncoder.encode(url.toString(), StandardCharsets.UTF_8.toString()).toLowerCase();
+      final String md5Checksum =
+          encodeBase64(md5.digest(paramsInJson.getBytes(StandardCharsets.UTF_8)));
       final String requestSignature = publicKey + "POST" + encodedUrl + nonce + md5Checksum;
-      final String encodedAndHashedSignature = encodeBase64(
-          mac.doFinal(requestSignature.getBytes(StandardCharsets.UTF_8)));
+      final String encodedAndHashedSignature =
+          encodeBase64(mac.doFinal(requestSignature.getBytes(StandardCharsets.UTF_8)));
       final String authHeader = "amx " + publicKey + ":" + encodedAndHashedSignature + ":" + nonce;
 
       // Request headers required by Exchange
@@ -831,14 +833,20 @@ public class CryptopiaExchangeAdapter extends AbstractExchangeAdapter implements
   private void setOtherConfig(ExchangeConfig exchangeConfig) {
     final OtherConfig otherConfig = getOtherConfig(exchangeConfig);
 
-    final String useGlobalTradingFeeConfigItem = getOtherConfigItem(otherConfig, USE_GLOBAL_TRADING_FEE_PROPERTY_NAME);
-    useGlobalTradingFee = !StringUtils.isEmpty(useGlobalTradingFeeConfigItem)
-        && Boolean.parseBoolean(useGlobalTradingFeeConfigItem);
+    final String useGlobalTradingFeeConfigItem =
+        getOtherConfigItem(otherConfig, USE_GLOBAL_TRADING_FEE_PROPERTY_NAME);
+    useGlobalTradingFee =
+        !StringUtils.isEmpty(useGlobalTradingFeeConfigItem)
+            && Boolean.parseBoolean(useGlobalTradingFeeConfigItem);
 
-    final String globalTradingFeeConfigItem = useGlobalTradingFee ? getOtherConfigItem(otherConfig,
-        GLOBAL_TRADING_FEE_PROPERTY_NAME) : null;
-    globalTradingFee = !StringUtils.isEmpty(globalTradingFeeConfigItem) ? new BigDecimal(globalTradingFeeConfigItem) :
-        DEFAULT_CRYPTOPIA_TRADING_FEE_PERCENT;
+    final String globalTradingFeeConfigItem =
+        useGlobalTradingFee
+            ? getOtherConfigItem(otherConfig, GLOBAL_TRADING_FEE_PROPERTY_NAME)
+            : null;
+    globalTradingFee =
+        !StringUtils.isEmpty(globalTradingFeeConfigItem)
+            ? new BigDecimal(globalTradingFeeConfigItem)
+            : DEFAULT_CRYPTOPIA_TRADING_FEE_PERCENT;
   }
 
   // ------------------------------------------------------------------------------------------------
@@ -846,9 +854,10 @@ public class CryptopiaExchangeAdapter extends AbstractExchangeAdapter implements
   // ------------------------------------------------------------------------------------------------
 
   private void initGson() {
-    gson = new GsonBuilder()
-        .setLenient() //since all names in json starts upper case
-        .create();
+    gson =
+        new GsonBuilder()
+            .setLenient() // since all names in json starts upper case
+            .create();
   }
 
   private String generateNonce() {
@@ -877,8 +886,8 @@ public class CryptopiaExchangeAdapter extends AbstractExchangeAdapter implements
    * Hack for unit-testing transport layer.
    */
   private ExchangeHttpResponse makeNetworkRequest(
-      URL url, String httpMethod, String postData, Map<String, String> requestHeaders) throws
-      TradingApiException, ExchangeNetworkException {
+      URL url, String httpMethod, String postData, Map<String, String> requestHeaders)
+      throws TradingApiException, ExchangeNetworkException {
     return super.sendNetworkRequest(url, httpMethod, postData, requestHeaders);
   }
 }

@@ -295,7 +295,7 @@ public class TradingEngine {
   /*
    * Shutdown the Trading Engine.
    * Might be called from a different thread.
-   * TODO currently not used - but will eventually be called from BX-bot UI
+   * TODO: currently not used - but will eventually be called from BX-bot UI
    */
   void shutdown() {
     LOG.info(() -> "Shutdown request received!");

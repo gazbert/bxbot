@@ -49,6 +49,7 @@ public final class OpenOrderImpl implements OpenOrder {
   public OpenOrderImpl(String id, Date creationDate, String marketId, OrderType type,
       BigDecimal price, BigDecimal quantity, BigDecimal originalQuantity,
       BigDecimal total) {
+
     this.id = id;
     if (creationDate != null) {
       this.creationDate = new Date(creationDate.getTime());

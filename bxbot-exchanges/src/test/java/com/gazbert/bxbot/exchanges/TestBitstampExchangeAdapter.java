@@ -783,7 +783,8 @@ public class TestBitstampExchangeAdapter extends AbstractExchangeAdapter {
         .andThrow(
             new IllegalStateException(
                 "I felt a great disturbance in the Force, as if millions of voices"
-                    + " suddenly cried out in terror and were suddenly silenced. I fear something terrible has happened."));
+                    + " suddenly cried out in terror and were suddenly silenced. "
+                    + "I fear something terrible has happened."));
 
     PowerMock.replayAll();
     exchangeAdapter.init(exchangeConfig);

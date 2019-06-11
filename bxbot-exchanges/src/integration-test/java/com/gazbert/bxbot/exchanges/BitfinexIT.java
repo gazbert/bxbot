@@ -59,14 +59,17 @@ public class BitfinexIT {
   private static final String KEY = "key123";
   private static final String SECRET = "notGonnaTellYa";
   private static final List<Integer> nonFatalNetworkErrorCodes = Arrays.asList(502, 503, 504);
-  private static final List<String> nonFatalNetworkErrorMessages = Arrays.asList(
-      "Connection refused", "Connection reset", "Remote host closed connection during handshake");
+  private static final List<String> nonFatalNetworkErrorMessages =
+      Arrays.asList(
+          "Connection refused",
+          "Connection reset",
+          "Remote host closed connection during handshake");
 
   private ExchangeConfig exchangeConfig;
   private AuthenticationConfig authenticationConfig;
   private NetworkConfig networkConfig;
 
-  /*
+  /**
    * Create some exchange config - the TradingEngine would normally do this.
    */
   @Before
@@ -133,7 +136,8 @@ public class BitfinexIT {
     assertNotNull(balanceInfo.getBalancesAvailable().get("BTC"));
 
     // Careful here: make sure the SELL_ORDER_PRICE is sensible!
-    // final String orderId = exchangeAdapter.createOrder(MARKET_ID, OrderType.SELL, SELL_ORDER_QUANTITY, SELL_ORDER_PRICE);
+    // final String orderId = exchangeAdapter.createOrder(MARKET_ID, OrderType.SELL,
+    // SELL_ORDER_QUANTITY, SELL_ORDER_PRICE);
     // final List<OpenOrder> openOrders = exchangeAdapter.getYourOpenOrders(MARKET_ID);
     // assertTrue(openOrders.stream().anyMatch(o -> o.getId().equals(orderId)));
     // assertTrue(exchangeAdapter.cancelOrder(orderId, MARKET_ID));

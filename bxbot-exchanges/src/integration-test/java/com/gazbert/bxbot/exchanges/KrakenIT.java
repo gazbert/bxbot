@@ -53,7 +53,8 @@ import org.junit.Test;
  */
 public class KrakenIT {
 
-  // Market id must be the same as the Asset Pair id. See: https://www.kraken.com/help/api#get-tradable-pairs
+  // Market id must be the same as the Asset Pair id. See:
+  // https://www.kraken.com/help/api#get-tradable-pairs
   private static final String MARKET_ID = "XBTUSD";
   private static final BigDecimal SELL_ORDER_PRICE = new BigDecimal("10000.176");
   private static final BigDecimal SELL_ORDER_QUANTITY = new BigDecimal("0.001");
@@ -61,15 +62,18 @@ public class KrakenIT {
   private static final String KEY = "key123";
   private static final String SECRET = "notGonnaTellYa";
   private static final List<Integer> nonFatalNetworkErrorCodes = Arrays.asList(502, 503, 504);
-  private static final List<String> nonFatalNetworkErrorMessages = Arrays.asList(
-      "Connection refused", "Connection reset", "Remote host closed connection during handshake");
+  private static final List<String> nonFatalNetworkErrorMessages =
+      Arrays.asList(
+          "Connection refused",
+          "Connection reset",
+          "Remote host closed connection during handshake");
 
   private ExchangeConfig exchangeConfig;
   private AuthenticationConfig authenticationConfig;
   private NetworkConfig networkConfig;
   private OtherConfig otherConfig;
 
-  /*
+  /**
    * Create some exchange config - the TradingEngine would normally do this.
    */
   @Before
@@ -116,7 +120,7 @@ public class KrakenIT {
     assertNotNull(ticker.getOpen());
     assertNotNull(ticker.getVolume());
     assertNotNull(ticker.getVwap());
-    assertNull(ticker.getTimestamp());  // timestamp not supplied by Kraken
+    assertNull(ticker.getTimestamp()); // timestamp not supplied by Kraken
 
     verify(authenticationConfig, networkConfig, otherConfig, exchangeConfig);
   }
@@ -136,7 +140,8 @@ public class KrakenIT {
     assertNotNull(balanceInfo.getBalancesAvailable().get("XXBT"));
 
     // Careful here: make sure the SELL_ORDER_PRICE is sensible!
-    // final String orderId = exchangeAdapter.createOrder(MARKET_ID, OrderType.SELL, SELL_ORDER_QUANTITY, SELL_ORDER_PRICE);
+    // final String orderId = exchangeAdapter.createOrder(MARKET_ID, OrderType.SELL,
+    // SELL_ORDER_QUANTITY, SELL_ORDER_PRICE);
     // final List<OpenOrder> openOrders = exchangeAdapter.getYourOpenOrders(MARKET_ID);
     // assertTrue(openOrders.stream().anyMatch(o -> o.getId().equals(orderId)));
     // assertTrue(exchangeAdapter.cancelOrder(orderId, MARKET_ID));

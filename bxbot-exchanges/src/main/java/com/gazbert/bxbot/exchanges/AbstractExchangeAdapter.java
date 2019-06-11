@@ -56,8 +56,8 @@ import org.apache.logging.log4j.Logger;
 
 /**
  * Base class for common Exchange Adapter functionality.
- * <p>
- * Exchange Adapters should extend this class.
+ *
+ * <p>Exchange Adapters should extend this class.
  *
  * @author gazbert
  * @since 1.0
@@ -67,14 +67,20 @@ abstract class AbstractExchangeAdapter {
   private static final Logger LOG = LogManager.getLogger();
   private static final String EXCHANGE_CONFIG_FILE = "config/exchange.xml";
 
-  private static final String UNEXPECTED_IO_ERROR_MSG = "Failed to connect to Exchange due to unexpected IO error.";
-  private static final String IO_SOCKET_TIMEOUT_ERROR_MSG = "Failed to connect to Exchange due to socket timeout.";
-  private static final String IO_5XX_TIMEOUT_ERROR_MSG = "Failed to connect to Exchange due to 5xx timeout.";
-  private static final String AUTHENTICATION_CONFIG_MISSING = "authenticationConfig is missing in exchange.yaml file.";
-  private static final String NETWORK_CONFIG_MISSING = "networkConfig is missing in exchange.yaml file.";
-  private static final String OTHER_CONFIG_MISSING = "otherConfig is missing in exchange.yaml file.";
-  private static final String CONFIG_IS_NULL_OR_ZERO_LENGTH = " cannot be null or zero length! "
-      + "HINT: is the value set in the ";
+  private static final String UNEXPECTED_IO_ERROR_MSG =
+      "Failed to connect to Exchange due to unexpected IO error.";
+  private static final String IO_SOCKET_TIMEOUT_ERROR_MSG =
+      "Failed to connect to Exchange due to socket timeout.";
+  private static final String IO_5XX_TIMEOUT_ERROR_MSG =
+      "Failed to connect to Exchange due to 5xx timeout.";
+  private static final String AUTHENTICATION_CONFIG_MISSING =
+      "authenticationConfig is missing in exchange.yaml file.";
+  private static final String NETWORK_CONFIG_MISSING =
+      "networkConfig is missing in exchange.yaml file.";
+  private static final String OTHER_CONFIG_MISSING =
+      "otherConfig is missing in exchange.yaml file.";
+  private static final String CONFIG_IS_NULL_OR_ZERO_LENGTH =
+      " cannot be null or zero length! " + "HINT: is the value set in the ";
 
   private static final String CONNECTION_TIMEOUT_PROPERTY_NAME = "connection-timeout";
   private static final String NON_FATAL_ERROR_CODES_PROPERTY_NAME = "non-fatal-error-codes";
@@ -87,14 +93,16 @@ abstract class AbstractExchangeAdapter {
   private DecimalFormatSymbols decimalFormatSymbols;
 
   /**
-   * Constructor sets some sensible defaults for the network config and specifies decimal point symbol.
+   * Constructor sets some sensible defaults for the network config and specifies decimal point
+   * symbol.
    */
   AbstractExchangeAdapter() {
     connectionTimeout = 30;
     nonFatalNetworkErrorCodes = new HashSet<>();
     nonFatalNetworkErrorMessages = new HashSet<>();
 
-    // Some locales (e.g. Czech Republic) default to ',' instead of '.' for decimal point. Exchanges always require a '.'
+    // Some locales (e.g. Czech Republic) default to ',' instead of '.' for decimal point. Exchanges
+    // always require a '.'
     decimalFormatSymbols = new DecimalFormatSymbols(Locale.getDefault());
     decimalFormatSymbols.setDecimalSeparator('.');
   }
@@ -105,15 +113,16 @@ abstract class AbstractExchangeAdapter {
    * @param url the URL to invoke.
    * @param postData optional post data to send. This can be null.
    * @param httpMethod the HTTP method to use, e.g. GET, POST, DELETE
-   * @param requestHeaders optional request headers to set on the {@link URLConnection} used to invoke the Exchange.
+   * @param requestHeaders optional request headers to set on the {@link URLConnection} used to
+   *     invoke the Exchange.
    * @return the response from the Exchange.
-   * @throws ExchangeNetworkException if a network error occurred trying to connect to the exchange. This exception
-   * allows for recovery from temporary network issues.
-   * @throws TradingApiException if the API call failed for any reason other than a network error. This means something
-   * really bad as happened.
+   * @throws ExchangeNetworkException if a network error occurred trying to connect to the exchange.
+   *     This exception allows for recovery from temporary network issues.
+   * @throws TradingApiException if the API call failed for any reason other than a network error.
+   *     This means something really bad as happened.
    */
-  ExchangeHttpResponse sendNetworkRequest(URL url, String httpMethod, String postData,
-      Map<String, String> requestHeaders)
+  ExchangeHttpResponse sendNetworkRequest(
+      URL url, String httpMethod, String postData, Map<String, String> requestHeaders)
       throws TradingApiException, ExchangeNetworkException {
 
     HttpURLConnection exchangeConnection = null;
@@ -127,9 +136,12 @@ abstract class AbstractExchangeAdapter {
       exchangeConnection.setDoOutput(true);
       exchangeConnection.setRequestMethod(httpMethod); // GET|POST|DELETE
 
-      // Er, perhaps, I need to be a bit more stealth here... this was needed for some exchanges back in the day!
-      exchangeConnection.setRequestProperty("User-Agent",
-          "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36");
+      // Er, perhaps, I need to be a bit more stealth here... this was needed for some exchanges
+      // back in the day!
+      exchangeConnection.setRequestProperty(
+          "User-Agent",
+          "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) "
+              + "Chrome/74.0.3729.169 Safari/537.36");
 
       if (requestHeaders != null) {
         for (final Map.Entry<String, String> requestHeader : requestHeaders.entrySet()) {
@@ -145,15 +157,16 @@ abstract class AbstractExchangeAdapter {
 
       if (httpMethod.equalsIgnoreCase("POST") && postData != null) {
         LOG.debug(() -> "Doing POST with request body: " + postData);
-        final OutputStreamWriter outputPostStream = new OutputStreamWriter(
-            exchangeConnection.getOutputStream(), StandardCharsets.UTF_8);
+        final OutputStreamWriter outputPostStream =
+            new OutputStreamWriter(exchangeConnection.getOutputStream(), StandardCharsets.UTF_8);
         outputPostStream.write(postData);
         outputPostStream.close();
       }
 
       // Grab the response - we just block here as per Connection API
-      final BufferedReader responseInputStream = new BufferedReader(new InputStreamReader(
-          exchangeConnection.getInputStream(), StandardCharsets.UTF_8));
+      final BufferedReader responseInputStream =
+          new BufferedReader(
+              new InputStreamReader(exchangeConnection.getInputStream(), StandardCharsets.UTF_8));
 
       // Read the JSON response lines into our response buffer
       String responseLine;
@@ -162,7 +175,9 @@ abstract class AbstractExchangeAdapter {
       }
       responseInputStream.close();
 
-      return new ExchangeHttpResponse(exchangeConnection.getResponseCode(), exchangeConnection.getResponseMessage(),
+      return new ExchangeHttpResponse(
+          exchangeConnection.getResponseCode(),
+          exchangeConnection.getResponseMessage(),
           exchangeResponse.toString());
 
     } catch (MalformedURLException e) {
@@ -187,12 +202,13 @@ abstract class AbstractExchangeAdapter {
         // Check if this is a non-fatal network error
         if (e.getMessage() != null && nonFatalNetworkErrorMessages.contains(e.getMessage())) {
 
-          final String errorMsg = "Failed to connect to Exchange. SSL Connection was refused or reset by the server.";
+          final String errorMsg =
+              "Failed to connect to Exchange. SSL Connection was refused or reset by the server.";
           LOG.error(errorMsg, e);
           throw new ExchangeNetworkException(errorMsg, e);
 
-        } else if (exchangeConnection != null && nonFatalNetworkErrorCodes
-            .contains(exchangeConnection.getResponseCode())) {
+        } else if (exchangeConnection != null
+            && nonFatalNetworkErrorCodes.contains(exchangeConnection.getResponseCode())) {
 
           final String errorMsg = IO_5XX_TIMEOUT_ERROR_MSG;
           LOG.error(errorMsg, e);
@@ -205,8 +221,8 @@ abstract class AbstractExchangeAdapter {
           if (exchangeConnection != null) {
             final InputStream rawErrorStream = exchangeConnection.getErrorStream();
             if (rawErrorStream != null) {
-              final BufferedReader errorInputStream = new BufferedReader(
-                  new InputStreamReader(rawErrorStream, StandardCharsets.UTF_8));
+              final BufferedReader errorInputStream =
+                  new BufferedReader(new InputStreamReader(rawErrorStream, StandardCharsets.UTF_8));
               final StringBuilder errorResponse = new StringBuilder();
               String errorLine;
               while ((errorLine = errorInputStream.readLine()) != null) {
@@ -234,7 +250,8 @@ abstract class AbstractExchangeAdapter {
   }
 
   /**
-   * Sets the network config for the exchange adapter. This helper method expects the network config to be present.
+   * Sets the network config for the exchange adapter. This helper method expects the network config
+   * to be present.
    *
    * @param exchangeConfig the exchange config.
    * @throws IllegalArgumentException if the network config is not set.
@@ -249,7 +266,8 @@ abstract class AbstractExchangeAdapter {
 
     connectionTimeout = networkConfig.getConnectionTimeout();
     if (connectionTimeout == 0) {
-      final String errorMsg = CONNECTION_TIMEOUT_PROPERTY_NAME + " cannot be 0 value." + exchangeConfig;
+      final String errorMsg =
+          CONNECTION_TIMEOUT_PROPERTY_NAME + " cannot be 0 value." + exchangeConfig;
       LOG.error(errorMsg);
       throw new IllegalArgumentException(errorMsg);
     }
@@ -273,7 +291,8 @@ abstract class AbstractExchangeAdapter {
    *
    * @param exchangeConfig the exchange adapter config.
    * @return the authentication config for the adapter.
-   * @throws IllegalArgumentException if authentication config is not set in exchange adapter config.
+   * @throws IllegalArgumentException if authentication config is not set in exchange adapter
+   *     config.
    */
   AuthenticationConfig getAuthenticationConfig(ExchangeConfig exchangeConfig) {
     final AuthenticationConfig authenticationConfig = exchangeConfig.getAuthenticationConfig();
@@ -330,7 +349,8 @@ abstract class AbstractExchangeAdapter {
   }
 
   /**
-   * Sorts the request params alphabetically (uses natural ordering) and returns them as a query string.
+   * Sorts the request params alphabetically (uses natural ordering) and returns them as a query
+   * string.
    *
    * @param params the request params to sort.
    * @return the query string containing the sorted request params.
@@ -352,8 +372,8 @@ abstract class AbstractExchangeAdapter {
   }
 
   /**
-   * Returns the decimal format symbols for using with BigDecimals with the exchanges. Specifically, the decimal point
-   * symbol is set to a '.'
+   * Returns the decimal format symbols for using with BigDecimals with the exchanges. Specifically,
+   * the decimal point symbol is set to a '.'
    *
    * @return the decimal format symbols.
    */
@@ -361,9 +381,7 @@ abstract class AbstractExchangeAdapter {
     return decimalFormatSymbols;
   }
 
-  /**
-   * Wrapper for holding Exchange HTTP response.
-   */
+  /** Wrapper for holding Exchange HTTP response. */
   static class ExchangeHttpResponse {
 
     private final int statusCode;
@@ -398,13 +416,14 @@ abstract class AbstractExchangeAdapter {
     }
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   //  Util methods
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   private static String assertItemExists(String itemName, String itemValue) {
     if (itemValue == null || itemValue.length() == 0) {
-      final String errorMsg = itemName + CONFIG_IS_NULL_OR_ZERO_LENGTH + EXCHANGE_CONFIG_FILE + " ?";
+      final String errorMsg =
+          itemName + CONFIG_IS_NULL_OR_ZERO_LENGTH + EXCHANGE_CONFIG_FILE + " ?";
       LOG.error(errorMsg);
       throw new IllegalArgumentException(errorMsg);
     }

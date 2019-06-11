@@ -44,8 +44,18 @@ public final class TickerImpl implements Ticker {
   private BigDecimal vwap;
   private Long timestamp;
 
-  public TickerImpl(BigDecimal last, BigDecimal bid, BigDecimal ask, BigDecimal low, BigDecimal high,
-      BigDecimal open, BigDecimal volume, BigDecimal vwap, Long timestamp) {
+  /** Creates a new TicketImpl. */
+  public TickerImpl(
+      BigDecimal last,
+      BigDecimal bid,
+      BigDecimal ask,
+      BigDecimal low,
+      BigDecimal high,
+      BigDecimal open,
+      BigDecimal volume,
+      BigDecimal vwap,
+      Long timestamp) {
+
     this.last = last;
     this.bid = bid;
     this.ask = ask;

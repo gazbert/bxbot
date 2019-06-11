@@ -44,9 +44,6 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.net.MalformedURLException;
@@ -59,13 +56,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Dummy Exchange adapter used to keep the bot up and running for engine and strategy testing.
- * <p>
- * Makes public calls to the Bitstamp exchange. It does not trade. All private (authenticated) requests are stubbed.
- * <p>
- * Might be handy for 'dry' testing your algos.
+ *
+ * <p>Makes public calls to the Bitstamp exchange. It does not trade. All private (authenticated)
+ * requests are stubbed.
+ *
+ * <p>Might be handy for 'dry' testing your algos.
  *
  * @author gazbert
  * @since 1.0
@@ -76,8 +76,10 @@ public final class TestExchangeAdapter extends AbstractExchangeAdapter implement
 
   private static final String API_BASE_URL = "https://www.bitstamp.net/api/v2/";
 
-  private static final String UNEXPECTED_ERROR_MSG = "Unexpected error has occurred in Bitstamp Exchange Adapter. ";
-  private static final String UNEXPECTED_IO_ERROR_MSG = "Failed to connect to Exchange due to unexpected IO error.";
+  private static final String UNEXPECTED_ERROR_MSG =
+      "Unexpected error has occurred in Bitstamp Exchange Adapter. ";
+  private static final String UNEXPECTED_IO_ERROR_MSG =
+      "Failed to connect to Exchange due to unexpected IO error.";
 
   private Gson gson;
 
@@ -94,32 +96,36 @@ public final class TestExchangeAdapter extends AbstractExchangeAdapter implement
   // ------------------------------------------------------------------------------------------------
 
   @Override
-  public MarketOrderBook getMarketOrders(String marketId) throws TradingApiException, ExchangeNetworkException {
+  public MarketOrderBook getMarketOrders(String marketId)
+      throws TradingApiException, ExchangeNetworkException {
     try {
       final ExchangeHttpResponse response = sendPublicRequestToExchange("order_book/" + marketId);
       LOG.debug(() -> "Market Orders response: " + response);
 
-      final BitstampOrderBook bitstampOrderBook = gson.fromJson(response.getPayload(), BitstampOrderBook.class);
+      final BitstampOrderBook bitstampOrderBook =
+          gson.fromJson(response.getPayload(), BitstampOrderBook.class);
 
       final List<MarketOrder> buyOrders = new ArrayList<>();
       final List<List<BigDecimal>> bitstampBuyOrders = bitstampOrderBook.bids;
       for (final List<BigDecimal> order : bitstampBuyOrders) {
-        final MarketOrder buyOrder = new MarketOrderImpl(
-            OrderType.BUY,
-            order.get(0), // price
-            order.get(1), // quantity
-            order.get(0).multiply(order.get(1)));
+        final MarketOrder buyOrder =
+            new MarketOrderImpl(
+                OrderType.BUY,
+                order.get(0), // price
+                order.get(1), // quantity
+                order.get(0).multiply(order.get(1)));
         buyOrders.add(buyOrder);
       }
 
       final List<MarketOrder> sellOrders = new ArrayList<>();
       final List<List<BigDecimal>> bitstampSellOrders = bitstampOrderBook.asks;
       for (final List<BigDecimal> order : bitstampSellOrders) {
-        final MarketOrder sellOrder = new MarketOrderImpl(
-            OrderType.SELL,
-            order.get(0), // price
-            order.get(1), // quantity
-            order.get(0).multiply(order.get(1)));
+        final MarketOrder sellOrder =
+            new MarketOrderImpl(
+                OrderType.SELL,
+                order.get(0), // price
+                order.get(1), // quantity
+                order.get(0).multiply(order.get(1)));
         sellOrders.add(sellOrder);
       }
 
@@ -140,7 +146,8 @@ public final class TestExchangeAdapter extends AbstractExchangeAdapter implement
   }
 
   @Override
-  public String createOrder(String marketId, OrderType orderType, BigDecimal quantity, BigDecimal price) {
+  public String createOrder(
+      String marketId, OrderType orderType, BigDecimal quantity, BigDecimal price) {
     return "DUMMY_ORDER_ID: " + UUID.randomUUID().toString();
   }
 
@@ -153,12 +160,14 @@ public final class TestExchangeAdapter extends AbstractExchangeAdapter implement
   }
 
   @Override
-  public BigDecimal getLatestMarketPrice(String marketId) throws TradingApiException, ExchangeNetworkException {
+  public BigDecimal getLatestMarketPrice(String marketId)
+      throws TradingApiException, ExchangeNetworkException {
     try {
       final ExchangeHttpResponse response = sendPublicRequestToExchange("ticker/" + marketId);
       LOG.debug(() -> "Latest Market Price response: " + response);
 
-      final BitstampTicker bitstampTicker = gson.fromJson(response.getPayload(), BitstampTicker.class);
+      final BitstampTicker bitstampTicker =
+          gson.fromJson(response.getPayload(), BitstampTicker.class);
       return bitstampTicker.last;
 
     } catch (ExchangeNetworkException | TradingApiException e) {
@@ -209,7 +218,8 @@ public final class TestExchangeAdapter extends AbstractExchangeAdapter implement
       final ExchangeHttpResponse response = sendPublicRequestToExchange("ticker/" + marketId);
       LOG.debug(() -> "Ticker response: " + response);
 
-      final BitstampTicker bitstampTicker = gson.fromJson(response.getPayload(), BitstampTicker.class);
+      final BitstampTicker bitstampTicker =
+          gson.fromJson(response.getPayload(), BitstampTicker.class);
       return new TickerImpl(
           bitstampTicker.last,
           bitstampTicker.bid,
@@ -235,12 +245,12 @@ public final class TestExchangeAdapter extends AbstractExchangeAdapter implement
   // ------------------------------------------------------------------------------------------------
 
   /**
-   * <p>
    * GSON class for holding Bitstamp Order Book response from order_book API call.
-   * </p>
+   *
    * <p>
-   * <p>
-   * JSON looks like:
+   *
+   * <p>JSON looks like:
+   *
    * <pre>
    * {
    *   "timestamp": "1400943488",
@@ -248,28 +258,26 @@ public final class TestExchangeAdapter extends AbstractExchangeAdapter implement
    *   "asks": [["521.88", "10.00000000"], ["522.00", "310.24504478"], ["522.13", "0.02852084"]]
    * }
    * </pre>
-   * </p>
+   *
    * Each is a list of open orders and each order is represented as a list of price and amount.
    */
   private static class BitstampOrderBook {
 
-    public long timestamp; //unix timestamp date and time
+    public long timestamp; // unix timestamp date and time
     public List<List<BigDecimal>> bids;
     public List<List<BigDecimal>> asks;
 
     @Override
     public String toString() {
       return MoreObjects.toStringHelper(this)
-                 .add("timestamp", timestamp)
-                 .add("bids", bids)
-                 .add("asks", asks)
-                 .toString();
+          .add("timestamp", timestamp)
+          .add("bids", bids)
+          .add("asks", asks)
+          .toString();
     }
   }
 
-  /**
-   * GSON class for a Bitstamp ticker response.
-   */
+  /** GSON class for a Bitstamp ticker response. */
   private static class BitstampTicker {
 
     public BigDecimal high;
@@ -285,21 +293,23 @@ public final class TestExchangeAdapter extends AbstractExchangeAdapter implement
     @Override
     public String toString() {
       return MoreObjects.toStringHelper(this)
-                 .add("high", high)
-                 .add("last", last)
-                 .add("timestamp", timestamp)
-                 .add("bid", bid)
-                 .add("vwap", vwap)
-                 .add("volume", volume)
-                 .add("low", low)
-                 .add("ask", ask)
-                 .add("open", open)
-                 .toString();
+          .add("high", high)
+          .add("last", last)
+          .add("timestamp", timestamp)
+          .add("bid", bid)
+          .add("vwap", vwap)
+          .add("volume", volume)
+          .add("low", low)
+          .add("ask", ask)
+          .add("open", open)
+          .toString();
     }
   }
 
   /**
-   * Deserializer needed because stamp Date format is different in open_order response and causes default GSON parsing to barf:
+   * Deserializer needed because stamp Date format is different in open_order response and causes
+   * default GSON parsing to barf:
+   *
    * <pre>
    * [main] 2014-05-25 20:51:31,074 ERROR BitstampExchangeAdapter  - Failed to parse a Bitstamp date
    * java.text.ParseException: Unparseable date: "2014-05-25 19:50:32"
@@ -332,8 +342,8 @@ public final class TestExchangeAdapter extends AbstractExchangeAdapter implement
   //  Transport layer methods
   // ------------------------------------------------------------------------------------------------
 
-  private ExchangeHttpResponse sendPublicRequestToExchange(String apiMethod) throws ExchangeNetworkException,
-                                                                                        TradingApiException {
+  private ExchangeHttpResponse sendPublicRequestToExchange(String apiMethod)
+      throws ExchangeNetworkException, TradingApiException {
     final Map<String, String> requestHeaders = new HashMap<>();
     requestHeaders.put("Content-Type", "application/x-www-form-urlencoded");
 

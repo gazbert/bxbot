@@ -44,12 +44,21 @@ public class TestOpenOrderImpl {
   private static final BigDecimal PRICE = new BigDecimal("671.91");
   private static final BigDecimal ORIGINAL_QUANTITY = new BigDecimal("0.01433434");
   private static final BigDecimal TOTAL = PRICE.multiply(ORIGINAL_QUANTITY);
-  private static final BigDecimal QUANTITY = ORIGINAL_QUANTITY.subtract(new BigDecimal("0.00112112"));
+  private static final BigDecimal QUANTITY =
+      ORIGINAL_QUANTITY.subtract(new BigDecimal("0.00112112"));
 
   @Test
   public void testOpenOrderIsInitialisedAsExpected() {
-    final OpenOrderImpl openOrder = new OpenOrderImpl(ID, CREATION_DATE, MARKET_ID, OrderType.SELL, PRICE, QUANTITY,
-        ORIGINAL_QUANTITY, TOTAL);
+    final OpenOrderImpl openOrder =
+        new OpenOrderImpl(
+            ID,
+            CREATION_DATE,
+            MARKET_ID,
+            OrderType.SELL,
+            PRICE,
+            QUANTITY,
+            ORIGINAL_QUANTITY,
+            TOTAL);
 
     assertEquals(ID, openOrder.getId());
     assertEquals(CREATION_DATE, openOrder.getCreationDate());
@@ -63,8 +72,8 @@ public class TestOpenOrderImpl {
 
   @Test
   public void testSettersWorkAsExpected() {
-    final OpenOrderImpl openOrder = new OpenOrderImpl(null, null, null, null, null,
-        null, null, null);
+    final OpenOrderImpl openOrder =
+        new OpenOrderImpl(null, null, null, null, null, null, null, null);
     assertNull(openOrder.getId());
     assertNull(openOrder.getCreationDate());
     assertNull(openOrder.getMarketId());

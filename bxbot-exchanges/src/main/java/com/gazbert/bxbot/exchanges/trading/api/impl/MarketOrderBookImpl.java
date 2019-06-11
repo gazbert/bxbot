@@ -39,7 +39,8 @@ public final class MarketOrderBookImpl implements MarketOrderBook {
   private List<MarketOrder> sellOrders;
   private List<MarketOrder> buyOrders;
 
-  public MarketOrderBookImpl(String marketId, List<MarketOrder> sellOrders, List<MarketOrder> buyOrders) {
+  public MarketOrderBookImpl(
+      String marketId, List<MarketOrder> sellOrders, List<MarketOrder> buyOrders) {
     this.marketId = marketId;
     this.sellOrders = sellOrders;
     this.buyOrders = buyOrders;

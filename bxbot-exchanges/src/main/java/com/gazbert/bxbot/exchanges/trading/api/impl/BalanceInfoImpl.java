@@ -38,7 +38,8 @@ public final class BalanceInfoImpl implements BalanceInfo {
   private Map<String, BigDecimal> balancesAvailable;
   private Map<String, BigDecimal> balancesOnHold;
 
-  public BalanceInfoImpl(Map<String, BigDecimal> balancesAvailable, Map<String, BigDecimal> balancesOnHold) {
+  public BalanceInfoImpl(
+      Map<String, BigDecimal> balancesAvailable, Map<String, BigDecimal> balancesOnHold) {
     this.balancesAvailable = balancesAvailable;
     this.balancesOnHold = balancesOnHold;
   }
@@ -67,4 +68,3 @@ public final class BalanceInfoImpl implements BalanceInfo {
         .toString();
   }
 }
-
