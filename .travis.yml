@@ -7,10 +7,10 @@ install: true
 script:
   - ./mvnw clean install -Dmaven.javadoc.skip=true -Pall
   # - ./mvnw clean org.jacoco:jacoco-maven-plugin:prepare-agent install sonar:sonar -Dmaven.javadoc.skip=true -Pall
-  # - sonar-scanner
+  - sonar-scanner
 
-#addons:
-#  sonarcloud:
-#    organization: "gazbert-github"
-#    token:
-#      secure: "HGumGX1o6Sz6FGceV6qLgA+D7qM/kMIDA4H97GsgG8Eoi2cQ4zK08Va3yFzTTlDZ+rhvezqNgYfKu1R2M/ubB/iNm9k6q/PDpgb9LZRJar5MlEHxSuQEUXDmaDoUJX+NQg1msajq/4gA7gefjCeJATIbAdbvxNu/O7HsmOtAmNqT9J6bwb/FGjlrn16wQr7FqcZr3JBSu2/3vY0dVtfujpCNpeRBCl4ATm+D/ZuIHtDLWhcIUVmcABijHo9PhRt2fe32kvLkGvmgo9YaVYqysc30Irrur798+z3op2f1vxFxg9nCIviK8D0MGEZ4+lXUVIrrhkuVwy/MDAvT5uSyqw/ax9AtAYY7DgHDxpCg1K7DVN61f5ZBsvjlxxYNN7RJMQGuYwWL4+21pEzwPk1khmpGAailUy7Cug+XcF6VS9aQ3R0nHc63F8/4Oqsu3S3L4uT+dMszN28D3gCyLIcTMVPyxcCUXxVx9n4k3e6CT0MLmQqHWNKdLGQOJYBPiTGECyn2FqBGLBlgW+GnAmgLNQ8bJw1ZQetogPRiXiLVKOxhPKKOPjFGoz0cqsKZwy8meAdXMOZlCp5oCGRzktFyHcTElGTWB5jmBajHpmD+/vxAlG3eGBqrAaI/Aewo+ItleDdnpXPx0MsbGYckHUQnLqWxs7uq0CU0LoS2PRUbqZ4="
+addons:
+  sonarcloud:
+    organization: "gazbert-github"
+    token:
+      secure: "HGumGX1o6Sz6FGceV6qLgA+D7qM/kMIDA4H97GsgG8Eoi2cQ4zK08Va3yFzTTlDZ+rhvezqNgYfKu1R2M/ubB/iNm9k6q/PDpgb9LZRJar5MlEHxSuQEUXDmaDoUJX+NQg1msajq/4gA7gefjCeJATIbAdbvxNu/O7HsmOtAmNqT9J6bwb/FGjlrn16wQr7FqcZr3JBSu2/3vY0dVtfujpCNpeRBCl4ATm+D/ZuIHtDLWhcIUVmcABijHo9PhRt2fe32kvLkGvmgo9YaVYqysc30Irrur798+z3op2f1vxFxg9nCIviK8D0MGEZ4+lXUVIrrhkuVwy/MDAvT5uSyqw/ax9AtAYY7DgHDxpCg1K7DVN61f5ZBsvjlxxYNN7RJMQGuYwWL4+21pEzwPk1khmpGAailUy7Cug+XcF6VS9aQ3R0nHc63F8/4Oqsu3S3L4uT+dMszN28D3gCyLIcTMVPyxcCUXxVx9n4k3e6CT0MLmQqHWNKdLGQOJYBPiTGECyn2FqBGLBlgW+GnAmgLNQ8bJw1ZQetogPRiXiLVKOxhPKKOPjFGoz0cqsKZwy8meAdXMOZlCp5oCGRzktFyHcTElGTWB5jmBajHpmD+/vxAlG3eGBqrAaI/Aewo+ItleDdnpXPx0MsbGYckHUQnLqWxs7uq0CU0LoS2PRUbqZ4="
