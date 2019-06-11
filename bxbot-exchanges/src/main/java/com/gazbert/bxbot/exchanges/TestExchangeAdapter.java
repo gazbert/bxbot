@@ -65,7 +65,7 @@ import org.apache.logging.log4j.Logger;
  * <p>Makes public calls to the Bitstamp exchange. It does not trade. All private (authenticated)
  * requests are stubbed.
  *
- * <p>Might be handy for 'dry' testing your algos.
+ * <p>Might be handy for 'dry testing' your algos.
  *
  * @author gazbert
  * @since 1.0
@@ -90,10 +90,10 @@ public final class TestExchangeAdapter extends AbstractExchangeAdapter implement
     initGson();
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   // Bitstamp API Calls adapted to the Trading API.
   // See https://www.bitstamp.net/api/
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   @Override
   public MarketOrderBook getMarketOrders(String marketId)
@@ -239,15 +239,13 @@ public final class TestExchangeAdapter extends AbstractExchangeAdapter implement
     }
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   //  GSON classes for JSON responses.
   //  See https://www.bitstamp.net/api/
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   /**
    * GSON class for holding Bitstamp Order Book response from order_book API call.
-   *
-   * <p>
    *
    * <p>JSON looks like:
    *
@@ -259,7 +257,7 @@ public final class TestExchangeAdapter extends AbstractExchangeAdapter implement
    * }
    * </pre>
    *
-   * Each is a list of open orders and each order is represented as a list of price and amount.
+   * <p>Each is a list of open orders and each order is represented as a list of price and amount.
    */
   private static class BitstampOrderBook {
 
@@ -308,14 +306,16 @@ public final class TestExchangeAdapter extends AbstractExchangeAdapter implement
 
   /**
    * Deserializer needed because stamp Date format is different in open_order response and causes
-   * default GSON parsing to barf:
+   * default GSON parsing to barf.
    *
    * <pre>
    * [main] 2014-05-25 20:51:31,074 ERROR BitstampExchangeAdapter  - Failed to parse a Bitstamp date
    * java.text.ParseException: Unparseable date: "2014-05-25 19:50:32"
    * at java.text.DateFormat.parse(DateFormat.java:357)
-   * at com.gazbert.bxbot.adapter.BitstampExchangeAdapter$DateDeserializer.deserialize(BitstampExchangeAdapter.java:596)
-   * at com.gazbert.bxbot.adapter.BitstampExchangeAdapter$DateDeserializer.deserialize(BitstampExchangeAdapter.java:1)
+   * at com.gazbert.bxbot.adapter.BitstampExchangeAdapter$DateDeserializer
+   *   .deserialize(BitstampExchangeAdapter.java:596)
+   * at com.gazbert.bxbot.adapter.BitstampExchangeAdapter$DateDeserializer
+   *   .deserialize(BitstampExchangeAdapter.java:1)
    * at com.google.gson.TreeTypeAdapter.read(TreeTypeAdapter.java:58)
    * </pre>
    */
@@ -338,9 +338,9 @@ public final class TestExchangeAdapter extends AbstractExchangeAdapter implement
     }
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   //  Transport layer methods
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   private ExchangeHttpResponse sendPublicRequestToExchange(String apiMethod)
       throws ExchangeNetworkException, TradingApiException {
@@ -359,9 +359,9 @@ public final class TestExchangeAdapter extends AbstractExchangeAdapter implement
     }
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   //  Util methods
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   private void initGson() {
     final GsonBuilder gsonBuilder = new GsonBuilder();

@@ -44,6 +44,7 @@ import com.gazbert.bxbot.trading.api.TradingApiException;
 import com.google.common.base.MoreObjects;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.annotations.SerializedName;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.HttpURLConnection;
@@ -131,7 +132,7 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
   private String secret = "";
 
   private Mac mac;
-  private boolean initializedMACAuthentication = false;
+  private boolean initializedMacAuthentication = false;
 
   private Gson gson;
 
@@ -146,10 +147,10 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
     initGson();
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   // GDAX API Calls adapted to the Trading API.
   // See https://docs.gdax.com/#api
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   @Override
   public String createOrder(
@@ -159,7 +160,8 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
       /*
        * Build Limit Order: https://docs.gdax.com/#place-a-new-order
        *
-       * stp param optional           - (Self-trade prevention flag) defaults to 'dc' Decrease & Cancel
+       * stp param optional           - (Self-trade prevention flag) defaults to 'dc' Decrease &
+       *                                Cancel
        * post_only param optional     - defaults to 'false'
        * time_in_force param optional - defaults to 'GTC' Good til Cancel
        * client_oid param is optional - thia adapter does not use it.
@@ -268,7 +270,7 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
         final List<OpenOrder> ordersToReturn = new ArrayList<>();
         for (final GdaxOrder openOrder : gdaxOpenOrders) {
 
-          if (!marketId.equalsIgnoreCase(openOrder.product_id)) {
+          if (!marketId.equalsIgnoreCase(openOrder.productId)) {
             continue;
           }
 
@@ -289,12 +291,12 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
           final OpenOrder order =
               new OpenOrderImpl(
                   openOrder.id,
-                  Date.from(Instant.parse(openOrder.created_at)),
+                  Date.from(Instant.parse(openOrder.createdAt)),
                   marketId,
                   orderType,
                   openOrder.price,
                   openOrder.size.subtract(
-                      openOrder.filled_size), // quantity remaining - not provided by GDAX
+                      openOrder.filledSize), // quantity remaining - not provided by GDAX
                   openOrder.size, // orig quantity
                   openOrder.price.multiply(openOrder.size) // total - not provided by GDAX
                   );
@@ -516,10 +518,10 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
     }
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   //  GSON classes for JSON responses.
   //  See https://docs.gdax.com/#api
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   /**
    * GSON class for GDAX '/orders' API call response.
@@ -532,18 +534,31 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
     public String id;
     public BigDecimal price;
     public BigDecimal size;
-    public String product_id; // e.g. "BTC-GBP", "BTC-USD"
-    public String side; // "buy" or "sell"
-    public String stp; // Self-Trade Prevention flag, e.g. "dc"
-    public String type; // order type, e.g. "limit"
-    public String time_in_force; // e.g. "GTC" (Good Til Cancelled)
-    public boolean
-        post_only; // shows in book and provides exchange liquidity, but will no be executed
-    public String created_at; // e.g. "2014-11-14 06:39:55.189376+00"
-    public BigDecimal fill_fees;
-    public BigDecimal filled_size;
+
+    @SerializedName("product_id")
+    String productId; // e.g. "BTC-GBP", "BTC-USD"
+
+    String side; // "buy" or "sell"
+    String stp; // Self-Trade Prevention flag, e.g. "dc"
+    String type; // order type, e.g. "limit"
+
+    @SerializedName("time_in_force")
+    String timeInForce; // e.g. "GTC" (Good Til Cancelled)
+
+    @SerializedName("post_only")
+    boolean postOnly; // shows in book + provides exchange liquidity, but will not execute
+
+    @SerializedName("created_at")
+    String createdAt; // e.g. "2014-11-14 06:39:55.189376+00"
+
+    @SerializedName("fill_fees")
+    BigDecimal fillFees;
+
+    @SerializedName("filled_size")
+    BigDecimal filledSize;
+
     public String status; // e.g. "open"
-    public boolean settled;
+    boolean settled;
 
     @Override
     public String toString() {
@@ -551,15 +566,15 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
           .add("id", id)
           .add("price", price)
           .add("size", size)
-          .add("product_id", product_id)
+          .add("productId", productId)
           .add("side", side)
           .add("stp", stp)
           .add("type", type)
-          .add("time_in_force", time_in_force)
-          .add("post_only", post_only)
-          .add("created_at", created_at)
-          .add("fill_fees", fill_fees)
-          .add("filled_size", filled_size)
+          .add("timeInForce", timeInForce)
+          .add("postOnly", postOnly)
+          .add("createdAt", createdAt)
+          .add("fillFees", fillFees)
+          .add("filledSize", filledSize)
           .add("status", status)
           .add("settled", settled)
           .toString();
@@ -569,9 +584,9 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
   /** GSON class for GDAX '/products/{marketId}/book' API call response. */
   private static class GdaxBookWrapper {
 
-    public long sequence;
-    public List<GdaxMarketOrder> bids;
-    public List<GdaxMarketOrder> asks;
+    long sequence;
+    List<GdaxMarketOrder> bids;
+    List<GdaxMarketOrder> asks;
 
     @Override
     public String toString() {
@@ -595,18 +610,20 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
   /** GSON class for GDAX '/products/{marketId}/ticker' API call response. */
   private static class GdaxTicker {
 
-    public long trade_id;
-    public BigDecimal price;
-    public BigDecimal size;
-    public BigDecimal bid;
-    public BigDecimal ask;
-    public BigDecimal volume;
-    public String time; // e.g. "2015-10-14T19:19:36.604735Z"
+    @SerializedName("trade_id")
+    long tradeId;
+
+    BigDecimal price;
+    BigDecimal size;
+    BigDecimal bid;
+    BigDecimal ask;
+    BigDecimal volume;
+    String time; // e.g. "2015-10-14T19:19:36.604735Z"
 
     @Override
     public String toString() {
       return MoreObjects.toStringHelper(this)
-          .add("trade_id", trade_id)
+          .add("tradeId", tradeId)
           .add("price", price)
           .add("size", size)
           .add("bid", bid)
@@ -617,15 +634,17 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
     }
   }
 
-  /** GSON class for GDAX '/products/<product-id>/stats' API call response. */
+  /** GSON class for GDAX '/products/&ltproduct-id&gt/stats' API call response. */
   private static class GdaxStats {
 
-    public BigDecimal open;
-    public BigDecimal high;
-    public BigDecimal low;
-    public BigDecimal volume;
-    public BigDecimal last;
-    public String volume_30day;
+    BigDecimal open;
+    BigDecimal high;
+    BigDecimal low;
+    BigDecimal volume;
+    BigDecimal last;
+
+    @SerializedName("volume_30day")
+    String volume30Day;
 
     @Override
     public String toString() {
@@ -635,7 +654,7 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
           .add("low", low)
           .add("volume", volume)
           .add("last", last)
-          .add("volume_30day", volume_30day)
+          .add("volume30Day", volume30Day)
           .toString();
     }
   }
@@ -643,12 +662,14 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
   /** GSON class for GDAX '/accounts' API call response. */
   private static class GdaxAccount {
 
-    public String id;
-    public String currency;
-    public BigDecimal balance; // e.g. "0.0000000000000000"
-    public BigDecimal hold;
-    public BigDecimal available;
-    public String profile_id; // no idea what this is?
+    String id;
+    String currency;
+    BigDecimal balance; // e.g. "0.0000000000000000"
+    BigDecimal hold;
+    BigDecimal available;
+
+    @SerializedName("profile_id") // no idea what this is?!
+    String profileId;
 
     @Override
     public String toString() {
@@ -658,14 +679,14 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
           .add("balance", balance)
           .add("hold", hold)
           .add("available", available)
-          .add("profile_id", profile_id)
+          .add("profileId", profileId)
           .toString();
     }
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   //  Transport layer methods
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   private ExchangeHttpResponse sendPublicRequestToExchange(
       String apiMethod, Map<String, String> params)
@@ -718,30 +739,37 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
   * CB-ACCESS-TIMESTAMP    A timestamp for your request.
   * CB-ACCESS-PASSPHRASE   The passphrase you specified when creating the API key.
   *
-  * The CB-ACCESS-TIMESTAMP header MUST be number of seconds since Unix Epoch in UTC. Decimal values are allowed.
+  * The CB-ACCESS-TIMESTAMP header MUST be number of seconds since Unix Epoch in UTC.
+  * Decimal values are allowed.
   *
-  * Your timestamp must be within 30 seconds of the api service time or your request will be considered expired and
-  * rejected. We recommend using the time endpoint to query for the API server time if you believe there many be
-  * time skew between your server and the API servers.
+  * Your timestamp must be within 30 seconds of the api service time or your request will be
+  * considered expired and rejected. We recommend using the time endpoint to query for the API
+  * server time if you believe there many be time skew between your server and the API servers.
   *
   * All request bodies should have content type application/json and be valid JSON.
   *
-  * The CB-ACCESS-SIGN header is generated by creating a sha256 HMAC using the base64-decoded secret key on the
-  * prehash string timestamp + method + requestPath + body (where + represents string concatenation) and
-  * base64-encode the output. The timestamp value is the same as the CB-ACCESS-TIMESTAMP header.
+  * The CB-ACCESS-SIGN header is generated by creating a sha256 HMAC using the base64-decoded
+  * secret key on the prehash string:
   *
-  * The body is the request body string or omitted if there is no request body (typically for GET requests).
+  * timestamp + method + requestPath + body (where + represents string concatenation)
+  *
+  * and base64-encode the output.
+  * The timestamp value is the same as the CB-ACCESS-TIMESTAMP header.
+  *
+  * The body is the request body string or omitted if there is no request body
+  * (typically for GET requests).
   *
   * The method should be UPPER CASE.
   *
-  * Remember to first base64-decode the alphanumeric secret string (resulting in 64 bytes) before using it as the
-  * key for HMAC. Also, base64-encode the digest output before sending in the header.
+  * Remember to first base64-decode the alphanumeric secret string (resulting in 64 bytes) before
+  * using it as the key for HMAC. Also, base64-encode the digest output before sending in the
+  * header.
   */
   private ExchangeHttpResponse sendAuthenticatedRequestToExchange(
       String httpMethod, String apiMethod, Map<String, String> params)
       throws ExchangeNetworkException, TradingApiException {
 
-    if (!initializedMACAuthentication) {
+    if (!initializedMacAuthentication) {
       final String errorMsg = "MAC Message security layer has not been initialized.";
       LOG.error(errorMsg);
       throw new IllegalStateException(errorMsg);
@@ -830,8 +858,8 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
   /*
    * Initialises the secure messaging layer.
    * Sets up the MAC to safeguard the data we send to the exchange.
-   * Used to encrypt the hash of the entire message with the private key to ensure message integrity.
-   * We fail hard n fast if any of this stuff blows.
+   * Used to encrypt the hash of the entire message with the private key to ensure message
+   * integrity. We fail hard n fast if any of this stuff blows.
    */
   private void initSecureMessageLayer() {
     try {
@@ -841,7 +869,7 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
       final SecretKeySpec keyspec = new SecretKeySpec(decodedBase64Secret, "HmacSHA256");
       mac = Mac.getInstance("HmacSHA256");
       mac.init(keyspec);
-      initializedMACAuthentication = true;
+      initializedMacAuthentication = true;
     } catch (NoSuchAlgorithmException e) {
       final String errorMsg = "Failed to setup MAC security. HINT: Is HMAC-SHA256 installed?";
       LOG.error(errorMsg, e);
@@ -853,9 +881,9 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
     }
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   //  Config methods
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   private void setAuthenticationConfig(ExchangeConfig exchangeConfig) {
     final AuthenticationConfig authenticationConfig = getAuthenticationConfig(exchangeConfig);
@@ -878,9 +906,9 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
     LOG.info(() -> "Sell fee % in BigDecimal format: " + sellFeePercentage);
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   //  Util methods
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   private void initGson() {
     final GsonBuilder gsonBuilder = new GsonBuilder();
