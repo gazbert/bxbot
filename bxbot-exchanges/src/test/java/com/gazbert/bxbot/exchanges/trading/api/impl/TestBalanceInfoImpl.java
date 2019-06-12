@@ -59,6 +59,7 @@ public class TestBalanceInfoImpl {
    */
   private Map<String, BigDecimal> balancesOnHold;
 
+  /** Sets up some test balances. */
   @Before
   public void setupBalancesBeforeEachTest() {
     balancesAvailable = new HashMap<>();

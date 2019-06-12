@@ -70,13 +70,13 @@ import org.powermock.modules.junit4.PowerMockRunner;
  */
 @RunWith(PowerMockRunner.class)
 @PowerMockIgnore({
-  "javax.crypto.*",
-  "javax.management.*",
-  "com.sun.org.apache.xerces.*",
-  "javax.xml.parsers.*",
-  "org.xml.sax.*",
-  "org.w3c.dom.*",
-  "javax.xml.datatype.*"
+    "javax.crypto.*",
+    "javax.management.*",
+    "com.sun.org.apache.xerces.*",
+    "javax.xml.parsers.*",
+    "org.xml.sax.*",
+    "org.w3c.dom.*",
+    "javax.xml.datatype.*"
 })
 @PrepareForTest(BitfinexExchangeAdapter.class)
 public class TestBitfinexExchangeAdapter extends AbstractExchangeAdapterTest {
@@ -138,9 +138,7 @@ public class TestBitfinexExchangeAdapter extends AbstractExchangeAdapterTest {
   private AuthenticationConfig authenticationConfig;
   private NetworkConfig networkConfig;
 
-  /*
-   * Create some exchange config - the TradingEngine would normally do this.
-   */
+  /** Create some exchange config - the TradingEngine would normally do this. */
   @Before
   public void setupForEachTest() {
     authenticationConfig = PowerMock.createMock(AuthenticationConfig.class);
@@ -158,9 +156,9 @@ public class TestBitfinexExchangeAdapter extends AbstractExchangeAdapterTest {
     // optional config not needed for this adapter
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   //  Create Orders tests
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   @Test
   @SuppressWarnings("unchecked")
@@ -303,8 +301,8 @@ public class TestBitfinexExchangeAdapter extends AbstractExchangeAdapterTest {
         .andThrow(
             new IllegalArgumentException(
                 "What a fitting end to your life's pursuits. You're about to "
-                    + "become a permanent addition to this archaeological find. Who knows? In a thousand years,"
-                    + " even you may be worth something."));
+                    + "become a permanent addition to this archaeological find. Who knows? In a "
+                    + "thousand years, even you may be worth something."));
 
     PowerMock.replayAll();
     exchangeAdapter.init(exchangeConfig);
@@ -313,9 +311,9 @@ public class TestBitfinexExchangeAdapter extends AbstractExchangeAdapterTest {
     PowerMock.verifyAll();
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   //  Cancel Order tests
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   @Test
   @SuppressWarnings("unchecked")
@@ -401,9 +399,9 @@ public class TestBitfinexExchangeAdapter extends AbstractExchangeAdapterTest {
     PowerMock.verifyAll();
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   //  Get Market Orders tests
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   @Test
   public void testGettingMarketOrdersSuccessfully() throws Exception {
@@ -460,8 +458,8 @@ public class TestBitfinexExchangeAdapter extends AbstractExchangeAdapterTest {
         .andThrow(
             new ExchangeNetworkException(
                 "There are three basic types, Mr. Pizer: the Wills, the Won'ts,"
-                    + " and the Can'ts. The Wills accomplish everything, the Won'ts oppose everything, and the "
-                    + "Can'ts won't try anything."));
+                    + " and the Can'ts. The Wills accomplish everything, the Won'ts oppose "
+                    + "everything, and the Can'ts won't try anything."));
 
     PowerMock.replayAll();
     exchangeAdapter.init(exchangeConfig);
@@ -486,9 +484,9 @@ public class TestBitfinexExchangeAdapter extends AbstractExchangeAdapterTest {
     PowerMock.verifyAll();
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   //  Get Your Open Orders tests
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   @Test
   public void testGettingYourOpenOrdersSuccessfully() throws Exception {
@@ -545,8 +543,8 @@ public class TestBitfinexExchangeAdapter extends AbstractExchangeAdapterTest {
         .andThrow(
             new ExchangeNetworkException(
                 "There's an entirely different universe beyond that black hole. "
-                    + "A point where time and space as we know it no longer exists. We will be the first to see it, "
-                    + "to explore it, to experience it!"));
+                    + "A point where time and space as we know it no longer exists. We will be the "
+                    + "first to see it, to explore it, to experience it!"));
 
     PowerMock.replayAll();
     exchangeAdapter.init(exchangeConfig);
@@ -577,9 +575,9 @@ public class TestBitfinexExchangeAdapter extends AbstractExchangeAdapterTest {
     PowerMock.verifyAll();
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   //  Get Latest Market Price tests
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   @Test
   public void testGettingLatestMarketPriceSuccessfully() throws Exception {
@@ -619,13 +617,14 @@ public class TestBitfinexExchangeAdapter extends AbstractExchangeAdapterTest {
         .andThrow(
             new ExchangeNetworkException(
                 "They say most of your brain shuts down in cryo-sleep. "
-                    + "All but the primitive side, the animal side. No wonder I'm still awake. Transporting me with "
-                    + "civilians. Sounded like 40, 40-plus. Heard an Arab voice. Some hoodoo holy man, probably on "
-                    + "his way to New Mecca. But what route? What route? I smelt a woman. Sweat, boots, tool belt,"
-                    + " leather. Prospector type. Free settlers. And they only take the back roads. And here's my "
-                    + "real problem. Mr. Johns... the blue-eyed devil. Planning on taking me back to slam... "
-                    + "only this time he picked a ghost lane. A long time between stops. A long time for something"
-                    + " to go wrong..."));
+                    + "All but the primitive side, the animal side. No wonder I'm still awake. "
+                    + "Transporting me with civilians. Sounded like 40, 40-plus. Heard an Arab "
+                    + "voice. Some hoodoo holy man, probably on his way to New Mecca. But what "
+                    + "route? What route? I smelt a woman. Sweat, boots, tool belt, leather. "
+                    + "Prospector type. Free settlers. And they only take the back roads. "
+                    + "And here's my real problem. Mr. Johns... the blue-eyed devil. "
+                    + "Planning on taking me back to slam... only this time he picked a ghost "
+                    + "lane. A long time between stops. A long time for something to go wrong..."));
 
     PowerMock.replayAll();
     exchangeAdapter.init(exchangeConfig);
@@ -655,9 +654,9 @@ public class TestBitfinexExchangeAdapter extends AbstractExchangeAdapterTest {
     PowerMock.verifyAll();
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   //  Get Balance Info tests
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   @Test
   public void testGettingBalanceInfoSuccessfully() throws Exception {
@@ -706,7 +705,8 @@ public class TestBitfinexExchangeAdapter extends AbstractExchangeAdapterTest {
         .andThrow(
             new ExchangeNetworkException(
                 " Don't know, I don't know such stuff. I just do eyes, ju-, ju-,"
-                    + " just eyes... just genetic design, just eyes. You Nexus, huh? I design your eyes"));
+                    + " just eyes... just genetic design, just eyes. You Nexus, huh? I design your"
+                    + " eyes"));
 
     PowerMock.replayAll();
     exchangeAdapter.init(exchangeConfig);
@@ -728,8 +728,9 @@ public class TestBitfinexExchangeAdapter extends AbstractExchangeAdapterTest {
         .andThrow(
             new IllegalStateException(
                 " I've seen things you people wouldn't believe. Attack ships on fire"
-                    + " off the shoulder of Orion. I watched C-beams glitter in the dark near the Tannhauser gate. "
-                    + "All those moments will be lost in time... like tears in rain... Time to die"));
+                    + " off the shoulder of Orion. I watched C-beams glitter in the dark near the "
+                    + "Tannhauser gate. All those moments will be lost in time... like tears in"
+                    + " rain... Time to die"));
 
     PowerMock.replayAll();
     exchangeAdapter.init(exchangeConfig);
@@ -738,9 +739,9 @@ public class TestBitfinexExchangeAdapter extends AbstractExchangeAdapterTest {
     PowerMock.verifyAll();
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   //  Get Exchange Fees for Buy orders tests
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   @Test
   public void testGettingExchangeBuyingFeeSuccessfully() throws Exception {
@@ -782,9 +783,10 @@ public class TestBitfinexExchangeAdapter extends AbstractExchangeAdapterTest {
         .andThrow(
             new ExchangeNetworkException(
                 "Right. Well, um, using layman's terms... Use a retaining magnetic"
-                    + " field to focus a narrow beam of gravitons - these, in turn, fold space-time consistent with"
-                    + " Weyl tensor dynamics until the space-time curvature becomes infinitely large, and you produce"
-                    + " a singularity. Now, the singularity..."));
+                    + " field to focus a narrow beam of gravitons - these, in turn, fold "
+                    + "space-time consistent with Weyl tensor dynamics until the space-time "
+                    + "curvature becomes infinitely large, and you produce a singularity. "
+                    + "Now, the singularity..."));
 
     PowerMock.replayAll();
     exchangeAdapter.init(exchangeConfig);
@@ -806,9 +808,10 @@ public class TestBitfinexExchangeAdapter extends AbstractExchangeAdapterTest {
         .andThrow(
             new IllegalStateException(
                 "I created the Event Horizon to reach the stars, but she's gone much,"
-                    + " much farther than that. She tore a hole in our universe, a gateway to another dimension."
-                    + " A dimension of pure chaos. Pure... evil. When she crossed over, she was just a ship."
-                    + " But when she came back... she was alive! Look at her, Miller. Isn't she beautiful?"));
+                    + " much farther than that. She tore a hole in our universe, a gateway to "
+                    + "another dimension. A dimension of pure chaos. Pure... evil. When she "
+                    + "crossed over, she was just a ship. But when she came back... she was alive! "
+                    + "Look at her, Miller. Isn't she beautiful?"));
 
     PowerMock.replayAll();
     exchangeAdapter.init(exchangeConfig);
@@ -817,9 +820,9 @@ public class TestBitfinexExchangeAdapter extends AbstractExchangeAdapterTest {
     PowerMock.verifyAll();
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   //  Get Exchange Fees for Sell orders tests
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   @Test
   public void testGettingExchangeSellingFeeSuccessfully() throws Exception {
@@ -883,9 +886,11 @@ public class TestBitfinexExchangeAdapter extends AbstractExchangeAdapterTest {
         .andThrow(
             new IllegalStateException(
                 "What was made public about the Event Horizon - that "
-                    + "she was a deep space research vessel, that her reactor went critical, and that the ship blew up - "
-                    + "none of that is true. The Event Horizon is the culmination of a secret government project to create a"
-                    + " spacecraft capable of faster-than-light flight."));
+                    + "she was a deep space research vessel, that her reactor went critical, "
+                    + "and that the ship blew up - "
+                    + "none of that is true. The Event Horizon is the culmination of a secret "
+                    + "government project to create a "
+                    + "spacecraft capable of faster-than-light flight."));
 
     PowerMock.replayAll();
     exchangeAdapter.init(exchangeConfig);
@@ -894,9 +899,9 @@ public class TestBitfinexExchangeAdapter extends AbstractExchangeAdapterTest {
     PowerMock.verifyAll();
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   //  Get Ticker tests
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   @Test
   public void testGettingTickerSuccessfully() throws Exception {
@@ -974,9 +979,9 @@ public class TestBitfinexExchangeAdapter extends AbstractExchangeAdapterTest {
     PowerMock.verifyAll();
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   //  Non Exchange visiting tests
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   @Test
   public void testGettingImplNameIsAsExpected() {
@@ -987,9 +992,9 @@ public class TestBitfinexExchangeAdapter extends AbstractExchangeAdapterTest {
     PowerMock.verifyAll();
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   //  Initialisation tests
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   @Test
   public void testExchangeAdapterInitialisesSuccessfully() {
@@ -1032,9 +1037,9 @@ public class TestBitfinexExchangeAdapter extends AbstractExchangeAdapterTest {
     PowerMock.verifyAll();
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   //  Request sending tests
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   @Test
   public void testSendingPublicRequestToExchangeSuccessfully() throws Exception {
@@ -1087,12 +1092,14 @@ public class TestBitfinexExchangeAdapter extends AbstractExchangeAdapterTest {
         .andThrow(
             new ExchangeNetworkException(
                 "There are three types of people in this world: "
-                    + "sheep, wolves, and sheepdogs. Some people prefer to believe that evil doesn't exist in the "
-                    + "world, and if it ever darkened their doorstep, they wouldn't know how to protect themselves."
-                    + " Those are the sheep. Then you've got predators who use violence to prey on the weak. "
-                    + "They're the wolves. And then there are those blessed with the gift of aggression, "
-                    + "an overpowering need to protect the flock. These men are the rare breed who live to confront "
-                    + "the wolf. They are the sheepdog."));
+                    + "sheep, wolves, and sheepdogs. Some people prefer to believe that evil "
+                    + "doesn't exist in the world, and if it ever darkened their doorstep, they "
+                    + "wouldn't know how to protect themselves. Those are the sheep. Then you've "
+                    + "got predators who use violence to prey on the weak. "
+                    + "They're the wolves. And then there are those blessed with the gift of "
+                    + "aggression, an overpowering need to protect the flock. "
+                    + "These men are the rare breed who live to confront the wolf. "
+                    + "They are the sheepdog."));
 
     PowerMock.replayAll();
     exchangeAdapter.init(exchangeConfig);
@@ -1310,9 +1317,9 @@ public class TestBitfinexExchangeAdapter extends AbstractExchangeAdapterTest {
             eq(requestHeaderMap))
         .andThrow(
             new TradingApiException(
-                "Do you wish me a good morning, or mean that it is a good morning"
-                    + " whether I want it or not; or that you feel good this morning; or that it is a morning to"
-                    + " be good on?"));
+                "Do you wish me a good morning, or mean that it is a good morning whether I want "
+                    + "it or not; or that you feel good this morning; or that it is a morning to "
+                    + "be good on?"));
 
     PowerMock.replayAll();
     exchangeAdapter.init(exchangeConfig);

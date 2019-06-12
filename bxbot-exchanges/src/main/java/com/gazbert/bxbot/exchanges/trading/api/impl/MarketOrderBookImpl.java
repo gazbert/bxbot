@@ -39,6 +39,7 @@ public final class MarketOrderBookImpl implements MarketOrderBook {
   private List<MarketOrder> sellOrders;
   private List<MarketOrder> buyOrders;
 
+  /** Creates a new Market Order Book. */
   public MarketOrderBookImpl(
       String marketId, List<MarketOrder> sellOrders, List<MarketOrder> buyOrders) {
     this.marketId = marketId;

@@ -49,6 +49,7 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
@@ -180,7 +181,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
   private String secret = "";
 
   private Mac mac;
-  private boolean initializedMACAuthentication = false;
+  private boolean initializedMacAuthentication = false;
 
   private Gson gson;
 
@@ -196,10 +197,10 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
     initGson();
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   // Kraken API Calls adapted to the Trading API.
   // See https://www.kraken.com/en-gb/help/api
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   @Override
   public MarketOrderBook getMarketOrders(String marketId)
@@ -349,7 +350,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
                       orderType,
                       krakenOpenOrderDescription.price,
                       // vol_exec == amount of order that has been executed
-                      (krakenOpenOrder.vol.subtract(krakenOpenOrder.vol_exec)),
+                      (krakenOpenOrder.vol.subtract(krakenOpenOrder.volExec)),
                       krakenOpenOrder.vol, // vol == orig order amount
                       // krakenOpenOrder.cost, // cost == total value of order in API docs, but it's
                       // always 0 :-(
@@ -741,23 +742,21 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
     }
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   //  GSON classes for JSON responses.
   //  See https://www.kraken.com/en-gb/help/api
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   /**
    * GSON base class for all Kraken responses.
    *
    * <p>All Kraken responses have the following format:
    *
-   * <p>
-   *
    * <pre>
    *
    * error = array of error messages in the format of:
    *
-   * <char-severity code><string-error category>:<string-error type>[:<string-extra info>]
+   * {char-severity code}{string-error category}:{string-error type}[:{string-extra info}]
    *    - severity code can be E for error or W for warning
    *
    * result = result of API call (may not be present if errors occur)
@@ -778,15 +777,18 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
   }
 
   /** GSON class that wraps Depth API call result - the Market Order Book. */
-  private static class KrakenMarketOrderBookResult extends HashMap<String, KrakenOrderBook> {}
+  private static class KrakenMarketOrderBookResult extends HashMap<String, KrakenOrderBook> {
+  }
 
   /** GSON class that wraps a Balance API call result. */
-  private static class KrakenBalanceResult extends HashMap<String, BigDecimal> {}
+  private static class KrakenBalanceResult extends HashMap<String, BigDecimal> {
+  }
 
   /** GSON class that wraps a Ticker API call result. */
   private static class KrakenTickerResult extends HashMap<String, String> {
 
-    KrakenTickerResult() {}
+    KrakenTickerResult() {
+    }
   }
 
   /** GSON class that wraps an Open Order API call result - your open orders. */
@@ -803,20 +805,23 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
   /** GSON class the represents a Kraken Open Order. */
   private static class KrakenOpenOrder {
 
-    public String refid;
-    public String userref;
-    public String status;
-    public double opentm;
-    public double starttm;
-    public double expiretm;
-    public KrakenOpenOrderDescription descr;
-    public BigDecimal vol;
-    public BigDecimal vol_exec;
-    public BigDecimal cost;
-    public BigDecimal fee;
-    public BigDecimal price;
-    public String misc;
-    public String oflags;
+    String refid;
+    String userref;
+    String status;
+    double opentm;
+    double starttm;
+    double expiretm;
+    KrakenOpenOrderDescription descr;
+    BigDecimal vol;
+
+    @SerializedName("vol_exec")
+    BigDecimal volExec;
+
+    BigDecimal cost;
+    BigDecimal fee;
+    BigDecimal price;
+    String misc;
+    String oflags;
 
     @Override
     public String toString() {
@@ -829,7 +834,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
           .add("expiretm", expiretm)
           .add("descr", descr)
           .add("vol", vol)
-          .add("vol_exec", vol_exec)
+          .add("volExec", volExec)
           .add("cost", cost)
           .add("fee", fee)
           .add("price", price)
@@ -842,13 +847,13 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
   /** GSON class the represents a Kraken Open Order description. */
   private static class KrakenOpenOrderDescription {
 
-    public String pair;
-    public String type;
-    public String ordertype;
-    public BigDecimal price;
-    public BigDecimal price2;
-    public String leverage;
-    public String order;
+    String pair;
+    String type;
+    String ordertype;
+    BigDecimal price;
+    BigDecimal price2;
+    String leverage;
+    String order;
 
     @Override
     public String toString() {
@@ -867,8 +872,8 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
   /** GSON class representing an AddOrder result. */
   private static class KrakenAddOrderResult {
 
-    public KrakenAddOrderResultDescription descr;
-    public List<String> txid; // why is this a list/array?
+    KrakenAddOrderResultDescription descr;
+    List<String> txid; // why is this a list/array?
 
     @Override
     public String toString() {
@@ -879,7 +884,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
   /** GSON class representing an AddOrder result description. */
   private static class KrakenAddOrderResultDescription {
 
-    public String order;
+    String order;
 
     @Override
     public String toString() {
@@ -890,7 +895,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
   /** GSON class representing a CancelOrder result. */
   private static class KrakenCancelOrderResult {
 
-    public int count;
+    int count;
 
     @Override
     public String toString() {
@@ -901,8 +906,8 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
   /** GSON class for a Market Order Book. */
   private static class KrakenOrderBook {
 
-    public List<KrakenMarketOrder> bids;
-    public List<KrakenMarketOrder> asks;
+    List<KrakenMarketOrder> bids;
+    List<KrakenMarketOrder> asks;
 
     @Override
     public String toString() {
@@ -928,7 +933,8 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
   private static class KrakenTickerResultDeserializer
       implements JsonDeserializer<KrakenTickerResult> {
 
-    KrakenTickerResultDeserializer() {}
+    KrakenTickerResultDeserializer() {
+    }
 
     public KrakenTickerResult deserialize(
         JsonElement json, Type type, JsonDeserializationContext context) throws JsonParseException {
@@ -1004,9 +1010,9 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
     }
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   //  Transport layer methods
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   private ExchangeHttpResponse sendPublicRequestToExchange(
       String apiMethod, Map<String, String> params)
@@ -1051,20 +1057,21 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
    * Kraken requires the following HTTP headers to bet set:
    *
    * API-Key = API key
-   * API-Sign = Message signature using HMAC-SHA512 of (URI path + SHA256(nonce + POST data)) and base64 decoded
-   *            secret API key
+   * API-Sign = Message signature using HMAC-SHA512 of (URI path + SHA256(nonce + POST data))
+   *            and base64 decoded secret API key
    *
    * The nonce must always increasing unsigned 64 bit integer.
    *
-   * Note: Sometimes requests can arrive out of order or NTP can cause your clock to rewind, resulting in nonce issues.
-   * If you encounter this issue, you can change the nonce window in your account API settings page.
-   * The amount to set it to depends upon how you increment the nonce. Depending on your connectivity, a setting that
-   * would accommodate 3-15 seconds of network issues is suggested.
+   * Note: Sometimes requests can arrive out of order or NTP can cause your clock to rewind,
+   * resulting in nonce issues. If you encounter this issue, you can change the nonce window in
+   * your account API settings page. The amount to set it to depends upon how you increment the
+   * nonce. Depending on your connectivity, a setting that would accommodate 3-15 seconds of
+   * network issues is suggested.
    */
   private ExchangeHttpResponse sendAuthenticatedRequestToExchange(
       String apiMethod, Map<String, String> params)
       throws ExchangeNetworkException, TradingApiException {
-    if (!initializedMACAuthentication) {
+    if (!initializedMacAuthentication) {
       final String errorMsg = "MAC Message security layer has not been initialized.";
       LOG.error(errorMsg);
       throw new IllegalStateException(errorMsg);
@@ -1134,8 +1141,8 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
   /*
    * Initialises the secure messaging layer.
    * Sets up the MAC to safeguard the data we send to the exchange.
-   * Used to encrypt the hash of the entire message with the private key to ensure message integrity.
-   * We fail hard n fast if any of this stuff blows.
+   * Used to encrypt the hash of the entire message with the private key to ensure message
+   * integrity. We fail hard n fast if any of this stuff blows.
    */
   private void initSecureMessageLayer() {
     try {
@@ -1145,7 +1152,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
       final SecretKeySpec keyspec = new SecretKeySpec(base64DecodedSecret, "HmacSHA512");
       mac = Mac.getInstance("HmacSHA512");
       mac.init(keyspec);
-      initializedMACAuthentication = true;
+      initializedMacAuthentication = true;
     } catch (NoSuchAlgorithmException e) {
       final String errorMsg = "Failed to setup MAC security. HINT: Is HmacSHA512 installed?";
       LOG.error(errorMsg, e);
@@ -1157,9 +1164,9 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
     }
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   //  Config methods
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   private void setAuthenticationConfig(ExchangeConfig exchangeConfig) {
     final AuthenticationConfig authenticationConfig = getAuthenticationConfig(exchangeConfig);
@@ -1190,9 +1197,9 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
     }
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   //  Util methods
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   private void initGson() {
     final GsonBuilder gsonBuilder = new GsonBuilder();

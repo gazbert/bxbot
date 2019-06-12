@@ -46,8 +46,15 @@ public final class OpenOrderImpl implements OpenOrder {
   private BigDecimal originalQuantity;
   private BigDecimal total;
 
-  public OpenOrderImpl(String id, Date creationDate, String marketId, OrderType type,
-      BigDecimal price, BigDecimal quantity, BigDecimal originalQuantity,
+  /** Creates a new Open Order. */
+  public OpenOrderImpl(
+      String id,
+      Date creationDate,
+      String marketId,
+      OrderType type,
+      BigDecimal price,
+      BigDecimal quantity,
+      BigDecimal originalQuantity,
       BigDecimal total) {
 
     this.id = id;
@@ -70,6 +77,7 @@ public final class OpenOrderImpl implements OpenOrder {
     this.id = id;
   }
 
+  /** Returns the Order creation date. */
   public Date getCreationDate() {
     if (creationDate != null) {
       return new Date(creationDate.getTime());
@@ -77,7 +85,7 @@ public final class OpenOrderImpl implements OpenOrder {
     return null;
   }
 
-  public void setCreationDate(Date creationDate) {
+  void setCreationDate(Date creationDate) {
     if (creationDate != null) {
       this.creationDate = new Date(creationDate.getTime());
     }
@@ -119,7 +127,7 @@ public final class OpenOrderImpl implements OpenOrder {
     return originalQuantity;
   }
 
-  public void setOriginalQuantity(BigDecimal originalQuantity) {
+  void setOriginalQuantity(BigDecimal originalQuantity) {
     this.originalQuantity = originalQuantity;
   }
 

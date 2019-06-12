@@ -44,6 +44,7 @@ import com.gazbert.bxbot.trading.api.TradingApiException;
 import com.google.common.base.MoreObjects;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.annotations.SerializedName;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.MalformedURLException;
@@ -134,10 +135,10 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter
     initGson();
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   // OKCoin REST Spot Trading API Calls adapted to the Trading API.
   // See https://www.okcoin.com/about/rest_getStarted.do
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   @Override
   public String createOrder(
@@ -173,10 +174,10 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter
       final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("trade.do", params);
       LOG.debug(() -> "Create Order response: " + response);
 
-      final OKCoinTradeResponse createOrderResponse =
-          gson.fromJson(response.getPayload(), OKCoinTradeResponse.class);
+      final OkCoinTradeResponse createOrderResponse =
+          gson.fromJson(response.getPayload(), OkCoinTradeResponse.class);
       if (createOrderResponse.result) {
-        return Long.toString(createOrderResponse.order_id);
+        return Long.toString(createOrderResponse.orderId);
       } else {
         final String errorMsg = "Failed to place order on exchange. Error response: " + response;
         LOG.error(errorMsg);
@@ -204,8 +205,8 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter
           sendAuthenticatedRequestToExchange("cancel_order.do", params);
       LOG.debug(() -> "Cancel Order response: " + response);
 
-      final OKCoinCancelOrderResponse cancelOrderResponse =
-          gson.fromJson(response.getPayload(), OKCoinCancelOrderResponse.class);
+      final OkCoinCancelOrderResponse cancelOrderResponse =
+          gson.fromJson(response.getPayload(), OkCoinCancelOrderResponse.class);
       if (cancelOrderResponse.result) {
         return true;
       } else {
@@ -234,12 +235,12 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter
           sendAuthenticatedRequestToExchange("order_info.do", params);
       LOG.debug(() -> "Open Orders response: " + response);
 
-      final OKCoinOrderInfoWrapper orderInfoWrapper =
-          gson.fromJson(response.getPayload(), OKCoinOrderInfoWrapper.class);
+      final OkCoinOrderInfoWrapper orderInfoWrapper =
+          gson.fromJson(response.getPayload(), OkCoinOrderInfoWrapper.class);
       if (orderInfoWrapper.result) {
 
         final List<OpenOrder> ordersToReturn = new ArrayList<>();
-        for (final OKCoinOpenOrder openOrder : orderInfoWrapper.orders) {
+        for (final OkCoinOpenOrder openOrder : orderInfoWrapper.orders) {
           OrderType orderType;
           switch (openOrder.type) {
             case "buy":
@@ -256,8 +257,8 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter
 
           final OpenOrder order =
               new OpenOrderImpl(
-                  Long.toString(openOrder.order_id),
-                  new Date(openOrder.create_date),
+                  Long.toString(openOrder.orderId),
+                  new Date(openOrder.createDate),
                   marketId,
                   orderType,
                   openOrder.price,
@@ -296,11 +297,11 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter
       final ExchangeHttpResponse response = sendPublicRequestToExchange("depth.do", params);
       LOG.debug(() -> "Market Orders response: " + response);
 
-      final OKCoinDepthWrapper orderBook =
-          gson.fromJson(response.getPayload(), OKCoinDepthWrapper.class);
+      final OkCoinDepthWrapper orderBook =
+          gson.fromJson(response.getPayload(), OkCoinDepthWrapper.class);
 
       final List<MarketOrder> buyOrders = new ArrayList<>();
-      for (OKCoinMarketOrder okCoinBuyOrder : orderBook.bids) {
+      for (OkCoinMarketOrder okCoinBuyOrder : orderBook.bids) {
         final MarketOrder buyOrder =
             new MarketOrderImpl(
                 OrderType.BUY,
@@ -311,7 +312,7 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter
       }
 
       final List<MarketOrder> sellOrders = new ArrayList<>();
-      for (OKCoinMarketOrder okCoinSellOrder : orderBook.asks) {
+      for (OkCoinMarketOrder okCoinSellOrder : orderBook.asks) {
         final MarketOrder sellOrder =
             new MarketOrderImpl(
                 OrderType.SELL,
@@ -347,8 +348,8 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter
       final ExchangeHttpResponse response = sendPublicRequestToExchange("ticker.do", params);
       LOG.debug(() -> "Latest Market Price response: " + response);
 
-      final OKCoinTickerWrapper tickerWrapper =
-          gson.fromJson(response.getPayload(), OKCoinTickerWrapper.class);
+      final OkCoinTickerWrapper tickerWrapper =
+          gson.fromJson(response.getPayload(), OkCoinTickerWrapper.class);
       return tickerWrapper.ticker.last;
 
     } catch (ExchangeNetworkException | TradingApiException e) {
@@ -366,8 +367,8 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter
       final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("userinfo.do", null);
       LOG.debug(() -> "Balance Info response: " + response);
 
-      final OKCoinUserInfoWrapper userInfoWrapper =
-          gson.fromJson(response.getPayload(), OKCoinUserInfoWrapper.class);
+      final OkCoinUserInfoWrapper userInfoWrapper =
+          gson.fromJson(response.getPayload(), OkCoinUserInfoWrapper.class);
       if (userInfoWrapper.result) {
         final Map<String, BigDecimal> balancesAvailable = new HashMap<>();
         for (final Map.Entry<String, BigDecimal> balance :
@@ -429,8 +430,8 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter
       final ExchangeHttpResponse response = sendPublicRequestToExchange("ticker.do", params);
       LOG.debug(() -> "Latest Market Price response: " + response);
 
-      final OKCoinTickerWrapper tickerWrapper =
-          gson.fromJson(response.getPayload(), OKCoinTickerWrapper.class);
+      final OkCoinTickerWrapper tickerWrapper =
+          gson.fromJson(response.getPayload(), OkCoinTickerWrapper.class);
       return new TickerImpl(
           tickerWrapper.ticker.last,
           tickerWrapper.ticker.buy,
@@ -451,37 +452,39 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter
     }
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   //  GSON classes for JSON responses.
   //  See https://www.okcoin.com/about/rest_getStarted.do
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   /** GSON class for wrapping cancel_order.do response. */
-  public static class OKCoinCancelOrderResponse extends OKCoinMessageBase {
+  public static class OkCoinCancelOrderResponse extends OkCoinMessageBase {
 
-    public long order_id;
+    @SerializedName("order_id")
+    long orderId;
 
     @Override
     public String toString() {
-      return MoreObjects.toStringHelper(this).add("order_id", order_id).toString();
+      return MoreObjects.toStringHelper(this).add("orderId", orderId).toString();
     }
   }
 
   /** GSON class for wrapping trade.do response. */
-  public static class OKCoinTradeResponse extends OKCoinMessageBase {
+  public static class OkCoinTradeResponse extends OkCoinMessageBase {
 
-    public long order_id;
+    @SerializedName("order_id")
+    long orderId;
 
     @Override
     public String toString() {
-      return MoreObjects.toStringHelper(this).add("order_id", order_id).toString();
+      return MoreObjects.toStringHelper(this).add("orderId", orderId).toString();
     }
   }
 
   /** GSON class for wrapping order_info.do response. */
-  private static class OKCoinOrderInfoWrapper extends OKCoinMessageBase {
+  private static class OkCoinOrderInfoWrapper extends OkCoinMessageBase {
 
-    public List<OKCoinOpenOrder> orders;
+    List<OkCoinOpenOrder> orders;
 
     @Override
     public String toString() {
@@ -490,30 +493,43 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter
   }
 
   /** GSON class for holding your open orders info from order_info.do API call. */
-  private static class OKCoinOpenOrder {
+  private static class OkCoinOpenOrder {
 
-    public BigDecimal amount;
-    public BigDecimal avg_price;
-    public long create_date;
-    public BigDecimal deal_amount;
-    public long order_id;
-    public long orders_id; // deprecated
-    public BigDecimal price;
-    public int
-        status; // -1 = cancelled, 0 = unfilled, 1 = partially filled, 2 = fully filled, 4 = cancel
-                // request in process
-    public String symbol; // e.g. 'btc_usd'
-    public String type; // 'sell' or 'buy'
+    BigDecimal amount;
+
+    @SerializedName("avg_price")
+    BigDecimal avgPrice;
+
+    @SerializedName("create_date")
+    long createDate;
+
+    BigDecimal dealAmount;
+
+    @SerializedName("order_id")
+    long orderId;
+
+    @SerializedName("orders_id")
+    long ordersId; // deprecated
+
+    BigDecimal price;
+
+    /* -1 = cancelled, 0 = unfilled, 1 = partially filled, 2 = fully filled,
+     * 4 = cancel request in process
+     */
+    int status;
+
+    String symbol; // e.g. 'btc_usd'
+    String type; // 'sell' or 'buy'
 
     @Override
     public String toString() {
       return MoreObjects.toStringHelper(this)
           .add("amount", amount)
-          .add("avg_price", avg_price)
-          .add("create_date", create_date)
-          .add("deal_amount", deal_amount)
-          .add("order_id", order_id)
-          .add("orders_id", orders_id)
+          .add("avgPrice", avgPrice)
+          .add("createDate", createDate)
+          .add("dealAmount", dealAmount)
+          .add("orderId", orderId)
+          .add("ordersId", ordersId)
           .add("price", price)
           .add("status", status)
           .add("symbol", symbol)
@@ -523,10 +539,10 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter
   }
 
   /** GSON class for wrapping depth.do response. */
-  private static class OKCoinDepthWrapper {
+  private static class OkCoinDepthWrapper {
 
-    public List<OKCoinMarketOrder> asks;
-    public List<OKCoinMarketOrder> bids;
+    List<OkCoinMarketOrder> asks;
+    List<OkCoinMarketOrder> bids;
 
     @Override
     public String toString() {
@@ -538,15 +554,15 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter
    * GSON class for holding Market Orders. First element in array is price, second element is
    * amount.
    */
-  private static class OKCoinMarketOrder extends ArrayList<BigDecimal> {
+  private static class OkCoinMarketOrder extends ArrayList<BigDecimal> {
 
     private static final long serialVersionUID = -4919711260747077759L;
   }
 
   /** GSON class for wrapping userinfo.do response. */
-  private static class OKCoinUserInfoWrapper extends OKCoinMessageBase {
+  private static class OkCoinUserInfoWrapper extends OkCoinMessageBase {
 
-    public OKCoinUserInfo info;
+    OkCoinUserInfo info;
 
     @Override
     public String toString() {
@@ -555,9 +571,9 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter
   }
 
   /** GSON class for holding funds in userinfo.do response. */
-  private static class OKCoinUserInfo {
+  private static class OkCoinUserInfo {
 
-    public OKCoinFundsInfo funds;
+    OkCoinFundsInfo funds;
 
     @Override
     public String toString() {
@@ -566,11 +582,11 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter
   }
 
   /** GSON class for holding funds info from userinfo.do response. */
-  private static class OKCoinFundsInfo {
+  private static class OkCoinFundsInfo {
 
-    public OKCoinAssetInfo asset;
-    public OKCoinBalances free;
-    public OKCoinBalances freezed;
+    OkCoinAssetInfo asset;
+    OkCoinBalances free;
+    OkCoinBalances freezed;
 
     @Override
     public String toString() {
@@ -583,10 +599,10 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter
   }
 
   /** GSON class for holding asset info from userinfo.do response. */
-  private static class OKCoinAssetInfo {
+  private static class OkCoinAssetInfo {
 
-    public BigDecimal net;
-    public BigDecimal total;
+    BigDecimal net;
+    BigDecimal total;
 
     @Override
     public String toString() {
@@ -595,16 +611,16 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter
   }
 
   /** GSON class for holding wallet balances - basically a GSON enabled map. */
-  private static class OKCoinBalances extends HashMap<String, BigDecimal> {
+  private static class OkCoinBalances extends HashMap<String, BigDecimal> {
 
     private static final long serialVersionUID = -4919711060747077759L;
   }
 
   /** GSON class for wrapping OKCoin ticker.do response. */
-  private static class OKCoinTickerWrapper {
+  private static class OkCoinTickerWrapper {
 
-    public String date;
-    public OKCoinTicker ticker;
+    String date;
+    OkCoinTicker ticker;
 
     @Override
     public String toString() {
@@ -612,15 +628,15 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter
     }
   }
 
-  /** GSON class for a OKCoin ticker response. */
-  private static class OKCoinTicker {
+  /** GSON class for a OkCoin ticker response. */
+  private static class OkCoinTicker {
 
-    public BigDecimal buy;
-    public BigDecimal high;
-    public BigDecimal last;
-    public BigDecimal low;
-    public BigDecimal sell;
-    public BigDecimal vol;
+    BigDecimal buy;
+    BigDecimal high;
+    BigDecimal last;
+    BigDecimal low;
+    BigDecimal sell;
+    BigDecimal vol;
 
     @Override
     public String toString() {
@@ -636,23 +652,25 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter
   }
 
   /** GSON base class for API call requests and responses. */
-  private static class OKCoinMessageBase {
+  private static class OkCoinMessageBase {
 
-    public int error_code; // will be 0 if not an error response
-    public boolean result; // will be JSON boolean value in response: true or false
+    @SerializedName("error_code")
+    int errorCode; // will be 0 if not an error response
+
+    boolean result; // will be JSON boolean value in response: true or false
 
     @Override
     public String toString() {
       return MoreObjects.toStringHelper(this)
-          .add("error_code", error_code)
+          .add("errorCode", errorCode)
           .add("result", result)
           .toString();
     }
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   //  Transport layer methods
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   private ExchangeHttpResponse sendPublicRequestToExchange(
       String apiMethod, Map<String, String> params)
@@ -691,31 +709,33 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter
   }
 
   /*
-   * Makes an authenticated API call to the OKCoin exchange.
+   * Makes an authenticated API call to the OkCoin exchange.
    *
    * A tricky one to build!
    *
    * POST payload generation:
    *
-   * All parameters except for "sign" must be signed. The parameters must be re-ordered according to the
-   * initials of the parameter name, alphabetically. For example, if the request parameters are
-   * string[] parameters=
+   * All parameters except for "sign" must be signed. The parameters must be re-ordered according
+   * to the initials of the parameter name, alphabetically. For example, if the request parameters
+   * are string[] parameters=
    *
-   * {"api_key=c821db84-6fbd-11e4-a9e3-c86000d26d7c","symbol=btc_usd","type=buy","price=680","amount=1.0"};
+   * {"api_key=c821db84-6fbd-11e4-a9e3-c86000d26d7c","symbol=btc_usd","type=buy","price=680",
+   * "amount=1.0"};
    *
    * The result string is:
    * amount=1.0&api_key=c821db84-6fbd-11e4-a9e3-c86000d26d7c&price=680&symbol=btc_usd&type=buy
    *
    * Signature creation:
    *
-   * 'secretKey' is required to generate MD5 signature. Add the 'secret_Key' to the above string to generate the
-   * final string to be signed, such as:
+   * 'secretKey' is required to generate MD5 signature. Add the 'secret_Key' to the above string to
+   * generate the final string to be signed, such as:
    *
-   * amount=1.0&api_key=c821db84-6fbd-11e4-a9e3-c86000d26d7c&price=680&symbol=btc_usd&type=buy&secret_key=secretKey
+   * amount=1.0&api_key=c821db84-6fbd-11e4-a9e3-c86000d26d7c&price=680&symbol=btc_usd
+   * &type=buy&secret_key=secretKey
    *
    * Note: '&secret_key=secretKey' is a must.
-   * Use 32 bit MD5 encryption function to sign the string. Pass the encrypted string to 'sign' parameter.
-   * Letters of the encrypted string must be in upper case.
+   * Use 32 bit MD5 encryption function to sign the string. Pass the encrypted string to 'sign'
+   * parameter. Letters of the encrypted string must be in upper case.
    */
   private ExchangeHttpResponse sendAuthenticatedRequestToExchange(
       String apiMethod, Map<String, String> params)
@@ -771,7 +791,7 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter
   }
 
   private String createMd5HashAndReturnAsUpperCaseString(String stringToHash) {
-    final char[] HEX_DIGITS = {
+    final char[] hexDigits = {
       '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'
     };
     if (stringToHash == null || stringToHash.isEmpty()) {
@@ -784,8 +804,8 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter
     final StringBuilder md5HashAsUpperCaseString = new StringBuilder();
     for (final byte md5HashByte : md5HashInBytes) {
       md5HashAsUpperCaseString
-          .append(HEX_DIGITS[(md5HashByte & 0xf0) >> 4])
-          .append(HEX_DIGITS[md5HashByte & 0xf]);
+          .append(hexDigits[(md5HashByte & 0xf0) >> 4])
+          .append(hexDigits[md5HashByte & 0xf]);
     }
     return md5HashAsUpperCaseString.toString();
   }
@@ -793,8 +813,8 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter
   /*
    * Initialises the secure messaging layer.
    * Sets up the MAC to safeguard the data we send to the exchange.
-   * Used to encrypt the hash of the entire message with the private key to ensure message integrity.
-   * We fail hard n fast if any of this stuff blows.
+   * Used to encrypt the hash of the entire message with the private key to ensure message
+   * integrity. We fail hard n fast if any of this stuff blows.
    */
   private void initSecureMessageLayer() {
     try {
@@ -808,9 +828,9 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter
     }
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   //  Config methods
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   private void setAuthenticationConfig(ExchangeConfig exchangeConfig) {
     final AuthenticationConfig authenticationConfig = getAuthenticationConfig(exchangeConfig);
@@ -832,9 +852,9 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter
     LOG.info(() -> "Sell fee % in BigDecimal format: " + sellFeePercentage);
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   //  Util methods
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   /** Initialises the GSON layer. */
   private void initGson() {
