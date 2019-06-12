@@ -42,6 +42,7 @@ import com.gazbert.bxbot.trading.api.TradingApiException;
 import com.google.common.base.MoreObjects;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.annotations.SerializedName;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.MalformedURLException;
@@ -153,7 +154,7 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter
   private String secret = "";
 
   private Mac mac;
-  private boolean initializedMACAuthentication = false;
+  private boolean initializedMacAuthentication = false;
   private long nonce = 0;
 
   private Gson gson;
@@ -170,10 +171,10 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter
     initGson();
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   // Gemini REST Trade API Calls adapted to the Trading API.
   // See https://docs.gemini.com/rest-api/
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   @Override
   public String createOrder(
@@ -237,13 +238,13 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter
 
       final GeminiOpenOrder createOrderResponse =
           gson.fromJson(response.getPayload(), GeminiOpenOrder.class);
-      final long id = createOrderResponse.order_id;
+      final long id = createOrderResponse.orderId;
       if (id == 0) {
         final String errorMsg = "Failed to place order on exchange. Error response: " + response;
         LOG.error(errorMsg);
         throw new TradingApiException(errorMsg);
       } else {
-        return Long.toString(createOrderResponse.order_id);
+        return Long.toString(createOrderResponse.orderId);
       }
 
     } catch (ExchangeNetworkException | TradingApiException e) {
@@ -322,15 +323,15 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter
 
         final OpenOrder order =
             new OpenOrderImpl(
-                Long.toString(geminiOpenOrder.order_id),
+                Long.toString(geminiOpenOrder.orderId),
                 Date.from(Instant.ofEpochMilli(geminiOpenOrder.timestampms)),
                 marketId,
                 orderType,
                 geminiOpenOrder.price,
-                geminiOpenOrder.remaining_amount,
-                geminiOpenOrder.original_amount,
+                geminiOpenOrder.remainingAmount,
+                geminiOpenOrder.originalAmount,
                 geminiOpenOrder.price.multiply(
-                    geminiOpenOrder.original_amount) // total - not provided by Gemini :-(
+                    geminiOpenOrder.originalAmount) // total - not provided by Gemini :-(
                 );
 
         ordersToReturn.add(order);
@@ -459,16 +460,16 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter
     return "Gemini REST API v1";
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   //  GSON classes for JSON responses.
   //  See https://docs.gemini.com/rest-api/
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   /** GSON class for a market Order Book. */
   private static class GeminiOrderBook {
 
-    public List<GeminiMarketOrder> bids;
-    public List<GeminiMarketOrder> asks;
+    List<GeminiMarketOrder> bids;
+    List<GeminiMarketOrder> asks;
 
     @Override
     public String toString() {
@@ -479,8 +480,8 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter
   /** GSON class for a Market Order. */
   private static class GeminiMarketOrder {
 
-    public BigDecimal price;
-    public BigDecimal amount;
+    BigDecimal price;
+    BigDecimal amount;
     // ignore the timestamp attribute as per the API spec
 
     @Override
@@ -500,11 +501,11 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter
    */
   private static class GeminiAccountBalance {
 
-    public String type;
-    public String currency;
-    public BigDecimal amount;
-    public BigDecimal available;
-    public BigDecimal availableForWithdrawal;
+    String type;
+    String currency;
+    BigDecimal amount;
+    BigDecimal available;
+    BigDecimal availableForWithdrawal;
 
     @Override
     public String toString() {
@@ -521,11 +522,11 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter
   /** GSON class for Ticker API call response. */
   private static class GeminiTicker {
 
-    public BigDecimal bid;
-    public BigDecimal ask;
-    public BigDecimal last;
-    public BigDecimal low;
-    public GeminiVolume volume;
+    BigDecimal bid;
+    BigDecimal ask;
+    BigDecimal last;
+    BigDecimal low;
+    GeminiVolume volume;
 
     @Override
     public String toString() {
@@ -542,15 +543,19 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter
   /** GSON class for holding volume information in the Ticker response. */
   private static class GeminiVolume {
 
-    public BigDecimal BTC;
-    public BigDecimal USD;
-    public long timestamp;
+    @SerializedName("BTC")
+    BigDecimal btc;
+
+    @SerializedName("USD")
+    BigDecimal usd;
+
+    long timestamp;
 
     @Override
     public String toString() {
       return MoreObjects.toStringHelper(this)
-          .add("BTC", BTC)
-          .add("USD", USD)
+          .add("btc", btc)
+          .add("usd", usd)
           .add("timestamp", timestamp)
           .toString();
     }
@@ -565,50 +570,70 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter
   /** GSON class representing an open order on the exchange. */
   private static class GeminiOpenOrder {
 
-    public long order_id; // use this value for order id as per the API spec
-    public long id;
-    public String symbol;
-    public String exchange;
-    public BigDecimal price;
-    public BigDecimal avg_execution_price;
-    public String side; // buy|sell
-    public String type; // exchange limit
-    public String timestamp; // timestamp as a String
-    public long timestampms; // timestamp in millis as a long
-    public boolean is_live;
-    public boolean is_cancelled;
-    public boolean is_hidden;
-    public static boolean was_forced;
-    public BigDecimal remaining_amount;
-    public BigDecimal executed_amount;
-    public BigDecimal original_amount;
+    @SerializedName("order_id")
+    long orderId; // use this value for order id as per the API spec
+
+    long id;
+    String symbol;
+    String exchange;
+    BigDecimal price;
+
+    @SerializedName("avg_execution_price")
+    BigDecimal avgExecutionPrice;
+
+    String side; // buy|sell
+    String type; // exchange limit
+    String timestamp; // timestamp as a String
+    long timestampms; // timestamp in millis as a long
+
+    @SerializedName("is_live")
+    boolean isLive;
+
+    @SerializedName("is_cancelled")
+    boolean isCancelled;
+
+    @SerializedName("is_hidden")
+    boolean isHidden;
+
+    @SerializedName("was_forced")
+    boolean wasForced;
+
+    @SerializedName("remaining_amount")
+    BigDecimal remainingAmount;
+
+    @SerializedName("executed_amount")
+    BigDecimal executedAmount;
+
+    @SerializedName("original_amount")
+    BigDecimal originalAmount;
 
     @Override
     public String toString() {
       return MoreObjects.toStringHelper(this)
-          .add("order_id", order_id)
+          .add("orderId", orderId)
           .add("id", id)
           .add("symbol", symbol)
           .add("exchange", exchange)
           .add("price", price)
-          .add("avg_execution_price", avg_execution_price)
+          .add("avgExecutionPrice", avgExecutionPrice)
           .add("side", side)
           .add("type", type)
           .add("timestamp", timestamp)
           .add("timestampms", timestampms)
-          .add("is_live", is_live)
-          .add("is_cancelled", is_cancelled)
-          .add("is_hidden", is_hidden)
-          .add("remaining_amount", remaining_amount)
-          .add("executed_amount", executed_amount)
-          .add("original_amount", original_amount)
+          .add("isLive", isLive)
+          .add("isCancelled", isCancelled)
+          .add("isHidden", isHidden)
+          .add("wasForced", wasForced)
+          .add("remainingAmount", remainingAmount)
+          .add("executedAmount", executedAmount)
+          .add("originalAmount", originalAmount)
           .toString();
     }
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   //  Transport layer
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   private ExchangeHttpResponse sendPublicRequestToExchange(String apiMethod)
       throws ExchangeNetworkException, TradingApiException {
@@ -656,7 +681,7 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter
    * Finally, the HMac:
    *
    * hmac.new("privateKey", b64, hashlib.sha384).hexdigest()
-   * '337cc8b4ea692cfe65b4a85fcc9f042b2e3f702ac956fd098d600ab15705775017beae402be773ceee10719ff70d710f'
+   * '337cc8b4ea692cfe65b4a85fcc9f042b2e3f702ac956fd098d600ab15705775017beae402be773ceee107170d710f'
    *
    * These are sent as HTTP headers:
    *
@@ -667,7 +692,7 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter
   private ExchangeHttpResponse sendAuthenticatedRequestToExchange(
       String apiMethod, Map<String, String> params)
       throws ExchangeNetworkException, TradingApiException {
-    if (!initializedMACAuthentication) {
+    if (!initializedMacAuthentication) {
       final String errorMsg = "MAC Message security layer has not been initialized.";
       LOG.error(errorMsg);
       throw new IllegalStateException(errorMsg);
@@ -728,8 +753,8 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter
   /*
    * Initialises the secure messaging layer.
    * Sets up the MAC to safeguard the data we send to the exchange.
-   * Used to encrypt the hash of the entire message with the private key to ensure message integrity.
-   * We fail hard n fast if any of this stuff blows.
+   * Used to encrypt the hash of the entire message with the private key to ensure message
+   * integrity. We fail hard n fast if any of this stuff blows.
    */
   private void initSecureMessageLayer() {
     try {
@@ -737,7 +762,7 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter
           new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), "HmacSHA384");
       mac = Mac.getInstance("HmacSHA384");
       mac.init(keyspec);
-      initializedMACAuthentication = true;
+      initializedMacAuthentication = true;
     } catch (NoSuchAlgorithmException e) {
       final String errorMsg = "Failed to setup MAC security. HINT: Is HMAC-SHA384 installed?";
       LOG.error(errorMsg, e);
@@ -749,9 +774,9 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter
     }
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   //  Config methods
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   private void setAuthenticationConfig(ExchangeConfig exchangeConfig) {
     final AuthenticationConfig authenticationConfig = getAuthenticationConfig(exchangeConfig);
@@ -773,9 +798,9 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter
     LOG.info(() -> "Sell fee % in BigDecimal format: " + sellFeePercentage);
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   //  Util methods
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   private void initGson() {
     final GsonBuilder gsonBuilder = new GsonBuilder();

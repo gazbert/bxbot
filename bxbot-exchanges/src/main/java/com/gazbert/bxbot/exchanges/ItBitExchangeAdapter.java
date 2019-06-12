@@ -44,6 +44,7 @@ import com.gazbert.bxbot.trading.api.TradingApiException;
 import com.google.common.base.MoreObjects;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.annotations.SerializedName;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.HttpURLConnection;
@@ -153,7 +154,7 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
   private String secret = "";
 
   private Mac mac;
-  private boolean initializedMACAuthentication = false;
+  private boolean initializedMacAuthentication = false;
   private long nonce = 0;
 
   private Gson gson;
@@ -170,10 +171,10 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
     initGson();
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   // itBit REST Trade API Calls adapted to the Trading API.
   // See https://api.itbit.com/docs
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   @Override
   public String createOrder(
@@ -519,9 +520,10 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
         final ItBitWallet exchangeWallet = itBitWallets[0];
 
         /*
-         * If this is the first time to fetch the balance/wallet info, store the wallet UUID for future calls.
-         * The Trading Engine will always call this method first, before any user Trading Strategies are invoked,
-         * so any of the other Trading API methods that rely on the wallet UUID will be satisfied.
+         * If this is the first time to fetch the balance/wallet info, store the wallet UUID for
+         * future calls. The Trading Engine will always call this method first, before any user
+         * Trading Strategies are invoked, so any of the other Trading API methods that rely on the
+         * wallet UUID will be satisfied.
          */
         if (walletId == null) {
           walletId = exchangeWallet.id;
@@ -607,7 +609,7 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
             itBitTicker.openToday,
             itBitTicker.volume24h,
             itBitTicker.vwap24h,
-            Date.from(Instant.parse(itBitTicker.serverTimeUTC)).getTime());
+            Date.from(Instant.parse(itBitTicker.serverTimeUtc)).getTime());
       } else {
         final String errorMsg = "Failed to get market ticker from exchange. Details: " + response;
         LOG.error(errorMsg);
@@ -630,30 +632,28 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
     }
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   //  GSON classes for JSON responses.
   //  See https://api.itbit.com/docs
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   /**
    * GSON class for holding itBit order returned from: "Cancel Order"
    * /wallets/{walletId}/orders/{orderId} API call.
    *
-   * <p>
-   *
    * <p>No payload returned by exchange on success.
    */
-  private static class ItBitCancelOrderResponse {}
+  private static class ItBitCancelOrderResponse {
+  }
 
   /**
    * GSON class for holding itBit new order response from: "Create New Order" POST
    * /wallets/{walletId}/orders API call.
    *
-   * <p>
-   *
    * <p>It is exactly the same as order returned in Get Orders response.
    */
-  private static class ItBitNewOrderResponse extends ItBitYourOrder {}
+  private static class ItBitNewOrderResponse extends ItBitYourOrder {
+  }
 
   /**
    * GSON class for holding itBit order returned from: "Get Orders"
@@ -661,20 +661,20 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
    */
   private static class ItBitYourOrder {
 
-    public String id;
-    public String walletId;
-    public String side; // 'buy' or 'sell'
-    public String instrument; // the marketId e.g. 'XBTUSD'
-    public String type; // order type e.g. "limit"
-    public BigDecimal amount; // the original amount
-    public BigDecimal displayAmount; // ??? not documented in the REST API
-    public BigDecimal price;
-    public BigDecimal volumeWeightedAveragePrice;
-    public BigDecimal amountFilled;
-    public String createdTime; // e.g. "2015-10-01T18:10:39.3930000Z"
-    public String status; // e.g. "open"
-    public ItBitOrderMetadata metadata; // {} value returned - no idea what this is
-    public String clientOrderIdentifier; // cool - broker support :-)
+    String id;
+    String walletId;
+    String side; // 'buy' or 'sell'
+    String instrument; // the marketId e.g. 'XBTUSD'
+    String type; // order type e.g. "limit"
+    BigDecimal amount; // the original amount
+    BigDecimal displayAmount; // ??? not documented in the REST API
+    BigDecimal price;
+    BigDecimal volumeWeightedAveragePrice;
+    BigDecimal amountFilled;
+    String createdTime; // e.g. "2015-10-01T18:10:39.3930000Z"
+    String status; // e.g. "open"
+    ItBitOrderMetadata metadata; // {} value returned - no idea what this is
+    String clientOrderIdentifier; // cool - broker support :-)
 
     @Override
     public String toString() {
@@ -698,7 +698,8 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
   }
 
   /** GSON class for holding Your Order metadata. No idea what this is / or gonna be... */
-  private static class ItBitOrderMetadata {}
+  private static class ItBitOrderMetadata {
+  }
 
   /**
    * GSON class for holding itBit ticker returned from: "Get Order Book"
@@ -706,8 +707,8 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
    */
   private static class ItBitOrderBookWrapper {
 
-    public List<ItBitMarketOrder> bids;
-    public List<ItBitMarketOrder> asks;
+    List<ItBitMarketOrder> bids;
+    List<ItBitMarketOrder> asks;
 
     @Override
     public String toString() {
@@ -730,23 +731,25 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
    */
   private static class ItBitTicker {
 
-    public String pair; // e.g. XBTUSD
-    public BigDecimal bid;
-    public BigDecimal bidAmt;
-    public BigDecimal ask;
-    public BigDecimal askAmt;
-    public BigDecimal lastPrice;
-    public BigDecimal lastAmt;
-    public BigDecimal volume24h;
-    public BigDecimal volumeToday;
-    public BigDecimal high24h;
-    public BigDecimal low24h;
-    public BigDecimal highToday;
-    public BigDecimal lowToday;
-    public BigDecimal openToday;
-    public BigDecimal vwapToday;
-    public BigDecimal vwap24h;
-    public String serverTimeUTC;
+    String pair; // e.g. XBTUSD
+    BigDecimal bid;
+    BigDecimal bidAmt;
+    BigDecimal ask;
+    BigDecimal askAmt;
+    BigDecimal lastPrice;
+    BigDecimal lastAmt;
+    BigDecimal volume24h;
+    BigDecimal volumeToday;
+    BigDecimal high24h;
+    BigDecimal low24h;
+    BigDecimal highToday;
+    BigDecimal lowToday;
+    BigDecimal openToday;
+    BigDecimal vwapToday;
+    BigDecimal vwap24h;
+
+    @SerializedName("serverTimeUTC")
+    String serverTimeUtc;
 
     @Override
     public String toString() {
@@ -767,7 +770,7 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
           .add("openToday", openToday)
           .add("vwapToday", vwapToday)
           .add("vwap24h", vwap24h)
-          .add("serverTimeUTC", serverTimeUTC)
+          .add("serverTimeUtc", serverTimeUtc)
           .toString();
     }
   }
@@ -778,10 +781,10 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
    */
   private static class ItBitWallet {
 
-    public String id;
-    public String userId;
-    public String name;
-    public List<ItBitBalance> balances;
+    String id;
+    String userId;
+    String name;
+    List<ItBitBalance> balances;
 
     @Override
     public String toString() {
@@ -797,9 +800,9 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
   /** GSON class for holding itBit wallet balances. */
   private static class ItBitBalance {
 
-    public BigDecimal availableBalance;
-    public BigDecimal totalBalance;
-    public String currency; // e.g. USD
+    BigDecimal availableBalance;
+    BigDecimal totalBalance;
+    String currency; // e.g. USD
 
     @Override
     public String toString() {
@@ -811,9 +814,9 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
     }
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   //  Transport layer
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   private ExchangeHttpResponse sendPublicRequestToExchange(String apiMethod)
       throws ExchangeNetworkException, TradingApiException {
@@ -837,7 +840,7 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
       String httpMethod, String apiMethod, Map<String, String> params)
       throws ExchangeNetworkException, TradingApiException {
 
-    if (!initializedMACAuthentication) {
+    if (!initializedMacAuthentication) {
       final String errorMsg = "MAC Message security layer has not been initialized.";
       LOG.error(errorMsg);
       throw new IllegalStateException(errorMsg);
@@ -930,9 +933,11 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
       signatureParamList.add(unixTime);
 
       /*
-       * Convert that array to JSON, encoded as UTF-8. The resulting JSON should contain no spaces or other
-       * whitespace characters. For example, a valid JSON-encoded array might look like:
-       * '["GET","https://api.itbit.com/v1/wallets/7e037345-1288-4c39-12fe-d0f99a475a98","","5","1405385860202"]'
+       * Convert that array to JSON, encoded as UTF-8. The resulting JSON should contain no
+       * spaces or other whitespace characters. For example, a valid JSON-encoded array might look
+       * like:
+       * '["GET","https://api.itbit.com/v1/wallets/7e037345-1288-4c39-12fe-d0f99a475a98","","5",
+       * "1405385860202"]'
        */
       final String signatureParamsInJson = gson.toJson(signatureParamList);
       LOG.debug(() -> "Signature params in JSON: " + signatureParamsInJson);
@@ -985,8 +990,8 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
   /*
    * Initialises the secure messaging layer.
    * Sets up the MAC to safeguard the data we send to the exchange.
-   * Used to encrypt the hash of the entire message with the private key to ensure message integrity.
-   * We fail hard n fast if any of this stuff blows.
+   * Used to encrypt the hash of the entire message with the private key to ensure message
+   * integrity. We fail hard n fast if any of this stuff blows.
    */
   private void initSecureMessageLayer() {
     try {
@@ -994,7 +999,7 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
           new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), "HmacSHA512");
       mac = Mac.getInstance("HmacSHA512");
       mac.init(keyspec);
-      initializedMACAuthentication = true;
+      initializedMacAuthentication = true;
     } catch (NoSuchAlgorithmException e) {
       final String errorMsg = "Failed to setup MAC security. HINT: Is HMAC-SHA512 installed?";
       LOG.error(errorMsg, e);
@@ -1006,9 +1011,9 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
     }
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   //  Config methods
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   private void setAuthenticationConfig(ExchangeConfig exchangeConfig) {
     final AuthenticationConfig authenticationConfig = getAuthenticationConfig(exchangeConfig);
@@ -1040,9 +1045,9 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
     }
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   //  Util methods
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   private void initGson() {
     // We need to disable HTML escaping for this adapter else GSON will change = to unicode for
