@@ -71,12 +71,12 @@ import org.powermock.modules.junit4.PowerMockRunner;
  */
 @RunWith(PowerMockRunner.class)
 @PowerMockIgnore({
-  "javax.crypto.*",
-  "javax.management.*",
-  "com.sun.org.apache.xerces.*",
-  "javax.xml.parsers.*",
-  "org.xml.sax.*",
-  "org.w3c.dom.*"
+    "javax.crypto.*",
+    "javax.management.*",
+    "com.sun.org.apache.xerces.*",
+    "javax.xml.parsers.*",
+    "org.xml.sax.*",
+    "org.w3c.dom.*"
 })
 @PrepareForTest(OkCoinExchangeAdapter.class)
 public class TestOkcoinExchangeAdapter extends AbstractExchangeAdapterTest {
@@ -143,9 +143,7 @@ public class TestOkcoinExchangeAdapter extends AbstractExchangeAdapterTest {
   private NetworkConfig networkConfig;
   private OtherConfig otherConfig;
 
-  /*
-   * Create some exchange config - the TradingEngine would normally do this.
-   */
+  /** Create some exchange config - the TradingEngine would normally do this. */
   @Before
   public void setupForEachTest() {
     authenticationConfig = PowerMock.createMock(AuthenticationConfig.class);
@@ -167,9 +165,9 @@ public class TestOkcoinExchangeAdapter extends AbstractExchangeAdapterTest {
     expect(exchangeConfig.getOtherConfig()).andReturn(otherConfig);
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   //  Cancel Order tests
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   @Test
   @SuppressWarnings("unchecked")
@@ -279,9 +277,9 @@ public class TestOkcoinExchangeAdapter extends AbstractExchangeAdapterTest {
     PowerMock.verifyAll();
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   //  Create Orders tests
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   @Test
   @SuppressWarnings("unchecked")
@@ -417,11 +415,11 @@ public class TestOkcoinExchangeAdapter extends AbstractExchangeAdapterTest {
             anyObject(Map.class))
         .andThrow(
             new ExchangeNetworkException(
-                "It’s like in the great stories, Mr. Frodo, the ones that really "
-                    + "mattered. Full of darkness and danger, they were... Those were the stories that stayed"
-                    + " with you, that meant something, even if you were too small to understand why. But I think, "
-                    + "Mr. Frodo, I do understand... There’s some good in this world, Mr. Frodo, and it’s worth"
-                    + " fighting for."));
+                "It’s like in the great stories, Mr. Frodo, the ones that really mattered. "
+                    + "Full of darkness and danger, they were... Those were the stories "
+                    + "that stayed with you, that meant something, even if you were too small to "
+                    + "understand why. But I think, Mr. Frodo, I do understand... There’s some "
+                    + "good in this world, Mr. Frodo, and it’s worth fighting for."));
 
     PowerMock.replayAll();
     exchangeAdapter.init(exchangeConfig);
@@ -443,9 +441,10 @@ public class TestOkcoinExchangeAdapter extends AbstractExchangeAdapterTest {
         .andThrow(
             new IllegalArgumentException(
                 "We needs it. Must have the precious. They stole it from us. "
-                    + "Sneaky little hobbitses, wicked, tricksy, false. No, not master... Master’s my friend. "
-                    + "You don’t have any friends. Nobody likes you. Not listening. I’m not listening. You’re a liar."
-                    + " And a thief. Murderer. Go away... I hate you... Leave now and never come back.”"));
+                    + "Sneaky little hobbitses, wicked, tricksy, false. No, not master... "
+                    + "Master’s my friend. You don’t have any friends. Nobody likes you. "
+                    + "Not listening. I’m not listening. You’re a liar. And a thief. Murderer. "
+                    + "Go away... I hate you... Leave now and never come back."));
 
     PowerMock.replayAll();
     exchangeAdapter.init(exchangeConfig);
@@ -454,9 +453,9 @@ public class TestOkcoinExchangeAdapter extends AbstractExchangeAdapterTest {
     PowerMock.verifyAll();
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   //  Get Your Open Orders tests
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   @Test
   @SuppressWarnings("unchecked")
@@ -581,9 +580,9 @@ public class TestOkcoinExchangeAdapter extends AbstractExchangeAdapterTest {
     PowerMock.verifyAll();
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   //  Get Market Orders tests
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   @Test
   @SuppressWarnings("unchecked")
@@ -685,9 +684,9 @@ public class TestOkcoinExchangeAdapter extends AbstractExchangeAdapterTest {
     PowerMock.verifyAll();
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   //  Get Latest Market Price tests
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   @Test
   @SuppressWarnings("unchecked")
@@ -759,10 +758,11 @@ public class TestOkcoinExchangeAdapter extends AbstractExchangeAdapterTest {
         .andThrow(
             new IllegalArgumentException(
                 "What has happened before will happen again. What has been done "
-                    + "before will be done again. There is nothing new in the whole world. \"Look,\" they say, "
-                    + "\"here is something new!\" But no, it has all happened before, long before we were born."
-                    + " No one remembers what has happened in the past, and no one in days to come will remember what"
-                    + " happens between now and then."));
+                    + "before will be done again. There is nothing new in the whole world. "
+                    + "\"Look,\" they say, \"here is something new!\" But no, it has all happened "
+                    + "before, long before we were born. No one remembers what has happened in the "
+                    + "past, and no one in days to come will remember what happens between now "
+                    + "and then."));
 
     PowerMock.replayAll();
     exchangeAdapter.init(exchangeConfig);
@@ -771,9 +771,9 @@ public class TestOkcoinExchangeAdapter extends AbstractExchangeAdapterTest {
     PowerMock.verifyAll();
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   //  Get Balance Info tests
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   @Test
   public void testGettingBalanceInfoSuccessfully() throws Exception {
@@ -868,9 +868,9 @@ public class TestOkcoinExchangeAdapter extends AbstractExchangeAdapterTest {
             eq(null))
         .andThrow(
             new IllegalStateException(
-                "It's a dangerous business, Frodo, going out your door. You step "
-                    + "onto the road, and if you don't keep your feet, there's no knowing where you might be swept "
-                    + "off to."));
+                "It's a dangerous business, Frodo, going out your door. You step onto the road, "
+                    + "and if you don't keep your feet, there's no knowing where you might be "
+                    + "swept off to."));
 
     PowerMock.replayAll();
     exchangeAdapter.init(exchangeConfig);
@@ -879,9 +879,9 @@ public class TestOkcoinExchangeAdapter extends AbstractExchangeAdapterTest {
     PowerMock.verifyAll();
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   //  Get Ticker tests
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   @Test
   @SuppressWarnings("unchecked")
@@ -957,8 +957,8 @@ public class TestOkcoinExchangeAdapter extends AbstractExchangeAdapterTest {
             anyObject(Map.class))
         .andThrow(
             new IllegalArgumentException(
-                "All you people are so scared of me. "
-                    + "Most days I'd take that as a compliment. But it ain't me you gotta worry about now."));
+                "All you people are so scared of me. Most days I'd take that as a compliment. "
+                    + "But it ain't me you gotta worry about now."));
 
     PowerMock.replayAll();
     exchangeAdapter.init(exchangeConfig);
@@ -967,9 +967,9 @@ public class TestOkcoinExchangeAdapter extends AbstractExchangeAdapterTest {
     PowerMock.verifyAll();
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   //  Non Exchange visiting tests
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   @Test
   public void testGettingExchangeSellingFeeIsAsExpected() {
@@ -1010,9 +1010,9 @@ public class TestOkcoinExchangeAdapter extends AbstractExchangeAdapterTest {
     PowerMock.verifyAll();
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   //  Initialisation tests
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   @Test
   public void testExchangeAdapterInitialisesSuccessfully() {
@@ -1082,9 +1082,9 @@ public class TestOkcoinExchangeAdapter extends AbstractExchangeAdapterTest {
     PowerMock.verifyAll();
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   //  Request sending tests
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   @Test
   @SuppressWarnings("unchecked")

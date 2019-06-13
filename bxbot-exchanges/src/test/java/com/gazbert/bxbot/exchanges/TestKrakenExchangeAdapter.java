@@ -71,12 +71,12 @@ import org.powermock.modules.junit4.PowerMockRunner;
  */
 @RunWith(PowerMockRunner.class)
 @PowerMockIgnore({
-  "javax.crypto.*",
-  "javax.management.*",
-  "com.sun.org.apache.xerces.*",
-  "javax.xml.parsers.*",
-  "org.xml.sax.*",
-  "org.w3c.dom.*"
+    "javax.crypto.*",
+    "javax.management.*",
+    "com.sun.org.apache.xerces.*",
+    "javax.xml.parsers.*",
+    "org.xml.sax.*",
+    "org.w3c.dom.*"
 })
 @PrepareForTest(KrakenExchangeAdapter.class)
 public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
@@ -152,7 +152,7 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
   private AuthenticationConfig authenticationConfig;
   private NetworkConfig networkConfig;
 
-  /*
+  /**
    * Create some exchange config - the TradingEngine would normally do this.
    */
   @Before
@@ -177,9 +177,9 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
     expect(exchangeConfig.getOtherConfig()).andReturn(otherConfig);
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   //  Get Market Orders tests
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   @Test
   @SuppressWarnings("unchecked")
@@ -319,9 +319,9 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
     PowerMock.verifyAll();
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   //  Get Your Open Orders tests
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   @Test
   public void testGettingYourOpenOrdersSuccessfully() throws Exception {
@@ -405,8 +405,8 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
             anyObject(Map.class))
         .andThrow(
             new ExchangeNetworkException(
-                "Yes... yes. This is a fertile land, & we "
-                    + "will thrive. We will rule over all this land, & we will call it... This Land"));
+                "Yes... yes. This is a fertile land, & we will thrive. We will rule over all "
+                    + "this land, & we will call it... This Land"));
 
     PowerMock.replayAll();
     exchangeAdapter.init(exchangeConfig);
@@ -434,9 +434,9 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
     PowerMock.verifyAll();
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   //  Create Orders tests
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   @Test
   @SuppressWarnings("unchecked")
@@ -574,10 +574,10 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
             anyObject(Map.class))
         .andThrow(
             new ExchangeNetworkException(
-                "This is your last chance. After this, there is no turning back."
-                    + " You take the blue pill - the story ends, you wake up in your bed and believe whatever you "
-                    + "want to believe. You take the red pill - you stay in Wonderland and I show you how deep the"
-                    + " rabbit-hole goes"));
+                "This is your last chance. After this, there is no turning back. "
+                    + "You take the blue pill - the story ends, you wake up in your bed and "
+                    + "believe whatever you want to believe. You take the red pill - you stay "
+                    + "in Wonderland and I show you how deep the rabbit-hole goes"));
 
     PowerMock.replayAll();
     exchangeAdapter.init(exchangeConfig);
@@ -598,9 +598,9 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
             anyObject(Map.class))
         .andThrow(
             new IllegalArgumentException(
-                "Have you ever had a dream, Neo, that you were so sure was real?"
-                    + " What if you were unable to wake from that dream? How would you know the difference between "
-                    + "the dream world and the real world?"));
+                "Have you ever had a dream, Neo, that you were so sure was real? "
+                    + "What if you were unable to wake from that dream? How would you know the "
+                    + "difference between the dream world and the real world?"));
 
     PowerMock.replayAll();
     exchangeAdapter.init(exchangeConfig);
@@ -609,9 +609,9 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
     PowerMock.verifyAll();
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   //  Cancel Order tests
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   @Test
   @SuppressWarnings("unchecked")
@@ -704,8 +704,9 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
         .andThrow(
             new IllegalStateException(
                 "You know, I know this steak doesn't exist."
-                    + " I know that when I put it in my mouth, the Matrix is telling my brain that it is juicy and "
-                    + "delicious. After nine years, you know what I realize? Ignorance is bliss."));
+                    + "I know that when I put it in my mouth, the Matrix is telling my brain "
+                    + "that it is juicy and delicious. After nine years, you know what I "
+                    + "realize? Ignorance is bliss."));
 
     PowerMock.replayAll();
     exchangeAdapter.init(exchangeConfig);
@@ -714,9 +715,9 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
     PowerMock.verifyAll();
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   //  Get Balance Info tests
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   @Test
   public void testGettingBalanceInfoSuccessfully() throws Exception {
@@ -820,9 +821,9 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
     PowerMock.verifyAll();
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   //  Get Latest Market Price tests
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   @Test
   @SuppressWarnings("unchecked")
@@ -896,8 +897,9 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
         .andThrow(
             new ExchangeNetworkException(
                 "As long as you can still grab a breath, you fight. You breathe. "
-                    + "Keep breathing. When there is a storm and you stand in front of a tree, if you look at its "
-                    + "branches, you swear it will fall. But if you watch the trunk, you will see its stability."));
+                    + "Keep breathing. When there is a storm and you stand in front of a tree, "
+                    + "if you look at its branches, you swear it will fall. But if you watch the "
+                    + "trunk, you will see its stability."));
 
     PowerMock.replayAll();
     exchangeAdapter.init(exchangeConfig);
@@ -920,7 +922,8 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
             new IllegalArgumentException(
                 "Yes, you have information. You can find out all about a man, "
                     + "track him down, keep an eye on him. But you have to look him in the eye. "
-                    + "All the tech you have can't help you with that. A license to kill also means a license NOT to kill."));
+                    + "All the tech you have can't help you with that. A license to kill also "
+                    + "means a license NOT to kill."));
 
     PowerMock.replayAll();
     exchangeAdapter.init(exchangeConfig);
@@ -929,9 +932,9 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
     PowerMock.verifyAll();
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   //  Get Latest Market Price tests
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   @Test
   @SuppressWarnings("unchecked")
@@ -1038,9 +1041,9 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
     PowerMock.verifyAll();
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   //  Non Exchange visiting tests
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   @Test
   public void testGettingImplNameIsAsExpected() {
@@ -1079,9 +1082,9 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
     PowerMock.verifyAll();
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   //  Initialisation tests
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   @Test
   public void testExchangeAdapterInitialisesSuccessfully() {
@@ -1124,9 +1127,9 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
     PowerMock.verifyAll();
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   //  Request sending tests
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   @Test
   @SuppressWarnings("unchecked")
@@ -1228,9 +1231,10 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
         .andThrow(
             new TradingApiException(
                 "In 10 days, when the sun is eclipsed, I will unleash the Kraken. "
-                    + "Argos will be swept from the earth and all of you with it. Unless you sacrifice the princess"
-                    + " you so foolish compare to the gods. Only her blood will sate the Kraken and Zeus, "
-                    + "who you have so offended. Choose your penance, Argos. Destruction of sacrifice."));
+                    + "Argos will be swept from the earth and all of you with it. Unless you "
+                    + "sacrifice the princess you so foolish compare to the gods. Only her blood "
+                    + "will sate the Kraken and Zeus, who you have so offended. Choose your "
+                    + "penance, Argos. Destruction of sacrifice."));
 
     PowerMock.replayAll();
     exchangeAdapter.init(exchangeConfig);

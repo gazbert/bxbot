@@ -74,13 +74,13 @@ import org.powermock.reflect.Whitebox;
  */
 @RunWith(PowerMockRunner.class)
 @PowerMockIgnore({
-  "javax.crypto.*",
-  "javax.management.*",
-  "com.sun.org.apache.xerces.*",
-  "javax.xml.parsers.*",
-  "org.xml.sax.*",
-  "org.w3c.dom.*",
-  "javax.xml.datatype.*"
+    "javax.crypto.*",
+    "javax.management.*",
+    "com.sun.org.apache.xerces.*",
+    "javax.xml.parsers.*",
+    "org.xml.sax.*",
+    "org.w3c.dom.*",
+    "javax.xml.datatype.*"
 })
 @PrepareForTest(ItBitExchangeAdapter.class)
 public class TestItBitExchangeAdapter extends AbstractExchangeAdapterTest {
@@ -146,7 +146,7 @@ public class TestItBitExchangeAdapter extends AbstractExchangeAdapterTest {
   private NetworkConfig networkConfig;
   private OtherConfig otherConfig;
 
-  /*
+  /**
    * Create some exchange config - the TradingEngine would normally do this.
    */
   @Before
@@ -172,9 +172,9 @@ public class TestItBitExchangeAdapter extends AbstractExchangeAdapterTest {
     expect(exchangeConfig.getOtherConfig()).andReturn(otherConfig);
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   //  Create Orders tests
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   @Test
   @SuppressWarnings("unchecked")
@@ -298,7 +298,8 @@ public class TestItBitExchangeAdapter extends AbstractExchangeAdapterTest {
         .andThrow(
             new ExchangeNetworkException(
                 " If you want the ultimate,"
-                    + " you've got to be willing to pay the ultimate price. It's not tragic to die doing what you love."));
+                    + " you've got to be willing to pay the ultimate price. It's not tragic to "
+                    + "die doing what you love."));
 
     PowerMock.replayAll();
     Whitebox.setInternalState(exchangeAdapter, MOCKED_WALLET_ID_FIELD_NAME, WALLET_ID);
@@ -332,9 +333,9 @@ public class TestItBitExchangeAdapter extends AbstractExchangeAdapterTest {
     PowerMock.verifyAll();
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   //  Cancel Order tests
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   @Test
   public void testCancelOrderIsSuccessful() throws Exception {
@@ -403,8 +404,8 @@ public class TestItBitExchangeAdapter extends AbstractExchangeAdapterTest {
         .andThrow(
             new IllegalStateException(
                 "It's basic dog psychology, if you scare them and get them peeing down"
-                    + " their leg, they submit. But if you project weakness, that promotes violence, and that's"
-                    + " how people get hurt."));
+                    + " their leg, they submit. But if you project weakness, that promotes "
+                    + "violence, and that's how people get hurt."));
 
     PowerMock.replayAll();
     Whitebox.setInternalState(exchangeAdapter, MOCKED_WALLET_ID_FIELD_NAME, WALLET_ID);
@@ -415,9 +416,9 @@ public class TestItBitExchangeAdapter extends AbstractExchangeAdapterTest {
     PowerMock.verifyAll();
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   //  Get Your Open Orders tests
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   @Test
   @SuppressWarnings("unchecked")
@@ -492,11 +493,12 @@ public class TestItBitExchangeAdapter extends AbstractExchangeAdapterTest {
         .andThrow(
             new ExchangeNetworkException(
                 "I'm afraid. I'm afraid, Dave. Dave, my mind is "
-                    + "going. I can feel it. I can feel it. My mind is going. There is no question about it. "
-                    + "I can feel it. I can feel it. I can feel it. I'm a... fraid. Good afternoon, gentlemen."
-                    + " I am a HAL 9000 computer. I became operational at the H.A.L. plant in Urbana, Illinois"
-                    + " on the 12th of January 1992. My instructor was Mr. Langley, and he taught me to sing a"
-                    + " song. If you'd like to hear it I can sing it for you."));
+                    + "going. I can feel it. I can feel it. My mind is going. There is no "
+                    + "question about it. I can feel it. I can feel it. I can feel it. "
+                    + "I'm a... fraid. Good afternoon, gentlemen. I am a HAL 9000 computer. "
+                    + "I became operational at the H.A.L. plant in Urbana, Illinois on the 12th "
+                    + "of January 1992. My instructor was Mr. Langley, and he taught me to sing "
+                    + "a song. If you'd like to hear it I can sing it for you."));
 
     PowerMock.replayAll();
     Whitebox.setInternalState(exchangeAdapter, MOCKED_WALLET_ID_FIELD_NAME, WALLET_ID);
@@ -524,9 +526,9 @@ public class TestItBitExchangeAdapter extends AbstractExchangeAdapterTest {
     PowerMock.verifyAll();
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   //  Get Market Orders tests
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   @Test
   public void testGettingMarketOrdersSuccessfully() throws Exception {
@@ -583,9 +585,10 @@ public class TestItBitExchangeAdapter extends AbstractExchangeAdapterTest {
         .andThrow(
             new ExchangeNetworkException(
                 "There is an idea of a Patrick Bateman; some kind of "
-                    + "abstraction. But there is no real me: only an entity, something illusory. And though I"
-                    + " can hide my cold gaze, and you can shake my hand and feel flesh gripping yours and maybe"
-                    + " you can even sense our lifestyles are probably comparable... I simply am not there."));
+                    + "abstraction. But there is no real me: only an entity, something illusory. "
+                    + "And though I can hide my cold gaze, and you can shake my hand and feel "
+                    + "flesh gripping yours and maybe you can even sense our lifestyles are "
+                    + "probably comparable... I simply am not there."));
 
     PowerMock.replayAll();
     exchangeAdapter.getMarketOrders(MARKET_ID);
@@ -607,9 +610,9 @@ public class TestItBitExchangeAdapter extends AbstractExchangeAdapterTest {
     PowerMock.verifyAll();
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   //  Get Latest Market Price tests
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   @Test
   public void testGettingLatestMarketPriceSuccessfully() throws Exception {
@@ -643,10 +646,11 @@ public class TestItBitExchangeAdapter extends AbstractExchangeAdapterTest {
         .andThrow(
             new ExchangeNetworkException(
                 " I've seen horrors... horrors that you've seen."
-                    + " But you have no right to call me a murderer. You have a right to kill me. You have a right"
-                    + " to do that... but you have no right to judge me. It's impossible for words to describe what"
-                    + " is necessary to those who do not know what horror means. Horror... Horror has a face... and"
-                    + " you must make a friend of horror. Horror and moral terror are your friends. "
+                    + " But you have no right to call me a murderer. You have a right to kill me. "
+                    + "You have a right to do that... but you have no right to judge me. It's "
+                    + "impossible for words to describe what is necessary to those who do not "
+                    + "know what horror means. Horror... Horror has a face... and you must make a "
+                    + "friend of horror. Horror and moral terror are your friends. "
                     + "If they are not, then they are enemies to be feared."));
 
     PowerMock.replayAll();
@@ -667,9 +671,9 @@ public class TestItBitExchangeAdapter extends AbstractExchangeAdapterTest {
     PowerMock.verifyAll();
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   //  Get Balance Info tests
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   @Test
   @SuppressWarnings("unchecked")
@@ -755,9 +759,9 @@ public class TestItBitExchangeAdapter extends AbstractExchangeAdapterTest {
     PowerMock.verifyAll();
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   //  Get Ticker tests
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   @Test
   public void testGettingTickerSuccessfully() throws Exception {
@@ -822,9 +826,9 @@ public class TestItBitExchangeAdapter extends AbstractExchangeAdapterTest {
     PowerMock.verifyAll();
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   //  Non Exchange visiting tests
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   @Test
   public void testGettingExchangeSellingFeeIsAsExpected() {
@@ -865,9 +869,9 @@ public class TestItBitExchangeAdapter extends AbstractExchangeAdapterTest {
     PowerMock.verifyAll();
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   //  Initialisation tests
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   @Test
   public void testExchangeAdapterInitialisesSuccessfully() {
@@ -953,9 +957,9 @@ public class TestItBitExchangeAdapter extends AbstractExchangeAdapterTest {
     PowerMock.verifyAll();
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   //  Request sending tests
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   @Test
   public void testSendingPublicRequestToExchangeSuccessfully() throws Exception {

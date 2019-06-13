@@ -727,10 +727,10 @@ public class TestBitfinexExchangeAdapter extends AbstractExchangeAdapterTest {
             eq(null))
         .andThrow(
             new IllegalStateException(
-                " I've seen things you people wouldn't believe. Attack ships on fire"
-                    + " off the shoulder of Orion. I watched C-beams glitter in the dark near the "
-                    + "Tannhauser gate. All those moments will be lost in time... like tears in"
-                    + " rain... Time to die"));
+                " I've seen things you people wouldn't believe. Attack ships on fire "
+                    + "off the shoulder of Orion. I watched C-beams glitter in the dark near the "
+                    + "Tannhauser gate. All those moments will be lost in time... like tears in "
+                    + "rain... Time to die."));
 
     PowerMock.replayAll();
     exchangeAdapter.init(exchangeConfig);
@@ -782,8 +782,8 @@ public class TestBitfinexExchangeAdapter extends AbstractExchangeAdapterTest {
             eq(null))
         .andThrow(
             new ExchangeNetworkException(
-                "Right. Well, um, using layman's terms... Use a retaining magnetic"
-                    + " field to focus a narrow beam of gravitons - these, in turn, fold "
+                "Right. Well, um, using layman's terms... Use a retaining magnetic "
+                    + "field to focus a narrow beam of gravitons - these, in turn, fold "
                     + "space-time consistent with Weyl tensor dynamics until the space-time "
                     + "curvature becomes infinitely large, and you produce a singularity. "
                     + "Now, the singularity..."));
@@ -807,8 +807,8 @@ public class TestBitfinexExchangeAdapter extends AbstractExchangeAdapterTest {
             eq(null))
         .andThrow(
             new IllegalStateException(
-                "I created the Event Horizon to reach the stars, but she's gone much,"
-                    + " much farther than that. She tore a hole in our universe, a gateway to "
+                "I created the Event Horizon to reach the stars, but she's gone much, "
+                    + "much farther than that. She tore a hole in our universe, a gateway to "
                     + "another dimension. A dimension of pure chaos. Pure... evil. When she "
                     + "crossed over, she was just a ship. But when she came back... she was alive! "
                     + "Look at her, Miller. Isn't she beautiful?"));
@@ -863,8 +863,8 @@ public class TestBitfinexExchangeAdapter extends AbstractExchangeAdapterTest {
             eq(null))
         .andThrow(
             new ExchangeNetworkException(
-                "Day 11, Test 37, Configuration 2.0. For lack of a "
-                    + "better option, Dummy is still on fire safety."));
+                "Day 11, Test 37, Configuration 2.0. For lack of a better option, Dummy is still"
+                    + " on fire safety."));
 
     PowerMock.replayAll();
     exchangeAdapter.init(exchangeConfig);
@@ -885,12 +885,11 @@ public class TestBitfinexExchangeAdapter extends AbstractExchangeAdapterTest {
             eq(null))
         .andThrow(
             new IllegalStateException(
-                "What was made public about the Event Horizon - that "
-                    + "she was a deep space research vessel, that her reactor went critical, "
-                    + "and that the ship blew up - "
+                "What was made public about the Event Horizon - that she was a deep space research"
+                    + " vessel, that her reactor went critical, and that the ship blew up - "
                     + "none of that is true. The Event Horizon is the culmination of a secret "
-                    + "government project to create a "
-                    + "spacecraft capable of faster-than-light flight."));
+                    + "government project to create a spacecraft capable of faster-than-light "
+                    + "flight."));
 
     PowerMock.replayAll();
     exchangeAdapter.init(exchangeConfig);
@@ -947,9 +946,9 @@ public class TestBitfinexExchangeAdapter extends AbstractExchangeAdapterTest {
             PUB_TICKER + "/" + MARKET_ID)
         .andThrow(
             new ExchangeNetworkException(
-                " You're born, you live and you die. There are no due overs,"
-                    + " no second chances to make things right if you frak them up the first time, "
-                    + "not in this life anyway."));
+                " You're born, you live and you die. There are no due overs, no second chances "
+                    + "to make things right if you frak them up the first time, not in this "
+                    + "life anyway."));
 
     PowerMock.replayAll();
     exchangeAdapter.init(exchangeConfig);
@@ -969,8 +968,8 @@ public class TestBitfinexExchangeAdapter extends AbstractExchangeAdapterTest {
             PUB_TICKER + "/" + MARKET_ID)
         .andThrow(
             new IllegalArgumentException(
-                "Like I said, you make your choices and you live with them "
-                    + "and in the end you are those choices."));
+                "Like I said, you make your choices and you live with them and in the end you are"
+                    + " those choices."));
 
     PowerMock.replayAll();
     exchangeAdapter.init(exchangeConfig);

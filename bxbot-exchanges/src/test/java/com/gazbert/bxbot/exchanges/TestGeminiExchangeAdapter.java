@@ -69,13 +69,13 @@ import org.powermock.modules.junit4.PowerMockRunner;
  */
 @RunWith(PowerMockRunner.class)
 @PowerMockIgnore({
-  "javax.crypto.*",
-  "javax.management.*",
-  "com.sun.org.apache.xerces.*",
-  "javax.xml.parsers.*",
-  "org.xml.sax.*",
-  "org.w3c.dom.*",
-  "javax.xml.datatype.*"
+    "javax.crypto.*",
+    "javax.management.*",
+    "com.sun.org.apache.xerces.*",
+    "javax.xml.parsers.*",
+    "org.xml.sax.*",
+    "org.w3c.dom.*",
+    "javax.xml.datatype.*"
 })
 @PrepareForTest(GeminiExchangeAdapter.class)
 public class TestGeminiExchangeAdapter extends AbstractExchangeAdapterTest {
@@ -134,9 +134,7 @@ public class TestGeminiExchangeAdapter extends AbstractExchangeAdapterTest {
   private AuthenticationConfig authenticationConfig;
   private NetworkConfig networkConfig;
 
-  /*
-   * Create some exchange config - the TradingEngine would normally do this.
-   */
+  /** Create some exchange config - the TradingEngine would normally do this. */
   @Before
   public void setupForEachTest() {
     authenticationConfig = PowerMock.createMock(AuthenticationConfig.class);
@@ -158,9 +156,9 @@ public class TestGeminiExchangeAdapter extends AbstractExchangeAdapterTest {
     expect(exchangeConfig.getOtherConfig()).andReturn(otherConfig);
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   //  Get Market Orders tests
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   @Test
   public void testGettingMarketOrdersSuccessfully() throws Exception {
@@ -223,8 +221,8 @@ public class TestGeminiExchangeAdapter extends AbstractExchangeAdapterTest {
         .andThrow(
             new ExchangeNetworkException(
                 "This famous linguist once said that of all the phrases in the"
-                    + " English language, of all the endless combinations of words in all of history, that "
-                    + "\"cellar door\" is the most beautiful."));
+                    + " English language, of all the endless combinations of words in all of "
+                    + "history, that \"cellar door\" is the most beautiful."));
 
     PowerMock.replayAll();
     exchangeAdapter.init(exchangeConfig);
@@ -251,9 +249,9 @@ public class TestGeminiExchangeAdapter extends AbstractExchangeAdapterTest {
     PowerMock.verifyAll();
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   //  Create Orders tests
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   @Test
   @SuppressWarnings("unchecked")
@@ -369,8 +367,8 @@ public class TestGeminiExchangeAdapter extends AbstractExchangeAdapterTest {
         .andThrow(
             new ExchangeNetworkException(
                 "Excuse me, sir. Seeing as how the V.P. is such a V.I.P., "
-                    + "shouldn't we keep the P.C. on the Q.T.? 'Cause if it leaks to the V.C. he could end up M.I.A.,"
-                    + " and then we'd all be put out in K.P."));
+                    + "shouldn't we keep the P.C. on the Q.T.? 'Cause if it leaks to the V.C. "
+                    + "he could end up M.I.A., and then we'd all be put out in K.P."));
 
     PowerMock.replayAll();
     exchangeAdapter.init(exchangeConfig);
@@ -400,9 +398,9 @@ public class TestGeminiExchangeAdapter extends AbstractExchangeAdapterTest {
     PowerMock.verifyAll();
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   //  Cancel Order tests
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   @Test
   @SuppressWarnings("unchecked")
@@ -453,8 +451,8 @@ public class TestGeminiExchangeAdapter extends AbstractExchangeAdapterTest {
         .andThrow(
             new ExchangeNetworkException(
                 "Time is a companion that goes with us on a journey. "
-                    + "It reminds us to cherish each moment, because it will never come again. What we leave behind"
-                    + " is not as important as how we have lived."));
+                    + "It reminds us to cherish each moment, because it will never come again. "
+                    + "What we leave behind is not as important as how we have lived."));
 
     PowerMock.replayAll();
     exchangeAdapter.init(exchangeConfig);
@@ -486,9 +484,9 @@ public class TestGeminiExchangeAdapter extends AbstractExchangeAdapterTest {
     PowerMock.verifyAll();
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   //  Get Balance Info tests
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   @Test
   public void testGettingBalanceInfoSuccessfully() throws Exception {
@@ -567,9 +565,9 @@ public class TestGeminiExchangeAdapter extends AbstractExchangeAdapterTest {
     PowerMock.verifyAll();
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   //  Get Latest Market Price tests
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   @Test
   public void testGettingLatestMarketPriceSuccessfully() throws Exception {
@@ -630,8 +628,9 @@ public class TestGeminiExchangeAdapter extends AbstractExchangeAdapterTest {
             PUBTICKER + "/" + ETH_BTC_MARKET_ID)
         .andThrow(
             new IllegalArgumentException(
-                " In brightest day, in blackest night, no evil shall escape my sight,"
-                    + " Let those who worship evil's might, beware of my power, Green Lantern's light!"));
+                " In brightest day, in blackest night, no evil shall escape my sight, "
+                    + "Let those who worship evil's might, beware of my power, "
+                    + "Green Lantern's light!"));
 
     PowerMock.replayAll();
     exchangeAdapter.init(exchangeConfig);
@@ -640,9 +639,9 @@ public class TestGeminiExchangeAdapter extends AbstractExchangeAdapterTest {
     PowerMock.verifyAll();
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   //  Get Your Open Orders tests
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   @Test
   public void testGettingYourOpenOrdersSuccessfully() throws Exception {
@@ -728,9 +727,9 @@ public class TestGeminiExchangeAdapter extends AbstractExchangeAdapterTest {
     PowerMock.verifyAll();
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   //  Non Exchange visiting tests
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   @Test
   public void testGettingImplNameIsAsExpected() {
@@ -765,9 +764,9 @@ public class TestGeminiExchangeAdapter extends AbstractExchangeAdapterTest {
     PowerMock.verifyAll();
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   //  Initialisation tests
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   @Test
   public void testExchangeAdapterInitialisesSuccessfully() {
@@ -810,9 +809,9 @@ public class TestGeminiExchangeAdapter extends AbstractExchangeAdapterTest {
     PowerMock.verifyAll();
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   //  Request sending tests
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   @Test
   @SuppressWarnings("unchecked")
@@ -875,8 +874,9 @@ public class TestGeminiExchangeAdapter extends AbstractExchangeAdapterTest {
         .andThrow(
             new ExchangeNetworkException(
                 "Well, because he thought it was good sport. "
-                    + "Because some men aren't looking for anything logical, like money. They can't be bought,"
-                    + " bullied, reasoned, or negotiated with. Some men just want to watch the world burn."));
+                    + "Because some men aren't looking for anything logical, like money. "
+                    + "They can't be bought, bullied, reasoned, or negotiated with. Some men "
+                    + "just want to watch the world burn."));
 
     PowerMock.replayAll();
     exchangeAdapter.init(exchangeConfig);
@@ -1101,8 +1101,8 @@ public class TestGeminiExchangeAdapter extends AbstractExchangeAdapterTest {
         .andThrow(
             new TradingApiException(
                 "You cannot pass! I am a servant of the Secret Fire, "
-                    + "wielder of the Flame of Anor. The dark fire will not avail you, Flame of Udun! "
-                    + "Go back to the shadow. You shall not pass!"));
+                    + "wielder of the Flame of Anor. The dark fire will not avail you, "
+                    + "Flame of Udun! Go back to the shadow. You shall not pass!"));
 
     PowerMock.replayAll();
     exchangeAdapter.init(exchangeConfig);

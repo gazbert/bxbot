@@ -74,13 +74,13 @@ import org.powermock.modules.junit4.PowerMockRunner;
  */
 @RunWith(PowerMockRunner.class)
 @PowerMockIgnore({
-  "javax.crypto.*",
-  "javax.management.*",
-  "com.sun.org.apache.xerces.*",
-  "javax.xml.parsers.*",
-  "org.xml.sax.*",
-  "org.w3c.dom.*",
-  "javax.xml.datatype.*"
+    "javax.crypto.*",
+    "javax.management.*",
+    "com.sun.org.apache.xerces.*",
+    "javax.xml.parsers.*",
+    "org.xml.sax.*",
+    "org.w3c.dom.*",
+    "javax.xml.datatype.*"
 })
 @PrepareForTest(GdaxExchangeAdapter.class)
 public class TestGdaxExchangeAdapter extends AbstractExchangeAdapterTest {
@@ -141,7 +141,7 @@ public class TestGdaxExchangeAdapter extends AbstractExchangeAdapterTest {
   private NetworkConfig networkConfig;
   private OtherConfig otherConfig;
 
-  /*
+  /**
    * Create some exchange config - the TradingEngine would normally do this.
    */
   @Before
@@ -166,9 +166,9 @@ public class TestGdaxExchangeAdapter extends AbstractExchangeAdapterTest {
     expect(exchangeConfig.getOtherConfig()).andReturn(otherConfig);
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   //  Create Orders tests
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   @Test
   @SuppressWarnings("unchecked")
@@ -309,8 +309,8 @@ public class TestGdaxExchangeAdapter extends AbstractExchangeAdapterTest {
             anyObject(Map.class))
         .andThrow(
             new IllegalArgumentException(
-                " We all see what we want to see. Coffey looks and he"
-                    + " sees Russians. He sees hate and fear. You have to look with better eyes than that"));
+                " We all see what we want to see. Coffey looks and he sees Russians. He sees hate "
+                    + "and fear. You have to look with better eyes than that"));
 
     PowerMock.replayAll();
     exchangeAdapter.init(exchangeConfig);
@@ -319,9 +319,9 @@ public class TestGdaxExchangeAdapter extends AbstractExchangeAdapterTest {
     PowerMock.verifyAll();
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   //  Cancel Order tests
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   @Test
   public void testCancelOrderIsSuccessful() throws Exception {
@@ -400,9 +400,9 @@ public class TestGdaxExchangeAdapter extends AbstractExchangeAdapterTest {
     PowerMock.verifyAll();
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   //  Get Your Open Orders tests
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   @Test
   public void testGettingYourOpenOrdersSuccessfully() throws Exception {
@@ -483,7 +483,7 @@ public class TestGdaxExchangeAdapter extends AbstractExchangeAdapterTest {
             eq(null))
         .andThrow(
             new IllegalStateException(
-                "All those moments will be lost in time..." + " like tears in rain."));
+                "All those moments will be lost in time... like tears in rain."));
 
     PowerMock.replayAll();
     exchangeAdapter.init(exchangeConfig);
@@ -492,9 +492,9 @@ public class TestGdaxExchangeAdapter extends AbstractExchangeAdapterTest {
     PowerMock.verifyAll();
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   //  Get Market Orders tests
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   @Test
   @SuppressWarnings("unchecked")
@@ -586,10 +586,10 @@ public class TestGdaxExchangeAdapter extends AbstractExchangeAdapterTest {
             anyObject(Map.class))
         .andThrow(
             new IllegalArgumentException(
-                "Mr. Ambassador, you have nearly a hundred naval vessels"
-                    + " operating in the North Atlantic right now. Your aircraft has dropped enough sonar buoys"
-                    + " so that a man could walk from Greenland to Iceland to Scotland without getting his feet "
-                    + "wet. Now, shall we dispense with the bull?"));
+                "Mr. Ambassador, you have nearly a hundred naval vessels operating in the "
+                    + "North Atlantic right now. Your aircraft has dropped enough sonar buoys "
+                    + "so that a man could walk from Greenland to Iceland to Scotland without "
+                    + "getting his feet wet. Now, shall we dispense with the bull?"));
 
     PowerMock.replayAll();
     exchangeAdapter.init(exchangeConfig);
@@ -598,9 +598,9 @@ public class TestGdaxExchangeAdapter extends AbstractExchangeAdapterTest {
     PowerMock.verifyAll();
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   //  Get Latest Market Price tests
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   @Test
   public void testGettingLatestMarketPriceSuccessfully() throws Exception {
@@ -660,9 +660,9 @@ public class TestGdaxExchangeAdapter extends AbstractExchangeAdapterTest {
     PowerMock.verifyAll();
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   //  Get Balance Info tests
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   @Test
   public void testGettingBalanceInfoSuccessfully() throws Exception {
@@ -763,9 +763,9 @@ public class TestGdaxExchangeAdapter extends AbstractExchangeAdapterTest {
     PowerMock.verifyAll();
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   //  Get Ticker tests
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   @Test
   public void testGettingTickerSuccessfully() throws Exception {
@@ -817,8 +817,8 @@ public class TestGdaxExchangeAdapter extends AbstractExchangeAdapterTest {
             exchangeAdapter, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD, eq(TICKER), eq(null))
         .andThrow(
             new ExchangeNetworkException(
-                "Listen, Herr Mac, I don't know what kind of people you're used to dealing with, but nobody tells"
-                    + " me what to do in my place."));
+                "Listen, Herr Mac, I don't know what kind of people you're used to dealing with, "
+                    + "but nobody tells me what to do in my place."));
 
     PowerMock.replayAll();
     exchangeAdapter.init(exchangeConfig);
@@ -837,8 +837,8 @@ public class TestGdaxExchangeAdapter extends AbstractExchangeAdapterTest {
         .andThrow(
             new IllegalArgumentException(
                 "Indiana Jones. I always knew some day you'd come "
-                    + "walking back through my door. I never doubted that. Something made it inevitable."
-                    + " So, what are you doing here in Nepal?"));
+                    + "walking back through my door. I never doubted that. Something made it "
+                    + "inevitable. So, what are you doing here in Nepal?"));
 
     PowerMock.replayAll();
     exchangeAdapter.init(exchangeConfig);
@@ -847,9 +847,9 @@ public class TestGdaxExchangeAdapter extends AbstractExchangeAdapterTest {
     PowerMock.verifyAll();
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   //  Non Exchange visiting tests
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   @Test
   public void testGettingExchangeSellingFeeIsAsExpected() {
@@ -885,9 +885,9 @@ public class TestGdaxExchangeAdapter extends AbstractExchangeAdapterTest {
     PowerMock.verifyAll();
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   //  Initialisation tests
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   @Test
   public void testExchangeAdapterInitialisesSuccessfully() {
@@ -980,14 +980,13 @@ public class TestGdaxExchangeAdapter extends AbstractExchangeAdapterTest {
     PowerMock.verifyAll();
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   //  Request sending tests
   //
   //  "The rabbit-hole went straight on like a tunnel for some way, and then dipped suddenly down,
   //   so suddenly that Alice had not a moment to think about stopping herself before she found
-  // herself
-  //   falling down what seemed to be a very deep well..."
-  // ------------------------------------------------------------------------------------------------
+  //   herself falling down what seemed to be a very deep well..."
+  // --------------------------------------------------------------------------
 
   @Test
   public void testSendingPublicRequestToExchangeSuccessfully() throws Exception {
@@ -1162,7 +1161,8 @@ public class TestGdaxExchangeAdapter extends AbstractExchangeAdapterTest {
         .andThrow(
             new ExchangeNetworkException(
                 "Allow me then a moment to consider. You seek your creator. "
-                    + "I am looking at mine. I will serve you, yet you're human. You will die, I will not."));
+                    + "I am looking at mine. I will serve you, yet you're human. "
+                    + "You will die, I will not."));
 
     PowerMock.replayAll();
     exchangeAdapter.init(exchangeConfig);

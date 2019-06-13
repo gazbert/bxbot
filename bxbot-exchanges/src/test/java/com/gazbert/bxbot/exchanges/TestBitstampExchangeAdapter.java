@@ -71,12 +71,12 @@ import org.powermock.modules.junit4.PowerMockRunner;
  */
 @RunWith(PowerMockRunner.class)
 @PowerMockIgnore({
-  "javax.crypto.*",
-  "javax.management.*",
-  "com.sun.org.apache.xerces.*",
-  "javax.xml.parsers.*",
-  "org.xml.sax.*",
-  "org.w3c.dom.*"
+    "javax.crypto.*",
+    "javax.management.*",
+    "com.sun.org.apache.xerces.*",
+    "javax.xml.parsers.*",
+    "org.xml.sax.*",
+    "org.w3c.dom.*"
 })
 @PrepareForTest(BitstampExchangeAdapter.class)
 public class TestBitstampExchangeAdapter extends AbstractExchangeAdapter {
@@ -136,9 +136,7 @@ public class TestBitstampExchangeAdapter extends AbstractExchangeAdapter {
   private AuthenticationConfig authenticationConfig;
   private NetworkConfig networkConfig;
 
-  /*
-   * Create some exchange config - the TradingEngine would normally do this.
-   */
+  /** Create some exchange config - the TradingEngine would normally do this. */
   @Before
   public void setupForEachTest() {
     authenticationConfig = PowerMock.createMock(AuthenticationConfig.class);
@@ -157,9 +155,9 @@ public class TestBitstampExchangeAdapter extends AbstractExchangeAdapter {
     // optional config not needed for this adapter
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   //  Cancel Order tests
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   @Test
   @SuppressWarnings("unchecked")
@@ -214,8 +212,9 @@ public class TestBitstampExchangeAdapter extends AbstractExchangeAdapter {
         .andThrow(
             new ExchangeNetworkException(
                 "Traveling through hyperspace ain't like dusting crops, boy!"
-                    + " Without precise calculations we could fly right through a star, or bounce too close to a "
-                    + "supernova and that'd end your trip real quick, wouldn't it?"));
+                    + " Without precise calculations we could fly right through a star, or bounce "
+                    + "too close to a supernova and that'd end your trip real quick, wouldn't "
+                    + "it?"));
 
     PowerMock.replayAll();
     exchangeAdapter.init(exchangeConfig);
@@ -247,9 +246,9 @@ public class TestBitstampExchangeAdapter extends AbstractExchangeAdapter {
     PowerMock.verifyAll();
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   //  Create Orders tests
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   @Test
   @SuppressWarnings("unchecked")
@@ -387,9 +386,9 @@ public class TestBitstampExchangeAdapter extends AbstractExchangeAdapter {
     PowerMock.verifyAll();
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   //  Get Market Orders tests
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   @Test
   public void testGettingMarketOrdersSuccessfully() throws Exception {
@@ -470,7 +469,8 @@ public class TestBitstampExchangeAdapter extends AbstractExchangeAdapter {
         .andThrow(
             new IllegalArgumentException(
                 "Uh, we had a slight weapons malfunction, but uh... "
-                    + "everything's perfectly all right now. We're fine. We're all fine here now, thank you. How are you?"));
+                    + "everything's perfectly all right now. We're fine. We're all fine here now, "
+                    + "thank you. How are you?"));
 
     PowerMock.replayAll();
     exchangeAdapter.init(exchangeConfig);
@@ -479,9 +479,9 @@ public class TestBitstampExchangeAdapter extends AbstractExchangeAdapter {
     PowerMock.verifyAll();
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   //  Get Your Open Orders tests
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   @Test
   public void testGettingYourOpenOrdersSuccessfully() throws Exception {
@@ -569,9 +569,9 @@ public class TestBitstampExchangeAdapter extends AbstractExchangeAdapter {
     PowerMock.verifyAll();
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   //  Get Latest Market Price tests
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   @Test
   public void testGettingLatestMarketPriceSuccessfully() throws Exception {
@@ -632,9 +632,9 @@ public class TestBitstampExchangeAdapter extends AbstractExchangeAdapter {
     PowerMock.verifyAll();
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   //  Get Balance Info tests
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   @Test
   public void testGettingBalanceInfoSuccessfully() throws Exception {
@@ -692,7 +692,8 @@ public class TestBitstampExchangeAdapter extends AbstractExchangeAdapter {
         .andThrow(
             new ExchangeNetworkException(
                 "I’ve been waiting for you, Obi-Wan. We meet again, at last. "
-                    + "The circle is now complete. When I left you, I was but the learner; now I am the master."));
+                    + "The circle is now complete. When I left you, I was but the learner; "
+                    + "now I am the master."));
 
     PowerMock.replayAll();
     exchangeAdapter.init(exchangeConfig);
@@ -720,9 +721,9 @@ public class TestBitstampExchangeAdapter extends AbstractExchangeAdapter {
     PowerMock.verifyAll();
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   //  Get Exchange Fees for Buy orders tests
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   @Test
   public void testGettingExchangeBuyingFeeSuccessfully() throws Exception {
@@ -793,9 +794,9 @@ public class TestBitstampExchangeAdapter extends AbstractExchangeAdapter {
     PowerMock.verifyAll();
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   //  Get Exchange Fees for Sell orders tests
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   @Test
   public void testGettingExchangeSellingFeeSuccessfully() throws Exception {
@@ -855,8 +856,9 @@ public class TestBitstampExchangeAdapter extends AbstractExchangeAdapter {
             eq(null))
         .andThrow(
             new IllegalStateException(
-                "Don't be too proud of this technological terror you've constructed."
-                    + " The ability to destroy a planet is insignificant next to the power of the Force."));
+                "Don't be too proud of this technological terror you've constructed. "
+                    + "The ability to destroy a planet is insignificant next to the power of the "
+                    + "Force."));
 
     PowerMock.replayAll();
 
@@ -866,9 +868,9 @@ public class TestBitstampExchangeAdapter extends AbstractExchangeAdapter {
     PowerMock.verifyAll();
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   //  Get Ticker tests
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   @Test
   public void testGettingTickerSuccessfully() throws Exception {
@@ -935,9 +937,9 @@ public class TestBitstampExchangeAdapter extends AbstractExchangeAdapter {
     PowerMock.verifyAll();
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   //  Non Exchange visiting tests
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   @Test
   public void testGettingImplNameIsAsExpected() {
@@ -948,9 +950,10 @@ public class TestBitstampExchangeAdapter extends AbstractExchangeAdapter {
     PowerMock.verifyAll();
   }
 
-  // ------------------------------------------------------------------------------------------------
-  //  Initialisation tests - assume config property files are located under src/test/resources
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
+  //  Initialisation tests assume config property files are located under
+  //  src/test/resources
+  // --------------------------------------------------------------------------
 
   @Test
   public void testExchangeAdapterInitialisesSuccessfully() {
@@ -1015,9 +1018,9 @@ public class TestBitstampExchangeAdapter extends AbstractExchangeAdapter {
     PowerMock.verifyAll();
   }
 
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   //  Request sending tests
-  // ------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   @Test
   public void testSendingPublicRequestToExchangeSuccessfully() throws Exception {
