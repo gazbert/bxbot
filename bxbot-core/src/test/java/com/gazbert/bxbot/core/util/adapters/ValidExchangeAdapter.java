@@ -85,5 +85,6 @@ public class ValidExchangeAdapter implements TradingApi, ExchangeAdapter {
   }
 
   @Override
-  public void init(ExchangeConfig config) {}
+  public void init(ExchangeConfig config) {
+  }
 }

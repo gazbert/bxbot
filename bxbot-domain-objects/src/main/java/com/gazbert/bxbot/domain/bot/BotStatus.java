@@ -37,7 +37,8 @@ public class BotStatus {
   private String status;
 
   // required for jackson
-  public BotStatus() {}
+  public BotStatus() {
+  }
 
   /** Creates a new BotStatus. */
   public BotStatus(String botId, String displayName, String status) {

@@ -41,7 +41,8 @@ public class MarketConfig {
   private String tradingStrategyId;
 
   // required for Jackson
-  public MarketConfig() {}
+  public MarketConfig() {
+  }
 
   /** Creates a MarketConfig from an existing one. */
   public MarketConfig(MarketConfig other) {

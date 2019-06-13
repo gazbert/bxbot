@@ -36,7 +36,8 @@ public class EmailAlertsConfig {
   private SmtpConfig smtpConfig;
 
   // required for jackson
-  public EmailAlertsConfig() {}
+  public EmailAlertsConfig() {
+  }
 
   /** Creates a new EmailAlertsConfig. */
   public EmailAlertsConfig(boolean enabled, SmtpConfig smtpConfig) {

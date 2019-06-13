@@ -40,7 +40,8 @@ public class EngineConfig {
   private int tradeCycleInterval;
 
   // required for jackson
-  public EngineConfig() {}
+  public EngineConfig() {
+  }
 
   /** Creates an EngineConfig. */
   public EngineConfig(

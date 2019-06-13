@@ -43,7 +43,8 @@ public class StrategyConfig {
   private Map<String, String> configItems = new HashMap<>();
 
   // required for Jackson
-  public StrategyConfig() {}
+  public StrategyConfig() {
+  }
 
   /** Creates a StrategyConfig from an existing one. */
   public StrategyConfig(StrategyConfig other) {
