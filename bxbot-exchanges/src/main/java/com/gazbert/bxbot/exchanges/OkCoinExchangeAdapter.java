@@ -740,6 +740,7 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter
   private ExchangeHttpResponse sendAuthenticatedRequestToExchange(
       String apiMethod, Map<String, String> params)
       throws ExchangeNetworkException, TradingApiException {
+
     if (!initializedSecureMessagingLayer) {
       final String errorMsg = "Message security layer has not been initialized.";
       LOG.error(errorMsg);

@@ -692,6 +692,7 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter
   private ExchangeHttpResponse sendAuthenticatedRequestToExchange(
       String apiMethod, Map<String, String> params)
       throws ExchangeNetworkException, TradingApiException {
+
     if (!initializedMacAuthentication) {
       final String errorMsg = "MAC Message security layer has not been initialized.";
       LOG.error(errorMsg);
