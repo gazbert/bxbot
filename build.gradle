@@ -69,6 +69,7 @@ allprojects {
 
     apply plugin: "io.spring.dependency-management"
     apply plugin: 'maven'
+    apply plugin: 'checkstyle'
 
     group = 'com.gazbert.bxbot'
     version = '0.12.1-SNAPSHOT'
@@ -94,6 +95,23 @@ subprojects {
 
     javadoc {
         include "**/api/**"
+    }
+
+    checkstyle {
+        toolVersion '8.21'
+        configFile = file("${rootDir}/etc/google_checks.xml")
+        ignoreFailures = false
+        showViolations = true
+        maxErrors = 0
+        maxWarnings = 0
+    }
+
+    checkstyleMain {
+        source ='src/main/java'
+    }
+
+    checkstyleTest {
+        source ='src/test/java'
     }
 }
 
@@ -202,3 +220,4 @@ task buildTarGzipDist(type: Tar, dependsOn: build) {
         }
     }
 }
+
