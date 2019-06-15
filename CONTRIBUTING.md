@@ -63,10 +63,10 @@ To work on something, whether a new feature or a bug fix:
 
   7. When you're done, make sure your [Travis](https://travis-ci.org/) 
   Continuous Integration (CI) build is green and create a 
-  [Pull Request](https://help.github.com/articles/using-pull-requests/) to submit your changes.
+  [Pull Request (PR)](https://help.github.com/articles/using-pull-requests/) to submit your changes.
 
   
-After your Pull Request (PR) has been reviewed and signed off, a maintainer will merge it into 
+After your PR has been reviewed and signed off, a maintainer will merge it into 
 the master branch.
 
 ### Code conventions and housekeeping
