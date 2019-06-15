@@ -61,10 +61,9 @@ To work on something, whether a new feature or a bug fix:
   corresponding changes (or additions) to the documentation and tests. This will ensure that if 
   the merged PR is reversed, all traces of the change will be reversed as well.
 
-  7. When you're done, create a Pull Request (PR). Make sure your [Travis](https://travis-ci.org/) 
+  7. When you're done, make sure your [Travis](https://travis-ci.org/) 
   Continuous Integration (CI) build is green and create a 
-  [Pull Request](https://help.github.com/articles/using-pull-requests/) when you are ready to 
-  submit your changes.
+  [Pull Request](https://help.github.com/articles/using-pull-requests/) to submit your changes.
 
   
 After your Pull Request (PR) has been reviewed and signed off, a maintainer will merge it into 
