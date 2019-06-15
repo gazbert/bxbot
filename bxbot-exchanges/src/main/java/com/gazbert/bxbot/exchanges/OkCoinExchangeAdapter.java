@@ -107,6 +107,9 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter
   private static final String UNEXPECTED_IO_ERROR_MSG =
       "Failed to connect to Exchange due to unexpected IO error.";
 
+  private static final String SYMBOL = "symbol";
+  private static final String ORDER_ID = "orderId";
+
   private static final String KEY_PROPERTY_NAME = "key";
   private static final String SECRET_PROPERTY_NAME = "secret";
 
@@ -147,7 +150,7 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter
 
     try {
       final Map<String, String> params = createRequestParamMap();
-      params.put("symbol", marketId);
+      params.put(SYMBOL, marketId);
 
       if (orderType == OrderType.BUY) {
         params.put("type", "buy");
@@ -199,7 +202,7 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter
     try {
       final Map<String, String> params = createRequestParamMap();
       params.put("order_id", orderId);
-      params.put("symbol", marketId);
+      params.put(SYMBOL, marketId);
 
       final ExchangeHttpResponse response =
           sendAuthenticatedRequestToExchange("cancel_order.do", params);
@@ -228,7 +231,7 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter
       throws TradingApiException, ExchangeNetworkException {
     try {
       final Map<String, String> params = createRequestParamMap();
-      params.put("symbol", marketId);
+      params.put(SYMBOL, marketId);
       params.put("order_id", "-1"); // -1 means bring back all the orders
 
       final ExchangeHttpResponse response =
@@ -292,7 +295,7 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter
       throws TradingApiException, ExchangeNetworkException {
     try {
       final Map<String, String> params = createRequestParamMap();
-      params.put("symbol", marketId);
+      params.put(SYMBOL, marketId);
 
       final ExchangeHttpResponse response = sendPublicRequestToExchange("depth.do", params);
       LOG.debug(() -> "Market Orders response: " + response);
@@ -343,7 +346,7 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter
       throws ExchangeNetworkException, TradingApiException {
     try {
       final Map<String, String> params = createRequestParamMap();
-      params.put("symbol", marketId);
+      params.put(SYMBOL, marketId);
 
       final ExchangeHttpResponse response = sendPublicRequestToExchange("ticker.do", params);
       LOG.debug(() -> "Latest Market Price response: " + response);
@@ -425,7 +428,7 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter
   public Ticker getTicker(String marketId) throws ExchangeNetworkException, TradingApiException {
     try {
       final Map<String, String> params = createRequestParamMap();
-      params.put("symbol", marketId);
+      params.put(SYMBOL, marketId);
 
       final ExchangeHttpResponse response = sendPublicRequestToExchange("ticker.do", params);
       LOG.debug(() -> "Latest Market Price response: " + response);
@@ -465,7 +468,7 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter
 
     @Override
     public String toString() {
-      return MoreObjects.toStringHelper(this).add("orderId", orderId).toString();
+      return MoreObjects.toStringHelper(this).add(ORDER_ID, orderId).toString();
     }
   }
 
@@ -477,7 +480,7 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter
 
     @Override
     public String toString() {
-      return MoreObjects.toStringHelper(this).add("orderId", orderId).toString();
+      return MoreObjects.toStringHelper(this).add(ORDER_ID, orderId).toString();
     }
   }
 
@@ -528,11 +531,11 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter
           .add("avgPrice", avgPrice)
           .add("createDate", createDate)
           .add("dealAmount", dealAmount)
-          .add("orderId", orderId)
+          .add(ORDER_ID, orderId)
           .add("ordersId", ordersId)
           .add("price", price)
           .add("status", status)
-          .add("symbol", symbol)
+          .add(SYMBOL, symbol)
           .add("type", type)
           .toString();
     }
