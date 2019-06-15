@@ -531,9 +531,9 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
    */
   private static class GdaxOrder {
 
-    public String id;
-    public BigDecimal price;
-    public BigDecimal size;
+    String id;
+    BigDecimal price;
+    BigDecimal size;
 
     @SerializedName("product_id")
     String productId; // e.g. "BTC-GBP", "BTC-USD"
@@ -557,7 +557,7 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
     @SerializedName("filled_size")
     BigDecimal filledSize;
 
-    public String status; // e.g. "open"
+    String status; // e.g. "open"
     boolean settled;
 
     @Override
