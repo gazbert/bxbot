@@ -512,9 +512,9 @@ public class TestBitfinexExchangeAdapter extends AbstractExchangeAdapterTest {
 
     // assert some key stuff; we're not testing GSON here.
     assertEquals(2, openOrders.size());
-    assertEquals(openOrders.get(0).getMarketId(), MARKET_ID);
+    assertEquals(MARKET_ID, openOrders.get(0).getMarketId());
     assertEquals("423760243", openOrders.get(0).getId());
-    assertSame(openOrders.get(0).getType(), OrderType.SELL);
+    assertSame(OrderType.SELL, openOrders.get(0).getType());
     assertEquals(1442073766, openOrders.get(0).getCreationDate().getTime());
     assertEquals(0, openOrders.get(0).getPrice().compareTo(new BigDecimal("259.38")));
     assertEquals(0, openOrders.get(0).getQuantity().compareTo(new BigDecimal("0.03")));

@@ -69,7 +69,7 @@ public class BotStatusController extends AbstractRuntimeController {
 
     final EngineConfig engineConfig = engineConfigService.getEngineConfig();
 
-    // TODO - hacked up for now until work properly starts on runtime features ;-)
+    // WIP - Stubbed for now
     final BotStatus botStatus = new BotStatus();
     botStatus.setBotId(engineConfig.getBotId());
     botStatus.setDisplayName(engineConfig.getBotName());

@@ -457,9 +457,9 @@ public class TestItBitExchangeAdapter extends AbstractExchangeAdapterTest {
 
     // assert some key stuff; we're not testing GSON here.
     assertEquals(2, openOrders.size());
-    assertEquals(openOrders.get(0).getMarketId(), MARKET_ID);
+    assertEquals(MARKET_ID, openOrders.get(0).getMarketId());
     assertEquals("639ccf95-b87c-48ba-b27d-7bc09b841b81", openOrders.get(0).getId());
-    assertSame(openOrders.get(0).getType(), OrderType.SELL);
+    assertSame(OrderType.SELL, openOrders.get(0).getType());
     assertEquals(
         openOrders.get(0).getCreationDate(),
         Date.from(Instant.parse("2015-10-01T18:11:06.8470000Z")));

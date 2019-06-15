@@ -35,9 +35,7 @@ import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 /**
  * Web security config for protecting the REST API.
  *
- * <p>WARNING: This is not safe for Production yet!
- *
- * <p>TODO: Replace this with JWT impl...
+ * <p>WARNING: This is not safe for Production yet! It will be replaced this with a JWT impl...
  *
  * @author gazbert
  */
@@ -51,7 +49,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
   @Autowired
   public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
 
-    // TODO - get from application.properties file and bcrypt em!
+    // Get from application.properties file and bcrypt em!
     auth.inMemoryAuthentication()
         .withUser("unit-test-user")
         .password("unit-test-password")
@@ -83,7 +81,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     return (NoOpPasswordEncoder) NoOpPasswordEncoder.getInstance();
   }
 
-  // TODO -
   // https://docs.spring.io/spring-security/site/docs/5.0.5.RELEASE/reference/htmlsingle/#pe-bcpe
   //    @Bean
   //    public static BCryptPasswordEncoder bCryptPasswordEncoder() {

@@ -32,7 +32,7 @@ IF "%1"=="status" GOTO:status
 IF NOT "%1"=="status" GOTO:invalidArgs
 
 :start
-REM TODO - check if bot is already running before trying to start it!
+REM TODO: Check if bot is already running before trying to start it!
 SET START_TIME=%time%
 ECHO Starting BX-bot...
 START "BX-bot - %START_TIME%" java -Xmx64m -Xss256k -Dlog4j.configurationFile=%log4j2_config% --illegal-access=deny -jar %lib_dir%\%bxbot_jar%

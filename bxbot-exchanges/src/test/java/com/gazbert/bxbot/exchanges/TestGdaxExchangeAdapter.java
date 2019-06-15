@@ -430,9 +430,9 @@ public class TestGdaxExchangeAdapter extends AbstractExchangeAdapterTest {
 
     // assert some key stuff; we're not testing GSON here.
     assertEquals(2, openOrders.size());
-    assertEquals(openOrders.get(0).getMarketId(), MARKET_ID);
+    assertEquals(MARKET_ID, openOrders.get(0).getMarketId());
     assertEquals("cdad7602-f290-41e5-a64d-42a1a20fd02", openOrders.get(0).getId());
-    assertSame(openOrders.get(0).getType(), OrderType.SELL);
+    assertSame(OrderType.SELL, openOrders.get(0).getType());
     assertEquals(
         openOrders.get(0).getCreationDate(), Date.from(Instant.parse("2015-10-15T21:10:38.193Z")));
     assertEquals(0, openOrders.get(0).getPrice().compareTo(new BigDecimal("275.00000000")));

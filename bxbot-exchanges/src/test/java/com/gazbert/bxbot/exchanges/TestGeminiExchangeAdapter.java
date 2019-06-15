@@ -667,9 +667,9 @@ public class TestGeminiExchangeAdapter extends AbstractExchangeAdapterTest {
 
     // assert some key stuff; we're not testing GSON here.
     assertEquals(2, openOrders.size());
-    assertEquals(openOrders.get(0).getMarketId(), ETH_BTC_MARKET_ID);
+    assertEquals(ETH_BTC_MARKET_ID, openOrders.get(0).getMarketId());
     assertEquals("196267999", openOrders.get(0).getId());
-    assertSame(openOrders.get(0).getType(), OrderType.BUY);
+    assertSame(OrderType.BUY, openOrders.get(0).getType());
     assertEquals(1470419470223L, openOrders.get(0).getCreationDate().getTime());
     assertEquals(0, openOrders.get(0).getPrice().compareTo(new BigDecimal("0.00002")));
     assertEquals(0, openOrders.get(0).getQuantity().compareTo(new BigDecimal("0.0009")));

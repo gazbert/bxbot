@@ -129,7 +129,7 @@ subprojects {
     }
 }
 
-// TODO strip out common stuff into separate method?
+// TODO: Strip out common stuff into separate method?
 task buildZipDist(type: Zip, dependsOn: build) {
 
     baseName = 'bxbot-app'
@@ -181,7 +181,7 @@ task buildZipDist(type: Zip, dependsOn: build) {
     }
 }
 
-// TODO strip out common stuff into separate method?
+// TODO: Strip out common stuff into separate method?
 task buildTarGzipDist(type: Tar, dependsOn: build) {
 
     baseName = 'bxbot-app'

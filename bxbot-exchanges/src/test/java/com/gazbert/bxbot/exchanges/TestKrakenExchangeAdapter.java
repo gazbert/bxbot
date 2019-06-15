@@ -350,9 +350,9 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
 
     // assert some key stuff; we're not testing GSON here.
     assertEquals(2, openOrders.size());
-    assertEquals(openOrders.get(0).getMarketId(), MARKET_ID);
+    assertEquals(MARKET_ID, openOrders.get(0).getMarketId());
     assertEquals("OZUVVF-XEJUB-BOWOFO", openOrders.get(0).getId());
-    assertSame(openOrders.get(0).getType(), OrderType.SELL);
+    assertSame(OrderType.SELL, openOrders.get(0).getType());
     assertEquals(1469653618L, openOrders.get(0).getCreationDate().getTime());
     assertEquals(0, openOrders.get(0).getPrice().compareTo(new BigDecimal("699.100")));
     assertEquals(0, openOrders.get(0).getQuantity().compareTo(new BigDecimal("0.006")));

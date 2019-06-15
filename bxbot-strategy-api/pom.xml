@@ -77,7 +77,6 @@
                                         <limit>
                                             <counter>LINE</counter>
                                             <value>COVEREDRATIO</value>
-                                            <!-- TODO: Increase to 80% + -->
                                             <minimum>0.65</minimum>
                                         </limit>
                                     </limits>

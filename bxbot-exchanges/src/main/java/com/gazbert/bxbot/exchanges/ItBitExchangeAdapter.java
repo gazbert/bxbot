@@ -143,6 +143,8 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
       "keep-alive-during-maintenance";
   private static final String EXCHANGE_UNDERGOING_MAINTENANCE_RESPONSE =
       "The itBit API is currently undergoing " + "maintenance";
+  private static final String NULL_RESPONSE = "NULL RESPONSE";
+
   private BigDecimal buyFeePercentage;
   private BigDecimal sellFeePercentage;
 
@@ -254,7 +256,7 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
       }
 
       final String unexpectedErrorMsg =
-          UNEXPECTED_ERROR_MSG + (response == null ? "NULL RESPONSE" : response);
+          UNEXPECTED_ERROR_MSG + (response == null ? "NULL_RESPONSE" : response);
       LOG.error(unexpectedErrorMsg, e);
       throw new TradingApiException(unexpectedErrorMsg, e);
     }
@@ -302,7 +304,7 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
       }
 
       final String unexpectedErrorMsg =
-          UNEXPECTED_ERROR_MSG + (response == null ? "NULL RESPONSE" : response);
+          UNEXPECTED_ERROR_MSG + (response == null ? NULL_RESPONSE : response);
       LOG.error(unexpectedErrorMsg, e);
       throw new TradingApiException(unexpectedErrorMsg, e);
     }
@@ -390,7 +392,7 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
       }
 
       final String unexpectedErrorMsg =
-          UNEXPECTED_ERROR_MSG + (response == null ? "NULL RESPONSE" : response);
+          UNEXPECTED_ERROR_MSG + (response == null ? NULL_RESPONSE : response);
       LOG.error(unexpectedErrorMsg, e);
       throw new TradingApiException(unexpectedErrorMsg, e);
     }
@@ -454,7 +456,7 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
       }
 
       final String unexpectedErrorMsg =
-          UNEXPECTED_ERROR_MSG + (response == null ? "NULL RESPONSE" : response);
+          UNEXPECTED_ERROR_MSG + (response == null ? NULL_RESPONSE : response);
       LOG.error(unexpectedErrorMsg, e);
       throw new TradingApiException(unexpectedErrorMsg, e);
     }
@@ -492,7 +494,7 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
       }
 
       final String unexpectedErrorMsg =
-          UNEXPECTED_ERROR_MSG + (response == null ? "NULL RESPONSE" : response);
+          UNEXPECTED_ERROR_MSG + (response == null ? NULL_RESPONSE : response);
       LOG.error(unexpectedErrorMsg, e);
       throw new TradingApiException(unexpectedErrorMsg, e);
     }
@@ -558,7 +560,7 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
       }
 
       final String unexpectedErrorMsg =
-          UNEXPECTED_ERROR_MSG + (response == null ? "NULL RESPONSE" : response);
+          UNEXPECTED_ERROR_MSG + (response == null ? NULL_RESPONSE : response);
       LOG.error(unexpectedErrorMsg, e);
       throw new TradingApiException(unexpectedErrorMsg, e);
     }
@@ -626,7 +628,7 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
       }
 
       final String unexpectedErrorMsg =
-          UNEXPECTED_ERROR_MSG + (response == null ? "NULL RESPONSE" : response);
+          UNEXPECTED_ERROR_MSG + (response == null ? NULL_RESPONSE : response);
       LOG.error(unexpectedErrorMsg, e);
       throw new TradingApiException(unexpectedErrorMsg, e);
     }
