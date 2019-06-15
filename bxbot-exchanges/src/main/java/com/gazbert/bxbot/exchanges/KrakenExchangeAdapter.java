@@ -767,8 +767,8 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
    */
   private static class KrakenResponse<T> {
 
-    public List<String> error;
-    public T result;
+    List<String> error;
+    T result;
 
     @Override
     public String toString() {
@@ -800,7 +800,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
   /** GSON class that wraps an Open Order API call result - your open orders. */
   private static class KrakenOpenOrderResult {
 
-    public Map<String, KrakenOpenOrder> open;
+    Map<String, KrakenOpenOrder> open;
 
     @Override
     public String toString() {
