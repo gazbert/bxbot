@@ -29,12 +29,12 @@ code contributions. If you are unfamiliar, please review that link before procee
 To work on something, whether a new feature or a bug fix:
 
   1. [Fork](https://help.github.com/articles/fork-a-repo/) the repo.
-  2. Clone it locally
+  2. Clone it locally:
   
   ```
   git clone https://github.com/<your-id>/bxbot.git
   ```
-  3. Add the upstream repository as a remote 
+  3. Add the upstream repository as a remote: 
   ```
   git remote add upstream https://github.com/gazbert/bxbot.git
   ```  
@@ -54,19 +54,19 @@ To work on something, whether a new feature or a bug fix:
   issue(s) being addressed so that they will be automatically closed on a merge e.g. 
   ```Closes #1234``` or ```Fixes #1234``` - see 
   [here](https://help.github.com/articles/closing-issues-via-commit-messages/) for more details.
-  
   When writing a commit message please follow 
   [these conventions](http://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html).
 
-  6. Pull Request (PR). Make sure your [Travis](https://travis-ci.org/) Continuous Integration 
-  (CI) build is green and create a 
-  [Pull Request](https://help.github.com/articles/using-pull-requests/) when you are ready to 
-  submit your changes.
-
-  7. Any code changes that affect documentation (e.g. README.MD) should be accompanied by 
+  6. Any code changes that affect documentation (e.g. README.MD) should be accompanied by 
   corresponding changes (or additions) to the documentation and tests. This will ensure that if 
   the merged PR is reversed, all traces of the change will be reversed as well.
 
+  7. When you're done, create a Pull Request (PR). Make sure your [Travis](https://travis-ci.org/) 
+  Continuous Integration (CI) build is green and create a 
+  [Pull Request](https://help.github.com/articles/using-pull-requests/) when you are ready to 
+  submit your changes.
+
+  
 After your Pull Request (PR) has been reviewed and signed off, a maintainer will merge it into 
 the master branch.
 
