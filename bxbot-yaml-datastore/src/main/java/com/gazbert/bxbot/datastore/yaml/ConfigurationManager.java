@@ -27,6 +27,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Set;
 import java.util.TreeSet;
@@ -55,18 +56,14 @@ public final class ConfigurationManager {
   private ConfigurationManager() {
   }
 
-  /**
-   * Loads the config from the YAML file.
-   */
+  /** Loads the config from the YAML file. */
   public static synchronized <T> T loadConfig(final Class<T> configClass, String yamlConfigFile) {
 
     LOG.info(
         () -> "Loading configuration for [" + configClass + "] from: " + yamlConfigFile + " ...");
 
-    try {
+    try (final FileInputStream fileInputStream = new FileInputStream(yamlConfigFile)) {
       final Yaml yaml = new Yaml(new Constructor(configClass));
-
-      final FileInputStream fileInputStream = new FileInputStream(yamlConfigFile);
       final T requestedConfig = yaml.load(fileInputStream);
 
       LOG.info(() -> "Loaded and set configuration for [" + configClass + "] successfully!");
@@ -85,16 +82,15 @@ public final class ConfigurationManager {
     }
   }
 
-  /**
-   * Saves the config to the YAML file.
-   */
-  public static synchronized <T> void saveConfig(Class<T> configClass, T config,
-      String yamlConfigFile) {
+  /** Saves the config to the YAML file. */
+  public static synchronized <T> void saveConfig(
+      Class<T> configClass, T config, String yamlConfigFile) {
 
     LOG.info(() -> "Saving configuration for [" + configClass + "] to: " + yamlConfigFile + " ...");
 
     try (final FileOutputStream fileOutputStream = new FileOutputStream(yamlConfigFile);
-        final PrintWriter writer = new PrintWriter(fileOutputStream)) {
+        final PrintWriter writer =
+            new PrintWriter(fileOutputStream, true, StandardCharsets.UTF_8)) {
 
       // Skip null fields and order the YAML fields
       final Representer representer = new SkipNullFieldRepresenter();
@@ -120,14 +116,11 @@ public final class ConfigurationManager {
     }
   }
 
-  /**
-   * Stops null fields from getting written out to YAML.
-   */
+  /** Stops null fields from getting written out to YAML. */
   private static class SkipNullFieldRepresenter extends Representer {
-
     @Override
-    protected NodeTuple representJavaBeanProperty(Object javaBean, Property property,
-        Object propertyValue, Tag customTag) {
+    protected NodeTuple representJavaBeanProperty(
+        Object javaBean, Property property, Object propertyValue, Tag customTag) {
       if (propertyValue == null) {
         return null;
       } else {
@@ -136,11 +129,8 @@ public final class ConfigurationManager {
     }
   }
 
-  /**
-   * Orders properties before dumping out YAML.
-   */
+  /** Orders properties before dumping out YAML. */
   private static class ReversedPropertyUtils extends PropertyUtils {
-
     @Override
     protected Set<Property> createPropertySet(Class<?> type, BeanAccess beanAccess) {
       final Set<Property> result = new TreeSet<>(Collections.reverseOrder());

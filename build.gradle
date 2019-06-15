@@ -8,6 +8,7 @@ buildscript {
     dependencies {
         classpath("io.spring.gradle:dependency-management-plugin:1.0.7.RELEASE")
         classpath("org.springframework.boot:spring-boot-gradle-plugin:2.1.4.RELEASE")
+        classpath "gradle.plugin.com.github.spotbugs:spotbugs-gradle-plugin:2.0.0"
     }
 }
 
@@ -70,6 +71,7 @@ allprojects {
     apply plugin: "io.spring.dependency-management"
     apply plugin: 'maven'
     apply plugin: 'checkstyle'
+    apply plugin: "com.github.spotbugs"
 
     group = 'com.gazbert.bxbot'
     version = '0.12.1-SNAPSHOT'
@@ -105,13 +107,25 @@ subprojects {
         maxErrors = 0
         maxWarnings = 0
     }
-
     checkstyleMain {
         source ='src/main/java'
     }
-
     checkstyleTest {
         source ='src/test/java'
+    }
+
+    spotbugs {
+        ignoreFailures = false
+        sourceSets=[sourceSets.main]
+        excludeFilter = file("${rootDir}/etc/spotbugs-exclude-filter.xml")
+        reportsDir = file("$project.buildDir/reports/spotbugs")
+        effort = "max"
+    }
+    tasks.withType(com.github.spotbugs.SpotBugsTask) {
+        reports {
+            xml.enabled false
+            html.enabled true
+        }
     }
 }
 
