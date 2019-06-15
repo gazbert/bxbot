@@ -117,6 +117,7 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
   private static final String UNEXPECTED_IO_ERROR_MSG =
       "Failed to connect to Exchange due to unexpected IO error.";
 
+  private static final String PRODUCTS = "products/";
   private static final String PRICE = "price";
 
   private static final String PASSPHRASE_PROPERTY_NAME = "passphrase";
@@ -330,7 +331,7 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
       params.put("level", "2"); //  "2" = Top 50 bids and asks (aggregated)
 
       final ExchangeHttpResponse response =
-          sendPublicRequestToExchange("products/" + marketId + "/book", params);
+          sendPublicRequestToExchange(PRODUCTS + marketId + "/book", params);
 
       LOG.debug(() -> "Market Orders response: " + response);
 
@@ -417,7 +418,7 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
       throws ExchangeNetworkException, TradingApiException {
     try {
       final ExchangeHttpResponse response =
-          sendPublicRequestToExchange("products/" + marketId + "/ticker", null);
+          sendPublicRequestToExchange(PRODUCTS + marketId + "/ticker", null);
 
       LOG.debug(() -> "Latest Market Price response: " + response);
 
@@ -466,7 +467,7 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
   public Ticker getTicker(String marketId) throws ExchangeNetworkException, TradingApiException {
     try {
       final ExchangeHttpResponse tickerResponse =
-          sendPublicRequestToExchange("products/" + marketId + "/ticker", null);
+          sendPublicRequestToExchange(PRODUCTS + marketId + "/ticker", null);
 
       LOG.debug(() -> "Ticker response: " + tickerResponse);
 
@@ -487,7 +488,7 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
 
         // Now we need to call the stats operation to get the 24hr indicators
         final ExchangeHttpResponse statsResponse =
-            sendPublicRequestToExchange("products/" + marketId + "/stats", null);
+            sendPublicRequestToExchange(PRODUCTS + marketId + "/stats", null);
 
         LOG.debug(() -> "Stats response: " + statsResponse);
 

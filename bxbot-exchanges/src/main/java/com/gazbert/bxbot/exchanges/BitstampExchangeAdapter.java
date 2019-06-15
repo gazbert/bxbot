@@ -117,6 +117,7 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter
 
   private static final String AMOUNT = "amount";
   private static final String BALANCE = "balance";
+  private static final String PRICE = "price";
 
   private static final String CLIENT_ID_PROPERTY_NAME = "client-id";
   private static final String KEY_PROPERTY_NAME = "key";
@@ -249,7 +250,7 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter
       final Map<String, String> params = createRequestParamMap();
 
       // note we need to limit price to 2 decimal places else exchange will barf
-      params.put("price", new DecimalFormat("#.##", getDecimalFormatSymbols()).format(price));
+      params.put(PRICE, new DecimalFormat("#.##", getDecimalFormatSymbols()).format(price));
 
       // note we need to limit amount to 8 decimal places else exchange will barf
       params.put(
@@ -682,7 +683,7 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter
           .add("id", id)
           .add("datetime", datetime)
           .add("type", type)
-          .add("price", price)
+          .add(PRICE, price)
           .add(AMOUNT, amount)
           .toString();
     }
@@ -700,7 +701,7 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter
     public String toString() {
       return MoreObjects.toStringHelper(this)
           .add("id", id)
-          .add("price", price)
+          .add(PRICE, price)
           .add(AMOUNT, amount)
           .add("type", type)
           .toString();

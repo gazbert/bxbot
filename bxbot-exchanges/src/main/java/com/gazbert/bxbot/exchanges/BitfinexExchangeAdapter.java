@@ -112,6 +112,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter
   private static final String ID = "id";
   private static final String SYMBOL = "symbol";
   private static final String AMOUNT = "amount";
+  private static final String PRICE = "price";
   private static final String TIMESTAMP = "timestamp";
   private static final String AVG_EXECUTION_PRICE = "avgExecutionPrice";
   private static final String IS_LIVE = "isLive";
@@ -266,7 +267,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter
       // note we need to limit amount and price to 8 decimal places else exchange will barf
       params.put(
           AMOUNT, new DecimalFormat("#.########", getDecimalFormatSymbols()).format(quantity));
-      params.put("price", new DecimalFormat("#.########", getDecimalFormatSymbols()).format(price));
+      params.put(PRICE, new DecimalFormat("#.########", getDecimalFormatSymbols()).format(price));
 
       params.put("exchange", "bitfinex");
 
@@ -528,7 +529,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter
     @Override
     public String toString() {
       return MoreObjects.toStringHelper(this)
-          .add("price", price)
+          .add(PRICE, price)
           .add(AMOUNT, amount)
           .add(TIMESTAMP, timestamp)
           .toString();
@@ -582,7 +583,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter
           .add(ID, id)
           .add(SYMBOL, symbol)
           .add("exchange", exchange)
-          .add("price", price)
+          .add(PRICE, price)
           .add(AVG_EXECUTION_PRICE, avgExecutionPrice)
           .add("side", side)
           .add("type", type)
@@ -812,7 +813,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter
           .add(ID, id)
           .add(SYMBOL, symbol)
           .add("exchange", exchange)
-          .add("price", price)
+          .add(PRICE, price)
           .add(AVG_EXECUTION_PRICE, avgExecutionPrice)
           .add("side", side)
           .add("type", type)
@@ -871,7 +872,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter
           .add(ID, id)
           .add(SYMBOL, symbol)
           .add("exchange", exchange)
-          .add("price", price)
+          .add(PRICE, price)
           .add(AVG_EXECUTION_PRICE, avgExecutionPrice)
           .add("side", side)
           .add("type", type)

@@ -71,6 +71,7 @@ public class EmailAlerter {
           Session.getInstance(
               smtpProps,
               new Authenticator() {
+                @Override
                 protected PasswordAuthentication getPasswordAuthentication() {
                   return new PasswordAuthentication(
                       smtpConfig.getAccountUsername(), smtpConfig.getAccountPassword());
