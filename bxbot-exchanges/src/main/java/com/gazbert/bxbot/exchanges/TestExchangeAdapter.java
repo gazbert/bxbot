@@ -261,9 +261,9 @@ public final class TestExchangeAdapter extends AbstractExchangeAdapter implement
    */
   private static class BitstampOrderBook {
 
-    public long timestamp; // unix timestamp date and time
-    public List<List<BigDecimal>> bids;
-    public List<List<BigDecimal>> asks;
+    long timestamp; // unix timestamp date and time
+    List<List<BigDecimal>> bids;
+    List<List<BigDecimal>> asks;
 
     @Override
     public String toString() {
@@ -278,15 +278,15 @@ public final class TestExchangeAdapter extends AbstractExchangeAdapter implement
   /** GSON class for a Bitstamp ticker response. */
   private static class BitstampTicker {
 
-    public BigDecimal high;
-    public BigDecimal last;
-    public Long timestamp;
-    public BigDecimal bid;
-    public BigDecimal vwap;
-    public BigDecimal volume;
-    public BigDecimal low;
-    public BigDecimal ask;
-    public BigDecimal open;
+    BigDecimal high;
+    BigDecimal last;
+    Long timestamp;
+    BigDecimal bid;
+    BigDecimal vwap;
+    BigDecimal volume;
+    BigDecimal low;
+    BigDecimal ask;
+    BigDecimal open;
 
     @Override
     public String toString() {
