@@ -109,6 +109,19 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter
   private static final String UNEXPECTED_IO_ERROR_MSG =
       "Failed to connect to Exchange due to unexpected IO error.";
 
+  private static final String ID = "id";
+  private static final String SYMBOL = "symbol";
+  private static final String AMOUNT = "amount";
+  private static final String TIMESTAMP = "timestamp";
+  private static final String AVG_EXECUTION_PRICE = "avgExecutionPrice";
+  private static final String IS_LIVE = "isLive";
+  private static final String IS_CANCELLED = "isCancelled";
+  private static final String IS_HIDDEN = "isHidden";
+  private static final String WAS_FORCED = "wasForced";
+  private static final String ORIGINAL_AMOUNT = "originalAmount";
+  private static final String REMAINING_AMOUNT = "remainingAmount";
+  private static final String EXECUTED_AMOUNT = "executedAmount";
+
   private static final String KEY_PROPERTY_NAME = "key";
   private static final String SECRET_PROPERTY_NAME = "secret";
 
@@ -248,11 +261,11 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter
     try {
       final Map<String, Object> params = createRequestParamMap();
 
-      params.put("symbol", marketId);
+      params.put(SYMBOL, marketId);
 
       // note we need to limit amount and price to 8 decimal places else exchange will barf
       params.put(
-          "amount", new DecimalFormat("#.########", getDecimalFormatSymbols()).format(quantity));
+          AMOUNT, new DecimalFormat("#.########", getDecimalFormatSymbols()).format(quantity));
       params.put("price", new DecimalFormat("#.########", getDecimalFormatSymbols()).format(price));
 
       params.put("exchange", "bitfinex");
@@ -516,8 +529,8 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter
     public String toString() {
       return MoreObjects.toStringHelper(this)
           .add("price", price)
-          .add("amount", amount)
-          .add("timestamp", timestamp)
+          .add(AMOUNT, amount)
+          .add(TIMESTAMP, timestamp)
           .toString();
     }
   }
@@ -566,21 +579,21 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter
     @Override
     public String toString() {
       return MoreObjects.toStringHelper(this)
-          .add("id", id)
-          .add("symbol", symbol)
+          .add(ID, id)
+          .add(SYMBOL, symbol)
           .add("exchange", exchange)
           .add("price", price)
-          .add("avgExecutionPrice", avgExecutionPrice)
+          .add(AVG_EXECUTION_PRICE, avgExecutionPrice)
           .add("side", side)
           .add("type", type)
-          .add("timestamp", timestamp)
-          .add("isLive", isLive)
-          .add("isCancelled", isCancelled)
-          .add("isHidden", isHidden)
-          .add("wasForced", wasForced)
-          .add("originalAmount", originalAmount)
-          .add("remainingAmount", remainingAmount)
-          .add("executedAmount", executedAmount)
+          .add(TIMESTAMP, timestamp)
+          .add(IS_LIVE, isLive)
+          .add(IS_CANCELLED, isCancelled)
+          .add(IS_HIDDEN, isHidden)
+          .add(WAS_FORCED, wasForced)
+          .add(ORIGINAL_AMOUNT, originalAmount)
+          .add(REMAINING_AMOUNT, remainingAmount)
+          .add(EXECUTED_AMOUNT, executedAmount)
           .toString();
     }
   }
@@ -610,7 +623,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter
           .add("low", low)
           .add("high", high)
           .add("volume", volume)
-          .add("timestamp", timestamp)
+          .add(TIMESTAMP, timestamp)
           .toString();
     }
   }
@@ -748,7 +761,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter
       return MoreObjects.toStringHelper(this)
           .add("type", type)
           .add("currency", currency)
-          .add("amount", amount)
+          .add(AMOUNT, amount)
           .add("available", available)
           .toString();
     }
@@ -796,21 +809,21 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter
     @Override
     public String toString() {
       return MoreObjects.toStringHelper(this)
-          .add("id", id)
-          .add("symbol", symbol)
+          .add(ID, id)
+          .add(SYMBOL, symbol)
           .add("exchange", exchange)
           .add("price", price)
-          .add("avgExecutionPrice", avgExecutionPrice)
+          .add(AVG_EXECUTION_PRICE, avgExecutionPrice)
           .add("side", side)
           .add("type", type)
-          .add("timestamp", timestamp)
-          .add("isLive", isLive)
-          .add("isCancelled", isCancelled)
-          .add("isHidden", isHidden)
-          .add("wasForced", wasForced)
-          .add("originalAmount", originalAmount)
-          .add("remainingAmount", remainingAmount)
-          .add("executedAmount", executedAmount)
+          .add(TIMESTAMP, timestamp)
+          .add(IS_LIVE, isLive)
+          .add(IS_CANCELLED, isCancelled)
+          .add(IS_HIDDEN, isHidden)
+          .add(WAS_FORCED, wasForced)
+          .add(ORIGINAL_AMOUNT, originalAmount)
+          .add(REMAINING_AMOUNT, remainingAmount)
+          .add(EXECUTED_AMOUNT, executedAmount)
           .add("orderId", orderId)
           .toString();
     }
@@ -855,21 +868,21 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter
     @Override
     public String toString() {
       return MoreObjects.toStringHelper(this)
-          .add("id", id)
-          .add("symbol", symbol)
+          .add(ID, id)
+          .add(SYMBOL, symbol)
           .add("exchange", exchange)
           .add("price", price)
-          .add("avgExecutionPrice", avgExecutionPrice)
+          .add(AVG_EXECUTION_PRICE, avgExecutionPrice)
           .add("side", side)
           .add("type", type)
-          .add("timestamp", timestamp)
-          .add("isLive", isLive)
-          .add("isCancelled", isCancelled)
-          .add("isHidden", isHidden)
-          .add("wasForced", wasForced)
-          .add("originalAmount", originalAmount)
-          .add("remainingAmount", remainingAmount)
-          .add("executedAmount", executedAmount)
+          .add(TIMESTAMP, timestamp)
+          .add(IS_LIVE, isLive)
+          .add(IS_CANCELLED, isCancelled)
+          .add(IS_HIDDEN, isHidden)
+          .add(WAS_FORCED, wasForced)
+          .add(ORIGINAL_AMOUNT, originalAmount)
+          .add(REMAINING_AMOUNT, remainingAmount)
+          .add(EXECUTED_AMOUNT, executedAmount)
           .toString();
     }
   }

@@ -81,6 +81,8 @@ public final class TestExchangeAdapter extends AbstractExchangeAdapter implement
   private static final String UNEXPECTED_IO_ERROR_MSG =
       "Failed to connect to Exchange due to unexpected IO error.";
 
+  private static final String DUMMY_BALANCE = "100.00";
+
   private Gson gson;
 
   @Override
@@ -181,18 +183,18 @@ public final class TestExchangeAdapter extends AbstractExchangeAdapter implement
   @Override
   public BalanceInfo getBalanceInfo() {
     final Map<String, BigDecimal> balancesAvailable = new HashMap<>();
-    balancesAvailable.put("BTC", new BigDecimal("2.0"));
-    balancesAvailable.put("USD", new BigDecimal("100.0"));
-    balancesAvailable.put("EUR", new BigDecimal("100.0"));
-    balancesAvailable.put("LTC", new BigDecimal("100.0"));
-    balancesAvailable.put("XRP", new BigDecimal("100.0"));
+    balancesAvailable.put("BTC", new BigDecimal(DUMMY_BALANCE));
+    balancesAvailable.put("USD", new BigDecimal(DUMMY_BALANCE));
+    balancesAvailable.put("EUR", new BigDecimal(DUMMY_BALANCE));
+    balancesAvailable.put("LTC", new BigDecimal(DUMMY_BALANCE));
+    balancesAvailable.put("XRP", new BigDecimal(DUMMY_BALANCE));
 
     final Map<String, BigDecimal> balancesOnOrder = new HashMap<>();
-    balancesOnOrder.put("BTC", new BigDecimal("2.0"));
-    balancesOnOrder.put("USD", new BigDecimal("100.0"));
-    balancesOnOrder.put("EUR", new BigDecimal("100.0"));
-    balancesOnOrder.put("LTC", new BigDecimal("100.0"));
-    balancesOnOrder.put("XRP", new BigDecimal("100.0"));
+    balancesOnOrder.put("BTC", new BigDecimal(DUMMY_BALANCE));
+    balancesOnOrder.put("USD", new BigDecimal(DUMMY_BALANCE));
+    balancesOnOrder.put("EUR", new BigDecimal(DUMMY_BALANCE));
+    balancesOnOrder.put("LTC", new BigDecimal(DUMMY_BALANCE));
+    balancesOnOrder.put("XRP", new BigDecimal(DUMMY_BALANCE));
 
     return new BalanceInfoImpl(balancesAvailable, balancesOnOrder);
   }

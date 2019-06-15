@@ -136,6 +136,9 @@ public class ExampleScalpingStrategy implements TradingStrategy {
 
   private static final Logger LOG = LogManager.getLogger();
 
+  /** The decimal format for the logs. */
+  private static final String DECIMAL_FORMAT = "#.########";
+
   /** Reference to the main Trading API. */
   private TradingApi tradingApi;
 
@@ -217,12 +220,12 @@ public class ExampleScalpingStrategy implements TradingStrategy {
           () ->
               market.getName()
                   + " Current BID price="
-                  + new DecimalFormat("#.########").format(currentBidPrice));
+                  + new DecimalFormat(DECIMAL_FORMAT).format(currentBidPrice));
       LOG.info(
           () ->
               market.getName()
                   + " Current ASK price="
-                  + new DecimalFormat("#.########").format(currentAskPrice));
+                  + new DecimalFormat(DECIMAL_FORMAT).format(currentAskPrice));
 
       // Is this the first time the Strategy has been called? If yes, we initialise the OrderState
       // so we can keep
@@ -285,7 +288,7 @@ public class ExampleScalpingStrategy implements TradingStrategy {
         () ->
             market.getName()
                 + " OrderType is NONE - placing new BUY order at ["
-                + new DecimalFormat("#.########").format(currentBidPrice)
+                + new DecimalFormat(DECIMAL_FORMAT).format(currentBidPrice)
                 + "]");
 
     try {
@@ -404,7 +407,7 @@ public class ExampleScalpingStrategy implements TradingStrategy {
             () ->
                 market.getName()
                     + " Placing new SELL order at ask price ["
-                    + new DecimalFormat("#.########").format(newAskPrice)
+                    + new DecimalFormat(DECIMAL_FORMAT).format(newAskPrice)
                     + "]");
 
         LOG.info(() -> market.getName() + " Sending new SELL order to exchange --->");
@@ -505,7 +508,7 @@ public class ExampleScalpingStrategy implements TradingStrategy {
             () ->
                 market.getName()
                     + " Placing new BUY order at bid price ["
-                    + new DecimalFormat("#.########").format(currentBidPrice)
+                    + new DecimalFormat(DECIMAL_FORMAT).format(currentBidPrice)
                     + "]");
 
         LOG.info(() -> market.getName() + " Sending new BUY order to exchange --->");
@@ -606,7 +609,7 @@ public class ExampleScalpingStrategy implements TradingStrategy {
             market.getName()
                 + " Calculating amount of base currency (BTC) to buy for amount of counter "
                 + "currency "
-                + new DecimalFormat("#.########").format(amountOfCounterCurrencyToTrade)
+                + new DecimalFormat(DECIMAL_FORMAT).format(amountOfCounterCurrencyToTrade)
                 + " "
                 + market.getCounterCurrency());
 
@@ -618,7 +621,7 @@ public class ExampleScalpingStrategy implements TradingStrategy {
                 + " Last trade price for 1 "
                 + market.getBaseCurrency()
                 + " was: "
-                + new DecimalFormat("#.########").format(lastTradePriceInUsdForOneBtc)
+                + new DecimalFormat(DECIMAL_FORMAT).format(lastTradePriceInUsdForOneBtc)
                 + " "
                 + market.getCounterCurrency());
 
@@ -636,7 +639,7 @@ public class ExampleScalpingStrategy implements TradingStrategy {
                 + " Amount of base currency ("
                 + market.getBaseCurrency()
                 + ") to BUY for "
-                + new DecimalFormat("#.########").format(amountOfCounterCurrencyToTrade)
+                + new DecimalFormat(DECIMAL_FORMAT).format(amountOfCounterCurrencyToTrade)
                 + " "
                 + market.getCounterCurrency()
                 + " based on last market trade price: "

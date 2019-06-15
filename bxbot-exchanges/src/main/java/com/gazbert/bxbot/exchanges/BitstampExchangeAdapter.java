@@ -115,6 +115,9 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter
   private static final String UNEXPECTED_IO_ERROR_MSG =
       "Failed to connect to Exchange due to unexpected IO error.";
 
+  private static final String AMOUNT = "amount";
+  private static final String BALANCE = "balance";
+
   private static final String CLIENT_ID_PROPERTY_NAME = "client-id";
   private static final String KEY_PROPERTY_NAME = "key";
   private static final String SECRET_PROPERTY_NAME = "secret";
@@ -250,7 +253,7 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter
 
       // note we need to limit amount to 8 decimal places else exchange will barf
       params.put(
-          "amount", new DecimalFormat("#.########", getDecimalFormatSymbols()).format(quantity));
+          AMOUNT, new DecimalFormat("#.########", getDecimalFormatSymbols()).format(quantity));
 
       final ExchangeHttpResponse response;
       if (orderType == OrderType.BUY) {
@@ -349,7 +352,7 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter
   @Override
   public BalanceInfo getBalanceInfo() throws TradingApiException, ExchangeNetworkException {
     try {
-      final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("balance", null);
+      final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange(BALANCE, null);
       LOG.debug(() -> "Balance Info response: " + response);
 
       final BitstampBalance balances = gson.fromJson(response.getPayload(), BitstampBalance.class);
@@ -383,7 +386,7 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter
   public BigDecimal getPercentageOfBuyOrderTakenForExchangeFee(String marketId)
       throws TradingApiException, ExchangeNetworkException {
     try {
-      final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("balance", null);
+      final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange(BALANCE, null);
       LOG.debug(() -> "Buy Fee response: " + response);
 
       final BitstampBalance balances = gson.fromJson(response.getPayload(), BitstampBalance.class);
@@ -421,7 +424,7 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter
   public BigDecimal getPercentageOfSellOrderTakenForExchangeFee(String marketId)
       throws TradingApiException, ExchangeNetworkException {
     try {
-      final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("balance", null);
+      final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange(BALANCE, null);
       LOG.debug(() -> "Sell Fee response: " + response);
 
       final BitstampBalance balances = gson.fromJson(response.getPayload(), BitstampBalance.class);
@@ -680,7 +683,7 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter
           .add("datetime", datetime)
           .add("type", type)
           .add("price", price)
-          .add("amount", amount)
+          .add(AMOUNT, amount)
           .toString();
     }
   }
@@ -698,7 +701,7 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter
       return MoreObjects.toStringHelper(this)
           .add("id", id)
           .add("price", price)
-          .add("amount", amount)
+          .add(AMOUNT, amount)
           .add("type", type)
           .toString();
     }

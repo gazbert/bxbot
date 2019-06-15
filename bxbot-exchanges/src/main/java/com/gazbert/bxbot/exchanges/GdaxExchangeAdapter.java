@@ -117,6 +117,8 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
   private static final String UNEXPECTED_IO_ERROR_MSG =
       "Failed to connect to Exchange due to unexpected IO error.";
 
+  private static final String PRICE = "price";
+
   private static final String PASSPHRASE_PROPERTY_NAME = "passphrase";
   private static final String KEY_PROPERTY_NAME = "key";
   private static final String SECRET_PROPERTY_NAME = "secret";
@@ -187,7 +189,7 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
       params.put("product_id", marketId);
 
       // note we need to limit price to 2 decimal places else exchange will barf
-      params.put("price", new DecimalFormat("#.##", getDecimalFormatSymbols()).format(price));
+      params.put(PRICE, new DecimalFormat("#.##", getDecimalFormatSymbols()).format(price));
 
       // note we need to limit size to 8 decimal places else exchange will barf
       params.put(
@@ -564,7 +566,7 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
     public String toString() {
       return MoreObjects.toStringHelper(this)
           .add("id", id)
-          .add("price", price)
+          .add(PRICE, price)
           .add("size", size)
           .add("productId", productId)
           .add("side", side)
@@ -624,7 +626,7 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
     public String toString() {
       return MoreObjects.toStringHelper(this)
           .add("tradeId", tradeId)
-          .add("price", price)
+          .add(PRICE, price)
           .add("size", size)
           .add("bid", bid)
           .add("ask", ask)

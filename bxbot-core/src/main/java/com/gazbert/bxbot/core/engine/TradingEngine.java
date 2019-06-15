@@ -98,6 +98,7 @@ public class TradingEngine {
   private static final String NEWLINE = System.getProperty("line.separator");
   private static final String HORIZONTAL_RULE =
       "--------------------------------------------------" + NEWLINE;
+  private static final String DECIMAL_FORMAT_PATTERN = "#.########";
 
   private static int tradeExecutionInterval;
   private volatile boolean keepAlive = true;
@@ -358,14 +359,14 @@ public class TradingEngine {
       LOG.info(
           () ->
               "Emergency Stop Currency balance available on exchange is ["
-                  + new DecimalFormat("#.########").format(currentBalance)
+                  + new DecimalFormat(DECIMAL_FORMAT_PATTERN).format(currentBalance)
                   + "] "
                   + emergencyStopCurrency);
 
       LOG.info(
           () ->
               "Balance that will stop ALL trading across ALL markets is ["
-                  + new DecimalFormat("#.########").format(emergencyStopBalance)
+                  + new DecimalFormat(DECIMAL_FORMAT_PATTERN).format(emergencyStopBalance)
                   + "] "
                   + emergencyStopCurrency);
 
@@ -375,10 +376,10 @@ public class TradingEngine {
                 + emergencyStopCurrency
                 + "] wallet "
                 + "balance ["
-                + new DecimalFormat("#.########").format(currentBalance)
+                + new DecimalFormat(DECIMAL_FORMAT_PATTERN).format(currentBalance)
                 + "] on exchange "
                 + "is lower than configured Emergency Stop balance ["
-                + new DecimalFormat("#.########").format(emergencyStopBalance)
+                + new DecimalFormat(DECIMAL_FORMAT_PATTERN).format(emergencyStopBalance)
                 + "] "
                 + emergencyStopCurrency;
 
