@@ -778,14 +778,20 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
 
   /** GSON class that wraps Depth API call result - the Market Order Book. */
   private static class KrakenMarketOrderBookResult extends HashMap<String, KrakenOrderBook> {
+
+    private static final long serialVersionUID = -4913711010647027721L;
   }
 
   /** GSON class that wraps a Balance API call result. */
   private static class KrakenBalanceResult extends HashMap<String, BigDecimal> {
+
+    private static final long serialVersionUID = -4919711010747027759L;
   }
 
   /** GSON class that wraps a Ticker API call result. */
   private static class KrakenTickerResult extends HashMap<String, String> {
+
+    private static final long serialVersionUID = -4913711010647027759L;
 
     KrakenTickerResult() {
     }
@@ -1190,7 +1196,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
 
     final String keepAliveDuringMaintenanceConfig =
         getOtherConfigItem(otherConfig, KEEP_ALIVE_DURING_MAINTENANCE_PROPERTY_NAME);
-    if (keepAliveDuringMaintenanceConfig != null && !keepAliveDuringMaintenanceConfig.isEmpty()) {
+    if (!keepAliveDuringMaintenanceConfig.isEmpty()) {
       keepAliveDuringMaintenance = Boolean.valueOf(keepAliveDuringMaintenanceConfig);
       LOG.info(() -> "Keep Alive During Maintenance: " + keepAliveDuringMaintenance);
     } else {

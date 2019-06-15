@@ -157,28 +157,29 @@ abstract class AbstractExchangeAdapter {
 
       if (httpMethod.equalsIgnoreCase("POST") && postData != null) {
         LOG.debug(() -> "Doing POST with request body: " + postData);
-        final OutputStreamWriter outputPostStream =
-            new OutputStreamWriter(exchangeConnection.getOutputStream(), StandardCharsets.UTF_8);
-        outputPostStream.write(postData);
-        outputPostStream.close();
+        try (final OutputStreamWriter outputPostStream =
+            new OutputStreamWriter(exchangeConnection.getOutputStream(), StandardCharsets.UTF_8)) {
+          outputPostStream.write(postData);
+        }
       }
 
       // Grab the response - we just block here as per Connection API
-      final BufferedReader responseInputStream =
+      try (final BufferedReader responseInputStream =
           new BufferedReader(
-              new InputStreamReader(exchangeConnection.getInputStream(), StandardCharsets.UTF_8));
+              new InputStreamReader(exchangeConnection.getInputStream(), StandardCharsets.UTF_8))) {
 
-      // Read the JSON response lines into our response buffer
-      String responseLine;
-      while ((responseLine = responseInputStream.readLine()) != null) {
-        exchangeResponse.append(responseLine);
+        // Read the JSON response lines into our response buffer
+        String responseLine;
+        while ((responseLine = responseInputStream.readLine()) != null) {
+          exchangeResponse.append(responseLine);
+        }
+        responseInputStream.close();
+
+        return new ExchangeHttpResponse(
+            exchangeConnection.getResponseCode(),
+            exchangeConnection.getResponseMessage(),
+            exchangeResponse.toString());
       }
-      responseInputStream.close();
-
-      return new ExchangeHttpResponse(
-          exchangeConnection.getResponseCode(),
-          exchangeConnection.getResponseMessage(),
-          exchangeResponse.toString());
 
     } catch (MalformedURLException e) {
       final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
@@ -221,15 +222,18 @@ abstract class AbstractExchangeAdapter {
           if (exchangeConnection != null) {
             final InputStream rawErrorStream = exchangeConnection.getErrorStream();
             if (rawErrorStream != null) {
-              final BufferedReader errorInputStream =
-                  new BufferedReader(new InputStreamReader(rawErrorStream, StandardCharsets.UTF_8));
-              final StringBuilder errorResponse = new StringBuilder();
-              String errorLine;
-              while ((errorLine = errorInputStream.readLine()) != null) {
-                errorResponse.append(errorLine);
+              try (final BufferedReader errorInputStream =
+                  new BufferedReader(
+                      new InputStreamReader(rawErrorStream, StandardCharsets.UTF_8))) {
+
+                final StringBuilder errorResponse = new StringBuilder();
+                String errorLine;
+                while ((errorLine = errorInputStream.readLine()) != null) {
+                  errorResponse.append(errorLine);
+                }
+                errorInputStream.close();
+                errorMsg += " ErrorStream Response: " + errorResponse;
               }
-              errorInputStream.close();
-              errorMsg += " ErrorStream Response: " + errorResponse;
             }
           }
           LOG.error(errorMsg, e);
