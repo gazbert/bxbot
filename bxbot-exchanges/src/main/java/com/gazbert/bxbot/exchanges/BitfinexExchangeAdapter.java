@@ -110,6 +110,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter
       "Failed to connect to Exchange due to unexpected IO error.";
 
   private static final String ID = "id";
+  private static final String EXCHANGE = "exchange";
   private static final String SYMBOL = "symbol";
   private static final String AMOUNT = "amount";
   private static final String PRICE = "price";
@@ -269,7 +270,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter
           AMOUNT, new DecimalFormat("#.########", getDecimalFormatSymbols()).format(quantity));
       params.put(PRICE, new DecimalFormat("#.########", getDecimalFormatSymbols()).format(price));
 
-      params.put("exchange", "bitfinex");
+      params.put(EXCHANGE, "bitfinex");
 
       if (orderType == OrderType.BUY) {
         params.put("side", "buy");
@@ -393,7 +394,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter
        */
       if (allAccountBalances != null) {
         allAccountBalances.stream()
-            .filter(accountBalance -> accountBalance.type.equalsIgnoreCase("exchange"))
+            .filter(accountBalance -> accountBalance.type.equalsIgnoreCase(EXCHANGE))
             .forEach(
                 accountBalance -> {
                   if (accountBalance.currency.equalsIgnoreCase("usd")) {
@@ -582,7 +583,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter
       return MoreObjects.toStringHelper(this)
           .add(ID, id)
           .add(SYMBOL, symbol)
-          .add("exchange", exchange)
+          .add(EXCHANGE, exchange)
           .add(PRICE, price)
           .add(AVG_EXECUTION_PRICE, avgExecutionPrice)
           .add("side", side)
@@ -812,7 +813,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter
       return MoreObjects.toStringHelper(this)
           .add(ID, id)
           .add(SYMBOL, symbol)
-          .add("exchange", exchange)
+          .add(EXCHANGE, exchange)
           .add(PRICE, price)
           .add(AVG_EXECUTION_PRICE, avgExecutionPrice)
           .add("side", side)
@@ -871,7 +872,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter
       return MoreObjects.toStringHelper(this)
           .add(ID, id)
           .add(SYMBOL, symbol)
-          .add("exchange", exchange)
+          .add(EXCHANGE, exchange)
           .add(PRICE, price)
           .add(AVG_EXECUTION_PRICE, avgExecutionPrice)
           .add("side", side)

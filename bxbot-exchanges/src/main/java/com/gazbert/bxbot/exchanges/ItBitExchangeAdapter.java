@@ -146,6 +146,7 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
   private static final String NULL_RESPONSE = "NULL RESPONSE";
 
   private static final String WALLETS_RESOURCE = "wallets";
+  private static final String MARKETS_RESOURCE = "markets";
 
   private BigDecimal buyFeePercentage;
   private BigDecimal sellFeePercentage;
@@ -409,7 +410,7 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
     ExchangeHttpResponse response = null;
 
     try {
-      response = sendPublicRequestToExchange("markets/" + marketId + "/order_book");
+      response = sendPublicRequestToExchange(MARKETS_RESOURCE + "/" + marketId + "/order_book");
       if (LOG.isDebugEnabled()) {
         LOG.debug("Market Orders response: " + response);
       }
@@ -473,7 +474,7 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
     ExchangeHttpResponse response = null;
 
     try {
-      response = sendPublicRequestToExchange("markets/" + marketId + "/ticker");
+      response = sendPublicRequestToExchange(MARKETS_RESOURCE + "/" + marketId + "/ticker");
       if (LOG.isDebugEnabled()) {
         LOG.debug("Latest Market Price response: " + response);
       }
@@ -513,7 +514,7 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
       final Map<String, String> params = createRequestParamMap();
       params.put("userId", userId);
 
-      response = sendAuthenticatedRequestToExchange("GET", "wallets", params);
+      response = sendAuthenticatedRequestToExchange("GET", WALLETS_RESOURCE, params);
       if (LOG.isDebugEnabled()) {
         LOG.debug("Balance Info response: " + response);
       }
@@ -599,7 +600,7 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
     ExchangeHttpResponse response = null;
 
     try {
-      response = sendPublicRequestToExchange("markets/" + marketId + "/ticker");
+      response = sendPublicRequestToExchange(MARKETS_RESOURCE + "/" + marketId + "/ticker");
       if (LOG.isDebugEnabled()) {
         LOG.debug("Ticker response: " + response);
       }

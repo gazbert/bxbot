@@ -48,6 +48,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class MarketConfigYamlRepository implements MarketConfigRepository {
 
   private static final Logger LOG = LogManager.getLogger();
+  private static final String EXISTING_MARKET_CONFIG = " Existing MarketConfig: ";
 
   @Override
   public List<MarketConfig> findAll() {
@@ -105,7 +106,7 @@ public class MarketConfigYamlRepository implements MarketConfigRepository {
             "Trying to create new MarketConfig but null/empty id already exists. "
                 + "MarketConfig: "
                 + config
-                + " Existing MarketConfig: "
+                + EXISTING_MARKET_CONFIG
                 + marketsType.getMarkets());
       }
     } else {
@@ -130,7 +131,7 @@ public class MarketConfigYamlRepository implements MarketConfigRepository {
         LOG.warn(
             "Trying to update MarketConfig but id does not exist MarketConfig: "
                 + config
-                + " Existing MarketConfig: "
+                + EXISTING_MARKET_CONFIG
                 + marketsType.getMarkets());
         return null;
       }
@@ -159,7 +160,7 @@ public class MarketConfigYamlRepository implements MarketConfigRepository {
       LOG.warn(
           "Trying to delete MarketConfig but id does not exist. MarketConfig id: "
               + id
-              + " Existing MarketConfig: "
+              + EXISTING_MARKET_CONFIG
               + marketsType.getMarkets());
       return null;
     }
