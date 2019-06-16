@@ -67,7 +67,7 @@ public class MarketConfigController extends AbstractConfigController {
    * @return all the Market configurations.
    */
   @RequestMapping(value = MARKETS_RESOURCE_PATH, method = RequestMethod.GET)
-  public List<MarketConfig> getAllMarkets(@AuthenticationPrincipal User user) {
+  public List<?> getAllMarkets(@AuthenticationPrincipal User user) {
 
     LOG.info("GET " + MARKETS_RESOURCE_PATH + " - getAllMarkets() - caller: " + user.getUsername());
 
