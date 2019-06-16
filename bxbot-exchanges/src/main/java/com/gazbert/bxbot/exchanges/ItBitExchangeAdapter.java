@@ -145,6 +145,8 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
       "The itBit API is currently undergoing " + "maintenance";
   private static final String NULL_RESPONSE = "NULL RESPONSE";
 
+  private static final String WALLETS_RESOURCE = "wallets";
+
   private BigDecimal buyFeePercentage;
   private BigDecimal sellFeePercentage;
 
@@ -231,7 +233,8 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
       // params.put("clientOrderIdentifier", "id_123");
 
       response =
-          sendAuthenticatedRequestToExchange("POST", "wallets/" + walletId + "/orders", params);
+          sendAuthenticatedRequestToExchange(
+              "POST", WALLETS_RESOURCE + "/" + walletId + "/orders", params);
       if (LOG.isDebugEnabled()) {
         LOG.debug("Create Order response: " + response);
       }
@@ -278,7 +281,7 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
 
       response =
           sendAuthenticatedRequestToExchange(
-              "DELETE", "wallets/" + walletId + "/orders/" + orderId, null);
+              "DELETE", WALLETS_RESOURCE + "/" + walletId + "/orders/" + orderId, null);
       if (LOG.isDebugEnabled()) {
         LOG.debug("Cancel Order response: " + response);
       }
@@ -326,7 +329,8 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
       params.put("status", "open"); // we only want open orders
 
       response =
-          sendAuthenticatedRequestToExchange("GET", "wallets/" + walletId + "/orders", params);
+          sendAuthenticatedRequestToExchange(
+              "GET", WALLETS_RESOURCE + "/" + walletId + "/orders", params);
       if (LOG.isDebugEnabled()) {
         LOG.debug("Open Orders response: " + response);
       }

@@ -122,6 +122,9 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter
   private static final String UNEXPECTED_IO_ERROR_MSG =
       "Failed to connect to Exchange due to unexpected IO error.";
 
+  private static final String AMOUNT = "amount";
+  private static final String PRICE = "price";
+
   private static final String KEY_PROPERTY_NAME = "key";
   private static final String SECRET_PROPERTY_NAME = "secret";
 
@@ -188,14 +191,14 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter
       // note we need to limit amount and price to 6 decimal places else exchange will barf with 400
       // response
       params.put(
-          "amount", new DecimalFormat("#.######", getDecimalFormatSymbols()).format(quantity));
+          AMOUNT, new DecimalFormat("#.######", getDecimalFormatSymbols()).format(quantity));
 
       // Decimal precision of price varies with market price currency
       if (marketId.equals(MarketId.BTC_USD.getStringValue())
           || marketId.equals(MarketId.ETH_USD.getStringValue())) {
-        params.put("price", new DecimalFormat("#.##", getDecimalFormatSymbols()).format(price));
+        params.put(PRICE, new DecimalFormat("#.##", getDecimalFormatSymbols()).format(price));
       } else if (marketId.equals(MarketId.ETH_BTC.getStringValue())) {
-        params.put("price", new DecimalFormat("#.#####", getDecimalFormatSymbols()).format(price));
+        params.put(PRICE, new DecimalFormat("#.#####", getDecimalFormatSymbols()).format(price));
       } else {
         final String errorMsg =
             "Invalid market id: "
@@ -486,7 +489,7 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter
 
     @Override
     public String toString() {
-      return MoreObjects.toStringHelper(this).add("price", price).add("amount", amount).toString();
+      return MoreObjects.toStringHelper(this).add(PRICE, price).add(AMOUNT, amount).toString();
     }
   }
 
@@ -512,7 +515,7 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter
       return MoreObjects.toStringHelper(this)
           .add("type", type)
           .add("currency", currency)
-          .add("amount", amount)
+          .add(AMOUNT, amount)
           .add("available", available)
           .add("availableForWithdrawal", availableForWithdrawal)
           .toString();
@@ -614,7 +617,7 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter
           .add("id", id)
           .add("symbol", symbol)
           .add("exchange", exchange)
-          .add("price", price)
+          .add(PRICE, price)
           .add("avgExecutionPrice", avgExecutionPrice)
           .add("side", side)
           .add("type", type)
