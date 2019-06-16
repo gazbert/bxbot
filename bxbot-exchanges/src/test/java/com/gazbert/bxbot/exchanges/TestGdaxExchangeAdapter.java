@@ -528,14 +528,14 @@ public class TestGdaxExchangeAdapter extends AbstractExchangeAdapterTest {
     final MarketOrderBook marketOrderBook = exchangeAdapter.getMarketOrders(MARKET_ID);
 
     // assert some key stuff; we're not testing GSON here.
-    assertEquals(marketOrderBook.getMarketId(), MARKET_ID);
+    assertEquals(MARKET_ID, marketOrderBook.getMarketId());
 
     final BigDecimal buyPrice = new BigDecimal("165.87");
     final BigDecimal buyQuantity = new BigDecimal("16.2373");
     final BigDecimal buyTotal = buyPrice.multiply(buyQuantity);
 
     assertEquals(50, marketOrderBook.getBuyOrders().size());
-    assertSame(marketOrderBook.getBuyOrders().get(0).getType(), OrderType.BUY);
+    assertSame(OrderType.BUY, marketOrderBook.getBuyOrders().get(0).getType());
     assertEquals(0, marketOrderBook.getBuyOrders().get(0).getPrice().compareTo(buyPrice));
     assertEquals(0, marketOrderBook.getBuyOrders().get(0).getQuantity().compareTo(buyQuantity));
     assertEquals(0, marketOrderBook.getBuyOrders().get(0).getTotal().compareTo(buyTotal));
@@ -545,7 +545,7 @@ public class TestGdaxExchangeAdapter extends AbstractExchangeAdapterTest {
     final BigDecimal sellTotal = sellPrice.multiply(sellQuantity);
 
     assertEquals(50, marketOrderBook.getSellOrders().size());
-    assertSame(marketOrderBook.getSellOrders().get(0).getType(), OrderType.SELL);
+    assertSame(OrderType.SELL, marketOrderBook.getSellOrders().get(0).getType());
     assertEquals(0, marketOrderBook.getSellOrders().get(0).getPrice().compareTo(sellPrice));
     assertEquals(0, marketOrderBook.getSellOrders().get(0).getQuantity().compareTo(sellQuantity));
     assertEquals(0, marketOrderBook.getSellOrders().get(0).getTotal().compareTo(sellTotal));

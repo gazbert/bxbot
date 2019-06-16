@@ -730,8 +730,7 @@ public final class BitstampExchangeAdapter extends AbstractExchangeAdapter
     BitstampDateDeserializer() {
     }
 
-    public Date deserialize(JsonElement json, Type type, JsonDeserializationContext context)
-        throws JsonParseException {
+    public Date deserialize(JsonElement json, Type type, JsonDeserializationContext context) {
       Date dateFromBitstamp = null;
       if (json.isJsonPrimitive()) {
         try {

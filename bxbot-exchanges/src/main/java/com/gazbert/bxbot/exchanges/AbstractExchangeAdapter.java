@@ -173,7 +173,6 @@ abstract class AbstractExchangeAdapter {
         while ((responseLine = responseInputStream.readLine()) != null) {
           exchangeResponse.append(responseLine);
         }
-        responseInputStream.close();
 
         return new ExchangeHttpResponse(
             exchangeConnection.getResponseCode(),
@@ -231,7 +230,6 @@ abstract class AbstractExchangeAdapter {
                 while ((errorLine = errorInputStream.readLine()) != null) {
                   errorResponse.append(errorLine);
                 }
-                errorInputStream.close();
                 errorMsg += " ErrorStream Response: " + errorResponse;
               }
             }

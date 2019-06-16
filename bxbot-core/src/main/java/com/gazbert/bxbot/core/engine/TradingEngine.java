@@ -151,7 +151,7 @@ public class TradingEngine {
   }
 
   /** Starts the bot. */
-  public void start() throws IllegalStateException {
+  public void start() {
     synchronized (IS_RUNNING_MONITOR) {
       if (isRunning) {
         final String errorMsg = "Cannot start Trading Engine because it is already running!";

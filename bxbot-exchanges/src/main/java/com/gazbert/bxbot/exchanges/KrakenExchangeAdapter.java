@@ -160,6 +160,8 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
   private static final String FAILED_TO_CANCEL_ORDER =
       "Failed to Cancel Order on exchange. Details: ";
 
+  private static final String PRICE = "price";
+
   private static final String KEY_PROPERTY_NAME = "key";
   private static final String SECRET_PROPERTY_NAME = "secret";
 
@@ -416,7 +418,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
       }
 
       params.put("ordertype", "limit"); // this exchange adapter only supports limit orders
-      params.put("price", new DecimalFormat("#.########", getDecimalFormatSymbols()).format(price));
+      params.put(PRICE, new DecimalFormat("#.########", getDecimalFormatSymbols()).format(price));
       params.put(
           "volume", new DecimalFormat("#.########", getDecimalFormatSymbols()).format(quantity));
 
@@ -843,7 +845,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
           .add("volExec", volExec)
           .add("cost", cost)
           .add("fee", fee)
-          .add("price", price)
+          .add(PRICE, price)
           .add("misc", misc)
           .add("oflags", oflags)
           .toString();
@@ -867,7 +869,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
           .add("pair", pair)
           .add("type", type)
           .add("ordertype", ordertype)
-          .add("price", price)
+          .add(PRICE, price)
           .add("price2", price2)
           .add("leverage", leverage)
           .add("order", order)
@@ -943,7 +945,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
     }
 
     public KrakenTickerResult deserialize(
-        JsonElement json, Type type, JsonDeserializationContext context) throws JsonParseException {
+        JsonElement json, Type type, JsonDeserializationContext context) {
 
       final KrakenTickerResult krakenTickerResult = new KrakenTickerResult();
       if (json.isJsonObject()) {
