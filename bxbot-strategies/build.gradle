@@ -14,3 +14,18 @@ dependencies {
     testCompile libraries.powermock_api_easymock
     testCompile libraries.easymock
 }
+
+jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            element = 'CLASS'
+            excludes = [
+            ]
+            limit {
+                counter = 'LINE'
+                value = 'COVEREDRATIO'
+                minimum = 0.8
+            }
+        }
+    }
+}
