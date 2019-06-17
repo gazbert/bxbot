@@ -197,7 +197,7 @@ public class ExampleScalpingStrategy implements TradingStrategy {
       final MarketOrderBook orderBook = tradingApi.getMarketOrders(market.getId());
 
       final List<MarketOrder> buyOrders = orderBook.getBuyOrders();
-      if (buyOrders.size() == 0) {
+      if (buyOrders.isEmpty()) {
         LOG.warn(
             () ->
             "Exchange returned empty Buy Orders. Ignoring this trade window. OrderBook: "
@@ -206,7 +206,7 @@ public class ExampleScalpingStrategy implements TradingStrategy {
       }
 
       final List<MarketOrder> sellOrders = orderBook.getSellOrders();
-      if (sellOrders.size() == 0) {
+      if (sellOrders.isEmpty()) {
         LOG.warn(
             () ->
             "Exchange returned empty Sell Orders. Ignoring this trade window. OrderBook: "
