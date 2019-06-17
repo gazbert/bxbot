@@ -154,8 +154,12 @@ public class StrategyConfigController extends AbstractConfigController {
       @AuthenticationPrincipal User user, @RequestBody StrategyConfig config) {
 
     LOG.info(
-        "POST " + STRATEGIES_RESOURCE_PATH + " - createStrategy() - caller: " + user.getUsername());
-    LOG.info("Request: " + config);
+        () ->
+            "POST "
+                + STRATEGIES_RESOURCE_PATH
+                + " - createStrategy() - caller: "
+                + user.getUsername());
+    LOG.info(() -> "Request: " + config);
 
     final StrategyConfig createdConfig = strategyConfigService.createStrategyConfig(config);
     return createdConfig == null
@@ -176,12 +180,13 @@ public class StrategyConfigController extends AbstractConfigController {
       @AuthenticationPrincipal User user, @PathVariable String strategyId) {
 
     LOG.info(
-        "DELETE "
-            + STRATEGIES_RESOURCE_PATH
-            + "/"
-            + strategyId
-            + " - deleteStrategy() - caller: "
-            + user.getUsername());
+        () ->
+            "DELETE "
+                + STRATEGIES_RESOURCE_PATH
+                + "/"
+                + strategyId
+                + " - deleteStrategy() - caller: "
+                + user.getUsername());
 
     final StrategyConfig deletedConfig = strategyConfigService.deleteStrategyConfig(strategyId);
     return deletedConfig == null

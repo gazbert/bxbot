@@ -40,7 +40,7 @@ public abstract class AbstractController {
   protected static final String API_ENDPOINT_BASE_URI = "/api/v1";
 
   protected ResponseEntity<?> buildResponseEntity(Object entity, HttpStatus httpStatus) {
-    LOG.info("Response: " + entity);
+    LOG.info(() -> "Response: " + entity);
     return new ResponseEntity<>(entity, null, httpStatus);
   }
 }

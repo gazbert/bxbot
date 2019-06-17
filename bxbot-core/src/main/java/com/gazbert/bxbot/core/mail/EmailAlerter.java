@@ -126,8 +126,7 @@ public class EmailAlerter {
         LOG.info(() -> "SMTP host: " + smtpConfig.getHost());
         LOG.info(() -> "SMTP TLS Port: " + smtpConfig.getTlsPort());
         LOG.info(() -> "Account username: " + smtpConfig.getAccountUsername());
-        // uncomment below for testing only
-        // LOG.info( () -> "Account password: " + smtpConfig.getAccountPassword());
+        // Account password not logged intentionally
 
         LOG.info(() -> "From address: " + smtpConfig.getFromAddress());
         LOG.info(() -> "To address: " + smtpConfig.getToAddress());

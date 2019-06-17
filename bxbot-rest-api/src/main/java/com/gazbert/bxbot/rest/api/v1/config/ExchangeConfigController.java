@@ -72,11 +72,12 @@ public class ExchangeConfigController extends AbstractConfigController {
   @RequestMapping(value = EXCHANGE_RESOURCE_PATH, method = RequestMethod.GET)
   public ExchangeConfig getExchange(@AuthenticationPrincipal User user) {
 
-    LOG.info("GET " + EXCHANGE_RESOURCE_PATH + " - getExchange() - caller: " + user.getUsername());
+    LOG.info(
+        () -> "GET " + EXCHANGE_RESOURCE_PATH + " - getExchange() - caller: " + user.getUsername());
 
     final ExchangeConfig exchangeConfig = exchangeConfigService.getExchangeConfig();
     exchangeConfig.setAuthenticationConfig(null);
-    LOG.info("Response: " + exchangeConfig);
+    LOG.info(() -> "Response: " + exchangeConfig);
     return exchangeConfig;
   }
 
@@ -96,8 +97,12 @@ public class ExchangeConfigController extends AbstractConfigController {
       @AuthenticationPrincipal User user, @RequestBody ExchangeConfig config) {
 
     LOG.info(
-        "PUT " + EXCHANGE_RESOURCE_PATH + " - updateExchange() - caller: " + user.getUsername());
-    LOG.info("Request: " + config);
+        () ->
+            "PUT "
+                + EXCHANGE_RESOURCE_PATH
+                + " - updateExchange() - caller: "
+                + user.getUsername());
+    LOG.info(() -> "Request: " + config);
 
     final ExchangeConfig updatedConfig =
         exchangeConfigService.updateExchangeConfig(mergeWithLocalAuthenticationConfig(config));

@@ -69,10 +69,12 @@ public class MarketConfigController extends AbstractConfigController {
   @RequestMapping(value = MARKETS_RESOURCE_PATH, method = RequestMethod.GET)
   public List<?> getAllMarkets(@AuthenticationPrincipal User user) {
 
-    LOG.info("GET " + MARKETS_RESOURCE_PATH + " - getAllMarkets() - caller: " + user.getUsername());
+    LOG.info(
+        () ->
+            "GET " + MARKETS_RESOURCE_PATH + " - getAllMarkets() - caller: " + user.getUsername());
 
     final List<MarketConfig> marketConfigs = marketConfigService.getAllMarketConfig();
-    LOG.info("Response: " + marketConfigs);
+    LOG.info(() -> "Response: " + marketConfigs);
     return marketConfigs;
   }
 
@@ -88,12 +90,13 @@ public class MarketConfigController extends AbstractConfigController {
       @AuthenticationPrincipal User user, @PathVariable String marketId) {
 
     LOG.info(
-        "GET "
-            + MARKETS_RESOURCE_PATH
-            + "/"
-            + marketId
-            + " - getMarket() - caller: "
-            + user.getUsername());
+        () ->
+            "GET "
+                + MARKETS_RESOURCE_PATH
+                + "/"
+                + marketId
+                + " - getMarket() - caller: "
+                + user.getUsername());
 
     final MarketConfig marketConfig = marketConfigService.getMarketConfig(marketId);
     return marketConfig == null
@@ -116,13 +119,14 @@ public class MarketConfigController extends AbstractConfigController {
       @PathVariable String marketId,
       @RequestBody MarketConfig config) {
     LOG.info(
-        "PUT "
-            + MARKETS_RESOURCE_PATH
-            + "/"
-            + marketId
-            + " - updateMarket() - caller: "
-            + user.getUsername());
-    LOG.info("Request: " + config);
+        () ->
+            "PUT "
+                + MARKETS_RESOURCE_PATH
+                + "/"
+                + marketId
+                + " - updateMarket() - caller: "
+                + user.getUsername());
+    LOG.info(() -> "Request: " + config);
 
     if (config.getId() == null || !marketId.equals(config.getId())) {
       return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -146,8 +150,10 @@ public class MarketConfigController extends AbstractConfigController {
   public ResponseEntity<?> createMarket(
       @AuthenticationPrincipal User user, @RequestBody MarketConfig config) {
 
-    LOG.info("POST " + MARKETS_RESOURCE_PATH + " - createMarket() - caller: " + user.getUsername());
-    LOG.info("Request: " + config);
+    LOG.info(
+        () ->
+            "POST " + MARKETS_RESOURCE_PATH + " - createMarket() - caller: " + user.getUsername());
+    LOG.info(() -> "Request: " + config);
 
     final MarketConfig createdConfig = marketConfigService.createMarketConfig(config);
     return createdConfig == null
@@ -168,12 +174,13 @@ public class MarketConfigController extends AbstractConfigController {
       @AuthenticationPrincipal User user, @PathVariable String marketId) {
 
     LOG.info(
-        "DELETE "
-            + MARKETS_RESOURCE_PATH
-            + "/"
-            + marketId
-            + " - deleteMarket() - caller: "
-            + user.getUsername());
+        () ->
+            "DELETE "
+                + MARKETS_RESOURCE_PATH
+                + "/"
+                + marketId
+                + " - deleteMarket() - caller: "
+                + user.getUsername());
 
     final MarketConfig deletedConfig = marketConfigService.deleteMarketConfig(marketId);
     return deletedConfig == null

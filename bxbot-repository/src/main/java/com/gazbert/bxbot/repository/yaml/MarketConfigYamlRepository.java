@@ -129,6 +129,7 @@ public class MarketConfigYamlRepository implements MarketConfigRepository {
                 .collect(Collectors.toList()));
       } else {
         LOG.warn(
+            () ->
             "Trying to update MarketConfig but id does not exist MarketConfig: "
                 + config
                 + EXISTING_MARKET_CONFIG
@@ -158,6 +159,7 @@ public class MarketConfigYamlRepository implements MarketConfigRepository {
       return adaptInternalToExternalConfig(Collections.singletonList(marketToRemove));
     } else {
       LOG.warn(
+          () ->
           "Trying to delete MarketConfig but id does not exist. MarketConfig id: "
               + id
               + EXISTING_MARKET_CONFIG

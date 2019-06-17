@@ -129,6 +129,7 @@ public class StrategyConfigYamlRepository implements StrategyConfigRepository {
                 .collect(Collectors.toList()));
       } else {
         LOG.warn(
+            () ->
             "Trying to update StrategyConfig but id does not exist StrategyConfig: "
                 + config
                 + " Existing StrategyConfig: "
@@ -159,6 +160,7 @@ public class StrategyConfigYamlRepository implements StrategyConfigRepository {
       return adaptInternalToExternalConfig(Collections.singletonList(strategyToRemove));
     } else {
       LOG.warn(
+          () ->
           "Trying to delete StrategyConfig but id does not exist. StrategyConfig id: "
               + id
               + " Existing StrategyConfig: "

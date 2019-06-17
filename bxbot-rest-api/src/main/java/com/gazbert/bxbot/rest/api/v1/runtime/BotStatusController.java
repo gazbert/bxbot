@@ -65,7 +65,8 @@ public class BotStatusController extends AbstractRuntimeController {
   @RequestMapping(value = STATUS_RESOURCE_PATH, method = RequestMethod.GET)
   public BotStatus getStatus(@AuthenticationPrincipal User user) {
 
-    LOG.info("GET " + STATUS_RESOURCE_PATH + " - getStatus() - caller: " + user.getUsername());
+    LOG.info(
+        () -> "GET " + STATUS_RESOURCE_PATH + " - getStatus() - caller: " + user.getUsername());
 
     final EngineConfig engineConfig = engineConfigService.getEngineConfig();
 
@@ -75,8 +76,7 @@ public class BotStatusController extends AbstractRuntimeController {
     botStatus.setDisplayName(engineConfig.getBotName());
     botStatus.setStatus("running"); // use enum for defining states at some point
 
-    LOG.info("Response: " + botStatus);
+    LOG.info(() -> "Response: " + botStatus);
     return botStatus;
   }
 }
-

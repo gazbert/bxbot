@@ -72,6 +72,7 @@ public class EmailAlertsConfigController extends AbstractConfigController {
   public EmailAlertsConfig getEmailAlerts(@AuthenticationPrincipal User user) {
 
     LOG.info(
+        () ->
         "GET "
             + EMAIL_ALERTS_RESOURCE_PATH
             + " - getEmailAlerts() - caller: "
@@ -95,11 +96,12 @@ public class EmailAlertsConfigController extends AbstractConfigController {
       @AuthenticationPrincipal User user, @RequestBody EmailAlertsConfig config) {
 
     LOG.info(
+        () ->
         "PUT "
             + EMAIL_ALERTS_RESOURCE_PATH
             + " - updateEmailAlerts() - caller: "
             + user.getUsername());
-    LOG.info("Request: " + config);
+    LOG.info(() -> "Request: " + config);
 
     final EmailAlertsConfig updatedConfig =
         emailAlertsConfigService.updateEmailAlertsConfig(config);

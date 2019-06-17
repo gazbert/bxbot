@@ -155,7 +155,7 @@ public class TradingEngine {
     synchronized (IS_RUNNING_MONITOR) {
       if (isRunning) {
         final String errorMsg = "Cannot start Trading Engine because it is already running!";
-        LOG.error(errorMsg);
+        LOG.error(() -> errorMsg);
         throw new IllegalStateException(errorMsg);
       }
 
@@ -207,7 +207,7 @@ public class TradingEngine {
         try {
           Thread.sleep(tradeExecutionInterval * 1000L);
         } catch (InterruptedException e) {
-          LOG.warn("Control Loop thread interrupted when sleeping before next trade cycle");
+          LOG.warn(() -> "Control Loop thread interrupted when sleeping before next trade cycle");
           Thread.currentThread().interrupt();
         }
 
@@ -216,17 +216,17 @@ public class TradingEngine {
          * We have a network connection issue reported by Exchange Adapter when called directly from
          * Trading Engine. Current policy is to log it and sleep until next trade cycle.
          */
-        final String warningMessage =
+        final String errorMessage =
             "A network error has occurred in Exchange Adapter! "
                 + "BX-bot will try again in "
                 + tradeExecutionInterval
                 + "s...";
-        LOG.error(warningMessage, e);
+        LOG.error(() -> errorMessage, e);
 
         try {
           Thread.sleep(tradeExecutionInterval * 1000L);
         } catch (InterruptedException e1) {
-          LOG.warn("Control Loop thread interrupted when sleeping before next trade cycle");
+          LOG.warn(() -> "Control Loop thread interrupted when sleeping before next trade cycle");
           Thread.currentThread().interrupt();
         }
 
@@ -236,7 +236,7 @@ public class TradingEngine {
          * Current policy is to log it, send email alert if required, and shutdown bot.
          */
         final String fatalErrorMessage = "A FATAL error has occurred in Exchange Adapter!";
-        LOG.fatal(fatalErrorMessage, e);
+        LOG.fatal(() -> fatalErrorMessage, e);
         emailAlerter.sendMessage(
             CRITICAL_EMAIL_ALERT_SUBJECT,
             buildCriticalEmailAlertMsgContent(
@@ -254,7 +254,7 @@ public class TradingEngine {
          * Current policy is to log it, send email alert if required, and shutdown bot.
          */
         final String fatalErrorMsg = "A FATAL error has occurred in Trading Strategy!";
-        LOG.fatal(fatalErrorMsg, e);
+        LOG.fatal(() -> fatalErrorMsg, e);
         emailAlerter.sendMessage(
             CRITICAL_EMAIL_ALERT_SUBJECT,
             buildCriticalEmailAlertMsgContent(
@@ -273,7 +273,7 @@ public class TradingEngine {
          */
         final String fatalErrorMsg =
             "An unexpected FATAL error has occurred in Exchange Adapter or " + "Trading Strategy!";
-        LOG.fatal(fatalErrorMsg, e);
+        LOG.fatal(() -> fatalErrorMsg, e);
         emailAlerter.sendMessage(
             CRITICAL_EMAIL_ALERT_SUBJECT,
             buildCriticalEmailAlertMsgContent(
@@ -287,7 +287,7 @@ public class TradingEngine {
       }
     }
 
-    LOG.fatal("BX-bot " + botId + " is shutting down NOW!");
+    LOG.fatal(() -> "BX-bot " + botId + " is shutting down NOW!");
     synchronized (IS_RUNNING_MONITOR) {
       isRunning = false;
     }
@@ -338,7 +338,7 @@ public class TradingEngine {
       final String errorMsg =
           "Failed to get Balance info from exchange to perform Emergency Stop check - letting"
               + " Trade Engine error policy decide what to do next...";
-      LOG.error(errorMsg, e);
+      LOG.error(() -> errorMsg, e);
       // re-throw to main loop - might only be connection issue and it will retry...
       throw e;
     }
@@ -352,7 +352,7 @@ public class TradingEngine {
               + "' key into Balances map "
               + "returned null. Balances returned: "
               + balancesAvailable;
-      LOG.error(errorMsg);
+      LOG.error(() -> errorMsg);
       throw new IllegalStateException(errorMsg);
     } else {
 
@@ -383,7 +383,7 @@ public class TradingEngine {
                 + "] "
                 + emergencyStopCurrency;
 
-        LOG.fatal(balanceBlownErrorMsg);
+        LOG.fatal(() -> balanceBlownErrorMsg);
         emailAlerter.sendMessage(
             CRITICAL_EMAIL_ALERT_SUBJECT,
             buildCriticalEmailAlertMsgContent(balanceBlownErrorMsg, null));
@@ -575,7 +575,7 @@ public class TradingEngine {
       final boolean wasAdded = loadedMarkets.add(tradingMarket);
       if (!wasAdded) {
         final String errorMsg = "Found duplicate Market! Market details: " + market;
-        LOG.fatal(errorMsg);
+        LOG.fatal(() -> errorMsg);
         throw new IllegalArgumentException(errorMsg);
       }
 
@@ -627,7 +627,7 @@ public class TradingEngine {
                 + "] cannot be found in the "
                 + " Strategy Descriptions map: "
                 + strategyDescriptions;
-        LOG.error(errorMsg);
+        LOG.error(() -> errorMsg);
         throw new IllegalArgumentException(errorMsg);
       }
     }
@@ -647,7 +647,7 @@ public class TradingEngine {
       } catch (NullPointerException e) {
         final String errorMsg =
             "Failed to obtain bean [" + tradingStrategyBeanName + "] from spring context";
-        LOG.error(errorMsg);
+        LOG.error(() -> errorMsg);
         throw new IllegalArgumentException(errorMsg);
       }
     }

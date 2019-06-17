@@ -91,8 +91,9 @@ public class EngineConfigController extends AbstractConfigController {
   public ResponseEntity<?> updateEngine(
       @AuthenticationPrincipal User user, @RequestBody EngineConfig config) {
 
-    LOG.info("PUT " + ENGINE_RESOURCE_PATH + " - updateEngine() - caller: " + user.getUsername());
-    LOG.info("Request: " + config);
+    LOG.info(
+        () -> "PUT " + ENGINE_RESOURCE_PATH + " - updateEngine() - caller: " + user.getUsername());
+    LOG.info(() -> "Request: " + config);
 
     final EngineConfig updatedConfig = engineConfigService.updateEngineConfig(config);
     return buildResponseEntity(updatedConfig, HttpStatus.OK);
