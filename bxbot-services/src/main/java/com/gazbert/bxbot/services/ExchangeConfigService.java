@@ -20,6 +20,7 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+
 package com.gazbert.bxbot.services;
 
 import com.gazbert.bxbot.domain.exchange.ExchangeConfig;
@@ -31,7 +32,7 @@ import com.gazbert.bxbot.domain.exchange.ExchangeConfig;
  */
 public interface ExchangeConfigService {
 
-    ExchangeConfig getExchangeConfig();
+  ExchangeConfig getExchangeConfig();
 
-    ExchangeConfig updateExchangeConfig(ExchangeConfig config);
+  ExchangeConfig updateExchangeConfig(ExchangeConfig config);
 }

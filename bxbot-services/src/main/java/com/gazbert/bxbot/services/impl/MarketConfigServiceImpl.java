@@ -23,10 +23,10 @@
 
 package com.gazbert.bxbot.services.impl;
 
-
 import com.gazbert.bxbot.domain.market.MarketConfig;
 import com.gazbert.bxbot.repository.MarketConfigRepository;
 import com.gazbert.bxbot.services.MarketConfigService;
+import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,8 +34,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 /**
  * Implementation of the Market config service.
@@ -47,41 +45,41 @@ import java.util.List;
 @ComponentScan(basePackages = {"com.gazbert.bxbot.repository"})
 public class MarketConfigServiceImpl implements MarketConfigService {
 
-    private static final Logger LOG = LogManager.getLogger();
+  private static final Logger LOG = LogManager.getLogger();
+  private final MarketConfigRepository marketConfigRepository;
 
-    private final MarketConfigRepository marketConfigRepository;
+  @Autowired
+  public MarketConfigServiceImpl(@Qualifier("marketConfigYamlRepository")
+      MarketConfigRepository marketConfigRepository) {
+    this.marketConfigRepository = marketConfigRepository;
+  }
 
-    @Autowired
-    public MarketConfigServiceImpl(@Qualifier("marketConfigYamlRepository")MarketConfigRepository marketConfigRepository) {
-        this.marketConfigRepository = marketConfigRepository;
-    }
+  @Override
+  public List<MarketConfig> getAllMarketConfig() {
+    return marketConfigRepository.findAll();
+  }
 
-    @Override
-    public List<MarketConfig> getAllMarketConfig() {
-        return marketConfigRepository.findAll();
-    }
+  @Override
+  public MarketConfig getMarketConfig(String id) {
+    LOG.info(() -> "Fetching Market config for id: " + id);
+    return marketConfigRepository.findById(id);
+  }
 
-    @Override
-    public MarketConfig getMarketConfig(String id) {
-        LOG.info(() -> "Fetching Market config for id: " + id);
-        return marketConfigRepository.findById(id);
-    }
+  @Override
+  public MarketConfig updateMarketConfig(MarketConfig config) {
+    LOG.info(() -> "About to update Market config: " + config);
+    return marketConfigRepository.save(config);
+  }
 
-    @Override
-    public MarketConfig updateMarketConfig(MarketConfig config) {
-        LOG.info(() -> "About to update Market config: " + config);
-        return marketConfigRepository.save(config);
-    }
+  @Override
+  public MarketConfig createMarketConfig(MarketConfig config) {
+    LOG.info(() -> "About to create Market config: " + config);
+    return marketConfigRepository.save(config);
+  }
 
-    @Override
-    public MarketConfig createMarketConfig(MarketConfig config) {
-        LOG.info(() -> "About to create Market config: " + config);
-        return marketConfigRepository.save(config);
-    }
-
-    @Override
-    public MarketConfig deleteMarketConfig(String id) {
-        LOG.info(() -> "About to delete Market config for id: " + id);
-        return marketConfigRepository.delete(id);
-    }
+  @Override
+  public MarketConfig deleteMarketConfig(String id) {
+    LOG.info(() -> "About to delete Market config for id: " + id);
+    return marketConfigRepository.delete(id);
+  }
 }

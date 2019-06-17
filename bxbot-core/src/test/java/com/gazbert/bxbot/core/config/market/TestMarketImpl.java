@@ -23,10 +23,10 @@
 
 package com.gazbert.bxbot.core.config.market;
 
-import org.junit.Test;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+
+import org.junit.Test;
 
 /**
  * Tests Market impl behaves as expected.
@@ -35,41 +35,39 @@ import static org.junit.Assert.assertNull;
  */
 public class TestMarketImpl {
 
-    private static final String MARKET_NAME = "LTC_BTC";
-    private static final String MARKET_ID = "3";
-    private static final String BASE_CURRENCY = "LTC";
-    private static final String COUNTER_CURRENCY = "BTC";
+  private static final String MARKET_NAME = "LTC_BTC";
+  private static final String MARKET_ID = "3";
+  private static final String BASE_CURRENCY = "LTC";
+  private static final String COUNTER_CURRENCY = "BTC";
 
+  @Test
+  public void testMarketIsInitialisedAsExpected() {
+    final MarketImpl market =
+        new MarketImpl(MARKET_NAME, MARKET_ID, BASE_CURRENCY, COUNTER_CURRENCY);
+    assertEquals(MARKET_NAME, market.getName());
+    assertEquals(MARKET_ID, market.getId());
+    assertEquals(BASE_CURRENCY, market.getBaseCurrency());
+    assertEquals(COUNTER_CURRENCY, market.getCounterCurrency());
+  }
 
-    @Test
-    public void testMarketIsInitialisedAsExpected() {
+  @Test
+  public void testSettersWorkAsExpected() {
+    final MarketImpl market = new MarketImpl(null, null, null, null);
+    assertNull(market.getName());
+    assertNull(market.getId());
+    assertNull(market.getBaseCurrency());
+    assertNull(market.getCounterCurrency());
 
-        final MarketImpl market = new MarketImpl(MARKET_NAME, MARKET_ID, BASE_CURRENCY, COUNTER_CURRENCY);
-        assertEquals(MARKET_NAME, market.getName());
-        assertEquals(MARKET_ID, market.getId());
-        assertEquals(BASE_CURRENCY, market.getBaseCurrency());
-        assertEquals(COUNTER_CURRENCY, market.getCounterCurrency());
-    }
+    market.setName(MARKET_NAME);
+    assertEquals(MARKET_NAME, market.getName());
 
-    @Test
-    public void testSettersWorkAsExpected() {
+    market.setId(MARKET_ID);
+    assertEquals(MARKET_ID, market.getId());
 
-        final MarketImpl market = new MarketImpl(null, null, null, null);
-        assertNull(market.getName());
-        assertNull(market.getId());
-        assertNull(market.getBaseCurrency());
-        assertNull(market.getCounterCurrency());
+    market.setBaseCurrency(BASE_CURRENCY);
+    assertEquals(BASE_CURRENCY, market.getBaseCurrency());
 
-        market.setName(MARKET_NAME);
-        assertEquals(MARKET_NAME, market.getName());
-
-        market.setId(MARKET_ID);
-        assertEquals(MARKET_ID, market.getId());
-
-        market.setBaseCurrency(BASE_CURRENCY);
-        assertEquals(BASE_CURRENCY, market.getBaseCurrency());
-
-        market.setCounterCurrency(COUNTER_CURRENCY);
-        assertEquals(COUNTER_CURRENCY, market.getCounterCurrency());
-    }
+    market.setCounterCurrency(COUNTER_CURRENCY);
+    assertEquals(COUNTER_CURRENCY, market.getCounterCurrency());
+  }
 }

@@ -27,37 +27,32 @@ import com.gazbert.bxbot.trading.api.Market;
 import com.gazbert.bxbot.trading.api.TradingApi;
 
 /**
- * <p>
  * All user defined Trading Strategies must implement this interface.
- * </p>
- * <p>
- * The Trading Engine will send only 1 thread through your strategy code at a time - you do not have to code for concurrency.
- * </p>
+ *
+ * <p>The Trading Engine will send only 1 thread through your strategy code at a time - you do not
+ * have to code for concurrency.
  *
  * @author gazbert
  * @since 1.0
  */
 public interface TradingStrategy {
 
-    /**
-     * Called once by the Trading Engine when it starts up.
-     *
-     * @param tradingApi the Trading API.
-     * @param market     the market for this strategy.
-     * @param config     optional configuration for the strategy.
-     */
-    void init(TradingApi tradingApi, Market market, StrategyConfig config);
+  /**
+   * Called once by the Trading Engine when it starts up.
+   *
+   * @param tradingApi the Trading API.
+   * @param market the market for this strategy.
+   * @param config optional configuration for the strategy.
+   */
+  void init(TradingApi tradingApi, Market market, StrategyConfig config);
 
-    /**
-     * <p>
-     * Called by the Trading Engine during each trade cycle.
-     * </p>
-     * <p>
-     * Here, you can create some orders, cancel some, buy some beer... do whatever you want.
-     * </p>
-     *
-     * @throws StrategyException if something goes bad. Trading Strategy implementations should throw this exception
-     *                           if they want the Trading Engine to shutdown the bot immediately.
-     */
-    void execute() throws StrategyException;
+  /**
+   * Called by the Trading Engine during each trade cycle.
+   *
+   * <p>Here, you can create some orders, cancel some, buy some beer... do whatever you want.
+   *
+   * @throws StrategyException if something goes bad. Trading Strategy implementations should throw
+   *     this exception if they want the Trading Engine to shutdown the bot immediately.
+   */
+  void execute() throws StrategyException;
 }

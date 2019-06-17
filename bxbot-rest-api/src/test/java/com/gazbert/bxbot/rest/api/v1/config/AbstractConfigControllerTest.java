@@ -32,5 +32,5 @@ import com.gazbert.bxbot.rest.api.v1.AbstractControllerTest;
  */
 abstract class AbstractConfigControllerTest extends AbstractControllerTest {
 
-    static final String CONFIG_ENDPOINT_BASE_URI = API_ENDPOINT_BASE_URI + "/config";
+  static final String CONFIG_ENDPOINT_BASE_URI = API_ENDPOINT_BASE_URI + "/config";
 }

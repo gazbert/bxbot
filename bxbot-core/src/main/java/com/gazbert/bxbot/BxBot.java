@@ -35,21 +35,21 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @author gazbert
  */
 @SpringBootApplication
-public class BXBot implements CommandLineRunner {
+public class BxBot implements CommandLineRunner {
 
-    private final TradingEngine tradingEngine;
+  private final TradingEngine tradingEngine;
 
-    @Autowired
-    public BXBot(TradingEngine tradingEngine) {
-        this.tradingEngine = tradingEngine;
-    }
+  @Autowired
+  public BxBot(TradingEngine tradingEngine) {
+    this.tradingEngine = tradingEngine;
+  }
 
-    public static void main(String[] args) {
-        SpringApplication.run(BXBot.class, args);
-    }
+  public static void main(String[] args) {
+    SpringApplication.run(BxBot.class, args);
+  }
 
-    @Override
-    public void run(String... strings) {
-        tradingEngine.start();
-    }
+  @Override
+  public void run(String... strings) {
+    tradingEngine.start();
+  }
 }

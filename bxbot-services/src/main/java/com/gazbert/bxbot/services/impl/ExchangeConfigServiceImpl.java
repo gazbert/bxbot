@@ -44,23 +44,23 @@ import org.springframework.transaction.annotation.Transactional;
 @ComponentScan(basePackages = {"com.gazbert.bxbot.repository"})
 public class ExchangeConfigServiceImpl implements ExchangeConfigService {
 
-    private static final Logger LOG = LogManager.getLogger();
+  private static final Logger LOG = LogManager.getLogger();
+  private final ExchangeConfigRepository exchangeConfigRepository;
 
-    private final ExchangeConfigRepository exchangeConfigRepository;
+  @Autowired
+  public ExchangeConfigServiceImpl(@Qualifier("exchangeConfigYamlRepository")
+      ExchangeConfigRepository exchangeConfigRepository) {
+    this.exchangeConfigRepository = exchangeConfigRepository;
+  }
 
-    @Autowired
-    public ExchangeConfigServiceImpl(@Qualifier("exchangeConfigYamlRepository")ExchangeConfigRepository exchangeConfigRepository) {
-        this.exchangeConfigRepository = exchangeConfigRepository;
-    }
+  @Override
+  public ExchangeConfig getExchangeConfig() {
+    return exchangeConfigRepository.get();
+  }
 
-    @Override
-    public ExchangeConfig getExchangeConfig() {
-        return exchangeConfigRepository.get();
-    }
-
-    @Override
-    public ExchangeConfig updateExchangeConfig(ExchangeConfig config) {
-        LOG.info(() -> "About to update Exchange config: " + config);
-        return exchangeConfigRepository.save(config);
-    }
+  @Override
+  public ExchangeConfig updateExchangeConfig(ExchangeConfig config) {
+    LOG.info(() -> "About to update Exchange config: " + config);
+    return exchangeConfigRepository.save(config);
+  }
 }

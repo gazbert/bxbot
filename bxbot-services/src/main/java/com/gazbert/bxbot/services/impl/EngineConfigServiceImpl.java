@@ -44,23 +44,23 @@ import org.springframework.transaction.annotation.Transactional;
 @ComponentScan(basePackages = {"com.gazbert.bxbot.repository"})
 public class EngineConfigServiceImpl implements EngineConfigService {
 
-    private static final Logger LOG = LogManager.getLogger();
+  private static final Logger LOG = LogManager.getLogger();
+  private final EngineConfigRepository engineConfigRepository;
 
-    private final EngineConfigRepository engineConfigRepository;
+  @Autowired
+  public EngineConfigServiceImpl(@Qualifier("engineConfigYamlRepository")
+                                       EngineConfigRepository engineConfigRepository) {
+    this.engineConfigRepository = engineConfigRepository;
+  }
 
-    @Autowired
-    public EngineConfigServiceImpl(@Qualifier("engineConfigYamlRepository") EngineConfigRepository engineConfigRepository) {
-        this.engineConfigRepository = engineConfigRepository;
-    }
+  @Override
+  public EngineConfig getEngineConfig() {
+    return engineConfigRepository.get();
+  }
 
-    @Override
-    public EngineConfig getEngineConfig() {
-        return engineConfigRepository.get();
-    }
-
-    @Override
-    public EngineConfig updateEngineConfig(EngineConfig config) {
-        LOG.info(() -> "About to update Engine config: " + config);
-        return engineConfigRepository.save(config);
-    }
+  @Override
+  public EngineConfig updateEngineConfig(EngineConfig config) {
+    LOG.info(() -> "About to update Engine config: " + config);
+    return engineConfigRepository.save(config);
+  }
 }

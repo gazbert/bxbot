@@ -25,7 +25,6 @@ package com.gazbert.bxbot.core.config.strategy;
 
 import com.gazbert.bxbot.strategy.api.StrategyConfig;
 import com.google.common.base.MoreObjects;
-
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -38,35 +37,35 @@ import java.util.Set;
  */
 public final class StrategyConfigItems implements StrategyConfig {
 
-    private Map<String, String> items = new HashMap<>();
+  private Map<String, String> items = new HashMap<>();
 
-    @Override
-    public String getConfigItem(String key) {
-        return items.get(key);
-    }
+  @Override
+  public String getConfigItem(String key) {
+    return items.get(key);
+  }
 
-    @Override
-    public int getNumberOfConfigItems() {
-        return items.size();
-    }
+  @Override
+  public int getNumberOfConfigItems() {
+    return items.size();
+  }
 
-    @Override
-    public Set<String> getConfigItemKeys() {
-        return Collections.unmodifiableSet(items.keySet());
-    }
+  @Override
+  public Set<String> getConfigItemKeys() {
+    return Collections.unmodifiableSet(items.keySet());
+  }
 
-    public void setItems(Map<String, String> items) {
-        this.items = items;
-    }
+  public void setItems(Map<String, String> items) {
+    this.items = items;
+  }
 
-    public Map<String, String> getItems() {
-        return items;
-    }
+  Map<String, String> getItems() {
+    return items;
+  }
 
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-                .add("items", items)
-                .toString();
-    }
+  @Override
+  public String toString() {
+    return MoreObjects.toStringHelper(this)
+        .add("items", items)
+        .toString();
+  }
 }

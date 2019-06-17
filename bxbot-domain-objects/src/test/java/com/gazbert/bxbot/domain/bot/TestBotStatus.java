@@ -23,10 +23,10 @@
 
 package com.gazbert.bxbot.domain.bot;
 
-import org.junit.Test;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+
+import org.junit.Test;
 
 /**
  * Tests a BotStatus domain object behaves as expected.
@@ -35,35 +35,32 @@ import static org.junit.Assert.assertNull;
  */
 public class TestBotStatus {
 
-    private static final String BOT_ID = "avro-707_1";
-    private static final String DISPLAY_NAME = "Avro 707";
-    private static final String STATUS = "running";
+  private static final String BOT_ID = "avro-707_1";
+  private static final String DISPLAY_NAME = "Avro 707";
+  private static final String STATUS = "running";
 
-    @Test
-    public void testInitialisationWorksAsExpected() {
+  @Test
+  public void testInitialisationWorksAsExpected() {
+    final BotStatus botStatus = new BotStatus(BOT_ID, DISPLAY_NAME, STATUS);
+    assertEquals(BOT_ID, botStatus.getBotId());
+    assertEquals(DISPLAY_NAME, botStatus.getDisplayName());
+    assertEquals(STATUS, botStatus.getStatus());
+  }
 
-        final BotStatus botStatus = new BotStatus(BOT_ID, DISPLAY_NAME, STATUS);
+  @Test
+  public void testSettersWorkAsExpected() {
+    final BotStatus botStatus = new BotStatus();
+    assertNull(botStatus.getBotId());
+    assertNull(botStatus.getDisplayName());
+    assertNull(botStatus.getStatus());
 
-        assertEquals(BOT_ID, botStatus.getBotId());
-        assertEquals(DISPLAY_NAME, botStatus.getDisplayName());
-        assertEquals(STATUS, botStatus.getStatus());
-    }
+    botStatus.setBotId(BOT_ID);
+    assertEquals(BOT_ID, botStatus.getBotId());
 
-    @Test
-    public void testSettersWorkAsExpected() {
+    botStatus.setDisplayName(DISPLAY_NAME);
+    assertEquals(DISPLAY_NAME, botStatus.getDisplayName());
 
-        final BotStatus botStatus = new BotStatus();
-        assertNull(botStatus.getBotId());
-        assertNull(botStatus.getDisplayName());
-        assertNull(botStatus.getStatus());
-
-        botStatus.setBotId(BOT_ID);
-        assertEquals(BOT_ID, botStatus.getBotId());
-
-        botStatus.setDisplayName(DISPLAY_NAME);
-        assertEquals(DISPLAY_NAME, botStatus.getDisplayName());
-
-        botStatus.setStatus(STATUS);
-        assertEquals(STATUS, botStatus.getStatus());
-    }
+    botStatus.setStatus(STATUS);
+    assertEquals(STATUS, botStatus.getStatus());
+  }
 }

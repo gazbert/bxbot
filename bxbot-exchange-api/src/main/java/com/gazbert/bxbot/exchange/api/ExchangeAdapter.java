@@ -26,23 +26,21 @@ package com.gazbert.bxbot.exchange.api;
 import com.gazbert.bxbot.trading.api.TradingApi;
 
 /**
- * <p>
- * All Exchange Adapters must implement this interface. It's main purpose is for the Trading Engine to pass the
- * adapter its configuration on startup.
- * </p>
- * <p>
- * The Trading Engine will send only 1 thread through the Exchange Adapter code at a time - you do not have to code for concurrency.
- * </p>
+ * All Exchange Adapters must implement this interface. It's main purpose is for the Trading Engine
+ * to pass the adapter its configuration on startup.
+ *
+ * <p>The Trading Engine will send only 1 thread through the Exchange Adapter code at a time - you
+ * do not have to code for concurrency.
  *
  * @author gazbert
  * @since 1.0
  */
 public interface ExchangeAdapter extends TradingApi {
 
-    /**
-     * Called once by the Trading Engine when it starts up.
-     *
-     * @param config configuration for the Exchange Adapter.
-     */
-    void init(ExchangeConfig config);
+  /**
+   * Called once by the Trading Engine when it starts up.
+   *
+   * @param config configuration for the Exchange Adapter.
+   */
+  void init(ExchangeConfig config);
 }

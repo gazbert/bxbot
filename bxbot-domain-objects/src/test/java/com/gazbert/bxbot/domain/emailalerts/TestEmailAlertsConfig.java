@@ -23,9 +23,11 @@
 
 package com.gazbert.bxbot.domain.emailalerts;
 
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 
-import static org.junit.Assert.*;
+import org.junit.Test;
 
 /**
  * Tests a EmailAlertsConfig domain object behaves as expected.
@@ -34,28 +36,26 @@ import static org.junit.Assert.*;
  */
 public class TestEmailAlertsConfig {
 
-    private static final boolean ENABLED = true;
-    private static final SmtpConfig SMTP_CONFIG = new SmtpConfig();
+  private static final boolean ENABLED = true;
+  private static final SmtpConfig SMTP_CONFIG = new SmtpConfig();
 
-    @Test
-    public void testInitialisationWorksAsExpected() {
+  @Test
+  public void testInitialisationWorksAsExpected() {
+    final EmailAlertsConfig emailAlertsConfig = new EmailAlertsConfig(ENABLED, SMTP_CONFIG);
+    assertEquals(ENABLED, emailAlertsConfig.isEnabled());
+    assertEquals(SMTP_CONFIG, emailAlertsConfig.getSmtpConfig());
+  }
 
-        final EmailAlertsConfig emailAlertsConfig = new EmailAlertsConfig(ENABLED, SMTP_CONFIG);
-        assertEquals(ENABLED, emailAlertsConfig.isEnabled());
-        assertEquals(SMTP_CONFIG, emailAlertsConfig.getSmtpConfig());
-    }
+  @Test
+  public void testSettersWorkAsExpected() {
+    final EmailAlertsConfig emailAlertsConfig = new EmailAlertsConfig();
+    assertFalse(emailAlertsConfig.isEnabled());
+    assertNull(emailAlertsConfig.getSmtpConfig());
 
-    @Test
-    public void testSettersWorkAsExpected() {
+    emailAlertsConfig.setEnabled(ENABLED);
+    assertEquals(ENABLED, emailAlertsConfig.isEnabled());
 
-        final EmailAlertsConfig emailAlertsConfig = new EmailAlertsConfig();
-        assertFalse(emailAlertsConfig.isEnabled());
-        assertNull(emailAlertsConfig.getSmtpConfig());
-
-        emailAlertsConfig.setEnabled(ENABLED);
-        assertEquals(ENABLED, emailAlertsConfig.isEnabled());
-
-        emailAlertsConfig.setSmtpConfig(SMTP_CONFIG);
-        assertEquals(SMTP_CONFIG, emailAlertsConfig.getSmtpConfig());
-    }
+    emailAlertsConfig.setSmtpConfig(SMTP_CONFIG);
+    assertEquals(SMTP_CONFIG, emailAlertsConfig.getSmtpConfig());
+  }
 }

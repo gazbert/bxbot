@@ -23,12 +23,12 @@
 
 package com.gazbert.bxbot.core.util;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import com.gazbert.bxbot.exchange.api.ExchangeAdapter;
 import com.gazbert.bxbot.trading.api.TradingApi;
 import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 /**
  * Tests Exchange Adapters are created as expected.
@@ -37,39 +37,45 @@ import static org.junit.Assert.assertNotNull;
  */
 public class TestExchangeAdapterCreation {
 
-    private static final String VALID_EXCHANGE_ADAPTER_IMPL = "com.gazbert.bxbot.core.util.adapters.ValidExchangeAdapter";
-    private static final String INVALID_EXCHANGE_ADAPTER_NOT_IMPL_TRADING_API =
-            "com.gazbert.bxbot.core.util.adapters.InvalidExchangeAdapterNotImplTradingApi";
-    private static final String INVALID_EXCHANGE_ADAPTER_NOT_IMPL_EXCHANGE_ADAPTER =
-            "com.gazbert.bxbot.core.util.adapters.InvalidExchangeAdapterNotImplExchangeAdapter";
-    private static final String NONEXISTENT_EXCHANGE_ADAPTER_IMPL = "com.gazbert.bxbot.core.util.adapters.MuhInvalidExchangeAdapter";
+  private static final String VALID_EXCHANGE_ADAPTER_IMPL =
+      "com.gazbert.bxbot.core.util.adapters.ValidExchangeAdapter";
 
-    @Test
-    public void testCreatingValidExchangeAdapter() {
+  private static final String INVALID_EXCHANGE_ADAPTER_NOT_IMPL_TRADING_API =
+      "com.gazbert.bxbot.core.util.adapters.InvalidExchangeAdapterNotImplTradingApi";
 
-        final TradingApi tradingApi = ConfigurableComponentFactory.createComponent(VALID_EXCHANGE_ADAPTER_IMPL);
-        final ExchangeAdapter exchangeAdapter = ConfigurableComponentFactory.createComponent(VALID_EXCHANGE_ADAPTER_IMPL);
+  private static final String INVALID_EXCHANGE_ADAPTER_NOT_IMPL_EXCHANGE_ADAPTER =
+      "com.gazbert.bxbot.core.util.adapters.InvalidExchangeAdapterNotImplExchangeAdapter";
 
-        assertNotNull(tradingApi);
-        assertNotNull(exchangeAdapter);
-        assertEquals(VALID_EXCHANGE_ADAPTER_IMPL, exchangeAdapter.getClass().getCanonicalName());
-    }
+  private static final String NONEXISTENT_EXCHANGE_ADAPTER_IMPL =
+      "com.gazbert.bxbot.core.util.adapters.MuhInvalidExchangeAdapter";
 
-    @Test(expected = IllegalStateException.class)
-    public void testCreatingExchangeAdapterThatDoesNotExistThrowsException() {
+  @Test
+  public void testCreatingValidExchangeAdapter() {
+    final TradingApi tradingApi =
+        ConfigurableComponentFactory.createComponent(VALID_EXCHANGE_ADAPTER_IMPL);
+    final ExchangeAdapter exchangeAdapter =
+        ConfigurableComponentFactory.createComponent(VALID_EXCHANGE_ADAPTER_IMPL);
+    assertNotNull(tradingApi);
+    assertNotNull(exchangeAdapter);
+    assertEquals(VALID_EXCHANGE_ADAPTER_IMPL, exchangeAdapter.getClass().getCanonicalName());
+  }
 
-        final TradingApi tradingApi = ConfigurableComponentFactory.createComponent(NONEXISTENT_EXCHANGE_ADAPTER_IMPL);
-    }
+  @Test(expected = IllegalStateException.class)
+  public void testCreatingExchangeAdapterThatDoesNotExistThrowsException() {
+    final TradingApi tradingApi =
+        ConfigurableComponentFactory.createComponent(NONEXISTENT_EXCHANGE_ADAPTER_IMPL);
+  }
 
-    @Test(expected = ClassCastException.class)
-    public void testCreatingExchangeAdapterThatDoesNotImplementTradingApiThrowsException() {
+  @Test(expected = ClassCastException.class)
+  public void testCreatingExchangeAdapterThatDoesNotImplementTradingApiThrowsException() {
+    final TradingApi tradingApi =
+        ConfigurableComponentFactory.createComponent(INVALID_EXCHANGE_ADAPTER_NOT_IMPL_TRADING_API);
+  }
 
-        final TradingApi tradingApi = ConfigurableComponentFactory.createComponent(INVALID_EXCHANGE_ADAPTER_NOT_IMPL_TRADING_API);
-    }
-
-    @Test(expected = ClassCastException.class)
-    public void testCreatingExchangeAdapterThatDoesNotImplementExchangeAdapterThrowsException() {
-
-        final ExchangeAdapter exchangeAdapter = ConfigurableComponentFactory.createComponent(INVALID_EXCHANGE_ADAPTER_NOT_IMPL_EXCHANGE_ADAPTER);
-    }
+  @Test(expected = ClassCastException.class)
+  public void testCreatingExchangeAdapterThatDoesNotImplementExchangeAdapterThrowsException() {
+    final ExchangeAdapter exchangeAdapter =
+        ConfigurableComponentFactory.createComponent(
+            INVALID_EXCHANGE_ADAPTER_NOT_IMPL_EXCHANGE_ADAPTER);
+  }
 }

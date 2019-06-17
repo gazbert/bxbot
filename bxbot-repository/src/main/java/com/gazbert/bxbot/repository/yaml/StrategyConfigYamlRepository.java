@@ -23,21 +23,20 @@
 
 package com.gazbert.bxbot.repository.yaml;
 
+import static com.gazbert.bxbot.datastore.yaml.FileLocations.STRATEGIES_CONFIG_YAML_FILENAME;
+
 import com.gazbert.bxbot.datastore.yaml.ConfigurationManager;
 import com.gazbert.bxbot.datastore.yaml.strategy.StrategiesType;
 import com.gazbert.bxbot.domain.strategy.StrategyConfig;
 import com.gazbert.bxbot.repository.StrategyConfigRepository;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
-
-import static com.gazbert.bxbot.datastore.yaml.FileLocations.STRATEGIES_CONFIG_YAML_FILENAME;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * A Strategy config repo that uses a YAML backed datastore.
@@ -48,143 +47,144 @@ import static com.gazbert.bxbot.datastore.yaml.FileLocations.STRATEGIES_CONFIG_Y
 @Transactional
 public class StrategyConfigYamlRepository implements StrategyConfigRepository {
 
-    private static final Logger LOG = LogManager.getLogger();
+  private static final Logger LOG = LogManager.getLogger();
 
-    @Override
-    public List<StrategyConfig> findAll() {
-        LOG.info(() -> "Fetching all Strategy configs...");
-        return ConfigurationManager.loadConfig(StrategiesType.class, STRATEGIES_CONFIG_YAML_FILENAME).getStrategies();
-    }
+  @Override
+  public List<StrategyConfig> findAll() {
+    LOG.info(() -> "Fetching all Strategy configs...");
+    return ConfigurationManager.loadConfig(StrategiesType.class, STRATEGIES_CONFIG_YAML_FILENAME)
+        .getStrategies();
+  }
 
-    @Override
-    public StrategyConfig findById(String id) {
+  @Override
+  public StrategyConfig findById(String id) {
+    LOG.info(() -> "Fetching config for Strategy id: " + id);
 
-        LOG.info(() -> "Fetching config for Strategy id: " + id);
+    final StrategiesType strategiesType =
+        ConfigurationManager.loadConfig(StrategiesType.class, STRATEGIES_CONFIG_YAML_FILENAME);
 
-        final StrategiesType strategiesType = ConfigurationManager.loadConfig(StrategiesType.class,
-                STRATEGIES_CONFIG_YAML_FILENAME);
+    return adaptInternalToExternalConfig(
+        strategiesType.getStrategies().stream()
+            .filter((item) -> item.getId().equals(id))
+            .distinct()
+            .collect(Collectors.toList()));
+  }
+
+  @Override
+  public StrategyConfig save(StrategyConfig config) {
+    final StrategiesType strategiesType =
+        ConfigurationManager.loadConfig(StrategiesType.class, STRATEGIES_CONFIG_YAML_FILENAME);
+
+    final List<StrategyConfig> strategyConfigs =
+        strategiesType.getStrategies().stream()
+            .filter((item) -> item.getId().equals(config.getId()))
+            .distinct()
+            .collect(Collectors.toList());
+
+    if (config.getId() == null || config.getId().isEmpty()) {
+      LOG.info(() -> "About to create StrategyConfig: " + config);
+      if (strategyConfigs.isEmpty()) {
+
+        final StrategyConfig newStrategyConfig = new StrategyConfig(config);
+        newStrategyConfig.setId(generateUuid());
+
+        strategiesType.getStrategies().add(newStrategyConfig);
+        ConfigurationManager.saveConfig(
+            StrategiesType.class, strategiesType, STRATEGIES_CONFIG_YAML_FILENAME);
+
+        final StrategiesType updatedInternalStrategiesConfig =
+            ConfigurationManager.loadConfig(StrategiesType.class, STRATEGIES_CONFIG_YAML_FILENAME);
 
         return adaptInternalToExternalConfig(
-                strategiesType.getStrategies()
-                        .stream()
-                        .filter((item) -> item.getId().equals(id))
-                        .distinct()
-                        .collect(Collectors.toList()));
-    }
+            updatedInternalStrategiesConfig.getStrategies().stream()
+                .filter((item) -> item.getId().equals(newStrategyConfig.getId()))
+                .distinct()
+                .collect(Collectors.toList()));
+      } else {
+        throw new IllegalStateException(
+            "Trying to create new StrategyConfig but null/empty id already exists. "
+                + "StrategyConfig: "
+                + config
+                + " Existing StrategyConfigs: "
+                + strategiesType.getStrategies());
+      }
+    } else {
+      LOG.info(() -> "About to update StrategyConfig: " + config);
 
-    @Override
-    public StrategyConfig save(StrategyConfig config) {
+      if (!strategyConfigs.isEmpty()) {
+        strategiesType
+            .getStrategies()
+            .remove(strategyConfigs.get(0)); // will only be 1 unique strat
+        strategiesType.getStrategies().add(config);
+        ConfigurationManager.saveConfig(
+            StrategiesType.class, strategiesType, STRATEGIES_CONFIG_YAML_FILENAME);
 
-        final StrategiesType strategiesType = ConfigurationManager.loadConfig(StrategiesType.class,
-                STRATEGIES_CONFIG_YAML_FILENAME);
+        final StrategiesType updatedStrategiesType =
+            ConfigurationManager.loadConfig(StrategiesType.class, STRATEGIES_CONFIG_YAML_FILENAME);
 
-        final List<StrategyConfig> strategyConfigs = strategiesType.getStrategies()
-                .stream()
+        return adaptInternalToExternalConfig(
+            updatedStrategiesType.getStrategies().stream()
                 .filter((item) -> item.getId().equals(config.getId()))
                 .distinct()
-                .collect(Collectors.toList());
-
-        if (config.getId() == null || config.getId().isEmpty()) {
-
-            LOG.info(() -> "About to create StrategyConfig: " + config);
-
-            if (strategyConfigs.isEmpty()) {
-
-                final StrategyConfig newStrategyConfig = new StrategyConfig(config);
-                newStrategyConfig.setId(generateUuid());
-
-                strategiesType.getStrategies().add(newStrategyConfig);
-                ConfigurationManager.saveConfig(StrategiesType.class, strategiesType, STRATEGIES_CONFIG_YAML_FILENAME);
-
-                final StrategiesType updatedInternalStrategiesConfig = ConfigurationManager.loadConfig(
-                        StrategiesType.class, STRATEGIES_CONFIG_YAML_FILENAME);
-
-                return adaptInternalToExternalConfig(
-                        updatedInternalStrategiesConfig.getStrategies()
-                                .stream()
-                                .filter((item) -> item.getId().equals(newStrategyConfig.getId()))
-                                .distinct()
-                                .collect(Collectors.toList()));
-            } else {
-                throw new IllegalStateException("Trying to create new StrategyConfig but null/empty id already exists. " +
-                        "StrategyConfig: " + config + " Existing StrategyConfigs: "
-                        + strategiesType.getStrategies());
-            }
-
-        } else {
-
-            LOG.info(() -> "About to update StrategyConfig: " + config);
-
-            if (!strategyConfigs.isEmpty()) {
-
-                strategiesType.getStrategies().remove(strategyConfigs.get(0)); // will only be 1 unique strat
-                strategiesType.getStrategies().add(config);
-                ConfigurationManager.saveConfig(StrategiesType.class, strategiesType, STRATEGIES_CONFIG_YAML_FILENAME);
-
-                final StrategiesType updatedStrategiesType = ConfigurationManager.loadConfig(
-                        StrategiesType.class, STRATEGIES_CONFIG_YAML_FILENAME);
-
-                return adaptInternalToExternalConfig(
-                        updatedStrategiesType.getStrategies()
-                                .stream()
-                                .filter((item) -> item.getId().equals(config.getId()))
-                                .distinct()
-                                .collect(Collectors.toList()));
-            } else {
-                LOG.warn("Trying to update StrategyConfig but id does not exist StrategyConfig: " + config +
-                        " Existing StrategyConfig: " + strategiesType.getStrategies());
-                return null;
-            }
-        }
-    }
-
-    @Override
-    public StrategyConfig delete(String id) {
-
-        LOG.info(() -> "Deleting Strategy config for id: " + id);
-
-        final StrategiesType strategiesType = ConfigurationManager.loadConfig(StrategiesType.class,
-                STRATEGIES_CONFIG_YAML_FILENAME);
-
-        final List<StrategyConfig> strategyConfigs = strategiesType.getStrategies()
-                .stream()
-                .filter((item) -> item.getId().equals(id))
-                .distinct()
-                .collect(Collectors.toList());
-
-        if (!strategyConfigs.isEmpty()) {
-
-            final StrategyConfig strategyToRemove = strategyConfigs.get(0); // will only be 1 unique strat
-            strategiesType.getStrategies().remove(strategyToRemove);
-            ConfigurationManager.saveConfig(StrategiesType.class, strategiesType,
-                    STRATEGIES_CONFIG_YAML_FILENAME);
-
-            return adaptInternalToExternalConfig(Collections.singletonList(strategyToRemove));
-        } else {
-            LOG.warn("Trying to delete StrategyConfig but id does not exist. StrategyConfig id: " + id
-                    + " Existing StrategyConfig: " + strategiesType.getStrategies());
-            return null;
-        }
-    }
-
-    // ------------------------------------------------------------------------------------------------
-    // Adapter methods
-    // ------------------------------------------------------------------------------------------------
-
-    private static StrategyConfig adaptInternalToExternalConfig(List<StrategyConfig> internalStrategyConfigItems) {
-        if (!internalStrategyConfigItems.isEmpty()) {
-            // Should only ever be 1 unique Strategy id
-            return internalStrategyConfigItems.get(0);
-        }
+                .collect(Collectors.toList()));
+      } else {
+        LOG.warn(
+            "Trying to update StrategyConfig but id does not exist StrategyConfig: "
+                + config
+                + " Existing StrategyConfig: "
+                + strategiesType.getStrategies());
         return null;
+      }
     }
+  }
 
-    // -----------------------------------------------------------------------------------------------
-    // Util methods
-    // ------------------------------------------------------------------------------------------------
+  @Override
+  public StrategyConfig delete(String id) {
+    LOG.info(() -> "Deleting Strategy config for id: " + id);
 
-    private String generateUuid() {
-        return UUID.randomUUID().toString();
+    final StrategiesType strategiesType =
+        ConfigurationManager.loadConfig(StrategiesType.class, STRATEGIES_CONFIG_YAML_FILENAME);
+
+    final List<StrategyConfig> strategyConfigs =
+        strategiesType.getStrategies().stream()
+            .filter((item) -> item.getId().equals(id))
+            .distinct()
+            .collect(Collectors.toList());
+
+    if (!strategyConfigs.isEmpty()) {
+      final StrategyConfig strategyToRemove = strategyConfigs.get(0); // will only be 1 unique strat
+      strategiesType.getStrategies().remove(strategyToRemove);
+      ConfigurationManager.saveConfig(
+          StrategiesType.class, strategiesType, STRATEGIES_CONFIG_YAML_FILENAME);
+      return adaptInternalToExternalConfig(Collections.singletonList(strategyToRemove));
+    } else {
+      LOG.warn(
+          "Trying to delete StrategyConfig but id does not exist. StrategyConfig id: "
+              + id
+              + " Existing StrategyConfig: "
+              + strategiesType.getStrategies());
+      return null;
     }
+  }
+
+  // --------------------------------------------------------------------------
+  // Adapter methods
+  // --------------------------------------------------------------------------
+
+  private static StrategyConfig adaptInternalToExternalConfig(
+      List<StrategyConfig> internalStrategyConfigItems) {
+    if (!internalStrategyConfigItems.isEmpty()) {
+      // Should only ever be 1 unique Strategy id
+      return internalStrategyConfigItems.get(0);
+    }
+    return null;
+  }
+
+  // --------------------------------------------------------------------------
+  // Util methods
+  // --------------------------------------------------------------------------
+
+  private String generateUuid() {
+    return UUID.randomUUID().toString();
+  }
 }
-

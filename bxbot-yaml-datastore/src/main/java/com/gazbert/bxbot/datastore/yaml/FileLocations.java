@@ -23,7 +23,6 @@
 
 package com.gazbert.bxbot.datastore.yaml;
 
-
 /**
  * Locations of YAML files for the entities.
  *
@@ -31,15 +30,12 @@ package com.gazbert.bxbot.datastore.yaml;
  */
 public final class FileLocations {
 
-    /*
-     * Location of the YAML config files relative to project/installation root.
-     */
-    public static final String EMAIL_ALERTS_CONFIG_YAML_FILENAME = "config/email-alerts.yaml";
-    public static final String ENGINE_CONFIG_YAML_FILENAME = "config/engine.yaml";
-    public static final String EXCHANGE_CONFIG_YAML_FILENAME = "config/exchange.yaml";
-    public static final String MARKETS_CONFIG_YAML_FILENAME = "config/markets.yaml";
-    public static final String STRATEGIES_CONFIG_YAML_FILENAME = "config/strategies.yaml";
+  public static final String EMAIL_ALERTS_CONFIG_YAML_FILENAME = "config/email-alerts.yaml";
+  public static final String ENGINE_CONFIG_YAML_FILENAME = "config/engine.yaml";
+  public static final String EXCHANGE_CONFIG_YAML_FILENAME = "config/exchange.yaml";
+  public static final String MARKETS_CONFIG_YAML_FILENAME = "config/markets.yaml";
+  public static final String STRATEGIES_CONFIG_YAML_FILENAME = "config/strategies.yaml";
 
-    private FileLocations() {
-    }
+  private FileLocations() {
+  }
 }

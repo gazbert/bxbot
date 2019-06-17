@@ -26,16 +26,20 @@ package com.gazbert.bxbot.core.mail;
 import com.gazbert.bxbot.domain.emailalerts.EmailAlertsConfig;
 import com.gazbert.bxbot.domain.emailalerts.SmtpConfig;
 import com.gazbert.bxbot.services.EmailAlertsConfigService;
+import java.util.Properties;
+import javax.mail.Authenticator;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Component;
-
-import javax.mail.*;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
-import java.util.Properties;
 
 /**
  * A simple mail sender using SMTP and TLS. It sends plain/text email only.
@@ -46,91 +50,97 @@ import java.util.Properties;
 @ComponentScan(basePackages = {"com.gazbert.bxbot.repository"})
 public class EmailAlerter {
 
-    private static final Logger LOG = LogManager.getLogger();
+  private static final Logger LOG = LogManager.getLogger();
 
-    private SmtpConfig smtpConfig;
-    private Properties smtpProps;
-    private boolean sendEmailAlertsEnabled;
+  private SmtpConfig smtpConfig;
+  private Properties smtpProps;
+  private boolean sendEmailAlertsEnabled;
 
-    private final EmailAlertsConfigService emailAlertsConfigService;
+  private final EmailAlertsConfigService emailAlertsConfigService;
 
+  @Autowired
+  public EmailAlerter(EmailAlertsConfigService emailAlertsConfigService) {
+    this.emailAlertsConfigService = emailAlertsConfigService;
+    initialise();
+  }
 
-    @Autowired
-    public EmailAlerter(EmailAlertsConfigService emailAlertsConfigService) {
-        this.emailAlertsConfigService = emailAlertsConfigService;
-        initialise();
-    }
-
-    public void sendMessage(String subject, String msgContent) {
-
-        if (sendEmailAlertsEnabled) {
-
-            final Session session = Session.getInstance(smtpProps, new Authenticator() {
+  /** Sends an email message. */
+  public void sendMessage(String subject, String msgContent) {
+    if (sendEmailAlertsEnabled) {
+      final Session session =
+          Session.getInstance(
+              smtpProps,
+              new Authenticator() {
+                @Override
                 protected PasswordAuthentication getPasswordAuthentication() {
-                    return new PasswordAuthentication(smtpConfig.getAccountUsername(), smtpConfig.getAccountPassword());
+                  return new PasswordAuthentication(
+                      smtpConfig.getAccountUsername(), smtpConfig.getAccountPassword());
                 }
-            });
+              });
 
-            try {
-                final Message message = new MimeMessage(session);
-                message.setFrom(new InternetAddress(smtpConfig.getFromAddress()));
-                message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(smtpConfig.getToAddress()));
-                message.setSubject(subject);
-                message.setText(msgContent);
+      try {
+        final Message message = new MimeMessage(session);
+        message.setFrom(new InternetAddress(smtpConfig.getFromAddress()));
+        message.setRecipients(
+            Message.RecipientType.TO, InternetAddress.parse(smtpConfig.getToAddress()));
+        message.setSubject(subject);
+        message.setText(msgContent);
 
-                LOG.info(() -> "About to send following Email Alert with message content: " + msgContent);
-                Transport.send(message);
+        LOG.info(() -> "About to send following Email Alert with message content: " + msgContent);
+        Transport.send(message);
 
-            } catch (MessagingException e) {
-                // not much we can do here, especially if the alert was critical - the bot is shutting down; just log it.
-                LOG.error("Failed to send Email Alert. Details: " + e.getMessage(), e);
-            }
-        } else {
-            LOG.warn("Email Alerts are disabled. Not sending the following message: Subject: "
-                    + subject + " Content: " + msgContent);
-        }
+      } catch (MessagingException e) {
+        // not much we can do here, especially if the alert was critical - the bot is shutting down;
+        // just log it.
+        LOG.error("Failed to send Email Alert. Details: " + e.getMessage(), e);
+      }
+    } else {
+      LOG.warn(
+          "Email Alerts are disabled. Not sending the following message: Subject: "
+              + subject
+              + " Content: "
+              + msgContent);
     }
+  }
 
-    // ------------------------------------------------------------------------
-    // Private utils
-    // ------------------------------------------------------------------------
+  // ------------------------------------------------------------------------
+  // Private utils
+  // ------------------------------------------------------------------------
 
-    private void initialise() {
+  private void initialise() {
+    final EmailAlertsConfig emailAlertsConfig = emailAlertsConfigService.getEmailAlertsConfig();
+    if (emailAlertsConfig != null) {
+      sendEmailAlertsEnabled = emailAlertsConfig.isEnabled();
 
-        final EmailAlertsConfig emailAlertsConfig = emailAlertsConfigService.getEmailAlertsConfig();
-        if (emailAlertsConfig != null) {
+      if (sendEmailAlertsEnabled) {
+        LOG.info(() -> "Email Alert for emergency bot shutdown is enabled. Loading SMTP config...");
+        smtpConfig = emailAlertsConfig.getSmtpConfig();
 
-            sendEmailAlertsEnabled = emailAlertsConfig.isEnabled();
-            if (sendEmailAlertsEnabled) {
-
-                LOG.info(() -> "Email Alert for emergency bot shutdown is enabled. Loading SMTP config...");
-
-                smtpConfig = emailAlertsConfig.getSmtpConfig();
-
-                if (smtpConfig == null) {
-                    final String errorMsg = "Failed to initialise Email Alerter. " +
-                            "Alerts are enabled but no SMTP Config has been supplied in config.";
-                    throw new IllegalStateException(errorMsg);
-                }
-
-                LOG.info(() -> "SMTP host: " + smtpConfig.getHost());
-                LOG.info(() -> "SMTP TLS Port: " + smtpConfig.getTlsPort());
-                LOG.info(() -> "Account username: " + smtpConfig.getAccountUsername());
-                // uncomment below for testing only
-//                    LOG.info( () -> "Account password: " + smtpConfig.getAccountPassword());
-
-                LOG.info(() -> "From address: " + smtpConfig.getFromAddress());
-                LOG.info(() -> "To address: " + smtpConfig.getToAddress());
-
-                smtpProps = new Properties();
-                smtpProps.put("mail.smtp.auth", "true");
-                smtpProps.put("mail.smtp.starttls.enable", "true");
-                smtpProps.put("mail.smtp.host", smtpConfig.getHost());
-                smtpProps.put("mail.smtp.port", smtpConfig.getTlsPort());
-
-            } else {
-                LOG.warn("Email Alerts are disabled. Are you sure you want to configure this?");
-            }
+        if (smtpConfig == null) {
+          final String errorMsg =
+              "Failed to initialise Email Alerter. "
+                  + "Alerts are enabled but no SMTP Config has been supplied in config.";
+          throw new IllegalStateException(errorMsg);
         }
+
+        LOG.info(() -> "SMTP host: " + smtpConfig.getHost());
+        LOG.info(() -> "SMTP TLS Port: " + smtpConfig.getTlsPort());
+        LOG.info(() -> "Account username: " + smtpConfig.getAccountUsername());
+        // uncomment below for testing only
+        // LOG.info( () -> "Account password: " + smtpConfig.getAccountPassword());
+
+        LOG.info(() -> "From address: " + smtpConfig.getFromAddress());
+        LOG.info(() -> "To address: " + smtpConfig.getToAddress());
+
+        smtpProps = new Properties();
+        smtpProps.put("mail.smtp.auth", "true");
+        smtpProps.put("mail.smtp.starttls.enable", "true");
+        smtpProps.put("mail.smtp.host", smtpConfig.getHost());
+        smtpProps.put("mail.smtp.port", smtpConfig.getTlsPort());
+
+      } else {
+        LOG.warn("Email Alerts are disabled. Are you sure you want to configure this?");
+      }
     }
+  }
 }

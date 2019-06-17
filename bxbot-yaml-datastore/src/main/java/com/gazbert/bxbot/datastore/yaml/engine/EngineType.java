@@ -32,13 +32,13 @@ import com.gazbert.bxbot.domain.engine.EngineConfig;
  */
 public class EngineType {
 
-   private EngineConfig engine;
+  private EngineConfig engine;
 
-    public EngineConfig getEngine() {
-        return engine;
-    }
+  public EngineConfig getEngine() {
+    return engine;
+  }
 
-    public void setEngine(EngineConfig engine) {
-        this.engine = engine;
-    }
+  public void setEngine(EngineConfig engine) {
+    this.engine = engine;
+  }
 }

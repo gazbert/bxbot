@@ -25,7 +25,6 @@ package com.gazbert.bxbot.domain.strategy;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -36,106 +35,118 @@ import java.util.Map;
  */
 public class StrategyConfig {
 
-    private String id;
-    private String name;
-    private String description;
-    private String className;
-    private String beanName;
-    private Map<String, String> configItems = new HashMap<>();
+  private String id;
+  private String name;
+  private String description;
+  private String className;
+  private String beanName;
+  private Map<String, String> configItems = new HashMap<>();
 
+  // required for Jackson
+  public StrategyConfig() {
+  }
 
-    // required for Jackson
-    public StrategyConfig() {
+  /** Creates a StrategyConfig from an existing one. */
+  public StrategyConfig(StrategyConfig other) {
+    this.id = other.id;
+    this.name = other.name;
+    this.description = other.description;
+    this.className = other.className;
+    this.beanName = other.beanName;
+    this.configItems = other.configItems;
+  }
+
+  /** Creates a new StrategyConfig. */
+  public StrategyConfig(
+      String id,
+      String name,
+      String description,
+      String className,
+      String beanName,
+      Map<String, String> configItems) {
+
+    this.id = id;
+    this.name = name;
+    this.description = description;
+    this.className = className;
+    this.beanName = beanName;
+    this.configItems = configItems;
+  }
+
+  public String getId() {
+    return id;
+  }
+
+  public void setId(String id) {
+    this.id = id;
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  public String getDescription() {
+    return description;
+  }
+
+  public void setDescription(String description) {
+    this.description = description;
+  }
+
+  public String getClassName() {
+    return className;
+  }
+
+  public void setClassName(String className) {
+    this.className = className;
+  }
+
+  public String getBeanName() {
+    return beanName;
+  }
+
+  public void setBeanName(String beanName) {
+    this.beanName = beanName;
+  }
+
+  public Map<String, String> getConfigItems() {
+    return configItems;
+  }
+
+  public void setConfigItems(Map<String, String> configItems) {
+    this.configItems = configItems;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
     }
-
-    public StrategyConfig(StrategyConfig other) {
-        this.id = other.id;
-        this.name = other.name;
-        this.description = other.description;
-        this.className = other.className;
-        this.beanName = other.beanName;
-        this.configItems = other.configItems;
+    if (o == null || getClass() != o.getClass()) {
+      return false;
     }
+    StrategyConfig that = (StrategyConfig) o;
+    return Objects.equal(id, that.id);
+  }
 
-    public StrategyConfig(String id, String name, String description, String className, String beanName, Map<String, String> configItems) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.className = className;
-        this.beanName = beanName;
-        this.configItems = configItems;
-    }
+  @Override
+  public int hashCode() {
+    return Objects.hashCode(id);
+  }
 
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getClassName() {
-        return className;
-    }
-
-    public void setClassName(String className) {
-        this.className = className;
-    }
-
-    public String getBeanName() {
-        return beanName;
-    }
-
-    public void setBeanName(String beanName) {
-        this.beanName = beanName;
-    }
-
-    public Map<String, String> getConfigItems() {
-        return configItems;
-    }
-
-    public void setConfigItems(Map<String, String> configItems) {
-        this.configItems = configItems;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        StrategyConfig that = (StrategyConfig) o;
-        return Objects.equal(id, that.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(id);
-    }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-                .add("id", id)
-                .add("name", name)
-                .add("description", description)
-                .add("className", className)
-                .add("beanName", beanName)
-                .add("configItems", configItems)
-                .toString();
-    }
+  @Override
+  public String toString() {
+    return MoreObjects.toStringHelper(this)
+        .add("id", id)
+        .add("name", name)
+        .add("description", description)
+        .add("className", className)
+        .add("beanName", beanName)
+        .add("configItems", configItems)
+        .toString();
+  }
 }

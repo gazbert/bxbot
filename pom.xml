@@ -7,7 +7,7 @@
     <artifactId>bxbot-parent</artifactId>
     <packaging>pom</packaging>
     <version>${revision}</version>
-    <name>BX-bot Parent</name>
+    <name>BX-bot</name>
     <description>Parent POM for building the bot</description>
     <url>https://github.com/gazbert/bxbot</url>
     <inceptionYear>2015</inceptionYear>
@@ -394,12 +394,51 @@
                                             <limit>
                                                 <counter>LINE</counter>
                                                 <value>COVEREDRATIO</value>
-                                                <minimum>0.9</minimum>
+                                                <minimum>0.8</minimum>
                                             </limit>
                                         </limits>
                                     </rule>
                                 </rules>
                             </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-checkstyle-plugin</artifactId>
+                    <version>3.1.0</version>
+                    <configuration>
+                        <configLocation>google_checks.xml</configLocation>
+                        <encoding>UTF-8</encoding>
+                        <consoleOutput>true</consoleOutput>
+                        <failsOnError>true</failsOnError>
+                        <linkXRef>false</linkXRef>
+                        <violationSeverity>warning</violationSeverity>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>validate</id>
+                            <phase>validate</phase>
+                            <goals>
+                                <goal>check</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>com.github.spotbugs</groupId>
+                    <artifactId>spotbugs-maven-plugin</artifactId>
+                    <version>${spotbugs.version}</version>
+                    <configuration>
+                        <excludeFilterFile>etc/spotbugs-exclude-filter.xml</excludeFilterFile>
+                        <effort>Max</effort>
+                        <threshold>Low</threshold>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>check</goal>
+                            </goals>
                         </execution>
                     </executions>
                 </plugin>

@@ -12,7 +12,7 @@
  *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
  * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
@@ -25,7 +25,6 @@ package com.gazbert.bxbot.exchanges.trading.api.impl;
 
 import com.gazbert.bxbot.trading.api.Ticker;
 import com.google.common.base.MoreObjects;
-
 import java.math.BigDecimal;
 
 /**
@@ -35,123 +34,132 @@ import java.math.BigDecimal;
  */
 public final class TickerImpl implements Ticker {
 
-    private BigDecimal last;
-    private BigDecimal bid;
-    private BigDecimal ask;
-    private BigDecimal low;
-    private BigDecimal high;
-    private BigDecimal open;
-    private BigDecimal volume;
-    private BigDecimal vwap;
-    private Long timestamp;
+  private BigDecimal last;
+  private BigDecimal bid;
+  private BigDecimal ask;
+  private BigDecimal low;
+  private BigDecimal high;
+  private BigDecimal open;
+  private BigDecimal volume;
+  private BigDecimal vwap;
+  private Long timestamp;
 
+  /** Creates a new TicketImpl. */
+  public TickerImpl(
+      BigDecimal last,
+      BigDecimal bid,
+      BigDecimal ask,
+      BigDecimal low,
+      BigDecimal high,
+      BigDecimal open,
+      BigDecimal volume,
+      BigDecimal vwap,
+      Long timestamp) {
 
-    public TickerImpl(BigDecimal last, BigDecimal bid, BigDecimal ask, BigDecimal low, BigDecimal high,
-               BigDecimal open, BigDecimal volume, BigDecimal vwap, Long timestamp) {
-        this.last = last;
-        this.bid = bid;
-        this.ask = ask;
-        this.low = low;
-        this.high = high;
-        this.open = open;
-        this.volume = volume;
-        this.vwap = vwap;
-        this.timestamp = timestamp;
-    }
+    this.last = last;
+    this.bid = bid;
+    this.ask = ask;
+    this.low = low;
+    this.high = high;
+    this.open = open;
+    this.volume = volume;
+    this.vwap = vwap;
+    this.timestamp = timestamp;
+  }
 
-    @Override
-    public BigDecimal getLast() {
-        return last;
-    }
+  @Override
+  public BigDecimal getLast() {
+    return last;
+  }
 
-    public void setLast(BigDecimal last) {
-        this.last = last;
-    }
+  public void setLast(BigDecimal last) {
+    this.last = last;
+  }
 
-    @Override
-    public BigDecimal getBid() {
-        return bid;
-    }
+  @Override
+  public BigDecimal getBid() {
+    return bid;
+  }
 
-    public void setBid(BigDecimal bid) {
-        this.bid = bid;
-    }
+  public void setBid(BigDecimal bid) {
+    this.bid = bid;
+  }
 
-    @Override
-    public BigDecimal getAsk() {
-        return ask;
-    }
+  @Override
+  public BigDecimal getAsk() {
+    return ask;
+  }
 
-    public void setAsk(BigDecimal ask) {
-        this.ask = ask;
-    }
+  public void setAsk(BigDecimal ask) {
+    this.ask = ask;
+  }
 
-    @Override
-    public BigDecimal getLow() {
-        return low;
-    }
+  @Override
+  public BigDecimal getLow() {
+    return low;
+  }
 
-    public void setLow(BigDecimal low) {
-        this.low = low;
-    }
+  public void setLow(BigDecimal low) {
+    this.low = low;
+  }
 
-    @Override
-    public BigDecimal getHigh() {
-        return high;
-    }
+  @Override
+  public BigDecimal getHigh() {
+    return high;
+  }
 
-    public void setHigh(BigDecimal high) {
-        this.high = high;
-    }
+  public void setHigh(BigDecimal high) {
+    this.high = high;
+  }
 
-    @Override
-    public BigDecimal getOpen() {
-        return open;
-    }
+  @Override
+  public BigDecimal getOpen() {
+    return open;
+  }
 
-    public void setOpen(BigDecimal open) {
-        this.open = open;
-    }
+  public void setOpen(BigDecimal open) {
+    this.open = open;
+  }
 
-    @Override
-    public BigDecimal getVolume() {
-        return volume;
-    }
+  @Override
+  public BigDecimal getVolume() {
+    return volume;
+  }
 
-    public void setVolume(BigDecimal volume) {
-        this.volume = volume;
-    }
+  public void setVolume(BigDecimal volume) {
+    this.volume = volume;
+  }
 
-    @Override
-    public BigDecimal getVwap() {
-        return vwap;
-    }
+  @Override
+  public BigDecimal getVwap() {
+    return vwap;
+  }
 
-    public void setVwap(BigDecimal vwap) {
-        this.vwap = vwap;
-    }
+  public void setVwap(BigDecimal vwap) {
+    this.vwap = vwap;
+  }
 
-    @Override
-    public Long getTimestamp() {
-        return timestamp;
-    }
+  @Override
+  public Long getTimestamp() {
+    return timestamp;
+  }
 
-    public void setTimestamp(Long timestamp) {
-        this.timestamp = timestamp;
-    }
+  public void setTimestamp(Long timestamp) {
+    this.timestamp = timestamp;
+  }
 
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-                .add("last", last)
-                .add("bid", bid)
-                .add("ask", ask)
-                .add("low", low)
-                .add("high", high)
-                .add("open", open)
-                .add("volume", volume)
-                .add("vwap", vwap)
-                .add("timestamp", timestamp)
-                .toString();
-    }
+  @Override
+  public String toString() {
+    return MoreObjects.toStringHelper(this)
+        .add("last", last)
+        .add("bid", bid)
+        .add("ask", ask)
+        .add("low", low)
+        .add("high", high)
+        .add("open", open)
+        .add("volume", volume)
+        .add("vwap", vwap)
+        .add("timestamp", timestamp)
+        .toString();
+  }
 }

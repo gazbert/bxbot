@@ -44,23 +44,23 @@ import org.springframework.transaction.annotation.Transactional;
 @ComponentScan(basePackages = {"com.gazbert.bxbot.repository"})
 public class EmailAlertsConfigServiceImpl implements EmailAlertsConfigService {
 
-    private static final Logger LOG = LogManager.getLogger();
+  private static final Logger LOG = LogManager.getLogger();
+  private final EmailAlertsConfigRepository emailAlertsConfigRepository;
 
-    private final EmailAlertsConfigRepository emailAlertsConfigRepository;
+  @Autowired
+  public EmailAlertsConfigServiceImpl(@Qualifier("emailAlertsConfigYamlRepository")
+      EmailAlertsConfigRepository emailAlertsConfigRepository) {
+    this.emailAlertsConfigRepository = emailAlertsConfigRepository;
+  }
 
-    @Autowired
-    public EmailAlertsConfigServiceImpl(@Qualifier("emailAlertsConfigYamlRepository")EmailAlertsConfigRepository emailAlertsConfigRepository) {
-        this.emailAlertsConfigRepository = emailAlertsConfigRepository;
-    }
+  @Override
+  public EmailAlertsConfig getEmailAlertsConfig() {
+    return emailAlertsConfigRepository.get();
+  }
 
-    @Override
-    public EmailAlertsConfig getEmailAlertsConfig() {
-        return emailAlertsConfigRepository.get();
-    }
-
-    @Override
-    public EmailAlertsConfig updateEmailAlertsConfig(EmailAlertsConfig config) {
-        LOG.info(() -> "About to update Email Alerts config: " + config);
-        return emailAlertsConfigRepository.save(config);
-    }
+  @Override
+  public EmailAlertsConfig updateEmailAlertsConfig(EmailAlertsConfig config) {
+    LOG.info(() -> "About to update Email Alerts config: " + config);
+    return emailAlertsConfigRepository.save(config);
+  }
 }

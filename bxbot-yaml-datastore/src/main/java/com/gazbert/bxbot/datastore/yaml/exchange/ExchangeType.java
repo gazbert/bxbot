@@ -32,13 +32,13 @@ import com.gazbert.bxbot.domain.exchange.ExchangeConfig;
  */
 public class ExchangeType {
 
-    private ExchangeConfig exchange;
+  private ExchangeConfig exchange;
 
-    public ExchangeConfig getExchange() {
-        return exchange;
-    }
+  public ExchangeConfig getExchange() {
+    return exchange;
+  }
 
-    public void setExchange(ExchangeConfig exchange) {
-        this.exchange = exchange;
-    }
+  public void setExchange(ExchangeConfig exchange) {
+    this.exchange = exchange;
+  }
 }

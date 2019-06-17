@@ -12,7 +12,7 @@
  *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
  * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
@@ -34,26 +34,23 @@ import java.util.Map;
  */
 public interface BalanceInfo {
 
-    /**
-     * Returns map of available balances.
-     * <p>
-     * The key is the currency id in UPPERCASE, e.g. LTC, BTC, USD
-     * </p>
-     *
-     * @return map of available balances.
-     */
-    Map<String, BigDecimal> getBalancesAvailable();
+  /**
+   * Returns map of available balances.
+   *
+   * <p>The key is the currency id in UPPERCASE, e.g. LTC, BTC, USD
+   *
+   * @return map of available balances.
+   */
+  Map<String, BigDecimal> getBalancesAvailable();
 
-    /**
-     * Returns map of balances on hold.
-     * <p>
-     * Some exchanges do not provide this information and the returned map will be empty.
-     * <p>
-     * The key is the currency id in UPPERCASE, e.g. LTC, BTC, USD
-     * </p>
-     *
-     * @return map of balances on hold.
-     */
-    Map<String, BigDecimal> getBalancesOnHold();
+  /**
+   * Returns map of balances on hold.
+   *
+   * <p>Some exchanges do not provide this information and the returned map will be empty.
+   *
+   * <p>The key is the currency id in UPPERCASE, e.g. LTC, BTC, USD
+   *
+   * @return map of balances on hold.
+   */
+  Map<String, BigDecimal> getBalancesOnHold();
 }
-

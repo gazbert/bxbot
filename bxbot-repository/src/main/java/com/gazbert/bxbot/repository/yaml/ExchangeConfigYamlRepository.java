@@ -23,6 +23,8 @@
 
 package com.gazbert.bxbot.repository.yaml;
 
+import static com.gazbert.bxbot.datastore.yaml.FileLocations.EXCHANGE_CONFIG_YAML_FILENAME;
+
 import com.gazbert.bxbot.datastore.yaml.ConfigurationManager;
 import com.gazbert.bxbot.datastore.yaml.exchange.ExchangeType;
 import com.gazbert.bxbot.domain.exchange.ExchangeConfig;
@@ -31,8 +33,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-
-import static com.gazbert.bxbot.datastore.yaml.FileLocations.EXCHANGE_CONFIG_YAML_FILENAME;
 
 /**
  * An Exchange config repo that uses a YAML backed datastore.
@@ -43,23 +43,25 @@ import static com.gazbert.bxbot.datastore.yaml.FileLocations.EXCHANGE_CONFIG_YAM
 @Transactional
 public class ExchangeConfigYamlRepository implements ExchangeConfigRepository {
 
-    private static final Logger LOG = LogManager.getLogger();
+  private static final Logger LOG = LogManager.getLogger();
 
-    @Override
-    public ExchangeConfig get() {
-        LOG.info(() -> "Fetching ExchangeConfig...");
-        return ConfigurationManager.loadConfig(ExchangeType.class, EXCHANGE_CONFIG_YAML_FILENAME).getExchange();
-    }
+  @Override
+  public ExchangeConfig get() {
+    LOG.info(() -> "Fetching ExchangeConfig...");
+    return ConfigurationManager.loadConfig(ExchangeType.class, EXCHANGE_CONFIG_YAML_FILENAME)
+        .getExchange();
+  }
 
-    @Override
-    public ExchangeConfig save(ExchangeConfig config) {
+  @Override
+  public ExchangeConfig save(ExchangeConfig config) {
+    LOG.info(() -> "About to save ExchangeConfig: " + config);
 
-        LOG.info(() -> "About to save ExchangeConfig: " + config);
+    final ExchangeType exchangeType = new ExchangeType();
+    exchangeType.setExchange(config);
+    ConfigurationManager.saveConfig(
+        ExchangeType.class, exchangeType, EXCHANGE_CONFIG_YAML_FILENAME);
 
-        final ExchangeType exchangeType = new ExchangeType();
-        exchangeType.setExchange(config);
-        ConfigurationManager.saveConfig(ExchangeType.class, exchangeType, EXCHANGE_CONFIG_YAML_FILENAME);
-
-        return ConfigurationManager.loadConfig(ExchangeType.class, EXCHANGE_CONFIG_YAML_FILENAME).getExchange();
-    }
+    return ConfigurationManager.loadConfig(ExchangeType.class, EXCHANGE_CONFIG_YAML_FILENAME)
+        .getExchange();
+  }
 }

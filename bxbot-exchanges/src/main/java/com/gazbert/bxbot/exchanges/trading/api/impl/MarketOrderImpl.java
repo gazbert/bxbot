@@ -12,7 +12,7 @@
  *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
  * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
@@ -26,67 +26,67 @@ package com.gazbert.bxbot.exchanges.trading.api.impl;
 import com.gazbert.bxbot.trading.api.MarketOrder;
 import com.gazbert.bxbot.trading.api.OrderType;
 import com.google.common.base.MoreObjects;
-
 import java.math.BigDecimal;
 
 /**
- * A Market Order implementation that can be used by Exchange Adapters.
+ * A MarketOrder implementation that can be used by Exchange Adapters.
  *
  * @author gazbert
  */
 public final class MarketOrderImpl implements MarketOrder {
 
-    private OrderType type;
-    private BigDecimal price;
-    private BigDecimal quantity;
-    private BigDecimal total;
+  private OrderType type;
+  private BigDecimal price;
+  private BigDecimal quantity;
+  private BigDecimal total;
 
-    public MarketOrderImpl(OrderType type, BigDecimal price, BigDecimal quantity, BigDecimal total) {
-        this.type = type;
-        this.price = price;
-        this.quantity = quantity;
-        this.total = total;
-    }
+  /** Creates a new Market Order. */
+  public MarketOrderImpl(OrderType type, BigDecimal price, BigDecimal quantity, BigDecimal total) {
+    this.type = type;
+    this.price = price;
+    this.quantity = quantity;
+    this.total = total;
+  }
 
-    public OrderType getType() {
-        return type;
-    }
+  public OrderType getType() {
+    return type;
+  }
 
-    public void setType(OrderType type) {
-        this.type = type;
-    }
+  public void setType(OrderType type) {
+    this.type = type;
+  }
 
-    public BigDecimal getPrice() {
-        return price;
-    }
+  public BigDecimal getPrice() {
+    return price;
+  }
 
-    public void setPrice(BigDecimal price) {
-        this.price = price;
-    }
+  public void setPrice(BigDecimal price) {
+    this.price = price;
+  }
 
-    public BigDecimal getQuantity() {
-        return quantity;
-    }
+  public BigDecimal getQuantity() {
+    return quantity;
+  }
 
-    public void setQuantity(BigDecimal quantity) {
-        this.quantity = quantity;
-    }
+  public void setQuantity(BigDecimal quantity) {
+    this.quantity = quantity;
+  }
 
-    public BigDecimal getTotal() {
-        return total;
-    }
+  public BigDecimal getTotal() {
+    return total;
+  }
 
-    public void setTotal(BigDecimal total) {
-        this.total = total;
-    }
+  public void setTotal(BigDecimal total) {
+    this.total = total;
+  }
 
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-                .add("type", type)
-                .add("price", price)
-                .add("quantity", quantity)
-                .add("total", total)
-                .toString();
-    }
+  @Override
+  public String toString() {
+    return MoreObjects.toStringHelper(this)
+        .add("type", type)
+        .add("price", price)
+        .add("quantity", quantity)
+        .add("total", total)
+        .toString();
+  }
 }

@@ -14,7 +14,7 @@
         <version>${revision}</version>
     </parent>
     <properties>
-        <start-class>com.gazbert.bxbot.BXBot</start-class>
+        <start-class>com.gazbert.bxbot.BxBot</start-class>
     </properties>
     <dependencies>
         <dependency>

@@ -23,9 +23,7 @@
 
 package com.gazbert.bxbot.services;
 
-
 import com.gazbert.bxbot.domain.strategy.StrategyConfig;
-
 import java.util.List;
 
 /**
@@ -35,13 +33,13 @@ import java.util.List;
  */
 public interface StrategyConfigService {
 
-    List<StrategyConfig> getAllStrategyConfig();
+  List<StrategyConfig> getAllStrategyConfig();
 
-    StrategyConfig getStrategyConfig(String id);
+  StrategyConfig getStrategyConfig(String id);
 
-    StrategyConfig updateStrategyConfig(StrategyConfig config);
+  StrategyConfig updateStrategyConfig(StrategyConfig config);
 
-    StrategyConfig createStrategyConfig(StrategyConfig config);
+  StrategyConfig createStrategyConfig(StrategyConfig config);
 
-    StrategyConfig deleteStrategyConfig(String id);
+  StrategyConfig deleteStrategyConfig(String id);
 }
