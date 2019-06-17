@@ -66,7 +66,7 @@ public class MarketConfigYamlRepository implements MarketConfigRepository {
 
     return adaptInternalToExternalConfig(
         marketsType.getMarkets().stream()
-            .filter((item) -> item.getId().equals(id))
+            .filter(item -> item.getId().equals(id))
             .distinct()
             .collect(Collectors.toList()));
   }
@@ -78,7 +78,7 @@ public class MarketConfigYamlRepository implements MarketConfigRepository {
 
     final List<MarketConfig> marketConfigs =
         marketsType.getMarkets().stream()
-            .filter((item) -> item.getId().equals(config.getId()))
+            .filter(item -> item.getId().equals(config.getId()))
             .distinct()
             .collect(Collectors.toList());
 
@@ -98,7 +98,7 @@ public class MarketConfigYamlRepository implements MarketConfigRepository {
 
         return adaptInternalToExternalConfig(
             updatedInternalMarketsConfig.getMarkets().stream()
-                .filter((item) -> item.getId().equals(newMarketConfig.getId()))
+                .filter(item -> item.getId().equals(newMarketConfig.getId()))
                 .distinct()
                 .collect(Collectors.toList()));
       } else {
@@ -124,16 +124,16 @@ public class MarketConfigYamlRepository implements MarketConfigRepository {
 
         return adaptInternalToExternalConfig(
             updatedMarketsType.getMarkets().stream()
-                .filter((item) -> item.getId().equals(config.getId()))
+                .filter(item -> item.getId().equals(config.getId()))
                 .distinct()
                 .collect(Collectors.toList()));
       } else {
         LOG.warn(
             () ->
-            "Trying to update MarketConfig but id does not exist MarketConfig: "
-                + config
-                + EXISTING_MARKET_CONFIG
-                + marketsType.getMarkets());
+                "Trying to update MarketConfig but id does not exist MarketConfig: "
+                    + config
+                    + EXISTING_MARKET_CONFIG
+                    + marketsType.getMarkets());
         return null;
       }
     }
@@ -148,7 +148,7 @@ public class MarketConfigYamlRepository implements MarketConfigRepository {
 
     final List<MarketConfig> marketConfigs =
         marketsType.getMarkets().stream()
-            .filter((item) -> item.getId().equals(id))
+            .filter(item -> item.getId().equals(id))
             .distinct()
             .collect(Collectors.toList());
 
@@ -160,10 +160,10 @@ public class MarketConfigYamlRepository implements MarketConfigRepository {
     } else {
       LOG.warn(
           () ->
-          "Trying to delete MarketConfig but id does not exist. MarketConfig id: "
-              + id
-              + EXISTING_MARKET_CONFIG
-              + marketsType.getMarkets());
+              "Trying to delete MarketConfig but id does not exist. MarketConfig id: "
+                  + id
+                  + EXISTING_MARKET_CONFIG
+                  + marketsType.getMarkets());
       return null;
     }
   }

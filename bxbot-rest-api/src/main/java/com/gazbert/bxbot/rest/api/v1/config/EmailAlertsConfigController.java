@@ -79,7 +79,7 @@ public class EmailAlertsConfigController extends AbstractConfigController {
             + user.getUsername());
 
     final EmailAlertsConfig emailAlertsConfig = emailAlertsConfigService.getEmailAlertsConfig();
-    LOG.info("Response: " + emailAlertsConfig);
+    LOG.info(() -> "Response: " + emailAlertsConfig);
     return emailAlertsConfig;
   }
 

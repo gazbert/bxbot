@@ -92,14 +92,15 @@ public class EmailAlerter {
       } catch (MessagingException e) {
         // not much we can do here, especially if the alert was critical - the bot is shutting down;
         // just log it.
-        LOG.error("Failed to send Email Alert. Details: " + e.getMessage(), e);
+        LOG.error(() -> "Failed to send Email Alert. Details: " + e.getMessage(), e);
       }
     } else {
       LOG.warn(
-          "Email Alerts are disabled. Not sending the following message: Subject: "
-              + subject
-              + " Content: "
-              + msgContent);
+          () ->
+              "Email Alerts are disabled. Not sending the following message: Subject: "
+                  + subject
+                  + " Content: "
+                  + msgContent);
     }
   }
 
@@ -138,7 +139,7 @@ public class EmailAlerter {
         smtpProps.put("mail.smtp.port", smtpConfig.getTlsPort());
 
       } else {
-        LOG.warn("Email Alerts are disabled. Are you sure you want to configure this?");
+        LOG.warn(() -> "Email Alerts are disabled. Are you sure you want to configure this?");
       }
     }
   }
