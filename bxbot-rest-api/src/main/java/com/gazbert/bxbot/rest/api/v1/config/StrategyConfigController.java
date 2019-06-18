@@ -35,10 +35,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -66,7 +69,8 @@ public class StrategyConfigController extends AbstractConfigController {
    * @param user the authenticated user.
    * @return all the Strategy configurations.
    */
-  @RequestMapping(value = STRATEGIES_RESOURCE_PATH, method = RequestMethod.GET)
+  @GetMapping
+  @RequestMapping(value = STRATEGIES_RESOURCE_PATH)
   public List<StrategyConfig> getAllStrategies(@AuthenticationPrincipal User user) {
     LOG.info(
         () ->
@@ -88,7 +92,8 @@ public class StrategyConfigController extends AbstractConfigController {
    * @param strategyId the id of the Strategy to fetch.
    * @return the Strategy configuration.
    */
-  @RequestMapping(value = STRATEGIES_RESOURCE_PATH + "/{strategyId}", method = RequestMethod.GET)
+  @GetMapping
+  @RequestMapping(value = STRATEGIES_RESOURCE_PATH + "/{strategyId}")
   public ResponseEntity<?> getStrategy(
       @AuthenticationPrincipal User user, @PathVariable String strategyId) {
     LOG.info(
@@ -115,7 +120,8 @@ public class StrategyConfigController extends AbstractConfigController {
    * @return 200 'OK' HTTP status code and updated Strategy config in the body if update successful,
    *     404 'Not Found' HTTP status code if Strategy config not found.
    */
-  @RequestMapping(value = STRATEGIES_RESOURCE_PATH + "/{strategyId}", method = RequestMethod.PUT)
+  @PutMapping
+  @RequestMapping(value = STRATEGIES_RESOURCE_PATH + "/{strategyId}")
   public ResponseEntity<?> updateStrategy(
       @AuthenticationPrincipal User user,
       @PathVariable String strategyId,
@@ -149,7 +155,8 @@ public class StrategyConfigController extends AbstractConfigController {
    * @return 201 'Created' HTTP status code and created Strategy config in response body if create
    *     successful, some other status code otherwise.
    */
-  @RequestMapping(value = STRATEGIES_RESOURCE_PATH, method = RequestMethod.POST)
+  @PostMapping
+  @RequestMapping(value = STRATEGIES_RESOURCE_PATH)
   public ResponseEntity<?> createStrategy(
       @AuthenticationPrincipal User user, @RequestBody StrategyConfig config) {
 
@@ -175,7 +182,8 @@ public class StrategyConfigController extends AbstractConfigController {
    * @return 204 'No Content' HTTP status code if delete successful, 404 'Not Found' HTTP status
    *     code if Strategy config not found.
    */
-  @RequestMapping(value = STRATEGIES_RESOURCE_PATH + "/{strategyId}", method = RequestMethod.DELETE)
+  @DeleteMapping
+  @RequestMapping(value = STRATEGIES_RESOURCE_PATH + "/{strategyId}")
   public ResponseEntity<?> deleteStrategy(
       @AuthenticationPrincipal User user, @PathVariable String strategyId) {
 

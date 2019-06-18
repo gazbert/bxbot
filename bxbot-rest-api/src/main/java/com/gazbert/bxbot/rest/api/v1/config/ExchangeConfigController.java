@@ -33,6 +33,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -69,7 +71,8 @@ public class ExchangeConfigController extends AbstractConfigController {
    * @param user the authenticated user making the request.
    * @return the Exchange configuration.
    */
-  @RequestMapping(value = EXCHANGE_RESOURCE_PATH, method = RequestMethod.GET)
+  @GetMapping
+  @RequestMapping(value = EXCHANGE_RESOURCE_PATH)
   public ExchangeConfig getExchange(@AuthenticationPrincipal User user) {
 
     LOG.info(
@@ -92,7 +95,8 @@ public class ExchangeConfigController extends AbstractConfigController {
    * @return 200 'OK' HTTP status code with updated Exchange config in the body if update
    *     successful, some other HTTP status code otherwise.
    */
-  @RequestMapping(value = EXCHANGE_RESOURCE_PATH, method = RequestMethod.PUT)
+  @PutMapping
+  @RequestMapping(value = EXCHANGE_RESOURCE_PATH)
   public ResponseEntity<?> updateExchange(
       @AuthenticationPrincipal User user, @RequestBody ExchangeConfig config) {
 

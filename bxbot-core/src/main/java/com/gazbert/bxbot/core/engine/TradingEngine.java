@@ -100,11 +100,11 @@ public class TradingEngine {
       "--------------------------------------------------" + NEWLINE;
   private static final String DECIMAL_FORMAT_PATTERN = "#.########";
 
-  private static int tradeExecutionInterval;
+  private static final Object IS_RUNNING_MONITOR = new Object();
+
+  private int tradeExecutionInterval;
   private volatile boolean keepAlive = true;
   private boolean isRunning = false;
-
-  private static final Object IS_RUNNING_MONITOR = new Object();
 
   private Thread engineThread;
 

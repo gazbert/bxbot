@@ -35,10 +35,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -66,7 +69,8 @@ public class MarketConfigController extends AbstractConfigController {
    * @param user the authenticated user.
    * @return all the Market configurations.
    */
-  @RequestMapping(value = MARKETS_RESOURCE_PATH, method = RequestMethod.GET)
+  @GetMapping
+  @RequestMapping(value = MARKETS_RESOURCE_PATH)
   public List<?> getAllMarkets(@AuthenticationPrincipal User user) {
 
     LOG.info(
@@ -85,7 +89,8 @@ public class MarketConfigController extends AbstractConfigController {
    * @param marketId the id of the Market to fetch.
    * @return the Market configuration.
    */
-  @RequestMapping(value = MARKETS_RESOURCE_PATH + "/{marketId}", method = RequestMethod.GET)
+  @GetMapping
+  @RequestMapping(value = MARKETS_RESOURCE_PATH + "/{marketId}")
   public ResponseEntity<?> getMarket(
       @AuthenticationPrincipal User user, @PathVariable String marketId) {
 
@@ -113,7 +118,8 @@ public class MarketConfigController extends AbstractConfigController {
    * @return 204 'No Content' HTTP status code if update successful, 404 'Not Found' HTTP status
    *     code if Market config not found.
    */
-  @RequestMapping(value = MARKETS_RESOURCE_PATH + "/{marketId}", method = RequestMethod.PUT)
+  @PutMapping
+  @RequestMapping(value = MARKETS_RESOURCE_PATH + "/{marketId}")
   public ResponseEntity<?> updateMarket(
       @AuthenticationPrincipal User user,
       @PathVariable String marketId,
@@ -146,7 +152,8 @@ public class MarketConfigController extends AbstractConfigController {
    * @return 201 'Created' HTTP status code and created Market config in response body if create
    *     successful, some other HTTP status code otherwise.
    */
-  @RequestMapping(value = MARKETS_RESOURCE_PATH, method = RequestMethod.POST)
+  @PostMapping
+  @RequestMapping(value = MARKETS_RESOURCE_PATH)
   public ResponseEntity<?> createMarket(
       @AuthenticationPrincipal User user, @RequestBody MarketConfig config) {
 
@@ -169,7 +176,8 @@ public class MarketConfigController extends AbstractConfigController {
    * @return 204 'No Content' HTTP status code if delete successful, 404 'Not Found' HTTP status
    *     code if Market config not found.
    */
-  @RequestMapping(value = MARKETS_RESOURCE_PATH + "/{marketId}", method = RequestMethod.DELETE)
+  @DeleteMapping
+  @RequestMapping(value = MARKETS_RESOURCE_PATH + "/{marketId}")
   public ResponseEntity<?> deleteMarket(
       @AuthenticationPrincipal User user, @PathVariable String marketId) {
 
