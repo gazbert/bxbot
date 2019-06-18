@@ -70,7 +70,7 @@ public class MarketConfigController extends AbstractConfigController {
    * @return all the Market configurations.
    */
   @GetMapping(value = MARKETS_RESOURCE_PATH)
-  public List<?> getAllMarkets(@AuthenticationPrincipal User user) {
+  public List<MarketConfig> getAllMarkets(@AuthenticationPrincipal User user) {
 
     LOG.info(
         () ->
@@ -89,7 +89,7 @@ public class MarketConfigController extends AbstractConfigController {
    * @return the Market configuration.
    */
   @GetMapping(value = MARKETS_RESOURCE_PATH + "/{marketId}")
-  public ResponseEntity<?> getMarket(
+  public ResponseEntity<MarketConfig> getMarket(
       @AuthenticationPrincipal User user, @PathVariable String marketId) {
 
     LOG.info(
@@ -117,7 +117,7 @@ public class MarketConfigController extends AbstractConfigController {
    *     code if Market config not found.
    */
   @PutMapping(value = MARKETS_RESOURCE_PATH + "/{marketId}")
-  public ResponseEntity<?> updateMarket(
+  public ResponseEntity<MarketConfig> updateMarket(
       @AuthenticationPrincipal User user,
       @PathVariable String marketId,
       @RequestBody MarketConfig config) {
@@ -150,7 +150,7 @@ public class MarketConfigController extends AbstractConfigController {
    *     successful, some other HTTP status code otherwise.
    */
   @PostMapping(value = MARKETS_RESOURCE_PATH)
-  public ResponseEntity<?> createMarket(
+  public ResponseEntity<MarketConfig> createMarket(
       @AuthenticationPrincipal User user, @RequestBody MarketConfig config) {
 
     LOG.info(
@@ -173,7 +173,7 @@ public class MarketConfigController extends AbstractConfigController {
    *     code if Market config not found.
    */
   @DeleteMapping(value = MARKETS_RESOURCE_PATH + "/{marketId}")
-  public ResponseEntity<?> deleteMarket(
+  public ResponseEntity<MarketConfig> deleteMarket(
       @AuthenticationPrincipal User user, @PathVariable String marketId) {
 
     LOG.info(

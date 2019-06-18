@@ -94,7 +94,7 @@ public class ExchangeConfigController extends AbstractConfigController {
    *     successful, some other HTTP status code otherwise.
    */
   @PutMapping(value = EXCHANGE_RESOURCE_PATH)
-  public ResponseEntity<?> updateExchange(
+  public ResponseEntity<ExchangeConfig> updateExchange(
       @AuthenticationPrincipal User user, @RequestBody ExchangeConfig config) {
 
     LOG.info(

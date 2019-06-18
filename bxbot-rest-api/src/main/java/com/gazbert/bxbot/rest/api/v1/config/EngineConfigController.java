@@ -89,7 +89,7 @@ public class EngineConfigController extends AbstractConfigController {
    *     successful, some other HTTP status code otherwise.
    */
   @PutMapping(value = ENGINE_RESOURCE_PATH)
-  public ResponseEntity<?> updateEngine(
+  public ResponseEntity<EngineConfig> updateEngine(
       @AuthenticationPrincipal User user, @RequestBody EngineConfig config) {
 
     LOG.info(

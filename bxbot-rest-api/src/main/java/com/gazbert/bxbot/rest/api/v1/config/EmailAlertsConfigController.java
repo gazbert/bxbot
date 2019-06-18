@@ -93,7 +93,7 @@ public class EmailAlertsConfigController extends AbstractConfigController {
    *     successful, some other HTTP status code otherwise.
    */
   @PutMapping(value = EMAIL_ALERTS_RESOURCE_PATH)
-  public ResponseEntity<?> updateEmailAlerts(
+  public ResponseEntity<EmailAlertsConfig> updateEmailAlerts(
       @AuthenticationPrincipal User user, @RequestBody EmailAlertsConfig config) {
 
     LOG.info(

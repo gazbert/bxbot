@@ -92,7 +92,7 @@ public class StrategyConfigController extends AbstractConfigController {
    * @return the Strategy configuration.
    */
   @GetMapping(value = STRATEGIES_RESOURCE_PATH + "/{strategyId}")
-  public ResponseEntity<?> getStrategy(
+  public ResponseEntity<StrategyConfig> getStrategy(
       @AuthenticationPrincipal User user, @PathVariable String strategyId) {
     LOG.info(
         () ->
@@ -119,7 +119,7 @@ public class StrategyConfigController extends AbstractConfigController {
    *     404 'Not Found' HTTP status code if Strategy config not found.
    */
   @PutMapping(value = STRATEGIES_RESOURCE_PATH + "/{strategyId}")
-  public ResponseEntity<?> updateStrategy(
+  public ResponseEntity<StrategyConfig> updateStrategy(
       @AuthenticationPrincipal User user,
       @PathVariable String strategyId,
       @RequestBody StrategyConfig config) {
@@ -153,7 +153,7 @@ public class StrategyConfigController extends AbstractConfigController {
    *     successful, some other status code otherwise.
    */
   @PostMapping(value = STRATEGIES_RESOURCE_PATH)
-  public ResponseEntity<?> createStrategy(
+  public ResponseEntity<StrategyConfig> createStrategy(
       @AuthenticationPrincipal User user, @RequestBody StrategyConfig config) {
 
     LOG.info(
@@ -179,7 +179,7 @@ public class StrategyConfigController extends AbstractConfigController {
    *     code if Strategy config not found.
    */
   @DeleteMapping(value = STRATEGIES_RESOURCE_PATH + "/{strategyId}")
-  public ResponseEntity<?> deleteStrategy(
+  public ResponseEntity<StrategyConfig> deleteStrategy(
       @AuthenticationPrincipal User user, @PathVariable String strategyId) {
 
     LOG.info(
