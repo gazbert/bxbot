@@ -69,8 +69,7 @@ public class StrategyConfigController extends AbstractConfigController {
    * @param user the authenticated user.
    * @return all the Strategy configurations.
    */
-  @GetMapping
-  @RequestMapping(value = STRATEGIES_RESOURCE_PATH)
+  @GetMapping(value = STRATEGIES_RESOURCE_PATH)
   public List<StrategyConfig> getAllStrategies(@AuthenticationPrincipal User user) {
     LOG.info(
         () ->
@@ -92,8 +91,7 @@ public class StrategyConfigController extends AbstractConfigController {
    * @param strategyId the id of the Strategy to fetch.
    * @return the Strategy configuration.
    */
-  @GetMapping
-  @RequestMapping(value = STRATEGIES_RESOURCE_PATH + "/{strategyId}")
+  @GetMapping(value = STRATEGIES_RESOURCE_PATH + "/{strategyId}")
   public ResponseEntity<?> getStrategy(
       @AuthenticationPrincipal User user, @PathVariable String strategyId) {
     LOG.info(
@@ -120,8 +118,7 @@ public class StrategyConfigController extends AbstractConfigController {
    * @return 200 'OK' HTTP status code and updated Strategy config in the body if update successful,
    *     404 'Not Found' HTTP status code if Strategy config not found.
    */
-  @PutMapping
-  @RequestMapping(value = STRATEGIES_RESOURCE_PATH + "/{strategyId}")
+  @PutMapping(value = STRATEGIES_RESOURCE_PATH + "/{strategyId}")
   public ResponseEntity<?> updateStrategy(
       @AuthenticationPrincipal User user,
       @PathVariable String strategyId,
@@ -155,8 +152,7 @@ public class StrategyConfigController extends AbstractConfigController {
    * @return 201 'Created' HTTP status code and created Strategy config in response body if create
    *     successful, some other status code otherwise.
    */
-  @PostMapping
-  @RequestMapping(value = STRATEGIES_RESOURCE_PATH)
+  @PostMapping(value = STRATEGIES_RESOURCE_PATH)
   public ResponseEntity<?> createStrategy(
       @AuthenticationPrincipal User user, @RequestBody StrategyConfig config) {
 
@@ -182,8 +178,7 @@ public class StrategyConfigController extends AbstractConfigController {
    * @return 204 'No Content' HTTP status code if delete successful, 404 'Not Found' HTTP status
    *     code if Strategy config not found.
    */
-  @DeleteMapping
-  @RequestMapping(value = STRATEGIES_RESOURCE_PATH + "/{strategyId}")
+  @DeleteMapping(value = STRATEGIES_RESOURCE_PATH + "/{strategyId}")
   public ResponseEntity<?> deleteStrategy(
       @AuthenticationPrincipal User user, @PathVariable String strategyId) {
 

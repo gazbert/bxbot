@@ -69,8 +69,7 @@ public class EmailAlertsConfigController extends AbstractConfigController {
    * @param user the authenticated user making the request.
    * @return the Email Alerts configuration.
    */
-  @GetMapping
-  @RequestMapping(value = EMAIL_ALERTS_RESOURCE_PATH)
+  @GetMapping(value = EMAIL_ALERTS_RESOURCE_PATH)
   public EmailAlertsConfig getEmailAlerts(@AuthenticationPrincipal User user) {
 
     LOG.info(
@@ -93,8 +92,7 @@ public class EmailAlertsConfigController extends AbstractConfigController {
    * @return 200 'OK' HTTP status code and Email Alerts config in response body if update
    *     successful, some other HTTP status code otherwise.
    */
-  @PutMapping
-  @RequestMapping(value = EMAIL_ALERTS_RESOURCE_PATH)
+  @PutMapping(value = EMAIL_ALERTS_RESOURCE_PATH)
   public ResponseEntity<?> updateEmailAlerts(
       @AuthenticationPrincipal User user, @RequestBody EmailAlertsConfig config) {
 

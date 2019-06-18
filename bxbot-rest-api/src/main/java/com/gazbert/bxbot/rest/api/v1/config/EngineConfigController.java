@@ -69,8 +69,7 @@ public class EngineConfigController extends AbstractConfigController {
    * @param user the authenticated user making the request.
    * @return the Engine configuration.
    */
-  @GetMapping
-  @RequestMapping(value = ENGINE_RESOURCE_PATH)
+  @GetMapping(value = ENGINE_RESOURCE_PATH)
   public EngineConfig getEngine(@AuthenticationPrincipal User user) {
 
     LOG.info(
@@ -89,8 +88,7 @@ public class EngineConfigController extends AbstractConfigController {
    * @return 200 'OK' HTTP status code and updated Engine config in the response body if update
    *     successful, some other HTTP status code otherwise.
    */
-  @PutMapping
-  @RequestMapping(value = ENGINE_RESOURCE_PATH)
+  @PutMapping(value = ENGINE_RESOURCE_PATH)
   public ResponseEntity<?> updateEngine(
       @AuthenticationPrincipal User user, @RequestBody EngineConfig config) {
 

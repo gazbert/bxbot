@@ -118,8 +118,7 @@ public class MarketConfigController extends AbstractConfigController {
    * @return 204 'No Content' HTTP status code if update successful, 404 'Not Found' HTTP status
    *     code if Market config not found.
    */
-  @PutMapping
-  @RequestMapping(value = MARKETS_RESOURCE_PATH + "/{marketId}")
+  @PutMapping(value = MARKETS_RESOURCE_PATH + "/{marketId}")
   public ResponseEntity<?> updateMarket(
       @AuthenticationPrincipal User user,
       @PathVariable String marketId,
@@ -152,8 +151,7 @@ public class MarketConfigController extends AbstractConfigController {
    * @return 201 'Created' HTTP status code and created Market config in response body if create
    *     successful, some other HTTP status code otherwise.
    */
-  @PostMapping
-  @RequestMapping(value = MARKETS_RESOURCE_PATH)
+  @PostMapping(value = MARKETS_RESOURCE_PATH)
   public ResponseEntity<?> createMarket(
       @AuthenticationPrincipal User user, @RequestBody MarketConfig config) {
 
@@ -176,8 +174,7 @@ public class MarketConfigController extends AbstractConfigController {
    * @return 204 'No Content' HTTP status code if delete successful, 404 'Not Found' HTTP status
    *     code if Market config not found.
    */
-  @DeleteMapping
-  @RequestMapping(value = MARKETS_RESOURCE_PATH + "/{marketId}")
+  @DeleteMapping(value = MARKETS_RESOURCE_PATH + "/{marketId}")
   public ResponseEntity<?> deleteMarket(
       @AuthenticationPrincipal User user, @PathVariable String marketId) {
 
