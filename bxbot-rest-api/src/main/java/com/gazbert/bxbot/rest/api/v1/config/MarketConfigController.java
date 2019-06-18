@@ -69,8 +69,7 @@ public class MarketConfigController extends AbstractConfigController {
    * @param user the authenticated user.
    * @return all the Market configurations.
    */
-  @GetMapping
-  @RequestMapping(value = MARKETS_RESOURCE_PATH)
+  @GetMapping(value = MARKETS_RESOURCE_PATH)
   public List<?> getAllMarkets(@AuthenticationPrincipal User user) {
 
     LOG.info(
@@ -89,8 +88,7 @@ public class MarketConfigController extends AbstractConfigController {
    * @param marketId the id of the Market to fetch.
    * @return the Market configuration.
    */
-  @GetMapping
-  @RequestMapping(value = MARKETS_RESOURCE_PATH + "/{marketId}")
+  @GetMapping(value = MARKETS_RESOURCE_PATH + "/{marketId}")
   public ResponseEntity<?> getMarket(
       @AuthenticationPrincipal User user, @PathVariable String marketId) {
 
