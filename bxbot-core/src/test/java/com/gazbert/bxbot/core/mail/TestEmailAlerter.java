@@ -98,6 +98,18 @@ public class TestEmailAlerter {
     PowerMock.verifyAll();
   }
 
+  @Test
+  public void testEmailAlerterInitialisedSuccessfullyWhenAlertsDisabledAndSmtpConfigSupplied() {
+    expect(emailAlertsConfigService.getEmailAlertsConfig())
+        .andReturn(someEmailAlertsConfigWithAlertsDisabledAndSmtpConfig());
+    PowerMock.replayAll();
+
+    final EmailAlerter emailAlerter = new EmailAlerter(emailAlertsConfigService);
+    assertNotNull(emailAlerter);
+
+    PowerMock.verifyAll();
+  }
+
   @Test(expected = IllegalStateException.class)
   public void testEmailAlerterInitialisationFailsWhenAlertsEnabledButNoSmtpConfigSupplied() {
     expect(emailAlertsConfigService.getEmailAlertsConfig())
@@ -176,6 +188,17 @@ public class TestEmailAlerter {
   private static EmailAlertsConfig someEmailAlertsConfigWithAlertsEnabledAndNoSmtpConfig() {
     final EmailAlertsConfig emailAlertsConfig = new EmailAlertsConfig();
     emailAlertsConfig.setEnabled(true);
+    return emailAlertsConfig;
+  }
+
+  private static EmailAlertsConfig someEmailAlertsConfigWithAlertsDisabledAndSmtpConfig() {
+    final SmtpConfig smtpConfig =
+        new SmtpConfig(
+            SMTP_HOST, SMTP_TLS_PORT, ACCOUNT_USERNAME, ACCOUNT_PASSWORD, FROM_ADDRESS, TO_ADDRESS);
+
+    final EmailAlertsConfig emailAlertsConfig = new EmailAlertsConfig();
+    emailAlertsConfig.setEnabled(false);
+    emailAlertsConfig.setSmtpConfig(smtpConfig);
     return emailAlertsConfig;
   }
 }
