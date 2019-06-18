@@ -106,6 +106,11 @@ public class EmailAlertsConfigController extends AbstractConfigController {
 
     final EmailAlertsConfig updatedConfig =
         emailAlertsConfigService.updateEmailAlertsConfig(config);
-    return buildResponseEntity(updatedConfig, HttpStatus.OK);
+    return buildResponseEntity(updatedConfig);
+  }
+
+  private ResponseEntity<EmailAlertsConfig> buildResponseEntity(EmailAlertsConfig entity) {
+    LOG.info(() -> "Response: " + entity);
+    return new ResponseEntity<>(entity, null, HttpStatus.OK);
   }
 }

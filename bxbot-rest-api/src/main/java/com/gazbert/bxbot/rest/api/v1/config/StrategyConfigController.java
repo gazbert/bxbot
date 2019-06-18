@@ -196,4 +196,14 @@ public class StrategyConfigController extends AbstractConfigController {
         ? new ResponseEntity<>(HttpStatus.NOT_FOUND)
         : new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }
+
+  // ------------------------------------------------------------------------
+  // Private utils
+  // ------------------------------------------------------------------------
+
+  private ResponseEntity<StrategyConfig> buildResponseEntity(
+      StrategyConfig entity, HttpStatus status) {
+    LOG.info(() -> "Response: " + entity);
+    return new ResponseEntity<>(entity, null, status);
+  }
 }

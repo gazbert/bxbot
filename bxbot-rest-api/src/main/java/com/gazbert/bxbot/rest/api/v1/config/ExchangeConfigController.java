@@ -107,7 +107,7 @@ public class ExchangeConfigController extends AbstractConfigController {
 
     final ExchangeConfig updatedConfig =
         exchangeConfigService.updateExchangeConfig(mergeWithLocalAuthenticationConfig(config));
-    return buildResponseEntity(updatedConfig, HttpStatus.OK);
+    return buildResponseEntity(updatedConfig);
   }
 
   // ------------------------------------------------------------------------
@@ -118,5 +118,10 @@ public class ExchangeConfigController extends AbstractConfigController {
     final ExchangeConfig localConfig = exchangeConfigService.getExchangeConfig();
     remoteConfig.setAuthenticationConfig(localConfig.getAuthenticationConfig());
     return remoteConfig;
+  }
+
+  private ResponseEntity<ExchangeConfig> buildResponseEntity(ExchangeConfig entity) {
+    LOG.info(() -> "Response: " + entity);
+    return new ResponseEntity<>(entity, null, HttpStatus.OK);
   }
 }

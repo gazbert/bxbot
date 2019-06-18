@@ -97,6 +97,11 @@ public class EngineConfigController extends AbstractConfigController {
     LOG.info(() -> "Request: " + config);
 
     final EngineConfig updatedConfig = engineConfigService.updateEngineConfig(config);
-    return buildResponseEntity(updatedConfig, HttpStatus.OK);
+    return buildResponseEntity(updatedConfig);
+  }
+
+  private ResponseEntity<EngineConfig> buildResponseEntity(EngineConfig entity) {
+    LOG.info(() -> "Response: " + entity);
+    return new ResponseEntity<>(entity, null, HttpStatus.OK);
   }
 }

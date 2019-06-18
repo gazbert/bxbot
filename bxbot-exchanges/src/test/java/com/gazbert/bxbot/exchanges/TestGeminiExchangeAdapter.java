@@ -201,7 +201,7 @@ public class TestGeminiExchangeAdapter extends AbstractExchangeAdapterTest {
     final BigDecimal sellTotal = sellPrice.multiply(sellQuantity);
 
     assertEquals(50, marketOrderBook.getSellOrders().size());
-    assertSame( OrderType.SELL, marketOrderBook.getSellOrders().get(0).getType());
+    assertSame(OrderType.SELL, marketOrderBook.getSellOrders().get(0).getType());
     assertEquals(0, marketOrderBook.getSellOrders().get(0).getPrice().compareTo(sellPrice));
     assertEquals(0, marketOrderBook.getSellOrders().get(0).getQuantity().compareTo(sellQuantity));
     assertEquals(0, marketOrderBook.getSellOrders().get(0).getTotal().compareTo(sellTotal));

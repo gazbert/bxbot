@@ -33,8 +33,8 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -62,7 +62,7 @@ public class BotStatusController extends AbstractRuntimeController {
    * @param user the authenticated user making the request.
    * @return the process status.
    */
-  @RequestMapping(value = STATUS_RESOURCE_PATH, method = RequestMethod.GET)
+  @GetMapping(value = STATUS_RESOURCE_PATH)
   public BotStatus getStatus(@AuthenticationPrincipal User user) {
 
     LOG.info(

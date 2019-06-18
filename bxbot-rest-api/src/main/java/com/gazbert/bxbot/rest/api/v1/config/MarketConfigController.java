@@ -190,4 +190,13 @@ public class MarketConfigController extends AbstractConfigController {
         ? new ResponseEntity<>(HttpStatus.NOT_FOUND)
         : new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }
+
+  // ------------------------------------------------------------------------
+  // Private utils
+  // ------------------------------------------------------------------------
+
+  private ResponseEntity<MarketConfig> buildResponseEntity(MarketConfig entity, HttpStatus status) {
+    LOG.info(() -> "Response: " + entity);
+    return new ResponseEntity<>(entity, null, status);
+  }
 }

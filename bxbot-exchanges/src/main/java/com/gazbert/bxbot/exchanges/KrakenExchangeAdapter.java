@@ -1009,7 +1009,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
               break;
 
             default:
-              LOG.warn("Received unexpected Ticker param - ignoring: " + key);
+              LOG.warn(() -> "Received unexpected Ticker param - ignoring: " + key);
           }
         }
       }
