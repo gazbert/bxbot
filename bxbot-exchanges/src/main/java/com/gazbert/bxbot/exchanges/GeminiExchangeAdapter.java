@@ -232,9 +232,6 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter
       // this adapter only supports 'exchange limit' orders
       params.put("type", "exchange limit");
 
-      // This adapter does not currently support options
-      // params.put("options", "not supported");
-
       final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("order/new", params);
 
       LOG.debug(() -> "Create Order response: " + response);

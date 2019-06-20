@@ -1097,9 +1097,6 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
       nonce++;
       params.put("nonce", Long.toString(nonce));
 
-      // Current adapter does not support optional 2FA
-      // params.put("otp", "false");
-
       // Build the URL with query param args in it - yuk!
       final StringBuilder postData = new StringBuilder();
       for (final Map.Entry<String, String> param : params.entrySet()) {

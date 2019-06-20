@@ -90,8 +90,6 @@ public class EmailAlerter {
         Transport.send(message);
 
       } catch (MessagingException e) {
-        // not much we can do here, especially if the alert was critical - the bot is shutting down;
-        // just log it.
         LOG.error(() -> "Failed to send Email Alert. Details: " + e.getMessage(), e);
       }
     } else {

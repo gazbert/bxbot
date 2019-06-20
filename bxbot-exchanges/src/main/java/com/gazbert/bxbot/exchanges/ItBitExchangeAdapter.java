@@ -229,10 +229,6 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
         throw new IllegalArgumentException(errorMsg);
       }
 
-      // Adapter does not using optional clientOrderIdentifier and clientOrderIdentifier params.
-      // params.put("metadata", "{}");
-      // params.put("clientOrderIdentifier", "id_123");
-
       response =
           sendAuthenticatedRequestToExchange(
               "POST", WALLETS_RESOURCE + "/" + walletId + "/orders", params);
@@ -887,8 +883,6 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
             if (queryParamBuilder.length() > 0) {
               queryParamBuilder.append("&");
             }
-            // Don't URL encode as it messed up the UUID params, e.g. wallet id
-            // queryParams += param + "=" + URLEncoder.encode(params.get(param));
             queryParamBuilder.append(param.getKey());
             queryParamBuilder.append("=");
             queryParamBuilder.append(param.getValue());
