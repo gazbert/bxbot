@@ -758,14 +758,12 @@ public class TestTradingEngine {
       someExchangeConfigWithoutNetworkConfig() {
     final Map<String, String> authenticationConfig = someAuthenticationConfig();
     final Map<String, String> otherConfig = someOtherConfig();
-
     final com.gazbert.bxbot.domain.exchange.ExchangeConfig exchangeConfig =
         new com.gazbert.bxbot.domain.exchange.ExchangeConfig();
     exchangeConfig.setAuthenticationConfig(authenticationConfig);
     exchangeConfig.setName(EXCHANGE_NAME);
     exchangeConfig.setAdapter(EXCHANGE_ADAPTER_IMPL_CLASS);
     exchangeConfig.setOtherConfig(otherConfig);
-
     return exchangeConfig;
   }
 

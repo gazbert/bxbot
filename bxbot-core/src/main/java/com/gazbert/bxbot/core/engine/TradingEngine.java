@@ -286,7 +286,6 @@ public class TradingEngine {
         keepAlive = false;
       }
     }
-
     LOG.fatal(() -> "BX-bot " + botId + " is shutting down NOW!");
     synchronized (IS_RUNNING_MONITOR) {
       isRunning = false;
@@ -382,7 +381,6 @@ public class TradingEngine {
                 + new DecimalFormat(DECIMAL_FORMAT_PATTERN).format(emergencyStopBalance)
                 + "] "
                 + emergencyStopCurrency;
-
         LOG.fatal(() -> balanceBlownErrorMsg);
         emailAlerter.sendMessage(
             CRITICAL_EMAIL_ALERT_SUBJECT,

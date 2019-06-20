@@ -42,6 +42,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -78,6 +79,7 @@ public class MarketConfigController extends AbstractConfigController {
 
     final List<MarketConfig> marketConfigs = marketConfigService.getAllMarketConfig();
     LOG.info(() -> "Response: " + marketConfigs);
+
     return marketConfigs;
   }
 
@@ -184,7 +186,7 @@ public class MarketConfigController extends AbstractConfigController {
                 + marketId
                 + " - deleteMarket() - caller: "
                 + user.getUsername());
-
+  
     final MarketConfig deletedConfig = marketConfigService.deleteMarketConfig(marketId);
     return deletedConfig == null
         ? new ResponseEntity<>(HttpStatus.NOT_FOUND)
