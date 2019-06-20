@@ -65,7 +65,7 @@ public class StrategyConfigYamlRepository implements StrategyConfigRepository {
 
     return adaptInternalToExternalConfig(
         strategiesType.getStrategies().stream()
-            .filter((item) -> item.getId().equals(id))
+            .filter(item -> item.getId().equals(id))
             .distinct()
             .collect(Collectors.toList()));
   }
@@ -77,7 +77,7 @@ public class StrategyConfigYamlRepository implements StrategyConfigRepository {
 
     final List<StrategyConfig> strategyConfigs =
         strategiesType.getStrategies().stream()
-            .filter((item) -> item.getId().equals(config.getId()))
+            .filter(item -> item.getId().equals(config.getId()))
             .distinct()
             .collect(Collectors.toList());
 
@@ -97,7 +97,7 @@ public class StrategyConfigYamlRepository implements StrategyConfigRepository {
 
         return adaptInternalToExternalConfig(
             updatedInternalStrategiesConfig.getStrategies().stream()
-                .filter((item) -> item.getId().equals(newStrategyConfig.getId()))
+                .filter(item -> item.getId().equals(newStrategyConfig.getId()))
                 .distinct()
                 .collect(Collectors.toList()));
       } else {
@@ -124,11 +124,12 @@ public class StrategyConfigYamlRepository implements StrategyConfigRepository {
 
         return adaptInternalToExternalConfig(
             updatedStrategiesType.getStrategies().stream()
-                .filter((item) -> item.getId().equals(config.getId()))
+                .filter(item -> item.getId().equals(config.getId()))
                 .distinct()
                 .collect(Collectors.toList()));
       } else {
         LOG.warn(
+            () ->
             "Trying to update StrategyConfig but id does not exist StrategyConfig: "
                 + config
                 + " Existing StrategyConfig: "
@@ -147,7 +148,7 @@ public class StrategyConfigYamlRepository implements StrategyConfigRepository {
 
     final List<StrategyConfig> strategyConfigs =
         strategiesType.getStrategies().stream()
-            .filter((item) -> item.getId().equals(id))
+            .filter(item -> item.getId().equals(id))
             .distinct()
             .collect(Collectors.toList());
 
@@ -159,6 +160,7 @@ public class StrategyConfigYamlRepository implements StrategyConfigRepository {
       return adaptInternalToExternalConfig(Collections.singletonList(strategyToRemove));
     } else {
       LOG.warn(
+          () ->
           "Trying to delete StrategyConfig but id does not exist. StrategyConfig id: "
               + id
               + " Existing StrategyConfig: "

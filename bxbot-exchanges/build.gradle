@@ -47,6 +47,9 @@ jacocoTestCoverageVerification {
     violationRules {
         rule {
             element = 'CLASS'
+            // Ignore classes tested using Powermock. JaCoCo won't/can't instrument them:
+            // "... right now there is NO WAY TO USE PowerMock with JaCoCo On-the-fly instrumentation."
+            // See https://github.com/powermock/powermock/wiki/Code-coverage-with-JaCoCo
             excludes = [
                     'com.gazbert.bxbot.exchanges.BitfinexExchangeAdapter*',
                     'com.gazbert.bxbot.exchanges.BitstampExchangeAdapter*',

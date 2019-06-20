@@ -34,9 +34,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -68,7 +69,7 @@ public class EngineConfigController extends AbstractConfigController {
    * @param user the authenticated user making the request.
    * @return the Engine configuration.
    */
-  @RequestMapping(value = ENGINE_RESOURCE_PATH, method = RequestMethod.GET)
+  @GetMapping(value = ENGINE_RESOURCE_PATH)
   public EngineConfig getEngine(@AuthenticationPrincipal User user) {
 
     LOG.info(
@@ -87,14 +88,20 @@ public class EngineConfigController extends AbstractConfigController {
    * @return 200 'OK' HTTP status code and updated Engine config in the response body if update
    *     successful, some other HTTP status code otherwise.
    */
-  @RequestMapping(value = ENGINE_RESOURCE_PATH, method = RequestMethod.PUT)
-  public ResponseEntity<?> updateEngine(
+  @PutMapping(value = ENGINE_RESOURCE_PATH)
+  public ResponseEntity<EngineConfig> updateEngine(
       @AuthenticationPrincipal User user, @RequestBody EngineConfig config) {
 
-    LOG.info("PUT " + ENGINE_RESOURCE_PATH + " - updateEngine() - caller: " + user.getUsername());
-    LOG.info("Request: " + config);
+    LOG.info(
+        () -> "PUT " + ENGINE_RESOURCE_PATH + " - updateEngine() - caller: " + user.getUsername());
+    LOG.info(() -> "Request: " + config);
 
     final EngineConfig updatedConfig = engineConfigService.updateEngineConfig(config);
-    return buildResponseEntity(updatedConfig, HttpStatus.OK);
+    return buildResponseEntity(updatedConfig);
+  }
+
+  private ResponseEntity<EngineConfig> buildResponseEntity(EngineConfig entity) {
+    LOG.info(() -> "Response: " + entity);
+    return new ResponseEntity<>(entity, null, HttpStatus.OK);
   }
 }

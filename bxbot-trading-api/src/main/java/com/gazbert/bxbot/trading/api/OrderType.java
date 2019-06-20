@@ -41,13 +41,13 @@ public enum OrderType {
    */
   SELL("Sell");
 
-  private final String orderType;
+  private final String type;
 
-  OrderType(String orderType) {
-    this.orderType = orderType;
+  OrderType(String type) {
+    this.type = type;
   }
 
   public String getStringValue() {
-    return orderType;
+    return type;
   }
 }

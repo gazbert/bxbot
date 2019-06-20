@@ -197,16 +197,18 @@ public class ExampleScalpingStrategy implements TradingStrategy {
       final MarketOrderBook orderBook = tradingApi.getMarketOrders(market.getId());
 
       final List<MarketOrder> buyOrders = orderBook.getBuyOrders();
-      if (buyOrders.size() == 0) {
+      if (buyOrders.isEmpty()) {
         LOG.warn(
+            () ->
             "Exchange returned empty Buy Orders. Ignoring this trade window. OrderBook: "
                 + orderBook);
         return;
       }
 
       final List<MarketOrder> sellOrders = orderBook.getSellOrders();
-      if (sellOrders.size() == 0) {
+      if (sellOrders.isEmpty()) {
         LOG.warn(
+            () ->
             "Exchange returned empty Sell Orders. Ignoring this trade window. OrderBook: "
                 + orderBook);
         return;
@@ -256,6 +258,7 @@ public class ExampleScalpingStrategy implements TradingStrategy {
       // Your timeout handling code could go here.
       // We are just going to log it and swallow it, and wait for next trade cycle.
       LOG.error(
+          () ->
           market.getName()
               + " Failed to get market orders because Exchange threw network exception. "
               + "Waiting until next trade cycle.",
@@ -318,6 +321,7 @@ public class ExampleScalpingStrategy implements TradingStrategy {
       // made it to the exchange? And if not, resend it...
       // We are just going to log it and swallow it, and wait for next trade cycle.
       LOG.error(
+          () ->
           market.getName()
               + " Initial order to BUY base currency failed because Exchange threw network "
               + "exception. Waiting until next trade cycle.",
@@ -328,6 +332,7 @@ public class ExampleScalpingStrategy implements TradingStrategy {
       // We are just going to re-throw as StrategyException for engine to deal with - it will
       // shutdown the bot.
       LOG.error(
+          () ->
           market.getName()
               + " Initial order to BUY base currency failed because Exchange threw TradingApi "
               + "exception. Telling Trading Engine to shutdown bot!",
@@ -446,6 +451,7 @@ public class ExampleScalpingStrategy implements TradingStrategy {
       // made it to the exchange? And if not, resend it...
       // We are just going to log it and swallow it, and wait for next trade cycle.
       LOG.error(
+          () ->
           market.getName()
               + " New Order to SELL base currency failed because Exchange threw network exception. "
               + "Waiting until next trade cycle. Last Order: "
@@ -457,6 +463,7 @@ public class ExampleScalpingStrategy implements TradingStrategy {
       // We are just going to re-throw as StrategyException for engine to deal with - it will
       // shutdown the bot.
       LOG.error(
+          () ->
           market.getName()
               + " New order to SELL base currency failed because Exchange threw TradingApi "
               + "exception. Telling Trading Engine to shutdown bot! Last Order: "
@@ -545,6 +552,7 @@ public class ExampleScalpingStrategy implements TradingStrategy {
 
         } else if (currentAskPrice.compareTo(lastOrder.price) > 0) {
           LOG.error(
+              () ->
               market.getName()
                   + " >>> Current ask price ["
                   + currentAskPrice
@@ -569,6 +577,7 @@ public class ExampleScalpingStrategy implements TradingStrategy {
       // made it to the exchange? And if not, resend it...
       // We are just going to log it and swallow it, and wait for next trade cycle.
       LOG.error(
+          () ->
           market.getName()
               + " New Order to BUY base currency failed because Exchange threw network exception. "
               + "Waiting until next trade cycle. Last Order: "
@@ -580,6 +589,7 @@ public class ExampleScalpingStrategy implements TradingStrategy {
       // We are just going to re-throw as StrategyException for engine to deal with - it will
       // shutdown the bot.
       LOG.error(
+          () ->
           market.getName()
               + " New order to BUY base currency failed because Exchange threw TradingApi "
               + "exception. Telling Trading Engine to shutdown bot! Last Order: "

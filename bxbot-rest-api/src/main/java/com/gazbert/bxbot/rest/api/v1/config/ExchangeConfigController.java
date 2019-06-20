@@ -33,9 +33,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -69,14 +70,15 @@ public class ExchangeConfigController extends AbstractConfigController {
    * @param user the authenticated user making the request.
    * @return the Exchange configuration.
    */
-  @RequestMapping(value = EXCHANGE_RESOURCE_PATH, method = RequestMethod.GET)
+  @GetMapping(value = EXCHANGE_RESOURCE_PATH)
   public ExchangeConfig getExchange(@AuthenticationPrincipal User user) {
 
-    LOG.info("GET " + EXCHANGE_RESOURCE_PATH + " - getExchange() - caller: " + user.getUsername());
+    LOG.info(
+        () -> "GET " + EXCHANGE_RESOURCE_PATH + " - getExchange() - caller: " + user.getUsername());
 
     final ExchangeConfig exchangeConfig = exchangeConfigService.getExchangeConfig();
     exchangeConfig.setAuthenticationConfig(null);
-    LOG.info("Response: " + exchangeConfig);
+    LOG.info(() -> "Response: " + exchangeConfig);
     return exchangeConfig;
   }
 
@@ -91,17 +93,21 @@ public class ExchangeConfigController extends AbstractConfigController {
    * @return 200 'OK' HTTP status code with updated Exchange config in the body if update
    *     successful, some other HTTP status code otherwise.
    */
-  @RequestMapping(value = EXCHANGE_RESOURCE_PATH, method = RequestMethod.PUT)
-  public ResponseEntity<?> updateExchange(
+  @PutMapping(value = EXCHANGE_RESOURCE_PATH)
+  public ResponseEntity<ExchangeConfig> updateExchange(
       @AuthenticationPrincipal User user, @RequestBody ExchangeConfig config) {
 
     LOG.info(
-        "PUT " + EXCHANGE_RESOURCE_PATH + " - updateExchange() - caller: " + user.getUsername());
-    LOG.info("Request: " + config);
+        () ->
+            "PUT "
+                + EXCHANGE_RESOURCE_PATH
+                + " - updateExchange() - caller: "
+                + user.getUsername());
+    LOG.info(() -> "Request: " + config);
 
     final ExchangeConfig updatedConfig =
         exchangeConfigService.updateExchangeConfig(mergeWithLocalAuthenticationConfig(config));
-    return buildResponseEntity(updatedConfig, HttpStatus.OK);
+    return buildResponseEntity(updatedConfig);
   }
 
   // ------------------------------------------------------------------------
@@ -112,5 +118,10 @@ public class ExchangeConfigController extends AbstractConfigController {
     final ExchangeConfig localConfig = exchangeConfigService.getExchangeConfig();
     remoteConfig.setAuthenticationConfig(localConfig.getAuthenticationConfig());
     return remoteConfig;
+  }
+
+  private ResponseEntity<ExchangeConfig> buildResponseEntity(ExchangeConfig entity) {
+    LOG.info(() -> "Response: " + entity);
+    return new ResponseEntity<>(entity, null, HttpStatus.OK);
   }
 }
