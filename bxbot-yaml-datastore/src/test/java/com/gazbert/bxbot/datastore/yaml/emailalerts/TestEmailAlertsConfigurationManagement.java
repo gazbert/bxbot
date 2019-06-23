@@ -52,6 +52,8 @@ public class TestEmailAlertsConfigurationManagement {
       "src/test/config/emailalerts/missing-email-alerts.yaml";
   private static final String YAML_CONFIG_TO_SAVE_FILENAME =
       "src/test/config/emailalerts/saved-email-alerts.yaml";
+  private static final String INVALID_YAML_CONFIG_TO_SAVE_FILENAME =
+      "src/test/config/not-here/saved-email-alerts.yaml";
 
   private static final String HOST = "mail.google.com";
   private static final int TLS_PORT = 587;
@@ -133,5 +135,26 @@ public class TestEmailAlertsConfigurationManagement {
 
     // cleanup
     Files.delete(FileSystems.getDefault().getPath(YAML_CONFIG_TO_SAVE_FILENAME));
+  }
+
+  @Test(expected = IllegalStateException.class)
+  public void testSavingConfigToInvalidYamlFileIsHandled() {
+    final SmtpConfig smtpConfig = new SmtpConfig();
+    smtpConfig.setAccountUsername(ACCOUNT_USERNAME);
+    smtpConfig.setAccountPassword(ACCOUNT_PASSWORD);
+    smtpConfig.setHost(HOST);
+    smtpConfig.setTlsPort(TLS_PORT);
+    smtpConfig.setFromAddress(FROM_ADDRESS);
+    smtpConfig.setToAddress(TO_ADDRESS);
+
+    final EmailAlertsConfig emailAlertsConfig = new EmailAlertsConfig();
+    emailAlertsConfig.setEnabled(true);
+    emailAlertsConfig.setSmtpConfig(smtpConfig);
+
+    final EmailAlertsType emailAlertsType = new EmailAlertsType();
+    emailAlertsType.setEmailAlerts(emailAlertsConfig);
+
+    ConfigurationManager.saveConfig(
+        EmailAlertsType.class, emailAlertsType, INVALID_YAML_CONFIG_TO_SAVE_FILENAME);
   }
 }

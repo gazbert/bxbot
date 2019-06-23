@@ -52,6 +52,8 @@ public class TestExchangeConfigurationManagement {
       "src/test/config/exchange-/missing-exchange.yaml";
   private static final String YAML_CONFIG_TO_SAVE_FILENAME =
       "src/test/config/exchange/saved-exchange.yaml";
+  private static final String INVALID_YAML_CONFIG_TO_SAVE_FILENAME =
+      "src/test/config/not-here/saved-exchange.yaml";
 
   private static final String EXCHANGE_NAME = "Bitstamp";
   private static final String EXCHANGE_ADAPTER =
@@ -188,5 +190,34 @@ public class TestExchangeConfigurationManagement {
 
     // cleanup
     Files.delete(FileSystems.getDefault().getPath(YAML_CONFIG_TO_SAVE_FILENAME));
+  }
+
+  @Test(expected = IllegalStateException.class)
+  public void testSavingConfigToInvalidYamlFileIsHandled() {
+    final Map<String, String> authenticationConfig = new HashMap<>();
+    authenticationConfig.put(API_KEY_CONFIG_ITEM_KEY, API_KEY_CONFIG_ITEM_VALUE);
+    authenticationConfig.put(SECRET_CONFIG_ITEM_KEY, SECRET_CONFIG_ITEM_VALUE);
+
+    final NetworkConfig networkConfig = new NetworkConfig();
+    networkConfig.setConnectionTimeout(CONNECTION_TIMEOUT);
+    networkConfig.setNonFatalErrorCodes(NON_FATAL_ERROR_CODES);
+    networkConfig.setNonFatalErrorMessages(NON_FATAL_ERROR_MESSAGES);
+
+    final Map<String, String> otherConfig = new HashMap<>();
+    otherConfig.put(BUY_FEE_CONFIG_ITEM_KEY, BUY_FEE_CONFIG_ITEM_VALUE);
+    otherConfig.put(SELL_FEE_CONFIG_ITEM_KEY, SELL_FEE_CONFIG_ITEM_VALUE);
+
+    final ExchangeConfig exchangeConfig = new ExchangeConfig();
+    exchangeConfig.setName(EXCHANGE_NAME);
+    exchangeConfig.setAdapter(EXCHANGE_ADAPTER);
+    exchangeConfig.setAuthenticationConfig(authenticationConfig);
+    exchangeConfig.setNetworkConfig(networkConfig);
+    exchangeConfig.setOtherConfig(otherConfig);
+
+    final ExchangeType exchangeType = new ExchangeType();
+    exchangeType.setExchange(exchangeConfig);
+
+    ConfigurationManager.saveConfig(
+        ExchangeType.class, exchangeType, INVALID_YAML_CONFIG_TO_SAVE_FILENAME);
   }
 }
