@@ -22,6 +22,14 @@ jacocoTestCoverageVerification {
         rule {
             element = 'CLASS'
             excludes = [
+                    // Ignore classes tested using Powermock. JaCoCo won't/can't instrument them:
+                    // "... right now there is NO WAY TO USE PowerMock with JaCoCo On-the-fly instrumentation."
+                    // See https://github.com/powermock/powermock/wiki/Code-coverage-with-JaCoCo
+                    'com.gazbert.bxbot.repository.yaml.MarketConfigYamlRepository',
+                    'com.gazbert.bxbot.repository.yaml.StrategyConfigYamlRepository',
+                    'com.gazbert.bxbot.repository.yaml.EngineConfigYamlRepository',
+                    'com.gazbert.bxbot.repository.yaml.ExchangeConfigYamlRepository',
+                    'com.gazbert.bxbot.repository.yaml.EmailAlertsConfigYamlRepository'
             ]
             limit {
                 counter = 'LINE'
