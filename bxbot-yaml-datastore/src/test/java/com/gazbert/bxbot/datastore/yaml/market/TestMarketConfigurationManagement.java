@@ -172,6 +172,6 @@ public class TestMarketConfigurationManagement {
     marketsConfig.getMarkets().add(market1);
     marketsConfig.getMarkets().add(market2);
 
-    ConfigurationManager.saveConfig(MarketsType.class, marketsConfig, YAML_CONFIG_TO_SAVE_FILENAME);
+    ConfigurationManager.saveConfig(MarketsType.class, marketsConfig, INVALID_YAML_CONFIG_TO_SAVE_FILENAME);
   }
 }
