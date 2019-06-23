@@ -158,8 +158,6 @@ public class TradingEngine {
         LOG.error(() -> errorMsg);
         throw new IllegalStateException(errorMsg);
       }
-
-      // first time to start
       isRunning = true;
     }
 
@@ -189,6 +187,7 @@ public class TradingEngine {
     while (keepAlive) {
       try {
         LOG.info(() -> "*** Starting next trade cycle... ***");
+
         // Emergency Stop Check MUST run at start of every trade cycle.
         if (isEmergencyStopLimitBreached()) {
           break;
@@ -202,90 +201,23 @@ public class TradingEngine {
           tradingStrategy.execute();
         }
 
-        LOG.info(() -> "*** Sleeping " + tradeExecutionInterval + "s til next trade cycle... ***");
-
-        try {
-          Thread.sleep(tradeExecutionInterval * 1000L);
-        } catch (InterruptedException e) {
-          LOG.warn(() -> "Control Loop thread interrupted when sleeping before next trade cycle");
-          Thread.currentThread().interrupt();
-        }
+        sleepUntilNextTradingCycle();
 
       } catch (ExchangeNetworkException e) {
-        /*
-         * We have a network connection issue reported by Exchange Adapter when called directly from
-         * Trading Engine. Current policy is to log it and sleep until next trade cycle.
-         */
-        final String errorMessage =
-            "A network error has occurred in Exchange Adapter! "
-                + "BX-bot will try again in "
-                + tradeExecutionInterval
-                + "s...";
-        LOG.error(() -> errorMessage, e);
-
-        try {
-          Thread.sleep(tradeExecutionInterval * 1000L);
-        } catch (InterruptedException e1) {
-          LOG.warn(() -> "Control Loop thread interrupted when sleeping before next trade cycle");
-          Thread.currentThread().interrupt();
-        }
+        handleExchangeNetworkException(e);
 
       } catch (TradingApiException e) {
-        /*
-         * A serious issue has occurred in the Exchange Adapter.
-         * Current policy is to log it, send email alert if required, and shutdown bot.
-         */
-        final String fatalErrorMessage = "A FATAL error has occurred in Exchange Adapter!";
-        LOG.fatal(() -> fatalErrorMessage, e);
-        emailAlerter.sendMessage(
-            CRITICAL_EMAIL_ALERT_SUBJECT,
-            buildCriticalEmailAlertMsgContent(
-                fatalErrorMessage
-                    + DETAILS_ERROR_MSG_LABEL
-                    + e.getMessage()
-                    + CAUSE_ERROR_MSG_LABEL
-                    + e.getCause(),
-                e));
-        keepAlive = false;
+        handleTradingApiException(e);
 
       } catch (StrategyException e) {
-        /*
-         * A serious issue has occurred in the Trading Strategy.
-         * Current policy is to log it, send email alert if required, and shutdown bot.
-         */
-        final String fatalErrorMsg = "A FATAL error has occurred in Trading Strategy!";
-        LOG.fatal(() -> fatalErrorMsg, e);
-        emailAlerter.sendMessage(
-            CRITICAL_EMAIL_ALERT_SUBJECT,
-            buildCriticalEmailAlertMsgContent(
-                fatalErrorMsg
-                    + DETAILS_ERROR_MSG_LABEL
-                    + e.getMessage()
-                    + CAUSE_ERROR_MSG_LABEL
-                    + e.getCause(),
-                e));
-        keepAlive = false;
+        handleStrategyException(e);
 
       } catch (Exception e) {
-        /*
-         * A serious and *unexpected* issue has occurred in the Exchange Adapter or Trading
-         * Strategy. Current policy is to log it, send email alert if required, and shutdown bot.
-         */
-        final String fatalErrorMsg =
-            "An unexpected FATAL error has occurred in Exchange Adapter or " + "Trading Strategy!";
-        LOG.fatal(() -> fatalErrorMsg, e);
-        emailAlerter.sendMessage(
-            CRITICAL_EMAIL_ALERT_SUBJECT,
-            buildCriticalEmailAlertMsgContent(
-                fatalErrorMsg
-                    + DETAILS_ERROR_MSG_LABEL
-                    + e.getMessage()
-                    + CAUSE_ERROR_MSG_LABEL
-                    + e.getCause(),
-                e));
-        keepAlive = false;
+        handleUnexpectedException(e);
       }
     }
+
+    // We've broken out of the control loop due to error or admin shutdown request
     LOG.fatal(() -> "BX-bot " + botId + " is shutting down NOW!");
     synchronized (IS_RUNNING_MONITOR) {
       isRunning = false;
@@ -309,6 +241,94 @@ public class TradingEngine {
     return isRunning;
   }
 
+  private void sleepUntilNextTradingCycle() {
+    LOG.info(() -> "*** Sleeping " + tradeExecutionInterval + "s til next trade cycle... ***");
+    try {
+      Thread.sleep(tradeExecutionInterval * 1000L);
+    } catch (InterruptedException e) {
+      LOG.warn(() -> "Control Loop thread interrupted when sleeping before next trade cycle");
+      Thread.currentThread().interrupt();
+    }
+  }
+
+  /*
+   * We have a network connection issue reported by Exchange Adapter when called directly from
+   * Trading Engine. Current policy is to log it and sleep until next trade cycle.
+   */
+  private void handleExchangeNetworkException(ExchangeNetworkException e) {
+    final String errorMessage =
+        "A network error has occurred in Exchange Adapter! "
+            + "BX-bot will try again in "
+            + tradeExecutionInterval
+            + "s...";
+    LOG.error(() -> errorMessage, e);
+
+    try {
+      Thread.sleep(tradeExecutionInterval * 1000L);
+    } catch (InterruptedException e1) {
+      LOG.warn(() -> "Control Loop thread interrupted when sleeping before next trade cycle");
+      Thread.currentThread().interrupt();
+    }
+  }
+
+  /*
+   * A serious issue has occurred in the Exchange Adapter.
+   * Current policy is to log it, send email alert if required, and shutdown bot.
+   */
+  private void handleTradingApiException(TradingApiException e) {
+    final String fatalErrorMessage = "A FATAL error has occurred in Exchange Adapter!";
+    LOG.fatal(() -> fatalErrorMessage, e);
+    emailAlerter.sendMessage(
+        CRITICAL_EMAIL_ALERT_SUBJECT,
+        buildCriticalEmailAlertMsgContent(
+            fatalErrorMessage
+                + DETAILS_ERROR_MSG_LABEL
+                + e.getMessage()
+                + CAUSE_ERROR_MSG_LABEL
+                + e.getCause(),
+            e));
+    keepAlive = false;
+  }
+
+  /*
+   * A serious issue has occurred in the Trading Strategy.
+   * Current policy is to log it, send email alert if required, and shutdown bot.
+   */
+  private void handleStrategyException(StrategyException e) {
+    final String fatalErrorMsg = "A FATAL error has occurred in Trading Strategy!";
+    LOG.fatal(() -> fatalErrorMsg, e);
+    emailAlerter.sendMessage(
+        CRITICAL_EMAIL_ALERT_SUBJECT,
+        buildCriticalEmailAlertMsgContent(
+            fatalErrorMsg
+                + DETAILS_ERROR_MSG_LABEL
+                + e.getMessage()
+                + CAUSE_ERROR_MSG_LABEL
+                + e.getCause(),
+            e));
+    keepAlive = false;
+  }
+
+  /*
+   * A serious and *unexpected* issue has occurred in the Exchange Adapter or Trading
+   * Strategy. Current policy is to log it, send email alert if required, and shutdown bot.
+   */
+  private void handleUnexpectedException(Exception e) {
+    final String fatalErrorMsg =
+        "An unexpected FATAL error has occurred in Exchange Adapter or " + "Trading Strategy!";
+    LOG.fatal(() -> fatalErrorMsg, e);
+    emailAlerter.sendMessage(
+        CRITICAL_EMAIL_ALERT_SUBJECT,
+        buildCriticalEmailAlertMsgContent(
+            fatalErrorMsg
+                + DETAILS_ERROR_MSG_LABEL
+                + e.getMessage()
+                + CAUSE_ERROR_MSG_LABEL
+                + e.getCause(),
+            e));
+    keepAlive = false;
+  }
+
   /*
    * Checks if the Emergency Stop Currency (e.g. USD, BTC) wallet balance on exchange has gone
    * *below* configured limit.
@@ -324,6 +344,7 @@ public class TradingEngine {
   private boolean isEmergencyStopLimitBreached()
       throws TradingApiException, ExchangeNetworkException {
     boolean isEmergencyStopLimitBreached = true;
+
     if (emergencyStopBalance.compareTo(BigDecimal.ZERO) == 0) {
       return false;
     }

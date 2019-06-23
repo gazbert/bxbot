@@ -214,10 +214,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
       params.put("pair", marketId);
 
       response = sendPublicRequestToExchange("Depth", params);
-
-      if (LOG.isDebugEnabled()) {
-        LOG.debug("Market Orders response: " + response);
-      }
+      LOG.debug(() -> "Market Orders response: " + response);
 
       if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
         final Type resultType =
@@ -226,44 +223,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
 
         final List errors = krakenResponse.error;
         if (errors == null || errors.isEmpty()) {
-
-          // Assume we'll always get something here if errors array is empty; else blow fast wih NPE
-          final KrakenMarketOrderBookResult krakenOrderBookResult =
-              (KrakenMarketOrderBookResult) krakenResponse.result;
-          final Optional<KrakenOrderBook> first =
-              krakenOrderBookResult.values().stream().findFirst();
-          if (first.isPresent()) {
-            final KrakenOrderBook krakenOrderBook = first.get();
-
-            final List<MarketOrder> buyOrders = new ArrayList<>();
-            for (KrakenMarketOrder krakenBuyOrder : krakenOrderBook.bids) {
-              final MarketOrder buyOrder =
-                  new MarketOrderImpl(
-                      OrderType.BUY,
-                      krakenBuyOrder.get(0),
-                      krakenBuyOrder.get(1),
-                      krakenBuyOrder.get(0).multiply(krakenBuyOrder.get(1)));
-              buyOrders.add(buyOrder);
-            }
-
-            final List<MarketOrder> sellOrders = new ArrayList<>();
-            for (KrakenMarketOrder krakenSellOrder : krakenOrderBook.asks) {
-              final MarketOrder sellOrder =
-                  new MarketOrderImpl(
-                      OrderType.SELL,
-                      krakenSellOrder.get(0),
-                      krakenSellOrder.get(1),
-                      krakenSellOrder.get(0).multiply(krakenSellOrder.get(1)));
-              sellOrders.add(sellOrder);
-            }
-
-            return new MarketOrderBookImpl(marketId, sellOrders, buyOrders);
-
-          } else {
-            final String errorMsg = FAILED_TO_GET_MARKET_ORDERS + response;
-            LOG.error(errorMsg);
-            throw new TradingApiException(errorMsg);
-          }
+          return adaptKrakenOrderBook(krakenResponse, marketId);
 
         } else {
           if (isExchangeUndergoingMaintenance(response) && keepAliveDuringMaintenance) {
@@ -299,10 +259,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
 
     try {
       response = sendAuthenticatedRequestToExchange("OpenOrders", null);
-
-      if (LOG.isDebugEnabled()) {
-        LOG.debug("Open Orders response: " + response);
-      }
+      LOG.debug(() -> "Open Orders response: " + response);
 
       if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
 
@@ -311,57 +268,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
 
         final List errors = krakenResponse.error;
         if (errors == null || errors.isEmpty()) {
-
-          final List<OpenOrder> openOrders = new ArrayList<>();
-
-          // Assume we'll always get something here if errors array is empty; else blow fast wih NPE
-          final KrakenOpenOrderResult krakenOpenOrderResult =
-              (KrakenOpenOrderResult) krakenResponse.result;
-
-          final Map<String, KrakenOpenOrder> krakenOpenOrders = krakenOpenOrderResult.open;
-          if (krakenOpenOrders != null) {
-            for (final Map.Entry<String, KrakenOpenOrder> openOrder : krakenOpenOrders.entrySet()) {
-
-              OrderType orderType;
-              final KrakenOpenOrder krakenOpenOrder = openOrder.getValue();
-              final KrakenOpenOrderDescription krakenOpenOrderDescription = krakenOpenOrder.descr;
-
-              if (!marketId.equalsIgnoreCase(krakenOpenOrderDescription.pair)) {
-                continue;
-              }
-
-              switch (krakenOpenOrderDescription.type) {
-                case "buy":
-                  orderType = OrderType.BUY;
-                  break;
-                case "sell":
-                  orderType = OrderType.SELL;
-                  break;
-                default:
-                  throw new TradingApiException(
-                      "Unrecognised order type received in getYourOpenOrders(). Value: "
-                          + openOrder.getValue().descr.ordertype);
-              }
-
-              final OpenOrder order =
-                  new OpenOrderImpl(
-                      openOrder.getKey(),
-                      new Date((long) krakenOpenOrder.opentm), // opentm == creationDate
-                      marketId,
-                      orderType,
-                      krakenOpenOrderDescription.price,
-                      // vol_exec == amount of order that has been executed
-                      (krakenOpenOrder.vol.subtract(krakenOpenOrder.volExec)),
-                      krakenOpenOrder.vol, // vol == orig order amount
-                      // krakenOpenOrder.cost, // cost == total value of order in API docs, but it's
-                      // always 0 :-(
-                      krakenOpenOrderDescription.price.multiply(krakenOpenOrder.vol));
-
-              openOrders.add(order);
-            }
-          }
-
-          return openOrders;
+          return adaptKrakenOpenOrders(krakenResponse, marketId);
 
         } else {
           if (isExchangeUndergoingMaintenance(response) && keepAliveDuringMaintenance) {
@@ -422,10 +329,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
           "volume", new DecimalFormat("#.########", getDecimalFormatSymbols()).format(quantity));
 
       response = sendAuthenticatedRequestToExchange("AddOrder", params);
-
-      if (LOG.isDebugEnabled()) {
-        LOG.debug("Create Order response: " + response);
-      }
+      LOG.debug(() -> "Create Order response: " + response);
 
       if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
 
@@ -478,10 +382,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
       params.put("txid", orderId);
 
       response = sendAuthenticatedRequestToExchange("CancelOrder", params);
-
-      if (LOG.isDebugEnabled()) {
-        LOG.debug("Cancel Order response: " + response);
-      }
+      LOG.debug(() -> "Cancel Order response: " + response);
 
       if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
 
@@ -491,23 +392,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
 
         final List errors = krakenResponse.error;
         if (errors == null || errors.isEmpty()) {
-
-          // Assume we'll always get something here if errors array is empty; else blow fast wih NPE
-          final KrakenCancelOrderResult krakenCancelOrderResult =
-              (KrakenCancelOrderResult) krakenResponse.result;
-          if (krakenCancelOrderResult != null) {
-            if (krakenCancelOrderResult.count > 0) {
-              return true;
-            } else {
-              final String errorMsg = FAILED_TO_CANCEL_ORDER + response;
-              LOG.error(errorMsg);
-              return false;
-            }
-          } else {
-            final String errorMsg = FAILED_TO_CANCEL_ORDER + response;
-            LOG.error(errorMsg);
-            return false;
-          }
+          return adaptKrakenCancelOrderResult(krakenResponse);
 
         } else {
           if (isExchangeUndergoingMaintenance(response) && keepAliveDuringMaintenance) {
@@ -546,10 +431,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
       params.put("pair", marketId);
 
       response = sendPublicRequestToExchange("Ticker", params);
-
-      if (LOG.isDebugEnabled()) {
-        LOG.debug("Latest Market Price response: " + response);
-      }
+      LOG.debug(() -> "Latest Market Price response: " + response);
 
       if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
 
@@ -599,49 +481,11 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
 
     try {
       response = sendAuthenticatedRequestToExchange("Balance", null);
-
-      if (LOG.isDebugEnabled()) {
-        LOG.debug("Balance Info response: " + response);
-      }
+      LOG.debug(() -> "Balance Info response: " + response);
 
       if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
         final Type resultType = new TypeToken<KrakenResponse<KrakenBalanceResult>>() {}.getType();
-
-        final KrakenResponse krakenResponse = gson.fromJson(response.getPayload(), resultType);
-
-        if (krakenResponse != null) {
-          final List errors = krakenResponse.error;
-          if (errors == null || errors.isEmpty()) {
-
-            // Assume we'll always get something here if errors array is empty; else blow fast wih
-            // NPE
-            final KrakenBalanceResult balanceResult = (KrakenBalanceResult) krakenResponse.result;
-
-            final Map<String, BigDecimal> balancesAvailable = new HashMap<>();
-            final Set<Map.Entry<String, BigDecimal>> entries = balanceResult.entrySet();
-            for (final Map.Entry<String, BigDecimal> entry : entries) {
-              balancesAvailable.put(entry.getKey(), entry.getValue());
-            }
-
-            // 2nd arg of BalanceInfo constructor for reserved/on-hold balances is not provided by
-            // exchange.
-            return new BalanceInfoImpl(balancesAvailable, new HashMap<>());
-
-          } else {
-            if (isExchangeUndergoingMaintenance(response) && keepAliveDuringMaintenance) {
-              LOG.warn(() -> UNDER_MAINTENANCE_WARNING_MESSAGE);
-              throw new ExchangeNetworkException(UNDER_MAINTENANCE_WARNING_MESSAGE);
-            }
-
-            final String errorMsg = FAILED_TO_GET_BALANCE + response;
-            LOG.error(errorMsg);
-            throw new TradingApiException(errorMsg);
-          }
-        } else {
-          final String errorMsg = FAILED_TO_GET_BALANCE + response;
-          LOG.error(errorMsg);
-          throw new TradingApiException(errorMsg);
-        }
+        return adaptKrakenBalanceInfo(response, resultType);
 
       } else {
         final String errorMsg = FAILED_TO_GET_BALANCE + response;
@@ -693,10 +537,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
       params.put("pair", marketId);
 
       response = sendPublicRequestToExchange("Ticker", params);
-
-      if (LOG.isDebugEnabled()) {
-        LOG.debug("Ticker response: " + response);
-      }
+      LOG.debug(() -> "Ticker response: " + response);
 
       if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
 
@@ -1207,6 +1048,152 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
   // --------------------------------------------------------------------------
   //  Util methods
   // --------------------------------------------------------------------------
+
+  private List<OpenOrder> adaptKrakenOpenOrders(KrakenResponse krakenResponse, String marketId)
+      throws TradingApiException {
+    final List<OpenOrder> openOrders = new ArrayList<>();
+
+    // Assume we'll always get something here if errors array is empty; else blow fast wih NPE
+    final KrakenOpenOrderResult krakenOpenOrderResult =
+        (KrakenOpenOrderResult) krakenResponse.result;
+
+    final Map<String, KrakenOpenOrder> krakenOpenOrders = krakenOpenOrderResult.open;
+    if (krakenOpenOrders != null) {
+      for (final Map.Entry<String, KrakenOpenOrder> openOrder : krakenOpenOrders.entrySet()) {
+
+        OrderType orderType;
+        final KrakenOpenOrder krakenOpenOrder = openOrder.getValue();
+        final KrakenOpenOrderDescription krakenOpenOrderDescription = krakenOpenOrder.descr;
+
+        if (!marketId.equalsIgnoreCase(krakenOpenOrderDescription.pair)) {
+          continue;
+        }
+
+        switch (krakenOpenOrderDescription.type) {
+          case "buy":
+            orderType = OrderType.BUY;
+            break;
+          case "sell":
+            orderType = OrderType.SELL;
+            break;
+          default:
+            throw new TradingApiException(
+                "Unrecognised order type received in getYourOpenOrders(). Value: "
+                    + openOrder.getValue().descr.ordertype);
+        }
+
+        final OpenOrder order =
+            new OpenOrderImpl(
+                openOrder.getKey(),
+                new Date((long) krakenOpenOrder.opentm), // opentm == creationDate
+                marketId,
+                orderType,
+                krakenOpenOrderDescription.price,
+                // vol_exec == amount of order that has been executed
+                (krakenOpenOrder.vol.subtract(krakenOpenOrder.volExec)),
+                krakenOpenOrder.vol, // vol == orig order amount
+                // krakenOpenOrder.cost, // cost == total value of order in API docs, but it's
+                // always 0 :-(
+                krakenOpenOrderDescription.price.multiply(krakenOpenOrder.vol));
+
+        openOrders.add(order);
+      }
+    }
+    return openOrders;
+  }
+
+  private MarketOrderBookImpl adaptKrakenOrderBook(KrakenResponse krakenResponse, String marketId)
+      throws TradingApiException {
+
+    // Assume we'll always get something here if errors array is empty; else blow fast wih NPE
+    final KrakenMarketOrderBookResult krakenOrderBookResult =
+        (KrakenMarketOrderBookResult) krakenResponse.result;
+    final Optional<KrakenOrderBook> first = krakenOrderBookResult.values().stream().findFirst();
+    if (first.isPresent()) {
+      final KrakenOrderBook krakenOrderBook = first.get();
+
+      final List<MarketOrder> buyOrders = new ArrayList<>();
+      for (KrakenMarketOrder krakenBuyOrder : krakenOrderBook.bids) {
+        final MarketOrder buyOrder =
+            new MarketOrderImpl(
+                OrderType.BUY,
+                krakenBuyOrder.get(0),
+                krakenBuyOrder.get(1),
+                krakenBuyOrder.get(0).multiply(krakenBuyOrder.get(1)));
+        buyOrders.add(buyOrder);
+      }
+
+      final List<MarketOrder> sellOrders = new ArrayList<>();
+      for (KrakenMarketOrder krakenSellOrder : krakenOrderBook.asks) {
+        final MarketOrder sellOrder =
+            new MarketOrderImpl(
+                OrderType.SELL,
+                krakenSellOrder.get(0),
+                krakenSellOrder.get(1),
+                krakenSellOrder.get(0).multiply(krakenSellOrder.get(1)));
+        sellOrders.add(sellOrder);
+      }
+      return new MarketOrderBookImpl(marketId, sellOrders, buyOrders);
+    } else {
+      final String errorMsg = FAILED_TO_GET_MARKET_ORDERS + krakenResponse;
+      LOG.error(errorMsg);
+      throw new TradingApiException(errorMsg);
+    }
+  }
+
+  private boolean adaptKrakenCancelOrderResult(KrakenResponse krakenResponse) {
+    // Assume we'll always get something here if errors array is empty; else blow fast wih NPE
+    final KrakenCancelOrderResult krakenCancelOrderResult =
+        (KrakenCancelOrderResult) krakenResponse.result;
+    if (krakenCancelOrderResult != null) {
+      if (krakenCancelOrderResult.count > 0) {
+        return true;
+      } else {
+        final String errorMsg = FAILED_TO_CANCEL_ORDER + krakenResponse;
+        LOG.error(errorMsg);
+        return false;
+      }
+    } else {
+      final String errorMsg = FAILED_TO_CANCEL_ORDER + krakenResponse;
+      LOG.error(errorMsg);
+      return false;
+    }
+  }
+
+  private BalanceInfoImpl adaptKrakenBalanceInfo(ExchangeHttpResponse response, Type resultType)
+      throws ExchangeNetworkException, TradingApiException {
+    final KrakenResponse krakenResponse = gson.fromJson(response.getPayload(), resultType);
+    if (krakenResponse != null) {
+      final List errors = krakenResponse.error;
+      if (errors == null || errors.isEmpty()) {
+        // Assume we'll always get something here if errors array is empty; else blow fast wih NPE
+        final KrakenBalanceResult balanceResult = (KrakenBalanceResult) krakenResponse.result;
+        final Map<String, BigDecimal> balancesAvailable = new HashMap<>();
+        final Set<Map.Entry<String, BigDecimal>> entries = balanceResult.entrySet();
+        for (final Map.Entry<String, BigDecimal> entry : entries) {
+          balancesAvailable.put(entry.getKey(), entry.getValue());
+        }
+
+        // 2nd arg of BalanceInfo constructor for reserved/on-hold balances is not provided by
+        // exchange.
+        return new BalanceInfoImpl(balancesAvailable, new HashMap<>());
+
+      } else {
+        if (isExchangeUndergoingMaintenance(response) && keepAliveDuringMaintenance) {
+          LOG.warn(() -> UNDER_MAINTENANCE_WARNING_MESSAGE);
+          throw new ExchangeNetworkException(UNDER_MAINTENANCE_WARNING_MESSAGE);
+        }
+
+        final String errorMsg = FAILED_TO_GET_BALANCE + response;
+        LOG.error(errorMsg);
+        throw new TradingApiException(errorMsg);
+      }
+    } else {
+      final String errorMsg = FAILED_TO_GET_BALANCE + response;
+      LOG.error(errorMsg);
+      throw new TradingApiException(errorMsg);
+    }
+  }
 
   private void initGson() {
     final GsonBuilder gsonBuilder = new GsonBuilder();
