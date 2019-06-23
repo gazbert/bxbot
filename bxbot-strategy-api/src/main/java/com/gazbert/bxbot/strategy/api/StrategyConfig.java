@@ -32,7 +32,7 @@ import java.util.Set;
  * </p>
  *
  * <p>
- * Configuration comes from the strategies.xml file.
+ * Configuration comes from the strategies.yaml file.
  * </p>
  *
  * @author gazbert

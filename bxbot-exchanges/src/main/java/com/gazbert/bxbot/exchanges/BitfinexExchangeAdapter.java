@@ -72,7 +72,7 @@ import org.apache.logging.log4j.Logger;
  * <p><strong> DISCLAIMER: This Exchange Adapter is provided as-is; it might have bugs in it and you
  * could lose money. Despite running live on Bitfinex, it has only been unit tested up until the
  * point of calling the {@link #sendPublicRequestToExchange(String)} and {@link
- * #sendAuthenticatedRequestToExchange(String, Map)} methods. Use it at our own risk! </strong>
+ * #sendAuthenticatedRequestToExchange(String, Map)} methods. Use it at our own risk!</strong>
  *
  * <p>The adapter uses v1 of the Bitfinex API - it is limited to 60 API calls per minute. It only
  * supports 'exchange' accounts; it does <em>not</em> support 'trading' (margin trading) accounts or

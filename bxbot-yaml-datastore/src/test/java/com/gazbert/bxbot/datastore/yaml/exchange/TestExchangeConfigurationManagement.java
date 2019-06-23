@@ -49,7 +49,7 @@ public class TestExchangeConfigurationManagement {
   private static final String INVALID_YAML_CONFIG_FILENAME =
       "src/test/config/exchange/invalid-exchange.yaml";
   private static final String MISSING_XML_CONFIG_FILENAME =
-      "src/test/config/exchange-/missing-exchange.xml";
+      "src/test/config/exchange-/missing-exchange.yaml";
   private static final String YAML_CONFIG_TO_SAVE_FILENAME =
       "src/test/config/exchange/saved-exchange.yaml";
 

@@ -91,7 +91,7 @@ import org.apache.logging.log4j.Logger;
  * href="https://support.kraken.com/hc/en-us/sections/200560633-Leverage-and-Margin">leverage and
  * margin</a> trading.
  *
- * <p>Exchange fees are loaded from the exchange.xml file on startup; they are not fetched from the
+ * <p>Exchange fees are loaded from the exchange.yaml file on startup; they are not fetched from the
  * exchange at runtime as the Kraken REST API does not support this. The fees are used across all
  * markets. Make sure you keep an eye on the <a href="https://www.kraken.com/help/fees">exchange
  * fees</a> and update the config accordingly.
@@ -111,7 +111,7 @@ import org.apache.logging.log4j.Logger;
  * filter only the orders for the given market id.
  *
  * <p>The exchange regularly goes down for maintenance. If the keep-alive-during-maintenance
- * config-item is set to true in the exchange.xml config file, the bot will stay alive and wait
+ * config-item is set to true in the exchange.yaml config file, the bot will stay alive and wait
  * until the next trade cycle.
  *
  * <p>The Exchange Adapter is <em>not</em> thread safe. It expects to be called using a single
@@ -658,19 +658,23 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
     }
   }
 
+  /*
+   * Kraken does not provide API call for fetching % buy fee; it only provides the fee monetary
+   * value for a given order via the OpenOrders API call. We load the % fee statically from
+   * exchange.yaml file.
+   */
   @Override
   public BigDecimal getPercentageOfBuyOrderTakenForExchangeFee(String marketId) {
-    // Kraken does not provide API call for fetching % buy fee; it only provides the fee monetary
-    // value for a
-    // given order via the OpenOrders API call. We load the % fee statically from exchange.xml file.
     return buyFeePercentage;
   }
 
+  /*
+   * Kraken does not provide API call for fetching % sell fee; it only provides the fee monetary
+   * value for a given order via the OpenOrders API call. We load the % fee statically from
+   * exchange.yaml file.
+   */
   @Override
   public BigDecimal getPercentageOfSellOrderTakenForExchangeFee(String marketId) {
-    // Kraken does not provide API call for fetching % sell fee; it only provides the fee monetary
-    // value for a
-    // given order via the OpenOrders API call. We load the % fee statically from exchange.xml file.
     return sellFeePercentage;
   }
 
@@ -794,8 +798,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
 
     private static final long serialVersionUID = -4913711010647027759L;
 
-    KrakenTickerResult() {
-    }
+    KrakenTickerResult() {}
   }
 
   /** GSON class that wraps an Open Order API call result - your open orders. */
@@ -940,8 +943,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
   private static class KrakenTickerResultDeserializer
       implements JsonDeserializer<KrakenTickerResult> {
 
-    KrakenTickerResultDeserializer() {
-    }
+    KrakenTickerResultDeserializer() {}
 
     public KrakenTickerResult deserialize(
         JsonElement json, Type type, JsonDeserializationContext context) {
@@ -1198,7 +1200,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
       keepAliveDuringMaintenance = Boolean.valueOf(keepAliveDuringMaintenanceConfig);
       LOG.info(() -> "Keep Alive During Maintenance: " + keepAliveDuringMaintenance);
     } else {
-      LOG.info(() -> KEEP_ALIVE_DURING_MAINTENANCE_PROPERTY_NAME + " is not set in exchange.xml");
+      LOG.info(() -> KEEP_ALIVE_DURING_MAINTENANCE_PROPERTY_NAME + " is not set in exchange.yaml");
     }
   }
 

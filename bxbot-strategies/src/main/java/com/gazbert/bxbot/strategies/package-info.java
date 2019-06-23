@@ -10,10 +10,10 @@
  *   <li>implement the {@link com.gazbert.bxbot.strategy.api.TradingStrategy} interface.
  *   <li>be placed on the Trading Engine's runtime classpath: keep it here, or in a separate jar
  *       file.
- *   <li>include a configuration entry in the strategies.xml file.
+ *   <li>include a configuration entry in the strategies.yaml file.
  * </ol>
  *
- * <p>You can pass configuration to your Strategy from the strategies.xml file - you access it from
+ * <p>You can pass configuration to your Strategy from the strategies.yaml file - you access it from
  * the {@link
  * com.gazbert.bxbot.strategy.api.TradingStrategy#init(com.gazbert.bxbot.trading.api.TradingApi,
  * com.gazbert.bxbot.trading.api.Market, com.gazbert.bxbot.strategy.api.StrategyConfig)} method via

@@ -85,7 +85,7 @@ import org.apache.logging.log4j.Logger;
  *       that you not exceed 5 requests per second.
  * </ul>
  *
- * <p>Exchange fees are loaded from the exchange.xml file on startup; they are not fetched from the
+ * <p>Exchange fees are loaded from the exchange.yaml file on startup; they are not fetched from the
  * exchange at runtime as the Gemini REST API does not support this. The fees are used across all
  * markets. Make sure you keep an eye on the <a href="https://gemini.com/fee-schedule/">exchange
  * fees</a> and update the config accordingly.
@@ -441,17 +441,21 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter
     }
   }
 
+  /*
+   * Gemini does not provide API call for fetching % buy fee. We load the % fee statically
+   * from exchange.yaml file - see https://gemini.com/fee-schedule/
+   */
   @Override
   public BigDecimal getPercentageOfBuyOrderTakenForExchangeFee(String marketId) {
-    // Gemini does not provide API call for fetching % buy fee.
-    // We load the % fee statically from exchange.xml file - see https://gemini.com/fee-schedule/
     return buyFeePercentage;
   }
 
+  /*
+   * Gemini does not provide API call for fetching % sell fee. load the % fee statically
+   * from exchange.yaml file - see https://gemini.com/fee-schedule/
+   */
   @Override
   public BigDecimal getPercentageOfSellOrderTakenForExchangeFee(String marketId) {
-    // Gemini does not provide API call for fetching % sell fee.
-    // We load the % fee statically from exchange.xml file - see https://gemini.com/fee-schedule/
     return sellFeePercentage;
   }
 

@@ -65,7 +65,7 @@ import org.apache.logging.log4j.Logger;
 abstract class AbstractExchangeAdapter {
 
   private static final Logger LOG = LogManager.getLogger();
-  private static final String EXCHANGE_CONFIG_FILE = "config/exchange.xml";
+  private static final String EXCHANGE_CONFIG_FILE = "config/exchange.yaml";
 
   private static final String UNEXPECTED_IO_ERROR_MSG =
       "Failed to connect to Exchange due to unexpected IO error.";

@@ -43,13 +43,11 @@ import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-  /**
-   * Configures the Authentication manager.
-   */
+  /** Configures the Authentication manager. */
   @Autowired
   public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
 
-    // Get from application.properties file and bcrypt em!
+    // TODO: Get credentials (use bcrypt) from application.properties file.
     auth.inMemoryAuthentication()
         .withUser("unit-test-user")
         .password("unit-test-password")

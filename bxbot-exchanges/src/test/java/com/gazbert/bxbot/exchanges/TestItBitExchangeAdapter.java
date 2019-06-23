@@ -74,13 +74,13 @@ import org.powermock.reflect.Whitebox;
  */
 @RunWith(PowerMockRunner.class)
 @PowerMockIgnore({
-    "javax.crypto.*",
-    "javax.management.*",
-    "com.sun.org.apache.xerces.*",
-    "javax.xml.parsers.*",
-    "org.xml.sax.*",
-    "org.w3c.dom.*",
-    "javax.xml.datatype.*"
+  "javax.crypto.*",
+  "javax.management.*",
+  "com.sun.org.apache.xerces.*",
+  "javax.xml.parsers.*",
+  "org.xml.sax.*",
+  "org.w3c.dom.*",
+  "javax.xml.datatype.*"
 })
 @PrepareForTest(ItBitExchangeAdapter.class)
 public class TestItBitExchangeAdapter extends AbstractExchangeAdapterTest {
@@ -146,9 +146,7 @@ public class TestItBitExchangeAdapter extends AbstractExchangeAdapterTest {
   private NetworkConfig networkConfig;
   private OtherConfig otherConfig;
 
-  /**
-   * Create some exchange config - the TradingEngine would normally do this.
-   */
+  /** Create some exchange config - the TradingEngine would normally do this. */
   @Before
   public void setupForEachTest() {
     authenticationConfig = PowerMock.createMock(AuthenticationConfig.class);

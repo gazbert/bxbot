@@ -149,7 +149,7 @@ public class TestEmailAlerter {
    *
    * <ol>
    *   <li>Uncomment @Test.
-   *   <li>Change the [project-root]/config/email-alerts.xml to use your account SMTP settings.
+   *   <li>Change the [project-root]/config/email-alerts.yaml to use your account SMTP settings.
    *   <li>Comment out @RunWith(PowerMockRunner.class) and @PrepareForTest(Transport.class) at top
    *       of class - they mess with the SSLContext and the test will fail - no time to debug why
    *       but related to: https://code.google.com/p/powermock/issues/detail?id=288
