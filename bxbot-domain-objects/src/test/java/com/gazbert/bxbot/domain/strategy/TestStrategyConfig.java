@@ -78,6 +78,9 @@ public class TestStrategyConfig {
     strategyConfig.setClassName(CLASSNAME);
     assertEquals(CLASSNAME, strategyConfig.getClassName());
 
+    strategyConfig.setBeanName(BEAN_NAME);
+    assertEquals(BEAN_NAME, strategyConfig.getBeanName());
+
     strategyConfig.setConfigItems(CONFIG_ITEMS);
     assertEquals(CONFIG_ITEMS, strategyConfig.getConfigItems());
   }

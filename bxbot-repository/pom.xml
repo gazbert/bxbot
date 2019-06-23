@@ -97,8 +97,11 @@
                       See https://github.com/powermock/powermock/wiki/Code-coverage-with-JaCoCo
                      -->
                     <excludes>
-                        <exclude>**/StrategyConfigRepositoryXmlDatastore</exclude>
-                        <exclude>**/MarketConfigRepositoryXmlDatastore</exclude>
+                        <exclude>**/StrategyConfigYamlRepository</exclude>
+                        <exclude>**/MarketConfigYamlRepository</exclude>
+                        <exclude>**/EngineConfigYamlRepository</exclude>
+                        <exclude>**/ExchangeConfigYamlRepository</exclude>
+                        <exclude>**/EmailAlertsConfigYamlRepository</exclude>
                     </excludes>
                 </configuration>
                 <executions>
