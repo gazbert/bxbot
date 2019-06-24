@@ -23,7 +23,7 @@
 
 package com.gazbert.bxbot.rest.api.v1.config;
 
-import static com.gazbert.bxbot.rest.api.v1.config.AbstractConfigController.CONFIG_ENDPOINT_BASE_URI;
+import static com.gazbert.bxbot.rest.api.v1.EndpointLocations.CONFIG_ENDPOINT_BASE_URI;
 
 import com.gazbert.bxbot.domain.engine.EngineConfig;
 import com.gazbert.bxbot.services.EngineConfigService;
@@ -52,7 +52,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping(CONFIG_ENDPOINT_BASE_URI)
-public class EngineConfigController extends AbstractConfigController {
+public class EngineConfigController {
 
   private static final Logger LOG = LogManager.getLogger();
   private static final String ENGINE_RESOURCE_PATH = "/engine";

@@ -23,7 +23,7 @@
 
 package com.gazbert.bxbot.rest.api.v1.config;
 
-import static com.gazbert.bxbot.rest.api.v1.config.AbstractConfigController.CONFIG_ENDPOINT_BASE_URI;
+import static com.gazbert.bxbot.rest.api.v1.EndpointLocations.CONFIG_ENDPOINT_BASE_URI;
 
 import com.gazbert.bxbot.domain.exchange.ExchangeConfig;
 import com.gazbert.bxbot.services.ExchangeConfigService;
@@ -51,7 +51,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping(CONFIG_ENDPOINT_BASE_URI)
-public class ExchangeConfigController extends AbstractConfigController {
+public class ExchangeConfigController {
 
   private static final Logger LOG = LogManager.getLogger();
   private static final String EXCHANGE_RESOURCE_PATH = "/exchange";

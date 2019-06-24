@@ -23,7 +23,7 @@
 
 package com.gazbert.bxbot.rest.api.v1.config;
 
-import static com.gazbert.bxbot.rest.api.v1.config.AbstractConfigController.CONFIG_ENDPOINT_BASE_URI;
+import static com.gazbert.bxbot.rest.api.v1.EndpointLocations.CONFIG_ENDPOINT_BASE_URI;
 
 import com.gazbert.bxbot.domain.market.MarketConfig;
 import com.gazbert.bxbot.services.MarketConfigService;
@@ -42,7 +42,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -53,7 +52,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping(CONFIG_ENDPOINT_BASE_URI)
-public class MarketConfigController extends AbstractConfigController {
+public class MarketConfigController {
 
   private static final Logger LOG = LogManager.getLogger();
   private static final String MARKETS_RESOURCE_PATH = "/markets";
@@ -186,7 +185,7 @@ public class MarketConfigController extends AbstractConfigController {
                 + marketId
                 + " - deleteMarket() - caller: "
                 + user.getUsername());
-  
+
     final MarketConfig deletedConfig = marketConfigService.deleteMarketConfig(marketId);
     return deletedConfig == null
         ? new ResponseEntity<>(HttpStatus.NOT_FOUND)

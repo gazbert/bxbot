@@ -23,7 +23,7 @@
 
 package com.gazbert.bxbot.rest.api.v1.config;
 
-import static com.gazbert.bxbot.rest.api.v1.config.AbstractConfigController.CONFIG_ENDPOINT_BASE_URI;
+import static com.gazbert.bxbot.rest.api.v1.EndpointLocations.CONFIG_ENDPOINT_BASE_URI;
 
 import com.gazbert.bxbot.domain.emailalerts.EmailAlertsConfig;
 import com.gazbert.bxbot.services.EmailAlertsConfigService;
@@ -52,7 +52,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping(CONFIG_ENDPOINT_BASE_URI)
-public class EmailAlertsConfigController extends AbstractConfigController {
+public class EmailAlertsConfigController {
 
   private static final Logger LOG = LogManager.getLogger();
   private static final String EMAIL_ALERTS_RESOURCE_PATH = "/email-alerts";

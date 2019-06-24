@@ -23,7 +23,7 @@
 
 package com.gazbert.bxbot.rest.api.v1.runtime;
 
-import static com.gazbert.bxbot.rest.api.v1.runtime.AbstractRuntimeController.RUNTIME_ENDPOINT_BASE_URI;
+import static com.gazbert.bxbot.rest.api.v1.EndpointLocations.RUNTIME_ENDPOINT_BASE_URI;
 
 import com.gazbert.bxbot.domain.bot.BotStatus;
 import com.gazbert.bxbot.domain.engine.EngineConfig;
@@ -45,7 +45,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping(RUNTIME_ENDPOINT_BASE_URI)
-public class BotStatusController extends AbstractRuntimeController {
+public class BotStatusController {
 
   private static final Logger LOG = LogManager.getLogger();
   private static final String STATUS_RESOURCE_PATH = "/status";
