@@ -45,7 +45,7 @@ public class BxBot implements CommandLineRunner {
   }
 
   public static void main(String[] args) {
-    SpringApplication.run(BxBot.class, args);
+    SpringApplication.run(BxBot.class);
   }
 
   @Override
