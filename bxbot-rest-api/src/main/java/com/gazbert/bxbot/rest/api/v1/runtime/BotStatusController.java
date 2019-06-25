@@ -23,7 +23,7 @@
 
 package com.gazbert.bxbot.rest.api.v1.runtime;
 
-import static com.gazbert.bxbot.rest.api.v1.runtime.AbstractRuntimeController.RUNTIME_ENDPOINT_BASE_URI;
+import static com.gazbert.bxbot.rest.api.v1.EndpointLocations.RUNTIME_ENDPOINT_BASE_URI;
 
 import com.gazbert.bxbot.domain.bot.BotStatus;
 import com.gazbert.bxbot.domain.engine.EngineConfig;
@@ -33,8 +33,8 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -45,7 +45,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping(RUNTIME_ENDPOINT_BASE_URI)
-public class BotStatusController extends AbstractRuntimeController {
+public class BotStatusController {
 
   private static final Logger LOG = LogManager.getLogger();
   private static final String STATUS_RESOURCE_PATH = "/status";
@@ -62,10 +62,11 @@ public class BotStatusController extends AbstractRuntimeController {
    * @param user the authenticated user making the request.
    * @return the process status.
    */
-  @RequestMapping(value = STATUS_RESOURCE_PATH, method = RequestMethod.GET)
+  @GetMapping(value = STATUS_RESOURCE_PATH)
   public BotStatus getStatus(@AuthenticationPrincipal User user) {
 
-    LOG.info("GET " + STATUS_RESOURCE_PATH + " - getStatus() - caller: " + user.getUsername());
+    LOG.info(
+        () -> "GET " + STATUS_RESOURCE_PATH + " - getStatus() - caller: " + user.getUsername());
 
     final EngineConfig engineConfig = engineConfigService.getEngineConfig();
 
@@ -75,8 +76,7 @@ public class BotStatusController extends AbstractRuntimeController {
     botStatus.setDisplayName(engineConfig.getBotName());
     botStatus.setStatus("running"); // use enum for defining states at some point
 
-    LOG.info("Response: " + botStatus);
+    LOG.info(() -> "Response: " + botStatus);
     return botStatus;
   }
 }
-

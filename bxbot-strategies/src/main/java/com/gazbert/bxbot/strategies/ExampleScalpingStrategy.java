@@ -62,14 +62,14 @@ import org.springframework.stereotype.Component;
  *
  * <p>When it starts up, it places an order at the current BID price and uses x amount of counter
  * currency (USD) to 'buy' the base currency (BTC). The value of x comes from the sample
- * {project-root}/config/strategies.xml 'counter-currency-buy-order-amount' config-item, currently
+ * {project-root}/config/strategies.yaml 'counter-currency-buy-order-amount' config-item, currently
  * set to 20 USD. Make sure that the value you use for x is large enough to be able to meet the
  * minimum BTC order size for the exchange you are trading on, e.g. the Bitfinex min order size is
  * 0.01 BTC as of 3 May 2017. The algorithm then waits for the buy order to fill...
  *
  * <p>Once the buy order fills, it then waits until the ASK price is at least y % higher than the
  * previous buy fill price. The value of y comes from the sample
- * {project-root}/config/strategies.xml 'minimum-percentage-gain' config-item, currently set to 1%.
+ * {project-root}/config/strategies.yaml 'minimum-percentage-gain' config-item, currently set to 1%.
  * Once the % gain has been achieved, the algorithm will place a sell order at the current ASK
  * price. It then waits for the sell order to fill... and the cycle repeats.
  *
@@ -89,18 +89,18 @@ import org.springframework.stereotype.Component;
  * calculations when you write your own algorithm. Otherwise, you'll end up bleeding fiat/crypto to
  * the exchange...
  *
- * <p>This demo algorithm relies on the {project-root}/config/strategies.xml
+ * <p>This demo algorithm relies on the {project-root}/config/strategies.yaml
  * 'minimum-percentage-gain' config-item value being high enough to make a profit and cover the
  * exchange fees. You could tweak the algo to call the {@link
  * com.gazbert.bxbot.trading.api.TradingApi#getPercentageOfBuyOrderTakenForExchangeFee(String)} and
  * {@link
  * com.gazbert.bxbot.trading.api.TradingApi#getPercentageOfSellOrderTakenForExchangeFee(String)}
  * when calculating the order to send to the exchange... See the sample
- * {project-root}/config/samples/{exchange}/exchange.xml files for info on the different exchange
+ * {project-root}/config/samples/{exchange}/exchange.yaml files for info on the different exchange
  * fees.
  *
  * <p>You configure the loading of your strategy using either a class-name OR a bean-name in the
- * {project-root}/config/strategies.xml config file. This example strategy is configured using the
+ * {project-root}/config/strategies.yaml config file. This example strategy is configured using the
  * bean-name and by setting the @Component("exampleScalpingStrategy") annotation - this results in
  * Spring injecting the bean - see <a
  * href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/stereotype/Component.html">
@@ -110,9 +110,9 @@ import org.springframework.stereotype.Component;
  * href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/stereotype/Repository.html">
  * Repository</a> to store your trade data.
  *
- * <p>The algorithm relies on config from the sample {project-root}/config/strategies.xml and
- * {project-root}/config/markets.xml files. You can pass additional config-items to your Strategy
- * using the {project-root}/config/strategies.xml file - you access it from the {@link
+ * <p>The algorithm relies on config from the sample {project-root}/config/strategies.yaml and
+ * {project-root}/config/markets.yaml files. You can pass additional config-items to your Strategy
+ * using the {project-root}/config/strategies.yaml file - you access it from the {@link
  * #init(TradingApi, Market, StrategyConfig)} method via the StrategyConfigImpl argument.
  *
  * <p>This simple demo algorithm only manages 1 order at a time to keep things simple.
@@ -150,13 +150,13 @@ public class ExampleScalpingStrategy implements TradingStrategy {
 
   /**
    * The counter currency amount to use when placing the buy order. This was loaded from the
-   * strategy entry in the {project-root}/config/strategies.xml config file.
+   * strategy entry in the {project-root}/config/strategies.yaml config file.
    */
   private BigDecimal counterCurrencyBuyOrderAmount;
 
   /**
    * The minimum % gain was to achieve before placing a SELL oder. This was loaded from the strategy
-   * entry in the {project-root}/config/strategies.xml config file.
+   * entry in the {project-root}/config/strategies.yaml config file.
    */
   private BigDecimal minimumPercentageGain;
 
@@ -166,9 +166,9 @@ public class ExampleScalpingStrategy implements TradingStrategy {
    *
    * @param tradingApi the Trading API. Use this to make trades and stuff.
    * @param market the market for this strategy. This is the market the strategy is currently
-   *     running on - you wire this up in the markets.xml and strategies.xml files.
+   *     running on - you wire this up in the markets.yaml and strategies.yaml files.
    * @param config configuration for the strategy. Contains any (optional) config you set up in the
-   *     strategies.xml file.
+   *     strategies.yaml file.
    */
   @Override
   public void init(TradingApi tradingApi, Market market, StrategyConfig config) {
@@ -183,7 +183,7 @@ public class ExampleScalpingStrategy implements TradingStrategy {
    * This is the main execution method of the Trading Strategy. It is where your algorithm lives.
    *
    * <p>It is called by the Trading Engine during each trade cycle, e.g. every 60s. The trade cycle
-   * is configured in the {project-root}/config/engine.xml file.
+   * is configured in the {project-root}/config/engine.yaml file.
    *
    * @throws StrategyException if something unexpected occurs. This tells the Trading Engine to
    *     shutdown the bot immediately to help prevent unexpected losses.
@@ -197,16 +197,18 @@ public class ExampleScalpingStrategy implements TradingStrategy {
       final MarketOrderBook orderBook = tradingApi.getMarketOrders(market.getId());
 
       final List<MarketOrder> buyOrders = orderBook.getBuyOrders();
-      if (buyOrders.size() == 0) {
+      if (buyOrders.isEmpty()) {
         LOG.warn(
+            () ->
             "Exchange returned empty Buy Orders. Ignoring this trade window. OrderBook: "
                 + orderBook);
         return;
       }
 
       final List<MarketOrder> sellOrders = orderBook.getSellOrders();
-      if (sellOrders.size() == 0) {
+      if (sellOrders.isEmpty()) {
         LOG.warn(
+            () ->
             "Exchange returned empty Sell Orders. Ignoring this trade window. OrderBook: "
                 + orderBook);
         return;
@@ -256,6 +258,7 @@ public class ExampleScalpingStrategy implements TradingStrategy {
       // Your timeout handling code could go here.
       // We are just going to log it and swallow it, and wait for next trade cycle.
       LOG.error(
+          () ->
           market.getName()
               + " Failed to get market orders because Exchange threw network exception. "
               + "Waiting until next trade cycle.",
@@ -318,6 +321,7 @@ public class ExampleScalpingStrategy implements TradingStrategy {
       // made it to the exchange? And if not, resend it...
       // We are just going to log it and swallow it, and wait for next trade cycle.
       LOG.error(
+          () ->
           market.getName()
               + " Initial order to BUY base currency failed because Exchange threw network "
               + "exception. Waiting until next trade cycle.",
@@ -328,6 +332,7 @@ public class ExampleScalpingStrategy implements TradingStrategy {
       // We are just going to re-throw as StrategyException for engine to deal with - it will
       // shutdown the bot.
       LOG.error(
+          () ->
           market.getName()
               + " Initial order to BUY base currency failed because Exchange threw TradingApi "
               + "exception. Telling Trading Engine to shutdown bot!",
@@ -379,7 +384,7 @@ public class ExampleScalpingStrategy implements TradingStrategy {
          * 2. We could end up selling at a loss.
          *
          * For this example strategy, we're just going to add 2% (taken from the
-         * 'minimum-percentage-gain' config item in the {project-root}/config/strategies.xml
+         * 'minimum-percentage-gain' config item in the {project-root}/config/strategies.yaml
          * config file) on top of previous bid price to make a little profit and cover the exchange
          * fees.
          *
@@ -446,6 +451,7 @@ public class ExampleScalpingStrategy implements TradingStrategy {
       // made it to the exchange? And if not, resend it...
       // We are just going to log it and swallow it, and wait for next trade cycle.
       LOG.error(
+          () ->
           market.getName()
               + " New Order to SELL base currency failed because Exchange threw network exception. "
               + "Waiting until next trade cycle. Last Order: "
@@ -457,6 +463,7 @@ public class ExampleScalpingStrategy implements TradingStrategy {
       // We are just going to re-throw as StrategyException for engine to deal with - it will
       // shutdown the bot.
       LOG.error(
+          () ->
           market.getName()
               + " New order to SELL base currency failed because Exchange threw TradingApi "
               + "exception. Telling Trading Engine to shutdown bot! Last Order: "
@@ -545,6 +552,7 @@ public class ExampleScalpingStrategy implements TradingStrategy {
 
         } else if (currentAskPrice.compareTo(lastOrder.price) > 0) {
           LOG.error(
+              () ->
               market.getName()
                   + " >>> Current ask price ["
                   + currentAskPrice
@@ -569,6 +577,7 @@ public class ExampleScalpingStrategy implements TradingStrategy {
       // made it to the exchange? And if not, resend it...
       // We are just going to log it and swallow it, and wait for next trade cycle.
       LOG.error(
+          () ->
           market.getName()
               + " New Order to BUY base currency failed because Exchange threw network exception. "
               + "Waiting until next trade cycle. Last Order: "
@@ -580,6 +589,7 @@ public class ExampleScalpingStrategy implements TradingStrategy {
       // We are just going to re-throw as StrategyException for engine to deal with - it will
       // shutdown the bot.
       LOG.error(
+          () ->
           market.getName()
               + " New order to BUY base currency failed because Exchange threw TradingApi "
               + "exception. Telling Trading Engine to shutdown bot! Last Order: "
@@ -651,7 +661,7 @@ public class ExampleScalpingStrategy implements TradingStrategy {
   /**
    * Loads the config for the strategy. We expect the 'counter-currency-buy-order-amount' and
    * 'minimum-percentage-gain' config items to be present in the
-   * {project-root}/config/strategies.xml config file.
+   * {project-root}/config/strategies.yaml config file.
    *
    * @param config the config for the Trading Strategy.
    */

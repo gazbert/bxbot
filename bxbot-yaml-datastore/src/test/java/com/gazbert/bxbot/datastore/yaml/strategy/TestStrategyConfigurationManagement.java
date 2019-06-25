@@ -50,6 +50,8 @@ public class TestStrategyConfigurationManagement {
       "src/test/config/strategies/missing-strategies.yaml";
   private static final String YAML_CONFIG_TO_SAVE_FILENAME =
       "src/test/config/strategies/saved-strategies.yaml";
+  private static final String INVALID_YAML_CONFIG_TO_SAVE_FILENAME =
+      "src/test/config/not-there/saved-strategies.yaml";
 
   private static final String STRAT_ID_1 = "macd-long-position";
   private static final String STRAT_NAME_1 = "MACD Long Position Algo";
@@ -234,5 +236,39 @@ public class TestStrategyConfigurationManagement {
 
     // cleanup
     Files.delete(FileSystems.getDefault().getPath(YAML_CONFIG_TO_SAVE_FILENAME));
+  }
+
+  @Test(expected = IllegalStateException.class)
+  public void testSavingConfigToInvalidYamlFileIsHandled() {
+    // Strat 1
+    final StrategyConfig strategy1 = new StrategyConfig();
+    strategy1.setId(STRAT_ID_1);
+    strategy1.setName(STRAT_NAME_1);
+    strategy1.setDescription(STRAT_DESCRIPTION_1);
+    strategy1.setClassName(STRAT_CLASSNAME_1);
+
+    final Map<String, String> strat1ConfigItems = new HashMap<>();
+    strat1ConfigItems.put(BUY_PRICE_CONFIG_ITEM_KEY, BUY_PRICE_CONFIG_ITEM_VALUE);
+    strat1ConfigItems.put(AMOUNT_TO_BUY_CONFIG_ITEM_KEY, AMOUNT_TO_BUY_CONFIG_ITEM_VALUE);
+    strategy1.setConfigItems(strat1ConfigItems);
+
+    // Strat 2
+    final StrategyConfig strategy2 = new StrategyConfig();
+    strategy2.setId(STRAT_ID_2);
+    strategy2.setName(STRAT_NAME_2);
+    strategy2.setDescription(STRAT_DESCRIPTION_2);
+    strategy2.setBeanName(STRAT_BEAN_NAME_2);
+
+    final Map<String, String> strat2ConfigItems = new HashMap<>();
+    strat2ConfigItems.put(BUY_PRICE_CONFIG_ITEM_KEY, BUY_PRICE_CONFIG_ITEM_VALUE);
+    strat2ConfigItems.put(AMOUNT_TO_BUY_CONFIG_ITEM_KEY, AMOUNT_TO_BUY_CONFIG_ITEM_VALUE);
+    strategy2.setConfigItems(strat2ConfigItems);
+
+    final StrategiesType strategiesConfig = new StrategiesType();
+    strategiesConfig.getStrategies().add(strategy1);
+    strategiesConfig.getStrategies().add(strategy2);
+
+    ConfigurationManager.saveConfig(
+        StrategiesType.class, strategiesConfig, INVALID_YAML_CONFIG_TO_SAVE_FILENAME);
   }
 }

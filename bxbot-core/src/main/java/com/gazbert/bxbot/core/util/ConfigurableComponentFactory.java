@@ -23,6 +23,7 @@
 
 package com.gazbert.bxbot.core.util;
 
+import java.lang.reflect.InvocationTargetException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -36,19 +37,22 @@ public abstract class ConfigurableComponentFactory {
 
   private static final Logger LOG = LogManager.getLogger();
 
-  private ConfigurableComponentFactory() {
-  }
+  private ConfigurableComponentFactory() {}
 
   /** Loads and instantiates a given class and returns it. */
   @SuppressWarnings("unchecked")
   public static <T> T createComponent(String componentClassName) {
     try {
       final Class componentClass = Class.forName(componentClassName);
-      final Object rawComponentObject = componentClass.newInstance();
+      final Object rawComponentObject = componentClass.getDeclaredConstructor().newInstance();
       LOG.info(() -> "Successfully created the Component class for: " + componentClassName);
       return (T) rawComponentObject;
 
-    } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+    } catch (ClassNotFoundException
+        | InstantiationException
+        | IllegalAccessException
+        | NoSuchMethodException
+        | InvocationTargetException e) {
       final String errorMsg = "Failed to load and initialise Component class.";
       LOG.error(errorMsg, e);
       throw new IllegalStateException(errorMsg, e);

@@ -85,7 +85,7 @@ import org.apache.logging.log4j.Logger;
  * Orders</a>. It was originally developed and tested for BTC-GBP market, but it should work for
  * BTC-USD.
  *
- * <p>Exchange fees are loaded from the exchange.xml file on startup; they are not fetched from the
+ * <p>Exchange fees are loaded from the exchange.yaml file on startup; they are not fetched from the
  * exchange at runtime as the GDAX REST API does not support this. The fees are used across all
  * markets. Make sure you keep an eye on the <a href="https://docs.gdax.com/#fees">exchange fees</a>
  * and update the config accordingly.
@@ -440,21 +440,23 @@ public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implement
     }
   }
 
+  /*
+   * GDAX does not provide API call for fetching % buy fee; it only provides the fee monetary
+   * value for a given order via e.g. /orders/<order-id> API call. We load the % fee statically
+   * from exchange.yaml file.
+   */
   @Override
   public BigDecimal getPercentageOfBuyOrderTakenForExchangeFee(String marketId) {
-    // GDAX does not provide API call for fetching % buy fee; it only provides the fee monetary
-    // value for a
-    // given order via e.g. /orders/<order-id> API call. We load the % fee statically from
-    // exchange.xml
     return buyFeePercentage;
   }
 
+  /*
+   * GDAX does not provide API call for fetching % sell fee; it only provides the fee monetary
+   * value for a given order via e.g. /orders/<order-id> API call. We load the % fee statically
+   * from exchange.yaml file.
+   */
   @Override
   public BigDecimal getPercentageOfSellOrderTakenForExchangeFee(String marketId) {
-    // GDAX does not provide API call for fetching % sell fee; it only provides the fee monetary
-    // value for a
-    // given order via e.g. /orders/<order-id> API call. We load the % fee statically from
-    // exchange.xml
     return sellFeePercentage;
   }
 

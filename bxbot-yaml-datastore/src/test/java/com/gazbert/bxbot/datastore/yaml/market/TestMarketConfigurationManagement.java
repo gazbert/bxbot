@@ -49,6 +49,8 @@ public class TestMarketConfigurationManagement {
       "src/test/config/markets/missing-markets.yaml";
   private static final String YAML_CONFIG_TO_SAVE_FILENAME =
       "src/test/config/markets/saved-markets.yaml";
+  private static final String INVALID_YAML_CONFIG_TO_SAVE_FILENAME =
+      "src/test/config/not-there/saved-markets.yaml";
 
   private static final String MARKET_1_ID = "gemini_usd/btc";
   private static final String MARKET_1_NAME = "BTC/USD";
@@ -146,5 +148,30 @@ public class TestMarketConfigurationManagement {
 
     // cleanup
     Files.delete(FileSystems.getDefault().getPath(YAML_CONFIG_TO_SAVE_FILENAME));
+  }
+
+  @Test(expected = IllegalStateException.class)
+  public void testSavingConfigToInvalidYamlFileIsHandled() {
+    final MarketConfig market1 = new MarketConfig();
+    market1.setEnabled(MARKET_1_IS_ENABLED);
+    market1.setId(MARKET_1_ID);
+    market1.setName(MARKET_1_NAME);
+    market1.setBaseCurrency(MARKET_1_BASE_CURRENCY);
+    market1.setCounterCurrency(MARKET_1_COUNTER_CURRENCY);
+    market1.setTradingStrategyId(MARKET_1_TRADING_STRATEGY_ID);
+
+    final MarketConfig market2 = new MarketConfig();
+    market2.setEnabled(MARKET_2_IS_ENABLED);
+    market2.setId(MARKET_2_ID);
+    market2.setName(MARKET_2_NAME);
+    market2.setBaseCurrency(MARKET_2_BASE_CURRENCY);
+    market2.setCounterCurrency(MARKET_2_COUNTER_CURRENCY);
+    market2.setTradingStrategyId(MARKET_2_TRADING_STRATEGY_ID);
+
+    final MarketsType marketsConfig = new MarketsType();
+    marketsConfig.getMarkets().add(market1);
+    marketsConfig.getMarkets().add(market2);
+
+    ConfigurationManager.saveConfig(MarketsType.class, marketsConfig, INVALID_YAML_CONFIG_TO_SAVE_FILENAME);
   }
 }

@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Gareth Jon Lynch
+ * Copyright (c) 2019 gazbert
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -21,17 +21,24 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.rest.api.v1.config;
-
-import com.gazbert.bxbot.rest.api.v1.AbstractController;
+package com.gazbert.bxbot.rest.api.v1;
 
 /**
- * Base class for all config controllers.
+ * Base paths for BX-bot REST endpoints.
  *
  * @author gazbert
- * @since 1.0
  */
-abstract class AbstractConfigController extends AbstractController {
+public final class EndpointLocations {
 
-  static final String CONFIG_ENDPOINT_BASE_URI = API_ENDPOINT_BASE_URI + "/config";
+  /** Base path for entire REST API. */
+  private static final String API_ENDPOINT_BASE_URI = "/api/v1";
+
+  /** Base path for configuration REST endpoints. */
+  public static final String CONFIG_ENDPOINT_BASE_URI = API_ENDPOINT_BASE_URI + "/config";
+
+  /** Base path for runtime REST endpoints. */
+  public static final String RUNTIME_ENDPOINT_BASE_URI = API_ENDPOINT_BASE_URI + "/runtime";
+
+  private EndpointLocations() {
+  }
 }

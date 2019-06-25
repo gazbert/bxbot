@@ -30,12 +30,13 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 /**
  * Web security config for protecting the REST API.
  *
- * <p>WARNING: This is not safe for Production yet! It will be replaced this with a JWT impl...
+ * <p>WARNING: This is *not* safe for Production yet! It will be replaced with a JWT + bcrypt
+ * impl...
  *
  * @author gazbert
  */
@@ -43,16 +44,14 @@ import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-  /**
-   * Configures the Authentication manager.
-   */
+  /** Configures the Authentication manager. */
   @Autowired
   public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
 
-    // Get from application.properties file and bcrypt em!
+    // TODO: #32 - Load credentials (use bcrypt) from application.properties file.
     auth.inMemoryAuthentication()
         .withUser("unit-test-user")
-        .password("unit-test-password")
+        .password("$2a$12$H0cJCC3NLUvZjTtriqAgXuNyQ/3XUO5YIqETS0cpu4hSFBo.VoBcS")
         .authorities("ROLE_USER");
   }
 
@@ -73,17 +72,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     http.csrf().disable();
   }
 
-  // https://docs.spring.io/spring-security/site/docs/5.0.5.RELEASE/reference/htmlsingle/#troubleshooting
-  // Tmp patch for backwards compatibility pre Spring 5
-  @SuppressWarnings("deprecation")
+  /*
+   * Use bcrypt password encoding.
+   * https://docs.spring.io/spring-security/site/docs/5.0.5.RELEASE/reference/htmlsingle/#pe-bcpe
+   */
   @Bean
-  public static NoOpPasswordEncoder passwordEncoder() {
-    return (NoOpPasswordEncoder) NoOpPasswordEncoder.getInstance();
+  public static BCryptPasswordEncoder bcryptPasswordEncoder() {
+    return new BCryptPasswordEncoder(12); // tuned to 1 sec; default is 10 rounds.
   }
-
-  // https://docs.spring.io/spring-security/site/docs/5.0.5.RELEASE/reference/htmlsingle/#pe-bcpe
-  //    @Bean
-  //    public static BCryptPasswordEncoder bCryptPasswordEncoder() {
-  //        return new BCryptPasswordEncoder(16);
-  //    }
 }

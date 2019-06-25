@@ -74,13 +74,13 @@ import org.powermock.reflect.Whitebox;
  */
 @RunWith(PowerMockRunner.class)
 @PowerMockIgnore({
-    "javax.crypto.*",
-    "javax.management.*",
-    "com.sun.org.apache.xerces.*",
-    "javax.xml.parsers.*",
-    "org.xml.sax.*",
-    "org.w3c.dom.*",
-    "javax.xml.datatype.*"
+  "javax.crypto.*",
+  "javax.management.*",
+  "com.sun.org.apache.xerces.*",
+  "javax.xml.parsers.*",
+  "org.xml.sax.*",
+  "org.w3c.dom.*",
+  "javax.xml.datatype.*"
 })
 @PrepareForTest(ItBitExchangeAdapter.class)
 public class TestItBitExchangeAdapter extends AbstractExchangeAdapterTest {
@@ -146,9 +146,7 @@ public class TestItBitExchangeAdapter extends AbstractExchangeAdapterTest {
   private NetworkConfig networkConfig;
   private OtherConfig otherConfig;
 
-  /**
-   * Create some exchange config - the TradingEngine would normally do this.
-   */
+  /** Create some exchange config - the TradingEngine would normally do this. */
   @Before
   public void setupForEachTest() {
     authenticationConfig = PowerMock.createMock(AuthenticationConfig.class);
@@ -550,14 +548,14 @@ public class TestItBitExchangeAdapter extends AbstractExchangeAdapterTest {
     final MarketOrderBook marketOrderBook = exchangeAdapter.getMarketOrders(MARKET_ID);
 
     // assert some key stuff; we're not testing GSON here.
-    assertEquals(marketOrderBook.getMarketId(), MARKET_ID);
+    assertEquals(MARKET_ID, marketOrderBook.getMarketId());
 
     final BigDecimal buyPrice = new BigDecimal("236.73");
     final BigDecimal buyQuantity = new BigDecimal("0.03");
     final BigDecimal buyTotal = buyPrice.multiply(buyQuantity);
 
     assertEquals(159, marketOrderBook.getBuyOrders().size()); // itBit sends them all back!
-    assertSame(marketOrderBook.getBuyOrders().get(0).getType(), OrderType.BUY);
+    assertSame(OrderType.BUY, marketOrderBook.getBuyOrders().get(0).getType());
     assertEquals(0, marketOrderBook.getBuyOrders().get(0).getPrice().compareTo(buyPrice));
     assertEquals(0, marketOrderBook.getBuyOrders().get(0).getQuantity().compareTo(buyQuantity));
     assertEquals(0, marketOrderBook.getBuyOrders().get(0).getTotal().compareTo(buyTotal));
@@ -567,7 +565,7 @@ public class TestItBitExchangeAdapter extends AbstractExchangeAdapterTest {
     final BigDecimal sellTotal = sellPrice.multiply(sellQuantity);
 
     assertEquals(143, marketOrderBook.getSellOrders().size()); // itBit sends them all back!
-    assertSame(marketOrderBook.getSellOrders().get(0).getType(), OrderType.SELL);
+    assertSame(OrderType.SELL, marketOrderBook.getSellOrders().get(0).getType());
     assertEquals(0, marketOrderBook.getSellOrders().get(0).getPrice().compareTo(sellPrice));
     assertEquals(0, marketOrderBook.getSellOrders().get(0).getQuantity().compareTo(sellQuantity));
     assertEquals(0, marketOrderBook.getSellOrders().get(0).getTotal().compareTo(sellTotal));

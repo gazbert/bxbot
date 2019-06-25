@@ -75,8 +75,8 @@ import org.apache.logging.log4j.Logger;
  * <p>It only supports the REST implementation of the <a
  * href="https://www.okcoin.com/about/rest_api.do#stapi">Spot Trading API</a>.
  *
- * <p>The exchange % buy and sell fees are currently loaded statically from the exchange.xml file on
- * startup; they are not fetched from the exchange at runtime as the OKCoin API does not support
+ * <p>The exchange % buy and sell fees are currently loaded statically from the exchange.yaml file
+ * on startup; they are not fetched from the exchange at runtime as the OKCoin API does not support
  * this - it only provides the fee monetary value for a given order id via the order_fee.do API
  * call. The fees are used across all markets. Make sure you keep an eye on the <a
  * href="https://www.okcoin.com/about/fees.do">exchange fees</a> and update the config accordingly.
@@ -403,19 +403,23 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter
     }
   }
 
+  /*
+   * OKCoin does not provide API call for fetching % buy fee; it only provides the fee monetary
+   * value for a given order via order_fee.do API call. We load the % fee statically from
+   * exchange.yaml file.
+   */
   @Override
   public BigDecimal getPercentageOfBuyOrderTakenForExchangeFee(String marketId) {
-    // OKCoin does not provide API call for fetching % buy fee; it only provides the fee monetary
-    // value for a
-    // given order via order_fee.do API call. We load the % fee statically from exchange.xml file
     return buyFeePercentage;
   }
 
+  /*
+   * OKCoin does not provide API call for fetching % sell fee; it only provides the fee monetary
+   * value for a given order via order_fee.do API call. We load the % fee statically from
+   * exchange.yaml file.
+   */
   @Override
   public BigDecimal getPercentageOfSellOrderTakenForExchangeFee(String marketId) {
-    // OKCoin does not provide API call for fetching % sell fee; it only provides the fee monetary
-    // value for a
-    // given order via order_fee.do API call. We load the % fee statically from exchange.xml file
     return sellFeePercentage;
   }
 

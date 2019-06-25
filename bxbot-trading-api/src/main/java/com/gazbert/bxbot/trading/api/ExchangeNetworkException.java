@@ -27,7 +27,7 @@ package com.gazbert.bxbot.trading.api;
  * This exception is thrown by the Exchange Adapter when there is a network error when attempting to
  * connect to the exchange to make an API call.
  *
- * <p>The non-fatal error response codes and messages specified in the exchange.xml config file
+ * <p>The non-fatal error response codes and messages specified in the exchange.yaml config file
  * determine whether this exception is thrown by the Exchange Adapter.
  *
  * <p>If your Trading Strategy catches this exception, you could retry the API call, or exit from

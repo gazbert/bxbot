@@ -603,6 +603,87 @@ public class TestTradingEngine {
     PowerMock.verifyAll();
   }
 
+  @Test
+  public void testEngineShutsDownWhenBalancesCannotBeFetchedFromExchange() throws Exception {
+    setupConfigLoadingExpectations();
+
+    // empty balances from exchange
+    final Map<String, BigDecimal> balancesAvailable = new HashMap<>();
+
+    // expect BalanceInfo to be fetched using Trading API
+    final BalanceInfo balanceInfo = PowerMock.createMock(BalanceInfo.class);
+    expect(exchangeAdapter.getBalanceInfo()).andReturn(balanceInfo);
+    expect(balanceInfo.getBalancesAvailable()).andReturn(balancesAvailable);
+
+    // expect Email Alert to be sent
+    emailAlerter.sendMessage(
+        eq(CRITICAL_EMAIL_ALERT_SUBJECT),
+        contains(
+            "Emergency stop check: Failed to get current Emergency Stop Currency balance as '"
+                + ENGINE_EMERGENCY_STOP_CURRENCY
+                + "' key into Balances map "
+                + "returned null. Balances returned: "
+                + balancesAvailable));
+    PowerMock.replayAll();
+
+    final TradingEngine tradingEngine =
+        new TradingEngine(
+            exchangeConfigService,
+            engineConfigService,
+            strategyConfigService,
+            marketConfigService,
+            emailAlerter);
+    tradingEngine.start();
+
+    waitForEngineStateChange(tradingEngine, EngineState.SHUTDOWN);
+    assertFalse(tradingEngine.isRunning());
+
+    PowerMock.verifyAll();
+  }
+
+  @Test
+  public void testEngineInitialisesSuccessfullyWithoutNetworkConfig() throws Exception {
+    setupExchangeAdapterConfigWithNoNetworkConfigExpectations();
+    setupEngineConfigExpectations();
+    setupStrategyAndMarketConfigExpectations();
+
+    final Map<String, BigDecimal> balancesAvailable = new HashMap<>();
+    // balance limit NOT breached for BTC
+    balancesAvailable.put(ENGINE_EMERGENCY_STOP_CURRENCY, new BigDecimal("0.5"));
+
+    // expect BalanceInfo to be fetched using Trading API
+    final BalanceInfo balanceInfo = PowerMock.createMock(BalanceInfo.class);
+    expect(exchangeAdapter.getBalanceInfo()).andReturn(balanceInfo).atLeastOnce();
+    expect(balanceInfo.getBalancesAvailable()).andReturn(balancesAvailable).atLeastOnce();
+
+    // expect Trading Strategy to be invoked
+    tradingStrategy.execute();
+    expectLastCall().atLeastOnce();
+
+    PowerMock.replayAll();
+
+    final TradingEngine tradingEngine =
+        new TradingEngine(
+            exchangeConfigService,
+            engineConfigService,
+            strategyConfigService,
+            marketConfigService,
+            emailAlerter);
+
+    final Executor executor = Executors.newSingleThreadExecutor();
+    executor.execute(tradingEngine::start);
+
+    waitForEngineStateChange(tradingEngine, EngineState.RUNNING);
+    assertTrue(tradingEngine.isRunning());
+
+    tradingEngine.shutdown();
+
+    waitForEngineStateChange(tradingEngine, EngineState.SHUTDOWN);
+    assertFalse(tradingEngine.isRunning());
+
+    PowerMock.verifyAll();
+  }
+
   // --------------------------------------------------------------------------
   //  private utils
   // --------------------------------------------------------------------------
@@ -612,6 +693,16 @@ public class TestTradingEngine {
     expect(ConfigurableComponentFactory.createComponent(EXCHANGE_ADAPTER_IMPL_CLASS))
         .andReturn(exchangeAdapter);
     expect(exchangeAdapter.getImplName()).andReturn(EXCHANGE_NAME);
+    exchangeAdapter.init(anyObject(ExchangeConfig.class));
+  }
+
+  private void setupExchangeAdapterConfigWithNoNetworkConfigExpectations() {
+    final com.gazbert.bxbot.domain.exchange.ExchangeConfig exchangeConfig =
+        someExchangeConfigWithoutNetworkConfig();
+    expect(exchangeConfigService.getExchangeConfig()).andReturn(exchangeConfig);
+    expect(ConfigurableComponentFactory.createComponent(EXCHANGE_ADAPTER_IMPL_CLASS))
+        .andReturn(exchangeAdapter);
+    expect(exchangeAdapter.getImplName()).andReturn(EXCHANGE_NAME).atLeastOnce();
     exchangeAdapter.init(anyObject(ExchangeConfig.class));
   }
 
@@ -648,19 +739,9 @@ public class TestTradingEngine {
   }
 
   private static com.gazbert.bxbot.domain.exchange.ExchangeConfig someExchangeConfig() {
-    final Map<String, String> authenticationConfig = new HashMap<>();
-    authenticationConfig.put(
-        EXCHANGE_ADAPTER_AUTHENTICATION_CONFIG_ITEM_NAME,
-        EXCHANGE_ADAPTER_AUTHENTICATION_CONFIG_ITEM_VALUE);
-
-    final NetworkConfig networkConfig = new NetworkConfig();
-    networkConfig.setConnectionTimeout(EXCHANGE_ADAPTER_NETWORK_TIMEOUT);
-    networkConfig.setNonFatalErrorCodes(EXCHANGE_ADAPTER_NONFATAL_ERROR_CODES);
-    networkConfig.setNonFatalErrorMessages(EXCHANGE_ADAPTER_NONFATAL_ERROR_MESSAGES);
-
-    final Map<String, String> otherConfig = new HashMap<>();
-    otherConfig.put(
-        EXCHANGE_ADAPTER_OTHER_CONFIG_ITEM_NAME, EXCHANGE_ADAPTER_OTHER_CONFIG_ITEM_VALUE);
+    final Map<String, String> authenticationConfig = someAuthenticationConfig();
+    final NetworkConfig networkConfig = someNetworkConfig();
+    final Map<String, String> otherConfig = someOtherConfig();
 
     final com.gazbert.bxbot.domain.exchange.ExchangeConfig exchangeConfig =
         new com.gazbert.bxbot.domain.exchange.ExchangeConfig();
@@ -671,6 +752,42 @@ public class TestTradingEngine {
     exchangeConfig.setOtherConfig(otherConfig);
 
     return exchangeConfig;
+  }
+
+  private static com.gazbert.bxbot.domain.exchange.ExchangeConfig
+      someExchangeConfigWithoutNetworkConfig() {
+    final Map<String, String> authenticationConfig = someAuthenticationConfig();
+    final Map<String, String> otherConfig = someOtherConfig();
+    final com.gazbert.bxbot.domain.exchange.ExchangeConfig exchangeConfig =
+        new com.gazbert.bxbot.domain.exchange.ExchangeConfig();
+    exchangeConfig.setAuthenticationConfig(authenticationConfig);
+    exchangeConfig.setName(EXCHANGE_NAME);
+    exchangeConfig.setAdapter(EXCHANGE_ADAPTER_IMPL_CLASS);
+    exchangeConfig.setOtherConfig(otherConfig);
+    return exchangeConfig;
+  }
+
+  private static NetworkConfig someNetworkConfig() {
+    final NetworkConfig networkConfig = new NetworkConfig();
+    networkConfig.setConnectionTimeout(EXCHANGE_ADAPTER_NETWORK_TIMEOUT);
+    networkConfig.setNonFatalErrorCodes(EXCHANGE_ADAPTER_NONFATAL_ERROR_CODES);
+    networkConfig.setNonFatalErrorMessages(EXCHANGE_ADAPTER_NONFATAL_ERROR_MESSAGES);
+    return networkConfig;
+  }
+
+  private static Map<String, String> someAuthenticationConfig() {
+    final Map<String, String> authenticationConfig = new HashMap<>();
+    authenticationConfig.put(
+        EXCHANGE_ADAPTER_AUTHENTICATION_CONFIG_ITEM_NAME,
+        EXCHANGE_ADAPTER_AUTHENTICATION_CONFIG_ITEM_VALUE);
+    return authenticationConfig;
+  }
+
+  private static Map<String, String> someOtherConfig() {
+    final Map<String, String> otherConfig = new HashMap<>();
+    otherConfig.put(
+        EXCHANGE_ADAPTER_OTHER_CONFIG_ITEM_NAME, EXCHANGE_ADAPTER_OTHER_CONFIG_ITEM_VALUE);
+    return otherConfig;
   }
 
   private static EngineConfig someEngineConfig() {

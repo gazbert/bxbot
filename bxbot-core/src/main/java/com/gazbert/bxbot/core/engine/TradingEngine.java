@@ -100,11 +100,11 @@ public class TradingEngine {
       "--------------------------------------------------" + NEWLINE;
   private static final String DECIMAL_FORMAT_PATTERN = "#.########";
 
-  private static int tradeExecutionInterval;
+  private static final Object IS_RUNNING_MONITOR = new Object();
+
+  private int tradeExecutionInterval;
   private volatile boolean keepAlive = true;
   private boolean isRunning = false;
-
-  private static final Object IS_RUNNING_MONITOR = new Object();
 
   private Thread engineThread;
 
@@ -155,11 +155,9 @@ public class TradingEngine {
     synchronized (IS_RUNNING_MONITOR) {
       if (isRunning) {
         final String errorMsg = "Cannot start Trading Engine because it is already running!";
-        LOG.error(errorMsg);
+        LOG.error(() -> errorMsg);
         throw new IllegalStateException(errorMsg);
       }
-
-      // first time to start
       isRunning = true;
     }
 
@@ -189,6 +187,7 @@ public class TradingEngine {
     while (keepAlive) {
       try {
         LOG.info(() -> "*** Starting next trade cycle... ***");
+
         // Emergency Stop Check MUST run at start of every trade cycle.
         if (isEmergencyStopLimitBreached()) {
           break;
@@ -202,92 +201,24 @@ public class TradingEngine {
           tradingStrategy.execute();
         }
 
-        LOG.info(() -> "*** Sleeping " + tradeExecutionInterval + "s til next trade cycle... ***");
-
-        try {
-          Thread.sleep(tradeExecutionInterval * 1000L);
-        } catch (InterruptedException e) {
-          LOG.warn("Control Loop thread interrupted when sleeping before next trade cycle");
-          Thread.currentThread().interrupt();
-        }
+        sleepUntilNextTradingCycle();
 
       } catch (ExchangeNetworkException e) {
-        /*
-         * We have a network connection issue reported by Exchange Adapter when called directly from
-         * Trading Engine. Current policy is to log it and sleep until next trade cycle.
-         */
-        final String warningMessage =
-            "A network error has occurred in Exchange Adapter! "
-                + "BX-bot will try again in "
-                + tradeExecutionInterval
-                + "s...";
-        LOG.error(warningMessage, e);
-
-        try {
-          Thread.sleep(tradeExecutionInterval * 1000L);
-        } catch (InterruptedException e1) {
-          LOG.warn("Control Loop thread interrupted when sleeping before next trade cycle");
-          Thread.currentThread().interrupt();
-        }
+        handleExchangeNetworkException(e);
 
       } catch (TradingApiException e) {
-        /*
-         * A serious issue has occurred in the Exchange Adapter.
-         * Current policy is to log it, send email alert if required, and shutdown bot.
-         */
-        final String fatalErrorMessage = "A FATAL error has occurred in Exchange Adapter!";
-        LOG.fatal(fatalErrorMessage, e);
-        emailAlerter.sendMessage(
-            CRITICAL_EMAIL_ALERT_SUBJECT,
-            buildCriticalEmailAlertMsgContent(
-                fatalErrorMessage
-                    + DETAILS_ERROR_MSG_LABEL
-                    + e.getMessage()
-                    + CAUSE_ERROR_MSG_LABEL
-                    + e.getCause(),
-                e));
-        keepAlive = false;
+        handleTradingApiException(e);
 
       } catch (StrategyException e) {
-        /*
-         * A serious issue has occurred in the Trading Strategy.
-         * Current policy is to log it, send email alert if required, and shutdown bot.
-         */
-        final String fatalErrorMsg = "A FATAL error has occurred in Trading Strategy!";
-        LOG.fatal(fatalErrorMsg, e);
-        emailAlerter.sendMessage(
-            CRITICAL_EMAIL_ALERT_SUBJECT,
-            buildCriticalEmailAlertMsgContent(
-                fatalErrorMsg
-                    + DETAILS_ERROR_MSG_LABEL
-                    + e.getMessage()
-                    + CAUSE_ERROR_MSG_LABEL
-                    + e.getCause(),
-                e));
-        keepAlive = false;
+        handleStrategyException(e);
 
       } catch (Exception e) {
-        /*
-         * A serious and *unexpected* issue has occurred in the Exchange Adapter or Trading
-         * Strategy. Current policy is to log it, send email alert if required, and shutdown bot.
-         */
-        final String fatalErrorMsg =
-            "An unexpected FATAL error has occurred in Exchange Adapter or " + "Trading Strategy!";
-        LOG.fatal(fatalErrorMsg, e);
-        emailAlerter.sendMessage(
-            CRITICAL_EMAIL_ALERT_SUBJECT,
-            buildCriticalEmailAlertMsgContent(
-                fatalErrorMsg
-                    + DETAILS_ERROR_MSG_LABEL
-                    + e.getMessage()
-                    + CAUSE_ERROR_MSG_LABEL
-                    + e.getCause(),
-                e));
-        keepAlive = false;
+        handleUnexpectedException(e);
       }
     }
 
-    LOG.fatal("BX-bot " + botId + " is shutting down NOW!");
+    // We've broken out of the control loop due to error or admin shutdown request
+    LOG.fatal(() -> "BX-bot " + botId + " is shutting down NOW!");
     synchronized (IS_RUNNING_MONITOR) {
       isRunning = false;
     }
@@ -310,6 +241,94 @@ public class TradingEngine {
     return isRunning;
   }
 
+  private void sleepUntilNextTradingCycle() {
+    LOG.info(() -> "*** Sleeping " + tradeExecutionInterval + "s til next trade cycle... ***");
+    try {
+      Thread.sleep(tradeExecutionInterval * 1000L);
+    } catch (InterruptedException e) {
+      LOG.warn(() -> "Control Loop thread interrupted when sleeping before next trade cycle");
+      Thread.currentThread().interrupt();
+    }
+  }
+
+  /*
+   * We have a network connection issue reported by Exchange Adapter when called directly from
+   * Trading Engine. Current policy is to log it and sleep until next trade cycle.
+   */
+  private void handleExchangeNetworkException(ExchangeNetworkException e) {
+    final String errorMessage =
+        "A network error has occurred in Exchange Adapter! "
+            + "BX-bot will try again in "
+            + tradeExecutionInterval
+            + "s...";
+    LOG.error(() -> errorMessage, e);
+
+    try {
+      Thread.sleep(tradeExecutionInterval * 1000L);
+    } catch (InterruptedException e1) {
+      LOG.warn(() -> "Control Loop thread interrupted when sleeping before next trade cycle");
+      Thread.currentThread().interrupt();
+    }
+  }
+
+  /*
+   * A serious issue has occurred in the Exchange Adapter.
+   * Current policy is to log it, send email alert if required, and shutdown bot.
+   */
+  private void handleTradingApiException(TradingApiException e) {
+    final String fatalErrorMessage = "A FATAL error has occurred in Exchange Adapter!";
+    LOG.fatal(() -> fatalErrorMessage, e);
+    emailAlerter.sendMessage(
+        CRITICAL_EMAIL_ALERT_SUBJECT,
+        buildCriticalEmailAlertMsgContent(
+            fatalErrorMessage
+                + DETAILS_ERROR_MSG_LABEL
+                + e.getMessage()
+                + CAUSE_ERROR_MSG_LABEL
+                + e.getCause(),
+            e));
+    keepAlive = false;
+  }
+
+  /*
+   * A serious issue has occurred in the Trading Strategy.
+   * Current policy is to log it, send email alert if required, and shutdown bot.
+   */
+  private void handleStrategyException(StrategyException e) {
+    final String fatalErrorMsg = "A FATAL error has occurred in Trading Strategy!";
+    LOG.fatal(() -> fatalErrorMsg, e);
+    emailAlerter.sendMessage(
+        CRITICAL_EMAIL_ALERT_SUBJECT,
+        buildCriticalEmailAlertMsgContent(
+            fatalErrorMsg
+                + DETAILS_ERROR_MSG_LABEL
+                + e.getMessage()
+                + CAUSE_ERROR_MSG_LABEL
+                + e.getCause(),
+            e));
+    keepAlive = false;
+  }
+
+  /*
+   * A serious and *unexpected* issue has occurred in the Exchange Adapter or Trading
+   * Strategy. Current policy is to log it, send email alert if required, and shutdown bot.
+   */
+  private void handleUnexpectedException(Exception e) {
+    final String fatalErrorMsg =
+        "An unexpected FATAL error has occurred in Exchange Adapter or " + "Trading Strategy!";
+    LOG.fatal(() -> fatalErrorMsg, e);
+    emailAlerter.sendMessage(
+        CRITICAL_EMAIL_ALERT_SUBJECT,
+        buildCriticalEmailAlertMsgContent(
+            fatalErrorMsg
+                + DETAILS_ERROR_MSG_LABEL
+                + e.getMessage()
+                + CAUSE_ERROR_MSG_LABEL
+                + e.getCause(),
+            e));
+    keepAlive = false;
+  }
+
   /*
    * Checks if the Emergency Stop Currency (e.g. USD, BTC) wallet balance on exchange has gone
    * *below* configured limit.
@@ -325,6 +344,7 @@ public class TradingEngine {
   private boolean isEmergencyStopLimitBreached()
       throws TradingApiException, ExchangeNetworkException {
     boolean isEmergencyStopLimitBreached = true;
+
     if (emergencyStopBalance.compareTo(BigDecimal.ZERO) == 0) {
       return false;
     }
@@ -338,7 +358,7 @@ public class TradingEngine {
       final String errorMsg =
           "Failed to get Balance info from exchange to perform Emergency Stop check - letting"
               + " Trade Engine error policy decide what to do next...";
-      LOG.error(errorMsg, e);
+      LOG.error(() -> errorMsg, e);
       // re-throw to main loop - might only be connection issue and it will retry...
       throw e;
     }
@@ -352,7 +372,7 @@ public class TradingEngine {
               + "' key into Balances map "
               + "returned null. Balances returned: "
               + balancesAvailable;
-      LOG.error(errorMsg);
+      LOG.error(() -> errorMsg);
       throw new IllegalStateException(errorMsg);
     } else {
 
@@ -382,8 +402,7 @@ public class TradingEngine {
                 + new DecimalFormat(DECIMAL_FORMAT_PATTERN).format(emergencyStopBalance)
                 + "] "
                 + emergencyStopCurrency;
-
-        LOG.fatal(balanceBlownErrorMsg);
+        LOG.fatal(() -> balanceBlownErrorMsg);
         emailAlerter.sendMessage(
             CRITICAL_EMAIL_ALERT_SUBJECT,
             buildCriticalEmailAlertMsgContent(balanceBlownErrorMsg, null));
@@ -575,7 +594,7 @@ public class TradingEngine {
       final boolean wasAdded = loadedMarkets.add(tradingMarket);
       if (!wasAdded) {
         final String errorMsg = "Found duplicate Market! Market details: " + market;
-        LOG.fatal(errorMsg);
+        LOG.fatal(() -> errorMsg);
         throw new IllegalArgumentException(errorMsg);
       }
 
@@ -627,7 +646,7 @@ public class TradingEngine {
                 + "] cannot be found in the "
                 + " Strategy Descriptions map: "
                 + strategyDescriptions;
-        LOG.error(errorMsg);
+        LOG.error(() -> errorMsg);
         throw new IllegalArgumentException(errorMsg);
       }
     }
@@ -647,7 +666,7 @@ public class TradingEngine {
       } catch (NullPointerException e) {
         final String errorMsg =
             "Failed to obtain bean [" + tradingStrategyBeanName + "] from spring context";
-        LOG.error(errorMsg);
+        LOG.error(() -> errorMsg);
         throw new IllegalArgumentException(errorMsg);
       }
     }

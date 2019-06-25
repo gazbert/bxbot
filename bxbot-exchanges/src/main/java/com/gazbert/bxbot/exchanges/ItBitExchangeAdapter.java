@@ -89,7 +89,7 @@ import org.apache.logging.log4j.Logger;
  * If there is more than 1, it will use the first one it finds when performing the {@link
  * #getBalanceInfo()} call.
  *
- * <p>Exchange fees are loaded from the exchange.xml file on startup; they are not fetched from the
+ * <p>Exchange fees are loaded from the exchange.yaml file on startup; they are not fetched from the
  * exchange at runtime as the itBit REST API v1 does not support this. The fees are used across all
  * markets. Make sure you keep an eye on the <a href="https://www.itbit.com/h/fees">exchange
  * fees</a> and update the config accordingly. There are different exchange fees for <a
@@ -103,7 +103,7 @@ import org.apache.logging.log4j.Logger;
  * places.
  *
  * <p>The exchange regularly goes down for maintenance. If the keep-alive-during-maintenance
- * config-item is set to true in the exchange.xml config file, the bot will stay alive and wait
+ * config-item is set to true in the exchange.yaml config file, the bot will stay alive and wait
  * until the next trade cycle.
  *
  * <p>The Exchange Adapter is <em>not</em> thread safe. It expects to be called using a single
@@ -132,6 +132,7 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
       "Failed to connect to Exchange due to unexpected IO error.";
   private static final String UNDER_MAINTENANCE_WARNING_MESSAGE =
       "Exchange is undergoing maintenance - keep alive " + "is true.";
+
   private static final String USER_ID_PROPERTY_NAME = "userId";
   private static final String KEY_PROPERTY_NAME = "key";
   private static final String SECRET_PROPERTY_NAME = "secret";
@@ -228,10 +229,6 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
         LOG.error(errorMsg);
         throw new IllegalArgumentException(errorMsg);
       }
-
-      // Adapter does not using optional clientOrderIdentifier and clientOrderIdentifier params.
-      // params.put("metadata", "{}");
-      // params.put("clientOrderIdentifier", "id_123");
 
       response =
           sendAuthenticatedRequestToExchange(
@@ -332,6 +329,7 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
       response =
           sendAuthenticatedRequestToExchange(
               "GET", WALLETS_RESOURCE + "/" + walletId + "/orders", params);
+
       if (LOG.isDebugEnabled()) {
         LOG.debug("Open Orders response: " + response);
       }
@@ -340,46 +338,8 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
         final ItBitYourOrder[] itBitOpenOrders =
             gson.fromJson(response.getPayload(), ItBitYourOrder[].class);
 
-        // adapt
-        final List<OpenOrder> ordersToReturn = new ArrayList<>();
-        for (final ItBitYourOrder itBitOpenOrder : itBitOpenOrders) {
+        return adaptItBitOpenOrders(itBitOpenOrders, marketId);
 
-          if (!marketId.equalsIgnoreCase(itBitOpenOrder.instrument)) {
-            continue;
-          }
-
-          OrderType orderType;
-          switch (itBitOpenOrder.side) {
-            case "buy":
-              orderType = OrderType.BUY;
-              break;
-            case "sell":
-              orderType = OrderType.SELL;
-              break;
-            default:
-              throw new TradingApiException(
-                  "Unrecognised order type received in getYourOpenOrders(). Value: "
-                      + itBitOpenOrder.side);
-          }
-
-          final OpenOrder order =
-              new OpenOrderImpl(
-                  itBitOpenOrder.id,
-                  Date.from(
-                      Instant.parse(
-                          itBitOpenOrder.createdTime)), // format: 2015-10-01T18:10:39.3930000Z
-                  marketId,
-                  orderType,
-                  itBitOpenOrder.price,
-                  itBitOpenOrder.amount.subtract(
-                      itBitOpenOrder.amountFilled), // remaining - not provided by itBit
-                  itBitOpenOrder.amount,
-                  itBitOpenOrder.price.multiply(
-                      itBitOpenOrder.amount)); // total - not provided by itBit
-
-          ordersToReturn.add(order);
-        }
-        return ordersToReturn;
       } else {
         final String errorMsg =
             "Failed to get your open orders from exchange. Details: " + response;
@@ -512,7 +472,7 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
 
     try {
       final Map<String, String> params = createRequestParamMap();
-      params.put("userId", userId);
+      params.put(USER_ID_PROPERTY_NAME, userId);
 
       response = sendAuthenticatedRequestToExchange("GET", WALLETS_RESOURCE, params);
       if (LOG.isDebugEnabled()) {
@@ -523,31 +483,8 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
         final ItBitWallet[] itBitWallets =
             gson.fromJson(response.getPayload(), ItBitWallet[].class);
 
-        // assume only 1 trading account wallet being used on exchange
-        final ItBitWallet exchangeWallet = itBitWallets[0];
+        return adaptItBitBalanceInfo(itBitWallets);
 
-        /*
-         * If this is the first time to fetch the balance/wallet info, store the wallet UUID for
-         * future calls. The Trading Engine will always call this method first, before any user
-         * Trading Strategies are invoked, so any of the other Trading API methods that rely on the
-         * wallet UUID will be satisfied.
-         */
-        if (walletId == null) {
-          walletId = exchangeWallet.id;
-        }
-
-        // adapt
-        final Map<String, BigDecimal> balancesAvailable = new HashMap<>();
-        final List<ItBitBalance> balances = exchangeWallet.balances;
-        if (balances != null) {
-          for (final ItBitBalance balance : balances) {
-            balancesAvailable.put(balance.currency, balance.availableBalance);
-          }
-        }
-
-        // 2nd arg of BalanceInfo constructor for reserved/on-hold balances is not provided by
-        // exchange.
-        return new BalanceInfoImpl(balancesAvailable, new HashMap<>());
       } else {
         final String errorMsg =
             "Failed to get your wallet balance info from exchange. Details: " + response;
@@ -571,21 +508,23 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
     }
   }
 
+  /*
+   * itBit does not provide API call for fetching % buy fee; it only provides the fee monetary
+   * value for a given order via /wallets/{walletId}/trades API call. We load the % fee statically
+   * from exchange.yaml file.
+   */
   @Override
   public BigDecimal getPercentageOfBuyOrderTakenForExchangeFee(String marketId) {
-    // itBit does not provide API call for fetching % buy fee; it only provides the fee monetary
-    // value for a
-    // given order via /wallets/{walletId}/trades API call. We load the % fee statically from
-    // exchange.xml file.
     return buyFeePercentage;
   }
 
+  /*
+   * itBit does not provide API call for fetching % sell fee; it only provides the fee monetary
+   * value for a given order via/wallets/{walletId}/trades API call. We load the % fee statically
+   * from exchange.yaml file.
+   */
   @Override
   public BigDecimal getPercentageOfSellOrderTakenForExchangeFee(String marketId) {
-    // itBit does not provide API call for fetching % sell fee; it only provides the fee monetary
-    // value for a
-    // given order via/wallets/{walletId}/trades API call. We load the % fee statically from
-    // exchange.xml file.
     return sellFeePercentage;
   }
 
@@ -648,9 +587,22 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
    * GSON class for holding itBit order returned from: "Cancel Order"
    * /wallets/{walletId}/orders/{orderId} API call.
    *
-   * <p>No payload returned by exchange on success.
+   * <p>No payload returned by exchange on success, fields populated only on error.
    */
   private static class ItBitCancelOrderResponse {
+
+    String code;
+    String description;
+    String requestId;
+
+    @Override
+    public String toString() {
+      return MoreObjects.toStringHelper(this)
+          .add("code", code)
+          .add("description", description)
+          .add("requestId", requestId)
+          .toString();
+    }
   }
 
   /**
@@ -659,8 +611,7 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
    *
    * <p>It is exactly the same as order returned in Get Orders response.
    */
-  private static class ItBitNewOrderResponse extends ItBitYourOrder {
-  }
+  private static class ItBitNewOrderResponse extends ItBitYourOrder {}
 
   /**
    * GSON class for holding itBit order returned from: "Get Orders"
@@ -680,7 +631,6 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
     BigDecimal amountFilled;
     String createdTime; // e.g. "2015-10-01T18:10:39.3930000Z"
     String status; // e.g. "open"
-    ItBitOrderMetadata metadata; // {} value returned - no idea what this is
     String clientOrderIdentifier; // cool - broker support :-)
 
     @Override
@@ -698,14 +648,9 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
           .add("amountFilled", amountFilled)
           .add("createdTime", createdTime)
           .add("status", status)
-          .add("metadata", metadata)
           .add("clientOrderIdentifier", clientOrderIdentifier)
           .toString();
     }
-  }
-
-  /** GSON class for holding Your Order metadata. No idea what this is / or gonna be... */
-  private static class ItBitOrderMetadata {
   }
 
   /**
@@ -797,7 +742,7 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
     public String toString() {
       return MoreObjects.toStringHelper(this)
           .add("id", id)
-          .add("userId", userId)
+          .add(USER_ID_PROPERTY_NAME, userId)
           .add("name", name)
           .add("balances", balances)
           .toString();
@@ -887,8 +832,6 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
             if (queryParamBuilder.length() > 0) {
               queryParamBuilder.append("&");
             }
-            // Don't URL encode as it messed up the UUID params, e.g. wallet id
-            // queryParams += param + "=" + URLEncoder.encode(params.get(param));
             queryParamBuilder.append(param.getKey());
             queryParamBuilder.append("=");
             queryParamBuilder.append(param.getValue());
@@ -1048,13 +991,85 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
       keepAliveDuringMaintenance = Boolean.valueOf(keepAliveDuringMaintenanceConfig);
       LOG.info(() -> "Keep Alive During Maintenance: " + keepAliveDuringMaintenance);
     } else {
-      LOG.info(() -> KEEP_ALIVE_DURING_MAINTENANCE_PROPERTY_NAME + " is not set in exchange.xml");
+      LOG.info(() -> KEEP_ALIVE_DURING_MAINTENANCE_PROPERTY_NAME + " is not set in exchange.yaml");
     }
   }
 
   // --------------------------------------------------------------------------
   //  Util methods
   // --------------------------------------------------------------------------
+
+  private List<OpenOrder> adaptItBitOpenOrders(ItBitYourOrder[] itBitOpenOrders, String marketId)
+      throws TradingApiException {
+
+    final List<OpenOrder> ordersToReturn = new ArrayList<>();
+    for (final ItBitYourOrder itBitOpenOrder : itBitOpenOrders) {
+
+      if (!marketId.equalsIgnoreCase(itBitOpenOrder.instrument)) {
+        continue;
+      }
+
+      OrderType orderType;
+      switch (itBitOpenOrder.side) {
+        case "buy":
+          orderType = OrderType.BUY;
+          break;
+        case "sell":
+          orderType = OrderType.SELL;
+          break;
+        default:
+          throw new TradingApiException(
+              "Unrecognised order type received in getYourOpenOrders(). Value: "
+                  + itBitOpenOrder.side);
+      }
+
+      final OpenOrder order =
+          new OpenOrderImpl(
+              itBitOpenOrder.id,
+              Date.from(
+                  Instant.parse(
+                      itBitOpenOrder.createdTime)), // format: 2015-10-01T18:10:39.3930000Z
+              marketId,
+              orderType,
+              itBitOpenOrder.price,
+              itBitOpenOrder.amount.subtract(
+                  itBitOpenOrder.amountFilled), // remaining - not provided by itBit
+              itBitOpenOrder.amount,
+              itBitOpenOrder.price.multiply(
+                  itBitOpenOrder.amount)); // total - not provided by itBit
+
+      ordersToReturn.add(order);
+    }
+    return ordersToReturn;
+  }
+
+  private BalanceInfoImpl adaptItBitBalanceInfo(ItBitWallet[] itBitWallets) {
+    // assume only 1 trading account wallet being used on exchange
+    final ItBitWallet exchangeWallet = itBitWallets[0];
+
+    /*
+     * If this is the first time to fetch the balance/wallet info, store the wallet UUID for
+     * future calls. The Trading Engine will always call this method first, before any user
+     * Trading Strategies are invoked, so any of the other Trading API methods that rely on the
+     * wallet UUID will be satisfied.
+     */
+    if (walletId == null) {
+      walletId = exchangeWallet.id;
+    }
+
+    // adapt
+    final Map<String, BigDecimal> balancesAvailable = new HashMap<>();
+    final List<ItBitBalance> balances = exchangeWallet.balances;
+    if (balances != null) {
+      for (final ItBitBalance balance : balances) {
+        balancesAvailable.put(balance.currency, balance.availableBalance);
+      }
+    }
+
+    // 2nd arg of BalanceInfo constructor for reserved/on-hold balances is not provided by
+    // exchange.
+    return new BalanceInfoImpl(balancesAvailable, new HashMap<>());
+  }
 
   private void initGson() {
     // We need to disable HTML escaping for this adapter else GSON will change = to unicode for

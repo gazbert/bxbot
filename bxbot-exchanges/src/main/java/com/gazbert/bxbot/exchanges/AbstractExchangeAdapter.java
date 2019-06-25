@@ -65,7 +65,7 @@ import org.apache.logging.log4j.Logger;
 abstract class AbstractExchangeAdapter {
 
   private static final Logger LOG = LogManager.getLogger();
-  private static final String EXCHANGE_CONFIG_FILE = "config/exchange.xml";
+  private static final String EXCHANGE_CONFIG_FILE = "config/exchange.yaml";
 
   private static final String UNEXPECTED_IO_ERROR_MSG =
       "Failed to connect to Exchange due to unexpected IO error.";
@@ -136,19 +136,7 @@ abstract class AbstractExchangeAdapter {
       exchangeConnection.setDoOutput(true);
       exchangeConnection.setRequestMethod(httpMethod); // GET|POST|DELETE
 
-      // Er, perhaps, I need to be a bit more stealth here... this was needed for some exchanges
-      // back in the day!
-      exchangeConnection.setRequestProperty(
-          "User-Agent",
-          "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) "
-              + "Chrome/74.0.3729.169 Safari/537.36");
-
-      if (requestHeaders != null) {
-        for (final Map.Entry<String, String> requestHeader : requestHeaders.entrySet()) {
-          exchangeConnection.setRequestProperty(requestHeader.getKey(), requestHeader.getValue());
-          LOG.debug(() -> "Setting following request header: " + requestHeader);
-        }
-      }
+      setRequestHeaders(exchangeConnection, requestHeaders);
 
       // Add a timeout so we don't get blocked indefinitely; timeout on URLConnection is in millis.
       final int timeoutInMillis = connectionTimeout * 1000;
@@ -191,7 +179,7 @@ abstract class AbstractExchangeAdapter {
       throw new ExchangeNetworkException(errorMsg, e);
 
     } catch (FileNotFoundException | UnknownHostException e) {
-      // Huobi started throwing FileNotFoundException as of 8 Nov 2015 :-/
+      // Huobi started throwing FileNotFoundException as of 8 Nov 2015.
       // EC2 started throwing UnknownHostException for BTC-e, GDAX, as of 14 July 2016 :-/
       final String errorMsg = "Failed to connect to Exchange. It's dead Jim!";
       LOG.error(errorMsg, e);
@@ -199,41 +187,20 @@ abstract class AbstractExchangeAdapter {
 
     } catch (IOException e) {
       try {
-        // Check if this is a non-fatal network error
-        if (e.getMessage() != null && nonFatalNetworkErrorMessages.contains(e.getMessage())) {
-
+        if (errorMessageIsRecoverableNetworkError(e)) {
           final String errorMsg =
               "Failed to connect to Exchange. SSL Connection was refused or reset by the server.";
           LOG.error(errorMsg, e);
           throw new ExchangeNetworkException(errorMsg, e);
 
-        } else if (exchangeConnection != null
-            && nonFatalNetworkErrorCodes.contains(exchangeConnection.getResponseCode())) {
-
+        } else if (errorCodeIsRecoverableNetworkError(exchangeConnection)) {
           final String errorMsg = IO_5XX_TIMEOUT_ERROR_MSG;
           LOG.error(errorMsg, e);
           throw new ExchangeNetworkException(errorMsg, e);
 
         } else {
-          String errorMsg = UNEXPECTED_IO_ERROR_MSG;
-
-          // Check for any clue in the response...
-          if (exchangeConnection != null) {
-            final InputStream rawErrorStream = exchangeConnection.getErrorStream();
-            if (rawErrorStream != null) {
-              try (final BufferedReader errorInputStream =
-                  new BufferedReader(
-                      new InputStreamReader(rawErrorStream, StandardCharsets.UTF_8))) {
-
-                final StringBuilder errorResponse = new StringBuilder();
-                String errorLine;
-                while ((errorLine = errorInputStream.readLine()) != null) {
-                  errorResponse.append(errorLine);
-                }
-                errorMsg += " ErrorStream Response: " + errorResponse;
-              }
-            }
-          }
+          // Game over!
+          String errorMsg = extractIoErrorMessage(exchangeConnection);
           LOG.error(errorMsg, e);
           throw new TradingApiException(errorMsg, e);
         }
@@ -421,6 +388,54 @@ abstract class AbstractExchangeAdapter {
   // --------------------------------------------------------------------------
   //  Util methods
   // --------------------------------------------------------------------------
+
+  private void setRequestHeaders(
+      HttpURLConnection exchangeConnection, Map<String, String> requestHeaders) {
+    // Er, perhaps, we need to be a bit more stealth here...
+    // This was needed for some exchanges back in the day!
+    exchangeConnection.setRequestProperty(
+        "User-Agent",
+        "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) "
+            + "Chrome/74.0.3729.169 Safari/537.36");
+
+    if (requestHeaders != null) {
+      for (final Map.Entry<String, String> requestHeader : requestHeaders.entrySet()) {
+        exchangeConnection.setRequestProperty(requestHeader.getKey(), requestHeader.getValue());
+        LOG.debug(() -> "Setting following request header: " + requestHeader);
+      }
+    }
+  }
+
+  private boolean errorMessageIsRecoverableNetworkError(Exception e) {
+    return e.getMessage() != null && nonFatalNetworkErrorMessages.contains(e.getMessage());
+  }
+
+  private boolean errorCodeIsRecoverableNetworkError(HttpURLConnection exchangeConnection)
+      throws IOException {
+    return (exchangeConnection != null
+        && nonFatalNetworkErrorCodes.contains(exchangeConnection.getResponseCode()));
+  }
+
+  private String extractIoErrorMessage(HttpURLConnection exchangeConnection) throws IOException {
+    String errorMsg = UNEXPECTED_IO_ERROR_MSG;
+    // Check for any clue in the response...
+    if (exchangeConnection != null) {
+      final InputStream rawErrorStream = exchangeConnection.getErrorStream();
+      if (rawErrorStream != null) {
+        try (final BufferedReader errorInputStream =
+            new BufferedReader(new InputStreamReader(rawErrorStream, StandardCharsets.UTF_8))) {
+
+          final StringBuilder errorResponse = new StringBuilder();
+          String errorLine;
+          while ((errorLine = errorInputStream.readLine()) != null) {
+            errorResponse.append(errorLine);
+          }
+          errorMsg += " ErrorStream Response: " + errorResponse;
+        }
+      }
+    }
+    return errorMsg;
+  }
 
   private static String assertItemExists(String itemName, String itemValue) {
     if (itemValue == null || itemValue.length() == 0) {

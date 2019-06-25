@@ -23,7 +23,7 @@
 
 package com.gazbert.bxbot.rest.api.v1.config;
 
-import static com.gazbert.bxbot.rest.api.v1.config.AbstractConfigController.CONFIG_ENDPOINT_BASE_URI;
+import static com.gazbert.bxbot.rest.api.v1.EndpointLocations.CONFIG_ENDPOINT_BASE_URI;
 
 import com.gazbert.bxbot.domain.emailalerts.EmailAlertsConfig;
 import com.gazbert.bxbot.services.EmailAlertsConfigService;
@@ -34,9 +34,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -51,7 +52,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping(CONFIG_ENDPOINT_BASE_URI)
-public class EmailAlertsConfigController extends AbstractConfigController {
+public class EmailAlertsConfigController {
 
   private static final Logger LOG = LogManager.getLogger();
   private static final String EMAIL_ALERTS_RESOURCE_PATH = "/email-alerts";
@@ -68,17 +69,18 @@ public class EmailAlertsConfigController extends AbstractConfigController {
    * @param user the authenticated user making the request.
    * @return the Email Alerts configuration.
    */
-  @RequestMapping(value = EMAIL_ALERTS_RESOURCE_PATH, method = RequestMethod.GET)
+  @GetMapping(value = EMAIL_ALERTS_RESOURCE_PATH)
   public EmailAlertsConfig getEmailAlerts(@AuthenticationPrincipal User user) {
 
     LOG.info(
-        "GET "
-            + EMAIL_ALERTS_RESOURCE_PATH
-            + " - getEmailAlerts() - caller: "
-            + user.getUsername());
+        () ->
+            "GET "
+                + EMAIL_ALERTS_RESOURCE_PATH
+                + " - getEmailAlerts() - caller: "
+                + user.getUsername());
 
     final EmailAlertsConfig emailAlertsConfig = emailAlertsConfigService.getEmailAlertsConfig();
-    LOG.info("Response: " + emailAlertsConfig);
+    LOG.info(() -> "Response: " + emailAlertsConfig);
     return emailAlertsConfig;
   }
 
@@ -90,19 +92,25 @@ public class EmailAlertsConfigController extends AbstractConfigController {
    * @return 200 'OK' HTTP status code and Email Alerts config in response body if update
    *     successful, some other HTTP status code otherwise.
    */
-  @RequestMapping(value = EMAIL_ALERTS_RESOURCE_PATH, method = RequestMethod.PUT)
-  public ResponseEntity<?> updateEmailAlerts(
+  @PutMapping(value = EMAIL_ALERTS_RESOURCE_PATH)
+  public ResponseEntity<EmailAlertsConfig> updateEmailAlerts(
       @AuthenticationPrincipal User user, @RequestBody EmailAlertsConfig config) {
 
     LOG.info(
-        "PUT "
-            + EMAIL_ALERTS_RESOURCE_PATH
-            + " - updateEmailAlerts() - caller: "
-            + user.getUsername());
-    LOG.info("Request: " + config);
+        () ->
+            "PUT "
+                + EMAIL_ALERTS_RESOURCE_PATH
+                + " - updateEmailAlerts() - caller: "
+                + user.getUsername());
+    LOG.info(() -> "Request: " + config);
 
     final EmailAlertsConfig updatedConfig =
         emailAlertsConfigService.updateEmailAlertsConfig(config);
-    return buildResponseEntity(updatedConfig, HttpStatus.OK);
+    return buildResponseEntity(updatedConfig);
+  }
+
+  private ResponseEntity<EmailAlertsConfig> buildResponseEntity(EmailAlertsConfig entity) {
+    LOG.info(() -> "Response: " + entity);
+    return new ResponseEntity<>(entity, null, HttpStatus.OK);
   }
 }

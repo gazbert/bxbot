@@ -47,6 +47,8 @@ public class TestEngineConfigurationManagement {
       "src/test/config/engine/missing-engine.yaml";
   private static final String YAML_CONFIG_TO_SAVE_FILENAME =
       "src/test/config/engine/saved-engine.yaml";
+  private static final String INVALID_YAML_CONFIG_TO_SAVE_FILENAME =
+      "src/test/config/not-here/saved-engine.yaml";
 
   private static final String BOT_ID = "avro-707_1";
   private static final String BOT_NAME = "Avro 707";
@@ -105,5 +107,21 @@ public class TestEngineConfigurationManagement {
 
     // cleanup
     Files.delete(FileSystems.getDefault().getPath(YAML_CONFIG_TO_SAVE_FILENAME));
+  }
+
+  @Test(expected = IllegalStateException.class)
+  public void testSavingConfigToInvalidYamlFileIsHandled() {
+    final EngineConfig engineConfig = new EngineConfig();
+    engineConfig.setBotId(BOT_ID);
+    engineConfig.setBotName(BOT_NAME);
+    engineConfig.setEmergencyStopCurrency(EMERGENCY_STOP_CURRENCY);
+    engineConfig.setEmergencyStopBalance(EMERGENCY_STOP_BALANCE);
+    engineConfig.setTradeCycleInterval(TRADE_CYCLE_INTERVAL);
+
+    final EngineType engineType = new EngineType();
+    engineType.setEngine(engineConfig);
+
+    ConfigurationManager.saveConfig(
+        EngineType.class, engineType, INVALID_YAML_CONFIG_TO_SAVE_FILENAME);
   }
 }
