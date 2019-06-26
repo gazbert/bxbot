@@ -30,7 +30,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /**
- * BX-bot - here be the main boot app.
+ * BX-bot app.
  *
  * @author gazbert
  */

@@ -24,8 +24,6 @@
 package com.gazbert.bxbot.core.config.exchange;
 
 import com.gazbert.bxbot.exchange.api.AuthenticationConfig;
-import com.google.common.base.MoreObjects;
-
 import java.util.HashMap;
 import java.util.Map;
 
