@@ -16,3 +16,4 @@ Building & Testing
 * Gradle                    - https://gradle.org/                    - https://gradle.org/license/
 * JsonPath                  - https://github.com/jayway/JsonPath     - https://github.com/jayway/JsonPath/blob/master/LICENSE
 * spring-boot-starter-test  - http://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-testing.html
+* Awaitify

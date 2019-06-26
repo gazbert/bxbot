@@ -54,12 +54,4 @@ public class AuthenticationConfigImpl implements AuthenticationConfig {
   public void setItems(Map<String, String> items) {
     this.items = items;
   }
-
-  @Override
-  public String toString() {
-    return MoreObjects.toStringHelper(this)
-               // WARNING - careful showing this!
-               // .add("items", items)
-               .toString();
-  }
 }
