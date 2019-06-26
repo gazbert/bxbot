@@ -50,4 +50,11 @@ public class TestStrategyExceptionCreation {
     assertEquals(ERROR_MSG, exception.getMessage());
     assertEquals(CAUSE, exception.getCause());
   }
+
+  @Test
+  public void testCreationOfExceptionWithThrowableIsAsExpected() {
+    final StrategyException exception = new StrategyException(CAUSE);
+    assertEquals(CAUSE, exception.getCause());
+  }
+
 }

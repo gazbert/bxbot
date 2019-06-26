@@ -52,4 +52,11 @@ public class TestAuthenticationConfigImpl {
     assertEquals(
         SECRET_FEE_CONFIG_ITEM_VALUE, authenticationConfig.getItems().get(SECRET_CONFIG_ITEM_KEY));
   }
+
+  @Test
+  public void testFetchingSingleAuthenticationConfigItem() {
+    final AuthenticationConfigImpl authenticationConfig = new AuthenticationConfigImpl();
+    authenticationConfig.getItems().put(API_KEY_CONFIG_ITEM_KEY, API_KEY_CONFIG_ITEM_VALUE);
+    assertEquals(API_KEY_CONFIG_ITEM_VALUE, authenticationConfig.getItem(API_KEY_CONFIG_ITEM_KEY));
+  }
 }
