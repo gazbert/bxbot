@@ -48,7 +48,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
   @Autowired
   public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
 
-    // TODO: #32 - Load credentials (use bcrypt) from application.properties file.
+    // #32 - Will eventually load credentials (use bcrypt) from application.properties file.
     auth.inMemoryAuthentication()
         .withUser("unit-test-user")
         .password("$2a$12$H0cJCC3NLUvZjTtriqAgXuNyQ/3XUO5YIqETS0cpu4hSFBo.VoBcS")
