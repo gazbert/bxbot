@@ -10,4 +10,6 @@ dependencies {
     compile libraries.google_guava
 
     testCompile libraries.spring_boot_starter_test
+    testCompile libraries.junit
+    testCompile libraries.easymock
 }
