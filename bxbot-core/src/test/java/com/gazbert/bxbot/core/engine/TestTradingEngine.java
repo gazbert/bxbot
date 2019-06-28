@@ -24,6 +24,7 @@
 package com.gazbert.bxbot.core.engine;
 
 import static junit.framework.TestCase.assertTrue;
+import static org.awaitility.Awaitility.await;
 import static org.easymock.EasyMock.anyObject;
 import static org.easymock.EasyMock.contains;
 import static org.easymock.EasyMock.eq;
@@ -56,6 +57,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import org.junit.Before;
@@ -90,10 +92,6 @@ import org.powermock.modules.junit4.PowerMockRunner;
     "org.w3c.dom.*"
 })
 public class TestTradingEngine {
-
-  // Might need to tweak these for diff chips/OS/architectures
-  private static final int STATE_CHANGE_WAIT_INTERVAL_IN_SECS = 1;
-  private static final int NUMBER_OF_TRADE_CYCLES = 5;
 
   private enum EngineState {
     RUNNING,
@@ -217,7 +215,7 @@ public class TestTradingEngine {
             emailAlerter);
     tradingEngine.start();
 
-    waitForEngineStateChange(tradingEngine, EngineState.SHUTDOWN);
+    await().until(engineStateChanged(tradingEngine, EngineState.SHUTDOWN));
     assertFalse(tradingEngine.isRunning());
 
     PowerMock.verifyAll();
@@ -245,12 +243,12 @@ public class TestTradingEngine {
     final Executor executor = Executors.newSingleThreadExecutor();
     executor.execute(tradingEngine::start);
 
-    waitForEngineStateChange(tradingEngine, EngineState.RUNNING);
+    await().until(engineStateChanged(tradingEngine, EngineState.RUNNING));
     assertTrue(tradingEngine.isRunning());
 
     tradingEngine.shutdown();
 
-    waitForEngineStateChange(tradingEngine, EngineState.SHUTDOWN);
+    await().until(engineStateChanged(tradingEngine, EngineState.SHUTDOWN));
     assertFalse(tradingEngine.isRunning());
 
     PowerMock.verifyAll();
@@ -290,12 +288,12 @@ public class TestTradingEngine {
     final Executor executor = Executors.newSingleThreadExecutor();
     executor.execute(tradingEngine::start);
 
-    waitForEngineStateChange(tradingEngine, EngineState.RUNNING);
+    await().until(engineStateChanged(tradingEngine, EngineState.RUNNING));
     assertTrue(tradingEngine.isRunning());
 
     tradingEngine.shutdown();
 
-    waitForEngineStateChange(tradingEngine, EngineState.SHUTDOWN);
+    await().until(engineStateChanged(tradingEngine, EngineState.SHUTDOWN));
     assertFalse(tradingEngine.isRunning());
 
     PowerMock.verifyAll();
@@ -343,7 +341,7 @@ public class TestTradingEngine {
 
     tradingEngine.start();
 
-    waitForEngineStateChange(tradingEngine, EngineState.SHUTDOWN);
+    await().until(engineStateChanged(tradingEngine, EngineState.SHUTDOWN));
     assertFalse(tradingEngine.isRunning());
 
     PowerMock.verifyAll();
@@ -395,7 +393,7 @@ public class TestTradingEngine {
 
     tradingEngine.start();
 
-    waitForEngineStateChange(tradingEngine, EngineState.SHUTDOWN);
+    await().until(engineStateChanged(tradingEngine, EngineState.SHUTDOWN));
     assertFalse(tradingEngine.isRunning());
 
     PowerMock.verifyAll();
@@ -447,7 +445,7 @@ public class TestTradingEngine {
 
     tradingEngine.start();
 
-    waitForEngineStateChange(tradingEngine, EngineState.SHUTDOWN);
+    await().until(engineStateChanged(tradingEngine, EngineState.SHUTDOWN));
     assertFalse(tradingEngine.isRunning());
 
     PowerMock.verifyAll();
@@ -496,7 +494,7 @@ public class TestTradingEngine {
 
     tradingEngine.start();
 
-    waitForEngineStateChange(tradingEngine, EngineState.SHUTDOWN);
+    await().until(engineStateChanged(tradingEngine, EngineState.SHUTDOWN));
     assertFalse(tradingEngine.isRunning());
 
     PowerMock.verifyAll();
@@ -514,25 +512,23 @@ public class TestTradingEngine {
     setupConfigLoadingExpectations();
 
     final String exceptionErrorMsg =
-        "Man walks down the street in a hat like that, you know he's not afraid of "
-            + "anything...";
-    final int numberOfTradeCycles = 3;
-    final BalanceInfo balanceInfo = PowerMock.createMock(BalanceInfo.class);
+        "Man walks down the street in a hat like that, you know he's not afraid of anything...";
+
     final Map<String, BigDecimal> balancesAvailable = new HashMap<>();
     // balance limit NOT breached for BTC
     balancesAvailable.put(ENGINE_EMERGENCY_STOP_CURRENCY, new BigDecimal("0.5"));
+    final BalanceInfo balanceInfo = PowerMock.createMock(BalanceInfo.class);
 
     // expect 1st trade cycle to be successful
     expect(exchangeAdapter.getBalanceInfo()).andReturn(balanceInfo);
     expect(balanceInfo.getBalancesAvailable()).andReturn(balancesAvailable);
     tradingStrategy.execute();
 
-    // expect BalanceInfo fetch to fail with ExchangeNetworkException on 2nd cycle
+    // expect recoverable ExchangeNetworkException in 2nd trade cycle
     expect(exchangeAdapter.getBalanceInfo())
         .andThrow(new ExchangeNetworkException(exceptionErrorMsg));
 
-    // expect 3rd (any subsequent) trade cycle to be successful - there may be > than 1 here
-    // depending on timings... ;-)
+    // expect bot recover and continue 3rd cycle + any subsequent ones...
     expect(exchangeAdapter.getBalanceInfo()).andReturn(balanceInfo).atLeastOnce();
     expect(balanceInfo.getBalancesAvailable()).andReturn(balancesAvailable).atLeastOnce();
     tradingStrategy.execute();
@@ -547,16 +543,22 @@ public class TestTradingEngine {
             strategyConfigService,
             marketConfigService,
             emailAlerter);
+
     final Executor executor = Executors.newSingleThreadExecutor();
     executor.execute(tradingEngine::start);
 
-    Thread.sleep(numberOfTradeCycles * STATE_CHANGE_WAIT_INTERVAL_IN_SECS * 1000);
-    waitForEngineStateChange(tradingEngine, EngineState.RUNNING);
+    await().until(engineStateChanged(tradingEngine, EngineState.RUNNING));
     assertTrue(tradingEngine.isRunning());
 
+    // wait for a few of trade cycles, then shutdown the bot.
+    try {
+      Thread.sleep(3 * (ENGINE_TRADE_CYCLE_INTERVAL * 1000));
+    } catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+    }
     tradingEngine.shutdown();
 
-    waitForEngineStateChange(tradingEngine, EngineState.SHUTDOWN);
+    await().until(engineStateChanged(tradingEngine, EngineState.SHUTDOWN));
     assertFalse(tradingEngine.isRunning());
 
     PowerMock.verifyAll();
@@ -594,7 +596,7 @@ public class TestTradingEngine {
     final Executor executor = Executors.newSingleThreadExecutor();
     executor.execute(tradingEngine::start);
 
-    waitForEngineStateChange(tradingEngine, EngineState.RUNNING);
+    await().until(engineStateChanged(tradingEngine, EngineState.RUNNING));
     assertTrue(tradingEngine.isRunning());
 
     // try start the engine again
@@ -635,7 +637,7 @@ public class TestTradingEngine {
             emailAlerter);
     tradingEngine.start();
 
-    waitForEngineStateChange(tradingEngine, EngineState.SHUTDOWN);
+    await().until(engineStateChanged(tradingEngine, EngineState.SHUTDOWN));
     assertFalse(tradingEngine.isRunning());
 
     PowerMock.verifyAll();
@@ -673,12 +675,12 @@ public class TestTradingEngine {
     final Executor executor = Executors.newSingleThreadExecutor();
     executor.execute(tradingEngine::start);
 
-    waitForEngineStateChange(tradingEngine, EngineState.RUNNING);
+    await().until(engineStateChanged(tradingEngine, EngineState.RUNNING));
     assertTrue(tradingEngine.isRunning());
 
     tradingEngine.shutdown();
 
-    waitForEngineStateChange(tradingEngine, EngineState.SHUTDOWN);
+    await().until(engineStateChanged(tradingEngine, EngineState.SHUTDOWN));
     assertFalse(tradingEngine.isRunning());
 
     PowerMock.verifyAll();
@@ -838,21 +840,21 @@ public class TestTradingEngine {
     return allMarkets;
   }
 
-  private static void waitForEngineStateChange(TradingEngine engine, EngineState engineState) {
-    for (int i = 0; i < TestTradingEngine.NUMBER_OF_TRADE_CYCLES; i++) {
-      try {
-        Thread.sleep(STATE_CHANGE_WAIT_INTERVAL_IN_SECS * 1000);
-      } catch (InterruptedException e) {
-        Thread.currentThread().interrupt();
-      }
+  private Callable<Boolean> engineStateChanged(TradingEngine engine, EngineState engineState) {
+    return () -> {
+      boolean stateChanged = false;
 
+      // Startup requested and has started
       if (engineState == EngineState.RUNNING && engine.isRunning()) {
-        break;
+        stateChanged = true;
       }
 
+      // Shutdown requested and has shutdown
       if (engineState == EngineState.SHUTDOWN && !engine.isRunning()) {
-        break;
+        stateChanged = true;
       }
-    }
+
+      return stateChanged;
+    };
   }
 }
