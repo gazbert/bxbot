@@ -550,7 +550,7 @@ public class TestTradingEngine {
     await().until(engineStateChanged(tradingEngine, EngineState.RUNNING));
     assertTrue(tradingEngine.isRunning());
 
-    // wait for a few of trade cycles, then shutdown the bot.
+    // wait for a few trade cycles, then shutdown the bot.
     try {
       Thread.sleep(3 * (ENGINE_TRADE_CYCLE_INTERVAL * 1000));
     } catch (InterruptedException e) {
