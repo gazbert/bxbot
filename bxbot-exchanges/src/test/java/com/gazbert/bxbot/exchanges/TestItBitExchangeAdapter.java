@@ -74,13 +74,13 @@ import org.powermock.reflect.Whitebox;
  */
 @RunWith(PowerMockRunner.class)
 @PowerMockIgnore({
-  "javax.crypto.*",
-  "javax.management.*",
-  "com.sun.org.apache.xerces.*",
-  "javax.xml.parsers.*",
-  "org.xml.sax.*",
-  "org.w3c.dom.*",
-  "javax.xml.datatype.*"
+    "javax.crypto.*",
+    "javax.management.*",
+    "com.sun.org.apache.xerces.*",
+    "javax.xml.parsers.*",
+    "org.xml.sax.*",
+    "org.w3c.dom.*",
+    "javax.xml.datatype.*"
 })
 @PrepareForTest(ItBitExchangeAdapter.class)
 public class TestItBitExchangeAdapter extends AbstractExchangeAdapterTest {

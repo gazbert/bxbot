@@ -26,13 +26,13 @@ dependencies {
 jacocoTestCoverageVerification {
     violationRules {
         rule {
-            element = 'CLASS'
+            element = 'BUNDLE'
             excludes = [
             ]
             limit {
                 counter = 'LINE'
                 value = 'COVEREDRATIO'
-                minimum = 0
+                minimum = 0.8
             }
         }
     }

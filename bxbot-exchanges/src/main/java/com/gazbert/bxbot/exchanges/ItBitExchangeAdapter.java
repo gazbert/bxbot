@@ -611,7 +611,8 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
    *
    * <p>It is exactly the same as order returned in Get Orders response.
    */
-  private static class ItBitNewOrderResponse extends ItBitYourOrder {}
+  private static class ItBitNewOrderResponse extends ItBitYourOrder {
+  }
 
   /**
    * GSON class for holding itBit order returned from: "Get Orders"
