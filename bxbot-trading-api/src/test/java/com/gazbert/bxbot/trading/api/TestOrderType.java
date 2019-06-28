@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Gareth Jon Lynch
+ * Copyright (c) 2019 gazbert
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -21,15 +21,28 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.rest.api.v1;
+package com.gazbert.bxbot.trading.api;
+
+import static org.junit.Assert.assertEquals;
+
+import org.junit.Test;
 
 /**
- * Base class for all controllers.
+ * Tests OrderType is created as expected.
  *
  * @author gazbert
- * @since 1.0
  */
-public abstract class AbstractController {
+public class TestOrderType {
 
-  protected static final String API_ENDPOINT_BASE_URI = "/api/v1";
+  @Test
+  public void testCreationOfBuyIsAsExpected() {
+    final OrderType orderType = OrderType.BUY;
+    assertEquals("Buy", orderType.getStringValue());
+  }
+
+  @Test
+  public void testCreationOfSellIsAsExpected() {
+    final OrderType orderType = OrderType.SELL;
+    assertEquals("Sell", orderType.getStringValue());
+  }
 }

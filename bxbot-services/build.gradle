@@ -10,4 +10,21 @@ dependencies {
     compile libraries.google_guava
 
     testCompile libraries.spring_boot_starter_test
+    testCompile libraries.junit
+    testCompile libraries.easymock
+}
+
+jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            element = 'CLASS'
+            excludes = [
+            ]
+            limit {
+                counter = 'LINE'
+                value = 'COVEREDRATIO'
+                minimum = 0.8
+            }
+        }
+    }
 }

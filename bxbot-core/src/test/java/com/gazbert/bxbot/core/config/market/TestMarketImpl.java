@@ -24,6 +24,7 @@
 package com.gazbert.bxbot.core.config.market;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
@@ -69,5 +70,13 @@ public class TestMarketImpl {
 
     market.setCounterCurrency(COUNTER_CURRENCY);
     assertEquals(COUNTER_CURRENCY, market.getCounterCurrency());
+  }
+
+  @Test
+  public void testEqualsWorksAsExpected() {
+    final MarketImpl market1 = new MarketImpl(null, "id-1", null, null);
+    final MarketImpl market2 = new MarketImpl(null, "id-2", null, null);
+    assertEquals(market1, market1);
+    assertNotEquals(market1, market2);
   }
 }

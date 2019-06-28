@@ -24,8 +24,6 @@
 package com.gazbert.bxbot.core.config.exchange;
 
 import com.gazbert.bxbot.exchange.api.AuthenticationConfig;
-import com.google.common.base.MoreObjects;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -53,13 +51,5 @@ public class AuthenticationConfigImpl implements AuthenticationConfig {
 
   public void setItems(Map<String, String> items) {
     this.items = items;
-  }
-
-  @Override
-  public String toString() {
-    return MoreObjects.toStringHelper(this)
-               // WARNING - careful showing this!
-               // .add("items", items)
-               .toString();
   }
 }

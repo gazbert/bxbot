@@ -20,18 +20,19 @@ dependencies {
     testCompile libraries.powermock_api_easymock
     testCompile libraries.easymock
     testCompile libraries.spring_boot_starter_test
+    testCompile libraries.awaitility
 }
 
 jacocoTestCoverageVerification {
     violationRules {
         rule {
-            element = 'CLASS'
+            element = 'BUNDLE'
             excludes = [
             ]
             limit {
                 counter = 'LINE'
                 value = 'COVEREDRATIO'
-                minimum = 0
+                minimum = 0.8
             }
         }
     }

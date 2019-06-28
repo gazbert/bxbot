@@ -91,8 +91,7 @@ public class ExchangeConfigImpl implements ExchangeConfig {
     return MoreObjects.toStringHelper(this)
                .add("exchangeName", exchangeName)
                .add("exchangeAdapter", exchangeAdapter)
-               // WARNING - careful showing this!
-               //.add("authenticationConfig", authenticationConfig)
+               .add("authenticationConfig", "NOT SHOWN BY DESIGN")
                .add("networkConfig", networkConfig)
                .add("otherConfig", otherConfig)
                .toString();

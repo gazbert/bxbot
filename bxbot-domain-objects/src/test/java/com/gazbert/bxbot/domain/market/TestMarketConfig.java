@@ -25,6 +25,7 @@ package com.gazbert.bxbot.domain.market;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
@@ -90,5 +91,16 @@ public class TestMarketConfig {
         new MarketConfig(ID, NAME, BASE_CURRENCY, COUNTER_CURRENCY, IS_ENABLED, TRADING_STRATEGY);
     final MarketConfig clonedMarketConfig = new MarketConfig(marketConfig);
     assertEquals(clonedMarketConfig, marketConfig);
+  }
+
+  @Test
+  public void testEqualsWorksAsExpected() {
+    final MarketConfig market1 =
+        new MarketConfig(ID, NAME, BASE_CURRENCY, COUNTER_CURRENCY, IS_ENABLED, TRADING_STRATEGY);
+    final MarketConfig market2 =
+        new MarketConfig(
+            "different-id", NAME, BASE_CURRENCY, COUNTER_CURRENCY, IS_ENABLED, TRADING_STRATEGY);
+    assertEquals(market1, market1);
+    assertNotEquals(market1, market2);
   }
 }

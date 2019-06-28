@@ -28,7 +28,7 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 /**
- * Tests Exchange Network created is created as expected.
+ * Tests Exchange Network Exception is created as expected.
  *
  * @author gazbert
  */

@@ -64,7 +64,8 @@ ext.libraries = [
         spring_boot_starter_test    : dependencies.create("org.springframework.boot:spring-boot-starter-test:" + ext.versions.springBootVersion) {
             exclude module: "spring-boot-starter-logging"
             force = true
-        }
+        },
+        awaitility                  : dependencies.create("org.awaitility:awaitility:3.1.6"),
 ]
 
 allprojects {

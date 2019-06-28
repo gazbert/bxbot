@@ -30,7 +30,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /**
- * BX-bot - here be the main boot app.
+ * BX-bot app.
  *
  * @author gazbert
  */
@@ -45,7 +45,7 @@ public class BxBot implements CommandLineRunner {
   }
 
   public static void main(String[] args) {
-    SpringApplication.run(BxBot.class, args);
+    SpringApplication.run(BxBot.class);
   }
 
   @Override

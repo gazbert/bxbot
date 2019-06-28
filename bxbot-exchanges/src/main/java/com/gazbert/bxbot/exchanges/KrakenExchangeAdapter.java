@@ -639,7 +639,8 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
 
     private static final long serialVersionUID = -4913711010647027759L;
 
-    KrakenTickerResult() {}
+    KrakenTickerResult() {
+    }
   }
 
   /** GSON class that wraps an Open Order API call result - your open orders. */
@@ -784,7 +785,8 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
   private static class KrakenTickerResultDeserializer
       implements JsonDeserializer<KrakenTickerResult> {
 
-    KrakenTickerResultDeserializer() {}
+    KrakenTickerResultDeserializer() {
+    }
 
     public KrakenTickerResult deserialize(
         JsonElement json, Type type, JsonDeserializationContext context) {

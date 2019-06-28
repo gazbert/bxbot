@@ -37,7 +37,8 @@ public abstract class ConfigurableComponentFactory {
 
   private static final Logger LOG = LogManager.getLogger();
 
-  private ConfigurableComponentFactory() {}
+  private ConfigurableComponentFactory() {
+  }
 
   /** Loads and instantiates a given class and returns it. */
   @SuppressWarnings("unchecked")

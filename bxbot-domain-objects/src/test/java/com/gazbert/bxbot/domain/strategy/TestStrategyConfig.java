@@ -24,6 +24,7 @@
 package com.gazbert.bxbot.domain.strategy;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -91,5 +92,15 @@ public class TestStrategyConfig {
         new StrategyConfig(ID, LABEL, DESCRIPTION, CLASSNAME, BEAN_NAME, CONFIG_ITEMS);
     final StrategyConfig clonedStrategyConfig = new StrategyConfig(strategyConfig);
     assertEquals(clonedStrategyConfig, strategyConfig);
+  }
+
+  @Test
+  public void testEqualsWorksAsExpected() {
+    final StrategyConfig strategy1 =
+        new StrategyConfig(ID, LABEL, DESCRIPTION, CLASSNAME, BEAN_NAME, CONFIG_ITEMS);
+    final StrategyConfig strategy2 =
+        new StrategyConfig("different-id", LABEL, DESCRIPTION, CLASSNAME, BEAN_NAME, CONFIG_ITEMS);
+    assertEquals(strategy1, strategy1);
+    assertNotEquals(strategy1, strategy2);
   }
 }
