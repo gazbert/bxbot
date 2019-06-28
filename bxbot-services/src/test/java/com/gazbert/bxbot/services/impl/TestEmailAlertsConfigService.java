@@ -41,7 +41,7 @@ import org.junit.Test;
 public class TestEmailAlertsConfigService {
 
   @Test
-  public void whenGetEmailAlertsConfigCalledThenExpectEmailAlertsConfigToBeReturned() {
+  public void whenGetEmailAlertsConfigCalledThenExpectConfigToBeReturned() {
     final EmailAlertsConfig emailAlertsConfig = new EmailAlertsConfig();
     final EmailAlertsConfigRepository emailAlertsConfigRepository =
         EasyMock.createMock(EmailAlertsConfigRepository.class);
@@ -56,7 +56,7 @@ public class TestEmailAlertsConfigService {
   }
 
   @Test
-  public void whenUpdateEmailAlertsConfigCalledThenExpectUpdatedEmailAlertsConfigToBeReturned() {
+  public void whenUpdateEmailAlertsConfigCalledThenExpectUpdatedConfigToBeReturned() {
     final EmailAlertsConfig emailAlertsConfig = new EmailAlertsConfig();
     final EmailAlertsConfigRepository emailAlertsConfigRepository =
         EasyMock.createMock(EmailAlertsConfigRepository.class);

@@ -41,7 +41,7 @@ import org.junit.Test;
 public class TestEngineConfigService {
 
   @Test
-  public void whenGetEngineConfigCalledThenExpectEngineConfigToBeReturned() {
+  public void whenGetEngineConfigCalledThenExpectConfigToBeReturned() {
     final EngineConfig engineConfig = new EngineConfig();
     final EngineConfigRepository engineConfigRepository =
         EasyMock.createMock(EngineConfigRepository.class);
@@ -56,7 +56,7 @@ public class TestEngineConfigService {
   }
 
   @Test
-  public void whenUpdateEngineConfigCalledThenExpectUpdatedEngineConfigToBeReturned() {
+  public void whenUpdateEngineConfigCalledThenExpectUpdatedConfigToBeReturned() {
     final EngineConfig engineConfig = new EngineConfig();
     final EngineConfigRepository engineConfigRepository =
         EasyMock.createMock(EngineConfigRepository.class);

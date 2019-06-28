@@ -13,3 +13,18 @@ dependencies {
     testCompile libraries.junit
     testCompile libraries.easymock
 }
+
+jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            element = 'CLASS'
+            excludes = [
+            ]
+            limit {
+                counter = 'LINE'
+                value = 'COVEREDRATIO'
+                minimum = 0.2
+            }
+        }
+    }
+}
