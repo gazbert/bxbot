@@ -114,12 +114,12 @@
             <configuration>
               <rules>
                 <rule>
-                  <element>PACKAGE</element>
+                  <element>CLASS</element>
                   <limits>
                     <limit>
                       <counter>LINE</counter>
                       <value>COVEREDRATIO</value>
-                      <minimum>0.8</minimum>
+                      <minimum>0</minimum>
                     </limit>
                   </limits>
                 </rule>
