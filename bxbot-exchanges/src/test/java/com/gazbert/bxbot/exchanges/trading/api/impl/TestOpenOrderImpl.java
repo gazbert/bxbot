@@ -24,6 +24,7 @@
 package com.gazbert.bxbot.exchanges.trading.api.impl;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
 
 import com.gazbert.bxbot.trading.api.OrderType;
@@ -106,5 +107,51 @@ public class TestOpenOrderImpl {
 
     openOrder.setTotal(TOTAL);
     assertEquals(TOTAL, openOrder.getTotal());
+  }
+
+  @Test
+  public void testEqualsWorksAsExpected() {
+    final OpenOrderImpl openOrder1 =
+        new OpenOrderImpl(
+            ID,
+            CREATION_DATE,
+            MARKET_ID,
+            OrderType.SELL,
+            PRICE,
+            QUANTITY,
+            ORIGINAL_QUANTITY,
+            TOTAL);
+
+    final OpenOrderImpl openOrder2 =
+        new OpenOrderImpl(
+            "different-id",
+            CREATION_DATE,
+            MARKET_ID,
+            OrderType.SELL,
+            PRICE,
+            QUANTITY,
+            ORIGINAL_QUANTITY,
+            TOTAL);
+
+    final OpenOrderImpl openOrder3 =
+        new OpenOrderImpl(
+            ID,
+            CREATION_DATE,
+            "diff-market",
+            OrderType.SELL,
+            PRICE,
+            QUANTITY,
+            ORIGINAL_QUANTITY,
+            TOTAL);
+
+    final OpenOrderImpl openOrder4 =
+        new OpenOrderImpl(
+            ID, CREATION_DATE, MARKET_ID, OrderType.BUY, PRICE, QUANTITY, ORIGINAL_QUANTITY, TOTAL);
+
+    assertEquals(openOrder1, openOrder1);
+
+    assertNotEquals(openOrder1, openOrder2);
+    assertNotEquals(openOrder1, openOrder3);
+    assertNotEquals(openOrder1, openOrder4);
   }
 }
