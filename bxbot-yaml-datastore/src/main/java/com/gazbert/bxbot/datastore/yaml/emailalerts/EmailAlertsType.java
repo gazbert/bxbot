@@ -32,13 +32,13 @@ import com.gazbert.bxbot.domain.emailalerts.EmailAlertsConfig;
  */
 public class EmailAlertsType {
 
-   private EmailAlertsConfig emailAlerts;
+  private EmailAlertsConfig emailAlerts;
 
-    public EmailAlertsConfig getEmailAlerts() {
-        return emailAlerts;
-    }
+  public EmailAlertsConfig getEmailAlerts() {
+    return emailAlerts;
+  }
 
-    public void setEmailAlerts(EmailAlertsConfig emailAlerts) {
-        this.emailAlerts = emailAlerts;
-    }
+  public void setEmailAlerts(EmailAlertsConfig emailAlerts) {
+    this.emailAlerts = emailAlerts;
+  }
 }

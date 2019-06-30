@@ -1,104 +1,105 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-    <modelVersion>4.0.0</modelVersion>
-    <artifactId>bxbot-app</artifactId>
-    <packaging>jar</packaging>
-    <name>BX-bot App</name>
-    <description>Builds the distributable BX-bot app</description>
-    <url>http://github.com/gazbert/bxbot</url>
-    <parent>
-        <groupId>com.gazbert.bxbot</groupId>
-        <artifactId>bxbot-parent</artifactId>
-        <version>${revision}</version>
-    </parent>
-    <properties>
-        <start-class>com.gazbert.bxbot.BXBot</start-class>
-    </properties>
-    <dependencies>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>bxbot-trading-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>bxbot-strategy-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>bxbot-exchange-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>bxbot-strategies</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>bxbot-exchanges</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>bxbot-domain-objects</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>bxbot-yaml-datastore</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>bxbot-repository</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>bxbot-core</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>bxbot-rest-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>bxbot-app</artifactId>
+  <packaging>jar</packaging>
+  <name>BX-bot App</name>
+  <description>Builds the distributable BX-bot app</description>
+  <url>http://github.com/gazbert/bxbot</url>
+  <parent>
+    <groupId>com.gazbert.bxbot</groupId>
+    <artifactId>bxbot-parent</artifactId>
+    <version>${revision}</version>
+  </parent>
+  <properties>
+    <start-class>com.gazbert.bxbot.BxBot</start-class>
+  </properties>
+  <dependencies>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>bxbot-trading-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>bxbot-strategy-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>bxbot-exchange-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>bxbot-strategies</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>bxbot-exchanges</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>bxbot-domain-objects</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>bxbot-yaml-datastore</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>bxbot-repository</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>bxbot-core</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>bxbot-rest-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
 
-        <!-- Add your (optional) Trading Strategies here -->
-        <!--<dependency>-->
-            <!--<groupId>com.gazbert.bxbot</groupId>-->
-            <!--<artifactId>bxbot-strategies</artifactId>-->
-            <!--<version>7.0.1-SNAPSHOT</version>-->
-            <!--<scope>runtime</scope>-->
-        <!--</dependency>-->
+    <!-- Add your (optional) Trading Strategies here -->
+    <!--<dependency>-->
+    <!--<groupId>com.gazbert.bxbot</groupId>-->
+    <!--<artifactId>bxbot-strategies</artifactId>-->
+    <!--<version>7.0.1-SNAPSHOT</version>-->
+    <!--<scope>runtime</scope>-->
+    <!--</dependency>-->
 
-        <!-- Add your (optional) Exchange Adapters here -->
-        <!--<dependency>-->
-            <!--<groupId>com.your.stuff</groupId>-->
-            <!--<artifactId>your-custom-exchanges</artifactId>-->
-            <!--<version>1.0-SNAPSHOT</version>-->
-            <!--<scope>runtime</scope>-->
-        <!--</dependency>-->
+    <!-- Add your (optional) Exchange Adapters here -->
+    <!--<dependency>-->
+    <!--<groupId>com.your.stuff</groupId>-->
+    <!--<artifactId>your-custom-exchanges</artifactId>-->
+    <!--<version>1.0-SNAPSHOT</version>-->
+    <!--<scope>runtime</scope>-->
+    <!--</dependency>-->
 
-    </dependencies>
-    <build>
-        <defaultGoal>clean install</defaultGoal>
-        <plugins>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>repackage</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
+  </dependencies>
+  <build>
+    <defaultGoal>clean install</defaultGoal>
+    <plugins>
+      <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>repackage</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 </project>

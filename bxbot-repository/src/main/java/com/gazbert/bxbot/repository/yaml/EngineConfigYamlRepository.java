@@ -23,6 +23,8 @@
 
 package com.gazbert.bxbot.repository.yaml;
 
+import static com.gazbert.bxbot.datastore.yaml.FileLocations.ENGINE_CONFIG_YAML_FILENAME;
+
 import com.gazbert.bxbot.datastore.yaml.ConfigurationManager;
 import com.gazbert.bxbot.datastore.yaml.engine.EngineType;
 import com.gazbert.bxbot.domain.engine.EngineConfig;
@@ -31,8 +33,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-
-import static com.gazbert.bxbot.datastore.yaml.FileLocations.ENGINE_CONFIG_YAML_FILENAME;
 
 /**
  * An Engine config repo that uses a YAML backed datastore.
@@ -43,23 +43,24 @@ import static com.gazbert.bxbot.datastore.yaml.FileLocations.ENGINE_CONFIG_YAML_
 @Transactional
 public class EngineConfigYamlRepository implements EngineConfigRepository {
 
-    private static final Logger LOG = LogManager.getLogger();
+  private static final Logger LOG = LogManager.getLogger();
 
-    @Override
-    public EngineConfig get() {
-        LOG.info(() -> "Fetching EngineConfig...");
-        return ConfigurationManager.loadConfig(EngineType.class, ENGINE_CONFIG_YAML_FILENAME).getEngine();
-    }
+  @Override
+  public EngineConfig get() {
+    LOG.info(() -> "Fetching EngineConfig...");
+    return ConfigurationManager.loadConfig(EngineType.class, ENGINE_CONFIG_YAML_FILENAME)
+        .getEngine();
+  }
 
-    @Override
-    public EngineConfig save(EngineConfig config) {
+  @Override
+  public EngineConfig save(EngineConfig config) {
+    LOG.info(() -> "About to save EngineConfig: " + config);
 
-        LOG.info(() -> "About to save EngineConfig: " + config);
+    final EngineType engineType = new EngineType();
+    engineType.setEngine(config);
+    ConfigurationManager.saveConfig(EngineType.class, engineType, ENGINE_CONFIG_YAML_FILENAME);
 
-        final EngineType engineType = new EngineType();
-        engineType.setEngine(config);
-        ConfigurationManager.saveConfig(EngineType.class, engineType, ENGINE_CONFIG_YAML_FILENAME);
-
-        return ConfigurationManager.loadConfig(EngineType.class, ENGINE_CONFIG_YAML_FILENAME).getEngine();
-    }
+    return ConfigurationManager.loadConfig(EngineType.class, ENGINE_CONFIG_YAML_FILENAME)
+        .getEngine();
+  }
 }

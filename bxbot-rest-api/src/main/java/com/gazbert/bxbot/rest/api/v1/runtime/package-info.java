@@ -1,7 +1,9 @@
 /**
+ *
+ *
  * <h2>BX-bot Runtime REST API</h2>
- * <p>
- * This is the REST API for stopping/starting the bot and querying the its runtime status.
+ *
+ * <p>This is the REST API for restarting the bot and querying its runtime status.
  *
  * @author gazbert
  * @since 1.0

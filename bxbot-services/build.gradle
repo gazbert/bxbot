@@ -7,7 +7,26 @@ dependencies {
     compile libraries.spring_tx
     compile libraries.spring_boot_starter
     compile libraries.spring_boot_starter_log4j2
+    compile libraries.spring_boot_starter_actuator
+    compile libraries.spring_cloud_starter
     compile libraries.google_guava
 
     testCompile libraries.spring_boot_starter_test
+    testCompile libraries.junit
+    testCompile libraries.easymock
+}
+
+jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            element = 'CLASS'
+            excludes = [
+            ]
+            limit {
+                counter = 'LINE'
+                value = 'COVEREDRATIO'
+                minimum = 0.8
+            }
+        }
+    }
 }

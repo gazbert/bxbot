@@ -12,7 +12,7 @@
  *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
  * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
@@ -32,7 +32,7 @@ import java.util.Set;
  * </p>
  *
  * <p>
- * Configuration comes from the strategies.xml file.
+ * Configuration comes from the strategies.yaml file.
  * </p>
  *
  * @author gazbert
@@ -40,23 +40,25 @@ import java.util.Set;
  */
 public interface StrategyConfig {
 
-    /**
-     * Fetches a config item for a given key.
-     *
-     * @param key the key of the item to fetch.
-     * @return value of the item if found, null otherwise.
-     */
-    String getConfigItem(String key);
+  /**
+   * Fetches a config item for a given key.
+   *
+   * @param key the key of the item to fetch.
+   * @return value of the item if found, null otherwise.
+   */
+  String getConfigItem(String key);
 
-    /**
-     * Returns the number of config items.
-     * @return the number of config items.
-     */
-    int getNumberOfConfigItems();
+  /**
+   * Returns the number of config items.
+   *
+   * @return the number of config items.
+   */
+  int getNumberOfConfigItems();
 
-    /**
-     * Returns all of the config item keys.
-     * @return all of the config item keys.
-     */
-    Set<String> getConfigItemKeys();
+  /**
+   * Returns all of the config item keys.
+   *
+   * @return all of the config item keys.
+   */
+  Set<String> getConfigItemKeys();
 }

@@ -20,6 +20,7 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+
 package com.gazbert.bxbot.services.runtime.impl;
 
 import com.gazbert.bxbot.services.runtime.BotRestartService;
@@ -37,18 +38,19 @@ import org.springframework.stereotype.Service;
 @Service("botRestartService")
 public class BotRestartServiceImpl implements BotRestartService {
 
-    private static final Logger LOG = LogManager.getLogger();
+  private static final Logger LOG = LogManager.getLogger();
 
-    private RestartEndpoint restartEndpoint;
+  private RestartEndpoint restartEndpoint;
 
-    @Autowired
-    public BotRestartServiceImpl(RestartEndpoint restartEndpoint) {
-        this.restartEndpoint = restartEndpoint;
-    }
+  @Autowired
+  public BotRestartServiceImpl(RestartEndpoint restartEndpoint) {
+    this.restartEndpoint = restartEndpoint;
+  }
 
-    @Override
-    public void restart() {
-        final Object result = restartEndpoint.restart();
-        LOG.info(() -> "Restart result: " + result);
-    }
+  @Override
+  public String restart() {
+    final String result = (String) restartEndpoint.restart();
+    LOG.info(() -> "Restart result: " + result);
+    return result;
+  }
 }

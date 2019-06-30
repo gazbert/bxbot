@@ -23,15 +23,12 @@
 
 package com.gazbert.bxbot.core.util.strategies;
 
-import com.gazbert.bxbot.strategy.api.StrategyException;
-
 /*
  * An invalid (and useless) Trading Strategy for unit testing.
  * Invalid because it does not implement the TradingStrategy interface.
  */
 public class InvalidTradingStrategy {
 
-    public void execute() throws StrategyException {
-
-    }
+  public void execute() {
+  }
 }

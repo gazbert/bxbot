@@ -12,7 +12,7 @@
  *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
  * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
@@ -26,57 +26,57 @@ package com.gazbert.bxbot.exchanges.trading.api.impl;
 import com.gazbert.bxbot.trading.api.MarketOrder;
 import com.gazbert.bxbot.trading.api.MarketOrderBook;
 import com.google.common.base.MoreObjects;
-
 import java.util.List;
 
 /**
- * A Market Order Book implementation that can be used by Exchange Adapters.
+ * A MarketOrderBook implementation that can be used by Exchange Adapters.
  *
  * @author gazbert
  */
 public final class MarketOrderBookImpl implements MarketOrderBook {
 
-    private String marketId;
-    private List<MarketOrder> sellOrders;
-    private List<MarketOrder> buyOrders;
+  private String marketId;
+  private List<MarketOrder> sellOrders;
+  private List<MarketOrder> buyOrders;
 
+  /** Creates a new Market Order Book. */
+  public MarketOrderBookImpl(
+      String marketId, List<MarketOrder> sellOrders, List<MarketOrder> buyOrders) {
+    this.marketId = marketId;
+    this.sellOrders = sellOrders;
+    this.buyOrders = buyOrders;
+  }
 
-    public MarketOrderBookImpl(String marketId, List<MarketOrder> sellOrders, List<MarketOrder> buyOrders) {
-        this.marketId = marketId;
-        this.sellOrders = sellOrders;
-        this.buyOrders = buyOrders;
-    }
+  public String getMarketId() {
+    return marketId;
+  }
 
-    public String getMarketId() {
-        return marketId;
-    }
+  public void setMarketId(String marketId) {
+    this.marketId = marketId;
+  }
 
-    public void setMarketId(String marketId) {
-        this.marketId = marketId;
-    }
+  public List<MarketOrder> getSellOrders() {
+    return sellOrders;
+  }
 
-    public List<MarketOrder> getSellOrders() {
-        return sellOrders;
-    }
+  public void setSellOrders(List<MarketOrder> sellOrders) {
+    this.sellOrders = sellOrders;
+  }
 
-    public void setSellOrders(List<MarketOrder> sellOrders) {
-        this.sellOrders = sellOrders;
-    }
+  public List<MarketOrder> getBuyOrders() {
+    return buyOrders;
+  }
 
-    public List<MarketOrder> getBuyOrders() {
-        return buyOrders;
-    }
+  public void setBuyOrders(List<MarketOrder> buyOrders) {
+    this.buyOrders = buyOrders;
+  }
 
-    public void setBuyOrders(List<MarketOrder> buyOrders) {
-        this.buyOrders = buyOrders;
-    }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-                .add("marketId", marketId)
-                .add("sellOrders", sellOrders)
-                .add("buyOrders", buyOrders)
-                .toString();
-    }
+  @Override
+  public String toString() {
+    return MoreObjects.toStringHelper(this)
+        .add("marketId", marketId)
+        .add("sellOrders", sellOrders)
+        .add("buyOrders", buyOrders)
+        .toString();
+  }
 }

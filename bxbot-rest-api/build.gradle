@@ -6,11 +6,25 @@ dependencies {
     compile project(':bxbot-core')
 
     compile libraries.spring_boot_starter_web
-    compile libraries.spring_boot_starter_actuator
     compile libraries.spring_boot_starter_security
     compile libraries.spring_boot_starter
     compile libraries.spring_boot_starter_log4j2
     compile libraries.google_guava
 
     testCompile libraries.spring_boot_starter_test
+}
+
+jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            element = 'CLASS'
+            excludes = [
+            ]
+            limit {
+                counter = 'LINE'
+                value = 'COVEREDRATIO'
+                minimum = 0.8
+            }
+        }
+    }
 }

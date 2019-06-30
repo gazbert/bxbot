@@ -23,13 +23,12 @@
 
 package com.gazbert.bxbot.exchanges.trading.api.impl;
 
-import com.gazbert.bxbot.trading.api.OrderType;
-import org.junit.Test;
-
-import java.math.BigDecimal;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+
+import com.gazbert.bxbot.trading.api.OrderType;
+import java.math.BigDecimal;
+import org.junit.Test;
 
 /**
  * Tests the Market Order impl behaves as expected.
@@ -38,41 +37,38 @@ import static org.junit.Assert.assertNull;
  */
 public class TestMarketOrderImpl {
 
-    private static final BigDecimal PRICE = new BigDecimal("671.91");
-    private static final BigDecimal QUANTITY = new BigDecimal("0.01345453");
-    private static final BigDecimal TOTAL = PRICE.multiply(QUANTITY);
+  private static final BigDecimal PRICE = new BigDecimal("671.91");
+  private static final BigDecimal QUANTITY = new BigDecimal("0.01345453");
+  private static final BigDecimal TOTAL = PRICE.multiply(QUANTITY);
 
+  @Test
+  public void testMarketOrderIsInitialisedAsExpected() {
+    final MarketOrderImpl marketOrder = new MarketOrderImpl(OrderType.BUY, PRICE, QUANTITY, TOTAL);
 
-    @Test
-    public void testMarketOrderIsInitialisedAsExpected() {
+    assertEquals(OrderType.BUY, marketOrder.getType());
+    assertEquals(PRICE, marketOrder.getPrice());
+    assertEquals(QUANTITY, marketOrder.getQuantity());
+    assertEquals(TOTAL, marketOrder.getTotal());
+  }
 
-        final MarketOrderImpl marketOrder = new MarketOrderImpl(OrderType.BUY, PRICE, QUANTITY, TOTAL);
+  @Test
+  public void testSettersWorkAsExpected() {
+    final MarketOrderImpl marketOrder = new MarketOrderImpl(null, null, null, null);
+    assertNull(marketOrder.getType());
+    assertNull(marketOrder.getPrice());
+    assertNull(marketOrder.getQuantity());
+    assertNull(marketOrder.getTotal());
 
-        assertEquals(OrderType.BUY, marketOrder.getType());
-        assertEquals(PRICE, marketOrder.getPrice());
-        assertEquals(QUANTITY, marketOrder.getQuantity());
-        assertEquals(TOTAL, marketOrder.getTotal());
-    }
+    marketOrder.setType(OrderType.BUY);
+    assertEquals(OrderType.BUY, marketOrder.getType());
 
-    @Test
-    public void testSettersWorkAsExpected() {
+    marketOrder.setPrice(PRICE);
+    assertEquals(PRICE, marketOrder.getPrice());
 
-        final MarketOrderImpl marketOrder = new MarketOrderImpl(null, null, null, null);
-        assertNull(marketOrder.getType());
-        assertNull(marketOrder.getPrice());
-        assertNull(marketOrder.getQuantity());
-        assertNull(marketOrder.getTotal());
+    marketOrder.setQuantity(QUANTITY);
+    assertEquals(QUANTITY, marketOrder.getQuantity());
 
-        marketOrder.setType(OrderType.BUY);
-        assertEquals(OrderType.BUY, marketOrder.getType());
-
-        marketOrder.setPrice(PRICE);
-        assertEquals(PRICE, marketOrder.getPrice());
-
-        marketOrder.setQuantity(QUANTITY);
-        assertEquals(QUANTITY, marketOrder.getQuantity());
-
-        marketOrder.setTotal(TOTAL);
-        assertEquals(TOTAL, marketOrder.getTotal());
-    }
+    marketOrder.setTotal(TOTAL);
+    assertEquals(TOTAL, marketOrder.getTotal());
+  }
 }

@@ -23,8 +23,11 @@
 
 package com.gazbert.bxbot.core.util.adapters;
 
-import com.gazbert.bxbot.trading.api.*;
-
+import com.gazbert.bxbot.trading.api.BalanceInfo;
+import com.gazbert.bxbot.trading.api.MarketOrderBook;
+import com.gazbert.bxbot.trading.api.OpenOrder;
+import com.gazbert.bxbot.trading.api.OrderType;
+import com.gazbert.bxbot.trading.api.TradingApi;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -34,49 +37,49 @@ import java.util.List;
  */
 public class InvalidExchangeAdapterNotImplExchangeAdapter implements TradingApi {
 
+  @Override
+  public String getImplName() {
+    return null;
+  }
 
-    @Override
-    public String getImplName() {
-        return null;
-    }
+  @Override
+  public MarketOrderBook getMarketOrders(String marketId) {
+    return null;
+  }
 
-    @Override
-    public MarketOrderBook getMarketOrders(String marketId) throws ExchangeNetworkException, TradingApiException {
-        return null;
-    }
+  @Override
+  public List<OpenOrder> getYourOpenOrders(String marketId) {
+    return null;
+  }
 
-    @Override
-    public List<OpenOrder> getYourOpenOrders(String marketId) throws ExchangeNetworkException, TradingApiException {
-        return null;
-    }
+  @Override
+  public String createOrder(
+      String marketId, OrderType orderType, BigDecimal quantity, BigDecimal price) {
+    return null;
+  }
 
-    @Override
-    public String createOrder(String marketId, OrderType orderType, BigDecimal quantity, BigDecimal price) throws ExchangeNetworkException, TradingApiException {
-        return null;
-    }
+  @Override
+  public boolean cancelOrder(String orderId, String marketId) {
+    return false;
+  }
 
-    @Override
-    public boolean cancelOrder(String orderId, String marketId) throws ExchangeNetworkException, TradingApiException {
-        return false;
-    }
+  @Override
+  public BigDecimal getLatestMarketPrice(String marketId) {
+    return null;
+  }
 
-    @Override
-    public BigDecimal getLatestMarketPrice(String marketId) throws ExchangeNetworkException, TradingApiException {
-        return null;
-    }
+  @Override
+  public BalanceInfo getBalanceInfo() {
+    return null;
+  }
 
-    @Override
-    public BalanceInfo getBalanceInfo() throws ExchangeNetworkException, TradingApiException {
-        return null;
-    }
+  @Override
+  public BigDecimal getPercentageOfBuyOrderTakenForExchangeFee(String marketId) {
+    return null;
+  }
 
-    @Override
-    public BigDecimal getPercentageOfBuyOrderTakenForExchangeFee(String marketId) throws TradingApiException, ExchangeNetworkException {
-        return null;
-    }
-
-    @Override
-    public BigDecimal getPercentageOfSellOrderTakenForExchangeFee(String marketId) throws TradingApiException, ExchangeNetworkException {
-        return null;
-    }
+  @Override
+  public BigDecimal getPercentageOfSellOrderTakenForExchangeFee(String marketId) {
+    return null;
+  }
 }

@@ -23,9 +23,9 @@
 
 package com.gazbert.bxbot.core.config.exchange;
 
-import org.junit.Test;
-
 import static org.junit.Assert.assertEquals;
+
+import org.junit.Test;
 
 /**
  * Tests Authentication Config exchange API config object behaves as expected.
@@ -34,22 +34,29 @@ import static org.junit.Assert.assertEquals;
  */
 public class TestAuthenticationConfigImpl {
 
-    private static final String API_KEY_CONFIG_ITEM_KEY = "api-key";
-    private static final String API_KEY_CONFIG_ITEM_VALUE = "apiKey--123";
+  private static final String API_KEY_CONFIG_ITEM_KEY = "api-key";
+  private static final String API_KEY_CONFIG_ITEM_VALUE = "apiKey--123";
 
-    private static final String SECRET_CONFIG_ITEM_KEY = "secret";
-    private static final String SECRET_FEE_CONFIG_ITEM_VALUE = "secret-key";
+  private static final String SECRET_CONFIG_ITEM_KEY = "secret";
+  private static final String SECRET_FEE_CONFIG_ITEM_VALUE = "secret-key";
 
+  @Test
+  public void testAddingAndFetchingAuthenticationConfig() {
+    final AuthenticationConfigImpl authenticationConfig = new AuthenticationConfigImpl();
+    authenticationConfig.getItems().put(API_KEY_CONFIG_ITEM_KEY, API_KEY_CONFIG_ITEM_VALUE);
+    authenticationConfig.getItems().put(SECRET_CONFIG_ITEM_KEY, SECRET_FEE_CONFIG_ITEM_VALUE);
 
-    @Test
-    public void testAddingAndFetchingAuthenticationConfig() {
+    assertEquals(2, authenticationConfig.getItems().size());
+    assertEquals(
+        API_KEY_CONFIG_ITEM_VALUE, authenticationConfig.getItems().get(API_KEY_CONFIG_ITEM_KEY));
+    assertEquals(
+        SECRET_FEE_CONFIG_ITEM_VALUE, authenticationConfig.getItems().get(SECRET_CONFIG_ITEM_KEY));
+  }
 
-        final AuthenticationConfigImpl authenticationConfig = new AuthenticationConfigImpl();
-        authenticationConfig.getItems().put(API_KEY_CONFIG_ITEM_KEY, API_KEY_CONFIG_ITEM_VALUE);
-        authenticationConfig.getItems().put(SECRET_CONFIG_ITEM_KEY, SECRET_FEE_CONFIG_ITEM_VALUE);
-
-        assertEquals(2, authenticationConfig.getItems().size());
-        assertEquals(API_KEY_CONFIG_ITEM_VALUE, authenticationConfig.getItems().get(API_KEY_CONFIG_ITEM_KEY));
-        assertEquals(SECRET_FEE_CONFIG_ITEM_VALUE, authenticationConfig.getItems().get(SECRET_CONFIG_ITEM_KEY));
-    }
+  @Test
+  public void testFetchingSingleAuthenticationConfigItem() {
+    final AuthenticationConfigImpl authenticationConfig = new AuthenticationConfigImpl();
+    authenticationConfig.getItems().put(API_KEY_CONFIG_ITEM_KEY, API_KEY_CONFIG_ITEM_VALUE);
+    assertEquals(API_KEY_CONFIG_ITEM_VALUE, authenticationConfig.getItem(API_KEY_CONFIG_ITEM_KEY));
+  }
 }

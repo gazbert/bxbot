@@ -20,22 +20,8 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.gazbert.bxbot.rest.api.v1.config;
 
-import com.gazbert.bxbot.core.engine.TradingEngine;
-import com.gazbert.bxbot.domain.emailalerts.EmailAlertsConfig;
-import com.gazbert.bxbot.domain.emailalerts.SmtpConfig;
-import com.gazbert.bxbot.services.EmailAlertsConfigService;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.cloud.context.restart.RestartEndpoint;
-import org.springframework.http.MediaType;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+package com.gazbert.bxbot.rest.api.v1.config;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
@@ -47,6 +33,21 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.gazbert.bxbot.core.engine.TradingEngine;
+import com.gazbert.bxbot.domain.emailalerts.EmailAlertsConfig;
+import com.gazbert.bxbot.domain.emailalerts.SmtpConfig;
+import com.gazbert.bxbot.services.config.EmailAlertsConfigService;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.cloud.context.restart.RestartEndpoint;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
 /**
  * Tests the Email Alerts config controller behaviour.
  *
@@ -57,119 +58,128 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebAppConfiguration
 public class TestEmailAlertsConfigController extends AbstractConfigControllerTest {
 
-    private static final String EMAIL_ALERTS_CONFIG_ENDPOINT_URI = CONFIG_ENDPOINT_BASE_URI + "/email-alerts";
+  private static final String EMAIL_ALERTS_CONFIG_ENDPOINT_URI =
+      CONFIG_ENDPOINT_BASE_URI + "/email-alerts";
 
-    private static final boolean ENABLED = true;
-    private static final String HOST = "smtp.host.deathstar.com";
-    private static final int TLS_PORT = 573;
-    private static final String ACCOUNT_USERNAME = "boba@google.com";
-    private static final String ACCOUNT_PASSWORD = "bounty";
-    private static final String FROM_ADDRESS = "boba.fett@Mandalore.com";
-    private static final String TO_ADDRESS = "darth.vader@deathstar.com";
+  private static final boolean ENABLED = true;
+  private static final String HOST = "smtp.host.deathstar.com";
+  private static final int TLS_PORT = 573;
+  private static final String ACCOUNT_USERNAME = "boba@google.com";
+  private static final String ACCOUNT_PASSWORD = "bounty";
+  private static final String FROM_ADDRESS = "boba.fett@Mandalore.com";
+  private static final String TO_ADDRESS = "darth.vader@deathstar.com";
 
-    @MockBean
-    private EmailAlertsConfigService emailAlertsConfigService;
+  @MockBean private EmailAlertsConfigService emailAlertsConfigService;
 
-    // Need this even though not used in the test directly because Spring loads it on startup...
-    @MockBean
-    private TradingEngine tradingEngine;
+  // Need this even though not used in the test directly because Spring loads it on startup...
+  @MockBean private TradingEngine tradingEngine;
 
-    // Need this even though not used in the test directly because Spring loads it on startup...
-    @MockBean
-    private RestartEndpoint restartEndpoint;
+  // Need this even though not used in the test directly because Spring loads it on startup...
+  @MockBean private RestartEndpoint restartEndpoint;
 
-    @Before
-    public void setupBeforeEachTest() {
-        mockMvc = MockMvcBuilders.webAppContextSetup(ctx).addFilter(springSecurityFilterChain).build();
-    }
+  @Before
+  public void setupBeforeEachTest() {
+    mockMvc = MockMvcBuilders.webAppContextSetup(ctx).addFilter(springSecurityFilterChain).build();
+  }
 
-    @Test
-    public void testGetEmailAlertsConfig() throws Exception {
+  @Test
+  public void testGetEmailAlertsConfig() throws Exception {
+    given(emailAlertsConfigService.getEmailAlertsConfig()).willReturn(someEmailAlertsConfig());
 
-        given(emailAlertsConfigService.getEmailAlertsConfig()).willReturn(someEmailAlertsConfig());
+    mockMvc
+        .perform(
+            get(EMAIL_ALERTS_CONFIG_ENDPOINT_URI)
+                .header(
+                    "Authorization",
+                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD)))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.smtpConfig.host").value(HOST))
+        .andExpect(jsonPath("$.smtpConfig.tlsPort").value(TLS_PORT))
+        .andExpect(jsonPath("$.enabled").value(ENABLED))
+        .andExpect(jsonPath("$.smtpConfig.fromAddress").value(FROM_ADDRESS))
+        .andExpect(jsonPath("$.smtpConfig.toAddress").value(TO_ADDRESS))
+        .andExpect(jsonPath("$.smtpConfig.accountUsername").value(ACCOUNT_USERNAME))
+        .andExpect(jsonPath("$.smtpConfig.accountPassword").value(ACCOUNT_PASSWORD));
 
-        mockMvc.perform(get(EMAIL_ALERTS_CONFIG_ENDPOINT_URI)
-                .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD)))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.smtpConfig.host").value(HOST))
-                .andExpect(jsonPath("$.smtpConfig.tlsPort").value(TLS_PORT))
-                .andExpect(jsonPath("$.enabled").value(ENABLED))
-                .andExpect(jsonPath("$.smtpConfig.fromAddress").value(FROM_ADDRESS))
-                .andExpect(jsonPath("$.smtpConfig.toAddress").value(TO_ADDRESS))
-                .andExpect(jsonPath("$.smtpConfig.accountUsername").value(ACCOUNT_USERNAME))
-                .andExpect(jsonPath("$.smtpConfig.accountPassword").value(ACCOUNT_PASSWORD));
+    verify(emailAlertsConfigService, times(1)).getEmailAlertsConfig();
+  }
 
-        verify(emailAlertsConfigService, times(1)).getEmailAlertsConfig();
-    }
+  @Test
+  public void testGetEmailAlertsConfigWhenUnauthorizedWithMissingCredentials() throws Exception {
+    mockMvc
+        .perform(get(EMAIL_ALERTS_CONFIG_ENDPOINT_URI).accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isUnauthorized());
+  }
 
-    @Test
-    public void testGetEmailAlertsConfigWhenUnauthorizedWithMissingCredentials() throws Exception {
-
-        mockMvc.perform(get(EMAIL_ALERTS_CONFIG_ENDPOINT_URI)
+  @Test
+  public void testGetEmailAlertsConfigWhenUnauthorizedWithInvalidCredentials() throws Exception {
+    mockMvc
+        .perform(
+            get(EMAIL_ALERTS_CONFIG_ENDPOINT_URI)
+                .header(
+                    "Authorization",
+                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, INVALID_USER_PASSWORD))
                 .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isUnauthorized());
-    }
+        .andExpect(status().isUnauthorized());
+  }
 
-    @Test
-    public void testGetEmailAlertsConfigWhenUnauthorizedWithInvalidCredentials() throws Exception {
+  @Test
+  public void testUpdateEmailAlertsConfig() throws Exception {
+    given(emailAlertsConfigService.updateEmailAlertsConfig(any()))
+        .willReturn(someEmailAlertsConfig());
 
-        mockMvc.perform(get(EMAIL_ALERTS_CONFIG_ENDPOINT_URI)
-                .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, INVALID_USER_PASSWORD))
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isUnauthorized());
-    }
-
-    @Test
-    public void testUpdateEmailAlertsConfig() throws Exception {
-
-        given(emailAlertsConfigService.updateEmailAlertsConfig(any())).willReturn(someEmailAlertsConfig());
-
-        mockMvc.perform(put(EMAIL_ALERTS_CONFIG_ENDPOINT_URI)
-                .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD))
+    mockMvc
+        .perform(
+            put(EMAIL_ALERTS_CONFIG_ENDPOINT_URI)
+                .header(
+                    "Authorization",
+                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD))
                 .contentType(CONTENT_TYPE)
                 .content(jsonify(someEmailAlertsConfig())))
-                .andDo(print())
-                .andExpect(status().isOk())
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.smtpConfig.host").value(HOST))
+        .andExpect(jsonPath("$.smtpConfig.tlsPort").value(TLS_PORT))
+        .andExpect(jsonPath("$.enabled").value(ENABLED))
+        .andExpect(jsonPath("$.smtpConfig.fromAddress").value(FROM_ADDRESS))
+        .andExpect(jsonPath("$.smtpConfig.toAddress").value(TO_ADDRESS))
+        .andExpect(jsonPath("$.smtpConfig.accountUsername").value(ACCOUNT_USERNAME))
+        .andExpect(jsonPath("$.smtpConfig.accountPassword").value(ACCOUNT_PASSWORD));
 
-                .andExpect(jsonPath("$.smtpConfig.host").value(HOST))
-                .andExpect(jsonPath("$.smtpConfig.tlsPort").value(TLS_PORT))
-                .andExpect(jsonPath("$.enabled").value(ENABLED))
-                .andExpect(jsonPath("$.smtpConfig.fromAddress").value(FROM_ADDRESS))
-                .andExpect(jsonPath("$.smtpConfig.toAddress").value(TO_ADDRESS))
-                .andExpect(jsonPath("$.smtpConfig.accountUsername").value(ACCOUNT_USERNAME))
-                .andExpect(jsonPath("$.smtpConfig.accountPassword").value(ACCOUNT_PASSWORD));
+    verify(emailAlertsConfigService, times(1)).updateEmailAlertsConfig(any());
+  }
 
-        verify(emailAlertsConfigService, times(1)).updateEmailAlertsConfig(any());
-    }
+  @Test
+  public void testUpdateEmailAlertsConfigWhenUnauthorizedWithMissingCredentials() throws Exception {
+    mockMvc
+        .perform(put(EMAIL_ALERTS_CONFIG_ENDPOINT_URI).accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isUnauthorized());
+  }
 
-    @Test
-    public void testUpdateEmailAlertsConfigWhenUnauthorizedWithMissingCredentials() throws Exception {
-
-        mockMvc.perform(put(EMAIL_ALERTS_CONFIG_ENDPOINT_URI)
+  @Test
+  public void testUpdateEmailAlertsConfigWhenUnauthorizedWithInvalidCredentials() throws Exception {
+    mockMvc
+        .perform(
+            put(EMAIL_ALERTS_CONFIG_ENDPOINT_URI)
+                .header(
+                    "Authorization",
+                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, INVALID_USER_PASSWORD))
                 .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isUnauthorized());
-    }
+        .andExpect(status().isUnauthorized());
+  }
 
-    @Test
-    public void testUpdateEmailAlertsConfigWhenUnauthorizedWithInvalidCredentials() throws Exception {
+  // --------------------------------------------------------------------------
+  // Private utils
+  // --------------------------------------------------------------------------
 
-        mockMvc.perform(put(EMAIL_ALERTS_CONFIG_ENDPOINT_URI)
-                .header("Authorization", buildAuthorizationHeaderValue(VALID_USER_LOGINID, INVALID_USER_PASSWORD))
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isUnauthorized());
-    }
-
-    // ------------------------------------------------------------------------------------------------
-    // Private utils
-    // ------------------------------------------------------------------------------------------------
-
-    private static EmailAlertsConfig someEmailAlertsConfig() {
-        final EmailAlertsConfig emailAlertsConfig = new EmailAlertsConfig();
-        final SmtpConfig smtpConfig = new SmtpConfig(
-                HOST, TLS_PORT, ACCOUNT_USERNAME, ACCOUNT_PASSWORD, FROM_ADDRESS, TO_ADDRESS);
-        emailAlertsConfig.setSmtpConfig(smtpConfig);
-        emailAlertsConfig.setEnabled(true);
-        return emailAlertsConfig;
-    }
+  private static EmailAlertsConfig someEmailAlertsConfig() {
+    final EmailAlertsConfig emailAlertsConfig = new EmailAlertsConfig();
+    final SmtpConfig smtpConfig =
+        new SmtpConfig(
+            HOST, TLS_PORT, ACCOUNT_USERNAME, ACCOUNT_PASSWORD, FROM_ADDRESS, TO_ADDRESS);
+    emailAlertsConfig.setSmtpConfig(smtpConfig);
+    emailAlertsConfig.setEnabled(true);
+    return emailAlertsConfig;
+  }
 }

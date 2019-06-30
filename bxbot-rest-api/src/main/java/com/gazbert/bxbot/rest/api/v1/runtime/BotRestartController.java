@@ -20,7 +20,10 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+
 package com.gazbert.bxbot.rest.api.v1.runtime;
+
+import static com.gazbert.bxbot.rest.api.v1.EndpointLocations.RUNTIME_ENDPOINT_BASE_URI;
 
 import com.gazbert.bxbot.services.runtime.BotRestartService;
 import org.apache.logging.log4j.LogManager;
@@ -29,12 +32,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.User;;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-
-import static com.gazbert.bxbot.rest.api.v1.runtime.AbstractRuntimeController.RUNTIME_ENDPOINT_BASE_URI;
 
 /**
  * Controller for directing Bot restart requests.
@@ -44,30 +45,30 @@ import static com.gazbert.bxbot.rest.api.v1.runtime.AbstractRuntimeController.RU
  */
 @RestController
 @RequestMapping(RUNTIME_ENDPOINT_BASE_URI)
-public class BotRestartController extends AbstractRuntimeController {
+public class BotRestartController {
 
-    private static final Logger LOG = LogManager.getLogger();
-    private static final String RESTART_RESOURCE_PATH = "/restart";
-    private final BotRestartService botRestartService;
+  private static final Logger LOG = LogManager.getLogger();
+  private static final String RESTART_RESOURCE_PATH = "/restart";
+  private final BotRestartService botRestartService;
 
-    @Autowired
-    public BotRestartController(BotRestartService botRestartService) {
-        this.botRestartService = botRestartService;
-    }
+  @Autowired
+  public BotRestartController(BotRestartService botRestartService) {
+    this.botRestartService = botRestartService;
+  }
 
-    /**
-     * Restarts the bot.
-     *
-     * @param user the authenticated user making the request.
-     * @return 200 OK on success, some other HTTP status code otherwise.
-     */
-    @RequestMapping(value = RESTART_RESOURCE_PATH, method = RequestMethod.POST)
-    public ResponseEntity<?> restart(@AuthenticationPrincipal User user) {
+  /**
+   * Restarts the bot.
+   *
+   * @param user the authenticated user making the request.
+   * @return 200 OK on success, some other HTTP status code otherwise.
+   */
+  @PostMapping(value = RESTART_RESOURCE_PATH)
+  public ResponseEntity<String> restart(@AuthenticationPrincipal User user) {
 
-        LOG.info("POST " + RESTART_RESOURCE_PATH + " - restart() - caller: " + user.getUsername());
+    LOG.info("POST " + RESTART_RESOURCE_PATH + " - restart() - caller: " + user.getUsername());
+    final String status = botRestartService.restart();
 
-        botRestartService.restart();
-        return buildResponseEntity(null, HttpStatus.OK);
-    }
+    LOG.info(() -> "Response: " + status);
+    return new ResponseEntity<>(status, null, HttpStatus.OK);
+  }
 }
-

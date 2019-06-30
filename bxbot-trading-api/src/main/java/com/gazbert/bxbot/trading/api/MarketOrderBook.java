@@ -12,7 +12,7 @@
  *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
  * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
@@ -26,41 +26,39 @@ package com.gazbert.bxbot.trading.api;
 import java.util.List;
 
 /**
- * <p>
  * Represents a Market Order Book.
- * </p>
- * <p>
- * The Market Order Book SELL orders are ordered price ascending - <em>lowest</em> ASK price is first in list.
- * </p>
- * <p>
- * The Market Order Book BUY orders are ordered price descending - <em>highest</em> BID price is first in list.
- * </p>
+ *
+ * <p>The Market Order Book SELL orders are ordered price ascending - <em>lowest</em> ASK price is
+ * first in list.
+ *
+ * <p>The Market Order Book BUY orders are ordered price descending - <em>highest</em> BID price is
+ * first in list.
  *
  * @author gazbert
  * @since 1.0
  */
 public interface MarketOrderBook {
 
-    /**
-     * Returns the market id for this Market Order Book.
-     *
-     * @return The market id.
-     */
-    String getMarketId();
+  /**
+   * Returns the market id for this Market Order Book.
+   *
+   * @return The market id.
+   */
+  String getMarketId();
 
-    /**
-     * Returns current SELL orders for the market.
-     * Ordered price ascending - <em>lowest</em> ASK price is first in list.
-     *
-     * @return current SELL orders for the market.
-     */
-    List<MarketOrder> getSellOrders();
+  /**
+   * Returns current SELL orders for the market. Ordered price ascending - <em>lowest</em> ASK price
+   * is first in list.
+   *
+   * @return current SELL orders for the market.
+   */
+  List<MarketOrder> getSellOrders();
 
-    /**
-     * Return the current BUY orders for the market.
-     * Ordered price descending - <em>highest</em> BID price is first in list.
-     *
-     * @return current BUY orders for the market.
-     */
-    List<MarketOrder> getBuyOrders();
+  /**
+   * Return the current BUY orders for the market. Ordered price descending - <em>highest</em> BID
+   * price is first in list.
+   *
+   * @return current BUY orders for the market.
+   */
+  List<MarketOrder> getBuyOrders();
 }

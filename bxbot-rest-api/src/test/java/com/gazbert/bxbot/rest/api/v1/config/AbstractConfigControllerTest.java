@@ -20,6 +20,7 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+
 package com.gazbert.bxbot.rest.api.v1.config;
 
 import com.gazbert.bxbot.rest.api.v1.AbstractControllerTest;
@@ -31,5 +32,5 @@ import com.gazbert.bxbot.rest.api.v1.AbstractControllerTest;
  */
 abstract class AbstractConfigControllerTest extends AbstractControllerTest {
 
-    static final String CONFIG_ENDPOINT_BASE_URI = API_ENDPOINT_BASE_URI + "/config";
+  static final String CONFIG_ENDPOINT_BASE_URI = API_ENDPOINT_BASE_URI + "/config";
 }

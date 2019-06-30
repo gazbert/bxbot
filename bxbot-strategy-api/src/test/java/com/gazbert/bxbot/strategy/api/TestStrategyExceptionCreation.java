@@ -23,9 +23,9 @@
 
 package com.gazbert.bxbot.strategy.api;
 
-import org.junit.Test;
-
 import static org.junit.Assert.assertEquals;
+
+import org.junit.Test;
 
 /**
  * Tests Strategy Exception is created as expected.
@@ -34,21 +34,27 @@ import static org.junit.Assert.assertEquals;
  */
 public class TestStrategyExceptionCreation {
 
-    private static final String ERROR_MSG = "Received unknown order id in current active orders API call";
-    private static final RuntimeException CAUSE = new RuntimeException("The cause of the exception");
+  private static final String ERROR_MSG =
+      "Received unknown order id in current active orders API call";
+  private static final RuntimeException CAUSE = new RuntimeException("The cause of the exception");
 
-    @Test
-    public void testCreationOfExceptionIsAsExpected() {
+  @Test
+  public void testCreationOfExceptionIsAsExpected() {
+    final StrategyException exception = new StrategyException(ERROR_MSG);
+    assertEquals(ERROR_MSG, exception.getMessage());
+  }
 
-        final StrategyException exception = new StrategyException(ERROR_MSG);
-        assertEquals(ERROR_MSG, exception.getMessage());
-    }
+  @Test
+  public void testCreationOfExceptionWithCauseIsAsExpected() {
+    final StrategyException exception = new StrategyException(ERROR_MSG, CAUSE);
+    assertEquals(ERROR_MSG, exception.getMessage());
+    assertEquals(CAUSE, exception.getCause());
+  }
 
-    @Test
-    public void testCreationOfExceptionWithCauseIsAsExpected() {
+  @Test
+  public void testCreationOfExceptionWithThrowableIsAsExpected() {
+    final StrategyException exception = new StrategyException(CAUSE);
+    assertEquals(CAUSE, exception.getCause());
+  }
 
-        final StrategyException exception = new StrategyException(ERROR_MSG, CAUSE);
-        assertEquals(ERROR_MSG, exception.getMessage());
-        assertEquals(CAUSE, exception.getCause());
-    }
 }

@@ -1,7 +1,7 @@
 apply plugin: 'org.springframework.boot'
 
 bootJar {
-    mainClassName = 'com.gazbert.bxbot.BXBot'
+    mainClassName = 'com.gazbert.bxbot.BxBot'
 }
 
 dependencies {
@@ -18,8 +18,8 @@ dependencies {
     compile project(':bxbot-rest-api')
 
     // Add your (optional) Trading Strategies here
-//    compile group: 'com.gazbert.bxbot', name: 'bxbot-strategies', version: '3.0-SNAPSHOT'
+    // compile group: 'com.gazbert.bxbot', name: 'bxbot-strategies', version: '3.0-SNAPSHOT'
 
     // Add your (optional) Exchange Adapters here
-//    compile group: 'com.your.stuff', name: 'your-custom-exchanges', version: '1.0-SNAPSHOT'
+    // compile group: 'com.your.stuff', name: 'your-custom-exchanges', version: '1.0-SNAPSHOT'
 }

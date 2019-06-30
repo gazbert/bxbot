@@ -24,7 +24,6 @@
 package com.gazbert.bxbot.datastore.yaml.market;
 
 import com.gazbert.bxbot.domain.market.MarketConfig;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,16 +34,19 @@ import java.util.List;
  */
 public class MarketsType {
 
-    private List<MarketConfig> markets;
+  private List<MarketConfig> markets;
 
-    public List<MarketConfig> getMarkets() {
-        if (markets == null) {
-            markets = new ArrayList<>();
-        }
-        return markets;
+  /**
+   * Returns the Market configs.
+   */
+  public List<MarketConfig> getMarkets() {
+    if (markets == null) {
+      markets = new ArrayList<>();
     }
+    return markets;
+  }
 
-    public void setMarkets(List<MarketConfig> markets) {
-        this.markets = markets;
-    }
+  public void setMarkets(List<MarketConfig> markets) {
+    this.markets = markets;
+  }
 }

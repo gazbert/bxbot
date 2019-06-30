@@ -24,7 +24,6 @@
 package com.gazbert.bxbot.core.util.strategies;
 
 import com.gazbert.bxbot.strategy.api.StrategyConfig;
-import com.gazbert.bxbot.strategy.api.StrategyException;
 import com.gazbert.bxbot.strategy.api.TradingStrategy;
 import com.gazbert.bxbot.trading.api.Market;
 import com.gazbert.bxbot.trading.api.TradingApi;
@@ -33,13 +32,11 @@ import com.gazbert.bxbot.trading.api.TradingApi;
  * A valid (but useless) Trading Strategy for unit testing.
  */
 public class ValidTradingStrategy implements TradingStrategy {
-    @Override
-    public void init(TradingApi tradingApi, Market market, StrategyConfig config) {
+  @Override
+  public void init(TradingApi tradingApi, Market market, StrategyConfig config) {
+  }
 
-    }
-
-    @Override
-    public void execute() throws StrategyException {
-
-    }
+  @Override
+  public void execute() {
+  }
 }

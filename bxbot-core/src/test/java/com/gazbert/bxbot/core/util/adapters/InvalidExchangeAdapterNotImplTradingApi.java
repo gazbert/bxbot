@@ -23,11 +23,8 @@
 
 package com.gazbert.bxbot.core.util.adapters;
 
-import com.gazbert.bxbot.trading.api.ExchangeNetworkException;
 import com.gazbert.bxbot.trading.api.MarketOrderBook;
 import com.gazbert.bxbot.trading.api.OpenOrder;
-import com.gazbert.bxbot.trading.api.TradingApiException;
-
 import java.util.List;
 
 /*
@@ -36,15 +33,15 @@ import java.util.List;
  */
 public class InvalidExchangeAdapterNotImplTradingApi {
 
-    public String getImplName() {
-        return null;
-    }
+  public String getImplName() {
+    return null;
+  }
 
-    public MarketOrderBook getMarketOrders(String marketId) throws ExchangeNetworkException, TradingApiException {
-        return null;
-    }
+  public MarketOrderBook getMarketOrders(String marketId) {
+    return null;
+  }
 
-    public List<OpenOrder> getYourOpenOrders(String marketId) throws ExchangeNetworkException, TradingApiException {
-        return null;
-    }
+  public List<OpenOrder> getYourOpenOrders(String marketId) {
+    return null;
+  }
 }

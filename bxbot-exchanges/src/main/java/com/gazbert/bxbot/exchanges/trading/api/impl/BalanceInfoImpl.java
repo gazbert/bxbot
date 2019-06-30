@@ -12,7 +12,7 @@
  *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
  * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
@@ -25,48 +25,46 @@ package com.gazbert.bxbot.exchanges.trading.api.impl;
 
 import com.gazbert.bxbot.trading.api.BalanceInfo;
 import com.google.common.base.MoreObjects;
-
 import java.math.BigDecimal;
 import java.util.Map;
 
 /**
- * A Balance Info implementation that can be used by Exchange Adapters.
+ * A BalanceInfo implementation that can be used by Exchange Adapters.
  *
  * @author gazbert
  */
 public final class BalanceInfoImpl implements BalanceInfo {
 
-    private Map<String, BigDecimal> balancesAvailable;
-    private Map<String, BigDecimal> balancesOnHold;
+  private Map<String, BigDecimal> balancesAvailable;
+  private Map<String, BigDecimal> balancesOnHold;
 
+  public BalanceInfoImpl(
+      Map<String, BigDecimal> balancesAvailable, Map<String, BigDecimal> balancesOnHold) {
+    this.balancesAvailable = balancesAvailable;
+    this.balancesOnHold = balancesOnHold;
+  }
 
-    public BalanceInfoImpl(Map<String, BigDecimal> balancesAvailable, Map<String, BigDecimal> balancesOnHold) {
-        this.balancesAvailable = balancesAvailable;
-        this.balancesOnHold = balancesOnHold;
-    }
+  public Map<String, BigDecimal> getBalancesAvailable() {
+    return balancesAvailable;
+  }
 
-    public Map<String, BigDecimal> getBalancesAvailable() {
-        return balancesAvailable;
-    }
+  public void setBalancesAvailable(Map<String, BigDecimal> balancesAvailable) {
+    this.balancesAvailable = balancesAvailable;
+  }
 
-    public void setBalancesAvailable(Map<String, BigDecimal> balancesAvailable) {
-        this.balancesAvailable = balancesAvailable;
-    }
+  public Map<String, BigDecimal> getBalancesOnHold() {
+    return balancesOnHold;
+  }
 
-    public Map<String, BigDecimal> getBalancesOnHold() {
-        return balancesOnHold;
-    }
+  public void setBalancesOnHold(Map<String, BigDecimal> balancesOnHold) {
+    this.balancesOnHold = balancesOnHold;
+  }
 
-    public void setBalancesOnHold(Map<String, BigDecimal> balancesOnHold) {
-        this.balancesOnHold = balancesOnHold;
-    }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-                .add("balancesAvailable", balancesAvailable)
-                .add("balancesOnHold", balancesOnHold)
-                .toString();
-    }
+  @Override
+  public String toString() {
+    return MoreObjects.toStringHelper(this)
+        .add("balancesAvailable", balancesAvailable)
+        .add("balancesOnHold", balancesOnHold)
+        .toString();
+  }
 }
-

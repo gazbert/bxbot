@@ -12,7 +12,7 @@
  *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
  * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
@@ -31,47 +31,44 @@ package com.gazbert.bxbot.trading.api;
  */
 public interface Market {
 
-    /**
-     * Returns the market name, e.g. LTC_BTC, USD_BTC.
-     *
-     * @return the market name.
-     */
-    String getName();
+  /**
+   * Returns the market name, e.g. LTC_BTC, USD_BTC.
+   *
+   * @return the market name.
+   */
+  String getName();
 
-    /**
-     * Sets the market id, e.g. 3, btc_usd
-     *
-     * @param id the ID of the Market.
-     */
-    void setId(String id);
+  /**
+   * Sets the market id, e.g. 3, btc_usd
+   *
+   * @param id the ID of the Market.
+   */
+  void setId(String id);
 
-    /**
-     * Returns the market id, e.g. 3, btc_usd
-     *
-     * @return the market id.
-     */
-    String getId();
+  /**
+   * Returns the market id, e.g. 3, btc_usd
+   *
+   * @return the market id.
+   */
+  String getId();
 
-    /**
-     * <p>
-     * Returns the base currency for the market currency pair.
-     * </p>
-     * <p>
-     * When you buy or sell a currency pair, you are performing that action on the base currency.
-     * E.g. in a LTC/BTC market, the first currency (LTC) is the base currency and the second currency (BTC) is the
-     * counter currency.
-     * </p>
-     *
-     * @return the base currency short code, e.g. LTC
-     */
-    String getBaseCurrency();
+  /**
+   * Returns the base currency for the market currency pair.
+   *
+   * <p>When you buy or sell a currency pair, you are performing that action on the base currency.
+   * E.g. in a LTC/BTC market, the first currency (LTC) is the base currency and the second currency
+   * (BTC) is the counter currency.
+   *
+   * @return the base currency short code, e.g. LTC
+   */
+  String getBaseCurrency();
 
-    /**
-     * Returns the counter currency for the market currency pair. Also known as the quote currency.
-     * E.g. in a LTC/BTC market, the first currency (LTC) is the base currency and the second currency (BTC) is the
-     * counter currency.
-     *
-     * @return the counter currency short code, e.g. LTC
-     */
-    String getCounterCurrency();
+  /**
+   * Returns the counter currency for the market currency pair. Also known as the quote currency.
+   * E.g. in a LTC/BTC market, the first currency (LTC) is the base currency and the second currency
+   * (BTC) is the counter currency.
+   *
+   * @return the counter currency short code, e.g. LTC
+   */
+  String getCounterCurrency();
 }

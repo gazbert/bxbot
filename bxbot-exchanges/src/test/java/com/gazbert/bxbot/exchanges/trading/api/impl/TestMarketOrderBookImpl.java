@@ -23,16 +23,17 @@
 
 package com.gazbert.bxbot.exchanges.trading.api.impl;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import com.gazbert.bxbot.trading.api.MarketOrder;
 import com.gazbert.bxbot.trading.api.OrderType;
-import org.junit.Before;
-import org.junit.Test;
-
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-
-import static org.junit.Assert.*;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * Tests the Market Order Book impl behaves as expected.
@@ -41,88 +42,89 @@ import static org.junit.Assert.*;
  */
 public class TestMarketOrderBookImpl {
 
-    private static final String MARKET_ID = "BTC_USD";
+  private static final String MARKET_ID = "BTC_USD";
 
-    private List<MarketOrder> sellOrders;
-    private List<MarketOrder> buyOrders;
+  private List<MarketOrder> sellOrders;
+  private List<MarketOrder> buyOrders;
 
-    private static final BigDecimal ORDER_1_PRICE = new BigDecimal("111.11");
-    private static final BigDecimal ORDER_1_QUANTITY = new BigDecimal("0.01614453");
-    private static final BigDecimal ORDER_1_TOTAL = ORDER_1_PRICE.multiply(ORDER_1_QUANTITY);
+  private static final BigDecimal ORDER_1_PRICE = new BigDecimal("111.11");
+  private static final BigDecimal ORDER_1_QUANTITY = new BigDecimal("0.01614453");
+  private static final BigDecimal ORDER_1_TOTAL = ORDER_1_PRICE.multiply(ORDER_1_QUANTITY);
 
-    private static final BigDecimal ORDER_2_PRICE = new BigDecimal("222.22");
-    private static final BigDecimal ORDER_2_QUANTITY = new BigDecimal("0.02423424");
-    private static final BigDecimal ORDER_2_TOTAL = ORDER_2_PRICE.multiply(ORDER_2_QUANTITY);
+  private static final BigDecimal ORDER_2_PRICE = new BigDecimal("222.22");
+  private static final BigDecimal ORDER_2_QUANTITY = new BigDecimal("0.02423424");
+  private static final BigDecimal ORDER_2_TOTAL = ORDER_2_PRICE.multiply(ORDER_2_QUANTITY);
 
-    private static final BigDecimal ORDER_3_PRICE = new BigDecimal("333.33");
-    private static final BigDecimal ORDER_3_QUANTITY = new BigDecimal("0.03435344");
-    private static final BigDecimal ORDER_3_TOTAL = ORDER_3_PRICE.multiply(ORDER_3_QUANTITY);
+  private static final BigDecimal ORDER_3_PRICE = new BigDecimal("333.33");
+  private static final BigDecimal ORDER_3_QUANTITY = new BigDecimal("0.03435344");
+  private static final BigDecimal ORDER_3_TOTAL = ORDER_3_PRICE.multiply(ORDER_3_QUANTITY);
 
-    private MarketOrder sellOrder1;
-    private MarketOrder sellOrder2;
-    private MarketOrder sellOrder3;
+  private MarketOrder sellOrder1;
+  private MarketOrder sellOrder2;
+  private MarketOrder sellOrder3;
 
-    private MarketOrder buyOrder1;
-    private MarketOrder buyOrder2;
-    private MarketOrder buyOrder3;
+  private MarketOrder buyOrder1;
+  private MarketOrder buyOrder2;
+  private MarketOrder buyOrder3;
 
+  /** Sets up some MarketOrders for the tests. */
+  @Before
+  public void setupOrdersBeforeEachTest() {
+    sellOrder1 =
+        new MarketOrderImpl(OrderType.SELL, ORDER_1_PRICE, ORDER_1_QUANTITY, ORDER_1_TOTAL);
+    sellOrder2 =
+        new MarketOrderImpl(OrderType.SELL, ORDER_2_PRICE, ORDER_2_QUANTITY, ORDER_2_TOTAL);
+    sellOrder3 =
+        new MarketOrderImpl(OrderType.SELL, ORDER_3_PRICE, ORDER_3_QUANTITY, ORDER_3_TOTAL);
 
-    @Before
-    public void setupOrdersBeforeEachTest() {
+    sellOrders = new ArrayList<>();
+    sellOrders.add(sellOrder1);
+    sellOrders.add(sellOrder2);
+    sellOrders.add(sellOrder3);
 
-        sellOrder1 = new MarketOrderImpl(OrderType.SELL, ORDER_1_PRICE, ORDER_1_QUANTITY, ORDER_1_TOTAL);
-        sellOrder2 = new MarketOrderImpl(OrderType.SELL, ORDER_2_PRICE, ORDER_2_QUANTITY, ORDER_2_TOTAL);
-        sellOrder3 = new MarketOrderImpl(OrderType.SELL, ORDER_3_PRICE, ORDER_3_QUANTITY, ORDER_3_TOTAL);
+    buyOrder1 = new MarketOrderImpl(OrderType.BUY, ORDER_1_PRICE, ORDER_1_QUANTITY, ORDER_1_TOTAL);
+    buyOrder2 = new MarketOrderImpl(OrderType.BUY, ORDER_2_PRICE, ORDER_2_QUANTITY, ORDER_2_TOTAL);
+    buyOrder3 = new MarketOrderImpl(OrderType.BUY, ORDER_3_PRICE, ORDER_3_QUANTITY, ORDER_3_TOTAL);
 
-        sellOrders = new ArrayList<>();
-        sellOrders.add(sellOrder1);
-        sellOrders.add(sellOrder2);
-        sellOrders.add(sellOrder3);
+    buyOrders = new ArrayList<>();
+    buyOrders.add(buyOrder1);
+    buyOrders.add(buyOrder2);
+    buyOrders.add(buyOrder3);
+  }
 
-        buyOrder1 = new MarketOrderImpl(OrderType.BUY, ORDER_1_PRICE, ORDER_1_QUANTITY, ORDER_1_TOTAL);
-        buyOrder2 = new MarketOrderImpl(OrderType.BUY, ORDER_2_PRICE, ORDER_2_QUANTITY, ORDER_2_TOTAL);
-        buyOrder3 = new MarketOrderImpl(OrderType.BUY, ORDER_3_PRICE, ORDER_3_QUANTITY, ORDER_3_TOTAL);
+  @Test
+  public void testMarketOrderBookIsInitialisedAsExpected() {
+    final MarketOrderBookImpl marketOrderBook =
+        new MarketOrderBookImpl(MARKET_ID, sellOrders, buyOrders);
+    assertEquals(MARKET_ID, marketOrderBook.getMarketId());
 
-        buyOrders = new ArrayList<>();
-        buyOrders.add(buyOrder1);
-        buyOrders.add(buyOrder2);
-        buyOrders.add(buyOrder3);
-    }
+    assertEquals(sellOrders, marketOrderBook.getSellOrders());
+    assertEquals(3, sellOrders.size());
+    assertTrue(sellOrders.contains(sellOrder1));
+    assertTrue(sellOrders.contains(sellOrder2));
+    assertTrue(sellOrders.contains(sellOrder3));
 
-    @Test
-    public void testMarketOrderBookIsInitialisedAsExpected() {
+    assertEquals(buyOrders, marketOrderBook.getBuyOrders());
+    assertEquals(3, buyOrders.size());
+    assertTrue(buyOrders.contains(buyOrder1));
+    assertTrue(buyOrders.contains(buyOrder2));
+    assertTrue(buyOrders.contains(buyOrder3));
+  }
 
-        final MarketOrderBookImpl marketOrderBook = new MarketOrderBookImpl(MARKET_ID, sellOrders, buyOrders);
-        assertEquals(MARKET_ID, marketOrderBook.getMarketId());
+  @Test
+  public void testSettersWorkAsExpected() {
+    final MarketOrderBookImpl marketOrderBook = new MarketOrderBookImpl(null, null, null);
+    assertNull(marketOrderBook.getMarketId());
+    assertNull(marketOrderBook.getSellOrders());
+    assertNull(marketOrderBook.getBuyOrders());
 
-        assertEquals(sellOrders, marketOrderBook.getSellOrders());
-        assertEquals(3, sellOrders.size());
-        assertTrue(sellOrders.contains(sellOrder1));
-        assertTrue(sellOrders.contains(sellOrder2));
-        assertTrue(sellOrders.contains(sellOrder3));
+    marketOrderBook.setMarketId(MARKET_ID);
+    assertEquals(MARKET_ID, marketOrderBook.getMarketId());
 
-        assertEquals(buyOrders, marketOrderBook.getBuyOrders());
-        assertEquals(3, buyOrders.size());
-        assertTrue(buyOrders.contains(buyOrder1));
-        assertTrue(buyOrders.contains(buyOrder2));
-        assertTrue(buyOrders.contains(buyOrder3));
-    }
+    marketOrderBook.setSellOrders(sellOrders);
+    assertEquals(sellOrders, marketOrderBook.getSellOrders());
 
-    @Test
-    public void testSettersWorkAsExpected() {
-
-        final MarketOrderBookImpl marketOrderBook = new MarketOrderBookImpl(null, null, null);
-        assertNull(marketOrderBook.getMarketId());
-        assertNull(marketOrderBook.getSellOrders());
-        assertNull(marketOrderBook.getBuyOrders());
-
-        marketOrderBook.setMarketId(MARKET_ID);
-        assertEquals(MARKET_ID, marketOrderBook.getMarketId());
-
-        marketOrderBook.setSellOrders(sellOrders);
-        assertEquals(sellOrders, marketOrderBook.getSellOrders());
-
-        marketOrderBook.setBuyOrders(buyOrders);
-        assertEquals(buyOrders, marketOrderBook.getBuyOrders());
-    }
+    marketOrderBook.setBuyOrders(buyOrders);
+    assertEquals(buyOrders, marketOrderBook.getBuyOrders());
+  }
 }

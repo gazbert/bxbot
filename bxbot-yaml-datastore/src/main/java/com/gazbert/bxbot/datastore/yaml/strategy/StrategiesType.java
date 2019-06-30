@@ -35,16 +35,19 @@ import java.util.List;
  */
 public class StrategiesType {
 
-    private List<StrategyConfig> strategies;
+  private List<StrategyConfig> strategies;
 
-    public List<StrategyConfig> getStrategies() {
-        if (strategies == null) {
-            strategies = new ArrayList<>();
-        }
-        return strategies;
+  /**
+   * Returns the Strategy configs.
+   */
+  public List<StrategyConfig> getStrategies() {
+    if (strategies == null) {
+      strategies = new ArrayList<>();
     }
+    return strategies;
+  }
 
-    public void setStrategies(List<StrategyConfig> strategies) {
-        this.strategies = strategies;
-    }
+  public void setStrategies(List<StrategyConfig> strategies) {
+    this.strategies = strategies;
+  }
 }

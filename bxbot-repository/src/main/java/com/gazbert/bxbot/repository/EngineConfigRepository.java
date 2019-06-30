@@ -20,6 +20,7 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+
 package com.gazbert.bxbot.repository;
 
 import com.gazbert.bxbot.domain.engine.EngineConfig;
@@ -31,7 +32,7 @@ import com.gazbert.bxbot.domain.engine.EngineConfig;
  */
 public interface EngineConfigRepository {
 
-    EngineConfig get();
+  EngineConfig get();
 
-    EngineConfig save(EngineConfig config);
+  EngineConfig save(EngineConfig config);
 }
