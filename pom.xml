@@ -44,7 +44,7 @@
         <maven>3.5.0</maven>
     </prerequisites>
     <properties>
-        <revision>0.12.1</revision>
+        <revision>0.12.2-SNAPSHOT</revision>
         <!-- spring-tx should be same version as Spring Boot's spring-core version -->
         <spring-tx.version>5.1.6.RELEASE</spring-tx.version>
         <powermock.version>2.0.2</powermock.version>
