@@ -111,7 +111,7 @@ import org.springframework.stereotype.Component;
  * Repository</a> to store your trade data.
  *
  * <p>The algorithm relies on config from the sample {project-root}/config/strategies.yaml and
- * {project-root}/config/markets.yaml files. You can pass additional config-items to your Strategy
+ * {project-root}/config/markets.yaml files. You can pass additional configItems to your Strategy
  * using the {project-root}/config/strategies.yaml file - you access it from the {@link
  * #init(TradingApi, Market, StrategyConfig)} method via the StrategyConfigImpl argument.
  *
