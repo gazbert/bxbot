@@ -315,8 +315,7 @@ public class ExampleScalpingStrategy implements TradingStrategy {
 
     } catch (ExchangeNetworkException e) {
       // Your timeout handling code could go here, e.g. you might want to check if the order
-      // actually
-      // made it to the exchange? And if not, resend it...
+      // actually made it to the exchange? And if not, resend it...
       // We are just going to log it and swallow it, and wait for next trade cycle.
       LOG.error(
           () ->
@@ -451,8 +450,8 @@ public class ExampleScalpingStrategy implements TradingStrategy {
       LOG.error(
           () ->
               market.getName()
-                  + " New Order to SELL base currency failed because Exchange threw network exception. "
-                  + "Waiting until next trade cycle. Last Order: "
+                  + " New Order to SELL base currency failed because Exchange threw network "
+                  + "exception. Waiting until next trade cycle. Last Order: "
                   + lastOrder,
           e);
 
@@ -571,14 +570,13 @@ public class ExampleScalpingStrategy implements TradingStrategy {
       }
     } catch (ExchangeNetworkException e) {
       // Your timeout handling code could go here, e.g. you might want to check if the order
-      // actually
-      // made it to the exchange? And if not, resend it...
+      // actually made it to the exchange? And if not, resend it...
       // We are just going to log it and swallow it, and wait for next trade cycle.
       LOG.error(
           () ->
               market.getName()
-                  + " New Order to BUY base currency failed because Exchange threw network exception. "
-                  + "Waiting until next trade cycle. Last Order: "
+                  + " New Order to BUY base currency failed because Exchange threw network "
+                  + "exception. Waiting until next trade cycle. Last Order: "
                   + lastOrder,
           e);
 
