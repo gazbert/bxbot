@@ -41,9 +41,6 @@
       <timezone>Europe/London</timezone>
     </developer>
   </developers>
-  <prerequisites>
-    <maven>3.5.0</maven>
-  </prerequisites>
   <properties>
     <revision>0.12.1-SNAPSHOT</revision>
     <!-- spring-tx should be same version as Spring Boot's spring-core version -->
@@ -451,6 +448,26 @@
               <goals>
                 <goal>check</goal>
               </goals>
+            </execution>
+          </executions>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-enforcer-plugin</artifactId>
+          <version>3.0.0-M2</version>
+          <executions>
+            <execution>
+              <id>enforce-maven</id>
+              <goals>
+                <goal>enforce</goal>
+              </goals>
+              <configuration>
+                <rules>
+                  <requireMavenVersion>
+                    <version>3.5.0</version>
+                  </requireMavenVersion>
+                </rules>
+              </configuration>
             </execution>
           </executions>
         </plugin>
