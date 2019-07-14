@@ -130,8 +130,8 @@ public class TestExampleScalpingStrategy {
     final String orderId = "4239407233";
     final BigDecimal amountOfUnitsToBuy = new BigDecimal("0.01375499");
     expect(market.getId()).andReturn(MARKET_ID);
-    expect(market.getCounterCurrency()).andReturn(COUNTER_CURRENCY).atLeastOnce();
-    expect(market.getBaseCurrency()).andReturn(BASE_CURRENCY).atLeastOnce();
+    expect(market.getCounterCurrency()).andReturn(COUNTER_CURRENCY).anyTimes();
+    expect(market.getBaseCurrency()).andReturn(BASE_CURRENCY).anyTimes();
     expect(tradingApi.createOrder(MARKET_ID, OrderType.BUY, amountOfUnitsToBuy, bidSpotPrice))
         .andReturn(orderId);
 
@@ -312,8 +312,8 @@ public class TestExampleScalpingStrategy {
     final String orderId = "4239407233";
     final BigDecimal amountOfUnitsToBuy = new BigDecimal("1333.33333333");
     expect(market.getId()).andReturn(MARKET_ID);
-    expect(market.getCounterCurrency()).andReturn(COUNTER_CURRENCY).atLeastOnce();
-    expect(market.getBaseCurrency()).andReturn(BASE_CURRENCY).atLeastOnce();
+    expect(market.getCounterCurrency()).andReturn(COUNTER_CURRENCY).anyTimes();
+    expect(market.getBaseCurrency()).andReturn(BASE_CURRENCY).anyTimes();
     expect(tradingApi.createOrder(MARKET_ID, OrderType.BUY, amountOfUnitsToBuy, bidSpotPrice))
         .andReturn(orderId);
 
@@ -428,8 +428,8 @@ public class TestExampleScalpingStrategy {
     // expect to send initial buy order to exchange and receive timeout exception
     final BigDecimal amountOfUnitsToBuy = new BigDecimal("0.01375499");
     expect(market.getId()).andReturn(MARKET_ID);
-    expect(market.getCounterCurrency()).andReturn(COUNTER_CURRENCY).atLeastOnce();
-    expect(market.getBaseCurrency()).andReturn(BASE_CURRENCY).atLeastOnce();
+    expect(market.getCounterCurrency()).andReturn(COUNTER_CURRENCY).anyTimes();
+    expect(market.getBaseCurrency()).andReturn(BASE_CURRENCY).anyTimes();
     expect(tradingApi.createOrder(MARKET_ID, OrderType.BUY, amountOfUnitsToBuy, bidSpotPrice))
         .andThrow(new ExchangeNetworkException("Timeout waiting for exchange!"));
 
@@ -482,8 +482,8 @@ public class TestExampleScalpingStrategy {
     // expect to send new buy order to exchange and receive timeout exception
     final BigDecimal amountOfUnitsToBuy = new BigDecimal("1333.33333333");
     expect(market.getId()).andReturn(MARKET_ID);
-    expect(market.getCounterCurrency()).andReturn(COUNTER_CURRENCY).atLeastOnce();
-    expect(market.getBaseCurrency()).andReturn(BASE_CURRENCY).atLeastOnce();
+    expect(market.getCounterCurrency()).andReturn(COUNTER_CURRENCY).anyTimes();
+    expect(market.getBaseCurrency()).andReturn(BASE_CURRENCY).anyTimes();
     expect(tradingApi.createOrder(MARKET_ID, OrderType.BUY, amountOfUnitsToBuy, bidSpotPrice))
         .andThrow(new ExchangeNetworkException("Timeout waiting for exchange!"));
 
