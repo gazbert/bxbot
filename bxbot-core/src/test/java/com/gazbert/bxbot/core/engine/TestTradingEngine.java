@@ -694,7 +694,7 @@ public class TestTradingEngine {
     expect(exchangeConfigService.getExchangeConfig()).andReturn(someExchangeConfig());
     expect(ConfigurableComponentFactory.createComponent(EXCHANGE_ADAPTER_IMPL_CLASS))
         .andReturn(exchangeAdapter);
-    expect(exchangeAdapter.getImplName()).andReturn(EXCHANGE_NAME);
+    expect(exchangeAdapter.getImplName()).andReturn(EXCHANGE_NAME).anyTimes();
     exchangeAdapter.init(anyObject(ExchangeConfig.class));
   }
 
@@ -704,7 +704,7 @@ public class TestTradingEngine {
     expect(exchangeConfigService.getExchangeConfig()).andReturn(exchangeConfig);
     expect(ConfigurableComponentFactory.createComponent(EXCHANGE_ADAPTER_IMPL_CLASS))
         .andReturn(exchangeAdapter);
-    expect(exchangeAdapter.getImplName()).andReturn(EXCHANGE_NAME).atLeastOnce();
+    expect(exchangeAdapter.getImplName()).andReturn(EXCHANGE_NAME).anyTimes();
     exchangeAdapter.init(anyObject(ExchangeConfig.class));
   }
 
