@@ -28,6 +28,7 @@ import static com.gazbert.bxbot.rest.api.v1.EndpointLocations.RUNTIME_ENDPOINT_B
 import com.gazbert.bxbot.domain.bot.BotStatus;
 import com.gazbert.bxbot.domain.engine.EngineConfig;
 import com.gazbert.bxbot.services.config.EngineConfigService;
+import com.gazbert.bxbot.services.runtime.BotStatusService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,10 +50,14 @@ public class BotStatusController {
 
   private static final Logger LOG = LogManager.getLogger();
   private static final String STATUS_RESOURCE_PATH = "/status";
+
+  private final BotStatusService botStatusService;
   private final EngineConfigService engineConfigService;
 
   @Autowired
-  public BotStatusController(EngineConfigService engineConfigService) {
+  public BotStatusController(
+      BotStatusService botStatusService, EngineConfigService engineConfigService) {
+    this.botStatusService = botStatusService;
     this.engineConfigService = engineConfigService;
   }
 
@@ -69,12 +74,12 @@ public class BotStatusController {
         () -> "GET " + STATUS_RESOURCE_PATH + " - getStatus() - caller: " + user.getUsername());
 
     final EngineConfig engineConfig = engineConfigService.getEngineConfig();
+    final String status = botStatusService.getStatus();
 
-    // WIP - Stubbed for now
     final BotStatus botStatus = new BotStatus();
     botStatus.setBotId(engineConfig.getBotId());
     botStatus.setDisplayName(engineConfig.getBotName());
-    botStatus.setStatus("running"); // use enum for defining states at some point
+    botStatus.setStatus(status);
 
     LOG.info(() -> "Response: " + botStatus);
     return botStatus;

@@ -35,6 +35,7 @@ import com.gazbert.bxbot.core.engine.TradingEngine;
 import com.gazbert.bxbot.core.mail.EmailAlerter;
 import com.gazbert.bxbot.domain.engine.EngineConfig;
 import com.gazbert.bxbot.services.config.EngineConfigService;
+import com.gazbert.bxbot.services.runtime.BotStatusService;
 import java.math.BigDecimal;
 import org.junit.Before;
 import org.junit.Test;
@@ -61,12 +62,13 @@ public class TestBotStatusController extends AbstractRuntimeControllerTest {
 
   private static final String BOT_ID = "avro-707_1";
   private static final String BOT_NAME = "Avro 707";
-  private static final String BOT_STATUS = "running";
+  private static final String BOT_STATUS = "UP";
 
   private static final String ENGINE_EMERGENCY_STOP_CURRENCY = "BTC";
   private static final BigDecimal ENGINE_EMERGENCY_STOP_BALANCE = new BigDecimal("0.9232320");
   private static final int ENGINE_TRADE_CYCLE_INTERVAL = 60;
 
+  @MockBean private BotStatusService botStatusService;
   @MockBean private EngineConfigService engineConfigService;
 
   // Need this even though not used in the test directly because Spring loads it on startup...
@@ -85,6 +87,7 @@ public class TestBotStatusController extends AbstractRuntimeControllerTest {
 
   @Test
   public void testGetBotStatus() throws Exception {
+    given(botStatusService.getStatus()).willReturn(BOT_STATUS);
     given(engineConfigService.getEngineConfig()).willReturn(someEngineConfig());
 
     mockMvc
