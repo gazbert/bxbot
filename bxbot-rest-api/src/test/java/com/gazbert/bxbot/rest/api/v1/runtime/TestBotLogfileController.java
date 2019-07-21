@@ -33,14 +33,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.gazbert.bxbot.core.engine.TradingEngine;
 import com.gazbert.bxbot.core.mail.EmailAlerter;
-import com.gazbert.bxbot.domain.engine.EngineConfig;
-import com.gazbert.bxbot.services.config.EngineConfigService;
-import com.gazbert.bxbot.services.runtime.BotStatusService;
-import java.math.BigDecimal;
+import com.gazbert.bxbot.services.runtime.BotLogfileService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.boot.actuate.logging.LogFileWebEndpoint;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.cloud.context.restart.RestartEndpoint;
@@ -50,27 +46,21 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 /**
- * Tests the Bot Status controller behaviour.
+ * Tests the Bot Logfile controller behaviour.
  *
  * @author gazbert
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @WebAppConfiguration
-public class TestBotStatusController extends AbstractRuntimeControllerTest {
+public class TestBotLogfileController extends AbstractRuntimeControllerTest {
 
-  private static final String STATUS_ENDPOINT_URI = RUNTIME_ENDPOINT_BASE_URI + "/status";
+  private static final String LOGFILE_ENDPOINT_URI = RUNTIME_ENDPOINT_BASE_URI + "/logfile";
 
-  private static final String BOT_ID = "avro-707_1";
-  private static final String BOT_NAME = "Avro 707";
-  private static final String BOT_STATUS = "UP";
+  private static final String LOGFILE =
+      "4981 [main] 2019-07-20 17:30:20,429 INFO  EngineConfigYamlRepository get() - Fetching EngineConfig...";
 
-  private static final String ENGINE_EMERGENCY_STOP_CURRENCY = "BTC";
-  private static final BigDecimal ENGINE_EMERGENCY_STOP_BALANCE = new BigDecimal("0.9232320");
-  private static final int ENGINE_TRADE_CYCLE_INTERVAL = 60;
-
-  @MockBean private BotStatusService botStatusService;
-  @MockBean private EngineConfigService engineConfigService;
+  @MockBean private BotLogfileService botLogfileService;
 
   // Need this even though not used in the test directly because Spring loads it on startup...
   @MockBean private TradingEngine tradingEngine;
@@ -81,39 +71,33 @@ public class TestBotStatusController extends AbstractRuntimeControllerTest {
   // Need this even though not used in the test directly because Spring loads it on startup...
   @MockBean private RestartEndpoint restartEndpoint;
 
-  // Need this even though not used in the test directly because Spring loads it on startup...
-  @MockBean private LogFileWebEndpoint logFileWebEndpoint;
-
   @Before
   public void setupBeforeEachTest() {
     mockMvc = MockMvcBuilders.webAppContextSetup(ctx).addFilter(springSecurityFilterChain).build();
   }
 
   @Test
-  public void testGetBotStatus() throws Exception {
-    given(botStatusService.getStatus()).willReturn(BOT_STATUS);
-    given(engineConfigService.getEngineConfig()).willReturn(someEngineConfig());
+  public void testGetBotLogfile() throws Exception {
+    given(botLogfileService.getLogfile()).willReturn(LOGFILE);
 
     mockMvc
         .perform(
-            get(STATUS_ENDPOINT_URI)
+            get(LOGFILE_ENDPOINT_URI)
                 .header(
                     "Authorization",
                     buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD)))
         .andDo(print())
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.botId").value(BOT_ID))
-        .andExpect(jsonPath("$.displayName").value(BOT_NAME))
-        .andExpect(jsonPath("$.status").value(BOT_STATUS));
+        .andExpect(jsonPath("$").value(LOGFILE));
 
-    verify(engineConfigService, times(1)).getEngineConfig();
+    verify(botLogfileService, times(1)).getLogfile();
   }
 
   @Test
-  public void testGetBotStatusWhenUnauthorizedWithBadCredentials() throws Exception {
+  public void testGetBotLogfileWhenUnauthorizedWithBadCredentials() throws Exception {
     mockMvc
         .perform(
-            get(STATUS_ENDPOINT_URI)
+            get(LOGFILE_ENDPOINT_URI)
                 .header(
                     "Authorization",
                     buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, INVALID_USER_PASSWORD))
@@ -122,28 +106,14 @@ public class TestBotStatusController extends AbstractRuntimeControllerTest {
   }
 
   @Test
-  public void testGetBotStatusWhenUnauthorizedWithMissingCredentials() throws Exception {
+  public void testGetBotLogfileWhenUnauthorizedWithMissingCredentials() throws Exception {
     mockMvc
         .perform(
-            get(STATUS_ENDPOINT_URI)
+            get(LOGFILE_ENDPOINT_URI)
                 .header(
                     "Authorization",
                     buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, INVALID_USER_PASSWORD))
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isUnauthorized());
-  }
-
-  // --------------------------------------------------------------------------
-  // Private utils
-  // --------------------------------------------------------------------------
-
-  private static EngineConfig someEngineConfig() {
-    final EngineConfig engineConfig = new EngineConfig();
-    engineConfig.setBotId(BOT_ID);
-    engineConfig.setBotName(BOT_NAME);
-    engineConfig.setEmergencyStopCurrency(ENGINE_EMERGENCY_STOP_CURRENCY);
-    engineConfig.setEmergencyStopBalance(ENGINE_EMERGENCY_STOP_BALANCE);
-    engineConfig.setTradeCycleInterval(ENGINE_TRADE_CYCLE_INTERVAL);
-    return engineConfig;
   }
 }

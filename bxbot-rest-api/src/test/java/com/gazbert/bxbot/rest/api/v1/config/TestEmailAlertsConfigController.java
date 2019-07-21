@@ -37,9 +37,11 @@ import com.gazbert.bxbot.core.engine.TradingEngine;
 import com.gazbert.bxbot.domain.emailalerts.EmailAlertsConfig;
 import com.gazbert.bxbot.domain.emailalerts.SmtpConfig;
 import com.gazbert.bxbot.services.config.EmailAlertsConfigService;
+import com.gazbert.bxbot.services.runtime.BotLogfileService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.boot.actuate.logging.LogFileWebEndpoint;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.cloud.context.restart.RestartEndpoint;
@@ -76,6 +78,9 @@ public class TestEmailAlertsConfigController extends AbstractConfigControllerTes
 
   // Need this even though not used in the test directly because Spring loads it on startup...
   @MockBean private RestartEndpoint restartEndpoint;
+
+  // Need this even though not used in the test directly because Spring loads it on startup...
+  @MockBean private LogFileWebEndpoint logFileWebEndpoint;
 
   @Before
   public void setupBeforeEachTest() {

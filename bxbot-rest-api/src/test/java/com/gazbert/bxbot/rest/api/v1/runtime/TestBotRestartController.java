@@ -38,6 +38,7 @@ import com.gazbert.bxbot.services.runtime.BotRestartService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.boot.actuate.logging.LogFileWebEndpoint;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.cloud.context.restart.RestartEndpoint;
@@ -69,6 +70,9 @@ public class TestBotRestartController extends AbstractRuntimeControllerTest {
 
   // Need this even though not used in the test directly because Spring loads it on startup...
   @MockBean private RestartEndpoint restartEndpoint;
+
+  // Need this even though not used in the test directly because Spring loads it on startup...
+  @MockBean private LogFileWebEndpoint logFileWebEndpoint;
 
   @Before
   public void setupBeforeEachTest() {
