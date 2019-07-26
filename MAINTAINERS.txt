@@ -1,3 +1,0 @@
-Maintainers:
-
-gazbert   https://github.com/gazbert
