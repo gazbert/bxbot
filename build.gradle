@@ -175,11 +175,7 @@ task buildZipDist(type: Zip, dependsOn: build) {
         }
 
         into('') {
-            from 'third_party_licenses.txt'
-        }
-
-        into('') {
-            from 'MAINTAINERS.txt'
+            from '3rd-party-licenses.md'
         }
 
         into('') {
@@ -229,7 +225,7 @@ task buildTarGzipDist(type: Tar, dependsOn: build) {
         }
 
         into('') {
-            from 'third_party_licenses.txt'
+            from '3rd-party-licenses.md'
         }
 
         into('') {
