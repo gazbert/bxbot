@@ -229,10 +229,6 @@ task buildTarGzipDist(type: Tar, dependsOn: build) {
         }
 
         into('') {
-            from 'MAINTAINERS.txt'
-        }
-
-        into('') {
             from 'bxbot.sh'
         }
 
