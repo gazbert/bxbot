@@ -24,6 +24,7 @@
 package com.gazbert.bxbot.services.runtime;
 
 import java.io.IOException;
+import org.springframework.core.io.Resource;
 
 /**
  * The Bot logfile service.
@@ -32,11 +33,11 @@ import java.io.IOException;
  */
 public interface BotLogfileService {
 
-  /**
-   * Max logfile fetch size is set to 5 MB. If the file fetch size is larger than this, it will be
-   * truncated.
-   */
-  static final int MAX_LOGFILE_FETCH_SIZE_IN_BYTES = 1024 * 1024 * 5;
+  Resource getLogfileAsResource(int maxFileSize) throws IOException;
 
-  String getLogfile() throws IOException;
+  String getLogfile(int maxLines) throws IOException;
+
+  String getLogfileTail(int maxLines) throws IOException;
+
+  String getLogfileHead(int maxLines) throws IOException;
 }

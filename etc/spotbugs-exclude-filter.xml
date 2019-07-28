@@ -110,9 +110,21 @@
         <Bug pattern="DM_CONVERT_CASE"/>
     </Match>
 
-    <!-- Don't bother with EI - expose internal representation (e.g. getter/setter for Date) -->
-    <!--<Match>-->
-    <!--<Bug code="EI,EI2"/>-->
-    <!--</Match>-->
+
+    <!-- False positive generated in BotLogfileServiceImpl:
+
+         [ERROR] Nullcheck of stream at line 108 of value previously dereferenced in
+         com.gazbert.bxbot.services.runtime.impl.BotLogfileServiceImpl.tailFile(Path, int)
+         [com.gazbert.bxbot.services.runtime.impl.BotLogfileServiceImpl,
+         com.gazbert.bxbot.services.runtime.impl.BotLogfileServiceImpl] At
+         BotLogfileServiceImpl.java:[line 108]Redundant null check at
+         BotLogfileServiceImpl.java:[line 110] RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE
+
+         See: https://github.com/spotbugs/spotbugs/issues/756
+    -->
+    <Match>
+        <Class name="com.gazbert.bxbot.services.runtime.impl.BotLogfileServiceImpl"/>
+        <Bug pattern="RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE"/>
+    </Match>
 
 </FindBugsFilter>
