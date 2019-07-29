@@ -31,6 +31,7 @@ import com.gazbert.bxbot.core.config.market.MarketImpl;
 import com.gazbert.bxbot.core.config.strategy.StrategyConfigItems;
 import com.gazbert.bxbot.core.mail.EmailAlerter;
 import com.gazbert.bxbot.core.util.ConfigurableComponentFactory;
+import com.gazbert.bxbot.core.util.EmailAlertMessageBuilder;
 import com.gazbert.bxbot.domain.engine.EngineConfig;
 import com.gazbert.bxbot.domain.exchange.ExchangeConfig;
 import com.gazbert.bxbot.domain.exchange.NetworkConfig;
@@ -47,12 +48,9 @@ import com.gazbert.bxbot.trading.api.BalanceInfo;
 import com.gazbert.bxbot.trading.api.ExchangeNetworkException;
 import com.gazbert.bxbot.trading.api.Market;
 import com.gazbert.bxbot.trading.api.TradingApiException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -95,9 +93,6 @@ public class TradingEngine {
   private static final String CRITICAL_EMAIL_ALERT_SUBJECT = "CRITICAL Alert message from BX-bot";
   private static final String DETAILS_ERROR_MSG_LABEL = " Details: ";
   private static final String CAUSE_ERROR_MSG_LABEL = " Cause: ";
-  private static final String NEWLINE = System.getProperty("line.separator");
-  private static final String HORIZONTAL_RULE =
-      "--------------------------------------------------" + NEWLINE;
   private static final String DECIMAL_FORMAT_PATTERN = "#.########";
 
   private static final Object IS_RUNNING_MONITOR = new Object();
@@ -193,7 +188,6 @@ public class TradingEngine {
           break;
         }
 
-        // Execute the Trading Strategies
         for (final TradingStrategy tradingStrategy : tradingStrategiesToExecute) {
           LOG.info(
               () ->
@@ -280,13 +274,16 @@ public class TradingEngine {
     LOG.fatal(() -> fatalErrorMessage, e);
     emailAlerter.sendMessage(
         CRITICAL_EMAIL_ALERT_SUBJECT,
-        buildCriticalEmailAlertMsgContent(
+        EmailAlertMessageBuilder.buildCriticalMsgContent(
             fatalErrorMessage
                 + DETAILS_ERROR_MSG_LABEL
                 + e.getMessage()
                 + CAUSE_ERROR_MSG_LABEL
                 + e.getCause(),
-            e));
+            e,
+            botId,
+            botName,
+            exchangeAdapter.getClass().getName()));
     keepAlive = false;
   }
 
@@ -299,13 +296,16 @@ public class TradingEngine {
     LOG.fatal(() -> fatalErrorMsg, e);
     emailAlerter.sendMessage(
         CRITICAL_EMAIL_ALERT_SUBJECT,
-        buildCriticalEmailAlertMsgContent(
+        EmailAlertMessageBuilder.buildCriticalMsgContent(
             fatalErrorMsg
                 + DETAILS_ERROR_MSG_LABEL
                 + e.getMessage()
                 + CAUSE_ERROR_MSG_LABEL
                 + e.getCause(),
-            e));
+            e,
+            botId,
+            botName,
+            exchangeAdapter.getClass().getName()));
     keepAlive = false;
   }
 
@@ -319,13 +319,16 @@ public class TradingEngine {
     LOG.fatal(() -> fatalErrorMsg, e);
     emailAlerter.sendMessage(
         CRITICAL_EMAIL_ALERT_SUBJECT,
-        buildCriticalEmailAlertMsgContent(
+        EmailAlertMessageBuilder.buildCriticalMsgContent(
             fatalErrorMsg
                 + DETAILS_ERROR_MSG_LABEL
                 + e.getMessage()
                 + CAUSE_ERROR_MSG_LABEL
                 + e.getCause(),
-            e));
+            e,
+            botId,
+            botName,
+            exchangeAdapter.getClass().getName()));
     keepAlive = false;
   }
 
@@ -402,10 +405,13 @@ public class TradingEngine {
                 + new DecimalFormat(DECIMAL_FORMAT_PATTERN).format(emergencyStopBalance)
                 + "] "
                 + emergencyStopCurrency;
+
         LOG.fatal(() -> balanceBlownErrorMsg);
+
         emailAlerter.sendMessage(
             CRITICAL_EMAIL_ALERT_SUBJECT,
-            buildCriticalEmailAlertMsgContent(balanceBlownErrorMsg, null));
+            EmailAlertMessageBuilder.buildCriticalMsgContent(
+                balanceBlownErrorMsg, null, botId, botName, exchangeAdapter.getClass().getName()));
       } else {
 
         isEmergencyStopLimitBreached = false;
@@ -413,56 +419,6 @@ public class TradingEngine {
       }
     }
     return isEmergencyStopLimitBreached;
-  }
-
-  private String buildCriticalEmailAlertMsgContent(String errorDetails, Throwable exception) {
-    final StringBuilder msgContent =
-        new StringBuilder("A CRITICAL error event has occurred on BX-bot.");
-    msgContent.append(NEWLINE).append(NEWLINE);
-
-    msgContent.append(HORIZONTAL_RULE);
-    msgContent.append("Bot Id / Name:");
-    msgContent.append(NEWLINE).append(NEWLINE);
-    msgContent.append(botId);
-    msgContent.append(" / ");
-    msgContent.append(botName);
-    msgContent.append(NEWLINE).append(NEWLINE);
-
-    msgContent.append(HORIZONTAL_RULE);
-    msgContent.append("Exchange Adapter:");
-    msgContent.append(NEWLINE).append(NEWLINE);
-    msgContent.append(exchangeAdapter.getClass().getName());
-    msgContent.append(NEWLINE).append(NEWLINE);
-
-    msgContent.append(HORIZONTAL_RULE);
-    msgContent.append("Event Time:");
-    msgContent.append(NEWLINE).append(NEWLINE);
-    msgContent.append(new Date());
-    msgContent.append(NEWLINE).append(NEWLINE);
-
-    msgContent.append(HORIZONTAL_RULE);
-    msgContent.append("Event Details:");
-    msgContent.append(NEWLINE).append(NEWLINE);
-    msgContent.append(errorDetails);
-    msgContent.append(NEWLINE).append(NEWLINE);
-
-    msgContent.append(HORIZONTAL_RULE);
-    msgContent.append("Action Taken:");
-    msgContent.append(NEWLINE).append(NEWLINE);
-    msgContent.append("The bot will shut down NOW! Check the bot logs for more information.");
-    msgContent.append(NEWLINE).append(NEWLINE);
-
-    if (exception != null) {
-      msgContent.append(HORIZONTAL_RULE);
-      msgContent.append("Stacktrace:");
-      msgContent.append(NEWLINE).append(NEWLINE);
-      final StringWriter stringWriter = new StringWriter();
-      final PrintWriter printWriter = new PrintWriter(stringWriter);
-      exception.printStackTrace(printWriter);
-      msgContent.append(stringWriter.toString());
-    }
-
-    return msgContent.toString();
   }
 
   // ------------------------------------------------------------------------
