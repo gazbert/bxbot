@@ -31,7 +31,7 @@ import com.gazbert.bxbot.core.config.market.MarketImpl;
 import com.gazbert.bxbot.core.config.strategy.StrategyConfigItems;
 import com.gazbert.bxbot.core.mail.EmailAlerter;
 import com.gazbert.bxbot.core.util.ConfigurableComponentFactory;
-import com.gazbert.bxbot.core.util.EmailAlertMessageBuilder;
+import com.gazbert.bxbot.core.mail.EmailAlertMessageBuilder;
 import com.gazbert.bxbot.domain.engine.EngineConfig;
 import com.gazbert.bxbot.domain.exchange.ExchangeConfig;
 import com.gazbert.bxbot.domain.exchange.NetworkConfig;
@@ -122,7 +122,7 @@ public class TradingEngine {
 
   private ApplicationContext springContext;
 
-  /** Creates the TradingEngine. */
+  /** Creates the Trading   Engine. */
   @Autowired
   public TradingEngine(
       ExchangeConfigService exchangeConfigService,

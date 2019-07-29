@@ -21,10 +21,11 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.core.util;
+package com.gazbert.bxbot.core.mail;
 
 import static org.junit.Assert.assertTrue;
 
+import com.gazbert.bxbot.core.mail.EmailAlertMessageBuilder;
 import org.junit.Test;
 
 /**

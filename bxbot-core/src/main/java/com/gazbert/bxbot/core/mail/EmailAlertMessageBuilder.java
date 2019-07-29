@@ -21,7 +21,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.core.util;
+package com.gazbert.bxbot.core.mail;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
