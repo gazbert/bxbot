@@ -23,18 +23,15 @@
 
 package com.gazbert.bxbot.core.engine;
 
-import com.gazbert.bxbot.core.config.exchange.AuthenticationConfigImpl;
+import com.gazbert.bxbot.core.config.exchange.ExchangeAdapterConfigBuilder;
 import com.gazbert.bxbot.core.config.exchange.ExchangeConfigImpl;
-import com.gazbert.bxbot.core.config.exchange.NetworkConfigImpl;
-import com.gazbert.bxbot.core.config.exchange.OtherConfigImpl;
 import com.gazbert.bxbot.core.config.market.MarketImpl;
 import com.gazbert.bxbot.core.config.strategy.StrategyConfigItems;
+import com.gazbert.bxbot.core.mail.EmailAlertMessageBuilder;
 import com.gazbert.bxbot.core.mail.EmailAlerter;
 import com.gazbert.bxbot.core.util.ConfigurableComponentFactory;
-import com.gazbert.bxbot.core.mail.EmailAlertMessageBuilder;
 import com.gazbert.bxbot.domain.engine.EngineConfig;
 import com.gazbert.bxbot.domain.exchange.ExchangeConfig;
-import com.gazbert.bxbot.domain.exchange.NetworkConfig;
 import com.gazbert.bxbot.domain.market.MarketConfig;
 import com.gazbert.bxbot.domain.strategy.StrategyConfig;
 import com.gazbert.bxbot.exchange.api.ExchangeAdapter;
@@ -122,7 +119,7 @@ public class TradingEngine {
 
   private ApplicationContext springContext;
 
-  /** Creates the Trading   Engine. */
+  /** Creates the Trading Engine. */
   @Autowired
   public TradingEngine(
       ExchangeConfigService exchangeConfigService,
@@ -130,8 +127,6 @@ public class TradingEngine {
       StrategyConfigService strategyConfigService,
       MarketConfigService marketConfigService,
       EmailAlerter emailAlerter) {
-
-    LOG.info(() -> "Initialising Trading Engine...");
 
     this.exchangeConfigService = exchangeConfigService;
     this.engineConfigService = engineConfigService;
@@ -159,14 +154,14 @@ public class TradingEngine {
     // store this so we can shutdown the engine later
     engineThread = Thread.currentThread();
 
-    initConfig();
+    init();
     runMainControlLoop();
   }
 
-  private void initConfig() {
-    LOG.info(() -> "Initialising BX-bot config...");
+  private void init() {
+    LOG.info(() -> "Initialising Trading Engine...");
     // the sequence order of these methods is significant - don't change it.
-    loadExchangeAdapterConfig();
+    initializeExchangeAdapter();
     loadEngineConfig();
     loadTradingStrategyConfig();
     loadMarketConfigAndInitialiseTradingStrategies();
@@ -421,93 +416,17 @@ public class TradingEngine {
     return isEmergencyStopLimitBreached;
   }
 
-  // ------------------------------------------------------------------------
-  // Config loading methods
-  // ------------------------------------------------------------------------
+  private void initializeExchangeAdapter() {
+    final ExchangeConfig exchangeConfig = exchangeConfigService.getExchangeConfig();
+    LOG.info(() -> "Fetched Exchange config from repository: " + exchangeConfig);
 
-  private void loadExchangeAdapterConfig() {
-    final ExchangeConfig domainExchangeConfig = exchangeConfigService.getExchangeConfig();
-    LOG.info(() -> "Fetched Exchange config from repository: " + domainExchangeConfig);
-
-    exchangeAdapter =
-        ConfigurableComponentFactory.createComponent(domainExchangeConfig.getAdapter());
+    exchangeAdapter = ConfigurableComponentFactory.createComponent(exchangeConfig.getAdapter());
     LOG.info(
         () -> "Trading Engine will use Exchange Adapter for: " + exchangeAdapter.getImplName());
 
-    final ExchangeConfigImpl adapterExchangeConfig = new ExchangeConfigImpl();
-
-    // Fetch optional network config
-    final NetworkConfig networkConfig = domainExchangeConfig.getNetworkConfig();
-    if (networkConfig != null) {
-      final NetworkConfigImpl adapterNetworkConfig = new NetworkConfigImpl();
-      adapterNetworkConfig.setConnectionTimeout(networkConfig.getConnectionTimeout());
-
-      // Grab optional non-fatal error codes
-      final List<Integer> nonFatalErrorCodes = networkConfig.getNonFatalErrorCodes();
-      if (nonFatalErrorCodes != null) {
-        adapterNetworkConfig.setNonFatalErrorCodes(nonFatalErrorCodes);
-      } else {
-        LOG.info(
-            () ->
-                "No (optional) NetworkConfiguration NonFatalErrorCodes have been set for "
-                    + "Exchange Adapter: "
-                    + exchangeAdapter.getImplName());
-      }
-
-      // Grab optional non-fatal error messages
-      final List<String> nonFatalErrorMessages = networkConfig.getNonFatalErrorMessages();
-      if (nonFatalErrorMessages != null) {
-        adapterNetworkConfig.setNonFatalErrorMessages(nonFatalErrorMessages);
-      } else {
-        LOG.info(
-            () ->
-                "No (optional) NetworkConfiguration NonFatalErrorMessages have been set for "
-                    + "Exchange Adapter: "
-                    + exchangeAdapter.getImplName());
-      }
-
-      adapterExchangeConfig.setNetworkConfig(adapterNetworkConfig);
-      LOG.info(() -> "NetworkConfiguration has been set: " + adapterNetworkConfig);
-
-    } else {
-      LOG.info(
-          () ->
-              "No (optional) NetworkConfiguration has been set for Exchange Adapter: "
-                  + exchangeAdapter.getImplName());
-    }
-
-    // Fetch optional authentication config
-    final Map<String, String> authenticationConfig = domainExchangeConfig.getAuthenticationConfig();
-    if (authenticationConfig != null) {
-      final AuthenticationConfigImpl adapterAuthenticationConfig = new AuthenticationConfigImpl();
-      adapterAuthenticationConfig.setItems(authenticationConfig);
-      adapterExchangeConfig.setAuthenticationConfig(adapterAuthenticationConfig);
-
-      // We don't log the creds!
-      LOG.info(() -> "AuthenticationConfiguration has been set successfully.");
-
-    } else {
-      LOG.info(
-          () ->
-              "No (optional) AuthenticationConfiguration has been set for Exchange Adapter: "
-                  + exchangeAdapter.getImplName());
-    }
-
-    // Fetch optional config
-    final Map<String, String> otherConfig = domainExchangeConfig.getOtherConfig();
-    if (otherConfig != null) {
-      final OtherConfigImpl adapterOtherConfig = new OtherConfigImpl();
-      adapterOtherConfig.setItems(otherConfig);
-      adapterExchangeConfig.setOtherConfig(adapterOtherConfig);
-      LOG.info(() -> "Other Exchange Adapter config has been set: " + adapterOtherConfig);
-    } else {
-      LOG.info(
-          () ->
-              "No Other config has been set for Exchange Adapter: "
-                  + exchangeAdapter.getImplName());
-    }
-
-    exchangeAdapter.init(adapterExchangeConfig);
+    final ExchangeConfigImpl exchangeAdapterConfig =
+        ExchangeAdapterConfigBuilder.buildConfig(exchangeConfig);
+    exchangeAdapter.init(exchangeAdapterConfig);
   }
 
   private void loadEngineConfig() {
