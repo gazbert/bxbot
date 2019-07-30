@@ -25,7 +25,6 @@ package com.gazbert.bxbot.core.mail;
 
 import static org.junit.Assert.assertTrue;
 
-import com.gazbert.bxbot.core.mail.EmailAlertMessageBuilder;
 import org.junit.Test;
 
 /**
@@ -35,6 +34,8 @@ import org.junit.Test;
  */
 public class TestEmailAlertMessageBuilder {
 
+  private static final String NEWLINE = System.getProperty("line.separator");
+
   /*
    * Tough one to test with timestamp + stacktrace, so best (lazy!) effort here.
    */
@@ -42,36 +43,53 @@ public class TestEmailAlertMessageBuilder {
   public void testBuildingCriticalMsgContent() {
 
     final String expectedStartOfMsg =
-        "A CRITICAL error event has occurred on BX-bot.\n"
-            + "\n"
-            + "--------------------------------------------------\n"
-            + "Bot Id / Name:\n"
-            + "\n"
-            + "seti-alpha-3 / The Pioneer\n"
-            + "\n"
-            + "--------------------------------------------------\n"
-            + "Exchange Adapter:\n"
-            + "\n"
-            + "Bitstamp\n"
-            + "\n"
-            + "--------------------------------------------------\n"
-            + "Event Time:\n"
-            + "\n";
+        "A CRITICAL error event has occurred on BX-bot."
+            + NEWLINE
+            + NEWLINE
+            + "--------------------------------------------------"
+            + NEWLINE
+            + "Bot Id / Name:"
+            + NEWLINE
+            + NEWLINE
+            + "seti-alpha-3 / The Pioneer"
+            + NEWLINE
+            + NEWLINE
+            + "--------------------------------------------------"
+            + NEWLINE
+            + "Exchange Adapter:"
+            + NEWLINE
+            + NEWLINE
+            + "Bitstamp"
+            + NEWLINE
+            + NEWLINE
+            + "--------------------------------------------------"
+            + NEWLINE
+            + "Event Time:"
+            + NEWLINE
+            + NEWLINE;
 
     final String expectedMiddleOfMsg =
-        "\n"
-            + "--------------------------------------------------\n"
-            + "Event Details:\n"
-            + "\n"
-            + "The trouble with Tribbles...\n"
-            + "\n"
-            + "--------------------------------------------------\n"
-            + "Action Taken:\n"
-            + "\n"
-            + "The bot will shut down NOW! Check the bot logs for more information.\n"
-            + "\n"
-            + "--------------------------------------------------\n"
-            + "Stacktrace:\n";
+        NEWLINE
+            + "--------------------------------------------------"
+            + NEWLINE
+            + "Event Details:"
+            + NEWLINE
+            + NEWLINE
+            + "The trouble with Tribbles..."
+            + NEWLINE
+            + NEWLINE
+            + "--------------------------------------------------"
+            + NEWLINE
+            + "Action Taken:"
+            + NEWLINE
+            + NEWLINE
+            + "The bot will shut down NOW! Check the bot logs for more information."
+            + NEWLINE
+            + NEWLINE
+            + "--------------------------------------------------"
+            + NEWLINE
+            + "Stacktrace:"
+            + NEWLINE;
 
     final String errorMsg = "The trouble with Tribbles...";
     final Exception exception = new RuntimeException(errorMsg);
