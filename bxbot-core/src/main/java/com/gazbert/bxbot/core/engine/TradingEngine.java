@@ -27,6 +27,7 @@ import com.gazbert.bxbot.core.config.exchange.ExchangeApiConfigBuilder;
 import com.gazbert.bxbot.core.config.exchange.ExchangeConfigImpl;
 import com.gazbert.bxbot.core.config.market.MarketImpl;
 import com.gazbert.bxbot.core.config.strategy.StrategyConfigItems;
+import com.gazbert.bxbot.core.config.strategy.TradingStrategyFactory;
 import com.gazbert.bxbot.core.mail.EmailAlertMessageBuilder;
 import com.gazbert.bxbot.core.mail.EmailAlerter;
 import com.gazbert.bxbot.core.util.ConfigurableComponentFactory;
@@ -56,7 +57,6 @@ import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Component;
 
@@ -97,8 +97,8 @@ public class TradingEngine {
   private volatile boolean keepAlive = true;
   private boolean isRunning = false;
 
-  private final List<TradingStrategy> tradingStrategies = new ArrayList<>();
   private final EmailAlerter emailAlerter;
+  private List<TradingStrategy> tradingStrategies;
   private EngineConfig engineConfig;
   private ExchangeAdapter exchangeAdapter;
 
@@ -106,8 +106,6 @@ public class TradingEngine {
   private final EngineConfigService engineConfigService;
   private final StrategyConfigService strategyConfigService;
   private final MarketConfigService marketConfigService;
-
-  private ApplicationContext springContext;
 
   /** Creates the Trading Engine. */
   @Autowired
@@ -123,11 +121,6 @@ public class TradingEngine {
     this.strategyConfigService = strategyConfigService;
     this.marketConfigService = marketConfigService;
     this.emailAlerter = emailAlerter;
-  }
-
-  @Autowired
-  public void setSpringContext(ApplicationContext springContext) {
-    this.springContext = springContext;
   }
 
   /** Starts the bot. */
@@ -153,7 +146,7 @@ public class TradingEngine {
     // the sequence order of these methods is significant - don't change it.
     exchangeAdapter = loadExchangeAdapter();
     engineConfig = loadEngineConfig();
-    loadMarketConfigAndInitialiseTradingStrategies();
+    tradingStrategies = loadAndInitialiseTradingStrategies();
   }
 
   /*
@@ -441,21 +434,16 @@ public class TradingEngine {
     return engineConfig;
   }
 
-  private Map<String, StrategyConfig> loadTradingStrategyConfigs() {
+  private List<TradingStrategy> loadAndInitialiseTradingStrategies() {
     final List<StrategyConfig> strategies = strategyConfigService.getAllStrategyConfig();
-    LOG.debug(() -> "Fetched Strategy config from repository: " + strategies);
-    final Map<String, StrategyConfig> tradingStrategyConfigs = new HashMap<>();
-    for (final StrategyConfig strategy : strategies) {
-      tradingStrategyConfigs.put(strategy.getId(), strategy);
-      LOG.info(() -> "Registered Trading Strategy with Trading Engine - ID: " + strategy.getId());
-    }
-    return tradingStrategyConfigs;
-  }
+    LOG.info(() -> "Fetched Strategy config from repository: " + strategies);
 
-  private void loadMarketConfigAndInitialiseTradingStrategies() {
     final List<MarketConfig> markets = marketConfigService.getAllMarketConfig();
     LOG.info(() -> "Fetched Markets config from repository: " + markets);
-    // Set used only as crude mechanism for checking for duplicate Markets
+
+    final List<TradingStrategy> tradingStrategies = new ArrayList<>();
+
+    // Set logic only as crude mechanism for checking for duplicate Markets.
     final Set<Market> loadedMarkets = new HashSet<>();
 
     // Load em up and create the Strategies
@@ -481,7 +469,12 @@ public class TradingEngine {
       final String strategyToUse = market.getTradingStrategyId();
       LOG.info(() -> "Market Trading Strategy Id: " + strategyToUse);
 
-      final Map<String, StrategyConfig> tradingStrategyConfigs = loadTradingStrategyConfigs();
+      final Map<String, StrategyConfig> tradingStrategyConfigs = new HashMap<>();
+      for (final StrategyConfig strategy : strategies) {
+        tradingStrategyConfigs.put(strategy.getId(), strategy);
+        LOG.info(() -> "Registered Trading Strategy with Trading Engine - ID: " + strategy.getId());
+      }
+
       if (tradingStrategyConfigs.containsKey(strategyToUse)) {
         final StrategyConfig tradingStrategy = tradingStrategyConfigs.get(strategyToUse);
 
@@ -503,7 +496,8 @@ public class TradingEngine {
          * Load the Trading Strategy impl, instantiate it, set its config, and store in the cached
          * Trading Strategy execution list.
          */
-        TradingStrategy strategyImpl = obtainTradingStrategyInstance(tradingStrategy);
+        final TradingStrategy strategyImpl =
+            TradingStrategyFactory.getInstance().createTradingStrategy(tradingStrategy);
         strategyImpl.init(exchangeAdapter, tradingMarket, tradingStrategyConfig);
 
         LOG.info(
@@ -530,31 +524,6 @@ public class TradingEngine {
         throw new IllegalArgumentException(errorMsg);
       }
     }
-    LOG.info(() -> "Loaded and set Market configuration successfully!");
-  }
-
-  private TradingStrategy obtainTradingStrategyInstance(StrategyConfig tradingStrategy) {
-    final String tradingStrategyClassname = tradingStrategy.getClassName();
-    final String tradingStrategyBeanName = tradingStrategy.getBeanName();
-
-    TradingStrategy strategyImpl = null;
-    if (tradingStrategyBeanName != null) {
-      // if beanName is configured, try get the bean first
-      try {
-        strategyImpl = (TradingStrategy) springContext.getBean(tradingStrategyBeanName);
-
-      } catch (NullPointerException e) {
-        final String errorMsg =
-            "Failed to obtain bean [" + tradingStrategyBeanName + "] from spring context";
-        LOG.error(() -> errorMsg);
-        throw new IllegalArgumentException(errorMsg);
-      }
-    }
-
-    if (strategyImpl == null) {
-      // if beanName not configured use className
-      strategyImpl = ConfigurableComponentFactory.createComponent(tradingStrategyClassname);
-    }
-    return strategyImpl;
+    return tradingStrategies;
   }
 }
