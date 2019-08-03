@@ -38,8 +38,10 @@ public final class EmailAlertMessageBuilder {
   private static final String HORIZONTAL_RULE =
       "--------------------------------------------------" + NEWLINE;
 
-  private EmailAlertMessageBuilder() {}
+  private EmailAlertMessageBuilder() {
+  }
 
+  /** Builds critical message content. */
   public static String buildCriticalMsgContent(
       String errorDetails, Throwable exception, String botId, String botName, String adapterName) {
 

@@ -23,7 +23,7 @@
 
 package com.gazbert.bxbot.core.engine;
 
-import com.gazbert.bxbot.core.config.exchange.ExchangeAdapterConfigBuilder;
+import com.gazbert.bxbot.core.config.exchange.ExchangeApiConfigBuilder;
 import com.gazbert.bxbot.core.config.exchange.ExchangeConfigImpl;
 import com.gazbert.bxbot.core.config.market.MarketImpl;
 import com.gazbert.bxbot.core.config.strategy.StrategyConfigItems;
@@ -424,9 +424,9 @@ public class TradingEngine {
     LOG.info(
         () -> "Trading Engine will use Exchange Adapter for: " + exchangeAdapter.getImplName());
 
-    final ExchangeConfigImpl exchangeAdapterConfig =
-        ExchangeAdapterConfigBuilder.buildConfig(exchangeConfig);
-    exchangeAdapter.init(exchangeAdapterConfig);
+    final ExchangeConfigImpl exchangeApiConfig =
+        ExchangeApiConfigBuilder.buildConfig(exchangeConfig);
+    exchangeAdapter.init(exchangeApiConfig);
   }
 
   private void loadEngineConfig() {
