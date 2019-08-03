@@ -25,9 +25,7 @@ package com.gazbert.bxbot.core.engine;
 
 import com.gazbert.bxbot.core.config.exchange.ExchangeApiConfigBuilder;
 import com.gazbert.bxbot.core.config.exchange.ExchangeConfigImpl;
-import com.gazbert.bxbot.core.config.market.MarketImpl;
-import com.gazbert.bxbot.core.config.strategy.StrategyConfigItems;
-import com.gazbert.bxbot.core.config.strategy.TradingStrategyFactory;
+import com.gazbert.bxbot.core.config.strategy.TradingStrategiesBuilder;
 import com.gazbert.bxbot.core.mail.EmailAlertMessageBuilder;
 import com.gazbert.bxbot.core.mail.EmailAlerter;
 import com.gazbert.bxbot.core.util.ConfigurableComponentFactory;
@@ -44,16 +42,11 @@ import com.gazbert.bxbot.strategy.api.StrategyException;
 import com.gazbert.bxbot.strategy.api.TradingStrategy;
 import com.gazbert.bxbot.trading.api.BalanceInfo;
 import com.gazbert.bxbot.trading.api.ExchangeNetworkException;
-import com.gazbert.bxbot.trading.api.Market;
 import com.gazbert.bxbot.trading.api.TradingApiException;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -433,90 +426,8 @@ public class TradingEngine {
   private List<TradingStrategy> loadTradingStrategies() {
     final List<StrategyConfig> strategies = strategyConfigService.getAllStrategyConfig();
     LOG.info(() -> "Fetched Strategy config from repository: " + strategies);
-
     final List<MarketConfig> markets = marketConfigService.getAllMarketConfig();
     LOG.info(() -> "Fetched Markets config from repository: " + markets);
-
-    final List<TradingStrategy> tradingStrategiesToExecute = new ArrayList<>();
-
-    // Set logic only as crude mechanism for checking for duplicate Markets.
-    final Set<Market> loadedMarkets = new HashSet<>();
-
-    // Load em up and create the Strategies
-    for (final MarketConfig market : markets) {
-      final String marketName = market.getName();
-      if (!market.isEnabled()) {
-        LOG.info(
-            () -> marketName + " market is NOT enabled for trading - skipping to next market...");
-        continue;
-      }
-
-      final Market tradingMarket =
-          new MarketImpl(
-              marketName, market.getId(), market.getBaseCurrency(), market.getCounterCurrency());
-      final boolean wasAdded = loadedMarkets.add(tradingMarket);
-      if (!wasAdded) {
-        final String errorMsg = "Found duplicate Market! Market details: " + market;
-        LOG.fatal(() -> errorMsg);
-        throw new IllegalArgumentException(errorMsg);
-      }
-
-      // Get the strategy to use for this Market
-      final String strategyToUse = market.getTradingStrategyId();
-      LOG.info(() -> "Market Trading Strategy Id: " + strategyToUse);
-
-      final Map<String, StrategyConfig> tradingStrategyConfigs = new HashMap<>();
-      for (final StrategyConfig strategy : strategies) {
-        tradingStrategyConfigs.put(strategy.getId(), strategy);
-        LOG.info(() -> "Registered Trading Strategy with Trading Engine - ID: " + strategy.getId());
-      }
-
-      if (tradingStrategyConfigs.containsKey(strategyToUse)) {
-        final StrategyConfig tradingStrategy = tradingStrategyConfigs.get(strategyToUse);
-        final StrategyConfigItems tradingStrategyConfig = new StrategyConfigItems();
-        final Map<String, String> configItems = tradingStrategy.getConfigItems();
-        if (configItems != null) {
-          tradingStrategyConfig.setItems(configItems);
-        } else {
-          LOG.info(
-              () ->
-                  "No (optional) configuration has been set for Trading Strategy: "
-                      + strategyToUse);
-        }
-        LOG.info(() -> "StrategyConfigImpl (optional): " + tradingStrategyConfig);
-
-        /*
-         * Load the Trading Strategy impl, instantiate it, set its config, and store in the
-         * Trading Strategy execution list.
-         */
-        final TradingStrategy strategyImpl =
-            TradingStrategyFactory.getInstance().createTradingStrategy(tradingStrategy);
-        strategyImpl.init(exchangeAdapter, tradingMarket, tradingStrategyConfig);
-
-        LOG.info(
-            () ->
-                "Initialized trading strategy successfully. Name: ["
-                    + tradingStrategy.getName()
-                    + "] Class: "
-                    + tradingStrategy.getClassName());
-
-        tradingStrategiesToExecute.add(strategyImpl);
-      } else {
-
-        // Game over. Config integrity blown - we can't find strat.
-        final String errorMsg =
-            "Failed to find matching Strategy for Market "
-                + market
-                + " - The Strategy "
-                + "["
-                + strategyToUse
-                + "] cannot be found in the "
-                + " Strategy Descriptions map: "
-                + tradingStrategyConfigs;
-        LOG.error(() -> errorMsg);
-        throw new IllegalArgumentException(errorMsg);
-      }
-    }
-    return tradingStrategiesToExecute;
+    return TradingStrategiesBuilder.buildStrategies(strategies, markets, exchangeAdapter);
   }
 }
