@@ -146,7 +146,7 @@ public class TradingEngine {
     // the sequence order of these methods is significant - don't change it.
     exchangeAdapter = loadExchangeAdapter();
     engineConfig = loadEngineConfig();
-    tradingStrategies = loadAndInitialiseTradingStrategies();
+    tradingStrategies = loadTradingStrategies();
   }
 
   /*
@@ -409,10 +409,6 @@ public class TradingEngine {
     return isEmergencyStopLimitBreached;
   }
 
-  // --------------------------------------------------------------------------
-  // Config loading
-  // --------------------------------------------------------------------------
-
   private ExchangeAdapter loadExchangeAdapter() {
     final ExchangeConfig exchangeConfig = exchangeConfigService.getExchangeConfig();
     LOG.info(() -> "Fetched Exchange config from repository: " + exchangeConfig);
@@ -434,14 +430,14 @@ public class TradingEngine {
     return engineConfig;
   }
 
-  private List<TradingStrategy> loadAndInitialiseTradingStrategies() {
+  private List<TradingStrategy> loadTradingStrategies() {
     final List<StrategyConfig> strategies = strategyConfigService.getAllStrategyConfig();
     LOG.info(() -> "Fetched Strategy config from repository: " + strategies);
 
     final List<MarketConfig> markets = marketConfigService.getAllMarketConfig();
     LOG.info(() -> "Fetched Markets config from repository: " + markets);
 
-    final List<TradingStrategy> tradingStrategies = new ArrayList<>();
+    final List<TradingStrategy> tradingStrategiesToExecute = new ArrayList<>();
 
     // Set logic only as crude mechanism for checking for duplicate Markets.
     final Set<Market> loadedMarkets = new HashSet<>();
@@ -477,8 +473,6 @@ public class TradingEngine {
 
       if (tradingStrategyConfigs.containsKey(strategyToUse)) {
         final StrategyConfig tradingStrategy = tradingStrategyConfigs.get(strategyToUse);
-
-        // Grab optional config for the Trading Strategy
         final StrategyConfigItems tradingStrategyConfig = new StrategyConfigItems();
         final Map<String, String> configItems = tradingStrategy.getConfigItems();
         if (configItems != null) {
@@ -489,11 +483,10 @@ public class TradingEngine {
                   "No (optional) configuration has been set for Trading Strategy: "
                       + strategyToUse);
         }
-
         LOG.info(() -> "StrategyConfigImpl (optional): " + tradingStrategyConfig);
 
         /*
-         * Load the Trading Strategy impl, instantiate it, set its config, and store in the cached
+         * Load the Trading Strategy impl, instantiate it, set its config, and store in the
          * Trading Strategy execution list.
          */
         final TradingStrategy strategyImpl =
@@ -507,7 +500,7 @@ public class TradingEngine {
                     + "] Class: "
                     + tradingStrategy.getClassName());
 
-        tradingStrategies.add(strategyImpl);
+        tradingStrategiesToExecute.add(strategyImpl);
       } else {
 
         // Game over. Config integrity blown - we can't find strat.
@@ -524,6 +517,6 @@ public class TradingEngine {
         throw new IllegalArgumentException(errorMsg);
       }
     }
-    return tradingStrategies;
+    return tradingStrategiesToExecute;
   }
 }
