@@ -701,7 +701,7 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter
           }
           queryString.append(param.getKey());
           queryString.append("=");
-          queryString.append(URLEncoder.encode(param.getValue(), StandardCharsets.UTF_8.toString()));
+          queryString.append(URLEncoder.encode(param.getValue(),StandardCharsets.UTF_8.toString()));
         }
 
         requestHeaders.put("Content-Type", "application/x-www-form-urlencoded");

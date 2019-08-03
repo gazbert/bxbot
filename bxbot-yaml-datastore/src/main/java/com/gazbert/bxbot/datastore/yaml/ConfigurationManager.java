@@ -90,7 +90,8 @@ public final class ConfigurationManager {
     LOG.info(() -> "Saving configuration for [" + configClass + "] to: " + yamlConfigFile + " ...");
 
     try (final FileOutputStream fileOutputStream = new FileOutputStream(yamlConfigFile);
-         final PrintWriter writer = new PrintWriter(new OutputStreamWriter(fileOutputStream, StandardCharsets.UTF_8), true)
+         final PrintWriter writer = new PrintWriter(
+                 new OutputStreamWriter(fileOutputStream, StandardCharsets.UTF_8), true)
     ) {
 
       // Skip null fields and order the YAML fields
