@@ -26,6 +26,7 @@ package com.gazbert.bxbot.datastore.yaml;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
@@ -89,8 +90,8 @@ public final class ConfigurationManager {
     LOG.info(() -> "Saving configuration for [" + configClass + "] to: " + yamlConfigFile + " ...");
 
     try (final FileOutputStream fileOutputStream = new FileOutputStream(yamlConfigFile);
-        final PrintWriter writer =
-            new PrintWriter(fileOutputStream, true, StandardCharsets.UTF_8)) {
+         final PrintWriter writer = new PrintWriter(new OutputStreamWriter(fileOutputStream, StandardCharsets.UTF_8), true)
+    ) {
 
       // Skip null fields and order the YAML fields
       final Representer representer = new SkipNullFieldRepresenter();

@@ -45,6 +45,8 @@ import com.google.common.base.MoreObjects;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.SerializedName;
+
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.MalformedURLException;
@@ -699,7 +701,7 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter
           }
           queryString.append(param.getKey());
           queryString.append("=");
-          queryString.append(URLEncoder.encode(param.getValue(), StandardCharsets.UTF_8));
+          queryString.append(URLEncoder.encode(param.getValue(), StandardCharsets.UTF_8.toString()));
         }
 
         requestHeaders.put("Content-Type", "application/x-www-form-urlencoded");
@@ -708,7 +710,7 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter
       final URL url = new URL(PUBLIC_API_BASE_URL + apiMethod + queryString);
       return makeNetworkRequest(url, "GET", null, requestHeaders);
 
-    } catch (MalformedURLException e) {
+    } catch (MalformedURLException | UnsupportedEncodingException e) {
       final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
       LOG.error(errorMsg, e);
       throw new TradingApiException(errorMsg, e);
@@ -781,7 +783,7 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter
         }
         payload.append(param.getKey());
         payload.append("=");
-        payload.append(URLEncoder.encode(param.getValue(), StandardCharsets.UTF_8));
+        payload.append(URLEncoder.encode(param.getValue(), StandardCharsets.UTF_8.toString()));
       }
       LOG.debug(() -> "Using following URL encoded POST payload for API call: " + payload);
 
@@ -791,7 +793,7 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter
       final URL url = new URL(AUTHENTICATED_API_URL + apiMethod);
       return makeNetworkRequest(url, "POST", payload.toString(), requestHeaders);
 
-    } catch (MalformedURLException e) {
+    } catch (MalformedURLException | UnsupportedEncodingException e) {
       final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
       LOG.error(errorMsg, e);
       throw new TradingApiException(errorMsg, e);

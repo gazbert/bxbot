@@ -48,6 +48,8 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.google.gson.annotations.SerializedName;
+
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
@@ -809,7 +811,7 @@ public class BitstampExchangeAdapter extends AbstractExchangeAdapter implements 
         }
         postData.append(param.getKey());
         postData.append("=");
-        postData.append(URLEncoder.encode(param.getValue(), StandardCharsets.UTF_8));
+        postData.append(URLEncoder.encode(param.getValue(), StandardCharsets.UTF_8.toString()));
       }
 
       // Request headers required by Exchange
@@ -820,7 +822,7 @@ public class BitstampExchangeAdapter extends AbstractExchangeAdapter implements 
       final URL url = new URL(API_BASE_URL + apiMethod + "/");
       return makeNetworkRequest(url, "POST", postData.toString(), requestHeaders);
 
-    } catch (MalformedURLException e) {
+    } catch (MalformedURLException | UnsupportedEncodingException e) {
       final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
       LOG.error(errorMsg, e);
       throw new TradingApiException(errorMsg, e);
