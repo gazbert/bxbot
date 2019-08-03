@@ -97,11 +97,9 @@ public class TradingEngine {
   private volatile boolean keepAlive = true;
   private boolean isRunning = false;
 
-  private final Map<String, StrategyConfig> strategyDescriptions = new HashMap<>();
-  private final List<TradingStrategy> tradingStrategiesToExecute = new ArrayList<>();
-
-  private EngineConfig engineConfig;
+  private final List<TradingStrategy> tradingStrategies = new ArrayList<>();
   private final EmailAlerter emailAlerter;
+  private EngineConfig engineConfig;
   private ExchangeAdapter exchangeAdapter;
 
   private final ExchangeConfigService exchangeConfigService;
@@ -155,7 +153,6 @@ public class TradingEngine {
     // the sequence order of these methods is significant - don't change it.
     exchangeAdapter = loadExchangeAdapter();
     engineConfig = loadEngineConfig();
-    loadTradingStrategyConfig();
     loadMarketConfigAndInitialiseTradingStrategies();
   }
 
@@ -175,7 +172,7 @@ public class TradingEngine {
           break;
         }
 
-        for (final TradingStrategy tradingStrategy : tradingStrategiesToExecute) {
+        for (final TradingStrategy tradingStrategy : tradingStrategies) {
           LOG.info(
               () ->
                   "Executing Trading Strategy ---> " + tradingStrategy.getClass().getSimpleName());
@@ -419,6 +416,10 @@ public class TradingEngine {
     return isEmergencyStopLimitBreached;
   }
 
+  // --------------------------------------------------------------------------
+  // Config loading
+  // --------------------------------------------------------------------------
+
   private ExchangeAdapter loadExchangeAdapter() {
     final ExchangeConfig exchangeConfig = exchangeConfigService.getExchangeConfig();
     LOG.info(() -> "Fetched Exchange config from repository: " + exchangeConfig);
@@ -440,13 +441,15 @@ public class TradingEngine {
     return engineConfig;
   }
 
-  private void loadTradingStrategyConfig() {
+  private Map<String, StrategyConfig> loadTradingStrategyConfigs() {
     final List<StrategyConfig> strategies = strategyConfigService.getAllStrategyConfig();
     LOG.debug(() -> "Fetched Strategy config from repository: " + strategies);
+    final Map<String, StrategyConfig> tradingStrategyConfigs = new HashMap<>();
     for (final StrategyConfig strategy : strategies) {
-      strategyDescriptions.put(strategy.getId(), strategy);
+      tradingStrategyConfigs.put(strategy.getId(), strategy);
       LOG.info(() -> "Registered Trading Strategy with Trading Engine - ID: " + strategy.getId());
     }
+    return tradingStrategyConfigs;
   }
 
   private void loadMarketConfigAndInitialiseTradingStrategies() {
@@ -478,8 +481,9 @@ public class TradingEngine {
       final String strategyToUse = market.getTradingStrategyId();
       LOG.info(() -> "Market Trading Strategy Id: " + strategyToUse);
 
-      if (strategyDescriptions.containsKey(strategyToUse)) {
-        final StrategyConfig tradingStrategy = strategyDescriptions.get(strategyToUse);
+      final Map<String, StrategyConfig> tradingStrategyConfigs = loadTradingStrategyConfigs();
+      if (tradingStrategyConfigs.containsKey(strategyToUse)) {
+        final StrategyConfig tradingStrategy = tradingStrategyConfigs.get(strategyToUse);
 
         // Grab optional config for the Trading Strategy
         final StrategyConfigItems tradingStrategyConfig = new StrategyConfigItems();
@@ -509,7 +513,7 @@ public class TradingEngine {
                     + "] Class: "
                     + tradingStrategy.getClassName());
 
-        tradingStrategiesToExecute.add(strategyImpl);
+        tradingStrategies.add(strategyImpl);
       } else {
 
         // Game over. Config integrity blown - we can't find strat.
@@ -521,7 +525,7 @@ public class TradingEngine {
                 + strategyToUse
                 + "] cannot be found in the "
                 + " Strategy Descriptions map: "
-                + strategyDescriptions;
+                + tradingStrategyConfigs;
         LOG.error(() -> errorMsg);
         throw new IllegalArgumentException(errorMsg);
       }
