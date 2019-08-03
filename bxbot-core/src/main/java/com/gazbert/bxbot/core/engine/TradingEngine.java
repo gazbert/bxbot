@@ -93,22 +93,14 @@ public class TradingEngine {
   private static final String DECIMAL_FORMAT_PATTERN = "#.########";
 
   private static final Object IS_RUNNING_MONITOR = new Object();
-
-  private int tradeExecutionInterval;
+  private Thread engineThread;
   private volatile boolean keepAlive = true;
   private boolean isRunning = false;
-
-  private Thread engineThread;
 
   private final Map<String, StrategyConfig> strategyDescriptions = new HashMap<>();
   private final List<TradingStrategy> tradingStrategiesToExecute = new ArrayList<>();
 
-  private String emergencyStopCurrency;
-  private BigDecimal emergencyStopBalance;
-
-  private String botId;
-  private String botName;
-
+  private EngineConfig engineConfig;
   private final EmailAlerter emailAlerter;
   private ExchangeAdapter exchangeAdapter;
 
@@ -161,8 +153,8 @@ public class TradingEngine {
   private void init() {
     LOG.info(() -> "Initialising Trading Engine...");
     // the sequence order of these methods is significant - don't change it.
-    initializeExchangeAdapter();
-    loadEngineConfig();
+    exchangeAdapter = loadExchangeAdapter();
+    engineConfig = loadEngineConfig();
     loadTradingStrategyConfig();
     loadMarketConfigAndInitialiseTradingStrategies();
   }
@@ -173,7 +165,7 @@ public class TradingEngine {
    * The code fails hard and fast if an unexpected occurs. Network exceptions *should* recover.
    */
   private void runMainControlLoop() {
-    LOG.info(() -> "Starting Trading Engine for " + botId + " ...");
+    LOG.info(() -> "Starting Trading Engine for " + engineConfig.getBotId() + " ...");
     while (keepAlive) {
       try {
         LOG.info(() -> "*** Starting next trade cycle... ***");
@@ -207,7 +199,7 @@ public class TradingEngine {
     }
 
     // We've broken out of the control loop due to error or admin shutdown request
-    LOG.fatal(() -> "BX-bot " + botId + " is shutting down NOW!");
+    LOG.fatal(() -> "BX-bot " + engineConfig.getBotId() + " is shutting down NOW!");
     synchronized (IS_RUNNING_MONITOR) {
       isRunning = false;
     }
@@ -231,9 +223,13 @@ public class TradingEngine {
   }
 
   private void sleepUntilNextTradingCycle() {
-    LOG.info(() -> "*** Sleeping " + tradeExecutionInterval + "s til next trade cycle... ***");
+    LOG.info(
+        () ->
+            "*** Sleeping "
+                + engineConfig.getTradeCycleInterval()
+                + "s til next trade cycle... ***");
     try {
-      Thread.sleep(tradeExecutionInterval * 1000L);
+      Thread.sleep(engineConfig.getTradeCycleInterval() * 1000L);
     } catch (InterruptedException e) {
       LOG.warn(() -> "Control Loop thread interrupted when sleeping before next trade cycle");
       Thread.currentThread().interrupt();
@@ -248,12 +244,12 @@ public class TradingEngine {
     final String errorMessage =
         "A network error has occurred in Exchange Adapter! "
             + "BX-bot will try again in "
-            + tradeExecutionInterval
+            + engineConfig.getTradeCycleInterval()
             + "s...";
     LOG.error(() -> errorMessage, e);
 
     try {
-      Thread.sleep(tradeExecutionInterval * 1000L);
+      Thread.sleep(engineConfig.getTradeCycleInterval() * 1000L);
     } catch (InterruptedException e1) {
       LOG.warn(() -> "Control Loop thread interrupted when sleeping before next trade cycle");
       Thread.currentThread().interrupt();
@@ -276,8 +272,8 @@ public class TradingEngine {
                 + CAUSE_ERROR_MSG_LABEL
                 + e.getCause(),
             e,
-            botId,
-            botName,
+            engineConfig.getBotId(),
+            engineConfig.getBotName(),
             exchangeAdapter.getClass().getName()));
     keepAlive = false;
   }
@@ -298,8 +294,8 @@ public class TradingEngine {
                 + CAUSE_ERROR_MSG_LABEL
                 + e.getCause(),
             e,
-            botId,
-            botName,
+            engineConfig.getBotId(),
+            engineConfig.getBotName(),
             exchangeAdapter.getClass().getName()));
     keepAlive = false;
   }
@@ -321,8 +317,8 @@ public class TradingEngine {
                 + CAUSE_ERROR_MSG_LABEL
                 + e.getCause(),
             e,
-            botId,
-            botName,
+            engineConfig.getBotId(),
+            engineConfig.getBotName(),
             exchangeAdapter.getClass().getName()));
     keepAlive = false;
   }
@@ -343,7 +339,7 @@ public class TradingEngine {
       throws TradingApiException, ExchangeNetworkException {
     boolean isEmergencyStopLimitBreached = true;
 
-    if (emergencyStopBalance.compareTo(BigDecimal.ZERO) == 0) {
+    if (engineConfig.getEmergencyStopBalance().compareTo(BigDecimal.ZERO) == 0) {
       return false;
     }
 
@@ -362,11 +358,12 @@ public class TradingEngine {
     }
 
     final Map<String, BigDecimal> balancesAvailable = balanceInfo.getBalancesAvailable();
-    final BigDecimal currentBalance = balancesAvailable.get(emergencyStopCurrency);
+    final BigDecimal currentBalance =
+        balancesAvailable.get(engineConfig.getEmergencyStopCurrency());
     if (currentBalance == null) {
       final String errorMsg =
           "Emergency stop check: Failed to get current Emergency Stop Currency balance as '"
-              + emergencyStopCurrency
+              + engineConfig.getEmergencyStopCurrency()
               + "' key into Balances map "
               + "returned null. Balances returned: "
               + balancesAvailable;
@@ -379,34 +376,40 @@ public class TradingEngine {
               "Emergency Stop Currency balance available on exchange is ["
                   + new DecimalFormat(DECIMAL_FORMAT_PATTERN).format(currentBalance)
                   + "] "
-                  + emergencyStopCurrency);
+                  + engineConfig.getEmergencyStopCurrency());
 
       LOG.info(
           () ->
               "Balance that will stop ALL trading across ALL markets is ["
-                  + new DecimalFormat(DECIMAL_FORMAT_PATTERN).format(emergencyStopBalance)
+                  + new DecimalFormat(DECIMAL_FORMAT_PATTERN)
+                      .format(engineConfig.getEmergencyStopBalance())
                   + "] "
-                  + emergencyStopCurrency);
+                  + engineConfig.getEmergencyStopCurrency());
 
-      if (currentBalance.compareTo(emergencyStopBalance) < 0) {
+      if (currentBalance.compareTo(engineConfig.getEmergencyStopBalance()) < 0) {
         final String balanceBlownErrorMsg =
             "EMERGENCY STOP triggered! - Current Emergency Stop Currency ["
-                + emergencyStopCurrency
+                + engineConfig.getEmergencyStopCurrency()
                 + "] wallet "
                 + "balance ["
                 + new DecimalFormat(DECIMAL_FORMAT_PATTERN).format(currentBalance)
                 + "] on exchange "
                 + "is lower than configured Emergency Stop balance ["
-                + new DecimalFormat(DECIMAL_FORMAT_PATTERN).format(emergencyStopBalance)
+                + new DecimalFormat(DECIMAL_FORMAT_PATTERN)
+                    .format(engineConfig.getEmergencyStopBalance())
                 + "] "
-                + emergencyStopCurrency;
+                + engineConfig.getEmergencyStopCurrency();
 
         LOG.fatal(() -> balanceBlownErrorMsg);
 
         emailAlerter.sendMessage(
             CRITICAL_EMAIL_ALERT_SUBJECT,
             EmailAlertMessageBuilder.buildCriticalMsgContent(
-                balanceBlownErrorMsg, null, botId, botName, exchangeAdapter.getClass().getName()));
+                balanceBlownErrorMsg,
+                null,
+                engineConfig.getBotId(),
+                engineConfig.getBotName(),
+                exchangeAdapter.getClass().getName()));
       } else {
 
         isEmergencyStopLimitBreached = false;
@@ -416,27 +419,25 @@ public class TradingEngine {
     return isEmergencyStopLimitBreached;
   }
 
-  private void initializeExchangeAdapter() {
+  private ExchangeAdapter loadExchangeAdapter() {
     final ExchangeConfig exchangeConfig = exchangeConfigService.getExchangeConfig();
     LOG.info(() -> "Fetched Exchange config from repository: " + exchangeConfig);
 
-    exchangeAdapter = ConfigurableComponentFactory.createComponent(exchangeConfig.getAdapter());
+    final ExchangeAdapter exchangeAdapter =
+        ConfigurableComponentFactory.createComponent(exchangeConfig.getAdapter());
     LOG.info(
         () -> "Trading Engine will use Exchange Adapter for: " + exchangeAdapter.getImplName());
 
     final ExchangeConfigImpl exchangeApiConfig =
         ExchangeApiConfigBuilder.buildConfig(exchangeConfig);
     exchangeAdapter.init(exchangeApiConfig);
+    return exchangeAdapter;
   }
 
-  private void loadEngineConfig() {
+  private EngineConfig loadEngineConfig() {
     final EngineConfig engineConfig = engineConfigService.getEngineConfig();
     LOG.info(() -> "Fetched Engine config from repository: " + engineConfig);
-    botId = engineConfig.getBotId();
-    botName = engineConfig.getBotName();
-    tradeExecutionInterval = engineConfig.getTradeCycleInterval();
-    emergencyStopCurrency = engineConfig.getEmergencyStopCurrency();
-    emergencyStopBalance = engineConfig.getEmergencyStopBalance();
+    return engineConfig;
   }
 
   private void loadTradingStrategyConfig() {
