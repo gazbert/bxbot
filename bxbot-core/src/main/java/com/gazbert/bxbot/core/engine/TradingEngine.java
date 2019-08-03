@@ -406,21 +406,21 @@ public class TradingEngine {
     final ExchangeConfig exchangeConfig = exchangeConfigService.getExchangeConfig();
     LOG.info(() -> "Fetched Exchange config from repository: " + exchangeConfig);
 
-    final ExchangeAdapter exchangeAdapter =
+    final ExchangeAdapter adapter =
         ConfigurableComponentFactory.createComponent(exchangeConfig.getAdapter());
     LOG.info(
-        () -> "Trading Engine will use Exchange Adapter for: " + exchangeAdapter.getImplName());
+        () -> "Trading Engine will use Exchange Adapter for: " + adapter.getImplName());
 
     final ExchangeConfigImpl exchangeApiConfig =
         ExchangeApiConfigBuilder.buildConfig(exchangeConfig);
-    exchangeAdapter.init(exchangeApiConfig);
-    return exchangeAdapter;
+    adapter.init(exchangeApiConfig);
+    return adapter;
   }
 
   private EngineConfig loadEngineConfig() {
-    final EngineConfig engineConfig = engineConfigService.getEngineConfig();
-    LOG.info(() -> "Fetched Engine config from repository: " + engineConfig);
-    return engineConfig;
+    final EngineConfig loadedEngineConfig = engineConfigService.getEngineConfig();
+    LOG.info(() -> "Fetched Engine config from repository: " + loadedEngineConfig);
+    return loadedEngineConfig;
   }
 
   private List<TradingStrategy> loadTradingStrategies() {

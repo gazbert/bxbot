@@ -56,7 +56,7 @@ public final class TradingStrategyFactory {
   }
 
   /** Creates the Trading Strategy instance. */
-  public TradingStrategy createTradingStrategy(StrategyConfig tradingStrategy) {
+  TradingStrategy createTradingStrategy(StrategyConfig tradingStrategy) {
     final String tradingStrategyClassname = tradingStrategy.getClassName();
     final String tradingStrategyBeanName = tradingStrategy.getBeanName();
 
