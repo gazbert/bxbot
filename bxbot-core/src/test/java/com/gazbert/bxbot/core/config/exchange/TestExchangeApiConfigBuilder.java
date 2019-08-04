@@ -85,9 +85,9 @@ public class TestExchangeApiConfigBuilder {
   }
 
   @Test
-  public void testBuildingConfigWithoutOptionalConfig() {
+  public void testBuildingConfigWithMandatoryConfigOnly() {
     final com.gazbert.bxbot.exchange.api.ExchangeConfig exchangeApiConfig =
-        ExchangeApiConfigBuilder.buildConfig(buildExchangeConfigWithoutOptionalStuff());
+        ExchangeApiConfigBuilder.buildConfig(buildExchangeConfigWithMandatoryConfigOnly());
 
     assertThat(exchangeApiConfig.getExchangeName()).isEqualTo(EXCHANGE_NAME);
     assertThat(exchangeApiConfig.getExchangeAdapter()).isEqualTo(EXCHANGE_ADAPTER);
@@ -95,6 +95,30 @@ public class TestExchangeApiConfigBuilder {
     assertThat(exchangeApiConfig.getAuthenticationConfig()).isNull();
     assertThat(exchangeApiConfig.getNetworkConfig()).isNull();
     assertThat(exchangeApiConfig.getOtherConfig()).isNull();
+  }
+
+  @Test
+  public void testBuildingConfigWithoutOptionalNetworkConfig() {
+    final com.gazbert.bxbot.exchange.api.ExchangeConfig exchangeApiConfig =
+        ExchangeApiConfigBuilder.buildConfig(buildExchangeConfigWithoutOptionalNetworkConfig());
+
+    assertThat(exchangeApiConfig.getExchangeName()).isEqualTo(EXCHANGE_NAME);
+    assertThat(exchangeApiConfig.getExchangeAdapter()).isEqualTo(EXCHANGE_ADAPTER);
+
+    assertThat(exchangeApiConfig.getAuthenticationConfig().getItem(API_KEY_CONFIG_ITEM_KEY))
+        .isEqualTo(API_KEY_CONFIG_ITEM_VALUE);
+    assertThat(exchangeApiConfig.getAuthenticationConfig().getItem(SECRET_CONFIG_ITEM_KEY))
+        .isEqualTo(SECRET_FEE_CONFIG_ITEM_VALUE);
+
+    assertThat(exchangeApiConfig.getNetworkConfig().getConnectionTimeout())
+        .isEqualTo(CONNECTION_TIMEOUT);
+    assertThat(exchangeApiConfig.getNetworkConfig().getNonFatalErrorCodes()).isEmpty();
+    assertThat(exchangeApiConfig.getNetworkConfig().getNonFatalErrorMessages()).isEmpty();
+
+    assertThat(exchangeApiConfig.getOtherConfig().getItem(BUY_FEE_CONFIG_ITEM_KEY))
+        .isEqualTo(BUY_FEE_CONFIG_ITEM_VALUE);
+    assertThat(exchangeApiConfig.getOtherConfig().getItem(SELL_FEE_CONFIG_ITEM_KEY))
+        .isEqualTo(SELL_FEE_CONFIG_ITEM_VALUE);
   }
 
   private static Map<String, String> buildAuthenticationConfig() {
@@ -109,6 +133,12 @@ public class TestExchangeApiConfigBuilder {
     networkConfig.setConnectionTimeout(CONNECTION_TIMEOUT);
     networkConfig.setNonFatalErrorCodes(NON_FATAL_ERROR_CODES);
     networkConfig.setNonFatalErrorMessages(NON_FATAL_ERROR_MESSAGES);
+    return networkConfig;
+  }
+
+  private static NetworkConfig buildNetworkConfigWithoutErrorCodesAndMessages() {
+    final NetworkConfig networkConfig = new NetworkConfig();
+    networkConfig.setConnectionTimeout(CONNECTION_TIMEOUT);
     return networkConfig;
   }
 
@@ -129,10 +159,20 @@ public class TestExchangeApiConfigBuilder {
     return exchangeConfig;
   }
 
-  private static ExchangeConfig buildExchangeConfigWithoutOptionalStuff() {
+  private static ExchangeConfig buildExchangeConfigWithMandatoryConfigOnly() {
     final ExchangeConfig exchangeConfig = new ExchangeConfig();
     exchangeConfig.setName(EXCHANGE_NAME);
     exchangeConfig.setAdapter(EXCHANGE_ADAPTER);
+    return exchangeConfig;
+  }
+
+  private static ExchangeConfig buildExchangeConfigWithoutOptionalNetworkConfig() {
+    final ExchangeConfig exchangeConfig = new ExchangeConfig();
+    exchangeConfig.setName(EXCHANGE_NAME);
+    exchangeConfig.setAdapter(EXCHANGE_ADAPTER);
+    exchangeConfig.setAuthenticationConfig(buildAuthenticationConfig());
+    exchangeConfig.setNetworkConfig(buildNetworkConfigWithoutErrorCodesAndMessages());
+    exchangeConfig.setOtherConfig(buildOtherConfig());
     return exchangeConfig;
   }
 }
