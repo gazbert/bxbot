@@ -47,7 +47,8 @@ public final class TradingStrategiesBuilder {
 
   private static final Logger LOG = LogManager.getLogger();
 
-  private TradingStrategiesBuilder() {}
+  private TradingStrategiesBuilder() {
+  }
 
   /** Builds the Trading Strategy execution list. */
   public static List<TradingStrategy> buildStrategies(

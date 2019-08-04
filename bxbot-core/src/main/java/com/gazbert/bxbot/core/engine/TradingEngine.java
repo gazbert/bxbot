@@ -29,6 +29,7 @@ import com.gazbert.bxbot.core.config.strategy.TradingStrategiesBuilder;
 import com.gazbert.bxbot.core.mail.EmailAlertMessageBuilder;
 import com.gazbert.bxbot.core.mail.EmailAlerter;
 import com.gazbert.bxbot.core.util.ConfigurableComponentFactory;
+import com.gazbert.bxbot.core.util.EmergencyStopChecker;
 import com.gazbert.bxbot.domain.engine.EngineConfig;
 import com.gazbert.bxbot.domain.exchange.ExchangeConfig;
 import com.gazbert.bxbot.domain.market.MarketConfig;
@@ -40,13 +41,10 @@ import com.gazbert.bxbot.services.MarketConfigService;
 import com.gazbert.bxbot.services.StrategyConfigService;
 import com.gazbert.bxbot.strategy.api.StrategyException;
 import com.gazbert.bxbot.strategy.api.TradingStrategy;
-import com.gazbert.bxbot.trading.api.BalanceInfo;
 import com.gazbert.bxbot.trading.api.ExchangeNetworkException;
 import com.gazbert.bxbot.trading.api.TradingApiException;
 import java.math.BigDecimal;
-import java.text.DecimalFormat;
 import java.util.List;
-import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -83,7 +81,6 @@ public class TradingEngine {
   private static final String CRITICAL_EMAIL_ALERT_SUBJECT = "CRITICAL Alert message from BX-bot";
   private static final String DETAILS_ERROR_MSG_LABEL = " Details: ";
   private static final String CAUSE_ERROR_MSG_LABEL = " Cause: ";
-  private static final String DECIMAL_FORMAT_PATTERN = "#.########";
 
   private static final Object IS_RUNNING_MONITOR = new Object();
   private Thread engineThread;
@@ -306,100 +303,13 @@ public class TradingEngine {
     keepAlive = false;
   }
 
-  /*
-   * Checks if the Emergency Stop Currency (e.g. USD, BTC) wallet balance on exchange has gone
-   * *below* configured limit.
-   * If the balance cannot be obtained or has dropped below the configured limit, we notify the
-   * main control loop to immediately shutdown the bot.
-   *
-   * This check is here to help protect runaway losses due to:
-   * - 'buggy' Trading Strategies
-   * - Unforeseen bugs in the Trading Engine and Exchange Adapter
-   * - the exchange sending corrupt order book data and the Trading Strategy being misled...
-   *   this has happened.
-   */
   private boolean isEmergencyStopLimitBreached()
       throws TradingApiException, ExchangeNetworkException {
-    boolean isEmergencyStopLimitBreached = true;
-
     if (engineConfig.getEmergencyStopBalance().compareTo(BigDecimal.ZERO) == 0) {
       return false;
     }
-
-    LOG.info(() -> "Performing Emergency Stop check...");
-
-    BalanceInfo balanceInfo;
-    try {
-      balanceInfo = exchangeAdapter.getBalanceInfo();
-    } catch (TradingApiException e) {
-      final String errorMsg =
-          "Failed to get Balance info from exchange to perform Emergency Stop check - letting"
-              + " Trade Engine error policy decide what to do next...";
-      LOG.error(() -> errorMsg, e);
-      // re-throw to main loop - might only be connection issue and it will retry...
-      throw e;
-    }
-
-    final Map<String, BigDecimal> balancesAvailable = balanceInfo.getBalancesAvailable();
-    final BigDecimal currentBalance =
-        balancesAvailable.get(engineConfig.getEmergencyStopCurrency());
-    if (currentBalance == null) {
-      final String errorMsg =
-          "Emergency stop check: Failed to get current Emergency Stop Currency balance as '"
-              + engineConfig.getEmergencyStopCurrency()
-              + "' key into Balances map "
-              + "returned null. Balances returned: "
-              + balancesAvailable;
-      LOG.error(() -> errorMsg);
-      throw new IllegalStateException(errorMsg);
-    } else {
-
-      LOG.info(
-          () ->
-              "Emergency Stop Currency balance available on exchange is ["
-                  + new DecimalFormat(DECIMAL_FORMAT_PATTERN).format(currentBalance)
-                  + "] "
-                  + engineConfig.getEmergencyStopCurrency());
-
-      LOG.info(
-          () ->
-              "Balance that will stop ALL trading across ALL markets is ["
-                  + new DecimalFormat(DECIMAL_FORMAT_PATTERN)
-                      .format(engineConfig.getEmergencyStopBalance())
-                  + "] "
-                  + engineConfig.getEmergencyStopCurrency());
-
-      if (currentBalance.compareTo(engineConfig.getEmergencyStopBalance()) < 0) {
-        final String balanceBlownErrorMsg =
-            "EMERGENCY STOP triggered! - Current Emergency Stop Currency ["
-                + engineConfig.getEmergencyStopCurrency()
-                + "] wallet "
-                + "balance ["
-                + new DecimalFormat(DECIMAL_FORMAT_PATTERN).format(currentBalance)
-                + "] on exchange "
-                + "is lower than configured Emergency Stop balance ["
-                + new DecimalFormat(DECIMAL_FORMAT_PATTERN)
-                    .format(engineConfig.getEmergencyStopBalance())
-                + "] "
-                + engineConfig.getEmergencyStopCurrency();
-
-        LOG.fatal(() -> balanceBlownErrorMsg);
-
-        emailAlerter.sendMessage(
-            CRITICAL_EMAIL_ALERT_SUBJECT,
-            EmailAlertMessageBuilder.buildCriticalMsgContent(
-                balanceBlownErrorMsg,
-                null,
-                engineConfig.getBotId(),
-                engineConfig.getBotName(),
-                exchangeAdapter.getClass().getName()));
-      } else {
-
-        isEmergencyStopLimitBreached = false;
-        LOG.info(() -> "Emergency Stop check PASSED!");
-      }
-    }
-    return isEmergencyStopLimitBreached;
+    return EmergencyStopChecker.isEmergencyStopLimitBreached(
+        exchangeAdapter, engineConfig, emailAlerter);
   }
 
   private ExchangeAdapter loadExchangeAdapter() {
@@ -408,8 +318,7 @@ public class TradingEngine {
 
     final ExchangeAdapter adapter =
         ConfigurableComponentFactory.createComponent(exchangeConfig.getAdapter());
-    LOG.info(
-        () -> "Trading Engine will use Exchange Adapter for: " + adapter.getImplName());
+    LOG.info(() -> "Trading Engine will use Exchange Adapter for: " + adapter.getImplName());
 
     final ExchangeConfigImpl exchangeApiConfig =
         ExchangeApiConfigBuilder.buildConfig(exchangeConfig);
