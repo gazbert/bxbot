@@ -46,6 +46,7 @@ public class TestStrategyConfigFactory {
   private static final String STRATEGY_CLASSNAME =
       "com.gazbert.bxbot.core.config.strategy.strategies.TradingStrategyForClassnameInstantiation";
   private static final String STRATEGY_BEAN_NAME = "emaStrat";
+  private static final String INVALID_STRATEGY_BEAN_NAME = "invalid-bean";
 
   @Test
   public void testCreatingStrategyUsingClassname() {
@@ -72,6 +73,27 @@ public class TestStrategyConfigFactory {
     final ApplicationContext applicationContext = EasyMock.createMock(ApplicationContext.class);
     expect(applicationContext.getBean(STRATEGY_BEAN_NAME))
         .andReturn(new TradingStrategyForBeanNameInstantiation());
+    TradingStrategyFactory.getInstance().setSpringContext(applicationContext);
+    EasyMock.replay(applicationContext);
+
+    final TradingStrategy tradingStrategy =
+        TradingStrategyFactory.getInstance().createTradingStrategy(strategyConfig);
+
+    assertThat(tradingStrategy).isNotNull();
+    EasyMock.verify(applicationContext);
+  }
+
+  @Test (expected = IllegalArgumentException.class)
+  public void testCreatingStrategyUsingInvalidName() {
+    final StrategyConfig strategyConfig = new StrategyConfig();
+    strategyConfig.setId(STRATEGY_ID);
+    strategyConfig.setName(STRATEGY_NAME);
+    strategyConfig.setDescription(STRATEGY_DESCRIPTION);
+    strategyConfig.setBeanName(INVALID_STRATEGY_BEAN_NAME);
+
+    final ApplicationContext applicationContext = EasyMock.createMock(ApplicationContext.class);
+    expect(applicationContext.getBean(INVALID_STRATEGY_BEAN_NAME))
+        .andThrow(new NullPointerException("No such bean error!"));
     TradingStrategyFactory.getInstance().setSpringContext(applicationContext);
     EasyMock.replay(applicationContext);
 
