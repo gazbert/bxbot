@@ -306,7 +306,7 @@ public class TradingEngine {
   private boolean isEmergencyStopLimitBreached()
       throws TradingApiException, ExchangeNetworkException {
     if (engineConfig.getEmergencyStopBalance().compareTo(BigDecimal.ZERO) == 0) {
-      return false;
+      return false; // by-pass the emergency stop check
     }
     return EmergencyStopChecker.isEmergencyStopLimitBreached(
         exchangeAdapter, engineConfig, emailAlerter);
