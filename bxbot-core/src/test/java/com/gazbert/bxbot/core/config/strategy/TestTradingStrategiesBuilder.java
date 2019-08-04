@@ -23,9 +23,12 @@
 
 package com.gazbert.bxbot.core.config.strategy;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.gazbert.bxbot.domain.market.MarketConfig;
 import com.gazbert.bxbot.domain.strategy.StrategyConfig;
 import com.gazbert.bxbot.exchange.api.ExchangeAdapter;
+import com.gazbert.bxbot.strategy.api.TradingStrategy;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -41,6 +44,7 @@ import org.junit.Test;
 public class TestTradingStrategiesBuilder {
 
   private static final String STRATEGY_ID = "MyMacdStrategy_v3";
+  private static final String UNKNOWN_STRATEGY_ID = "unknown-strategy-id";
   private static final String STRATEGY_NAME = "MACD Shorting algo";
   private static final String STRATEGY_DESCRIPTION = "MACD Shorting algo description";
   private static final String STRATEGY_CLASSNAME =
@@ -49,17 +53,32 @@ public class TestTradingStrategiesBuilder {
   private static final String STRATEGY_CONFIG_ITEM_NAME = "btc-sell-order-amount";
   private static final String STRATEGY_CONFIG_ITEM_VALUE = "0.2";
 
-  private static final String MARKET_NAME = "BTC/USD";
-  private static final String MARKET_ID = "btc_usd";
-  private static final String MARKET_BASE_CURRENCY = "BTC";
-  private static final String MARKET_COUNTER_CURRENCY = "USD";
-  private static final boolean MARKET_IS_ENABLED = true;
+  private static final String MARKET_1_NAME = "BTC/USD";
+  private static final String MARKET_1_ID = "btc_usd";
+  private static final String MARKET_1_BASE_CURRENCY = "BTC";
+  private static final String MARKET_1_COUNTER_CURRENCY = "USD";
+  private static final boolean MARKET_1_IS_ENABLED = true;
+
+  private static final String MARKET_2_NAME = "LTC/USD";
+  private static final String MARKET_2_ID = "ltc_usd";
+  private static final String MARKET_2_BASE_CURRENCY = "LTC";
+  private static final String MARKET_2_COUNTER_CURRENCY = "USD";
+  private static final boolean MARKET_2_NOT_ENABLED = false;
 
   @Test
-  public void testBuildingStrategies() {
+  public void testBuildingStrategiesSuccessfully() {
+    final ExchangeAdapter exchangeAdapter = EasyMock.createMock(ExchangeAdapter.class);
+    final List<TradingStrategy> strategies =
+        TradingStrategiesBuilder.buildStrategies(
+            someStrategiesConfig(), someMarketsConfig(), exchangeAdapter);
+    assertThat(strategies.size()).isEqualTo(1);
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testBuildingStrategiesFailsForUnknownStrategyId() {
     final ExchangeAdapter exchangeAdapter = EasyMock.createMock(ExchangeAdapter.class);
     TradingStrategiesBuilder.buildStrategies(
-        someStrategiesConfig(), someMarketsConfig(), exchangeAdapter);
+        someStrategiesConfig(), someMarketsConfigUsingUnknownStrategyId(), exchangeAdapter);
   }
 
   private static List<StrategyConfig> someStrategiesConfig() {
@@ -83,12 +102,38 @@ public class TestTradingStrategiesBuilder {
   private static List<MarketConfig> someMarketsConfig() {
     final MarketConfig marketConfig1 =
         new MarketConfig(
-            MARKET_ID,
-            MARKET_NAME,
-            MARKET_BASE_CURRENCY,
-            MARKET_COUNTER_CURRENCY,
-            MARKET_IS_ENABLED,
+            MARKET_1_ID,
+            MARKET_1_NAME,
+            MARKET_1_BASE_CURRENCY,
+            MARKET_1_COUNTER_CURRENCY,
+            MARKET_1_IS_ENABLED,
             STRATEGY_ID);
+
+    final MarketConfig marketConfig2 =
+        new MarketConfig(
+            MARKET_2_ID,
+            MARKET_2_NAME,
+            MARKET_2_BASE_CURRENCY,
+            MARKET_2_COUNTER_CURRENCY,
+            MARKET_2_NOT_ENABLED,
+            STRATEGY_ID);
+
+    final List<MarketConfig> allMarkets = new ArrayList<>();
+    allMarkets.add(marketConfig1);
+    allMarkets.add(marketConfig2);
+    return allMarkets;
+  }
+
+  private static List<MarketConfig> someMarketsConfigUsingUnknownStrategyId() {
+    final MarketConfig marketConfig1 =
+        new MarketConfig(
+            MARKET_1_ID,
+            MARKET_1_NAME,
+            MARKET_1_BASE_CURRENCY,
+            MARKET_1_COUNTER_CURRENCY,
+            MARKET_1_IS_ENABLED,
+            UNKNOWN_STRATEGY_ID);
+
     final List<MarketConfig> allMarkets = new ArrayList<>();
     allMarkets.add(marketConfig1);
     return allMarkets;

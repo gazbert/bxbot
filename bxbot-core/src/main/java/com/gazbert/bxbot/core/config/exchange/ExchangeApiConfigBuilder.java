@@ -55,7 +55,7 @@ public class ExchangeApiConfigBuilder {
       exchangeApiNetworkConfig.setConnectionTimeout(networkConfig.getConnectionTimeout());
 
       final List<Integer> nonFatalErrorCodes = networkConfig.getNonFatalErrorCodes();
-      if (nonFatalErrorCodes != null) {
+      if (nonFatalErrorCodes != null && !nonFatalErrorCodes.isEmpty()) {
         exchangeApiNetworkConfig.setNonFatalErrorCodes(nonFatalErrorCodes);
       } else {
         LOG.info(
@@ -66,7 +66,7 @@ public class ExchangeApiConfigBuilder {
       }
 
       final List<String> nonFatalErrorMessages = networkConfig.getNonFatalErrorMessages();
-      if (nonFatalErrorMessages != null) {
+      if (nonFatalErrorMessages != null && !nonFatalErrorMessages.isEmpty()) {
         exchangeApiNetworkConfig.setNonFatalErrorMessages(nonFatalErrorMessages);
       } else {
         LOG.info(
