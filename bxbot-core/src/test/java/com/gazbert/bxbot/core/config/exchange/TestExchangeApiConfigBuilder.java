@@ -84,6 +84,19 @@ public class TestExchangeApiConfigBuilder {
         .isEqualTo(SELL_FEE_CONFIG_ITEM_VALUE);
   }
 
+  @Test
+  public void testBuildingConfigWithoutOptionalConfig() {
+    final com.gazbert.bxbot.exchange.api.ExchangeConfig exchangeApiConfig =
+        ExchangeApiConfigBuilder.buildConfig(buildExchangeConfigWithoutOptionalStuff());
+
+    assertThat(exchangeApiConfig.getExchangeName()).isEqualTo(EXCHANGE_NAME);
+    assertThat(exchangeApiConfig.getExchangeAdapter()).isEqualTo(EXCHANGE_ADAPTER);
+
+    assertThat(exchangeApiConfig.getAuthenticationConfig()).isNull();
+    assertThat(exchangeApiConfig.getNetworkConfig()).isNull();
+    assertThat(exchangeApiConfig.getOtherConfig()).isNull();
+  }
+
   private static Map<String, String> buildAuthenticationConfig() {
     final Map<String, String> authenticationConfig = new HashMap<>();
     authenticationConfig.put(API_KEY_CONFIG_ITEM_KEY, API_KEY_CONFIG_ITEM_VALUE);
@@ -113,6 +126,13 @@ public class TestExchangeApiConfigBuilder {
     exchangeConfig.setAuthenticationConfig(buildAuthenticationConfig());
     exchangeConfig.setNetworkConfig(buildNetworkConfig());
     exchangeConfig.setOtherConfig(buildOtherConfig());
+    return exchangeConfig;
+  }
+
+  private static ExchangeConfig buildExchangeConfigWithoutOptionalStuff() {
+    final ExchangeConfig exchangeConfig = new ExchangeConfig();
+    exchangeConfig.setName(EXCHANGE_NAME);
+    exchangeConfig.setAdapter(EXCHANGE_ADAPTER);
     return exchangeConfig;
   }
 }
