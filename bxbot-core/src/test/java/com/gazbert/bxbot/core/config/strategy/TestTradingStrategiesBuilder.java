@@ -95,6 +95,13 @@ public class TestTradingStrategiesBuilder {
         someStrategiesConfig(), someMarketsConfigUsingUnknownStrategyId(), exchangeAdapter);
   }
 
+  @Test(expected = IllegalArgumentException.class)
+  public void testBuildingStrategiesFailsDuplicateMarket() {
+    final ExchangeAdapter exchangeAdapter = EasyMock.createMock(ExchangeAdapter.class);
+    TradingStrategiesBuilder.buildStrategies(
+        someStrategiesConfig(), someMarketsConfigWithDuplicateMarket(), exchangeAdapter);
+  }
+
   private static List<StrategyConfig> someStrategiesConfig() {
     final Map<String, String> configItems = new HashMap<>();
     configItems.put(STRATEGY_1_CONFIG_ITEM_NAME, STRATEGY_1_CONFIG_ITEM_VALUE);
@@ -170,6 +177,31 @@ public class TestTradingStrategiesBuilder {
 
     final List<MarketConfig> allMarkets = new ArrayList<>();
     allMarkets.add(marketConfig1);
+    return allMarkets;
+  }
+
+  private static List<MarketConfig> someMarketsConfigWithDuplicateMarket() {
+    final MarketConfig marketConfig1 =
+        new MarketConfig(
+            MARKET_1_ID,
+            MARKET_1_NAME,
+            MARKET_1_BASE_CURRENCY,
+            MARKET_1_COUNTER_CURRENCY,
+            MARKET_1_IS_ENABLED,
+            STRATEGY_1_ID);
+
+    final MarketConfig marketConfig2 =
+        new MarketConfig(
+            MARKET_1_ID,
+            MARKET_1_NAME,
+            MARKET_1_BASE_CURRENCY,
+            MARKET_1_COUNTER_CURRENCY,
+            MARKET_1_IS_ENABLED,
+            STRATEGY_1_ID);
+
+    final List<MarketConfig> allMarkets = new ArrayList<>();
+    allMarkets.add(marketConfig1);
+    allMarkets.add(marketConfig2);
     return allMarkets;
   }
 }
