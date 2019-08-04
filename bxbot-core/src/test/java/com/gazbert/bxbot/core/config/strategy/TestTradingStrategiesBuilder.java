@@ -43,15 +43,23 @@ import org.junit.Test;
  */
 public class TestTradingStrategiesBuilder {
 
-  private static final String STRATEGY_ID = "MyMacdStrategy_v3";
-  private static final String UNKNOWN_STRATEGY_ID = "unknown-strategy-id";
-  private static final String STRATEGY_NAME = "MACD Shorting algo";
-  private static final String STRATEGY_DESCRIPTION = "MACD Shorting algo description";
-  private static final String STRATEGY_CLASSNAME =
+  private static final String STRATEGY_1_ID = "MyMacdStrategy_v3";
+  private static final String STRATEGY_1_NAME = "MACD Shorting algo";
+  private static final String STRATEGY_1_DESCRIPTION = "MACD Shorting algo description";
+  private static final String STRATEGY_1_CLASSNAME =
       "com.gazbert.bxbot.core.config.strategy.strategies.TradingStrategyForClassnameInstantiation";
-  private static final String STRATEGY_BEAN = null;
-  private static final String STRATEGY_CONFIG_ITEM_NAME = "btc-sell-order-amount";
-  private static final String STRATEGY_CONFIG_ITEM_VALUE = "0.2";
+  private static final String STRATEGY_1_BEAN = null;
+  private static final String STRATEGY_1_CONFIG_ITEM_NAME = "btc-sell-order-amount";
+  private static final String STRATEGY_1_CONFIG_ITEM_VALUE = "0.2";
+
+  private static final String STRATEGY_2_ID = "EMA Strat";
+  private static final String STRATEGY_2_NAME = "EMA algo";
+  private static final String STRATEGY_2_DESCRIPTION = "EMA algo description";
+  private static final String STRATEGY_2_CLASSNAME =
+      "com.gazbert.bxbot.core.config.strategy.strategies.TradingStrategyForClassnameInstantiation";
+  private static final String STRATEGY_2_BEAN = null;
+
+  private static final String UNKNOWN_STRATEGY_ID = "unknown-strategy-id";
 
   private static final String MARKET_1_NAME = "BTC/USD";
   private static final String MARKET_1_ID = "btc_usd";
@@ -63,7 +71,13 @@ public class TestTradingStrategiesBuilder {
   private static final String MARKET_2_ID = "ltc_usd";
   private static final String MARKET_2_BASE_CURRENCY = "LTC";
   private static final String MARKET_2_COUNTER_CURRENCY = "USD";
-  private static final boolean MARKET_2_NOT_ENABLED = false;
+  private static final boolean MARKET_2_IS_ENABLED = true;
+
+  private static final String MARKET_3_NAME = "ETH/USD";
+  private static final String MARKET_3_ID = "eth_usd";
+  private static final String MARKET_3_BASE_CURRENCY = "ETC";
+  private static final String MARKET_3_COUNTER_CURRENCY = "USD";
+  private static final boolean MARKET_3_NOT_ENABLED = false;
 
   @Test
   public void testBuildingStrategiesSuccessfully() {
@@ -71,7 +85,7 @@ public class TestTradingStrategiesBuilder {
     final List<TradingStrategy> strategies =
         TradingStrategiesBuilder.buildStrategies(
             someStrategiesConfig(), someMarketsConfig(), exchangeAdapter);
-    assertThat(strategies.size()).isEqualTo(1);
+    assertThat(strategies.size()).isEqualTo(2);
   }
 
   @Test(expected = IllegalArgumentException.class)
@@ -83,19 +97,29 @@ public class TestTradingStrategiesBuilder {
 
   private static List<StrategyConfig> someStrategiesConfig() {
     final Map<String, String> configItems = new HashMap<>();
-    configItems.put(STRATEGY_CONFIG_ITEM_NAME, STRATEGY_CONFIG_ITEM_VALUE);
+    configItems.put(STRATEGY_1_CONFIG_ITEM_NAME, STRATEGY_1_CONFIG_ITEM_VALUE);
 
     final StrategyConfig strategyConfig1 =
         new StrategyConfig(
-            STRATEGY_ID,
-            STRATEGY_NAME,
-            STRATEGY_DESCRIPTION,
-            STRATEGY_CLASSNAME,
-            STRATEGY_BEAN,
+            STRATEGY_1_ID,
+            STRATEGY_1_NAME,
+            STRATEGY_1_DESCRIPTION,
+            STRATEGY_1_CLASSNAME,
+            STRATEGY_1_BEAN,
             configItems);
+
+    final StrategyConfig strategyConfig2 =
+        new StrategyConfig(
+            STRATEGY_2_ID,
+            STRATEGY_2_NAME,
+            STRATEGY_2_DESCRIPTION,
+            STRATEGY_2_CLASSNAME,
+            STRATEGY_2_BEAN,
+            new HashMap<>()); // no optional config for this strat
 
     final List<StrategyConfig> allStrategies = new ArrayList<>();
     allStrategies.add(strategyConfig1);
+    allStrategies.add(strategyConfig2);
     return allStrategies;
   }
 
@@ -107,7 +131,7 @@ public class TestTradingStrategiesBuilder {
             MARKET_1_BASE_CURRENCY,
             MARKET_1_COUNTER_CURRENCY,
             MARKET_1_IS_ENABLED,
-            STRATEGY_ID);
+            STRATEGY_1_ID);
 
     final MarketConfig marketConfig2 =
         new MarketConfig(
@@ -115,12 +139,22 @@ public class TestTradingStrategiesBuilder {
             MARKET_2_NAME,
             MARKET_2_BASE_CURRENCY,
             MARKET_2_COUNTER_CURRENCY,
-            MARKET_2_NOT_ENABLED,
-            STRATEGY_ID);
+            MARKET_2_IS_ENABLED,
+            STRATEGY_2_ID);
+
+    final MarketConfig marketConfig3 =
+        new MarketConfig(
+            MARKET_3_ID,
+            MARKET_3_NAME,
+            MARKET_3_BASE_CURRENCY,
+            MARKET_3_COUNTER_CURRENCY,
+            MARKET_3_NOT_ENABLED,
+            STRATEGY_1_ID);
 
     final List<MarketConfig> allMarkets = new ArrayList<>();
     allMarkets.add(marketConfig1);
     allMarkets.add(marketConfig2);
+    allMarkets.add(marketConfig3);
     return allMarkets;
   }
 

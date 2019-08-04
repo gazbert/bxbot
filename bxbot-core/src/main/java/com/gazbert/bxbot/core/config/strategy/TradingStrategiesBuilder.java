@@ -47,8 +47,7 @@ public final class TradingStrategiesBuilder {
 
   private static final Logger LOG = LogManager.getLogger();
 
-  private TradingStrategiesBuilder() {
-  }
+  private TradingStrategiesBuilder() {}
 
   /** Builds the Trading Strategy execution list. */
   public static List<TradingStrategy> buildStrategies(
@@ -57,6 +56,13 @@ public final class TradingStrategiesBuilder {
       ExchangeAdapter exchangeAdapter) {
 
     final List<TradingStrategy> tradingStrategiesToExecute = new ArrayList<>();
+
+    // Register the strategies
+    final Map<String, StrategyConfig> tradingStrategyConfigs = new HashMap<>();
+    for (final StrategyConfig strategy : strategies) {
+      tradingStrategyConfigs.put(strategy.getId(), strategy);
+      LOG.info(() -> "Registered Trading Strategy with Trading Engine: Id=" + strategy.getId());
+    }
 
     // Set logic only as crude mechanism for checking for duplicate Markets.
     final Set<Market> loadedMarkets = new HashSet<>();
@@ -78,23 +84,24 @@ public final class TradingStrategiesBuilder {
         final String errorMsg = "Found duplicate Market! Market details: " + market;
         LOG.fatal(() -> errorMsg);
         throw new IllegalArgumentException(errorMsg);
+      } else {
+        LOG.info(
+            () ->
+                "Registered Market with Trading Engine: Id="
+                    + market.getId()
+                    + ", Name="
+                    + marketName);
       }
 
       // Get the strategy to use for this Market
       final String strategyToUse = market.getTradingStrategyId();
-      LOG.info(() -> "Market Trading Strategy Id: " + strategyToUse);
-
-      final Map<String, StrategyConfig> tradingStrategyConfigs = new HashMap<>();
-      for (final StrategyConfig strategy : strategies) {
-        tradingStrategyConfigs.put(strategy.getId(), strategy);
-        LOG.info(() -> "Registered Trading Strategy with Trading Engine - ID: " + strategy.getId());
-      }
+      LOG.info(() -> "Market Trading Strategy Id to use: " + strategyToUse);
 
       if (tradingStrategyConfigs.containsKey(strategyToUse)) {
         final StrategyConfig tradingStrategy = tradingStrategyConfigs.get(strategyToUse);
         final StrategyConfigItems tradingStrategyConfig = new StrategyConfigItems();
         final Map<String, String> configItems = tradingStrategy.getConfigItems();
-        if (configItems != null) {
+        if (configItems != null && !configItems.isEmpty()) {
           tradingStrategyConfig.setItems(configItems);
         } else {
           LOG.info(
