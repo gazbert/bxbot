@@ -28,7 +28,7 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 /**
- * Test the StrategyConfigItems behaves as expected.
+ * Tests the StrategyConfigItems behaves as expected.
  *
  * @author gazbert
  */
