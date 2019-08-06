@@ -37,21 +37,27 @@ import java.util.Map;
 import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  * Util class that loads and initialises the Trading Strategies to execute.
  *
  * @author gazbert
  */
-public final class TradingStrategiesBuilder {
+@Component
+public class TradingStrategiesBuilder {
 
   private static final Logger LOG = LogManager.getLogger();
+  private TradingStrategyFactory tradingStrategyFactory;
 
-  private TradingStrategiesBuilder() {
+  @Autowired
+  public void setTradingStrategyFactory(TradingStrategyFactory tradingStrategyFactory) {
+    this.tradingStrategyFactory = tradingStrategyFactory;
   }
 
   /** Builds the Trading Strategy execution list. */
-  public static List<TradingStrategy> buildStrategies(
+  public List<TradingStrategy> buildStrategies(
       List<StrategyConfig> strategies,
       List<MarketConfig> markets,
       ExchangeAdapter exchangeAdapter) {
@@ -117,7 +123,7 @@ public final class TradingStrategiesBuilder {
          * Trading Strategy execution list.
          */
         final TradingStrategy strategyImpl =
-            TradingStrategyFactory.getInstance().createTradingStrategy(tradingStrategy);
+            tradingStrategyFactory.createTradingStrategy(tradingStrategy);
         strategyImpl.init(exchangeAdapter, tradingMarket, tradingStrategyConfig);
 
         LOG.info(

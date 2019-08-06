@@ -97,6 +97,8 @@ public class TradingEngine {
   private final StrategyConfigService strategyConfigService;
   private final MarketConfigService marketConfigService;
 
+  private final TradingStrategiesBuilder tradingStrategiesBuilder;
+
   /** Creates the Trading Engine. */
   @Autowired
   public TradingEngine(
@@ -104,13 +106,15 @@ public class TradingEngine {
       EngineConfigService engineConfigService,
       StrategyConfigService strategyConfigService,
       MarketConfigService marketConfigService,
-      EmailAlerter emailAlerter) {
+      EmailAlerter emailAlerter,
+      TradingStrategiesBuilder tradingStrategiesBuilder) {
 
     this.exchangeConfigService = exchangeConfigService;
     this.engineConfigService = engineConfigService;
     this.strategyConfigService = strategyConfigService;
     this.marketConfigService = marketConfigService;
     this.emailAlerter = emailAlerter;
+    this.tradingStrategiesBuilder = tradingStrategiesBuilder;
   }
 
   /** Starts the bot. */
@@ -337,6 +341,6 @@ public class TradingEngine {
     LOG.info(() -> "Fetched Strategy config from repository: " + strategies);
     final List<MarketConfig> markets = marketConfigService.getAllMarketConfig();
     LOG.info(() -> "Fetched Markets config from repository: " + markets);
-    return TradingStrategiesBuilder.buildStrategies(strategies, markets, exchangeAdapter);
+    return tradingStrategiesBuilder.buildStrategies(strategies, markets, exchangeAdapter);
   }
 }

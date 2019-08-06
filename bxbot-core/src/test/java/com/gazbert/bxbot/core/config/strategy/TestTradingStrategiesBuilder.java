@@ -82,8 +82,11 @@ public class TestTradingStrategiesBuilder {
   @Test
   public void testBuildingStrategiesSuccessfully() {
     final ExchangeAdapter exchangeAdapter = EasyMock.createMock(ExchangeAdapter.class);
+    final TradingStrategyFactory tradingStrategyFactory = new TradingStrategyFactory();
+    final TradingStrategiesBuilder tradingStrategiesBuilder = new TradingStrategiesBuilder();
+    tradingStrategiesBuilder.setTradingStrategyFactory(tradingStrategyFactory);
     final List<TradingStrategy> strategies =
-        TradingStrategiesBuilder.buildStrategies(
+        tradingStrategiesBuilder.buildStrategies(
             someStrategiesConfig(), someMarketsConfig(), exchangeAdapter);
     assertThat(strategies.size()).isEqualTo(2);
   }
@@ -91,14 +94,20 @@ public class TestTradingStrategiesBuilder {
   @Test(expected = IllegalArgumentException.class)
   public void testBuildingStrategiesFailsForUnknownStrategyId() {
     final ExchangeAdapter exchangeAdapter = EasyMock.createMock(ExchangeAdapter.class);
-    TradingStrategiesBuilder.buildStrategies(
+    final TradingStrategyFactory tradingStrategyFactory = new TradingStrategyFactory();
+    final TradingStrategiesBuilder tradingStrategiesBuilder = new TradingStrategiesBuilder();
+    tradingStrategiesBuilder.setTradingStrategyFactory(tradingStrategyFactory);
+    tradingStrategiesBuilder.buildStrategies(
         someStrategiesConfig(), someMarketsConfigUsingUnknownStrategyId(), exchangeAdapter);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void testBuildingStrategiesFailsDuplicateMarket() {
     final ExchangeAdapter exchangeAdapter = EasyMock.createMock(ExchangeAdapter.class);
-    TradingStrategiesBuilder.buildStrategies(
+    final TradingStrategyFactory tradingStrategyFactory = new TradingStrategyFactory();
+    final TradingStrategiesBuilder tradingStrategiesBuilder = new TradingStrategiesBuilder();
+    tradingStrategiesBuilder.setTradingStrategyFactory(tradingStrategyFactory);
+    tradingStrategiesBuilder.buildStrategies(
         someStrategiesConfig(), someMarketsConfigWithDuplicateMarket(), exchangeAdapter);
   }
 

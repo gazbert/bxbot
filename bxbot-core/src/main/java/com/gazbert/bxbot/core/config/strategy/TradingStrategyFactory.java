@@ -30,29 +30,22 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Component;
 
 /**
  * Factory class for instantiating a Trading Strategy class.
  *
  * @author gazbert
  */
-public final class TradingStrategyFactory {
+@Component
+public class TradingStrategyFactory {
 
   private static final Logger LOG = LogManager.getLogger();
-  private static final TradingStrategyFactory SINGLE_INSTANCE = new TradingStrategyFactory();
   private ApplicationContext springContext;
-
-  private TradingStrategyFactory() {
-  }
 
   @Autowired
   public void setSpringContext(ApplicationContext springContext) {
     this.springContext = springContext;
-  }
-
-  /** Returns single instance of the TradingStrategyFactory. */
-  public static TradingStrategyFactory getInstance() {
-    return SINGLE_INSTANCE;
   }
 
   /** Creates the Trading Strategy instance. */

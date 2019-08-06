@@ -56,8 +56,9 @@ public class TestStrategyConfigFactory {
     strategyConfig.setDescription(STRATEGY_DESCRIPTION);
     strategyConfig.setClassName(STRATEGY_CLASSNAME);
 
+    final TradingStrategyFactory tradingStrategyFactory = new TradingStrategyFactory();
     final TradingStrategy tradingStrategy =
-        TradingStrategyFactory.getInstance().createTradingStrategy(strategyConfig);
+        tradingStrategyFactory.createTradingStrategy(strategyConfig);
 
     assertThat(tradingStrategy).isNotNull();
   }
@@ -73,11 +74,12 @@ public class TestStrategyConfigFactory {
     final ApplicationContext applicationContext = EasyMock.createMock(ApplicationContext.class);
     expect(applicationContext.getBean(STRATEGY_BEAN_NAME))
         .andReturn(new TradingStrategyForBeanNameInstantiation());
-    TradingStrategyFactory.getInstance().setSpringContext(applicationContext);
+    final TradingStrategyFactory tradingStrategyFactory = new TradingStrategyFactory();
+    tradingStrategyFactory.setSpringContext(applicationContext);
     EasyMock.replay(applicationContext);
 
     final TradingStrategy tradingStrategy =
-        TradingStrategyFactory.getInstance().createTradingStrategy(strategyConfig);
+        tradingStrategyFactory.createTradingStrategy(strategyConfig);
 
     assertThat(tradingStrategy).isNotNull();
     EasyMock.verify(applicationContext);
@@ -94,11 +96,12 @@ public class TestStrategyConfigFactory {
     final ApplicationContext applicationContext = EasyMock.createMock(ApplicationContext.class);
     expect(applicationContext.getBean(INVALID_STRATEGY_BEAN_NAME))
         .andThrow(new NullPointerException("No such bean error!"));
-    TradingStrategyFactory.getInstance().setSpringContext(applicationContext);
+    final TradingStrategyFactory tradingStrategyFactory = new TradingStrategyFactory();
+    tradingStrategyFactory.setSpringContext(applicationContext);
     EasyMock.replay(applicationContext);
 
     final TradingStrategy tradingStrategy =
-        TradingStrategyFactory.getInstance().createTradingStrategy(strategyConfig);
+        tradingStrategyFactory.createTradingStrategy(strategyConfig);
 
     assertThat(tradingStrategy).isNotNull();
     EasyMock.verify(applicationContext);

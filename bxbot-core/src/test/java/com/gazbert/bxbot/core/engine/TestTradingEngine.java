@@ -32,6 +32,8 @@ import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.expectLastCall;
 import static org.junit.Assert.assertFalse;
 
+import com.gazbert.bxbot.core.config.strategy.TradingStrategiesBuilder;
+import com.gazbert.bxbot.core.config.strategy.TradingStrategyFactory;
 import com.gazbert.bxbot.core.mail.EmailAlerter;
 import com.gazbert.bxbot.core.util.ConfigurableComponentFactory;
 import com.gazbert.bxbot.domain.engine.EngineConfig;
@@ -144,6 +146,8 @@ public class TestTradingEngine {
   private StrategyConfigService strategyConfigService;
   private MarketConfigService marketConfigService;
 
+  private TradingStrategiesBuilder tradingStrategiesBuilder;
+
   /**
    * Mock out Config subsystem; we're not testing it here - has its own unit tests.
    *
@@ -161,6 +165,10 @@ public class TestTradingEngine {
     strategyConfigService = PowerMock.createMock(StrategyConfigService.class);
     marketConfigService = PowerMock.createMock(MarketConfigService.class);
 
+    final TradingStrategyFactory tradingStrategyFactory = new TradingStrategyFactory();
+    tradingStrategiesBuilder = new TradingStrategiesBuilder();
+    tradingStrategiesBuilder.setTradingStrategyFactory(tradingStrategyFactory);
+
     PowerMock.mockStatic(ConfigurableComponentFactory.class);
   }
 
@@ -174,7 +182,8 @@ public class TestTradingEngine {
             engineConfigService,
             strategyConfigService,
             marketConfigService,
-            emailAlerter);
+            emailAlerter,
+            tradingStrategiesBuilder);
     assertFalse(tradingEngine.isRunning());
 
     PowerMock.verifyAll();
@@ -212,7 +221,8 @@ public class TestTradingEngine {
             engineConfigService,
             strategyConfigService,
             marketConfigService,
-            emailAlerter);
+            emailAlerter,
+            tradingStrategiesBuilder);
     tradingEngine.start();
 
     await().until(engineStateChanged(tradingEngine, EngineState.SHUTDOWN));
@@ -238,7 +248,8 @@ public class TestTradingEngine {
             engineConfigService,
             strategyConfigService,
             marketConfigService,
-            emailAlerter);
+            emailAlerter,
+            tradingStrategiesBuilder);
 
     final Executor executor = Executors.newSingleThreadExecutor();
     executor.execute(tradingEngine::start);
@@ -283,7 +294,8 @@ public class TestTradingEngine {
             engineConfigService,
             strategyConfigService,
             marketConfigService,
-            emailAlerter);
+            emailAlerter,
+            tradingStrategiesBuilder);
 
     final Executor executor = Executors.newSingleThreadExecutor();
     executor.execute(tradingEngine::start);
@@ -337,7 +349,8 @@ public class TestTradingEngine {
             engineConfigService,
             strategyConfigService,
             marketConfigService,
-            emailAlerter);
+            emailAlerter,
+            tradingStrategiesBuilder);
 
     tradingEngine.start();
 
@@ -389,7 +402,8 @@ public class TestTradingEngine {
             engineConfigService,
             strategyConfigService,
             marketConfigService,
-            emailAlerter);
+            emailAlerter,
+            tradingStrategiesBuilder);
 
     tradingEngine.start();
 
@@ -441,7 +455,8 @@ public class TestTradingEngine {
             engineConfigService,
             strategyConfigService,
             marketConfigService,
-            emailAlerter);
+            emailAlerter,
+            tradingStrategiesBuilder);
 
     tradingEngine.start();
 
@@ -490,7 +505,8 @@ public class TestTradingEngine {
             engineConfigService,
             strategyConfigService,
             marketConfigService,
-            emailAlerter);
+            emailAlerter,
+            tradingStrategiesBuilder);
 
     tradingEngine.start();
 
@@ -542,7 +558,8 @@ public class TestTradingEngine {
             engineConfigService,
             strategyConfigService,
             marketConfigService,
-            emailAlerter);
+            emailAlerter,
+            tradingStrategiesBuilder);
 
     final Executor executor = Executors.newSingleThreadExecutor();
     executor.execute(tradingEngine::start);
@@ -592,7 +609,8 @@ public class TestTradingEngine {
             engineConfigService,
             strategyConfigService,
             marketConfigService,
-            emailAlerter);
+            emailAlerter,
+            tradingStrategiesBuilder);
     final Executor executor = Executors.newSingleThreadExecutor();
     executor.execute(tradingEngine::start);
 
@@ -634,7 +652,8 @@ public class TestTradingEngine {
             engineConfigService,
             strategyConfigService,
             marketConfigService,
-            emailAlerter);
+            emailAlerter,
+            tradingStrategiesBuilder);
     tradingEngine.start();
 
     await().until(engineStateChanged(tradingEngine, EngineState.SHUTDOWN));
@@ -670,7 +689,8 @@ public class TestTradingEngine {
             engineConfigService,
             strategyConfigService,
             marketConfigService,
-            emailAlerter);
+            emailAlerter,
+            tradingStrategiesBuilder);
 
     final Executor executor = Executors.newSingleThreadExecutor();
     executor.execute(tradingEngine::start);
