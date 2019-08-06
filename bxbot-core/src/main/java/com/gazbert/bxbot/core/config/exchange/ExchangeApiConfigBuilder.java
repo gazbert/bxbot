@@ -35,7 +35,7 @@ import org.apache.logging.log4j.Logger;
  *
  * @author gazbert
  */
-public class ExchangeApiConfigBuilder {
+public final class ExchangeApiConfigBuilder {
 
   private static final Logger LOG = LogManager.getLogger();
 
