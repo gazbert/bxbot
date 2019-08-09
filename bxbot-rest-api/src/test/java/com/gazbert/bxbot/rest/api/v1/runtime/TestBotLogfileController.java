@@ -60,7 +60,8 @@ public class TestBotLogfileController extends AbstractRuntimeControllerTest {
 
   private static final int MAX_LOGFILE_LINES = 1000;
   private static final String LOGFILE =
-      "4981 [main] 2019-07-20 17:30:20,429 INFO  EngineConfigYamlRepository get() - Fetching EngineConfig...";
+      "4981 [main] 2019-07-20 17:30:20,429 INFO  EngineConfigYamlRepository get() - "
+          + "Fetching EngineConfig...";
 
   @MockBean private BotLogfileService botLogfileService;
 

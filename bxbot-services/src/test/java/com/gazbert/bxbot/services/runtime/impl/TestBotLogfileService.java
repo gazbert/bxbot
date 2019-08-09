@@ -47,7 +47,8 @@ public class TestBotLogfileService {
   @Test
   public void whenGetLogfileCalledThenExpectLogfileContentToBeReturned() throws Exception {
     final String logfile =
-        "4981 [main] 2019-07-20 17:30:20,429 INFO  EngineConfigYamlRepository get() - Fetching EngineConfig...";
+        "4981 [main] 2019-07-20 17:30:20,429 INFO  EngineConfigYamlRepository get() - "
+            + "Fetching EngineConfig...";
 
     final InputStream inputStream = EasyMock.createMock(InputStream.class);
     final Resource resource = EasyMock.createMock(Resource.class);

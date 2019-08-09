@@ -23,17 +23,15 @@
 
 package com.gazbert.bxbot.core.engine;
 
-import com.gazbert.bxbot.core.config.exchange.AuthenticationConfigImpl;
+import com.gazbert.bxbot.core.config.exchange.ExchangeApiConfigBuilder;
 import com.gazbert.bxbot.core.config.exchange.ExchangeConfigImpl;
-import com.gazbert.bxbot.core.config.exchange.NetworkConfigImpl;
-import com.gazbert.bxbot.core.config.exchange.OtherConfigImpl;
-import com.gazbert.bxbot.core.config.market.MarketImpl;
-import com.gazbert.bxbot.core.config.strategy.StrategyConfigItems;
+import com.gazbert.bxbot.core.config.strategy.TradingStrategiesBuilder;
+import com.gazbert.bxbot.core.mail.EmailAlertMessageBuilder;
 import com.gazbert.bxbot.core.mail.EmailAlerter;
 import com.gazbert.bxbot.core.util.ConfigurableComponentFactory;
+import com.gazbert.bxbot.core.util.EmergencyStopChecker;
 import com.gazbert.bxbot.domain.engine.EngineConfig;
 import com.gazbert.bxbot.domain.exchange.ExchangeConfig;
-import com.gazbert.bxbot.domain.exchange.NetworkConfig;
 import com.gazbert.bxbot.domain.market.MarketConfig;
 import com.gazbert.bxbot.domain.strategy.StrategyConfig;
 import com.gazbert.bxbot.exchange.api.ExchangeAdapter;
@@ -43,25 +41,13 @@ import com.gazbert.bxbot.services.config.MarketConfigService;
 import com.gazbert.bxbot.services.config.StrategyConfigService;
 import com.gazbert.bxbot.strategy.api.StrategyException;
 import com.gazbert.bxbot.strategy.api.TradingStrategy;
-import com.gazbert.bxbot.trading.api.BalanceInfo;
 import com.gazbert.bxbot.trading.api.ExchangeNetworkException;
-import com.gazbert.bxbot.trading.api.Market;
 import com.gazbert.bxbot.trading.api.TradingApiException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.math.BigDecimal;
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Component;
 
@@ -95,29 +81,15 @@ public class TradingEngine {
   private static final String CRITICAL_EMAIL_ALERT_SUBJECT = "CRITICAL Alert message from BX-bot";
   private static final String DETAILS_ERROR_MSG_LABEL = " Details: ";
   private static final String CAUSE_ERROR_MSG_LABEL = " Cause: ";
-  private static final String NEWLINE = System.getProperty("line.separator");
-  private static final String HORIZONTAL_RULE =
-      "--------------------------------------------------" + NEWLINE;
-  private static final String DECIMAL_FORMAT_PATTERN = "#.########";
 
   private static final Object IS_RUNNING_MONITOR = new Object();
-
-  private int tradeExecutionInterval;
+  private Thread engineThread;
   private volatile boolean keepAlive = true;
   private boolean isRunning = false;
 
-  private Thread engineThread;
-
-  private final Map<String, StrategyConfig> strategyDescriptions = new HashMap<>();
-  private final List<TradingStrategy> tradingStrategiesToExecute = new ArrayList<>();
-
-  private String emergencyStopCurrency;
-  private BigDecimal emergencyStopBalance;
-
-  private String botId;
-  private String botName;
-
   private final EmailAlerter emailAlerter;
+  private List<TradingStrategy> tradingStrategies;
+  private EngineConfig engineConfig;
   private ExchangeAdapter exchangeAdapter;
 
   private final ExchangeConfigService exchangeConfigService;
@@ -125,29 +97,24 @@ public class TradingEngine {
   private final StrategyConfigService strategyConfigService;
   private final MarketConfigService marketConfigService;
 
-  private ApplicationContext springContext;
+  private final TradingStrategiesBuilder tradingStrategiesBuilder;
 
-  /** Creates the TradingEngine. */
+  /** Creates the Trading Engine. */
   @Autowired
   public TradingEngine(
       ExchangeConfigService exchangeConfigService,
       EngineConfigService engineConfigService,
       StrategyConfigService strategyConfigService,
       MarketConfigService marketConfigService,
-      EmailAlerter emailAlerter) {
-
-    LOG.info(() -> "Initialising Trading Engine...");
+      EmailAlerter emailAlerter,
+      TradingStrategiesBuilder tradingStrategiesBuilder) {
 
     this.exchangeConfigService = exchangeConfigService;
     this.engineConfigService = engineConfigService;
     this.strategyConfigService = strategyConfigService;
     this.marketConfigService = marketConfigService;
     this.emailAlerter = emailAlerter;
-  }
-
-  @Autowired
-  public void setSpringContext(ApplicationContext springContext) {
-    this.springContext = springContext;
+    this.tradingStrategiesBuilder = tradingStrategiesBuilder;
   }
 
   /** Starts the bot. */
@@ -164,17 +131,16 @@ public class TradingEngine {
     // store this so we can shutdown the engine later
     engineThread = Thread.currentThread();
 
-    initConfig();
+    init();
     runMainControlLoop();
   }
 
-  private void initConfig() {
-    LOG.info(() -> "Initialising BX-bot config...");
+  private void init() {
+    LOG.info(() -> "Initialising Trading Engine...");
     // the sequence order of these methods is significant - don't change it.
-    loadExchangeAdapterConfig();
-    loadEngineConfig();
-    loadTradingStrategyConfig();
-    loadMarketConfigAndInitialiseTradingStrategies();
+    exchangeAdapter = loadExchangeAdapter();
+    engineConfig = loadEngineConfig();
+    tradingStrategies = loadTradingStrategies();
   }
 
   /*
@@ -183,7 +149,7 @@ public class TradingEngine {
    * The code fails hard and fast if an unexpected occurs. Network exceptions *should* recover.
    */
   private void runMainControlLoop() {
-    LOG.info(() -> "Starting Trading Engine for " + botId + " ...");
+    LOG.info(() -> "Starting Trading Engine for " + engineConfig.getBotId() + " ...");
     while (keepAlive) {
       try {
         LOG.info(() -> "*** Starting next trade cycle... ***");
@@ -193,8 +159,7 @@ public class TradingEngine {
           break;
         }
 
-        // Execute the Trading Strategies
-        for (final TradingStrategy tradingStrategy : tradingStrategiesToExecute) {
+        for (final TradingStrategy tradingStrategy : tradingStrategies) {
           LOG.info(
               () ->
                   "Executing Trading Strategy ---> " + tradingStrategy.getClass().getSimpleName());
@@ -218,7 +183,7 @@ public class TradingEngine {
     }
 
     // We've broken out of the control loop due to error or admin shutdown request
-    LOG.fatal(() -> "BX-bot " + botId + " is shutting down NOW!");
+    LOG.fatal(() -> "BX-bot " + engineConfig.getBotId() + " is shutting down NOW!");
     synchronized (IS_RUNNING_MONITOR) {
       isRunning = false;
     }
@@ -242,9 +207,13 @@ public class TradingEngine {
   }
 
   private void sleepUntilNextTradingCycle() {
-    LOG.info(() -> "*** Sleeping " + tradeExecutionInterval + "s til next trade cycle... ***");
+    LOG.info(
+        () ->
+            "*** Sleeping "
+                + engineConfig.getTradeCycleInterval()
+                + "s til next trade cycle... ***");
     try {
-      Thread.sleep(tradeExecutionInterval * 1000L);
+      Thread.sleep(engineConfig.getTradeCycleInterval() * 1000L);
     } catch (InterruptedException e) {
       LOG.warn(() -> "Control Loop thread interrupted when sleeping before next trade cycle");
       Thread.currentThread().interrupt();
@@ -259,12 +228,12 @@ public class TradingEngine {
     final String errorMessage =
         "A network error has occurred in Exchange Adapter! "
             + "BX-bot will try again in "
-            + tradeExecutionInterval
+            + engineConfig.getTradeCycleInterval()
             + "s...";
     LOG.error(() -> errorMessage, e);
 
     try {
-      Thread.sleep(tradeExecutionInterval * 1000L);
+      Thread.sleep(engineConfig.getTradeCycleInterval() * 1000L);
     } catch (InterruptedException e1) {
       LOG.warn(() -> "Control Loop thread interrupted when sleeping before next trade cycle");
       Thread.currentThread().interrupt();
@@ -280,13 +249,16 @@ public class TradingEngine {
     LOG.fatal(() -> fatalErrorMessage, e);
     emailAlerter.sendMessage(
         CRITICAL_EMAIL_ALERT_SUBJECT,
-        buildCriticalEmailAlertMsgContent(
+        EmailAlertMessageBuilder.buildCriticalMsgContent(
             fatalErrorMessage
                 + DETAILS_ERROR_MSG_LABEL
                 + e.getMessage()
                 + CAUSE_ERROR_MSG_LABEL
                 + e.getCause(),
-            e));
+            e,
+            engineConfig.getBotId(),
+            engineConfig.getBotName(),
+            exchangeAdapter.getClass().getName()));
     keepAlive = false;
   }
 
@@ -299,13 +271,16 @@ public class TradingEngine {
     LOG.fatal(() -> fatalErrorMsg, e);
     emailAlerter.sendMessage(
         CRITICAL_EMAIL_ALERT_SUBJECT,
-        buildCriticalEmailAlertMsgContent(
+        EmailAlertMessageBuilder.buildCriticalMsgContent(
             fatalErrorMsg
                 + DETAILS_ERROR_MSG_LABEL
                 + e.getMessage()
                 + CAUSE_ERROR_MSG_LABEL
                 + e.getCause(),
-            e));
+            e,
+            engineConfig.getBotId(),
+            engineConfig.getBotName(),
+            exchangeAdapter.getClass().getName()));
     keepAlive = false;
   }
 
@@ -319,362 +294,53 @@ public class TradingEngine {
     LOG.fatal(() -> fatalErrorMsg, e);
     emailAlerter.sendMessage(
         CRITICAL_EMAIL_ALERT_SUBJECT,
-        buildCriticalEmailAlertMsgContent(
+        EmailAlertMessageBuilder.buildCriticalMsgContent(
             fatalErrorMsg
                 + DETAILS_ERROR_MSG_LABEL
                 + e.getMessage()
                 + CAUSE_ERROR_MSG_LABEL
                 + e.getCause(),
-            e));
+            e,
+            engineConfig.getBotId(),
+            engineConfig.getBotName(),
+            exchangeAdapter.getClass().getName()));
     keepAlive = false;
   }
 
-  /*
-   * Checks if the Emergency Stop Currency (e.g. USD, BTC) wallet balance on exchange has gone
-   * *below* configured limit.
-   * If the balance cannot be obtained or has dropped below the configured limit, we notify the
-   * main control loop to immediately shutdown the bot.
-   *
-   * This check is here to help protect runaway losses due to:
-   * - 'buggy' Trading Strategies
-   * - Unforeseen bugs in the Trading Engine and Exchange Adapter
-   * - the exchange sending corrupt order book data and the Trading Strategy being misled...
-   *   this has happened.
-   */
   private boolean isEmergencyStopLimitBreached()
       throws TradingApiException, ExchangeNetworkException {
-    boolean isEmergencyStopLimitBreached = true;
-
-    if (emergencyStopBalance.compareTo(BigDecimal.ZERO) == 0) {
-      return false;
+    if (engineConfig.getEmergencyStopBalance().compareTo(BigDecimal.ZERO) == 0) {
+      return false; // by-pass the emergency stop check
     }
-
-    LOG.info(() -> "Performing Emergency Stop check...");
-
-    BalanceInfo balanceInfo;
-    try {
-      balanceInfo = exchangeAdapter.getBalanceInfo();
-    } catch (TradingApiException e) {
-      final String errorMsg =
-          "Failed to get Balance info from exchange to perform Emergency Stop check - letting"
-              + " Trade Engine error policy decide what to do next...";
-      LOG.error(() -> errorMsg, e);
-      // re-throw to main loop - might only be connection issue and it will retry...
-      throw e;
-    }
-
-    final Map<String, BigDecimal> balancesAvailable = balanceInfo.getBalancesAvailable();
-    final BigDecimal currentBalance = balancesAvailable.get(emergencyStopCurrency);
-    if (currentBalance == null) {
-      final String errorMsg =
-          "Emergency stop check: Failed to get current Emergency Stop Currency balance as '"
-              + emergencyStopCurrency
-              + "' key into Balances map "
-              + "returned null. Balances returned: "
-              + balancesAvailable;
-      LOG.error(() -> errorMsg);
-      throw new IllegalStateException(errorMsg);
-    } else {
-
-      LOG.info(
-          () ->
-              "Emergency Stop Currency balance available on exchange is ["
-                  + new DecimalFormat(DECIMAL_FORMAT_PATTERN).format(currentBalance)
-                  + "] "
-                  + emergencyStopCurrency);
-
-      LOG.info(
-          () ->
-              "Balance that will stop ALL trading across ALL markets is ["
-                  + new DecimalFormat(DECIMAL_FORMAT_PATTERN).format(emergencyStopBalance)
-                  + "] "
-                  + emergencyStopCurrency);
-
-      if (currentBalance.compareTo(emergencyStopBalance) < 0) {
-        final String balanceBlownErrorMsg =
-            "EMERGENCY STOP triggered! - Current Emergency Stop Currency ["
-                + emergencyStopCurrency
-                + "] wallet "
-                + "balance ["
-                + new DecimalFormat(DECIMAL_FORMAT_PATTERN).format(currentBalance)
-                + "] on exchange "
-                + "is lower than configured Emergency Stop balance ["
-                + new DecimalFormat(DECIMAL_FORMAT_PATTERN).format(emergencyStopBalance)
-                + "] "
-                + emergencyStopCurrency;
-        LOG.fatal(() -> balanceBlownErrorMsg);
-        emailAlerter.sendMessage(
-            CRITICAL_EMAIL_ALERT_SUBJECT,
-            buildCriticalEmailAlertMsgContent(balanceBlownErrorMsg, null));
-      } else {
-
-        isEmergencyStopLimitBreached = false;
-        LOG.info(() -> "Emergency Stop check PASSED!");
-      }
-    }
-    return isEmergencyStopLimitBreached;
+    return EmergencyStopChecker.isEmergencyStopLimitBreached(
+        exchangeAdapter, engineConfig, emailAlerter);
   }
 
-  private String buildCriticalEmailAlertMsgContent(String errorDetails, Throwable exception) {
-    final StringBuilder msgContent =
-        new StringBuilder("A CRITICAL error event has occurred on BX-bot.");
-    msgContent.append(NEWLINE).append(NEWLINE);
+  private ExchangeAdapter loadExchangeAdapter() {
+    final ExchangeConfig exchangeConfig = exchangeConfigService.getExchangeConfig();
+    LOG.info(() -> "Fetched Exchange config from repository: " + exchangeConfig);
 
-    msgContent.append(HORIZONTAL_RULE);
-    msgContent.append("Bot Id / Name:");
-    msgContent.append(NEWLINE).append(NEWLINE);
-    msgContent.append(botId);
-    msgContent.append(" / ");
-    msgContent.append(botName);
-    msgContent.append(NEWLINE).append(NEWLINE);
+    final ExchangeAdapter adapter =
+        ConfigurableComponentFactory.createComponent(exchangeConfig.getAdapter());
+    LOG.info(() -> "Trading Engine will use Exchange Adapter for: " + adapter.getImplName());
 
-    msgContent.append(HORIZONTAL_RULE);
-    msgContent.append("Exchange Adapter:");
-    msgContent.append(NEWLINE).append(NEWLINE);
-    msgContent.append(exchangeAdapter.getClass().getName());
-    msgContent.append(NEWLINE).append(NEWLINE);
-
-    msgContent.append(HORIZONTAL_RULE);
-    msgContent.append("Event Time:");
-    msgContent.append(NEWLINE).append(NEWLINE);
-    msgContent.append(new Date());
-    msgContent.append(NEWLINE).append(NEWLINE);
-
-    msgContent.append(HORIZONTAL_RULE);
-    msgContent.append("Event Details:");
-    msgContent.append(NEWLINE).append(NEWLINE);
-    msgContent.append(errorDetails);
-    msgContent.append(NEWLINE).append(NEWLINE);
-
-    msgContent.append(HORIZONTAL_RULE);
-    msgContent.append("Action Taken:");
-    msgContent.append(NEWLINE).append(NEWLINE);
-    msgContent.append("The bot will shut down NOW! Check the bot logs for more information.");
-    msgContent.append(NEWLINE).append(NEWLINE);
-
-    if (exception != null) {
-      msgContent.append(HORIZONTAL_RULE);
-      msgContent.append("Stacktrace:");
-      msgContent.append(NEWLINE).append(NEWLINE);
-      final StringWriter stringWriter = new StringWriter();
-      final PrintWriter printWriter = new PrintWriter(stringWriter);
-      exception.printStackTrace(printWriter);
-      msgContent.append(stringWriter.toString());
-    }
-
-    return msgContent.toString();
+    final ExchangeConfigImpl exchangeApiConfig =
+        ExchangeApiConfigBuilder.buildConfig(exchangeConfig);
+    adapter.init(exchangeApiConfig);
+    return adapter;
   }
 
-  // ------------------------------------------------------------------------
-  // Config loading methods
-  // ------------------------------------------------------------------------
-
-  private void loadExchangeAdapterConfig() {
-    final ExchangeConfig domainExchangeConfig = exchangeConfigService.getExchangeConfig();
-    LOG.info(() -> "Fetched Exchange config from repository: " + domainExchangeConfig);
-
-    exchangeAdapter =
-        ConfigurableComponentFactory.createComponent(domainExchangeConfig.getAdapter());
-    LOG.info(
-        () -> "Trading Engine will use Exchange Adapter for: " + exchangeAdapter.getImplName());
-
-    final ExchangeConfigImpl adapterExchangeConfig = new ExchangeConfigImpl();
-
-    // Fetch optional network config
-    final NetworkConfig networkConfig = domainExchangeConfig.getNetworkConfig();
-    if (networkConfig != null) {
-      final NetworkConfigImpl adapterNetworkConfig = new NetworkConfigImpl();
-      adapterNetworkConfig.setConnectionTimeout(networkConfig.getConnectionTimeout());
-
-      // Grab optional non-fatal error codes
-      final List<Integer> nonFatalErrorCodes = networkConfig.getNonFatalErrorCodes();
-      if (nonFatalErrorCodes != null) {
-        adapterNetworkConfig.setNonFatalErrorCodes(nonFatalErrorCodes);
-      } else {
-        LOG.info(
-            () ->
-                "No (optional) NetworkConfiguration NonFatalErrorCodes have been set for "
-                    + "Exchange Adapter: "
-                    + exchangeAdapter.getImplName());
-      }
-
-      // Grab optional non-fatal error messages
-      final List<String> nonFatalErrorMessages = networkConfig.getNonFatalErrorMessages();
-      if (nonFatalErrorMessages != null) {
-        adapterNetworkConfig.setNonFatalErrorMessages(nonFatalErrorMessages);
-      } else {
-        LOG.info(
-            () ->
-                "No (optional) NetworkConfiguration NonFatalErrorMessages have been set for "
-                    + "Exchange Adapter: "
-                    + exchangeAdapter.getImplName());
-      }
-
-      adapterExchangeConfig.setNetworkConfig(adapterNetworkConfig);
-      LOG.info(() -> "NetworkConfiguration has been set: " + adapterNetworkConfig);
-
-    } else {
-      LOG.info(
-          () ->
-              "No (optional) NetworkConfiguration has been set for Exchange Adapter: "
-                  + exchangeAdapter.getImplName());
-    }
-
-    // Fetch optional authentication config
-    final Map<String, String> authenticationConfig = domainExchangeConfig.getAuthenticationConfig();
-    if (authenticationConfig != null) {
-      final AuthenticationConfigImpl adapterAuthenticationConfig = new AuthenticationConfigImpl();
-      adapterAuthenticationConfig.setItems(authenticationConfig);
-      adapterExchangeConfig.setAuthenticationConfig(adapterAuthenticationConfig);
-
-      // We don't log the creds!
-      LOG.info(() -> "AuthenticationConfiguration has been set successfully.");
-
-    } else {
-      LOG.info(
-          () ->
-              "No (optional) AuthenticationConfiguration has been set for Exchange Adapter: "
-                  + exchangeAdapter.getImplName());
-    }
-
-    // Fetch optional config
-    final Map<String, String> otherConfig = domainExchangeConfig.getOtherConfig();
-    if (otherConfig != null) {
-      final OtherConfigImpl adapterOtherConfig = new OtherConfigImpl();
-      adapterOtherConfig.setItems(otherConfig);
-      adapterExchangeConfig.setOtherConfig(adapterOtherConfig);
-      LOG.info(() -> "Other Exchange Adapter config has been set: " + adapterOtherConfig);
-    } else {
-      LOG.info(
-          () ->
-              "No Other config has been set for Exchange Adapter: "
-                  + exchangeAdapter.getImplName());
-    }
-
-    exchangeAdapter.init(adapterExchangeConfig);
+  private EngineConfig loadEngineConfig() {
+    final EngineConfig loadedEngineConfig = engineConfigService.getEngineConfig();
+    LOG.info(() -> "Fetched Engine config from repository: " + loadedEngineConfig);
+    return loadedEngineConfig;
   }
 
-  private void loadEngineConfig() {
-    final EngineConfig engineConfig = engineConfigService.getEngineConfig();
-    LOG.info(() -> "Fetched Engine config from repository: " + engineConfig);
-    botId = engineConfig.getBotId();
-    botName = engineConfig.getBotName();
-    tradeExecutionInterval = engineConfig.getTradeCycleInterval();
-    emergencyStopCurrency = engineConfig.getEmergencyStopCurrency();
-    emergencyStopBalance = engineConfig.getEmergencyStopBalance();
-  }
-
-  private void loadTradingStrategyConfig() {
+  private List<TradingStrategy> loadTradingStrategies() {
     final List<StrategyConfig> strategies = strategyConfigService.getAllStrategyConfig();
-    LOG.debug(() -> "Fetched Strategy config from repository: " + strategies);
-    for (final StrategyConfig strategy : strategies) {
-      strategyDescriptions.put(strategy.getId(), strategy);
-      LOG.info(() -> "Registered Trading Strategy with Trading Engine - ID: " + strategy.getId());
-    }
-  }
-
-  private void loadMarketConfigAndInitialiseTradingStrategies() {
+    LOG.info(() -> "Fetched Strategy config from repository: " + strategies);
     final List<MarketConfig> markets = marketConfigService.getAllMarketConfig();
     LOG.info(() -> "Fetched Markets config from repository: " + markets);
-    // Set used only as crude mechanism for checking for duplicate Markets
-    final Set<Market> loadedMarkets = new HashSet<>();
-
-    // Load em up and create the Strategies
-    for (final MarketConfig market : markets) {
-      final String marketName = market.getName();
-      if (!market.isEnabled()) {
-        LOG.info(
-            () -> marketName + " market is NOT enabled for trading - skipping to next market...");
-        continue;
-      }
-
-      final Market tradingMarket =
-          new MarketImpl(
-              marketName, market.getId(), market.getBaseCurrency(), market.getCounterCurrency());
-      final boolean wasAdded = loadedMarkets.add(tradingMarket);
-      if (!wasAdded) {
-        final String errorMsg = "Found duplicate Market! Market details: " + market;
-        LOG.fatal(() -> errorMsg);
-        throw new IllegalArgumentException(errorMsg);
-      }
-
-      // Get the strategy to use for this Market
-      final String strategyToUse = market.getTradingStrategyId();
-      LOG.info(() -> "Market Trading Strategy Id: " + strategyToUse);
-
-      if (strategyDescriptions.containsKey(strategyToUse)) {
-        final StrategyConfig tradingStrategy = strategyDescriptions.get(strategyToUse);
-
-        // Grab optional config for the Trading Strategy
-        final StrategyConfigItems tradingStrategyConfig = new StrategyConfigItems();
-        final Map<String, String> configItems = tradingStrategy.getConfigItems();
-        if (configItems != null) {
-          tradingStrategyConfig.setItems(configItems);
-        } else {
-          LOG.info(
-              () ->
-                  "No (optional) configuration has been set for Trading Strategy: "
-                      + strategyToUse);
-        }
-
-        LOG.info(() -> "StrategyConfigImpl (optional): " + tradingStrategyConfig);
-
-        /*
-         * Load the Trading Strategy impl, instantiate it, set its config, and store in the cached
-         * Trading Strategy execution list.
-         */
-        TradingStrategy strategyImpl = obtainTradingStrategyInstance(tradingStrategy);
-        strategyImpl.init(exchangeAdapter, tradingMarket, tradingStrategyConfig);
-
-        LOG.info(
-            () ->
-                "Initialized trading strategy successfully. Name: ["
-                    + tradingStrategy.getName()
-                    + "] Class: "
-                    + tradingStrategy.getClassName());
-
-        tradingStrategiesToExecute.add(strategyImpl);
-      } else {
-
-        // Game over. Config integrity blown - we can't find strat.
-        final String errorMsg =
-            "Failed to find matching Strategy for Market "
-                + market
-                + " - The Strategy "
-                + "["
-                + strategyToUse
-                + "] cannot be found in the "
-                + " Strategy Descriptions map: "
-                + strategyDescriptions;
-        LOG.error(() -> errorMsg);
-        throw new IllegalArgumentException(errorMsg);
-      }
-    }
-    LOG.info(() -> "Loaded and set Market configuration successfully!");
-  }
-
-  private TradingStrategy obtainTradingStrategyInstance(StrategyConfig tradingStrategy) {
-    final String tradingStrategyClassname = tradingStrategy.getClassName();
-    final String tradingStrategyBeanName = tradingStrategy.getBeanName();
-
-    TradingStrategy strategyImpl = null;
-    if (tradingStrategyBeanName != null) {
-      // if beanName is configured, try get the bean first
-      try {
-        strategyImpl = (TradingStrategy) springContext.getBean(tradingStrategyBeanName);
-
-      } catch (NullPointerException e) {
-        final String errorMsg =
-            "Failed to obtain bean [" + tradingStrategyBeanName + "] from spring context";
-        LOG.error(() -> errorMsg);
-        throw new IllegalArgumentException(errorMsg);
-      }
-    }
-
-    if (strategyImpl == null) {
-      // if beanName not configured use className
-      strategyImpl = ConfigurableComponentFactory.createComponent(tradingStrategyClassname);
-    }
-    return strategyImpl;
+    return tradingStrategiesBuilder.buildStrategies(strategies, markets, exchangeAdapter);
   }
 }

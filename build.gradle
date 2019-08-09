@@ -82,7 +82,7 @@ allprojects {
     apply plugin: "jacoco"
 
     group = 'com.gazbert.bxbot'
-    version = '0.12.1-SNAPSHOT'
+    version = '0.12.2-SNAPSHOT'
 }
 
 subprojects {
