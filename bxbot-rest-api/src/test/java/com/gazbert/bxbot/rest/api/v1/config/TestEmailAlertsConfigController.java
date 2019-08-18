@@ -73,13 +73,9 @@ public class TestEmailAlertsConfigController extends AbstractConfigControllerTes
 
   @MockBean private EmailAlertsConfigService emailAlertsConfigService;
 
-  // Need this even though not used in the test directly because Spring loads it on startup...
+  // Need these even though not used in the test directly because Spring loads it on startup...
   @MockBean private TradingEngine tradingEngine;
-
-  // Need this even though not used in the test directly because Spring loads it on startup...
   @MockBean private RestartEndpoint restartEndpoint;
-
-  // Need this even though not used in the test directly because Spring loads it on startup...
   @MockBean private LogFileWebEndpoint logFileWebEndpoint;
 
   @Before

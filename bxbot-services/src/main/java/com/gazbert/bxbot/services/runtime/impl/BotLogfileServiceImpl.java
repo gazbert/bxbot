@@ -82,7 +82,7 @@ public class BotLogfileServiceImpl implements BotLogfileService {
           () ->
               "Logfile size is greater than "
                   + maxLines
-                  + " lines - tailing end of file...");
+                  + " lines - truncating beginning of file...");
 
       final Path logfilePath = Paths.get(resource.getURI());
       final List<String> fileLines = tailFile(logfilePath, maxLines);
