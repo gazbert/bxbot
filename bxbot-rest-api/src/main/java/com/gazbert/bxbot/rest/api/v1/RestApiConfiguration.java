@@ -56,7 +56,7 @@ public class RestApiConfiguration {
   private int maxLogfileDownloadSize;
 
   /**
-   * TODO:  Does stuff.
+   * TODO: Does stuff.
    *
    * @return
    */
@@ -74,7 +74,7 @@ public class RestApiConfiguration {
   }
 
   /**
-   * TODO:  Does stuff.
+   * TODO: Does stuff.
    *
    * @param maxLogfileLines max lines to return.
    */

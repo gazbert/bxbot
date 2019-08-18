@@ -75,20 +75,26 @@ public class BotLogfileController {
     this.botLogfileService = botLogfileService;
   }
 
-
   /**
-   * TODO: Does stuff.
+   * Returns the logfile as a download.
    *
-   * @param user the user.
+   * <p>If the file has more lines than {@link RestApiConfiguration#getLogfileDownloadSize()}, the
+   * beginning of the logfile will be truncated.
+   *
+   * @param user the authenticated user making the request.
    * @param request the request.
-   * @return the logfile.
+   * @return the logfile as a download.
    */
   @GetMapping(value = LOGFILE_DOWNLOAD_RESOURCE_PATH)
   public ResponseEntity<Resource> downloadLogfile(
       @AuthenticationPrincipal User user, HttpServletRequest request) {
 
     LOG.info(
-        () -> "GET " + LOGFILE_RESOURCE_PATH + " - getLogfile() - caller: " + user.getUsername());
+        () ->
+            "GET "
+                + LOGFILE_RESOURCE_PATH
+                + " - downloadLogfile() - caller: "
+                + user.getUsername());
 
     Resource logfile;
     try {

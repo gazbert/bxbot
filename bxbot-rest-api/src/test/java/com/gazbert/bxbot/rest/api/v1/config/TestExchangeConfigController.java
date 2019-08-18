@@ -91,16 +91,10 @@ public class TestExchangeConfigController extends AbstractConfigControllerTest {
 
   @MockBean private ExchangeConfigService exchangeConfigService;
 
-  // Need this even though not used in the test directly because Spring loads it on startup...
+  // Need these even though not used in the test directly because Spring loads it on startup...
   @MockBean private TradingEngine tradingEngine;
-
-  // Need this even though not used in the test directly because Spring loads it on startup...
   @MockBean private EmailAlerter emailAlerter;
-
-  // Need this even though not used in the test directly because Spring loads it on startup...
   @MockBean private RestartEndpoint restartEndpoint;
-
-  // Need this even though not used in the test directly because Spring loads it on startup...
   @MockBean private LogFileWebEndpoint logFileWebEndpoint;
 
   @Before
