@@ -83,6 +83,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
     "javax.xml.datatype.*"
 })
 @PrepareForTest(GdaxExchangeAdapter.class)
+@Deprecated // #120 : GDAX exchange has been superseded by Coinbase Pro: https://pro.coinbase.com/
 public class TestGdaxExchangeAdapter extends AbstractExchangeAdapterTest {
 
   private static final String BOOK_JSON_RESPONSE = "./src/test/exchange-data/gdax/book.json";

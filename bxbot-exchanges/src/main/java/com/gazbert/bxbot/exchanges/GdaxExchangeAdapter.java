@@ -69,7 +69,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * Exchange Adapter for integrating with the GDAX (formerly Coinbase) exchange. The GDAX API is
+ * <strong>GDAX exchange has been superseded by Coinbase Pro: https://pro.coinbase.com/</strong>
+ *
+ * <p>Exchange Adapter for integrating with the GDAX (formerly Coinbase) exchange. The GDAX API is
  * documented <a href="https://www.gdax.com/">here</a>.
  *
  * <p><strong> DISCLAIMER: This Exchange Adapter is provided as-is; it might have bugs in it and you
@@ -105,6 +107,7 @@ import org.apache.logging.log4j.Logger;
  * @author gazbert
  * @since 1.0
  */
+@Deprecated // #120 : GDAX exchange has been superseded by Coinbase Pro: https://pro.coinbase.com/
 public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implements ExchangeAdapter {
 
   private static final Logger LOG = LogManager.getLogger();
