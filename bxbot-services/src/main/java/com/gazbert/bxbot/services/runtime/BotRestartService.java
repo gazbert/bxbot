@@ -30,5 +30,10 @@ package com.gazbert.bxbot.services.runtime;
  */
 public interface BotRestartService {
 
+  /**
+   * Restarts the bot.
+   *
+   * @return 'Restarting' if the bot could be restarted.
+   */
   String restart();
 }

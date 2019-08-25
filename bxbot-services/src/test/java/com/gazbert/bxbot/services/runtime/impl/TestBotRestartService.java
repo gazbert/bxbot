@@ -41,7 +41,7 @@ public class TestBotRestartService {
 
   @Test
   public void whenRestartCalledThenExpectBotStatusToBeRestarting() {
-    final String restartingStatus = "restarting";
+    final String restartingStatus = "Restarting";
     final RestartEndpoint restartEndpoint = EasyMock.createMock(RestartEndpoint.class);
     expect(restartEndpoint.restart()).andReturn(restartingStatus);
     replay(restartEndpoint);
