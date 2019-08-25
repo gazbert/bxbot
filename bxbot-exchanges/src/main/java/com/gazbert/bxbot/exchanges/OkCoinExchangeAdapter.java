@@ -764,7 +764,7 @@ public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter
 
       String sortedQueryString = createAlphabeticallySortedQueryString(params);
       if (LOG.isDebugEnabled()) {
-        LOG.debug("Sorted Query String without secret: " + sortedQueryString);
+        LOG.debug("Sorted Query String without secret: {}", sortedQueryString);
       }
 
       // Add secret key to Query String
