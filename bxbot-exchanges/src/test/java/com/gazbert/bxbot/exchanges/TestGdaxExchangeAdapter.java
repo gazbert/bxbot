@@ -84,7 +84,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
     "javax.xml.datatype.*"
 })
 @PrepareForTest(GdaxExchangeAdapter.class)
-@Deprecated
+@Deprecated(forRemoval = true)
 public class TestGdaxExchangeAdapter extends AbstractExchangeAdapterTest {
 
   private static final String BOOK_JSON_RESPONSE = "./src/test/exchange-data/gdax/book.json";
