@@ -116,7 +116,8 @@ public class BotLogfileServiceImpl implements BotLogfileService {
       if (fileLineCount > lineCount) {
         LOG.warn(
             () ->
-                "Logfile line count exceeds requested tail line count. Truncating beginning of file. "
+                "Logfile line count exceeds requested tail line count. Truncating beginning of "
+                    + "file. "
                     + "RequestedLineCount: "
                     + lineCount
                     + " LogfileLineCount: "
