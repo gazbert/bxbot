@@ -68,10 +68,11 @@ public class BotLogfileServiceImpl implements BotLogfileService {
       } else {
 
         LOG.warn(
-            "Logfile exceeds MaxFileSize. Truncating beginning of file. MaxFileSize: "
-                + maxFileSize
-                + " LogfileSize: "
-                + logfileLength);
+            () ->
+                "Logfile exceeds MaxFileSize. Truncating beginning of file. MaxFileSize: "
+                    + maxFileSize
+                    + " LogfileSize: "
+                    + logfileLength);
         final InputStream inputStream = logfile.getInputStream();
         final byte[] truncatedLogfile = new byte[maxFileSize];
         inputStream.readNBytes(truncatedLogfile, ((int) logfileLength) - maxFileSize, maxFileSize);
@@ -90,12 +91,12 @@ public class BotLogfileServiceImpl implements BotLogfileService {
   }
 
   @Override
-  public String getLogfileHead(int lineCount) throws IOException  {
+  public String getLogfileHead(int lineCount) throws IOException {
     final Resource resource = logFileWebEndpoint.logFile();
     final Path logfilePath = Paths.get(resource.getURI());
     final List<String> fileLines = headFile(logfilePath, lineCount);
     final StringBuilder truncatedFile = new StringBuilder();
-    fileLines.forEach((line) -> truncatedFile.append(line).append(NEWLINE));
+    fileLines.forEach(line -> truncatedFile.append(line).append(NEWLINE));
     return truncatedFile.toString();
   }
 
@@ -105,19 +106,21 @@ public class BotLogfileServiceImpl implements BotLogfileService {
     final Path logfilePath = Paths.get(resource.getURI());
     final List<String> fileLines = tailFile(logfilePath, lineCount);
     final StringBuilder truncatedFile = new StringBuilder();
-    fileLines.forEach((line) -> truncatedFile.append(line).append(NEWLINE));
+    fileLines.forEach(line -> truncatedFile.append(line).append(NEWLINE));
     return truncatedFile.toString();
   }
 
   private static List<String> tailFile(final Path source, final int lineCount) throws IOException {
     try (Stream<String> stream = Files.lines(source)) {
-      if (stream.count() > lineCount) {
+      final long fileLineCount = stream.count();
+      if (fileLineCount > lineCount) {
         LOG.warn(
-            "Logfile line count exceeds requested tail line count. Truncating beginning of file. "
-                + "RequestedLineCount: "
-                + lineCount
-                + " LogfileLineCount: "
-                + stream.count());
+            () ->
+                "Logfile line count exceeds requested tail line count. Truncating beginning of file. "
+                    + "RequestedLineCount: "
+                    + lineCount
+                    + " LogfileLineCount: "
+                    + fileLineCount);
       }
       final FileBuffer fileBuffer = new FileBuffer(lineCount);
       stream.forEach(fileBuffer::collect);
@@ -127,13 +130,15 @@ public class BotLogfileServiceImpl implements BotLogfileService {
 
   private static List<String> headFile(final Path source, final int lineCount) throws IOException {
     try (Stream<String> stream = Files.lines(source)) {
-      if (stream.count() > lineCount) {
+      final long fileLineCount = stream.count();
+      if (fileLineCount > lineCount) {
         LOG.warn(
-            "Logfile line count exceeds requested head line count. Truncating end of file. "
-                + "RequestedLineCount: "
-                + lineCount
-                + " LogfileLineCount: "
-                + stream.count());
+            () ->
+                "Logfile line count exceeds requested head line count. Truncating end of file. "
+                    + "RequestedLineCount: "
+                    + lineCount
+                    + " LogfileLineCount: "
+                    + fileLineCount);
       }
       final FileBuffer fileBuffer = new FileBuffer(lineCount);
       stream.forEach(fileBuffer::collect);
@@ -141,9 +146,7 @@ public class BotLogfileServiceImpl implements BotLogfileService {
     }
   }
 
-  /**
-   * Util class for reading lines of a logfile.
-   */
+  /** Util class for reading lines of a logfile. */
   private static final class FileBuffer {
     private int offset = 0;
     private final int maxLines;

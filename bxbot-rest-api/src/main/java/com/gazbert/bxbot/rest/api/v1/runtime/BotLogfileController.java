@@ -157,8 +157,9 @@ public class BotLogfileController {
       if (head > 0) {
         if (head > maxLogfileLineCount) {
           LOG.warn(
-              "Requested head line count exceeds max line count. Using max line count: "
-                  + maxLogfileLineCount);
+              () ->
+                  "Requested head line count exceeds max line count. Using max line count: "
+                      + maxLogfileLineCount);
           logfile = botLogfileService.getLogfileHead(maxLogfileLineCount);
         } else {
           logfile = botLogfileService.getLogfileHead(head);
@@ -167,8 +168,9 @@ public class BotLogfileController {
       } else if (tail > 0) {
         if (tail > maxLogfileLineCount) {
           LOG.warn(
-              "Requested tail line count exceeds max line count. Using max line count: "
-                  + maxLogfileLineCount);
+              () ->
+                  "Requested tail line count exceeds max line count. Using max line count: "
+                      + maxLogfileLineCount);
           logfile = botLogfileService.getLogfileTail(maxLogfileLineCount);
         } else {
           logfile = botLogfileService.getLogfileTail(tail);

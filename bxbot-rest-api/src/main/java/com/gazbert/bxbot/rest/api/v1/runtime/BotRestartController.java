@@ -64,8 +64,9 @@ public class BotRestartController {
    */
   @PostMapping(value = RESTART_RESOURCE_PATH)
   public ResponseEntity<String> restart(@AuthenticationPrincipal User user) {
+    LOG.info(
+        () -> "POST " + RESTART_RESOURCE_PATH + " - restart() - caller: " + user.getUsername());
 
-    LOG.info("POST " + RESTART_RESOURCE_PATH + " - restart() - caller: " + user.getUsername());
     final String status = botRestartService.restart();
 
     LOG.info(() -> "Response: " + status);
