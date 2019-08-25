@@ -234,7 +234,7 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
           sendAuthenticatedRequestToExchange(
               "POST", WALLETS_RESOURCE + "/" + walletId + "/orders", params);
       if (LOG.isDebugEnabled()) {
-        LOG.debug("Create Order response: " + response);
+        LOG.debug("Create Order response: {}", response);
       }
 
       if (response.getStatusCode() == HttpURLConnection.HTTP_CREATED) {
@@ -281,7 +281,7 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
           sendAuthenticatedRequestToExchange(
               "DELETE", WALLETS_RESOURCE + "/" + walletId + "/orders/" + orderId, null);
       if (LOG.isDebugEnabled()) {
-        LOG.debug("Cancel Order response: " + response);
+        LOG.debug("Cancel Order response: {}", response);
       }
 
       if (response.getStatusCode() == HttpURLConnection.HTTP_ACCEPTED) {
@@ -331,7 +331,7 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
               "GET", WALLETS_RESOURCE + "/" + walletId + "/orders", params);
 
       if (LOG.isDebugEnabled()) {
-        LOG.debug("Open Orders response: " + response);
+        LOG.debug("Open Orders response: {}", response);
       }
 
       if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
@@ -372,7 +372,7 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
     try {
       response = sendPublicRequestToExchange(MARKETS_RESOURCE + "/" + marketId + "/order_book");
       if (LOG.isDebugEnabled()) {
-        LOG.debug("Market Orders response: " + response);
+        LOG.debug("Market Orders response: {}", response);
       }
 
       if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
@@ -436,7 +436,7 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
     try {
       response = sendPublicRequestToExchange(MARKETS_RESOURCE + "/" + marketId + "/ticker");
       if (LOG.isDebugEnabled()) {
-        LOG.debug("Latest Market Price response: " + response);
+        LOG.debug("Latest Market Price response: {}", response);
       }
 
       if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
@@ -476,7 +476,7 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
 
       response = sendAuthenticatedRequestToExchange("GET", WALLETS_RESOURCE, params);
       if (LOG.isDebugEnabled()) {
-        LOG.debug("Balance Info response: " + response);
+        LOG.debug("Balance Info response: {}", response);
       }
 
       if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
@@ -541,7 +541,7 @@ public final class ItBitExchangeAdapter extends AbstractExchangeAdapter implemen
     try {
       response = sendPublicRequestToExchange(MARKETS_RESOURCE + "/" + marketId + "/ticker");
       if (LOG.isDebugEnabled()) {
-        LOG.debug("Ticker response: " + response);
+        LOG.debug("Ticker response: {}", response);
       }
 
       if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {

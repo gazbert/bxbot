@@ -50,8 +50,9 @@ import org.junit.Test;
  * Basic integration testing with GDAX exchange.
  *
  * @author gazbert
+ * @deprecated #120 : GDAX exchange has been superseded by Coinbase Pro: https://pro.coinbase.com/
  */
-@Deprecated // #120 : GDAX exchange has been superseded by Coinbase Pro: https://pro.coinbase.com/
+@Deprecated
 public class GdaxIT {
 
   private static final String MARKET_ID = "BTC-GBP";

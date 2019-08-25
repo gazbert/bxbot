@@ -106,8 +106,9 @@ import org.apache.logging.log4j.Logger;
  *
  * @author gazbert
  * @since 1.0
+ * @deprecated #120 : GDAX exchange has been superseded by Coinbase Pro: https://pro.coinbase.com/
  */
-@Deprecated // #120 : GDAX exchange has been superseded by Coinbase Pro: https://pro.coinbase.com/
+@Deprecated
 public final class GdaxExchangeAdapter extends AbstractExchangeAdapter implements ExchangeAdapter {
 
   private static final Logger LOG = LogManager.getLogger();
