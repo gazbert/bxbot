@@ -56,9 +56,11 @@ public class RestApiConfiguration {
   private int maxLogfileDownloadSize;
 
   /**
-   * TODO: Does stuff.
+   * Returns the max logfile size (in bytes) to be returned by the REST API.
    *
-   * @return
+   * <p>It is specified in the application.properties file: bxbot.restapi.maxLogfileLines
+   *
+   * @return the max logfile size in bytes.
    */
   public int getMaxLogfileLines() {
     if (maxLogfileLines == 0) {
@@ -73,19 +75,16 @@ public class RestApiConfiguration {
     return maxLogfileLines;
   }
 
-  /**
-   * TODO: Does stuff.
-   *
-   * @param maxLogfileLines max lines to return.
-   */
   public void setMaxLogfileLines(int maxLogfileLines) {
     this.maxLogfileLines = maxLogfileLines;
   }
 
   /**
-   * TODO: Does stuff.
+   * Returns the max download size for a logfile (in bytes) returned by the REST API.
    *
-   * @return max download size.
+   * <p>It is specified in the application.properties file: bxbot.restapi.maxLogfileDownloadSize
+   *
+   * @return max download size of the logfile in bytes.
    */
   public int getLogfileDownloadSize() {
     if (maxLogfileDownloadSize == 0) {
