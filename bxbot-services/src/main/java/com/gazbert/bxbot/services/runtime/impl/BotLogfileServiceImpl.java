@@ -112,17 +112,6 @@ public class BotLogfileServiceImpl implements BotLogfileService {
 
   private static List<String> tailFile(final Path source, final int lineCount) throws IOException {
     try (Stream<String> stream = Files.lines(source)) {
-      final long fileLineCount = stream.count();
-      if (fileLineCount > lineCount) {
-        LOG.warn(
-            () ->
-                "Logfile line count exceeds requested tail line count. Truncating beginning of "
-                    + "file. "
-                    + "RequestedLineCount: "
-                    + lineCount
-                    + " LogfileLineCount: "
-                    + fileLineCount);
-      }
       final FileBuffer fileBuffer = new FileBuffer(lineCount);
       stream.forEach(fileBuffer::collect);
       return fileBuffer.getTailLines();
@@ -131,16 +120,6 @@ public class BotLogfileServiceImpl implements BotLogfileService {
 
   private static List<String> headFile(final Path source, final int lineCount) throws IOException {
     try (Stream<String> stream = Files.lines(source)) {
-      final long fileLineCount = stream.count();
-      if (fileLineCount > lineCount) {
-        LOG.warn(
-            () ->
-                "Logfile line count exceeds requested head line count. Truncating end of file. "
-                    + "RequestedLineCount: "
-                    + lineCount
-                    + " LogfileLineCount: "
-                    + fileLineCount);
-      }
       final FileBuffer fileBuffer = new FileBuffer(lineCount);
       stream.forEach(fileBuffer::collect);
       return fileBuffer.getHeadLines();
@@ -163,12 +142,14 @@ public class BotLogfileServiceImpl implements BotLogfileService {
     }
 
     List<String> getTailLines() {
+      // Truncates the file head if file line count > maxLines
       return IntStream.range(offset < maxLines ? 0 : offset - maxLines, offset)
           .mapToObj(idx -> lines[idx % maxLines])
           .collect(Collectors.toList());
     }
 
     List<String> getHeadLines() {
+      // Truncates the file tail if file line count > maxLines
       return IntStream.range(offset, offset < maxLines ? 0 : offset - maxLines)
           .mapToObj(idx -> lines[idx % maxLines])
           .collect(Collectors.toList());
