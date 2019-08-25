@@ -33,11 +33,43 @@ import org.springframework.core.io.Resource;
  */
 public interface BotLogfileService {
 
+  /**
+   * Returns entire logfile as a Resource. The beginning of the file is truncated if the file size
+   * exceeds maxFileSize.
+   *
+   * @param maxFileSize the max size of the file to return.
+   * @return the logfile as a Resource.
+   * @throws IOException if an error occurs fetching the logfile.
+   */
   Resource getLogfileAsResource(int maxFileSize) throws IOException;
 
+  /**
+   * Returns entire logfile as a String. The beginning of the file is truncated if the file line
+   * count exceeds maxLines.
+   *
+   * @param maxLines the max number of lines to return.
+   * @return the logfile lines as a String.
+   * @throws IOException if an error occurs fetching the logfile.
+   */
   String getLogfile(int maxLines) throws IOException;
 
-  String getLogfileTail(int maxLines) throws IOException;
+  /**
+   * Returns specified tail of the logfile as a String. The beginning of the file is truncated if
+   * the requested lineCount exceeds the actual logfile line count.
+   *
+   * @param lineCount the requested line count.
+   * @return the logfile lines as a String.
+   * @throws IOException if an error occurs fetching the logfile.
+   */
+  String getLogfileTail(int lineCount) throws IOException;
 
-  String getLogfileHead(int maxLines) throws IOException;
+  /**
+   * Returns specified head of the logfile as a String. The end of the file is truncated if the
+   * requested lineCount exceeds the actual logfile line count.
+   *
+   * @param lineCount the requested line count.
+   * @return the logfile lines as a String.
+   * @throws IOException if an error occurs fetching the logfile.
+   */
+  String getLogfileHead(int lineCount) throws IOException;
 }

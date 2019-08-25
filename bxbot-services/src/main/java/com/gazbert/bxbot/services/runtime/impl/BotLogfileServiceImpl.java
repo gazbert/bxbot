@@ -26,7 +26,6 @@ package com.gazbert.bxbot.services.runtime.impl;
 import com.gazbert.bxbot.services.runtime.BotLogfileService;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -38,6 +37,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.logging.LogFileWebEndpoint;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
@@ -59,57 +59,91 @@ public class BotLogfileServiceImpl implements BotLogfileService {
   }
 
   @Override
-  public Resource getLogfileAsResource(int maxFileSize) {
-    // TODO: Truncate file if too large
-    return logFileWebEndpoint.logFile();
+  public Resource getLogfileAsResource(int maxFileSize) throws IOException {
+    final Resource logfile = logFileWebEndpoint.logFile();
+    final long logfileLength = logfile.contentLength();
+    try {
+      if (logfileLength <= maxFileSize) {
+        return logfile;
+      } else {
+
+        LOG.warn(
+            "Logfile exceeds MaxFileSize. Truncating beginning of file. MaxFileSize: "
+                + maxFileSize
+                + " LogfileSize: "
+                + logfileLength);
+        final InputStream inputStream = logfile.getInputStream();
+        final byte[] truncatedLogfile = new byte[maxFileSize];
+        inputStream.readNBytes(truncatedLogfile, ((int) logfileLength) - maxFileSize, maxFileSize);
+        return new ByteArrayResource(truncatedLogfile);
+      }
+    } catch (IOException e) {
+      final String errorMsg = "Failed to load logfile. Details: " + e.getMessage();
+      LOG.error(() -> errorMsg);
+      throw e;
+    }
   }
 
   @Override
   public String getLogfile(int maxLines) throws IOException {
+    return getLogfileTail(maxLines);
+  }
+
+  @Override
+  public String getLogfileHead(int lineCount) throws IOException  {
     final Resource resource = logFileWebEndpoint.logFile();
-    if (resource.contentLength() <= maxLines) {
-      try {
-        final InputStream inputStream = resource.getInputStream();
-        final byte[] bytes = inputStream.readAllBytes();
-        return new String(bytes, StandardCharsets.UTF_8);
-      } catch (IOException e) {
-        final String errorMsg = "Failed to load logfile. Details: " + e.getMessage();
-        LOG.error(() -> errorMsg);
-        throw e;
-      }
-    } else {
-      LOG.warn(
-          () ->
-              "Logfile size is greater than "
-                  + maxLines
-                  + " lines - truncating beginning of file...");
-
-      final Path logfilePath = Paths.get(resource.getURI());
-      final List<String> fileLines = tailFile(logfilePath, maxLines);
-      final StringBuilder truncatedFile = new StringBuilder();
-      fileLines.forEach((line) -> truncatedFile.append(line).append(NEWLINE));
-      return truncatedFile.toString();
-    }
+    final Path logfilePath = Paths.get(resource.getURI());
+    final List<String> fileLines = headFile(logfilePath, lineCount);
+    final StringBuilder truncatedFile = new StringBuilder();
+    fileLines.forEach((line) -> truncatedFile.append(line).append(NEWLINE));
+    return truncatedFile.toString();
   }
 
   @Override
-  public String getLogfileHead(int maxLines) {
-    throw new UnsupportedOperationException("getLogfileHead() still under development.");
+  public String getLogfileTail(int lineCount) throws IOException {
+    final Resource resource = logFileWebEndpoint.logFile();
+    final Path logfilePath = Paths.get(resource.getURI());
+    final List<String> fileLines = tailFile(logfilePath, lineCount);
+    final StringBuilder truncatedFile = new StringBuilder();
+    fileLines.forEach((line) -> truncatedFile.append(line).append(NEWLINE));
+    return truncatedFile.toString();
   }
 
-  @Override
-  public String getLogfileTail(int maxLines) {
-    throw new UnsupportedOperationException("getLogfileTail() still under development.");
-  }
-
-  private static List<String> tailFile(final Path source, final int maxLines) throws IOException {
+  private static List<String> tailFile(final Path source, final int lineCount) throws IOException {
     try (Stream<String> stream = Files.lines(source)) {
-      final FileBuffer fileBuffer = new FileBuffer(maxLines);
+      if (stream.count() > lineCount) {
+        LOG.warn(
+            "Logfile line count exceeds requested tail line count. Truncating beginning of file. "
+                + "RequestedLineCount: "
+                + lineCount
+                + " LogfileLineCount: "
+                + stream.count());
+      }
+      final FileBuffer fileBuffer = new FileBuffer(lineCount);
       stream.forEach(fileBuffer::collect);
-      return fileBuffer.getLines();
+      return fileBuffer.getTailLines();
     }
   }
 
+  private static List<String> headFile(final Path source, final int lineCount) throws IOException {
+    try (Stream<String> stream = Files.lines(source)) {
+      if (stream.count() > lineCount) {
+        LOG.warn(
+            "Logfile line count exceeds requested head line count. Truncating end of file. "
+                + "RequestedLineCount: "
+                + lineCount
+                + " LogfileLineCount: "
+                + stream.count());
+      }
+      final FileBuffer fileBuffer = new FileBuffer(lineCount);
+      stream.forEach(fileBuffer::collect);
+      return fileBuffer.getHeadLines();
+    }
+  }
+
+  /**
+   * Util class for reading lines of a logfile.
+   */
   private static final class FileBuffer {
     private int offset = 0;
     private final int maxLines;
@@ -124,8 +158,14 @@ public class BotLogfileServiceImpl implements BotLogfileService {
       lines[offset++ % maxLines] = line;
     }
 
-    public List<String> getLines() {
+    List<String> getTailLines() {
       return IntStream.range(offset < maxLines ? 0 : offset - maxLines, offset)
+          .mapToObj(idx -> lines[idx % maxLines])
+          .collect(Collectors.toList());
+    }
+
+    List<String> getHeadLines() {
+      return IntStream.range(offset, offset < maxLines ? 0 : offset - maxLines)
           .mapToObj(idx -> lines[idx % maxLines])
           .collect(Collectors.toList());
     }

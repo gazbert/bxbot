@@ -40,19 +40,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
  * Controller for directing Bot Logfile requests.
- *
- * <p>GET /runtime/logfile/download [bxbot.restapi.maxLogfileDownloadSize]
- *
- * <p>GET /runtime/logfile [bxbot.restapi.maxLogfileLines]
- *
- * <p>GET /runtime/logfile?head=1000 [bxbot.restapi.maxLogfileLines]
- *
- * <p>GET /runtime/logfile?tail=2000 [bxbot.restapi.maxLogfileLines]
  *
  * @author gazbert
  * @since 1.0
@@ -98,7 +91,8 @@ public class BotLogfileController {
 
     Resource logfile;
     try {
-      logfile = botLogfileService.getLogfileAsResource(restApiConfiguration.getMaxLogfileLines());
+      logfile =
+          botLogfileService.getLogfileAsResource(restApiConfiguration.getLogfileDownloadSize());
     } catch (IOException e) {
       return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -131,24 +125,63 @@ public class BotLogfileController {
    * <ul>
    *   <li>For a head request, the end of the file will be truncated.
    *   <li>For a tail request, the start of the file will be truncated.
-   *   <li>If head or tail param not specified, the start of the file will be truncated
+   *   <li>If head or tail param is not specified, the start of the file will be truncated.
+   *   <li>If both a head and tail param is present (just why?!!), the head request will be
+   *       actioned.
    * </ul>
    *
    * @param user the authenticated user making the request.
+   * @param head the optional head line count.
+   * @param tail the optional tail line count.
    * @return the logfile.
    */
   @GetMapping(value = LOGFILE_RESOURCE_PATH)
-  public ResponseEntity<String> getLogfile(@AuthenticationPrincipal User user) {
+  public ResponseEntity<String> getLogfile(
+      @AuthenticationPrincipal User user, @PathVariable int head, @PathVariable int tail) {
 
     LOG.info(
-        () -> "GET " + LOGFILE_RESOURCE_PATH + " - getLogfile() - caller: " + user.getUsername());
+        () ->
+            "GET "
+                + LOGFILE_RESOURCE_PATH
+                + " - getLogfile() - caller: "
+                + user.getUsername()
+                + ", head="
+                + head
+                + ", tail="
+                + tail);
 
     String logfile;
+    final int maxLogfileLineCount = restApiConfiguration.getMaxLogfileLines();
+
     try {
-      logfile = botLogfileService.getLogfile(restApiConfiguration.getMaxLogfileLines());
+      if (head > 0) {
+        if (head > maxLogfileLineCount) {
+          LOG.warn(
+              "Requested head line count exceeds max line count. Using max line count: "
+                  + maxLogfileLineCount);
+          logfile = botLogfileService.getLogfileHead(maxLogfileLineCount);
+        } else {
+          logfile = botLogfileService.getLogfileHead(head);
+        }
+
+      } else if (tail > 0) {
+        if (tail > maxLogfileLineCount) {
+          LOG.warn(
+              "Requested tail line count exceeds max line count. Using max line count: "
+                  + maxLogfileLineCount);
+          logfile = botLogfileService.getLogfileTail(maxLogfileLineCount);
+        } else {
+          logfile = botLogfileService.getLogfileTail(tail);
+        }
+
+      } else {
+        logfile = botLogfileService.getLogfile(restApiConfiguration.getMaxLogfileLines());
+      }
+
+      return new ResponseEntity<>(logfile, null, HttpStatus.OK);
+
     } catch (IOException e) {
       return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
-    return new ResponseEntity<>(logfile, null, HttpStatus.OK);
   }
 }
