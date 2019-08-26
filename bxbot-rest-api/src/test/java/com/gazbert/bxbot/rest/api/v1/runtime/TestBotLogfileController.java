@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016 Gareth Jon Lynch
+ * Copyright (c) 2019 gazbert
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -35,7 +35,6 @@ import com.gazbert.bxbot.core.engine.TradingEngine;
 import com.gazbert.bxbot.core.mail.EmailAlerter;
 import com.gazbert.bxbot.services.runtime.BotLogfileService;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -59,6 +58,7 @@ public class TestBotLogfileController extends AbstractRuntimeControllerTest {
   private static final String LOGFILE_ENDPOINT_URI = RUNTIME_ENDPOINT_BASE_URI + "/logfile";
 
   private static final int MAX_LOGFILE_LINES = 1000;
+
   private static final String LOGFILE =
       "4981 [main] 2019-07-20 17:30:20,429 INFO  EngineConfigYamlRepository get() - "
           + "Fetching EngineConfig...";
@@ -75,9 +75,8 @@ public class TestBotLogfileController extends AbstractRuntimeControllerTest {
     mockMvc = MockMvcBuilders.webAppContextSetup(ctx).addFilter(springSecurityFilterChain).build();
   }
 
-  @Ignore("FIXME: Ignore for now - code still being developed")
   @Test
-  public void testGetBotLogfile() throws Exception {
+  public void testGetLogfile() throws Exception {
     given(botLogfileService.getLogfile(MAX_LOGFILE_LINES)).willReturn(LOGFILE);
 
     mockMvc
@@ -94,19 +93,57 @@ public class TestBotLogfileController extends AbstractRuntimeControllerTest {
   }
 
   @Test
-  public void testGetBotLogfileWhenUnauthorizedWithBadCredentials() throws Exception {
+  public void testGetLogfileHead() throws Exception {
+    final int headLineCount = 4;
+    given(botLogfileService.getLogfileHead(headLineCount))
+        .willReturn(LOGFILE.substring(0, headLineCount));
+
+    mockMvc
+        .perform(
+            get(LOGFILE_ENDPOINT_URI + "?head=" + headLineCount)
+                .header(
+                    "Authorization",
+                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD)))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$").value(LOGFILE.substring(0, headLineCount)));
+
+    verify(botLogfileService, times(1)).getLogfileHead(headLineCount);
+  }
+
+  @Test
+  public void testGetLogfileTail() throws Exception {
+    final int tailLineCount = 4;
+    final String tailContent = LOGFILE.substring(LOGFILE.length() - tailLineCount);
+    given(botLogfileService.getLogfileTail(tailLineCount)).willReturn(tailContent);
+
+    mockMvc
+        .perform(
+            get(LOGFILE_ENDPOINT_URI + "?tail=" + tailLineCount)
+                .header(
+                    "Authorization",
+                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD)))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$").value(tailContent));
+
+    verify(botLogfileService, times(1)).getLogfileTail(tailLineCount);
+  }
+
+  @Test
+  public void testGetLogfileWhenUnauthorizedWithBadCredentials() throws Exception {
     mockMvc
         .perform(
             get(LOGFILE_ENDPOINT_URI)
                 .header(
                     "Authorization",
                     buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, INVALID_USER_PASSWORD))
-                .accept(MediaType.APPLICATION_JSON))
+                .accept(MediaType.APPLICATION_FORM_URLENCODED))
         .andExpect(status().isUnauthorized());
   }
 
   @Test
-  public void testGetBotLogfileWhenUnauthorizedWithMissingCredentials() throws Exception {
+  public void testGetLogfileWhenUnauthorizedWithMissingCredentials() throws Exception {
     mockMvc
         .perform(
             get(LOGFILE_ENDPOINT_URI)

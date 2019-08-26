@@ -40,8 +40,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -137,7 +137,9 @@ public class BotLogfileController {
    */
   @GetMapping(value = LOGFILE_RESOURCE_PATH)
   public ResponseEntity<String> getLogfile(
-      @AuthenticationPrincipal User user, @PathVariable int head, @PathVariable int tail) {
+      @AuthenticationPrincipal User user,
+      @RequestParam(required = false) Integer head,
+      @RequestParam(required = false) Integer tail) {
 
     LOG.info(
         () ->
@@ -154,7 +156,7 @@ public class BotLogfileController {
     final int maxLogfileLineCount = restApiConfiguration.getMaxLogfileLines();
 
     try {
-      if (head > 0) {
+      if (head != null && head > 0) {
         if (head > maxLogfileLineCount) {
           LOG.warn(
               () ->
@@ -165,7 +167,7 @@ public class BotLogfileController {
           logfile = botLogfileService.getLogfileHead(head);
         }
 
-      } else if (tail > 0) {
+      } else if (tail != null && tail > 0) {
         if (tail > maxLogfileLineCount) {
           LOG.warn(
               () ->
