@@ -113,7 +113,8 @@ public class TestBotLogfileController extends AbstractRuntimeControllerTest {
                     buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD)))
         .andDo(print())
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$").value(LOGFILE_LINE_1 + System.lineSeparator() + LOGFILE_LINE_2));
+        .andExpect(jsonPath("$").value(LOGFILE_LINE_1
+            + System.lineSeparator() + LOGFILE_LINE_2));
 
     verify(botLogfileService, times(1)).getLogfile(MAX_LOGFILE_LINES);
   }
@@ -150,7 +151,8 @@ public class TestBotLogfileController extends AbstractRuntimeControllerTest {
                     buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD)))
         .andDo(print())
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$").value(LOGFILE_LINE_2 + System.lineSeparator() + LOGFILE_LINE_3));
+        .andExpect(jsonPath("$").value(LOGFILE_LINE_2
+            + System.lineSeparator() + LOGFILE_LINE_3));
 
     verify(botLogfileService, times(1)).getLogfile(MAX_LOGFILE_LINES);
   }
@@ -169,7 +171,8 @@ public class TestBotLogfileController extends AbstractRuntimeControllerTest {
                     buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD)))
         .andDo(print())
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$").value(LOGFILE_LINE_1 + System.lineSeparator() + LOGFILE_LINE_2));
+        .andExpect(jsonPath("$").value(LOGFILE_LINE_1
+            + System.lineSeparator() + LOGFILE_LINE_2));
 
     verify(botLogfileService, times(1)).getLogfileHead(MAX_LOGFILE_LINES);
   }
@@ -206,7 +209,8 @@ public class TestBotLogfileController extends AbstractRuntimeControllerTest {
                     buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD)))
         .andDo(print())
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$").value(LOGFILE_LINE_2 + System.lineSeparator() + LOGFILE_LINE_3));
+        .andExpect(jsonPath("$").value(LOGFILE_LINE_2
+            + System.lineSeparator() + LOGFILE_LINE_3));
 
     verify(botLogfileService, times(1)).getLogfile(MAX_LOGFILE_LINES);
   }
@@ -225,7 +229,8 @@ public class TestBotLogfileController extends AbstractRuntimeControllerTest {
                     buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD)))
         .andDo(print())
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$").value(LOGFILE_LINE_2 + System.lineSeparator() + LOGFILE_LINE_3));
+        .andExpect(jsonPath("$").value(LOGFILE_LINE_2
+            + System.lineSeparator() + LOGFILE_LINE_3));
 
     verify(botLogfileService, times(1)).getLogfileTail(MAX_LOGFILE_LINES);
   }

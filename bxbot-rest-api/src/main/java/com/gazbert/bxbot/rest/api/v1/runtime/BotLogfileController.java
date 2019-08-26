@@ -126,7 +126,7 @@ public class BotLogfileController {
    *   <li>For a head request, the end of the file will be truncated.
    *   <li>For a tail request, the start of the file will be truncated.
    *   <li>If head or tail param is not specified, the start of the file will be truncated.
-   *   <li>If both a head and tail param is present (just why?!!), the head request will be
+   *   <li>If both a head and tail param is present (just why?!!), a tail request will be
    *       actioned.
    * </ul>
    *
