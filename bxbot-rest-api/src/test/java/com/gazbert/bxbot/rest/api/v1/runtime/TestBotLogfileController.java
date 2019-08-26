@@ -57,7 +57,8 @@ public class TestBotLogfileController extends AbstractRuntimeControllerTest {
 
   private static final String LOGFILE_ENDPOINT_URI = RUNTIME_ENDPOINT_BASE_URI + "/logfile";
 
-  private static final int MAX_LOGFILE_LINES = 1000;
+  // This value must be the same as maxLogfileLines in test/resources/application.properties
+  private static final int MAX_LOGFILE_LINES = 102;
 
   private static final String LOGFILE =
       "4981 [main] 2019-07-20 17:30:20,429 INFO  EngineConfigYamlRepository get() - "
@@ -112,6 +113,24 @@ public class TestBotLogfileController extends AbstractRuntimeControllerTest {
   }
 
   @Test
+  public void testGetLogfileHeadWhenRequestedLineCountExceedsMaxAllowed() throws Exception {
+    final int headLineCount = MAX_LOGFILE_LINES + 1;
+    given(botLogfileService.getLogfileHead(MAX_LOGFILE_LINES)).willReturn(LOGFILE);
+
+    mockMvc
+        .perform(
+            get(LOGFILE_ENDPOINT_URI + "?head=" + headLineCount)
+                .header(
+                    "Authorization",
+                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD)))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$").value(LOGFILE));
+
+    verify(botLogfileService, times(1)).getLogfileHead(MAX_LOGFILE_LINES);
+  }
+
+  @Test
   public void testGetLogfileTail() throws Exception {
     final int tailLineCount = 4;
     final String tailContent = LOGFILE.substring(LOGFILE.length() - tailLineCount);
@@ -128,6 +147,24 @@ public class TestBotLogfileController extends AbstractRuntimeControllerTest {
         .andExpect(jsonPath("$").value(tailContent));
 
     verify(botLogfileService, times(1)).getLogfileTail(tailLineCount);
+  }
+
+  @Test
+  public void testGetLogfileTailWhenRequestedLineCountExceedsMaxAllowed() throws Exception {
+    final int tailLineCount = MAX_LOGFILE_LINES + 1;
+    given(botLogfileService.getLogfileTail(MAX_LOGFILE_LINES)).willReturn(LOGFILE);
+
+    mockMvc
+        .perform(
+            get(LOGFILE_ENDPOINT_URI + "?tail=" + tailLineCount)
+                .header(
+                    "Authorization",
+                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD)))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$").value(LOGFILE));
+
+    verify(botLogfileService, times(1)).getLogfileTail(MAX_LOGFILE_LINES);
   }
 
   @Test
