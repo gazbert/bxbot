@@ -45,9 +45,25 @@ public class TestRestApiConfiguration {
   }
 
   @Test
+  public void testMaxLogfileLinesDefaultFallback() {
+    final RestApiConfiguration restApiConfiguration = new RestApiConfiguration();
+    restApiConfiguration.setMaxLogfileLines(0);
+    assertThat(restApiConfiguration.getMaxLogfileLines())
+        .isEqualTo(RestApiConfiguration.DEFAULT_MAX_LINES);
+  }
+
+  @Test
   public void testMaxLogfileDownloadSizeCanBeSetAndFetched() {
     final RestApiConfiguration restApiConfiguration = new RestApiConfiguration();
     restApiConfiguration.setMaxLogfileDownloadSize(MAX_LOGFILE_DOWNLOAD_SIZE);
     assertThat(restApiConfiguration.getLogfileDownloadSize()).isEqualTo(MAX_LOGFILE_DOWNLOAD_SIZE);
+  }
+
+  @Test
+  public void testMaxLogfileDownloadSizeDefaultFallback() {
+    final RestApiConfiguration restApiConfiguration = new RestApiConfiguration();
+    restApiConfiguration.setMaxLogfileDownloadSize(0);
+    assertThat(restApiConfiguration.getLogfileDownloadSize())
+        .isEqualTo(RestApiConfiguration.DEFAULT_MAX_DOWNLOAD_SIZE);
   }
 }

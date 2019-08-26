@@ -43,9 +43,9 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix = "bxbot.restapi")
 public class RestApiConfiguration {
 
+  public static final int DEFAULT_MAX_LINES = 1000;
+  public static final int DEFAULT_MAX_DOWNLOAD_SIZE = 1024 * 1024;
   private static final Logger LOG = LogManager.getLogger();
-  private static final int DEFAULT_MAX_LINES = 1000;
-  private static final int DEFAULT_MAX_DOWNLOAD_SIZE = 1024 * 1024;
 
   @NotNull
   @Min(1)
