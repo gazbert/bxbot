@@ -28,6 +28,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -97,7 +98,9 @@ public class TestBotLogfileController extends AbstractRuntimeControllerTest {
                     "Authorization",
                     buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD)))
         .andDo(print())
-        .andExpect(status().isOk());
+        .andExpect(status().isOk())
+        .andExpect(header().string("Content-Type", "application/octet-stream"))
+        .andExpect(jsonPath("$").value(LOGFILE));
 
     verify(botLogfileService, times(1)).getLogfileAsResource(MAX_LOGFILE_DOWNLOAD_SIZE);
   }
