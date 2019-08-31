@@ -28,12 +28,12 @@ import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
 
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
 import org.easymock.EasyMock;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.boot.actuate.logging.LogFileWebEndpoint;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 
 /**
@@ -43,32 +43,87 @@ import org.springframework.core.io.Resource;
  */
 public class TestBotLogfileService {
 
-  @Ignore("FIXME: Ignore for now - code still being developed")
   @Test
   public void whenGetLogfileCalledThenExpectLogfileContentToBeReturned() throws Exception {
-    final String logfile =
-        "4981 [main] 2019-07-20 17:30:20,429 INFO  EngineConfigYamlRepository get() - "
-            + "Fetching EngineConfig...";
+    final String logfilePath = "src/test/logfiles/logfile.log";
+    final String expectedLogfileContent =
+        "4981 [main] 2019-07-20 17:30:20,429 INFO  EngineConfigYamlRepository get() "
+            + "- Fetching EngineConfig..."
+            + System.lineSeparator()
+            + "4982 [main] 2019-07-20 17:30:21,429 INFO  EngineConfigYamlRepository get() "
+            + "- Validating config..."
+            + System.lineSeparator()
+            + "4983 [main] 2019-07-20 17:30:22,429 INFO  EngineConfigYamlRepository get() "
+            + "- Config is good"
+            + System.lineSeparator();
 
-    final InputStream inputStream = EasyMock.createMock(InputStream.class);
-    final Resource resource = EasyMock.createMock(Resource.class);
+    final Path path = FileSystems.getDefault().getPath(logfilePath);
+    final Resource resource = new FileSystemResource(path);
     final LogFileWebEndpoint logFileWebEndpoint = EasyMock.createMock(LogFileWebEndpoint.class);
 
     expect(logFileWebEndpoint.logFile()).andReturn(resource);
-    expect(resource.getInputStream()).andReturn(inputStream);
-    expect(inputStream.readAllBytes()).andReturn(logfile.getBytes(StandardCharsets.UTF_8));
 
-    replay(resource);
-    replay(inputStream);
     replay(logFileWebEndpoint);
 
     final BotLogfileServiceImpl botLogfileService = new BotLogfileServiceImpl(logFileWebEndpoint);
-    final String fetchedLogfile = botLogfileService.getLogfile(100);
+    final String fetchedLogfile = botLogfileService.getLogfile(3);
 
-    assertThat(fetchedLogfile).isEqualTo(logfile);
+    assertThat(fetchedLogfile).isEqualTo(expectedLogfileContent);
 
-    verify(resource);
-    verify(inputStream);
+    verify(logFileWebEndpoint);
+  }
+
+  @Test
+  public void whenLogfileCalledWith2ThenExpectOnlyLast2LinesToBeReturned() throws Exception {
+    final String logfilePath = "src/test/logfiles/logfile.log";
+    final String expectedLogfileContent =
+        "4982 [main] 2019-07-20 17:30:21,429 INFO  EngineConfigYamlRepository get() "
+            + "- Validating config..."
+            + System.lineSeparator()
+            + "4983 [main] 2019-07-20 17:30:22,429 INFO  EngineConfigYamlRepository get() "
+            + "- Config is good"
+            + System.lineSeparator();
+
+    final Path path = FileSystems.getDefault().getPath(logfilePath);
+    final Resource resource = new FileSystemResource(path);
+    final LogFileWebEndpoint logFileWebEndpoint = EasyMock.createMock(LogFileWebEndpoint.class);
+
+    expect(logFileWebEndpoint.logFile()).andReturn(resource);
+
+    replay(logFileWebEndpoint);
+
+    final BotLogfileServiceImpl botLogfileService = new BotLogfileServiceImpl(logFileWebEndpoint);
+    final String fetchedLogfile = botLogfileService.getLogfile(2); // 2 lines only
+
+    assertThat(fetchedLogfile).isEqualTo(expectedLogfileContent);
+
+    verify(logFileWebEndpoint);
+  }
+
+  @Test
+  public void whenTailLogfileCalledWith2ThenExpectOnlyLast2LinesToBeReturned() throws Exception {
+    final String logfilePath = "src/test/logfiles/logfile.log";
+    final String expectedLogfileContent =
+        "4982 [main] 2019-07-20 17:30:21,429 INFO  EngineConfigYamlRepository get() "
+            + "- Validating config..."
+            + System.lineSeparator()
+            + "4983 [main] 2019-07-20 17:30:22,429 INFO  EngineConfigYamlRepository get() "
+            + "- Config is good"
+            + System.lineSeparator();
+
+    final Path path = FileSystems.getDefault().getPath(logfilePath);
+    final Resource resource = new FileSystemResource(path);
+    final LogFileWebEndpoint logFileWebEndpoint = EasyMock.createMock(LogFileWebEndpoint.class);
+
+    expect(logFileWebEndpoint.logFile()).andReturn(resource);
+
+    replay(logFileWebEndpoint);
+
+    final BotLogfileServiceImpl botLogfileService = new BotLogfileServiceImpl(logFileWebEndpoint);
+    final String fetchedLogfile = botLogfileService.getLogfileTail(2); // tail 2 lines only
+
+    assertThat(fetchedLogfile).isEqualTo(expectedLogfileContent);
+
     verify(logFileWebEndpoint);
   }
 }
