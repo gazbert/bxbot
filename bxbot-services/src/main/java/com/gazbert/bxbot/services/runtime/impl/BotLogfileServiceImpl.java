@@ -113,7 +113,7 @@ public class BotLogfileServiceImpl implements BotLogfileService {
   private static List<String> tailFile(final Path source, final int lineCount) throws IOException {
     try (Stream<String> stream = Files.lines(source)) {
       final FileBuffer fileBuffer = new FileBuffer(lineCount);
-      stream.forEach(fileBuffer::collect);
+      stream.forEach(fileBuffer::collectTailLine);
       return fileBuffer.getTailLines();
     }
   }
@@ -121,7 +121,7 @@ public class BotLogfileServiceImpl implements BotLogfileService {
   private static List<String> headFile(final Path source, final int lineCount) throws IOException {
     try (Stream<String> stream = Files.lines(source)) {
       final FileBuffer fileBuffer = new FileBuffer(lineCount);
-      stream.forEach(fileBuffer::collect);
+      stream.forEach(fileBuffer::collectHeadLine);
       return fileBuffer.getHeadLines();
     }
   }
@@ -137,8 +137,14 @@ public class BotLogfileServiceImpl implements BotLogfileService {
       this.lines = new String[maxLines];
     }
 
-    void collect(String line) {
+    void collectTailLine(String line) {
       lines[offset++ % maxLines] = line;
+    }
+
+    void collectHeadLine(String line) {
+      if (offset + 1 <= maxLines) {
+        lines[offset++] = line;
+      }
     }
 
     List<String> getTailLines() {
@@ -150,7 +156,7 @@ public class BotLogfileServiceImpl implements BotLogfileService {
 
     List<String> getHeadLines() {
       // Truncates the file tail if file line count > maxLines
-      return IntStream.range(offset, offset < maxLines ? 0 : offset - maxLines)
+      return IntStream.range(0, maxLines > offset ? offset : maxLines)
           .mapToObj(idx -> lines[idx % maxLines])
           .collect(Collectors.toList());
     }
