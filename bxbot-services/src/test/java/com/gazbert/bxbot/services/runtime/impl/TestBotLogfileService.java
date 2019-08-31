@@ -62,14 +62,12 @@ public class TestBotLogfileService {
     final LogFileWebEndpoint logFileWebEndpoint = EasyMock.createMock(LogFileWebEndpoint.class);
 
     expect(logFileWebEndpoint.logFile()).andReturn(resource);
-
     replay(logFileWebEndpoint);
 
     final BotLogfileServiceImpl botLogfileService = new BotLogfileServiceImpl(logFileWebEndpoint);
     final String fetchedLogfile = botLogfileService.getLogfile(3);
 
     assertThat(fetchedLogfile).isEqualTo(expectedLogfileContent);
-
     verify(logFileWebEndpoint);
   }
 
@@ -89,14 +87,12 @@ public class TestBotLogfileService {
     final LogFileWebEndpoint logFileWebEndpoint = EasyMock.createMock(LogFileWebEndpoint.class);
 
     expect(logFileWebEndpoint.logFile()).andReturn(resource);
-
     replay(logFileWebEndpoint);
 
     final BotLogfileServiceImpl botLogfileService = new BotLogfileServiceImpl(logFileWebEndpoint);
     final String fetchedLogfile = botLogfileService.getLogfile(2); // 2 lines only
 
     assertThat(fetchedLogfile).isEqualTo(expectedLogfileContent);
-
     verify(logFileWebEndpoint);
   }
 
@@ -116,14 +112,12 @@ public class TestBotLogfileService {
     final LogFileWebEndpoint logFileWebEndpoint = EasyMock.createMock(LogFileWebEndpoint.class);
 
     expect(logFileWebEndpoint.logFile()).andReturn(resource);
-
     replay(logFileWebEndpoint);
 
     final BotLogfileServiceImpl botLogfileService = new BotLogfileServiceImpl(logFileWebEndpoint);
     final String fetchedLogfile = botLogfileService.getLogfileTail(2); // tail 2 lines only
 
     assertThat(fetchedLogfile).isEqualTo(expectedLogfileContent);
-
     verify(logFileWebEndpoint);
   }
 
@@ -146,14 +140,12 @@ public class TestBotLogfileService {
     final LogFileWebEndpoint logFileWebEndpoint = EasyMock.createMock(LogFileWebEndpoint.class);
 
     expect(logFileWebEndpoint.logFile()).andReturn(resource);
-
     replay(logFileWebEndpoint);
 
     final BotLogfileServiceImpl botLogfileService = new BotLogfileServiceImpl(logFileWebEndpoint);
     final String fetchedLogfile = botLogfileService.getLogfileTail(4); // attempt 4 lines
 
     assertThat(fetchedLogfile).isEqualTo(expectedLogfileContent); // expect last 3
-
     verify(logFileWebEndpoint);
   }
 
@@ -173,14 +165,12 @@ public class TestBotLogfileService {
     final LogFileWebEndpoint logFileWebEndpoint = EasyMock.createMock(LogFileWebEndpoint.class);
 
     expect(logFileWebEndpoint.logFile()).andReturn(resource);
-
     replay(logFileWebEndpoint);
 
     final BotLogfileServiceImpl botLogfileService = new BotLogfileServiceImpl(logFileWebEndpoint);
     final String fetchedLogfile = botLogfileService.getLogfileHead(2); // head 2 lines only
 
     assertThat(fetchedLogfile).isEqualTo(expectedLogfileContent);
-
     verify(logFileWebEndpoint);
   }
 
@@ -203,14 +193,12 @@ public class TestBotLogfileService {
     final LogFileWebEndpoint logFileWebEndpoint = EasyMock.createMock(LogFileWebEndpoint.class);
 
     expect(logFileWebEndpoint.logFile()).andReturn(resource);
-
     replay(logFileWebEndpoint);
 
     final BotLogfileServiceImpl botLogfileService = new BotLogfileServiceImpl(logFileWebEndpoint);
     final String fetchedLogfile = botLogfileService.getLogfileHead(4); // attempt 4 lines
 
     assertThat(fetchedLogfile).isEqualTo(expectedLogfileContent); // expect first 3
-
     verify(logFileWebEndpoint);
   }
 }

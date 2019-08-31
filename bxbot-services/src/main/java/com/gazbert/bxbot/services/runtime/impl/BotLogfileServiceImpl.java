@@ -66,7 +66,6 @@ public class BotLogfileServiceImpl implements BotLogfileService {
       if (logfileLength <= maxFileSize) {
         return logfile;
       } else {
-
         LOG.warn(
             () ->
                 "Logfile exceeds MaxFileSize. Truncating beginning of file. MaxFileSize: "
