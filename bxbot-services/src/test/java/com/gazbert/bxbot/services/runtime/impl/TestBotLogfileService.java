@@ -44,8 +44,6 @@ import org.springframework.core.io.Resource;
  */
 public class TestBotLogfileService {
 
-  private static final int MAX_LOGFILE_SIZE_IN_BYTES = 1024;
-
   @Test
   public void whenGetLogfileCalledThenExpectLogfileContentToBeReturned() throws Exception {
     final String logfilePath = "src/test/logfiles/logfile.log";
@@ -226,12 +224,39 @@ public class TestBotLogfileService {
     replay(logFileWebEndpoint);
 
     final BotLogfileServiceImpl botLogfileService = new BotLogfileServiceImpl(logFileWebEndpoint);
+    final int maxLogfileSizeInBytes = 1024;
     final Resource logfileAsResource =
-        botLogfileService.getLogfileAsResource(MAX_LOGFILE_SIZE_IN_BYTES);
+        botLogfileService.getLogfileAsResource(maxLogfileSizeInBytes);
     final byte[] logfileInBytes = logfileAsResource.getInputStream().readAllBytes();
 
     assertThat(new String(logfileInBytes, Charset.forName("UTF-8")))
         .isEqualTo(expectedLogfileContent);
+    verify(logFileWebEndpoint);
+  }
+
+  @Test
+  public void whenGetLogfileAsResourceCalledAndMaxSizeExceededThenExpectLogfileToBeTruncated()
+      throws Exception {
+    final String logfilePath = "src/test/logfiles/logfile.log";
+
+    final String firstLineOfLogfile =
+        "4981 [main] 2019-07-20 17:30:20,429 INFO  EngineConfigYamlRepository get() "
+            + "- Fetching EngineConfig...";
+
+    final Path path = FileSystems.getDefault().getPath(logfilePath);
+    final Resource resource = new FileSystemResource(path);
+    final LogFileWebEndpoint logFileWebEndpoint = EasyMock.createMock(LogFileWebEndpoint.class);
+
+    expect(logFileWebEndpoint.logFile()).andReturn(resource);
+    replay(logFileWebEndpoint);
+
+    final BotLogfileServiceImpl botLogfileService = new BotLogfileServiceImpl(logFileWebEndpoint);
+    final int maxLogfileSizeInBytes = firstLineOfLogfile.length();
+    final Resource logfileAsResource =
+        botLogfileService.getLogfileAsResource(maxLogfileSizeInBytes);
+    final byte[] logfileInBytes = logfileAsResource.getInputStream().readAllBytes();
+
+    assertThat(new String(logfileInBytes, Charset.forName("UTF-8"))).isEqualTo(firstLineOfLogfile);
     verify(logFileWebEndpoint);
   }
 }

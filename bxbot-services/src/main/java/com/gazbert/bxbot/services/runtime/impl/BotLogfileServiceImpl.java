@@ -68,13 +68,13 @@ public class BotLogfileServiceImpl implements BotLogfileService {
       } else {
         LOG.warn(
             () ->
-                "Logfile exceeds MaxFileSize. Truncating beginning of file. MaxFileSize: "
+                "Logfile exceeds MaxFileSize. Truncating end of file. MaxFileSize: "
                     + maxFileSize
                     + " LogfileSize: "
                     + logfileLength);
         final InputStream inputStream = logfile.getInputStream();
         final byte[] truncatedLogfile = new byte[maxFileSize];
-        inputStream.readNBytes(truncatedLogfile, ((int) logfileLength) - maxFileSize, maxFileSize);
+        inputStream.readNBytes(truncatedLogfile, 0, maxFileSize);
         return new ByteArrayResource(truncatedLogfile);
       }
     } catch (IOException e) {

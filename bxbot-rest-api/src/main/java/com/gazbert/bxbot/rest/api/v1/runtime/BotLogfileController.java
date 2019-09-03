@@ -71,8 +71,8 @@ public class BotLogfileController {
   /**
    * Returns the logfile as a download.
    *
-   * <p>If the file has more lines than {@link RestApiConfiguration#getLogfileDownloadSize()}, the
-   * beginning of the logfile will be truncated.
+   * <p>If the file is larger than {@link RestApiConfiguration#getLogfileDownloadSize()}, the
+   * end of the logfile will be truncated.
    *
    * @param user the authenticated user making the request.
    * @param request the request.
