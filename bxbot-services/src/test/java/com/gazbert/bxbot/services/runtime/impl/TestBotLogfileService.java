@@ -28,6 +28,7 @@ import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
 
+import java.nio.charset.Charset;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import org.easymock.EasyMock;
@@ -42,6 +43,8 @@ import org.springframework.core.io.Resource;
  * @author gazbert
  */
 public class TestBotLogfileService {
+
+  private static final int MAX_LOGFILE_SIZE_IN_BYTES = 1024;
 
   @Test
   public void whenGetLogfileCalledThenExpectLogfileContentToBeReturned() throws Exception {
@@ -199,6 +202,36 @@ public class TestBotLogfileService {
     final String fetchedLogfile = botLogfileService.getLogfileHead(4); // attempt 4 lines
 
     assertThat(fetchedLogfile).isEqualTo(expectedLogfileContent); // expect first 3
+    verify(logFileWebEndpoint);
+  }
+
+  @Test
+  public void whenGetLogfileAsResourceCalledThenExpectLogfileToBeReturned() throws Exception {
+    final String logfilePath = "src/test/logfiles/logfile.log";
+    final String expectedLogfileContent =
+        "4981 [main] 2019-07-20 17:30:20,429 INFO  EngineConfigYamlRepository get() "
+            + "- Fetching EngineConfig..."
+            + System.lineSeparator()
+            + "4982 [main] 2019-07-20 17:30:21,429 INFO  EngineConfigYamlRepository get() "
+            + "- Validating config..."
+            + System.lineSeparator()
+            + "4983 [main] 2019-07-20 17:30:22,429 INFO  EngineConfigYamlRepository get() "
+            + "- Config is good";
+
+    final Path path = FileSystems.getDefault().getPath(logfilePath);
+    final Resource resource = new FileSystemResource(path);
+    final LogFileWebEndpoint logFileWebEndpoint = EasyMock.createMock(LogFileWebEndpoint.class);
+
+    expect(logFileWebEndpoint.logFile()).andReturn(resource);
+    replay(logFileWebEndpoint);
+
+    final BotLogfileServiceImpl botLogfileService = new BotLogfileServiceImpl(logFileWebEndpoint);
+    final Resource logfileAsResource =
+        botLogfileService.getLogfileAsResource(MAX_LOGFILE_SIZE_IN_BYTES);
+    final byte[] logfileInBytes = logfileAsResource.getInputStream().readAllBytes();
+
+    assertThat(new String(logfileInBytes, Charset.forName("UTF-8")))
+        .isEqualTo(expectedLogfileContent);
     verify(logFileWebEndpoint);
   }
 }
