@@ -60,16 +60,17 @@ public class BotRestartController {
    * Restarts the bot.
    *
    * @param user the authenticated user making the request.
-   * @return 200 OK on success, some other HTTP status code otherwise.
+   * @return 200 OK on success with 'Restarting' response on success, some other HTTP status code
+   *     otherwise.
    */
   @PostMapping(value = RESTART_RESOURCE_PATH)
   public ResponseEntity<String> restart(@AuthenticationPrincipal User user) {
     LOG.info(
         () -> "POST " + RESTART_RESOURCE_PATH + " - restart() - caller: " + user.getUsername());
 
-    final String status = botRestartService.restart();
+    final Object status = botRestartService.restart();
 
-    LOG.info(() -> "Response: " + status);
-    return new ResponseEntity<>(status, null, HttpStatus.OK);
+    LOG.info(() -> "Response: " + status.toString());
+    return new ResponseEntity<>(status.toString(), null, HttpStatus.OK);
   }
 }
