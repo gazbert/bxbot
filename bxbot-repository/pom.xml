@@ -98,11 +98,11 @@
             See https://github.com/powermock/powermock/wiki/Code-coverage-with-JaCoCo
            -->
           <excludes>
-            <exclude>**/StrategyConfigYamlRepository</exclude>
-            <exclude>**/MarketConfigYamlRepository</exclude>
-            <exclude>**/EngineConfigYamlRepository</exclude>
-            <exclude>**/ExchangeConfigYamlRepository</exclude>
-            <exclude>**/EmailAlertsConfigYamlRepository</exclude>
+            <exclude>**/StrategyConfigYamlRepository.class</exclude>
+            <exclude>**/MarketConfigYamlRepository.class</exclude>
+            <exclude>**/EngineConfigYamlRepository.class</exclude>
+            <exclude>**/ExchangeConfigYamlRepository.class</exclude>
+            <exclude>**/EmailAlertsConfigYamlRepository.class</exclude>
           </excludes>
         </configuration>
         <executions>
@@ -119,7 +119,7 @@
                     <limit>
                       <counter>LINE</counter>
                       <value>COVEREDRATIO</value>
-                      <minimum>0</minimum>
+                      <minimum>0.8</minimum>
                     </limit>
                   </limits>
                 </rule>

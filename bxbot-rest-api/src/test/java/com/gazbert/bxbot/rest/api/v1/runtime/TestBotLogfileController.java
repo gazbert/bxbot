@@ -106,7 +106,7 @@ public class TestBotLogfileController extends AbstractRuntimeControllerTest {
   }
 
   @Test
-  public void testDownloadLogfileReturnsInternalServerErrorForIOException() throws Exception {
+  public void testDownloadLogfileReturnsInternalServerErrorForIoException() throws Exception {
     given(botLogfileService.getLogfileAsResource(MAX_LOGFILE_DOWNLOAD_SIZE))
         .willThrow(new IOException("Oops!"));
 
@@ -253,7 +253,7 @@ public class TestBotLogfileController extends AbstractRuntimeControllerTest {
   }
 
   @Test
-  public void testGetLogfileReturnsInternalServerErrorForIOException() throws Exception {
+  public void testGetLogfileReturnsInternalServerErrorForIoException() throws Exception {
     given(botLogfileService.getLogfile(MAX_LOGFILE_LINES))
         .willThrow(new IOException("Something bad happened!"));
 
