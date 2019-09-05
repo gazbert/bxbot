@@ -34,13 +34,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.gazbert.bxbot.core.engine.TradingEngine;
 import com.gazbert.bxbot.core.mail.EmailAlerter;
 import com.gazbert.bxbot.domain.engine.EngineConfig;
-import com.gazbert.bxbot.services.EngineConfigService;
+import com.gazbert.bxbot.services.config.EngineConfigService;
+import com.gazbert.bxbot.services.runtime.BotStatusService;
 import java.math.BigDecimal;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.boot.actuate.logging.LogFileWebEndpoint;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.cloud.context.restart.RestartEndpoint;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -60,19 +63,20 @@ public class TestBotStatusController extends AbstractRuntimeControllerTest {
 
   private static final String BOT_ID = "avro-707_1";
   private static final String BOT_NAME = "Avro 707";
-  private static final String BOT_STATUS = "running";
+  private static final String BOT_STATUS = "UP";
 
   private static final String ENGINE_EMERGENCY_STOP_CURRENCY = "BTC";
   private static final BigDecimal ENGINE_EMERGENCY_STOP_BALANCE = new BigDecimal("0.9232320");
   private static final int ENGINE_TRADE_CYCLE_INTERVAL = 60;
 
+  @MockBean private BotStatusService botStatusService;
   @MockBean private EngineConfigService engineConfigService;
 
-  // Need this even though not used in the test directly because Spring loads it on startup...
+  // Need these even though not used in the test directly because Spring loads it on startup...
   @MockBean private TradingEngine tradingEngine;
-
-  // Need this even though not used in the test directly because Spring loads it on startup...
   @MockBean private EmailAlerter emailAlerter;
+  @MockBean private RestartEndpoint restartEndpoint;
+  @MockBean private LogFileWebEndpoint logFileWebEndpoint;
 
   @Before
   public void setupBeforeEachTest() {
@@ -81,6 +85,7 @@ public class TestBotStatusController extends AbstractRuntimeControllerTest {
 
   @Test
   public void testGetBotStatus() throws Exception {
+    given(botStatusService.getStatus()).willReturn(BOT_STATUS);
     given(engineConfigService.getEngineConfig()).willReturn(someEngineConfig());
 
     mockMvc
@@ -88,7 +93,7 @@ public class TestBotStatusController extends AbstractRuntimeControllerTest {
             get(STATUS_ENDPOINT_URI)
                 .header(
                     "Authorization",
-                    buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD)))
+                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD)))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.botId").value(BOT_ID))
@@ -105,7 +110,7 @@ public class TestBotStatusController extends AbstractRuntimeControllerTest {
             get(STATUS_ENDPOINT_URI)
                 .header(
                     "Authorization",
-                    buildAuthorizationHeaderValue(VALID_USER_LOGINID, INVALID_USER_PASSWORD))
+                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, INVALID_USER_PASSWORD))
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isUnauthorized());
   }
@@ -117,7 +122,7 @@ public class TestBotStatusController extends AbstractRuntimeControllerTest {
             get(STATUS_ENDPOINT_URI)
                 .header(
                     "Authorization",
-                    buildAuthorizationHeaderValue(VALID_USER_LOGINID, INVALID_USER_PASSWORD))
+                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, INVALID_USER_PASSWORD))
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isUnauthorized());
   }

@@ -14,8 +14,7 @@
             <includes>
                 <include>README.md</include>
                 <include>LICENSE</include>
-                <include>third_party_licenses.txt</include>
-                <include>MAINTAINERS.txt</include>
+                <include>3rd-party-licenses.md</include>
                 <include>CONTRIBUTING.md</include>
                 <include>bxbot.sh</include>
                 <include>bxbot.bat</include>

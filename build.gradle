@@ -14,7 +14,7 @@ buildscript {
 
 plugins {
     id 'com.gradle.build-scan' version '2.2.1'
-    id "org.sonarqube" version "2.7"
+    id "org.sonarqube" version "2.7.1"
     id 'jacoco'
 }
 
@@ -26,6 +26,7 @@ buildScan {
 
 ext.versions = [
         springBootVersion: '2.1.4.RELEASE',
+        springCloudVersion: '2.1.1.RELEASE',
         springTxVersion  : '5.1.6.RELEASE'
 ]
 
@@ -44,6 +45,10 @@ ext.libraries = [
             force = true
         },
         spring_boot_starter_security: dependencies.create("org.springframework.boot:spring-boot-starter-security:" + ext.versions.springBootVersion) {
+            exclude module: "spring-boot-starter-logging"
+            force = true
+        },
+        spring_cloud_starter: dependencies.create("org.springframework.cloud:spring-cloud-starter:" + ext.versions.springCloudVersion) {
             exclude module: "spring-boot-starter-logging"
             force = true
         },
@@ -170,11 +175,7 @@ task buildZipDist(type: Zip, dependsOn: build) {
         }
 
         into('') {
-            from 'third_party_licenses.txt'
-        }
-
-        into('') {
-            from 'MAINTAINERS.txt'
+            from '3rd-party-licenses.md'
         }
 
         into('') {
@@ -224,11 +225,7 @@ task buildTarGzipDist(type: Tar, dependsOn: build) {
         }
 
         into('') {
-            from 'third_party_licenses.txt'
-        }
-
-        into('') {
-            from 'MAINTAINERS.txt'
+            from '3rd-party-licenses.md'
         }
 
         into('') {

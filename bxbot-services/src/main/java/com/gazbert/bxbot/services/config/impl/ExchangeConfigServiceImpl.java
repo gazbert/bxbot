@@ -21,11 +21,11 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.services.impl;
+package com.gazbert.bxbot.services.config.impl;
 
-import com.gazbert.bxbot.domain.emailalerts.EmailAlertsConfig;
-import com.gazbert.bxbot.repository.EmailAlertsConfigRepository;
-import com.gazbert.bxbot.services.EmailAlertsConfigService;
+import com.gazbert.bxbot.domain.exchange.ExchangeConfig;
+import com.gazbert.bxbot.repository.ExchangeConfigRepository;
+import com.gazbert.bxbot.services.config.ExchangeConfigService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,32 +35,32 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Implementation of the Email Alerts configuration service.
+ * Implementation of the Exchange config service.
  *
  * @author gazbert
  */
-@Service("emailAlertsConfigService")
+@Service("exchangeConfigService")
 @Transactional
 @ComponentScan(basePackages = {"com.gazbert.bxbot.repository"})
-public class EmailAlertsConfigServiceImpl implements EmailAlertsConfigService {
+public class ExchangeConfigServiceImpl implements ExchangeConfigService {
 
   private static final Logger LOG = LogManager.getLogger();
-  private final EmailAlertsConfigRepository emailAlertsConfigRepository;
+  private final ExchangeConfigRepository exchangeConfigRepository;
 
   @Autowired
-  public EmailAlertsConfigServiceImpl(@Qualifier("emailAlertsConfigYamlRepository")
-      EmailAlertsConfigRepository emailAlertsConfigRepository) {
-    this.emailAlertsConfigRepository = emailAlertsConfigRepository;
+  public ExchangeConfigServiceImpl(@Qualifier("exchangeConfigYamlRepository")
+      ExchangeConfigRepository exchangeConfigRepository) {
+    this.exchangeConfigRepository = exchangeConfigRepository;
   }
 
   @Override
-  public EmailAlertsConfig getEmailAlertsConfig() {
-    return emailAlertsConfigRepository.get();
+  public ExchangeConfig getExchangeConfig() {
+    return exchangeConfigRepository.get();
   }
 
   @Override
-  public EmailAlertsConfig updateEmailAlertsConfig(EmailAlertsConfig config) {
-    LOG.info(() -> "About to update Email Alerts config: " + config);
-    return emailAlertsConfigRepository.save(config);
+  public ExchangeConfig updateExchangeConfig(ExchangeConfig config) {
+    LOG.info(() -> "About to update Exchange config: " + config);
+    return exchangeConfigRepository.save(config);
   }
 }

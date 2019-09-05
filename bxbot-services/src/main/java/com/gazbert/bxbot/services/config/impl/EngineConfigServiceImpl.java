@@ -21,11 +21,11 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.services.impl;
+package com.gazbert.bxbot.services.config.impl;
 
-import com.gazbert.bxbot.domain.exchange.ExchangeConfig;
-import com.gazbert.bxbot.repository.ExchangeConfigRepository;
-import com.gazbert.bxbot.services.ExchangeConfigService;
+import com.gazbert.bxbot.domain.engine.EngineConfig;
+import com.gazbert.bxbot.repository.EngineConfigRepository;
+import com.gazbert.bxbot.services.config.EngineConfigService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,32 +35,32 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Implementation of the Exchange config service.
+ * Implementation of the Engine config service.
  *
  * @author gazbert
  */
-@Service("exchangeConfigService")
+@Service("engineConfigService")
 @Transactional
 @ComponentScan(basePackages = {"com.gazbert.bxbot.repository"})
-public class ExchangeConfigServiceImpl implements ExchangeConfigService {
+public class EngineConfigServiceImpl implements EngineConfigService {
 
   private static final Logger LOG = LogManager.getLogger();
-  private final ExchangeConfigRepository exchangeConfigRepository;
+  private final EngineConfigRepository engineConfigRepository;
 
   @Autowired
-  public ExchangeConfigServiceImpl(@Qualifier("exchangeConfigYamlRepository")
-      ExchangeConfigRepository exchangeConfigRepository) {
-    this.exchangeConfigRepository = exchangeConfigRepository;
+  public EngineConfigServiceImpl(@Qualifier("engineConfigYamlRepository")
+                                       EngineConfigRepository engineConfigRepository) {
+    this.engineConfigRepository = engineConfigRepository;
   }
 
   @Override
-  public ExchangeConfig getExchangeConfig() {
-    return exchangeConfigRepository.get();
+  public EngineConfig getEngineConfig() {
+    return engineConfigRepository.get();
   }
 
   @Override
-  public ExchangeConfig updateExchangeConfig(ExchangeConfig config) {
-    LOG.info(() -> "About to update Exchange config: " + config);
-    return exchangeConfigRepository.save(config);
+  public EngineConfig updateEngineConfig(EngineConfig config) {
+    LOG.info(() -> "About to update Engine config: " + config);
+    return engineConfigRepository.save(config);
   }
 }

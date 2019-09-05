@@ -25,7 +25,7 @@ package com.gazbert.bxbot.core.mail;
 
 import com.gazbert.bxbot.domain.emailalerts.EmailAlertsConfig;
 import com.gazbert.bxbot.domain.emailalerts.SmtpConfig;
-import com.gazbert.bxbot.services.EmailAlertsConfigService;
+import com.gazbert.bxbot.services.config.EmailAlertsConfigService;
 import java.util.Properties;
 import javax.mail.Authenticator;
 import javax.mail.Message;

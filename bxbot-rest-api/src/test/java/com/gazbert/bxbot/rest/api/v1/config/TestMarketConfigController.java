@@ -39,14 +39,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.gazbert.bxbot.core.engine.TradingEngine;
 import com.gazbert.bxbot.core.mail.EmailAlerter;
 import com.gazbert.bxbot.domain.market.MarketConfig;
-import com.gazbert.bxbot.services.MarketConfigService;
+import com.gazbert.bxbot.services.config.MarketConfigService;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.boot.actuate.logging.LogFileWebEndpoint;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.cloud.context.restart.RestartEndpoint;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -81,13 +83,13 @@ public class TestMarketConfigController extends AbstractConfigControllerTest {
   private static final boolean MARKET_2_ENABLED = false;
   private static final String MARKET_2_STRATEGY_ID = "macd-strategy";
 
-  @MockBean MarketConfigService marketConfigService;
+  @MockBean private MarketConfigService marketConfigService;
 
-  // Need this even though not used in the test directly because Spring loads it on startup...
+  // Need these even though not used in the test directly because Spring loads it on startup...
   @MockBean private EmailAlerter emailAlerter;
-
-  // Need this even though not used in the test directly because Spring loads it on startup...
   @MockBean private TradingEngine tradingEngine;
+  @MockBean private RestartEndpoint restartEndpoint;
+  @MockBean private LogFileWebEndpoint logFileWebEndpoint;
 
   @Before
   public void setupBeforeEachTest() {
@@ -103,7 +105,7 @@ public class TestMarketConfigController extends AbstractConfigControllerTest {
             get(MARKETS_CONFIG_ENDPOINT_URI)
                 .header(
                     "Authorization",
-                    buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD)))
+                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD)))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.[0].id").value(MARKET_1_ID))
@@ -136,7 +138,7 @@ public class TestMarketConfigController extends AbstractConfigControllerTest {
             get(MARKETS_CONFIG_ENDPOINT_URI)
                 .header(
                     "Authorization",
-                    buildAuthorizationHeaderValue(VALID_USER_LOGINID, INVALID_USER_PASSWORD))
+                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, INVALID_USER_PASSWORD))
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isUnauthorized());
   }
@@ -150,7 +152,7 @@ public class TestMarketConfigController extends AbstractConfigControllerTest {
             get(MARKETS_CONFIG_ENDPOINT_URI + MARKET_1_ID)
                 .header(
                     "Authorization",
-                    buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD)))
+                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD)))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.id").value(MARKET_1_ID))
@@ -177,7 +179,7 @@ public class TestMarketConfigController extends AbstractConfigControllerTest {
             get(MARKETS_CONFIG_ENDPOINT_URI + MARKET_1_ID)
                 .header(
                     "Authorization",
-                    buildAuthorizationHeaderValue(VALID_USER_LOGINID, INVALID_USER_PASSWORD))
+                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, INVALID_USER_PASSWORD))
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isUnauthorized());
   }
@@ -191,7 +193,7 @@ public class TestMarketConfigController extends AbstractConfigControllerTest {
             get(MARKETS_CONFIG_ENDPOINT_URI + UNKNOWN_MARKET_ID)
                 .header(
                     "Authorization",
-                    buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD))
+                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD))
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isNotFound());
   }
@@ -207,7 +209,7 @@ public class TestMarketConfigController extends AbstractConfigControllerTest {
                 put(MARKETS_CONFIG_ENDPOINT_URI + MARKET_1_ID)
                     .header(
                         "Authorization",
-                        buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD))
+                        buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD))
                     .contentType(CONTENT_TYPE)
                     .content(jsonify(someMarketConfig())))
             .andDo(print())
@@ -236,7 +238,7 @@ public class TestMarketConfigController extends AbstractConfigControllerTest {
             put(MARKETS_CONFIG_ENDPOINT_URI + MARKET_1_ID)
                 .header(
                     "Authorization",
-                    buildAuthorizationHeaderValue(VALID_USER_LOGINID, INVALID_USER_PASSWORD))
+                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, INVALID_USER_PASSWORD))
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(CONTENT_TYPE)
                 .content(jsonify(someMarketConfig())))
@@ -252,7 +254,7 @@ public class TestMarketConfigController extends AbstractConfigControllerTest {
             put(MARKETS_CONFIG_ENDPOINT_URI + UNKNOWN_MARKET_ID)
                 .header(
                     "Authorization",
-                    buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD))
+                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD))
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(CONTENT_TYPE)
                 .content(jsonify(unrecognizedMarketConfig())))
@@ -266,7 +268,7 @@ public class TestMarketConfigController extends AbstractConfigControllerTest {
             put(MARKETS_CONFIG_ENDPOINT_URI + MARKET_1_ID)
                 .header(
                     "Authorization",
-                    buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD))
+                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD))
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(CONTENT_TYPE)
                 .content(jsonify(someMarketConfigWithMissingId())))
@@ -282,7 +284,7 @@ public class TestMarketConfigController extends AbstractConfigControllerTest {
             delete(MARKETS_CONFIG_ENDPOINT_URI + MARKET_1_ID)
                 .header(
                     "Authorization",
-                    buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD)))
+                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD)))
         .andExpect(status().isNoContent());
 
     verify(marketConfigService, times(1)).deleteMarketConfig(MARKET_1_ID);
@@ -303,7 +305,7 @@ public class TestMarketConfigController extends AbstractConfigControllerTest {
             delete(MARKETS_CONFIG_ENDPOINT_URI + MARKET_1_ID)
                 .header(
                     "Authorization",
-                    buildAuthorizationHeaderValue(VALID_USER_LOGINID, INVALID_USER_PASSWORD))
+                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, INVALID_USER_PASSWORD))
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isUnauthorized());
   }
@@ -317,7 +319,7 @@ public class TestMarketConfigController extends AbstractConfigControllerTest {
             delete(MARKETS_CONFIG_ENDPOINT_URI + UNKNOWN_MARKET_ID)
                 .header(
                     "Authorization",
-                    buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD))
+                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD))
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isNotFound());
   }
@@ -333,7 +335,7 @@ public class TestMarketConfigController extends AbstractConfigControllerTest {
                 post(MARKETS_CONFIG_ENDPOINT_URI)
                     .header(
                         "Authorization",
-                        buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD))
+                        buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD))
                     .contentType(CONTENT_TYPE)
                     .content(jsonify(someMarketConfig())))
             .andDo(print())
@@ -362,7 +364,7 @@ public class TestMarketConfigController extends AbstractConfigControllerTest {
             post(MARKETS_CONFIG_ENDPOINT_URI)
                 .header(
                     "Authorization",
-                    buildAuthorizationHeaderValue(VALID_USER_LOGINID, INVALID_USER_PASSWORD))
+                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, INVALID_USER_PASSWORD))
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(CONTENT_TYPE)
                 .content(jsonify(someMarketConfig())))
@@ -376,7 +378,7 @@ public class TestMarketConfigController extends AbstractConfigControllerTest {
             post(MARKETS_CONFIG_ENDPOINT_URI)
                 .header(
                     "Authorization",
-                    buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD))
+                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD))
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(CONTENT_TYPE)
                 .content(jsonify(someMarketConfigWithMissingId())))
@@ -392,7 +394,7 @@ public class TestMarketConfigController extends AbstractConfigControllerTest {
             post(MARKETS_CONFIG_ENDPOINT_URI)
                 .header(
                     "Authorization",
-                    buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD))
+                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD))
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(CONTENT_TYPE)
                 .content(jsonify(someMarketConfigWithMissingStrategyId())))

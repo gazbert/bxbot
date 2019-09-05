@@ -5,9 +5,7 @@ jdk:
 install: true
 
 script:
-  # - ./mvnw clean install -Dmaven.javadoc.skip=true -Pall
   - ./mvnw clean install org.jacoco:jacoco-maven-plugin:prepare-agent sonar:sonar -Dmaven.javadoc.skip=true -Pall -Dsonar.projectKey=gazbert_bxbot -Dsonar.organization=gazbert-github
-  # - sonar-scanner
 
 addons:
   sonarcloud:

@@ -21,12 +21,11 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.services.impl;
+package com.gazbert.bxbot.services.config.impl;
 
-import com.gazbert.bxbot.domain.strategy.StrategyConfig;
-import com.gazbert.bxbot.repository.StrategyConfigRepository;
-import com.gazbert.bxbot.services.StrategyConfigService;
-import java.util.List;
+import com.gazbert.bxbot.domain.emailalerts.EmailAlertsConfig;
+import com.gazbert.bxbot.repository.EmailAlertsConfigRepository;
+import com.gazbert.bxbot.services.config.EmailAlertsConfigService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,50 +35,32 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Implementation of the Strategy config service.
+ * Implementation of the Email Alerts configuration service.
  *
  * @author gazbert
  */
-@Service("strategyConfigService")
+@Service("emailAlertsConfigService")
 @Transactional
 @ComponentScan(basePackages = {"com.gazbert.bxbot.repository"})
-public class StrategyConfigServiceImpl implements StrategyConfigService {
+public class EmailAlertsConfigServiceImpl implements EmailAlertsConfigService {
 
   private static final Logger LOG = LogManager.getLogger();
-  private final StrategyConfigRepository strategyConfigRepository;
+  private final EmailAlertsConfigRepository emailAlertsConfigRepository;
 
   @Autowired
-  public StrategyConfigServiceImpl(@Qualifier("strategyConfigYamlRepository")
-                                         StrategyConfigRepository strategyConfigRepository) {
-    this.strategyConfigRepository = strategyConfigRepository;
+  public EmailAlertsConfigServiceImpl(@Qualifier("emailAlertsConfigYamlRepository")
+      EmailAlertsConfigRepository emailAlertsConfigRepository) {
+    this.emailAlertsConfigRepository = emailAlertsConfigRepository;
   }
 
   @Override
-  public List<StrategyConfig> getAllStrategyConfig() {
-    return strategyConfigRepository.findAll();
+  public EmailAlertsConfig getEmailAlertsConfig() {
+    return emailAlertsConfigRepository.get();
   }
 
   @Override
-  public StrategyConfig getStrategyConfig(String id) {
-    LOG.info(() -> "Fetching Strategy config for id: " + id);
-    return strategyConfigRepository.findById(id);
-  }
-
-  @Override
-  public StrategyConfig updateStrategyConfig(StrategyConfig config) {
-    LOG.info(() -> "About to update Strategy config: " + config);
-    return strategyConfigRepository.save(config);
-  }
-
-  @Override
-  public StrategyConfig createStrategyConfig(StrategyConfig config) {
-    LOG.info(() -> "About to create Strategy config: " + config);
-    return strategyConfigRepository.save(config);
-  }
-
-  @Override
-  public StrategyConfig deleteStrategyConfig(String id) {
-    LOG.info(() -> "About to delete Strategy config for id: " + id);
-    return strategyConfigRepository.delete(id);
+  public EmailAlertsConfig updateEmailAlertsConfig(EmailAlertsConfig config) {
+    LOG.info(() -> "About to update Email Alerts config: " + config);
+    return emailAlertsConfigRepository.save(config);
   }
 }

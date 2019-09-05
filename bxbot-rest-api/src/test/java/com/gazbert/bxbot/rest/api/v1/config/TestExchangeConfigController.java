@@ -37,7 +37,7 @@ import com.gazbert.bxbot.core.engine.TradingEngine;
 import com.gazbert.bxbot.core.mail.EmailAlerter;
 import com.gazbert.bxbot.domain.exchange.ExchangeConfig;
 import com.gazbert.bxbot.domain.exchange.NetworkConfig;
-import com.gazbert.bxbot.services.ExchangeConfigService;
+import com.gazbert.bxbot.services.config.ExchangeConfigService;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -45,8 +45,10 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.boot.actuate.logging.LogFileWebEndpoint;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.cloud.context.restart.RestartEndpoint;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -87,13 +89,13 @@ public class TestExchangeConfigController extends AbstractConfigControllerTest {
   private static final String SELL_FEE_CONFIG_ITEM_KEY = "sell-fee";
   private static final String SELL_FEE_CONFIG_ITEM_VALUE = "0.25";
 
-  @MockBean ExchangeConfigService exchangeConfigService;
+  @MockBean private ExchangeConfigService exchangeConfigService;
 
-  // Need this even though not used in the test directly because Spring loads it on startup...
+  // Need these even though not used in the test directly because Spring loads it on startup...
   @MockBean private TradingEngine tradingEngine;
-
-  // Need this even though not used in the test directly because Spring loads it on startup...
   @MockBean private EmailAlerter emailAlerter;
+  @MockBean private RestartEndpoint restartEndpoint;
+  @MockBean private LogFileWebEndpoint logFileWebEndpoint;
 
   @Before
   public void setupBeforeEachTest() {
@@ -109,7 +111,7 @@ public class TestExchangeConfigController extends AbstractConfigControllerTest {
             get(EXCHANGE_CONFIG_ENDPOINT_URI)
                 .header(
                     "Authorization",
-                    buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD)))
+                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD)))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.name").value(EXCHANGE_NAME))
@@ -145,7 +147,7 @@ public class TestExchangeConfigController extends AbstractConfigControllerTest {
             get(EXCHANGE_CONFIG_ENDPOINT_URI)
                 .header(
                     "Authorization",
-                    buildAuthorizationHeaderValue(VALID_USER_LOGINID, INVALID_USER_PASSWORD))
+                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, INVALID_USER_PASSWORD))
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isUnauthorized());
   }
@@ -160,7 +162,7 @@ public class TestExchangeConfigController extends AbstractConfigControllerTest {
             put(EXCHANGE_CONFIG_ENDPOINT_URI)
                 .header(
                     "Authorization",
-                    buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD))
+                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD))
                 .contentType(CONTENT_TYPE)
                 .content(jsonify(someExchangeConfig())))
         .andExpect(status().isOk())
@@ -198,7 +200,7 @@ public class TestExchangeConfigController extends AbstractConfigControllerTest {
             put(EXCHANGE_CONFIG_ENDPOINT_URI)
                 .header(
                     "Authorization",
-                    buildAuthorizationHeaderValue(VALID_USER_LOGINID, INVALID_USER_PASSWORD))
+                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, INVALID_USER_PASSWORD))
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isUnauthorized());
   }

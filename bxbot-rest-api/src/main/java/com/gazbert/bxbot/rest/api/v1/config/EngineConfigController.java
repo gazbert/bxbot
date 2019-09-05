@@ -26,7 +26,7 @@ package com.gazbert.bxbot.rest.api.v1.config;
 import static com.gazbert.bxbot.rest.api.v1.EndpointLocations.CONFIG_ENDPOINT_BASE_URI;
 
 import com.gazbert.bxbot.domain.engine.EngineConfig;
-import com.gazbert.bxbot.services.EngineConfigService;
+import com.gazbert.bxbot.services.config.EngineConfigService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;

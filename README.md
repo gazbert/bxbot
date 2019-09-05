@@ -1,6 +1,6 @@
 # BX-bot
 
-[![Build Status](https://travis-ci.org/gazbert/bxbot.svg?branch=master)](https://travis-ci.org/gazbert/bxbot)
+[![Build Status](https://travis-ci.org/gazbert/bxbot.svg?branch=bxbot-restapi)](https://travis-ci.org/gazbert/bxbot)
 [![Sonarcloud Status](https://sonarcloud.io/api/project_badges/measure?project=gazbert_bxbot&metric=alert_status)](https://sonarcloud.io/dashboard?id=gazbert_bxbot)
 [![Join the chat at https://gitter.im/BX-bot/Lobby](https://badges.gitter.im/BX-bot/Lobby.svg)](https://gitter.im/BX-bot/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)		 	 
  
@@ -204,7 +204,8 @@ All fields are mandatory.
 You specify the Exchange Adapter you want BX-bot to use in the 
 [`exchange.yaml`](./config/exchange.yaml) file. 
 
-BX-bot only supports 1 Exchange Adapter per bot, but you could have multiple bots running on the same exchange.
+BX-bot supports 1 exchange per bot. 
+This keeps things simple and helps minimise risk: problems on one exchange should not impact trading on another.
 
 ```yaml
 exchange:

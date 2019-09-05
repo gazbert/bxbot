@@ -26,7 +26,7 @@ package com.gazbert.bxbot.rest.api.v1.config;
 import static com.gazbert.bxbot.rest.api.v1.EndpointLocations.CONFIG_ENDPOINT_BASE_URI;
 
 import com.gazbert.bxbot.domain.strategy.StrategyConfig;
-import com.gazbert.bxbot.services.StrategyConfigService;
+import com.gazbert.bxbot.services.config.StrategyConfigService;
 import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

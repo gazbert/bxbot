@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016 Gareth Jon Lynch
+ * Copyright (c) 2019 gazbert
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -21,18 +21,19 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.services;
-
-import com.gazbert.bxbot.domain.engine.EngineConfig;
+package com.gazbert.bxbot.services.runtime;
 
 /**
- * The Engine configuration service.
+ * The Bot status service.
  *
  * @author gazbert
  */
-public interface EngineConfigService {
+public interface BotStatusService {
 
-  EngineConfig getEngineConfig();
-
-  EngineConfig updateEngineConfig(EngineConfig config);
+  /**
+   * Returns the status of the Bot.
+   *
+   * @return UP if the bot is running, DOWN if the bot is not running.
+   */
+  String getStatus();
 }

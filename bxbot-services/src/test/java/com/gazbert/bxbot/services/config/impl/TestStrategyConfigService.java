@@ -21,7 +21,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.services.impl;
+package com.gazbert.bxbot.services.config.impl;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.easymock.EasyMock.expect;
@@ -29,8 +29,8 @@ import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
 
 import com.gazbert.bxbot.domain.strategy.StrategyConfig;
-import com.gazbert.bxbot.repository.MarketConfigRepository;
 import com.gazbert.bxbot.repository.StrategyConfigRepository;
+import com.gazbert.bxbot.services.config.impl.StrategyConfigServiceImpl;
 import java.util.ArrayList;
 import java.util.List;
 import org.easymock.EasyMock;

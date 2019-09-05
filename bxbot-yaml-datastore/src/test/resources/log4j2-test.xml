@@ -19,10 +19,8 @@
         <!--</RollingFile>-->
     </Appenders>
     <Loggers>
-        <!--
-        debug for testing
-        -->
-        <Root level="debug">
+        <!-- debug | info | warn | error | fatal -->
+        <Root level="fatal">
             <AppenderRef ref="STDOUT"/>
             <!--<AppenderRef ref="BXBot_RollingFile"/>-->
         </Root>

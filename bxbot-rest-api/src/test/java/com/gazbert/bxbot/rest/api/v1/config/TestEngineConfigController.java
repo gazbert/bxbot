@@ -36,13 +36,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.gazbert.bxbot.core.engine.TradingEngine;
 import com.gazbert.bxbot.core.mail.EmailAlerter;
 import com.gazbert.bxbot.domain.engine.EngineConfig;
-import com.gazbert.bxbot.services.EngineConfigService;
+import com.gazbert.bxbot.services.config.EngineConfigService;
 import java.math.BigDecimal;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.boot.actuate.logging.LogFileWebEndpoint;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.cloud.context.restart.RestartEndpoint;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -68,11 +70,11 @@ public class TestEngineConfigController extends AbstractConfigControllerTest {
 
   @MockBean private EngineConfigService engineConfigService;
 
-  // Need this even though not used in the test directly because Spring loads it on startup...
+  // Need these even though not used in the test directly because Spring loads it on startup...
   @MockBean private TradingEngine tradingEngine;
-
-  // Need this even though not used in the test directly because Spring loads it on startup...
   @MockBean private EmailAlerter emailAlerter;
+  @MockBean private RestartEndpoint restartEndpoint;
+  @MockBean private LogFileWebEndpoint logFileWebEndpoint;
 
   @Before
   public void setupBeforeEachTest() {
@@ -88,7 +90,7 @@ public class TestEngineConfigController extends AbstractConfigControllerTest {
             get(ENGINE_CONFIG_ENDPOINT_URI)
                 .header(
                     "Authorization",
-                    buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD)))
+                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD)))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.botId").value(BOT_ID))
@@ -108,7 +110,7 @@ public class TestEngineConfigController extends AbstractConfigControllerTest {
             get(ENGINE_CONFIG_ENDPOINT_URI)
                 .header(
                     "Authorization",
-                    buildAuthorizationHeaderValue(VALID_USER_LOGINID, INVALID_USER_PASSWORD))
+                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, INVALID_USER_PASSWORD))
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isUnauthorized());
   }
@@ -120,7 +122,7 @@ public class TestEngineConfigController extends AbstractConfigControllerTest {
             get(ENGINE_CONFIG_ENDPOINT_URI)
                 .header(
                     "Authorization",
-                    buildAuthorizationHeaderValue(VALID_USER_LOGINID, INVALID_USER_PASSWORD))
+                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, INVALID_USER_PASSWORD))
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isUnauthorized());
   }
@@ -134,7 +136,7 @@ public class TestEngineConfigController extends AbstractConfigControllerTest {
             put(ENGINE_CONFIG_ENDPOINT_URI)
                 .header(
                     "Authorization",
-                    buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD))
+                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD))
                 .contentType(CONTENT_TYPE)
                 .content(jsonify(someEngineConfig())))
         .andDo(print())
@@ -163,7 +165,7 @@ public class TestEngineConfigController extends AbstractConfigControllerTest {
             put(ENGINE_CONFIG_ENDPOINT_URI)
                 .header(
                     "Authorization",
-                    buildAuthorizationHeaderValue(VALID_USER_LOGINID, INVALID_USER_PASSWORD))
+                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, INVALID_USER_PASSWORD))
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isUnauthorized());
   }

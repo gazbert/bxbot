@@ -21,25 +21,18 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.services;
+package com.gazbert.bxbot.services.config;
 
-import com.gazbert.bxbot.domain.strategy.StrategyConfig;
-import java.util.List;
+import com.gazbert.bxbot.domain.exchange.ExchangeConfig;
 
 /**
- * The Strategy configuration service.
+ * The Exchange configuration service.
  *
  * @author gazbert
  */
-public interface StrategyConfigService {
+public interface ExchangeConfigService {
 
-  List<StrategyConfig> getAllStrategyConfig();
+  ExchangeConfig getExchangeConfig();
 
-  StrategyConfig getStrategyConfig(String id);
-
-  StrategyConfig updateStrategyConfig(StrategyConfig config);
-
-  StrategyConfig createStrategyConfig(StrategyConfig config);
-
-  StrategyConfig deleteStrategyConfig(String id);
+  ExchangeConfig updateExchangeConfig(ExchangeConfig config);
 }

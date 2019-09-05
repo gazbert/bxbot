@@ -26,7 +26,7 @@ package com.gazbert.bxbot.rest.api.v1.config;
 import static com.gazbert.bxbot.rest.api.v1.EndpointLocations.CONFIG_ENDPOINT_BASE_URI;
 
 import com.gazbert.bxbot.domain.exchange.ExchangeConfig;
-import com.gazbert.bxbot.services.ExchangeConfigService;
+import com.gazbert.bxbot.services.config.ExchangeConfigService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;

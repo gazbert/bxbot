@@ -42,10 +42,10 @@ import com.gazbert.bxbot.domain.market.MarketConfig;
 import com.gazbert.bxbot.domain.strategy.StrategyConfig;
 import com.gazbert.bxbot.exchange.api.ExchangeAdapter;
 import com.gazbert.bxbot.exchange.api.ExchangeConfig;
-import com.gazbert.bxbot.services.EngineConfigService;
-import com.gazbert.bxbot.services.ExchangeConfigService;
-import com.gazbert.bxbot.services.MarketConfigService;
-import com.gazbert.bxbot.services.StrategyConfigService;
+import com.gazbert.bxbot.services.config.EngineConfigService;
+import com.gazbert.bxbot.services.config.ExchangeConfigService;
+import com.gazbert.bxbot.services.config.MarketConfigService;
+import com.gazbert.bxbot.services.config.StrategyConfigService;
 import com.gazbert.bxbot.strategy.api.StrategyException;
 import com.gazbert.bxbot.strategy.api.TradingStrategy;
 import com.gazbert.bxbot.trading.api.BalanceInfo;
@@ -714,7 +714,7 @@ public class TestTradingEngine {
     expect(exchangeConfigService.getExchangeConfig()).andReturn(someExchangeConfig());
     expect(ConfigurableComponentFactory.createComponent(EXCHANGE_ADAPTER_IMPL_CLASS))
         .andReturn(exchangeAdapter);
-    expect(exchangeAdapter.getImplName()).andReturn(EXCHANGE_NAME);
+    expect(exchangeAdapter.getImplName()).andReturn(EXCHANGE_NAME).anyTimes();
     exchangeAdapter.init(anyObject(ExchangeConfig.class));
   }
 
@@ -724,7 +724,7 @@ public class TestTradingEngine {
     expect(exchangeConfigService.getExchangeConfig()).andReturn(exchangeConfig);
     expect(ConfigurableComponentFactory.createComponent(EXCHANGE_ADAPTER_IMPL_CLASS))
         .andReturn(exchangeAdapter);
-    expect(exchangeAdapter.getImplName()).andReturn(EXCHANGE_NAME).atLeastOnce();
+    expect(exchangeAdapter.getImplName()).andReturn(EXCHANGE_NAME).anyTimes();
     exchangeAdapter.init(anyObject(ExchangeConfig.class));
   }
 

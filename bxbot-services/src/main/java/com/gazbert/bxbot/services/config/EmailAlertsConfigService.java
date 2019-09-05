@@ -21,7 +21,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.services;
+package com.gazbert.bxbot.services.config;
 
 import com.gazbert.bxbot.domain.emailalerts.EmailAlertsConfig;
 

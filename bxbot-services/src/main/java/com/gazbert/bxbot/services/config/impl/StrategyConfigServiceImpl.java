@@ -21,11 +21,11 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.services.impl;
+package com.gazbert.bxbot.services.config.impl;
 
-import com.gazbert.bxbot.domain.market.MarketConfig;
-import com.gazbert.bxbot.repository.MarketConfigRepository;
-import com.gazbert.bxbot.services.MarketConfigService;
+import com.gazbert.bxbot.domain.strategy.StrategyConfig;
+import com.gazbert.bxbot.repository.StrategyConfigRepository;
+import com.gazbert.bxbot.services.config.StrategyConfigService;
 import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -36,50 +36,50 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Implementation of the Market config service.
+ * Implementation of the Strategy config service.
  *
  * @author gazbert
  */
-@Service("marketConfigService")
+@Service("strategyConfigService")
 @Transactional
 @ComponentScan(basePackages = {"com.gazbert.bxbot.repository"})
-public class MarketConfigServiceImpl implements MarketConfigService {
+public class StrategyConfigServiceImpl implements StrategyConfigService {
 
   private static final Logger LOG = LogManager.getLogger();
-  private final MarketConfigRepository marketConfigRepository;
+  private final StrategyConfigRepository strategyConfigRepository;
 
   @Autowired
-  public MarketConfigServiceImpl(@Qualifier("marketConfigYamlRepository")
-      MarketConfigRepository marketConfigRepository) {
-    this.marketConfigRepository = marketConfigRepository;
+  public StrategyConfigServiceImpl(@Qualifier("strategyConfigYamlRepository")
+                                         StrategyConfigRepository strategyConfigRepository) {
+    this.strategyConfigRepository = strategyConfigRepository;
   }
 
   @Override
-  public List<MarketConfig> getAllMarketConfig() {
-    return marketConfigRepository.findAll();
+  public List<StrategyConfig> getAllStrategyConfig() {
+    return strategyConfigRepository.findAll();
   }
 
   @Override
-  public MarketConfig getMarketConfig(String id) {
-    LOG.info(() -> "Fetching Market config for id: " + id);
-    return marketConfigRepository.findById(id);
+  public StrategyConfig getStrategyConfig(String id) {
+    LOG.info(() -> "Fetching Strategy config for id: " + id);
+    return strategyConfigRepository.findById(id);
   }
 
   @Override
-  public MarketConfig updateMarketConfig(MarketConfig config) {
-    LOG.info(() -> "About to update Market config: " + config);
-    return marketConfigRepository.save(config);
+  public StrategyConfig updateStrategyConfig(StrategyConfig config) {
+    LOG.info(() -> "About to update Strategy config: " + config);
+    return strategyConfigRepository.save(config);
   }
 
   @Override
-  public MarketConfig createMarketConfig(MarketConfig config) {
-    LOG.info(() -> "About to create Market config: " + config);
-    return marketConfigRepository.save(config);
+  public StrategyConfig createStrategyConfig(StrategyConfig config) {
+    LOG.info(() -> "About to create Strategy config: " + config);
+    return strategyConfigRepository.save(config);
   }
 
   @Override
-  public MarketConfig deleteMarketConfig(String id) {
-    LOG.info(() -> "About to delete Market config for id: " + id);
-    return marketConfigRepository.delete(id);
+  public StrategyConfig deleteStrategyConfig(String id) {
+    LOG.info(() -> "About to delete Strategy config for id: " + id);
+    return strategyConfigRepository.delete(id);
   }
 }

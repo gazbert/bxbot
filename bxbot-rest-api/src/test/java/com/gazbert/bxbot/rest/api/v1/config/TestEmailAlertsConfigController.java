@@ -36,12 +36,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.gazbert.bxbot.core.engine.TradingEngine;
 import com.gazbert.bxbot.domain.emailalerts.EmailAlertsConfig;
 import com.gazbert.bxbot.domain.emailalerts.SmtpConfig;
-import com.gazbert.bxbot.services.EmailAlertsConfigService;
+import com.gazbert.bxbot.services.config.EmailAlertsConfigService;
+import com.gazbert.bxbot.services.runtime.BotLogfileService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.boot.actuate.logging.LogFileWebEndpoint;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.cloud.context.restart.RestartEndpoint;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -68,10 +71,12 @@ public class TestEmailAlertsConfigController extends AbstractConfigControllerTes
   private static final String FROM_ADDRESS = "boba.fett@Mandalore.com";
   private static final String TO_ADDRESS = "darth.vader@deathstar.com";
 
-  @MockBean EmailAlertsConfigService emailAlertsConfigService;
+  @MockBean private EmailAlertsConfigService emailAlertsConfigService;
 
-  // Need this even though not used in the test directly because Spring loads it on startup...
+  // Need these even though not used in the test directly because Spring loads it on startup...
   @MockBean private TradingEngine tradingEngine;
+  @MockBean private RestartEndpoint restartEndpoint;
+  @MockBean private LogFileWebEndpoint logFileWebEndpoint;
 
   @Before
   public void setupBeforeEachTest() {
@@ -87,7 +92,7 @@ public class TestEmailAlertsConfigController extends AbstractConfigControllerTes
             get(EMAIL_ALERTS_CONFIG_ENDPOINT_URI)
                 .header(
                     "Authorization",
-                    buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD)))
+                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD)))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.smtpConfig.host").value(HOST))
@@ -115,7 +120,7 @@ public class TestEmailAlertsConfigController extends AbstractConfigControllerTes
             get(EMAIL_ALERTS_CONFIG_ENDPOINT_URI)
                 .header(
                     "Authorization",
-                    buildAuthorizationHeaderValue(VALID_USER_LOGINID, INVALID_USER_PASSWORD))
+                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, INVALID_USER_PASSWORD))
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isUnauthorized());
   }
@@ -130,7 +135,7 @@ public class TestEmailAlertsConfigController extends AbstractConfigControllerTes
             put(EMAIL_ALERTS_CONFIG_ENDPOINT_URI)
                 .header(
                     "Authorization",
-                    buildAuthorizationHeaderValue(VALID_USER_LOGINID, VALID_USER_PASSWORD))
+                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD))
                 .contentType(CONTENT_TYPE)
                 .content(jsonify(someEmailAlertsConfig())))
         .andDo(print())
@@ -160,7 +165,7 @@ public class TestEmailAlertsConfigController extends AbstractConfigControllerTes
             put(EMAIL_ALERTS_CONFIG_ENDPOINT_URI)
                 .header(
                     "Authorization",
-                    buildAuthorizationHeaderValue(VALID_USER_LOGINID, INVALID_USER_PASSWORD))
+                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, INVALID_USER_PASSWORD))
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isUnauthorized());
   }

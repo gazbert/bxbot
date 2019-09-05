@@ -1,0 +1,295 @@
+/*
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2019 gazbert
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of
+ * this software and associated documentation files (the "Software"), to deal in
+ * the Software without restriction, including without limitation the rights to
+ * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+ * the Software, and to permit persons to whom the Software is furnished to do so,
+ * subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+ * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+ * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
+package com.gazbert.bxbot.rest.api.v1.runtime;
+
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import com.gazbert.bxbot.core.engine.TradingEngine;
+import com.gazbert.bxbot.core.mail.EmailAlerter;
+import com.gazbert.bxbot.services.runtime.BotLogfileService;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.cloud.context.restart.RestartEndpoint;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
+/**
+ * Tests the Bot Logfile controller behaviour.
+ *
+ * @author gazbert
+ */
+@RunWith(SpringRunner.class)
+@SpringBootTest
+@WebAppConfiguration
+public class TestBotLogfileController extends AbstractRuntimeControllerTest {
+
+  private static final String LOGFILE_ENDPOINT_URI = RUNTIME_ENDPOINT_BASE_URI + "/logfile";
+  private static final String LOGFILE_DOWNLOAD_URI = LOGFILE_ENDPOINT_URI + "/download";
+
+  // This value must be the same as maxLogfileLines in test/resources/application.properties
+  private static final int MAX_LOGFILE_LINES = 2;
+
+  // This value must be the same as maxLogfileDownloadSize in test/resources/application.properties
+  private static final int MAX_LOGFILE_DOWNLOAD_SIZE = 100;
+
+  private static final String LOGFILE_LINE_1 = "4981 [main] 2019-07-20 17:30:20,429 INFO  Line 1";
+  private static final String LOGFILE_LINE_2 = "4482 [main] 2019-07-20 17:30:21,429 INFO  Line 2";
+  private static final String LOGFILE_LINE_3 = "4483 [main] 2019-07-20 17:30:22,429 INFO  Line 3";
+  private static final String LOGFILE = LOGFILE_LINE_1 + LOGFILE_LINE_2 + LOGFILE_LINE_3;
+
+  @MockBean private BotLogfileService botLogfileService;
+
+  // Need these even though not used in the test directly because Spring loads it on startup...
+  @MockBean private TradingEngine tradingEngine;
+  @MockBean private EmailAlerter emailAlerter;
+  @MockBean private RestartEndpoint restartEndpoint;
+
+  @Before
+  public void setupBeforeEachTest() {
+    mockMvc = MockMvcBuilders.webAppContextSetup(ctx).addFilter(springSecurityFilterChain).build();
+  }
+
+  @Test
+  public void testDownloadLogfile() throws Exception {
+    final Resource resource = new ByteArrayResource(LOGFILE.getBytes(Charset.forName("UTF-8")));
+    given(botLogfileService.getLogfileAsResource(MAX_LOGFILE_DOWNLOAD_SIZE)).willReturn(resource);
+
+    mockMvc
+        .perform(
+            get(LOGFILE_DOWNLOAD_URI)
+                .header(
+                    "Authorization",
+                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD)))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(header().string("Content-Type", "application/octet-stream"))
+        .andExpect(jsonPath("$").value(LOGFILE));
+
+    verify(botLogfileService, times(1)).getLogfileAsResource(MAX_LOGFILE_DOWNLOAD_SIZE);
+  }
+
+  @Test
+  public void testDownloadLogfileReturnsInternalServerErrorForIoException() throws Exception {
+    given(botLogfileService.getLogfileAsResource(MAX_LOGFILE_DOWNLOAD_SIZE))
+        .willThrow(new IOException("Oops!"));
+
+    mockMvc
+        .perform(
+            get(LOGFILE_DOWNLOAD_URI)
+                .header(
+                    "Authorization",
+                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD)))
+        .andDo(print())
+        .andExpect(status().is5xxServerError());
+
+    verify(botLogfileService, times(1)).getLogfileAsResource(MAX_LOGFILE_DOWNLOAD_SIZE);
+  }
+
+  @Test
+  public void testGetLogfile() throws Exception {
+    given(botLogfileService.getLogfile(MAX_LOGFILE_LINES))
+        .willReturn(LOGFILE_LINE_1 + System.lineSeparator() + LOGFILE_LINE_2);
+
+    mockMvc
+        .perform(
+            get(LOGFILE_ENDPOINT_URI)
+                .header(
+                    "Authorization",
+                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD)))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$").value(LOGFILE_LINE_1 + System.lineSeparator() + LOGFILE_LINE_2));
+
+    verify(botLogfileService, times(1)).getLogfile(MAX_LOGFILE_LINES);
+  }
+
+  @Test
+  public void testGetLogfileHead() throws Exception {
+    final int headLineCount = 1;
+    given(botLogfileService.getLogfileHead(headLineCount)).willReturn(LOGFILE_LINE_1);
+
+    mockMvc
+        .perform(
+            get(LOGFILE_ENDPOINT_URI + "?head=" + headLineCount)
+                .header(
+                    "Authorization",
+                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD)))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$").value(LOGFILE_LINE_1));
+
+    verify(botLogfileService, times(1)).getLogfileHead(headLineCount);
+  }
+
+  @Test
+  public void testGetLogfileHeadWithTailParamSetToZero() throws Exception {
+    final int headLineCount = 0;
+    given(botLogfileService.getLogfile(MAX_LOGFILE_LINES))
+        .willReturn(LOGFILE_LINE_2 + System.lineSeparator() + LOGFILE_LINE_3);
+
+    mockMvc
+        .perform(
+            get(LOGFILE_ENDPOINT_URI + "?head=" + headLineCount)
+                .header(
+                    "Authorization",
+                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD)))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$").value(LOGFILE_LINE_2 + System.lineSeparator() + LOGFILE_LINE_3));
+
+    verify(botLogfileService, times(1)).getLogfile(MAX_LOGFILE_LINES);
+  }
+
+  @Test
+  public void testGetLogfileHeadWhenRequestedLineCountExceedsMaxAllowed() throws Exception {
+    final int headLineCount = MAX_LOGFILE_LINES + 1;
+    given(botLogfileService.getLogfileHead(MAX_LOGFILE_LINES))
+        .willReturn(LOGFILE_LINE_1 + System.lineSeparator() + LOGFILE_LINE_2);
+
+    mockMvc
+        .perform(
+            get(LOGFILE_ENDPOINT_URI + "?head=" + headLineCount)
+                .header(
+                    "Authorization",
+                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD)))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$").value(LOGFILE_LINE_1 + System.lineSeparator() + LOGFILE_LINE_2));
+
+    verify(botLogfileService, times(1)).getLogfileHead(MAX_LOGFILE_LINES);
+  }
+
+  @Test
+  public void testGetLogfileTail() throws Exception {
+    final int tailLineCount = 1;
+    given(botLogfileService.getLogfileTail(tailLineCount)).willReturn(LOGFILE_LINE_3);
+
+    mockMvc
+        .perform(
+            get(LOGFILE_ENDPOINT_URI + "?tail=" + tailLineCount)
+                .header(
+                    "Authorization",
+                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD)))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$").value(LOGFILE_LINE_3));
+
+    verify(botLogfileService, times(1)).getLogfileTail(tailLineCount);
+  }
+
+  @Test
+  public void testGetLogfileTailWithTailParamSetToZero() throws Exception {
+    final int tailLineCount = 0;
+    given(botLogfileService.getLogfile(MAX_LOGFILE_LINES))
+        .willReturn(LOGFILE_LINE_2 + System.lineSeparator() + LOGFILE_LINE_3);
+
+    mockMvc
+        .perform(
+            get(LOGFILE_ENDPOINT_URI + "?tail=" + tailLineCount)
+                .header(
+                    "Authorization",
+                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD)))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$").value(LOGFILE_LINE_2 + System.lineSeparator() + LOGFILE_LINE_3));
+
+    verify(botLogfileService, times(1)).getLogfile(MAX_LOGFILE_LINES);
+  }
+
+  @Test
+  public void testGetLogfileTailWhenRequestedLineCountExceedsMaxAllowed() throws Exception {
+    final int tailLineCount = MAX_LOGFILE_LINES + 1;
+    given(botLogfileService.getLogfileTail(MAX_LOGFILE_LINES))
+        .willReturn(LOGFILE_LINE_2 + System.lineSeparator() + LOGFILE_LINE_3);
+
+    mockMvc
+        .perform(
+            get(LOGFILE_ENDPOINT_URI + "?tail=" + tailLineCount)
+                .header(
+                    "Authorization",
+                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD)))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$").value(LOGFILE_LINE_2 + System.lineSeparator() + LOGFILE_LINE_3));
+
+    verify(botLogfileService, times(1)).getLogfileTail(MAX_LOGFILE_LINES);
+  }
+
+  @Test
+  public void testGetLogfileReturnsInternalServerErrorForIoException() throws Exception {
+    given(botLogfileService.getLogfile(MAX_LOGFILE_LINES))
+        .willThrow(new IOException("Something bad happened!"));
+
+    mockMvc
+        .perform(
+            get(LOGFILE_ENDPOINT_URI)
+                .header(
+                    "Authorization",
+                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD)))
+        .andDo(print())
+        .andExpect(status().is5xxServerError());
+
+    verify(botLogfileService, times(1)).getLogfile(MAX_LOGFILE_LINES);
+  }
+
+  @Test
+  public void testGetLogfileWhenUnauthorizedWithBadCredentials() throws Exception {
+    mockMvc
+        .perform(
+            get(LOGFILE_ENDPOINT_URI)
+                .header(
+                    "Authorization",
+                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, INVALID_USER_PASSWORD))
+                .accept(MediaType.APPLICATION_FORM_URLENCODED))
+        .andExpect(status().isUnauthorized());
+  }
+
+  @Test
+  public void testGetLogfileWhenUnauthorizedWithMissingCredentials() throws Exception {
+    mockMvc
+        .perform(
+            get(LOGFILE_ENDPOINT_URI)
+                .header(
+                    "Authorization",
+                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, INVALID_USER_PASSWORD))
+                .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isUnauthorized());
+  }
+}

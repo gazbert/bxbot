@@ -21,11 +21,12 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.services.impl;
+package com.gazbert.bxbot.services.config.impl;
 
-import com.gazbert.bxbot.domain.engine.EngineConfig;
-import com.gazbert.bxbot.repository.EngineConfigRepository;
-import com.gazbert.bxbot.services.EngineConfigService;
+import com.gazbert.bxbot.domain.market.MarketConfig;
+import com.gazbert.bxbot.repository.MarketConfigRepository;
+import com.gazbert.bxbot.services.config.MarketConfigService;
+import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,32 +36,50 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Implementation of the Engine config service.
+ * Implementation of the Market config service.
  *
  * @author gazbert
  */
-@Service("engineConfigService")
+@Service("marketConfigService")
 @Transactional
 @ComponentScan(basePackages = {"com.gazbert.bxbot.repository"})
-public class EngineConfigServiceImpl implements EngineConfigService {
+public class MarketConfigServiceImpl implements MarketConfigService {
 
   private static final Logger LOG = LogManager.getLogger();
-  private final EngineConfigRepository engineConfigRepository;
+  private final MarketConfigRepository marketConfigRepository;
 
   @Autowired
-  public EngineConfigServiceImpl(@Qualifier("engineConfigYamlRepository")
-                                       EngineConfigRepository engineConfigRepository) {
-    this.engineConfigRepository = engineConfigRepository;
+  public MarketConfigServiceImpl(@Qualifier("marketConfigYamlRepository")
+      MarketConfigRepository marketConfigRepository) {
+    this.marketConfigRepository = marketConfigRepository;
   }
 
   @Override
-  public EngineConfig getEngineConfig() {
-    return engineConfigRepository.get();
+  public List<MarketConfig> getAllMarketConfig() {
+    return marketConfigRepository.findAll();
   }
 
   @Override
-  public EngineConfig updateEngineConfig(EngineConfig config) {
-    LOG.info(() -> "About to update Engine config: " + config);
-    return engineConfigRepository.save(config);
+  public MarketConfig getMarketConfig(String id) {
+    LOG.info(() -> "Fetching Market config for id: " + id);
+    return marketConfigRepository.findById(id);
+  }
+
+  @Override
+  public MarketConfig updateMarketConfig(MarketConfig config) {
+    LOG.info(() -> "About to update Market config: " + config);
+    return marketConfigRepository.save(config);
+  }
+
+  @Override
+  public MarketConfig createMarketConfig(MarketConfig config) {
+    LOG.info(() -> "About to create Market config: " + config);
+    return marketConfigRepository.save(config);
+  }
+
+  @Override
+  public MarketConfig deleteMarketConfig(String id) {
+    LOG.info(() -> "About to delete Market config for id: " + id);
+    return marketConfigRepository.delete(id);
   }
 }

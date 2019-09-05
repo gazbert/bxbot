@@ -49,7 +49,7 @@ public abstract class AbstractControllerTest {
   protected static final String INVALID_USER_PASSWORD = "not-valid-password";
 
   // This must match security.user.name in the src/test/resources/application.properties file.
-  protected static final String VALID_USER_LOGINID = "unit-test-user";
+  protected static final String VALID_USER_LOGIN_ID = "unit-test-user";
 
   // This must match a security.user.password in the src/test/resources/application.properties file.
   protected static final String VALID_USER_PASSWORD = "unit-test-password";

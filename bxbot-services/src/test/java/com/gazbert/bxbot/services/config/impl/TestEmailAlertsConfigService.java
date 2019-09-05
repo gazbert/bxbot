@@ -21,7 +21,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.services.impl;
+package com.gazbert.bxbot.services.config.impl;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.easymock.EasyMock.expect;
@@ -30,6 +30,7 @@ import static org.easymock.EasyMock.verify;
 
 import com.gazbert.bxbot.domain.emailalerts.EmailAlertsConfig;
 import com.gazbert.bxbot.repository.EmailAlertsConfigRepository;
+import com.gazbert.bxbot.services.config.impl.EmailAlertsConfigServiceImpl;
 import org.easymock.EasyMock;
 import org.junit.Test;
 

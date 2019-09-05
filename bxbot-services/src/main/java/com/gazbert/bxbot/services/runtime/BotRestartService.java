@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016 Gareth Jon Lynch
+ * Copyright (c) 2019 gazbert
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -21,18 +21,19 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.services;
-
-import com.gazbert.bxbot.domain.exchange.ExchangeConfig;
+package com.gazbert.bxbot.services.runtime;
 
 /**
- * The Exchange configuration service.
+ * The Bot restart service.
  *
  * @author gazbert
  */
-public interface ExchangeConfigService {
+public interface BotRestartService {
 
-  ExchangeConfig getExchangeConfig();
-
-  ExchangeConfig updateExchangeConfig(ExchangeConfig config);
+  /**
+   * Restarts the bot.
+   *
+   * @return 'Restarting' if the bot could be restarted.
+   */
+  String restart();
 }
