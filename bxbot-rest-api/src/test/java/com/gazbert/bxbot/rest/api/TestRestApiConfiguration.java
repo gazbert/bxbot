@@ -21,7 +21,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.rest.api.v1;
+package com.gazbert.bxbot.rest.api;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

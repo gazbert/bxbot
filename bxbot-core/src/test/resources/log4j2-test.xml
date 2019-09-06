@@ -21,7 +21,7 @@
     <Loggers>
         <!-- debug | info | warn | error | fatal -->
         <Root level="fatal">
-            <AppenderRef ref="STDOUT"/>
+            <!--<AppenderRef ref="STDOUT"/>-->
             <!--<AppenderRef ref="BXBot_RollingFile"/>-->
         </Root>
     </Loggers>

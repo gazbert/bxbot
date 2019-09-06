@@ -1,6 +1,7 @@
 /*
  * The MIT License (MIT)
  *
+ * Copyright (c) 2016 Stephan Zerhusen
  * Copyright (c) 2019 gazbert
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -21,24 +22,19 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.rest.api.v1;
+package com.gazbert.bxbot.rest.api.security.model;
 
 /**
- * Base paths for BX-bot v1 REST endpoints.
+ * These Role names map to the Spring Security roles.
+ *
+ * <p>They are assigned to users in the resources/import.sql script when the bot bootstraps.
+ *
+ * <p>See:
+ * https://docs.spring.io/spring-security/site/docs/current/reference/htmlsingle/#appendix-faq-role-prefix
  *
  * @author gazbert
  */
-public final class EndpointLocations {
-
-  /** Base path for entire REST API. */
-  private static final String API_ENDPOINT_BASE_URI = "/api/v1";
-
-  /** Base path for configuration REST endpoints. */
-  public static final String CONFIG_ENDPOINT_BASE_URI = API_ENDPOINT_BASE_URI + "/config";
-
-  /** Base path for runtime REST endpoints. */
-  public static final String RUNTIME_ENDPOINT_BASE_URI = API_ENDPOINT_BASE_URI + "/runtime";
-
-  private EndpointLocations() {
-  }
+public enum RoleName {
+  ROLE_USER,
+  ROLE_ADMIN
 }

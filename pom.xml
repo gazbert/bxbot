@@ -182,6 +182,11 @@
         <version>27.1-jre</version>
       </dependency>
       <dependency>
+        <groupId>com.h2database</groupId>
+        <artifactId>h2</artifactId>
+        <version>1.4.199</version>
+      </dependency>
+      <dependency>
         <groupId>javax.mail</groupId>
         <artifactId>javax.mail-api</artifactId>
         <version>1.6.2</version>

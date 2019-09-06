@@ -25,7 +25,7 @@ package com.gazbert.bxbot.rest.api.v1.runtime;
 
 import static com.gazbert.bxbot.rest.api.v1.EndpointLocations.RUNTIME_ENDPOINT_BASE_URI;
 
-import com.gazbert.bxbot.rest.api.v1.RestApiConfiguration;
+import com.gazbert.bxbot.rest.api.RestApiConfiguration;
 import com.gazbert.bxbot.services.runtime.BotLogfileService;
 import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;

@@ -21,7 +21,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.rest.api.v1;
+package com.gazbert.bxbot.rest.api;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
