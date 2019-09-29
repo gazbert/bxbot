@@ -89,6 +89,10 @@ public class TestJwtUser {
         jwtUser.getAuthorities().contains(new SimpleGrantedAuthority(RoleName.ROLE_ADMIN.name())));
     assertTrue(
         jwtUser.getAuthorities().contains(new SimpleGrantedAuthority(RoleName.ROLE_USER.name())));
+
+    assertTrue(jwtUser.isCredentialsNonExpired());
+    assertTrue(jwtUser.isAccountNonLocked());
+    assertTrue(jwtUser.isAccountNonExpired());
   }
 
   // ------------------------------------------------------------------------

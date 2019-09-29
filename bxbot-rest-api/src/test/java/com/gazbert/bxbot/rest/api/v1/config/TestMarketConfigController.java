@@ -39,6 +39,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.gazbert.bxbot.core.engine.TradingEngine;
 import com.gazbert.bxbot.core.mail.EmailAlerter;
 import com.gazbert.bxbot.domain.market.MarketConfig;
+import com.gazbert.bxbot.rest.api.security.jwt.JwtUtils;
 import com.gazbert.bxbot.services.config.MarketConfigService;
 import java.util.ArrayList;
 import java.util.List;
@@ -90,6 +91,7 @@ public class TestMarketConfigController extends AbstractConfigControllerTest {
   @MockBean private TradingEngine tradingEngine;
   @MockBean private RestartEndpoint restartEndpoint;
   @MockBean private LogFileWebEndpoint logFileWebEndpoint;
+  @MockBean private JwtUtils jwtUtils;
 
   @Before
   public void setupBeforeEachTest() {

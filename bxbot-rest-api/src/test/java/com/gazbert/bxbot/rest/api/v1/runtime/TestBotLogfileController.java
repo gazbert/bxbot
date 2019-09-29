@@ -34,6 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.gazbert.bxbot.core.engine.TradingEngine;
 import com.gazbert.bxbot.core.mail.EmailAlerter;
+import com.gazbert.bxbot.rest.api.security.jwt.JwtUtils;
 import com.gazbert.bxbot.services.runtime.BotLogfileService;
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -80,6 +81,7 @@ public class TestBotLogfileController extends AbstractRuntimeControllerTest {
   @MockBean private TradingEngine tradingEngine;
   @MockBean private EmailAlerter emailAlerter;
   @MockBean private RestartEndpoint restartEndpoint;
+  @MockBean private JwtUtils jwtUtils;
 
   @Before
   public void setupBeforeEachTest() {

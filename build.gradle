@@ -61,6 +61,7 @@ ext.libraries = [
             force = true
         },
         spring_tx                    : dependencies.create("org.springframework:spring-tx:" + ext.versions.springTxVersion),
+        jjwt                         : dependencies.create("io.jsonwebtoken:jjwt:0.9.1"),
         google_guava                 : dependencies.create("com.google.guava:guava:27.1-jre"),
         google_gson                  : dependencies.create("com.google.code.gson:gson:2.8.5"),
         h2                           : dependencies.create("com.h2database:h2:1.4.199"),

@@ -1,7 +1,6 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016 Stephan Zerhusen
  * Copyright (c) 2019 gazbert
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -24,46 +23,30 @@
 
 package com.gazbert.bxbot.rest.api.security.jwt;
 
-import com.gazbert.bxbot.rest.api.security.model.Role;
-import com.gazbert.bxbot.rest.api.security.model.User;
-import java.util.List;
-import java.util.stream.Collectors;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import static org.junit.Assert.assertEquals;
+
+import org.junit.Test;
 
 /**
- * Creates a JWT User that has been authenticated successfully.
+ * Tests JWT Authentication Exception is created as expected.
  *
  * @author gazbert
  */
-public final class JwtUserFactory {
+public class TestJwtAuthenticationException {
 
-  private JwtUserFactory() {
+  private static final String ERROR_MSG = "Failed to extract expiration claim from token!";
+  private static final RuntimeException CAUSE = new RuntimeException("The cause of the exception");
+
+  @Test
+  public void testCreationOfExceptionIsAsExpected() {
+    final JwtAuthenticationException exception = new JwtAuthenticationException(ERROR_MSG);
+    assertEquals(ERROR_MSG, exception.getMessage());
   }
 
-  /**
-   * Creates a JWT User.
-   *
-   * @param user the user details from the database.
-   * @return a JWT User.
-   */
-  public static JwtUser create(User user) {
-    return new JwtUser(
-        user.getId(),
-        user.getUsername(),
-        user.getFirstname(),
-        user.getLastname(),
-        user.getPassword(),
-        user.getEmail(),
-        user.getEnabled(),
-        user.getLastPasswordResetDate().getTime(),
-        mapUserRolesToGrantedAuthorities(user.getRoles()),
-        user.getRoles());
-  }
-
-  private static List<GrantedAuthority> mapUserRolesToGrantedAuthorities(List<Role> roles) {
-    return roles.stream()
-        .map(role -> new SimpleGrantedAuthority(role.getName().name()))
-        .collect(Collectors.toList());
+  @Test
+  public void testCreationOfExceptionWithCauseIsAsExpected() {
+    final JwtAuthenticationException exception = new JwtAuthenticationException(ERROR_MSG, CAUSE);
+    assertEquals(ERROR_MSG, exception.getMessage());
+    assertEquals(CAUSE, exception.getCause());
   }
 }

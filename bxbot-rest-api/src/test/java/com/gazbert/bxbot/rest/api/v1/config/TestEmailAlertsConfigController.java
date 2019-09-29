@@ -36,6 +36,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.gazbert.bxbot.core.engine.TradingEngine;
 import com.gazbert.bxbot.domain.emailalerts.EmailAlertsConfig;
 import com.gazbert.bxbot.domain.emailalerts.SmtpConfig;
+import com.gazbert.bxbot.rest.api.security.jwt.JwtUtils;
 import com.gazbert.bxbot.services.config.EmailAlertsConfigService;
 import com.gazbert.bxbot.services.runtime.BotLogfileService;
 import org.junit.Before;
@@ -77,6 +78,7 @@ public class TestEmailAlertsConfigController extends AbstractConfigControllerTes
   @MockBean private TradingEngine tradingEngine;
   @MockBean private RestartEndpoint restartEndpoint;
   @MockBean private LogFileWebEndpoint logFileWebEndpoint;
+  @MockBean private JwtUtils jwtUtils;
 
   @Before
   public void setupBeforeEachTest() {

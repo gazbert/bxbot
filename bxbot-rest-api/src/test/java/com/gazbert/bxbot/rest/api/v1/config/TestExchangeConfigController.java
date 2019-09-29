@@ -37,6 +37,7 @@ import com.gazbert.bxbot.core.engine.TradingEngine;
 import com.gazbert.bxbot.core.mail.EmailAlerter;
 import com.gazbert.bxbot.domain.exchange.ExchangeConfig;
 import com.gazbert.bxbot.domain.exchange.NetworkConfig;
+import com.gazbert.bxbot.rest.api.security.jwt.JwtUtils;
 import com.gazbert.bxbot.services.config.ExchangeConfigService;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -96,6 +97,7 @@ public class TestExchangeConfigController extends AbstractConfigControllerTest {
   @MockBean private EmailAlerter emailAlerter;
   @MockBean private RestartEndpoint restartEndpoint;
   @MockBean private LogFileWebEndpoint logFileWebEndpoint;
+  @MockBean private JwtUtils jwtUtils;
 
   @Before
   public void setupBeforeEachTest() {

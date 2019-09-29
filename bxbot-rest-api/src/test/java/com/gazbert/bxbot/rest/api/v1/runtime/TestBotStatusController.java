@@ -34,6 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.gazbert.bxbot.core.engine.TradingEngine;
 import com.gazbert.bxbot.core.mail.EmailAlerter;
 import com.gazbert.bxbot.domain.engine.EngineConfig;
+import com.gazbert.bxbot.rest.api.security.jwt.JwtUtils;
 import com.gazbert.bxbot.services.config.EngineConfigService;
 import com.gazbert.bxbot.services.runtime.BotStatusService;
 import java.math.BigDecimal;
@@ -77,6 +78,7 @@ public class TestBotStatusController extends AbstractRuntimeControllerTest {
   @MockBean private EmailAlerter emailAlerter;
   @MockBean private RestartEndpoint restartEndpoint;
   @MockBean private LogFileWebEndpoint logFileWebEndpoint;
+  @MockBean private JwtUtils jwtUtils;
 
   @Before
   public void setupBeforeEachTest() {
