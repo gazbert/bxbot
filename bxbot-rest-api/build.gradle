@@ -14,6 +14,10 @@ dependencies {
     compile libraries.google_guava
     compile libraries.h2
 
+    testCompile libraries.junit
+    testCompile libraries.powermock_junit
+    testCompile libraries.powermock_api_easymock
+    testCompile libraries.easymock
     testCompile libraries.spring_boot_starter_test
 }
 
