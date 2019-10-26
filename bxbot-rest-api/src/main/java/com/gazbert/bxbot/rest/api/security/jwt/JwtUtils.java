@@ -24,6 +24,7 @@
 
 package com.gazbert.bxbot.rest.api.security.jwt;
 
+import com.gazbert.bxbot.rest.api.security.authentication.JwtAuthenticationException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;

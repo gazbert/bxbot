@@ -21,32 +21,24 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.rest.api.security.jwt;
+package com.gazbert.bxbot.rest.api.security.authentication;
 
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
 /**
- * Tests JWT Authentication Exception is created as expected.
+ * Tests a JWT Authentication Response behaves as expected.
  *
  * @author gazbert
  */
-public class TestJwtAuthenticationException {
+public class TestJwtAuthenticationResponse {
 
-  private static final String ERROR_MSG = "Failed to extract expiration claim from token!";
-  private static final RuntimeException CAUSE = new RuntimeException("The cause of the exception");
-
-  @Test
-  public void testCreationOfExceptionIsAsExpected() {
-    final JwtAuthenticationException exception = new JwtAuthenticationException(ERROR_MSG);
-    assertEquals(ERROR_MSG, exception.getMessage());
-  }
+  private static final String JWT = "the.jwt.string";
 
   @Test
-  public void testCreationOfExceptionWithCauseIsAsExpected() {
-    final JwtAuthenticationException exception = new JwtAuthenticationException(ERROR_MSG, CAUSE);
-    assertEquals(ERROR_MSG, exception.getMessage());
-    assertEquals(CAUSE, exception.getCause());
+  public void testInitialisationWorksAsExpected() {
+    final JwtAuthenticationResponse jwtAuthenticationResponse = new JwtAuthenticationResponse(JWT);
+    assertEquals(JWT, jwtAuthenticationResponse.getToken());
   }
 }

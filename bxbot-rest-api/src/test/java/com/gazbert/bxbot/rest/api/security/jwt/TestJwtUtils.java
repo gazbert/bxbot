@@ -30,6 +30,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.gazbert.bxbot.rest.api.security.authentication.JwtAuthenticationException;
 import com.gazbert.bxbot.rest.api.security.model.Role;
 import com.gazbert.bxbot.rest.api.security.model.RoleName;
 import com.gazbert.bxbot.rest.api.security.model.User;

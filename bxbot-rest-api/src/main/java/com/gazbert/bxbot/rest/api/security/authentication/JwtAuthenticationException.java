@@ -21,7 +21,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.rest.api.security.jwt;
+package com.gazbert.bxbot.rest.api.security.authentication;
 
 import org.springframework.security.core.AuthenticationException;
 
