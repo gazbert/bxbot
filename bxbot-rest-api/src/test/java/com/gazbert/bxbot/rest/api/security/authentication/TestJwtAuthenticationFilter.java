@@ -43,6 +43,7 @@ import org.springframework.boot.actuate.logging.LogFileWebEndpoint;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.cloud.context.restart.RestartEndpoint;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.junit4.SpringRunner;
 
 /**
@@ -78,19 +79,22 @@ public class TestJwtAuthenticationFilter {
     jwtAuthenticationFilter.setJwtUtils(jwtUtils);
   }
 
-  @Ignore("FIXME: Test broken when run as part of Suite; work OK on its own :-/")
   @Test
   public void whenFilterCalledWithValidTokenThenExpectSuccessfulAuthenticationAndCallNextFilter()
           throws Exception {
+
+    // Need to reset this in case previous test sets it
+    SecurityContextHolder.getContext().setAuthentication(null);
+
     when(request.getHeader(AUTHORIZATION_HEADER)).thenReturn("dummy-token");
-    when(jwtUtils.getUsernameFromTokenClaims((any()))).thenReturn(USERNAME);
     when(jwtUtils.validateTokenAndGetClaims((any()))).thenReturn(claims);
+    when(jwtUtils.getUsernameFromTokenClaims((any()))).thenReturn(USERNAME);
 
     jwtAuthenticationFilter.doFilterInternal(request, response, filterChain);
 
     verify(request, times(1)).getHeader(AUTHORIZATION_HEADER);
-    verify(jwtUtils, times(1)).getUsernameFromTokenClaims(any());
     verify(jwtUtils, times(1)).validateTokenAndGetClaims(any());
+    verify(jwtUtils, times(1)).getUsernameFromTokenClaims(any());
     verify(jwtUtils, times(1)).getRolesFromTokenClaims(any());
     verify(filterChain, times(1)).doFilter(request, response);
   }
