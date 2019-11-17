@@ -58,8 +58,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
   @Override
   protected void configure(HttpSecurity http) throws Exception {
     http.authorizeRequests()
-        .antMatchers("/nothingWillBeUnsecured")
+
+        // Allow anyone to try and authenticate
+        .antMatchers("/auth")
         .permitAll()
+
+        // All other endpoints locked down
         .anyRequest()
         .authenticated()
         .and()

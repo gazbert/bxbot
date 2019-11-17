@@ -37,6 +37,7 @@ import org.springframework.boot.actuate.logging.LogFileWebEndpoint;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.cloud.context.restart.RestartEndpoint;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -59,6 +60,7 @@ public class TestJwtAuthenticationEntryPoint {
   @MockBean private RestartEndpoint restartEndpoint;
   @MockBean private LogFileWebEndpoint logFileWebEndpoint;
   @MockBean private JwtUtils jwtUtils;
+  @MockBean private AuthenticationManager authenticationManager;
 
   @Test
   public void whenCommenceCalledThenExpectUnauthorizedResponse() throws Exception {

@@ -80,6 +80,7 @@ ext.libraries = [
             exclude module: "spring-boot-starter-logging"
             force = true
         },
+        spring_security_test         : dependencies.create("org.springframework.security:spring-security-test:5.2.1.RELEASE"),
         awaitility                   : dependencies.create("org.awaitility:awaitility:3.1.6"),
 ]
 

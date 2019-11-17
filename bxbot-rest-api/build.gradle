@@ -20,6 +20,7 @@ dependencies {
     testCompile libraries.powermock_api_easymock
     testCompile libraries.easymock
     testCompile libraries.spring_boot_starter_test
+    testCompile libraries.spring_security_test
     testCompile libraries.awaitility
 }
 

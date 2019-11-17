@@ -142,7 +142,14 @@ public class JwtUtils {
    */
   public boolean canTokenBeRefreshed(Claims claims, Date lastPasswordReset) {
     final Date created = getIssuedAtDateFromTokenClaims(claims);
-    return isCreatedAfterLastPasswordReset(created, lastPasswordReset);
+    boolean canBeRefreshed = isCreatedAfterLastPasswordReset(created, lastPasswordReset);
+    if (!canBeRefreshed) {
+      LOG.warn(
+          "Token cannot be refreshed for user: "
+              + claims.get(CLAIM_KEY_USERNAME)
+              + " - token creation date is BEFORE last password reset date");
+    }
+    return canBeRefreshed;
   }
 
   /**
