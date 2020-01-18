@@ -23,8 +23,9 @@
 
 package com.gazbert.bxbot.rest.api.v1.config;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -36,9 +37,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.gazbert.bxbot.core.engine.TradingEngine;
 import com.gazbert.bxbot.domain.emailalerts.EmailAlertsConfig;
 import com.gazbert.bxbot.domain.emailalerts.SmtpConfig;
-import com.gazbert.bxbot.rest.api.security.jwt.JwtUtils;
 import com.gazbert.bxbot.services.config.EmailAlertsConfigService;
-import com.gazbert.bxbot.services.runtime.BotLogfileService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -79,7 +78,6 @@ public class TestEmailAlertsConfigController extends AbstractConfigControllerTes
   @MockBean private TradingEngine tradingEngine;
   @MockBean private RestartEndpoint restartEndpoint;
   @MockBean private LogFileWebEndpoint logFileWebEndpoint;
-  @MockBean private JwtUtils jwtUtils;
   @MockBean private AuthenticationManager authenticationManager;
 
   @Before
@@ -88,15 +86,14 @@ public class TestEmailAlertsConfigController extends AbstractConfigControllerTes
   }
 
   @Test
-  public void testGetEmailAlertsConfig() throws Exception {
+  public void testGetEmailAlertsConfigWithValidToken() throws Exception {
     given(emailAlertsConfigService.getEmailAlertsConfig()).willReturn(someEmailAlertsConfig());
 
     mockMvc
         .perform(
             get(EMAIL_ALERTS_CONFIG_ENDPOINT_URI)
                 .header(
-                    "Authorization",
-                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD)))
+                    "Authorization", "Bearer " + getJwt(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD)))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.smtpConfig.host").value(HOST))
@@ -107,30 +104,28 @@ public class TestEmailAlertsConfigController extends AbstractConfigControllerTes
         .andExpect(jsonPath("$.smtpConfig.accountUsername").value(ACCOUNT_USERNAME))
         .andExpect(jsonPath("$.smtpConfig.accountPassword").value(ACCOUNT_PASSWORD));
 
-    verify(emailAlertsConfigService, times(1)).getEmailAlertsConfig();
+    verify(emailAlertsConfigService, atLeastOnce()).getEmailAlertsConfig();
   }
 
   @Test
-  public void testGetEmailAlertsConfigWhenUnauthorizedWithMissingCredentials() throws Exception {
+  public void testGetEmailAlertsConfigWhenUnauthorizedWithMissingToken() throws Exception {
     mockMvc
         .perform(get(EMAIL_ALERTS_CONFIG_ENDPOINT_URI).accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isUnauthorized());
   }
 
   @Test
-  public void testGetEmailAlertsConfigWhenUnauthorizedWithInvalidCredentials() throws Exception {
+  public void testGetEmailAlertsConfigWhenUnauthorizedWithInvalidToken() throws Exception {
     mockMvc
         .perform(
             get(EMAIL_ALERTS_CONFIG_ENDPOINT_URI)
-                .header(
-                    "Authorization",
-                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, INVALID_USER_PASSWORD))
+                .header("Authorization", "Bearer junk.web.token")
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isUnauthorized());
   }
 
   @Test
-  public void testUpdateEmailAlertsConfig() throws Exception {
+  public void testUpdateEmailAlertsConfigWithValidToken() throws Exception {
     given(emailAlertsConfigService.updateEmailAlertsConfig(any()))
         .willReturn(someEmailAlertsConfig());
 
@@ -138,8 +133,7 @@ public class TestEmailAlertsConfigController extends AbstractConfigControllerTes
         .perform(
             put(EMAIL_ALERTS_CONFIG_ENDPOINT_URI)
                 .header(
-                    "Authorization",
-                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD))
+                    "Authorization", "Bearer " + getJwt(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD))
                 .contentType(CONTENT_TYPE)
                 .content(jsonify(someEmailAlertsConfig())))
         .andDo(print())
@@ -156,20 +150,18 @@ public class TestEmailAlertsConfigController extends AbstractConfigControllerTes
   }
 
   @Test
-  public void testUpdateEmailAlertsConfigWhenUnauthorizedWithMissingCredentials() throws Exception {
+  public void testUpdateEmailAlertsConfigWhenUnauthorizedWithMissingToken() throws Exception {
     mockMvc
         .perform(put(EMAIL_ALERTS_CONFIG_ENDPOINT_URI).accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isUnauthorized());
   }
 
   @Test
-  public void testUpdateEmailAlertsConfigWhenUnauthorizedWithInvalidCredentials() throws Exception {
+  public void testUpdateEmailAlertsConfigWhenUnauthorizedWithInvalidCToken() throws Exception {
     mockMvc
         .perform(
             put(EMAIL_ALERTS_CONFIG_ENDPOINT_URI)
-                .header(
-                    "Authorization",
-                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, INVALID_USER_PASSWORD))
+                .header("Authorization", "Authorization", "Bearer junk.web.token")
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isUnauthorized());
   }
