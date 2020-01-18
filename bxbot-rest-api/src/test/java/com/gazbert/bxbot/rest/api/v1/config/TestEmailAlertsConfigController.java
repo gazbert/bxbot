@@ -157,7 +157,7 @@ public class TestEmailAlertsConfigController extends AbstractConfigControllerTes
   }
 
   @Test
-  public void testUpdateEmailAlertsConfigWhenUnauthorizedWithInvalidCToken() throws Exception {
+  public void testUpdateEmailAlertsConfigWhenUnauthorizedWithInvalidToken() throws Exception {
     mockMvc
         .perform(
             put(EMAIL_ALERTS_CONFIG_ENDPOINT_URI)
