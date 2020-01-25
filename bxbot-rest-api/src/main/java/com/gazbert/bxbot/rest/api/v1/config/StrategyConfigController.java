@@ -33,6 +33,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -69,14 +70,11 @@ public class StrategyConfigController {
    * @param user the authenticated user.
    * @return all the Strategy configurations.
    */
+  @PreAuthorize("hasRole('USER')")
   @GetMapping(value = STRATEGIES_RESOURCE_PATH)
   public List<StrategyConfig> getAllStrategies(@AuthenticationPrincipal User user) {
-    LOG.info(
-        () ->
-            "GET "
-                + STRATEGIES_RESOURCE_PATH
-                + " - getAllStrategies() - caller: "
-                + user.getUsername());
+    LOG.info(() -> "GET " + STRATEGIES_RESOURCE_PATH + " - getAllStrategies() - caller: ");
+    // + user.getUsername()); // TODO: NPE thrown here...
 
     final List<StrategyConfig> strategyConfigs = strategyConfigService.getAllStrategyConfig();
 
@@ -91,17 +89,13 @@ public class StrategyConfigController {
    * @param strategyId the id of the Strategy to fetch.
    * @return the Strategy configuration.
    */
+  @PreAuthorize("hasRole('USER')")
   @GetMapping(value = STRATEGIES_RESOURCE_PATH + "/{strategyId}")
   public ResponseEntity<StrategyConfig> getStrategy(
       @AuthenticationPrincipal User user, @PathVariable String strategyId) {
     LOG.info(
-        () ->
-            "GET "
-                + STRATEGIES_RESOURCE_PATH
-                + "/"
-                + strategyId
-                + " - getStrategy() - caller: "
-                + user.getUsername());
+        () -> "GET " + STRATEGIES_RESOURCE_PATH + "/" + strategyId + " - getStrategy() - caller: ");
+    // + user.getUsername()); // TODO: NPE thrown here...
 
     final StrategyConfig strategyConfig = strategyConfigService.getStrategyConfig(strategyId);
     return strategyConfig == null
@@ -118,6 +112,7 @@ public class StrategyConfigController {
    * @return 200 'OK' HTTP status code and updated Strategy config in the body if update successful,
    *     404 'Not Found' HTTP status code if Strategy config not found.
    */
+  // TODO: unit test for admin role @PreAuthorize("hasRole('ADMIN')")
   @PutMapping(value = STRATEGIES_RESOURCE_PATH + "/{strategyId}")
   public ResponseEntity<StrategyConfig> updateStrategy(
       @AuthenticationPrincipal User user,
@@ -130,8 +125,8 @@ public class StrategyConfigController {
                 + STRATEGIES_RESOURCE_PATH
                 + "/"
                 + strategyId
-                + " - updateStrategy() - caller: "
-                + user.getUsername());
+                + " - updateStrategy() - caller: ");
+    // + user.getUsername()); // TODO: NPE thrown here...
     LOG.info(() -> "Request: " + config);
 
     if (config.getId() == null || !strategyId.equals(config.getId())) {
@@ -152,16 +147,13 @@ public class StrategyConfigController {
    * @return 201 'Created' HTTP status code and created Strategy config in response body if create
    *     successful, some other status code otherwise.
    */
+  // TODO: unit test for admin role @PreAuthorize("hasRole('ADMIN')")
   @PostMapping(value = STRATEGIES_RESOURCE_PATH)
   public ResponseEntity<StrategyConfig> createStrategy(
       @AuthenticationPrincipal User user, @RequestBody StrategyConfig config) {
 
-    LOG.info(
-        () ->
-            "POST "
-                + STRATEGIES_RESOURCE_PATH
-                + " - createStrategy() - caller: "
-                + user.getUsername());
+    LOG.info(() -> "POST " + STRATEGIES_RESOURCE_PATH + " - createStrategy() - caller: ");
+    // + user.getUsername()); // TODO: NPE thrown here...
     LOG.info(() -> "Request: " + config);
 
     final StrategyConfig createdConfig = strategyConfigService.createStrategyConfig(config);
@@ -178,6 +170,7 @@ public class StrategyConfigController {
    * @return 204 'No Content' HTTP status code if delete successful, 404 'Not Found' HTTP status
    *     code if Strategy config not found.
    */
+  // TODO: unit test for admin role @PreAuthorize("hasRole('ADMIN')")
   @DeleteMapping(value = STRATEGIES_RESOURCE_PATH + "/{strategyId}")
   public ResponseEntity<StrategyConfig> deleteStrategy(
       @AuthenticationPrincipal User user, @PathVariable String strategyId) {
@@ -188,8 +181,8 @@ public class StrategyConfigController {
                 + STRATEGIES_RESOURCE_PATH
                 + "/"
                 + strategyId
-                + " - deleteStrategy() - caller: "
-                + user.getUsername());
+                + " - deleteStrategy() - caller: ");
+    // + user.getUsername()); // TODO: NPE thrown here...
 
     final StrategyConfig deletedConfig = strategyConfigService.deleteStrategyConfig(strategyId);
     return deletedConfig == null

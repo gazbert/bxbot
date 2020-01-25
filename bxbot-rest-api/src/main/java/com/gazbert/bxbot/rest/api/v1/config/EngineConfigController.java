@@ -32,6 +32,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -69,11 +70,12 @@ public class EngineConfigController {
    * @param user the authenticated user making the request.
    * @return the Engine configuration.
    */
+  @PreAuthorize("hasRole('USER')")
   @GetMapping(value = ENGINE_RESOURCE_PATH)
   public EngineConfig getEngine(@AuthenticationPrincipal User user) {
 
-    LOG.info(
-        () -> "GET " + ENGINE_RESOURCE_PATH + " - getEngine() - caller: " + user.getUsername());
+    LOG.info(() -> "GET " + ENGINE_RESOURCE_PATH + " - getEngine() - caller: ");
+    // + user.getUsername()); // TODO: NPE thrown here...
 
     final EngineConfig engineConfig = engineConfigService.getEngineConfig();
     LOG.info(() -> "Response: " + engineConfig);
@@ -88,12 +90,13 @@ public class EngineConfigController {
    * @return 200 'OK' HTTP status code and updated Engine config in the response body if update
    *     successful, some other HTTP status code otherwise.
    */
+  // TODO: unit test for admin role @PreAuthorize("hasRole('ADMIN')")
   @PutMapping(value = ENGINE_RESOURCE_PATH)
   public ResponseEntity<EngineConfig> updateEngine(
       @AuthenticationPrincipal User user, @RequestBody EngineConfig config) {
 
-    LOG.info(
-        () -> "PUT " + ENGINE_RESOURCE_PATH + " - updateEngine() - caller: " + user.getUsername());
+    LOG.info(() -> "PUT " + ENGINE_RESOURCE_PATH + " - updateEngine() - caller: ");
+    // + user.getUsername()); // TODO: NPE thrown here...
     LOG.info(() -> "Request: " + config);
 
     final EngineConfig updatedConfig = engineConfigService.updateEngineConfig(config);

@@ -23,7 +23,6 @@
 
 package com.gazbert.bxbot.rest.api.v1.config;
 
-import static org.junit.Assert.assertEquals;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.times;
@@ -39,12 +38,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.gazbert.bxbot.core.engine.TradingEngine;
 import com.gazbert.bxbot.core.mail.EmailAlerter;
 import com.gazbert.bxbot.domain.market.MarketConfig;
-import com.gazbert.bxbot.rest.api.security.jwt.JwtUtils;
 import com.gazbert.bxbot.services.config.MarketConfigService;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.actuate.logging.LogFileWebEndpoint;
@@ -55,7 +52,6 @@ import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 /**
@@ -63,7 +59,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
  *
  * @author gazbert
  */
-@Ignore("Tests need converting to use JWT authentication")
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @WebAppConfiguration
@@ -94,7 +89,6 @@ public class TestMarketConfigController extends AbstractConfigControllerTest {
   @MockBean private TradingEngine tradingEngine;
   @MockBean private RestartEndpoint restartEndpoint;
   @MockBean private LogFileWebEndpoint logFileWebEndpoint;
-  @MockBean private JwtUtils jwtUtils;
   @MockBean private AuthenticationManager authenticationManager;
 
   @Before
@@ -103,15 +97,14 @@ public class TestMarketConfigController extends AbstractConfigControllerTest {
   }
 
   @Test
-  public void testGetAllMarketConfig() throws Exception {
+  public void testGetAllMarketConfigWithValidToken() throws Exception {
     given(marketConfigService.getAllMarketConfig()).willReturn(allMarketConfig());
 
     mockMvc
         .perform(
             get(MARKETS_CONFIG_ENDPOINT_URI)
                 .header(
-                    "Authorization",
-                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD)))
+                    "Authorization", "Bearer " + getJwt(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD)))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.[0].id").value(MARKET_1_ID))
@@ -131,34 +124,31 @@ public class TestMarketConfigController extends AbstractConfigControllerTest {
   }
 
   @Test
-  public void testGetAllMarketConfigWhenUnauthorizedWithMissingCredentials() throws Exception {
+  public void testGetAllMarketConfigWhenUnauthorizedWithMissingToken() throws Exception {
     mockMvc
         .perform(get(MARKETS_CONFIG_ENDPOINT_URI).accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isUnauthorized());
   }
 
   @Test
-  public void testGetAllMarketConfigWhenUnauthorizedWithInvalidCredentials() throws Exception {
+  public void testGetAllMarketConfigWhenUnauthorizedWithInvalidToken() throws Exception {
     mockMvc
         .perform(
             get(MARKETS_CONFIG_ENDPOINT_URI)
-                .header(
-                    "Authorization",
-                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, INVALID_USER_PASSWORD))
+                .header("Authorization", "Bearer junk.web.token")
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isUnauthorized());
   }
 
   @Test
-  public void testGetMarketConfig() throws Exception {
+  public void testGetMarketConfigWithValidToken() throws Exception {
     given(marketConfigService.getMarketConfig(MARKET_1_ID)).willReturn(someMarketConfig());
 
     mockMvc
         .perform(
             get(MARKETS_CONFIG_ENDPOINT_URI + MARKET_1_ID)
                 .header(
-                    "Authorization",
-                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD)))
+                    "Authorization", "Bearer " + getJwt(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD)))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.id").value(MARKET_1_ID))
@@ -172,20 +162,18 @@ public class TestMarketConfigController extends AbstractConfigControllerTest {
   }
 
   @Test
-  public void testGetMarketConfigByIdWhenUnauthorizedWithMissingCredentials() throws Exception {
+  public void testGetMarketConfigByIdWhenUnauthorizedWithMissingToken() throws Exception {
     mockMvc
         .perform(get(MARKETS_CONFIG_ENDPOINT_URI + MARKET_1_ID).accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isUnauthorized());
   }
 
   @Test
-  public void testGetMarketConfigByIdWhenUnauthorizedWithInvalidCredentials() throws Exception {
+  public void testGetMarketConfigByIdWhenUnauthorizedWithInvalidToken() throws Exception {
     mockMvc
         .perform(
             get(MARKETS_CONFIG_ENDPOINT_URI + MARKET_1_ID)
-                .header(
-                    "Authorization",
-                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, INVALID_USER_PASSWORD))
+                .header("Authorization", "Bearer junk.web.token")
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isUnauthorized());
   }
@@ -198,36 +186,37 @@ public class TestMarketConfigController extends AbstractConfigControllerTest {
         .perform(
             get(MARKETS_CONFIG_ENDPOINT_URI + UNKNOWN_MARKET_ID)
                 .header(
-                    "Authorization",
-                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD))
+                    "Authorization", "Bearer " + getJwt(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD))
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isNotFound());
   }
 
   @Test
-  public void testUpdateMarketConfig() throws Exception {
+  public void testUpdateMarketConfigWithValidToken() throws Exception {
     given(marketConfigService.updateMarketConfig(someMarketConfig()))
         .willReturn(someMarketConfig());
 
-    final MvcResult result =
-        mockMvc
-            .perform(
-                put(MARKETS_CONFIG_ENDPOINT_URI + MARKET_1_ID)
-                    .header(
-                        "Authorization",
-                        buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD))
-                    .contentType(CONTENT_TYPE)
-                    .content(jsonify(someMarketConfig())))
-            .andDo(print())
-            .andExpect(status().isOk())
-            .andReturn();
+    mockMvc
+        .perform(
+            put(MARKETS_CONFIG_ENDPOINT_URI + MARKET_1_ID)
+                .header(
+                    "Authorization", "Bearer " + getJwt(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD))
+                .contentType(CONTENT_TYPE)
+                .content(jsonify(someMarketConfig())))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.id").value(MARKET_1_ID))
+        .andExpect(jsonPath("$.name").value(MARKET_1_NAME))
+        .andExpect(jsonPath("$.baseCurrency").value(MARKET_1_BASE_CURRENCY))
+        .andExpect(jsonPath("$.counterCurrency").value(MARKET_1_COUNTER_CURRENCY))
+        .andExpect(jsonPath("$.enabled").value(MARKET_1_ENABLED))
+        .andExpect(jsonPath("$.tradingStrategyId").value(MARKET_1_STRATEGY_ID));
 
-    assertEquals(jsonify(someMarketConfig()), result.getResponse().getContentAsString());
     verify(marketConfigService, times(1)).updateMarketConfig(any());
   }
 
   @Test
-  public void testUpdateMarketConfigWhenUnauthorizedWithMissingCredentials() throws Exception {
+  public void testUpdateMarketConfigWhenUnauthorizedWithMissingToken() throws Exception {
     mockMvc
         .perform(
             put(MARKETS_CONFIG_ENDPOINT_URI + MARKET_1_ID)
@@ -238,13 +227,11 @@ public class TestMarketConfigController extends AbstractConfigControllerTest {
   }
 
   @Test
-  public void testUpdateMarketConfigWhenUnauthorizedWithInvalidCredentials() throws Exception {
+  public void testUpdateMarketConfigWhenUnauthorizedWithInvalidToken() throws Exception {
     mockMvc
         .perform(
             put(MARKETS_CONFIG_ENDPOINT_URI + MARKET_1_ID)
-                .header(
-                    "Authorization",
-                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, INVALID_USER_PASSWORD))
+                .header("Authorization", "Bearer junk.web.token")
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(CONTENT_TYPE)
                 .content(jsonify(someMarketConfig())))
@@ -259,8 +246,7 @@ public class TestMarketConfigController extends AbstractConfigControllerTest {
         .perform(
             put(MARKETS_CONFIG_ENDPOINT_URI + UNKNOWN_MARKET_ID)
                 .header(
-                    "Authorization",
-                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD))
+                    "Authorization", "Bearer " + getJwt(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD))
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(CONTENT_TYPE)
                 .content(jsonify(unrecognizedMarketConfig())))
@@ -273,8 +259,7 @@ public class TestMarketConfigController extends AbstractConfigControllerTest {
         .perform(
             put(MARKETS_CONFIG_ENDPOINT_URI + MARKET_1_ID)
                 .header(
-                    "Authorization",
-                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD))
+                    "Authorization", "Bearer " + getJwt(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD))
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(CONTENT_TYPE)
                 .content(jsonify(someMarketConfigWithMissingId())))
@@ -282,22 +267,21 @@ public class TestMarketConfigController extends AbstractConfigControllerTest {
   }
 
   @Test
-  public void testDeleteMarketConfig() throws Exception {
+  public void testDeleteMarketConfigWithValidToken() throws Exception {
     given(marketConfigService.deleteMarketConfig(MARKET_1_ID)).willReturn(someMarketConfig());
 
     mockMvc
         .perform(
             delete(MARKETS_CONFIG_ENDPOINT_URI + MARKET_1_ID)
                 .header(
-                    "Authorization",
-                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD)))
+                    "Authorization", "Bearer " + getJwt(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD)))
         .andExpect(status().isNoContent());
 
     verify(marketConfigService, times(1)).deleteMarketConfig(MARKET_1_ID);
   }
 
   @Test
-  public void testDeleteMarketConfigWhenUnauthorizedWithMissingCredentials() throws Exception {
+  public void testDeleteMarketConfigWhenUnauthorizedWithMissingToken() throws Exception {
     mockMvc
         .perform(
             delete(MARKETS_CONFIG_ENDPOINT_URI + MARKET_1_ID).accept(MediaType.APPLICATION_JSON))
@@ -305,13 +289,11 @@ public class TestMarketConfigController extends AbstractConfigControllerTest {
   }
 
   @Test
-  public void testDeleteMarketConfigWhenUnauthorizedWithInvalidCredentials() throws Exception {
+  public void testDeleteMarketConfigWhenUnauthorizedWithInvalidToken() throws Exception {
     mockMvc
         .perform(
             delete(MARKETS_CONFIG_ENDPOINT_URI + MARKET_1_ID)
-                .header(
-                    "Authorization",
-                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, INVALID_USER_PASSWORD))
+                .header("Authorization", "Bearer junk.web.token")
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isUnauthorized());
   }
@@ -324,36 +306,37 @@ public class TestMarketConfigController extends AbstractConfigControllerTest {
         .perform(
             delete(MARKETS_CONFIG_ENDPOINT_URI + UNKNOWN_MARKET_ID)
                 .header(
-                    "Authorization",
-                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD))
+                    "Authorization", "Bearer " + getJwt(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD))
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isNotFound());
   }
 
   @Test
-  public void testCreateMarketConfig() throws Exception {
+  public void testCreateMarketConfigWithValidToken() throws Exception {
     given(marketConfigService.createMarketConfig(someMarketConfig()))
         .willReturn(someMarketConfig());
 
-    final MvcResult result =
-        mockMvc
-            .perform(
-                post(MARKETS_CONFIG_ENDPOINT_URI)
-                    .header(
-                        "Authorization",
-                        buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD))
-                    .contentType(CONTENT_TYPE)
-                    .content(jsonify(someMarketConfig())))
-            .andDo(print())
-            .andExpect(status().isCreated())
-            .andReturn();
+    mockMvc
+        .perform(
+            post(MARKETS_CONFIG_ENDPOINT_URI)
+                .header(
+                    "Authorization", "Bearer " + getJwt(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD))
+                .contentType(CONTENT_TYPE)
+                .content(jsonify(someMarketConfig())))
+        .andDo(print())
+        .andExpect(status().isCreated())
+        .andExpect(jsonPath("$.id").value(MARKET_1_ID))
+        .andExpect(jsonPath("$.name").value(MARKET_1_NAME))
+        .andExpect(jsonPath("$.baseCurrency").value(MARKET_1_BASE_CURRENCY))
+        .andExpect(jsonPath("$.counterCurrency").value(MARKET_1_COUNTER_CURRENCY))
+        .andExpect(jsonPath("$.enabled").value(MARKET_1_ENABLED))
+        .andExpect(jsonPath("$.tradingStrategyId").value(MARKET_1_STRATEGY_ID));
 
-    assertEquals(jsonify(someMarketConfig()), result.getResponse().getContentAsString());
     verify(marketConfigService, times(1)).createMarketConfig(any());
   }
 
   @Test
-  public void testCreateMarketConfigWhenUnauthorizedWithMissingCredentials() throws Exception {
+  public void testCreateMarketConfigWhenUnauthorizedWithMissingToken() throws Exception {
     mockMvc
         .perform(
             post(MARKETS_CONFIG_ENDPOINT_URI)
@@ -364,13 +347,11 @@ public class TestMarketConfigController extends AbstractConfigControllerTest {
   }
 
   @Test
-  public void testCreateMarketConfigWhenUnauthorizedWithInvalidCredentials() throws Exception {
+  public void testCreateMarketConfigWhenUnauthorizedWithInvalidToken() throws Exception {
     mockMvc
         .perform(
             post(MARKETS_CONFIG_ENDPOINT_URI)
-                .header(
-                    "Authorization",
-                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, INVALID_USER_PASSWORD))
+                .header("Authorization", "Bearer junk.web.token")
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(CONTENT_TYPE)
                 .content(jsonify(someMarketConfig())))
@@ -383,8 +364,7 @@ public class TestMarketConfigController extends AbstractConfigControllerTest {
         .perform(
             post(MARKETS_CONFIG_ENDPOINT_URI)
                 .header(
-                    "Authorization",
-                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD))
+                    "Authorization", "Bearer " + getJwt(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD))
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(CONTENT_TYPE)
                 .content(jsonify(someMarketConfigWithMissingId())))
@@ -399,8 +379,7 @@ public class TestMarketConfigController extends AbstractConfigControllerTest {
         .perform(
             post(MARKETS_CONFIG_ENDPOINT_URI)
                 .header(
-                    "Authorization",
-                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD))
+                    "Authorization", "Bearer " + getJwt(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD))
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(CONTENT_TYPE)
                 .content(jsonify(someMarketConfigWithMissingStrategyId())))

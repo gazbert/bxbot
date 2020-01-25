@@ -37,14 +37,12 @@ import com.gazbert.bxbot.core.engine.TradingEngine;
 import com.gazbert.bxbot.core.mail.EmailAlerter;
 import com.gazbert.bxbot.domain.exchange.ExchangeConfig;
 import com.gazbert.bxbot.domain.exchange.NetworkConfig;
-import com.gazbert.bxbot.rest.api.security.jwt.JwtUtils;
 import com.gazbert.bxbot.services.config.ExchangeConfigService;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.actuate.logging.LogFileWebEndpoint;
@@ -62,7 +60,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
  *
  * @author gazbert
  */
-@Ignore("Tests need converting to use JWT authentication")
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @WebAppConfiguration
@@ -100,7 +97,6 @@ public class TestExchangeConfigController extends AbstractConfigControllerTest {
   @MockBean private EmailAlerter emailAlerter;
   @MockBean private RestartEndpoint restartEndpoint;
   @MockBean private LogFileWebEndpoint logFileWebEndpoint;
-  @MockBean private JwtUtils jwtUtils;
   @MockBean private AuthenticationManager authenticationManager;
 
   @Before
@@ -109,15 +105,14 @@ public class TestExchangeConfigController extends AbstractConfigControllerTest {
   }
 
   @Test
-  public void testGetExchangeConfig() throws Exception {
+  public void testGetExchangeConfigWithValidToken() throws Exception {
     given(exchangeConfigService.getExchangeConfig()).willReturn(someExchangeConfig());
 
     mockMvc
         .perform(
             get(EXCHANGE_CONFIG_ENDPOINT_URI)
                 .header(
-                    "Authorization",
-                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD)))
+                    "Authorization", "Bearer " + getJwt(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD)))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.name").value(EXCHANGE_NAME))
@@ -140,26 +135,24 @@ public class TestExchangeConfigController extends AbstractConfigControllerTest {
   }
 
   @Test
-  public void testGetExchangeConfigWhenUnauthorizedWithMissingCredentials() throws Exception {
+  public void testGetExchangeConfigWhenUnauthorizedWithMissingToken() throws Exception {
     mockMvc
         .perform(get(EXCHANGE_CONFIG_ENDPOINT_URI).accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isUnauthorized());
   }
 
   @Test
-  public void testGetExchangeConfigWhenUnauthorizedWithInvalidCredentials() throws Exception {
+  public void testGetExchangeConfigWhenUnauthorizedWithInvalidToken() throws Exception {
     mockMvc
         .perform(
             get(EXCHANGE_CONFIG_ENDPOINT_URI)
-                .header(
-                    "Authorization",
-                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, INVALID_USER_PASSWORD))
+                .header("Authorization", "Bearer junk.web.token")
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isUnauthorized());
   }
 
   @Test
-  public void testUpdateExchangeConfig() throws Exception {
+  public void testUpdateExchangeConfigWithValidToken() throws Exception {
     given(exchangeConfigService.getExchangeConfig()).willReturn(someExchangeConfig());
     given(exchangeConfigService.updateExchangeConfig(any())).willReturn(someExchangeConfig());
 
@@ -167,8 +160,7 @@ public class TestExchangeConfigController extends AbstractConfigControllerTest {
         .perform(
             put(EXCHANGE_CONFIG_ENDPOINT_URI)
                 .header(
-                    "Authorization",
-                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD))
+                    "Authorization", "Bearer " + getJwt(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD))
                 .contentType(CONTENT_TYPE)
                 .content(jsonify(someExchangeConfig())))
         .andExpect(status().isOk())
@@ -193,20 +185,18 @@ public class TestExchangeConfigController extends AbstractConfigControllerTest {
   }
 
   @Test
-  public void testUpdateExchangeConfigWhenUnauthorizedWithMissingCredentials() throws Exception {
+  public void testUpdateExchangeConfigWhenUnauthorizedWithMissingToken() throws Exception {
     mockMvc
         .perform(put(EXCHANGE_CONFIG_ENDPOINT_URI).accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isUnauthorized());
   }
 
   @Test
-  public void testUpdateExchangeConfigWhenUnauthorizedWithInvalidCredentials() throws Exception {
+  public void testUpdateExchangeConfigWhenUnauthorizedWithInvalidToken() throws Exception {
     mockMvc
         .perform(
             put(EXCHANGE_CONFIG_ENDPOINT_URI)
-                .header(
-                    "Authorization",
-                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, INVALID_USER_PASSWORD))
+                .header("Authorization", "Bearer junk.web.token")
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isUnauthorized());
   }

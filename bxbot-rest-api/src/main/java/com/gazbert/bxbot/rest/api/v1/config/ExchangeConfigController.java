@@ -31,6 +31,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -70,11 +71,12 @@ public class ExchangeConfigController {
    * @param user the authenticated user making the request.
    * @return the Exchange configuration.
    */
+  @PreAuthorize("hasRole('USER')")
   @GetMapping(value = EXCHANGE_RESOURCE_PATH)
   public ExchangeConfig getExchange(@AuthenticationPrincipal User user) {
 
-    LOG.info(
-        () -> "GET " + EXCHANGE_RESOURCE_PATH + " - getExchange() - caller: " + user.getUsername());
+    LOG.info(() -> "GET " + EXCHANGE_RESOURCE_PATH + " - getExchange() - caller: ");
+    // + user.getUsername()); // TODO: NPE thrown here...
 
     final ExchangeConfig exchangeConfig = exchangeConfigService.getExchangeConfig();
     exchangeConfig.setAuthenticationConfig(null);
@@ -93,16 +95,13 @@ public class ExchangeConfigController {
    * @return 200 'OK' HTTP status code with updated Exchange config in the body if update
    *     successful, some other HTTP status code otherwise.
    */
+  // TODO: unit test for admin role @PreAuthorize("hasRole('ADMIN')")
   @PutMapping(value = EXCHANGE_RESOURCE_PATH)
   public ResponseEntity<ExchangeConfig> updateExchange(
       @AuthenticationPrincipal User user, @RequestBody ExchangeConfig config) {
 
-    LOG.info(
-        () ->
-            "PUT "
-                + EXCHANGE_RESOURCE_PATH
-                + " - updateExchange() - caller: "
-                + user.getUsername());
+    LOG.info(() -> "PUT " + EXCHANGE_RESOURCE_PATH + " - updateExchange() - caller: ");
+    // + user.getUsername()); // TODO: NPE thrown here...
     LOG.info(() -> "Request: " + config);
 
     final ExchangeConfig updatedConfig =

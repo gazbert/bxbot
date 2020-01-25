@@ -33,6 +33,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -69,12 +70,12 @@ public class MarketConfigController {
    * @param user the authenticated user.
    * @return all the Market configurations.
    */
+  @PreAuthorize("hasRole('USER')")
   @GetMapping(value = MARKETS_RESOURCE_PATH)
   public List<MarketConfig> getAllMarkets(@AuthenticationPrincipal User user) {
 
-    LOG.info(
-        () ->
-            "GET " + MARKETS_RESOURCE_PATH + " - getAllMarkets() - caller: " + user.getUsername());
+    LOG.info(() -> "GET " + MARKETS_RESOURCE_PATH + " - getAllMarkets() - caller: ");
+    // + user.getUsername()); // TODO: NPE thrown here...+ user.getUsername());
 
     final List<MarketConfig> marketConfigs = marketConfigService.getAllMarketConfig();
     LOG.info(() -> "Response: " + marketConfigs);
@@ -89,18 +90,13 @@ public class MarketConfigController {
    * @param marketId the id of the Market to fetch.
    * @return the Market configuration.
    */
+  @PreAuthorize("hasRole('USER')")
   @GetMapping(value = MARKETS_RESOURCE_PATH + "/{marketId}")
   public ResponseEntity<MarketConfig> getMarket(
       @AuthenticationPrincipal User user, @PathVariable String marketId) {
 
-    LOG.info(
-        () ->
-            "GET "
-                + MARKETS_RESOURCE_PATH
-                + "/"
-                + marketId
-                + " - getMarket() - caller: "
-                + user.getUsername());
+    LOG.info(() -> "GET " + MARKETS_RESOURCE_PATH + "/" + marketId + " - getMarket() - caller: ");
+    // + user.getUsername()); // TODO: NPE thrown here...
 
     final MarketConfig marketConfig = marketConfigService.getMarketConfig(marketId);
     return marketConfig == null
@@ -117,19 +113,15 @@ public class MarketConfigController {
    * @return 204 'No Content' HTTP status code if update successful, 404 'Not Found' HTTP status
    *     code if Market config not found.
    */
+  // TODO: unit test for admin role @PreAuthorize("hasRole('ADMIN')")
   @PutMapping(value = MARKETS_RESOURCE_PATH + "/{marketId}")
   public ResponseEntity<MarketConfig> updateMarket(
       @AuthenticationPrincipal User user,
       @PathVariable String marketId,
       @RequestBody MarketConfig config) {
     LOG.info(
-        () ->
-            "PUT "
-                + MARKETS_RESOURCE_PATH
-                + "/"
-                + marketId
-                + " - updateMarket() - caller: "
-                + user.getUsername());
+        () -> "PUT " + MARKETS_RESOURCE_PATH + "/" + marketId + " - updateMarket() - caller: ");
+    // + user.getUsername()); // TODO: NPE thrown here...
     LOG.info(() -> "Request: " + config);
 
     if (config.getId() == null || !marketId.equals(config.getId())) {
@@ -150,13 +142,13 @@ public class MarketConfigController {
    * @return 201 'Created' HTTP status code and created Market config in response body if create
    *     successful, some other HTTP status code otherwise.
    */
+  // TODO: unit test for admin role @PreAuthorize("hasRole('ADMIN')")
   @PostMapping(value = MARKETS_RESOURCE_PATH)
   public ResponseEntity<MarketConfig> createMarket(
       @AuthenticationPrincipal User user, @RequestBody MarketConfig config) {
 
-    LOG.info(
-        () ->
-            "POST " + MARKETS_RESOURCE_PATH + " - createMarket() - caller: " + user.getUsername());
+    LOG.info(() -> "POST " + MARKETS_RESOURCE_PATH + " - createMarket() - caller: ");
+    // + user.getUsername()); // TODO: NPE thrown here...
     LOG.info(() -> "Request: " + config);
 
     final MarketConfig createdConfig = marketConfigService.createMarketConfig(config);
@@ -173,18 +165,14 @@ public class MarketConfigController {
    * @return 204 'No Content' HTTP status code if delete successful, 404 'Not Found' HTTP status
    *     code if Market config not found.
    */
+  // TODO: unit test for admin role @PreAuthorize("hasRole('ADMIN')")
   @DeleteMapping(value = MARKETS_RESOURCE_PATH + "/{marketId}")
   public ResponseEntity<MarketConfig> deleteMarket(
       @AuthenticationPrincipal User user, @PathVariable String marketId) {
 
     LOG.info(
-        () ->
-            "DELETE "
-                + MARKETS_RESOURCE_PATH
-                + "/"
-                + marketId
-                + " - deleteMarket() - caller: "
-                + user.getUsername());
+        () -> "DELETE " + MARKETS_RESOURCE_PATH + "/" + marketId + " - deleteMarket() - caller: ");
+    // + user.getUsername()); // TODO: NPE thrown here...
 
     final MarketConfig deletedConfig = marketConfigService.deleteMarketConfig(marketId);
     return deletedConfig == null
