@@ -29,12 +29,11 @@ import com.gazbert.bxbot.domain.bot.BotStatus;
 import com.gazbert.bxbot.domain.engine.EngineConfig;
 import com.gazbert.bxbot.services.config.EngineConfigService;
 import com.gazbert.bxbot.services.runtime.BotStatusService;
+import java.security.Principal;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -65,15 +64,15 @@ public class BotStatusController {
   /**
    * Returns the process status for the bot.
    *
-   * @param user the authenticated user making the request.
+   * @param principal the authenticated user making the request.
    * @return the process status.
    */
   @PreAuthorize("hasRole('USER')")
   @GetMapping(value = STATUS_RESOURCE_PATH)
-  public BotStatus getStatus(@AuthenticationPrincipal User user) {
+  public BotStatus getStatus(Principal principal) {
 
-    LOG.info(() -> "GET " + STATUS_RESOURCE_PATH + " - getStatus() - caller: ");
-    // + user.getUsername()); // TODO: NPE thrown here...
+    LOG.info(
+        () -> "GET " + STATUS_RESOURCE_PATH + " - getStatus() - caller: " + principal.getName());
 
     final EngineConfig engineConfig = engineConfigService.getEngineConfig();
     final String status = botStatusService.getStatus();
