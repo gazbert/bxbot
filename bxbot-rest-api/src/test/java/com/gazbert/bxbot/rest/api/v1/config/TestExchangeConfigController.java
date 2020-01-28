@@ -112,7 +112,7 @@ public class TestExchangeConfigController extends AbstractConfigControllerTest {
         .perform(
             get(EXCHANGE_CONFIG_ENDPOINT_URI)
                 .header(
-                    "Authorization", "Bearer " + getJwt(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD)))
+                    "Authorization", "Bearer " + getJwt(VALID_USER_NAME, VALID_USER_PASSWORD)))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.name").value(EXCHANGE_NAME))
@@ -152,7 +152,7 @@ public class TestExchangeConfigController extends AbstractConfigControllerTest {
   }
 
   @Test
-  public void testUpdateExchangeConfigWithValidToken() throws Exception {
+  public void testUpdateExchangeConfigWithAdminTokenAuthorized() throws Exception {
     given(exchangeConfigService.getExchangeConfig()).willReturn(someExchangeConfig());
     given(exchangeConfigService.updateExchangeConfig(any())).willReturn(someExchangeConfig());
 
@@ -160,7 +160,7 @@ public class TestExchangeConfigController extends AbstractConfigControllerTest {
         .perform(
             put(EXCHANGE_CONFIG_ENDPOINT_URI)
                 .header(
-                    "Authorization", "Bearer " + getJwt(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD))
+                    "Authorization", "Bearer " + getJwt(VALID_ADMIN_NAME, VALID_ADMIN_PASSWORD))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonify(someExchangeConfig())))
         .andExpect(status().isOk())
@@ -182,6 +182,24 @@ public class TestExchangeConfigController extends AbstractConfigControllerTest {
 
     verify(exchangeConfigService, times(1)).getExchangeConfig();
     verify(exchangeConfigService, times(1)).updateExchangeConfig(any());
+  }
+
+  @Test
+  public void testUpdateExchangeConfigWithUserTokenForbidden() throws Exception {
+    given(exchangeConfigService.getExchangeConfig()).willReturn(someExchangeConfig());
+    given(exchangeConfigService.updateExchangeConfig(any())).willReturn(someExchangeConfig());
+
+    mockMvc
+        .perform(
+            put(EXCHANGE_CONFIG_ENDPOINT_URI)
+                .header(
+                    "Authorization", "Bearer " + getJwt(VALID_USER_NAME, VALID_USER_PASSWORD))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonify(someExchangeConfig())))
+        .andExpect(status().isForbidden());
+
+    verify(exchangeConfigService, times(0)).getExchangeConfig();
+    verify(exchangeConfigService, times(0)).updateExchangeConfig(any());
   }
 
   @Test

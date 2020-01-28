@@ -113,7 +113,7 @@ public class MarketConfigController {
    * @return 204 'No Content' HTTP status code if update successful, 404 'Not Found' HTTP status
    *     code if Market config not found.
    */
-  // TODO: unit test for admin role @PreAuthorize("hasRole('ADMIN')")
+  @PreAuthorize("hasRole('ADMIN')")
   @PutMapping(value = MARKETS_RESOURCE_PATH + "/{marketId}")
   public ResponseEntity<MarketConfig> updateMarket(
       @AuthenticationPrincipal User user,
@@ -142,7 +142,7 @@ public class MarketConfigController {
    * @return 201 'Created' HTTP status code and created Market config in response body if create
    *     successful, some other HTTP status code otherwise.
    */
-  // TODO: unit test for admin role @PreAuthorize("hasRole('ADMIN')")
+  @PreAuthorize("hasRole('ADMIN')")
   @PostMapping(value = MARKETS_RESOURCE_PATH)
   public ResponseEntity<MarketConfig> createMarket(
       @AuthenticationPrincipal User user, @RequestBody MarketConfig config) {
@@ -165,7 +165,7 @@ public class MarketConfigController {
    * @return 204 'No Content' HTTP status code if delete successful, 404 'Not Found' HTTP status
    *     code if Market config not found.
    */
-  // TODO: unit test for admin role @PreAuthorize("hasRole('ADMIN')")
+  @PreAuthorize("hasRole('ADMIN')")
   @DeleteMapping(value = MARKETS_RESOURCE_PATH + "/{marketId}")
   public ResponseEntity<MarketConfig> deleteMarket(
       @AuthenticationPrincipal User user, @PathVariable String marketId) {

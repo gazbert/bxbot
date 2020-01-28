@@ -93,7 +93,7 @@ public class TestEmailAlertsConfigController extends AbstractConfigControllerTes
         .perform(
             get(EMAIL_ALERTS_CONFIG_ENDPOINT_URI)
                 .header(
-                    "Authorization", "Bearer " + getJwt(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD)))
+                    "Authorization", "Bearer " + getJwt(VALID_USER_NAME, VALID_USER_PASSWORD)))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.smtpConfig.host").value(HOST))
@@ -125,7 +125,7 @@ public class TestEmailAlertsConfigController extends AbstractConfigControllerTes
   }
 
   @Test
-  public void testUpdateEmailAlertsConfigWithValidToken() throws Exception {
+  public void testUpdateEmailAlertsConfigWithAdminTokenAuthorized() throws Exception {
     given(emailAlertsConfigService.updateEmailAlertsConfig(any()))
         .willReturn(someEmailAlertsConfig());
 
@@ -133,7 +133,7 @@ public class TestEmailAlertsConfigController extends AbstractConfigControllerTes
         .perform(
             put(EMAIL_ALERTS_CONFIG_ENDPOINT_URI)
                 .header(
-                    "Authorization", "Bearer " + getJwt(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD))
+                    "Authorization", "Bearer " + getJwt(VALID_ADMIN_NAME, VALID_ADMIN_PASSWORD))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonify(someEmailAlertsConfig())))
         .andDo(print())
@@ -147,6 +147,23 @@ public class TestEmailAlertsConfigController extends AbstractConfigControllerTes
         .andExpect(jsonPath("$.smtpConfig.accountPassword").value(ACCOUNT_PASSWORD));
 
     verify(emailAlertsConfigService, times(1)).updateEmailAlertsConfig(any());
+  }
+
+  @Test
+  public void testUpdateEmailAlertsConfigWithUserTokenForbidden() throws Exception {
+    given(emailAlertsConfigService.updateEmailAlertsConfig(any()))
+        .willReturn(someEmailAlertsConfig());
+
+    mockMvc
+        .perform(
+            put(EMAIL_ALERTS_CONFIG_ENDPOINT_URI)
+                .header(
+                    "Authorization", "Bearer " + getJwt(VALID_USER_NAME, VALID_USER_PASSWORD))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonify(someEmailAlertsConfig())))
+        .andExpect(status().isForbidden());
+
+    verify(emailAlertsConfigService, times(0)).updateEmailAlertsConfig(any());
   }
 
   @Test

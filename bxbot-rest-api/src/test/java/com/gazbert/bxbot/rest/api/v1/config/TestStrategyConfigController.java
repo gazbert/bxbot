@@ -111,7 +111,7 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
         .perform(
             get(STRATEGIES_CONFIG_ENDPOINT_URI)
                 .header(
-                    "Authorization", "Bearer " + getJwt(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD)))
+                    "Authorization", "Bearer " + getJwt(VALID_USER_NAME, VALID_USER_PASSWORD)))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.[0].id").value(STRAT_1_ID))
@@ -155,7 +155,7 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
         .perform(
             get(STRATEGIES_CONFIG_ENDPOINT_URI + STRAT_1_ID)
                 .header(
-                    "Authorization", "Bearer " + getJwt(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD)))
+                    "Authorization", "Bearer " + getJwt(VALID_USER_NAME, VALID_USER_PASSWORD)))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.id").value(STRAT_1_ID))
@@ -194,13 +194,13 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
         .perform(
             get(STRATEGIES_CONFIG_ENDPOINT_URI + UNKNOWN_STRAT_ID)
                 .header(
-                    "Authorization", "Bearer " + getJwt(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD))
+                    "Authorization", "Bearer " + getJwt(VALID_USER_NAME, VALID_USER_PASSWORD))
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isNotFound());
   }
 
   @Test
-  public void testUpdateStrategyConfigWithValidToken() throws Exception {
+  public void testUpdateStrategyConfigWithAdminTokenAuthorized() throws Exception {
     given(strategyConfigService.updateStrategyConfig(someStrategyConfig()))
         .willReturn(someStrategyConfig());
 
@@ -208,7 +208,7 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
         .perform(
             put(STRATEGIES_CONFIG_ENDPOINT_URI + STRAT_1_ID)
                 .header(
-                    "Authorization", "Bearer " + getJwt(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD))
+                    "Authorization", "Bearer " + getJwt(VALID_ADMIN_NAME, VALID_ADMIN_PASSWORD))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonify(someStrategyConfig())))
         .andDo(print())
@@ -221,6 +221,23 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
         .andExpect(jsonPath("$.configItems.buy-amount").value(AMOUNT_TO_BUY_CONFIG_ITEM_VALUE));
 
     verify(strategyConfigService, times(1)).updateStrategyConfig(any());
+  }
+
+  @Test
+  public void testUpdateStrategyConfigWithUserTokenForbidden() throws Exception {
+    given(strategyConfigService.updateStrategyConfig(someStrategyConfig()))
+        .willReturn(someStrategyConfig());
+
+    mockMvc
+        .perform(
+            put(STRATEGIES_CONFIG_ENDPOINT_URI + STRAT_1_ID)
+                .header(
+                    "Authorization", "Bearer " + getJwt(VALID_USER_NAME, VALID_USER_PASSWORD))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonify(someStrategyConfig())))
+        .andExpect(status().isForbidden());
+
+    verify(strategyConfigService, times(0)).updateStrategyConfig(any());
   }
 
   @Test
@@ -255,7 +272,7 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
         .perform(
             put(STRATEGIES_CONFIG_ENDPOINT_URI + UNKNOWN_STRAT_ID)
                 .header(
-                    "Authorization", "Bearer " + getJwt(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD))
+                    "Authorization", "Bearer " + getJwt(VALID_ADMIN_NAME, VALID_ADMIN_PASSWORD))
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonify(unrecognizedStrategyConfig())))
@@ -268,7 +285,7 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
         .perform(
             put(STRATEGIES_CONFIG_ENDPOINT_URI + STRAT_1_ID)
                 .header(
-                    "Authorization", "Bearer " + getJwt(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD))
+                    "Authorization", "Bearer " + getJwt(VALID_ADMIN_NAME, VALID_ADMIN_PASSWORD))
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonify(someStrategyConfigWithMissingId())))
@@ -276,17 +293,31 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
   }
 
   @Test
-  public void testDeleteStrategyConfigWithValidToken() throws Exception {
+  public void testDeleteStrategyConfigWithAdminTokenAuthorized() throws Exception {
     given(strategyConfigService.deleteStrategyConfig(STRAT_1_ID)).willReturn(someStrategyConfig());
 
     mockMvc
         .perform(
             delete(STRATEGIES_CONFIG_ENDPOINT_URI + STRAT_1_ID)
                 .header(
-                    "Authorization", "Bearer " + getJwt(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD)))
+                    "Authorization", "Bearer " + getJwt(VALID_ADMIN_NAME, VALID_ADMIN_PASSWORD)))
         .andExpect(status().isNoContent());
 
     verify(strategyConfigService, times(1)).deleteStrategyConfig(STRAT_1_ID);
+  }
+
+  @Test
+  public void testDeleteStrategyConfigWithUserTokenForbidden() throws Exception {
+    given(strategyConfigService.deleteStrategyConfig(STRAT_1_ID)).willReturn(someStrategyConfig());
+
+    mockMvc
+        .perform(
+            delete(STRATEGIES_CONFIG_ENDPOINT_URI + STRAT_1_ID)
+                .header(
+                    "Authorization", "Bearer " + getJwt(VALID_USER_NAME, VALID_USER_PASSWORD)))
+        .andExpect(status().isForbidden());
+
+    verify(strategyConfigService, times(0)).deleteStrategyConfig(STRAT_1_ID);
   }
 
   @Test
@@ -315,13 +346,13 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
         .perform(
             delete(STRATEGIES_CONFIG_ENDPOINT_URI + UNKNOWN_STRAT_ID)
                 .header(
-                    "Authorization", "Bearer " + getJwt(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD))
+                    "Authorization", "Bearer " + getJwt(VALID_ADMIN_NAME, VALID_ADMIN_PASSWORD))
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isNotFound());
   }
 
   @Test
-  public void testCreateStrategyConfigWithValidToken() throws Exception {
+  public void testCreateStrategyConfigWithAdminTokenAuthorized() throws Exception {
     given(strategyConfigService.createStrategyConfig(someStrategyConfig()))
         .willReturn(someStrategyConfig());
 
@@ -329,7 +360,7 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
         .perform(
             post(STRATEGIES_CONFIG_ENDPOINT_URI)
                 .header(
-                    "Authorization", "Bearer " + getJwt(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD))
+                    "Authorization", "Bearer " + getJwt(VALID_ADMIN_NAME, VALID_ADMIN_PASSWORD))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonify(someStrategyConfig())))
         .andDo(print())
@@ -342,6 +373,22 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
         .andExpect(jsonPath("$.configItems.buy-amount").value(AMOUNT_TO_BUY_CONFIG_ITEM_VALUE));
 
     verify(strategyConfigService, times(1)).createStrategyConfig(any());
+  }
+  @Test
+  public void testCreateStrategyConfigWithUserTokenForbidden() throws Exception {
+    given(strategyConfigService.createStrategyConfig(someStrategyConfig()))
+        .willReturn(someStrategyConfig());
+
+    mockMvc
+        .perform(
+            post(STRATEGIES_CONFIG_ENDPOINT_URI)
+                .header(
+                    "Authorization", "Bearer " + getJwt(VALID_USER_NAME, VALID_USER_PASSWORD))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonify(someStrategyConfig())))
+        .andExpect(status().isForbidden());
+
+    verify(strategyConfigService, times(0)).createStrategyConfig(any());
   }
 
   @Test

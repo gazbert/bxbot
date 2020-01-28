@@ -31,6 +31,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -63,7 +64,7 @@ public class BotRestartController {
    * @return 200 OK on success with 'Restarting' response on success, some other HTTP status code
    *     otherwise.
    */
-  // TODO: unit test for admin role @PreAuthorize("hasRole('ADMIN')")
+  @PreAuthorize("hasRole('ADMIN')")
   @PostMapping(value = RESTART_RESOURCE_PATH)
   public ResponseEntity<String> restart(@AuthenticationPrincipal User user) {
     LOG.info(() -> "POST " + RESTART_RESOURCE_PATH + " - restart() - caller: ");

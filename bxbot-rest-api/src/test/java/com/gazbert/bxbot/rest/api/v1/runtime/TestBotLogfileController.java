@@ -97,7 +97,7 @@ public class TestBotLogfileController extends AbstractRuntimeControllerTest {
         .perform(
             get(LOGFILE_DOWNLOAD_URI)
                 .header(
-                    "Authorization", "Bearer " + getJwt(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD)))
+                    "Authorization", "Bearer " + getJwt(VALID_USER_NAME, VALID_USER_PASSWORD)))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(header().string("Content-Type", "application/octet-stream"))
@@ -115,7 +115,7 @@ public class TestBotLogfileController extends AbstractRuntimeControllerTest {
         .perform(
             get(LOGFILE_DOWNLOAD_URI)
                 .header(
-                    "Authorization", "Bearer " + getJwt(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD)))
+                    "Authorization", "Bearer " + getJwt(VALID_USER_NAME, VALID_USER_PASSWORD)))
         .andDo(print())
         .andExpect(status().is5xxServerError());
 
@@ -131,7 +131,7 @@ public class TestBotLogfileController extends AbstractRuntimeControllerTest {
         .perform(
             get(LOGFILE_ENDPOINT_URI)
                 .header(
-                    "Authorization", "Bearer " + getJwt(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD)))
+                    "Authorization", "Bearer " + getJwt(VALID_USER_NAME, VALID_USER_PASSWORD)))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$").value(LOGFILE_LINE_1 + System.lineSeparator() + LOGFILE_LINE_2));
@@ -148,7 +148,7 @@ public class TestBotLogfileController extends AbstractRuntimeControllerTest {
         .perform(
             get(LOGFILE_ENDPOINT_URI + "?head=" + headLineCount)
                 .header(
-                    "Authorization", "Bearer " + getJwt(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD)))
+                    "Authorization", "Bearer " + getJwt(VALID_USER_NAME, VALID_USER_PASSWORD)))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$").value(LOGFILE_LINE_1));
@@ -166,7 +166,7 @@ public class TestBotLogfileController extends AbstractRuntimeControllerTest {
         .perform(
             get(LOGFILE_ENDPOINT_URI + "?head=" + headLineCount)
                 .header(
-                    "Authorization", "Bearer " + getJwt(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD)))
+                    "Authorization", "Bearer " + getJwt(VALID_USER_NAME, VALID_USER_PASSWORD)))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$").value(LOGFILE_LINE_2 + System.lineSeparator() + LOGFILE_LINE_3));
@@ -184,7 +184,7 @@ public class TestBotLogfileController extends AbstractRuntimeControllerTest {
         .perform(
             get(LOGFILE_ENDPOINT_URI + "?head=" + headLineCount)
                 .header(
-                    "Authorization", "Bearer " + getJwt(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD)))
+                    "Authorization", "Bearer " + getJwt(VALID_USER_NAME, VALID_USER_PASSWORD)))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$").value(LOGFILE_LINE_1 + System.lineSeparator() + LOGFILE_LINE_2));
@@ -201,7 +201,7 @@ public class TestBotLogfileController extends AbstractRuntimeControllerTest {
         .perform(
             get(LOGFILE_ENDPOINT_URI + "?tail=" + tailLineCount)
                 .header(
-                    "Authorization", "Bearer " + getJwt(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD)))
+                    "Authorization", "Bearer " + getJwt(VALID_USER_NAME, VALID_USER_PASSWORD)))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$").value(LOGFILE_LINE_3));
@@ -219,7 +219,7 @@ public class TestBotLogfileController extends AbstractRuntimeControllerTest {
         .perform(
             get(LOGFILE_ENDPOINT_URI + "?tail=" + tailLineCount)
                 .header(
-                    "Authorization", "Bearer " + getJwt(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD)))
+                    "Authorization", "Bearer " + getJwt(VALID_USER_NAME, VALID_USER_PASSWORD)))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$").value(LOGFILE_LINE_2 + System.lineSeparator() + LOGFILE_LINE_3));
@@ -237,7 +237,7 @@ public class TestBotLogfileController extends AbstractRuntimeControllerTest {
         .perform(
             get(LOGFILE_ENDPOINT_URI + "?tail=" + tailLineCount)
                 .header(
-                    "Authorization", "Bearer " + getJwt(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD)))
+                    "Authorization", "Bearer " + getJwt(VALID_USER_NAME, VALID_USER_PASSWORD)))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$").value(LOGFILE_LINE_2 + System.lineSeparator() + LOGFILE_LINE_3));
@@ -254,7 +254,7 @@ public class TestBotLogfileController extends AbstractRuntimeControllerTest {
         .perform(
             get(LOGFILE_ENDPOINT_URI)
                 .header(
-                    "Authorization", "Bearer " + getJwt(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD)))
+                    "Authorization", "Bearer " + getJwt(VALID_USER_NAME, VALID_USER_PASSWORD)))
         .andDo(print())
         .andExpect(status().is5xxServerError());
 

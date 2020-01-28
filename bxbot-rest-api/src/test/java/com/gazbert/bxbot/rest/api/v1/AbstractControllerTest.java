@@ -57,13 +57,13 @@ public abstract class AbstractControllerTest {
   protected static final String INVALID_USER_PASSWORD = "not-valid-password";
 
   // This must match a user's USERNAME in the user table in src/test/resources/import.sql
-  protected static final String VALID_USER_LOGIN_ID = "unit-test-user";
+  protected static final String VALID_USER_NAME = "unit-test-user";
 
   // This must match a user's PASSWORD in the user table in src/test/resources/import.sql
   protected static final String VALID_USER_PASSWORD = "user";
 
   // This must match a admin's USERNAME in the user table in src/test/resources/import.sql
-  protected static final String VALID_ADMIN_NAME = "admin";
+  protected static final String VALID_ADMIN_NAME = "unit-test-admin";
 
   // This must match a admin's PASSWORD in the user table in src/test/resources/import.sql
   protected static final String VALID_ADMIN_PASSWORD = "admin";

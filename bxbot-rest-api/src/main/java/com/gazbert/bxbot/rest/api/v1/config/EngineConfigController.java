@@ -90,7 +90,7 @@ public class EngineConfigController {
    * @return 200 'OK' HTTP status code and updated Engine config in the response body if update
    *     successful, some other HTTP status code otherwise.
    */
-  // TODO: unit test for admin role @PreAuthorize("hasRole('ADMIN')")
+  @PreAuthorize("hasRole('ADMIN')")
   @PutMapping(value = ENGINE_RESOURCE_PATH)
   public ResponseEntity<EngineConfig> updateEngine(
       @AuthenticationPrincipal User user, @RequestBody EngineConfig config) {

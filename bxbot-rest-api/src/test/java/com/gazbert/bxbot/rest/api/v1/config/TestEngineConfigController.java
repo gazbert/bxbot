@@ -36,7 +36,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.gazbert.bxbot.core.engine.TradingEngine;
 import com.gazbert.bxbot.core.mail.EmailAlerter;
 import com.gazbert.bxbot.domain.engine.EngineConfig;
-import com.gazbert.bxbot.rest.api.security.jwt.JwtUtils;
 import com.gazbert.bxbot.services.config.EngineConfigService;
 import java.math.BigDecimal;
 import org.junit.Before;
@@ -92,7 +91,7 @@ public class TestEngineConfigController extends AbstractConfigControllerTest {
         .perform(
             get(ENGINE_CONFIG_ENDPOINT_URI)
                 .header(
-                    "Authorization", "Bearer " + getJwt(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD)))
+                    "Authorization", "Bearer " + getJwt(VALID_USER_NAME, VALID_USER_PASSWORD)))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.botId").value(BOT_ID))
@@ -123,14 +122,14 @@ public class TestEngineConfigController extends AbstractConfigControllerTest {
   }
 
   @Test
-  public void testUpdateEngineConfigWithValidToken() throws Exception {
+  public void testUpdateEngineConfigWithAdminTokenAuthorized() throws Exception {
     given(engineConfigService.updateEngineConfig(any())).willReturn(someEngineConfig());
 
     mockMvc
         .perform(
             put(ENGINE_CONFIG_ENDPOINT_URI)
                 .header(
-                    "Authorization", "Bearer " + getJwt(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD))
+                    "Authorization", "Bearer " + getJwt(VALID_ADMIN_NAME, VALID_ADMIN_PASSWORD))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonify(someEngineConfig())))
         .andDo(print())
@@ -143,6 +142,22 @@ public class TestEngineConfigController extends AbstractConfigControllerTest {
         .andExpect(jsonPath("$.tradeCycleInterval").value(ENGINE_TRADE_CYCLE_INTERVAL));
 
     verify(engineConfigService, times(1)).updateEngineConfig(any());
+  }
+
+  @Test
+  public void testUpdateEngineConfigWithUserTokenForbidden() throws Exception {
+    given(engineConfigService.updateEngineConfig(any())).willReturn(someEngineConfig());
+
+    mockMvc
+        .perform(
+            put(ENGINE_CONFIG_ENDPOINT_URI)
+                .header(
+                    "Authorization", "Bearer " + getJwt(VALID_USER_NAME, VALID_USER_PASSWORD))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonify(someEngineConfig())))
+        .andExpect(status().isForbidden());
+
+    verify(engineConfigService, times(0)).updateEngineConfig(any());
   }
 
   @Test

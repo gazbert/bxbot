@@ -76,19 +76,34 @@ public class TestBotRestartController extends AbstractRuntimeControllerTest {
   }
 
   @Test
-  public void testBotRestartWithValidToken() throws Exception {
+  public void testBotRestartWithAdminTokenAuthorized() throws Exception {
     given(botRestartService.restart()).willReturn(BOT_STATUS);
 
     mockMvc
         .perform(
             post(RESTART_ENDPOINT_URI)
                 .header(
-                    "Authorization", "Bearer " + getJwt(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD)))
+                    "Authorization", "Bearer " + getJwt(VALID_ADMIN_NAME, VALID_ADMIN_PASSWORD)))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$").value(BOT_STATUS));
 
     verify(botRestartService, times(1)).restart();
+  }
+
+  @Test
+  public void testBotRestartWithUserTokenForbidden() throws Exception {
+    given(botRestartService.restart()).willReturn(BOT_STATUS);
+
+    mockMvc
+        .perform(
+            post(RESTART_ENDPOINT_URI)
+                .header(
+                    "Authorization", "Bearer " + getJwt(VALID_USER_NAME, VALID_USER_PASSWORD)))
+        .andDo(print())
+        .andExpect(status().isForbidden());
+
+    verify(botRestartService, times(0)).restart();
   }
 
   @Test

@@ -112,7 +112,7 @@ public class StrategyConfigController {
    * @return 200 'OK' HTTP status code and updated Strategy config in the body if update successful,
    *     404 'Not Found' HTTP status code if Strategy config not found.
    */
-  // TODO: unit test for admin role @PreAuthorize("hasRole('ADMIN')")
+  @PreAuthorize("hasRole('ADMIN')")
   @PutMapping(value = STRATEGIES_RESOURCE_PATH + "/{strategyId}")
   public ResponseEntity<StrategyConfig> updateStrategy(
       @AuthenticationPrincipal User user,
@@ -147,7 +147,7 @@ public class StrategyConfigController {
    * @return 201 'Created' HTTP status code and created Strategy config in response body if create
    *     successful, some other status code otherwise.
    */
-  // TODO: unit test for admin role @PreAuthorize("hasRole('ADMIN')")
+  @PreAuthorize("hasRole('ADMIN')")
   @PostMapping(value = STRATEGIES_RESOURCE_PATH)
   public ResponseEntity<StrategyConfig> createStrategy(
       @AuthenticationPrincipal User user, @RequestBody StrategyConfig config) {
@@ -170,7 +170,7 @@ public class StrategyConfigController {
    * @return 204 'No Content' HTTP status code if delete successful, 404 'Not Found' HTTP status
    *     code if Strategy config not found.
    */
-  // TODO: unit test for admin role @PreAuthorize("hasRole('ADMIN')")
+  @PreAuthorize("hasRole('ADMIN')")
   @DeleteMapping(value = STRATEGIES_RESOURCE_PATH + "/{strategyId}")
   public ResponseEntity<StrategyConfig> deleteStrategy(
       @AuthenticationPrincipal User user, @PathVariable String strategyId) {

@@ -94,7 +94,7 @@ public class TestBotStatusController extends AbstractRuntimeControllerTest {
         .perform(
             get(STATUS_ENDPOINT_URI)
                 .header(
-                    "Authorization", "Bearer " + getJwt(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD)))
+                    "Authorization", "Bearer " + getJwt(VALID_USER_NAME, VALID_USER_PASSWORD)))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.botId").value(BOT_ID))

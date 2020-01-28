@@ -95,7 +95,7 @@ public class ExchangeConfigController {
    * @return 200 'OK' HTTP status code with updated Exchange config in the body if update
    *     successful, some other HTTP status code otherwise.
    */
-  // TODO: unit test for admin role @PreAuthorize("hasRole('ADMIN')")
+  @PreAuthorize("hasRole('ADMIN')")
   @PutMapping(value = EXCHANGE_RESOURCE_PATH)
   public ResponseEntity<ExchangeConfig> updateExchange(
       @AuthenticationPrincipal User user, @RequestBody ExchangeConfig config) {

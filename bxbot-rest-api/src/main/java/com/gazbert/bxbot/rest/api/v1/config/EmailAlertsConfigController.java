@@ -90,7 +90,7 @@ public class EmailAlertsConfigController {
    * @return 200 'OK' HTTP status code and Email Alerts config in response body if update
    *     successful, some other HTTP status code otherwise.
    */
-  //  TODO: unit test for admin role @PreAuthorize("hasRole('ADMIN')")
+  @PreAuthorize("hasRole('ADMIN')")
   @PutMapping(value = EMAIL_ALERTS_RESOURCE_PATH)
   public ResponseEntity<EmailAlertsConfig> updateEmailAlerts(
       @AuthenticationPrincipal User user, @RequestBody EmailAlertsConfig config) {
