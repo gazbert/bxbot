@@ -70,14 +70,14 @@ public class TestJwtUserFactory {
 
     final JwtUser userDetails = JwtUserFactory.create(user);
 
-    assertEquals(userDetails.getId(), USER_ID);
-    assertEquals(userDetails.getUsername(), USERNAME);
-    assertEquals(userDetails.getPassword(), PASSWORD);
-    assertEquals(userDetails.getFirstname(), FIRSTNAME);
-    assertEquals(userDetails.getLastname(), LASTNAME);
-    assertEquals(userDetails.getEmail(), EMAIL);
-    assertEquals(userDetails.isEnabled(), USER_ENABLED);
-    assertEquals(userDetails.getLastPasswordResetDate(), LAST_PASSWORD_RESET_DATE.getTime());
+    assertEquals(USER_ID, userDetails.getId());
+    assertEquals(USERNAME, userDetails.getUsername());
+    assertEquals(PASSWORD, userDetails.getPassword());
+    assertEquals(FIRSTNAME, userDetails.getFirstname());
+    assertEquals(LASTNAME, userDetails.getLastname());
+    assertEquals(EMAIL, userDetails.getEmail());
+    assertEquals(USER_ENABLED, userDetails.isEnabled());
+    assertEquals(LAST_PASSWORD_RESET_DATE.getTime(), userDetails.getLastPasswordResetDate());
 
     assertTrue(userDetails.getRoles().contains(RoleName.ROLE_ADMIN.name()));
     assertTrue(userDetails.getRoles().contains(RoleName.ROLE_USER.name()));
