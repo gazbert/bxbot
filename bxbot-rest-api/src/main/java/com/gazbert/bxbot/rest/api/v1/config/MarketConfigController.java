@@ -27,6 +27,7 @@ import static com.gazbert.bxbot.rest.api.v1.EndpointLocations.CONFIG_ENDPOINT_BA
 
 import com.gazbert.bxbot.domain.market.MarketConfig;
 import com.gazbert.bxbot.services.config.MarketConfigService;
+import java.security.Principal;
 import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -34,8 +35,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -67,15 +66,16 @@ public class MarketConfigController {
   /**
    * Returns all of the Market configuration for the bot.
    *
-   * @param user the authenticated user.
+   * @param principal the authenticated user.
    * @return all the Market configurations.
    */
   @PreAuthorize("hasRole('USER')")
   @GetMapping(value = MARKETS_RESOURCE_PATH)
-  public List<MarketConfig> getAllMarkets(@AuthenticationPrincipal User user) {
+  public List<MarketConfig> getAllMarkets(Principal principal) {
 
-    LOG.info(() -> "GET " + MARKETS_RESOURCE_PATH + " - getAllMarkets() - caller: ");
-    // + user.getUsername()); // TODO: NPE thrown here...+ user.getUsername());
+    LOG.info(
+        () ->
+            "GET " + MARKETS_RESOURCE_PATH + " - getAllMarkets() - caller: " + principal.getName());
 
     final List<MarketConfig> marketConfigs = marketConfigService.getAllMarketConfig();
     LOG.info(() -> "Response: " + marketConfigs);
@@ -86,17 +86,23 @@ public class MarketConfigController {
   /**
    * Returns the Market configuration for a given id.
    *
-   * @param user the authenticated user.
+   * @param principal the authenticated user.
    * @param marketId the id of the Market to fetch.
    * @return the Market configuration.
    */
   @PreAuthorize("hasRole('USER')")
   @GetMapping(value = MARKETS_RESOURCE_PATH + "/{marketId}")
   public ResponseEntity<MarketConfig> getMarket(
-      @AuthenticationPrincipal User user, @PathVariable String marketId) {
+      Principal principal, @PathVariable String marketId) {
 
-    LOG.info(() -> "GET " + MARKETS_RESOURCE_PATH + "/" + marketId + " - getMarket() - caller: ");
-    // + user.getUsername()); // TODO: NPE thrown here...
+    LOG.info(
+        () ->
+            "GET "
+                + MARKETS_RESOURCE_PATH
+                + "/"
+                + marketId
+                + " - getMarket() - caller: "
+                + principal.getName());
 
     final MarketConfig marketConfig = marketConfigService.getMarketConfig(marketId);
     return marketConfig == null
@@ -107,7 +113,7 @@ public class MarketConfigController {
   /**
    * Updates a given Market configuration.
    *
-   * @param user the authenticated user.
+   * @param principal the authenticated user.
    * @param marketId id of the Market config to update.
    * @param config the updated Market config.
    * @return 204 'No Content' HTTP status code if update successful, 404 'Not Found' HTTP status
@@ -116,12 +122,17 @@ public class MarketConfigController {
   @PreAuthorize("hasRole('ADMIN')")
   @PutMapping(value = MARKETS_RESOURCE_PATH + "/{marketId}")
   public ResponseEntity<MarketConfig> updateMarket(
-      @AuthenticationPrincipal User user,
-      @PathVariable String marketId,
-      @RequestBody MarketConfig config) {
+      Principal principal, @PathVariable String marketId, @RequestBody MarketConfig config) {
+
     LOG.info(
-        () -> "PUT " + MARKETS_RESOURCE_PATH + "/" + marketId + " - updateMarket() - caller: ");
-    // + user.getUsername()); // TODO: NPE thrown here...
+        () ->
+            "PUT "
+                + MARKETS_RESOURCE_PATH
+                + "/"
+                + marketId
+                + " - updateMarket() - caller: "
+                + principal.getName());
+
     LOG.info(() -> "Request: " + config);
 
     if (config.getId() == null || !marketId.equals(config.getId())) {
@@ -137,7 +148,7 @@ public class MarketConfigController {
   /**
    * Creates a new Market configuration.
    *
-   * @param user the authenticated user.
+   * @param principal the authenticated user.
    * @param config the new Market config.
    * @return 201 'Created' HTTP status code and created Market config in response body if create
    *     successful, some other HTTP status code otherwise.
@@ -145,10 +156,12 @@ public class MarketConfigController {
   @PreAuthorize("hasRole('ADMIN')")
   @PostMapping(value = MARKETS_RESOURCE_PATH)
   public ResponseEntity<MarketConfig> createMarket(
-      @AuthenticationPrincipal User user, @RequestBody MarketConfig config) {
+      Principal principal, @RequestBody MarketConfig config) {
 
-    LOG.info(() -> "POST " + MARKETS_RESOURCE_PATH + " - createMarket() - caller: ");
-    // + user.getUsername()); // TODO: NPE thrown here...
+    LOG.info(
+        () ->
+            "POST " + MARKETS_RESOURCE_PATH + " - createMarket() - caller: " + principal.getName());
+
     LOG.info(() -> "Request: " + config);
 
     final MarketConfig createdConfig = marketConfigService.createMarketConfig(config);
@@ -160,7 +173,7 @@ public class MarketConfigController {
   /**
    * Deletes a Market configuration for a given id.
    *
-   * @param user the authenticated user.
+   * @param principal the authenticated user.
    * @param marketId the id of the Market configuration to delete.
    * @return 204 'No Content' HTTP status code if delete successful, 404 'Not Found' HTTP status
    *     code if Market config not found.
@@ -168,11 +181,16 @@ public class MarketConfigController {
   @PreAuthorize("hasRole('ADMIN')")
   @DeleteMapping(value = MARKETS_RESOURCE_PATH + "/{marketId}")
   public ResponseEntity<MarketConfig> deleteMarket(
-      @AuthenticationPrincipal User user, @PathVariable String marketId) {
+      Principal principal, @PathVariable String marketId) {
 
     LOG.info(
-        () -> "DELETE " + MARKETS_RESOURCE_PATH + "/" + marketId + " - deleteMarket() - caller: ");
-    // + user.getUsername()); // TODO: NPE thrown here...
+        () ->
+            "DELETE "
+                + MARKETS_RESOURCE_PATH
+                + "/"
+                + marketId
+                + " - deleteMarket() - caller: "
+                + principal.getName());
 
     final MarketConfig deletedConfig = marketConfigService.deleteMarketConfig(marketId);
     return deletedConfig == null

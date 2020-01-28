@@ -28,6 +28,7 @@ import static com.gazbert.bxbot.rest.api.v1.EndpointLocations.RUNTIME_ENDPOINT_B
 import com.gazbert.bxbot.rest.api.RestApiConfiguration;
 import com.gazbert.bxbot.services.runtime.BotLogfileService;
 import java.io.IOException;
+import java.security.Principal;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -38,8 +39,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -75,17 +74,20 @@ public class BotLogfileController {
    * <p>If the file is larger than {@link RestApiConfiguration#getLogfileDownloadSize()}, the end of
    * the logfile will be truncated.
    *
-   * @param user the authenticated user making the request.
+   * @param principal the authenticated user making the request.
    * @param request the request.
    * @return the logfile as a download.
    */
   @PreAuthorize("hasRole('USER')")
   @GetMapping(value = LOGFILE_DOWNLOAD_RESOURCE_PATH)
-  public ResponseEntity<Resource> downloadLogfile(
-      @AuthenticationPrincipal User user, HttpServletRequest request) {
+  public ResponseEntity<Resource> downloadLogfile(Principal principal, HttpServletRequest request) {
 
-    LOG.info(() -> "GET " + LOGFILE_RESOURCE_PATH + " - downloadLogfile() - caller: ");
-    // + user.getUsername()); // TODO: NPE thrown here...
+    LOG.info(
+        () ->
+            "GET "
+                + LOGFILE_RESOURCE_PATH
+                + " - downloadLogfile() - caller: "
+                + principal.getName());
 
     Resource logfile;
     try {
@@ -127,7 +129,7 @@ public class BotLogfileController {
    *   <li>If both a head and tail param is present (just why?!!), a tail request will be actioned.
    * </ul>
    *
-   * @param user the authenticated user making the request.
+   * @param principal the authenticated user making the request.
    * @param head the optional head line count.
    * @param tail the optional tail line count.
    * @return the logfile.
@@ -135,7 +137,7 @@ public class BotLogfileController {
   @PreAuthorize("hasRole('USER')")
   @GetMapping(value = LOGFILE_RESOURCE_PATH)
   public ResponseEntity<String> getLogfile(
-      @AuthenticationPrincipal User user,
+      Principal principal,
       @RequestParam(required = false) Integer head,
       @RequestParam(required = false) Integer tail) {
 
@@ -144,7 +146,7 @@ public class BotLogfileController {
             "GET "
                 + LOGFILE_RESOURCE_PATH
                 + " - getLogfile() - caller: "
-                // + user.getUsername()); // TODO: NPE thrown here...
+                + principal.getName()
                 + ", head="
                 + head
                 + ", tail="

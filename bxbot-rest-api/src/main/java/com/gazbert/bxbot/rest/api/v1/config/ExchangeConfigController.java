@@ -27,13 +27,12 @@ import static com.gazbert.bxbot.rest.api.v1.EndpointLocations.CONFIG_ENDPOINT_BA
 
 import com.gazbert.bxbot.domain.exchange.ExchangeConfig;
 import com.gazbert.bxbot.services.config.ExchangeConfigService;
+import java.security.Principal;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -68,15 +67,16 @@ public class ExchangeConfigController {
    * <p>The AuthenticationConfig is stripped out and not exposed for remote consumption. The API
    * keys/credentials should not leave the bot's local machine via the REST API.
    *
-   * @param user the authenticated user making the request.
+   * @param principal the authenticated user making the request.
    * @return the Exchange configuration.
    */
   @PreAuthorize("hasRole('USER')")
   @GetMapping(value = EXCHANGE_RESOURCE_PATH)
-  public ExchangeConfig getExchange(@AuthenticationPrincipal User user) {
+  public ExchangeConfig getExchange(Principal principal) {
 
-    LOG.info(() -> "GET " + EXCHANGE_RESOURCE_PATH + " - getExchange() - caller: ");
-    // + user.getUsername()); // TODO: NPE thrown here...
+    LOG.info(
+        () ->
+            "GET " + EXCHANGE_RESOURCE_PATH + " - getExchange() - caller: " + principal.getName());
 
     final ExchangeConfig exchangeConfig = exchangeConfigService.getExchangeConfig();
     exchangeConfig.setAuthenticationConfig(null);
@@ -90,7 +90,7 @@ public class ExchangeConfigController {
    * <p>Any AuthenticationConfig is stripped out and not updated. The API keys/credentials should
    * not enter the bot's local machine via the REST API.
    *
-   * @param user the authenticated user making the request.
+   * @param principal the authenticated user making the request.
    * @param config the Exchange config to update.
    * @return 200 'OK' HTTP status code with updated Exchange config in the body if update
    *     successful, some other HTTP status code otherwise.
@@ -98,10 +98,15 @@ public class ExchangeConfigController {
   @PreAuthorize("hasRole('ADMIN')")
   @PutMapping(value = EXCHANGE_RESOURCE_PATH)
   public ResponseEntity<ExchangeConfig> updateExchange(
-      @AuthenticationPrincipal User user, @RequestBody ExchangeConfig config) {
+      Principal principal, @RequestBody ExchangeConfig config) {
 
-    LOG.info(() -> "PUT " + EXCHANGE_RESOURCE_PATH + " - updateExchange() - caller: ");
-    // + user.getUsername()); // TODO: NPE thrown here...
+    LOG.info(
+        () ->
+            "PUT "
+                + EXCHANGE_RESOURCE_PATH
+                + " - updateExchange() - caller: "
+                + principal.getName());
+
     LOG.info(() -> "Request: " + config);
 
     final ExchangeConfig updatedConfig =

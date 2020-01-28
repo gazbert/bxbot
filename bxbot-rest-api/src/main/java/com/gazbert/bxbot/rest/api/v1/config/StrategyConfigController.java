@@ -27,6 +27,7 @@ import static com.gazbert.bxbot.rest.api.v1.EndpointLocations.CONFIG_ENDPOINT_BA
 
 import com.gazbert.bxbot.domain.strategy.StrategyConfig;
 import com.gazbert.bxbot.services.config.StrategyConfigService;
+import java.security.Principal;
 import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -34,8 +35,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -67,14 +66,19 @@ public class StrategyConfigController {
   /**
    * Returns all of the Strategy configuration for the bot.
    *
-   * @param user the authenticated user.
+   * @param principal the authenticated user.
    * @return all the Strategy configurations.
    */
   @PreAuthorize("hasRole('USER')")
   @GetMapping(value = STRATEGIES_RESOURCE_PATH)
-  public List<StrategyConfig> getAllStrategies(@AuthenticationPrincipal User user) {
-    LOG.info(() -> "GET " + STRATEGIES_RESOURCE_PATH + " - getAllStrategies() - caller: ");
-    // + user.getUsername()); // TODO: NPE thrown here...
+  public List<StrategyConfig> getAllStrategies(Principal principal) {
+
+    LOG.info(
+        () ->
+            "GET "
+                + STRATEGIES_RESOURCE_PATH
+                + " - getAllStrategies() - caller: "
+                + principal.getName());
 
     final List<StrategyConfig> strategyConfigs = strategyConfigService.getAllStrategyConfig();
 
@@ -85,17 +89,23 @@ public class StrategyConfigController {
   /**
    * Returns the Strategy configuration for a given id.
    *
-   * @param user the authenticated user.
+   * @param principal the authenticated user.
    * @param strategyId the id of the Strategy to fetch.
    * @return the Strategy configuration.
    */
   @PreAuthorize("hasRole('USER')")
   @GetMapping(value = STRATEGIES_RESOURCE_PATH + "/{strategyId}")
   public ResponseEntity<StrategyConfig> getStrategy(
-      @AuthenticationPrincipal User user, @PathVariable String strategyId) {
+      Principal principal, @PathVariable String strategyId) {
+
     LOG.info(
-        () -> "GET " + STRATEGIES_RESOURCE_PATH + "/" + strategyId + " - getStrategy() - caller: ");
-    // + user.getUsername()); // TODO: NPE thrown here...
+        () ->
+            "GET "
+                + STRATEGIES_RESOURCE_PATH
+                + "/"
+                + strategyId
+                + " - getStrategy() - caller: "
+                + principal.getName());
 
     final StrategyConfig strategyConfig = strategyConfigService.getStrategyConfig(strategyId);
     return strategyConfig == null
@@ -106,7 +116,7 @@ public class StrategyConfigController {
   /**
    * Updates a given Strategy configuration.
    *
-   * @param user the authenticated user.
+   * @param principal the authenticated user.
    * @param strategyId id of the Strategy config to update.
    * @param config the updated Strategy config.
    * @return 200 'OK' HTTP status code and updated Strategy config in the body if update successful,
@@ -115,9 +125,7 @@ public class StrategyConfigController {
   @PreAuthorize("hasRole('ADMIN')")
   @PutMapping(value = STRATEGIES_RESOURCE_PATH + "/{strategyId}")
   public ResponseEntity<StrategyConfig> updateStrategy(
-      @AuthenticationPrincipal User user,
-      @PathVariable String strategyId,
-      @RequestBody StrategyConfig config) {
+      Principal principal, @PathVariable String strategyId, @RequestBody StrategyConfig config) {
 
     LOG.info(
         () ->
@@ -125,8 +133,9 @@ public class StrategyConfigController {
                 + STRATEGIES_RESOURCE_PATH
                 + "/"
                 + strategyId
-                + " - updateStrategy() - caller: ");
-    // + user.getUsername()); // TODO: NPE thrown here...
+                + " - updateStrategy() - caller: "
+                + principal.getName());
+
     LOG.info(() -> "Request: " + config);
 
     if (config.getId() == null || !strategyId.equals(config.getId())) {
@@ -142,7 +151,7 @@ public class StrategyConfigController {
   /**
    * Creates a new Strategy configuration.
    *
-   * @param user the authenticated user.
+   * @param principal the authenticated user.
    * @param config the new Strategy config.
    * @return 201 'Created' HTTP status code and created Strategy config in response body if create
    *     successful, some other status code otherwise.
@@ -150,10 +159,15 @@ public class StrategyConfigController {
   @PreAuthorize("hasRole('ADMIN')")
   @PostMapping(value = STRATEGIES_RESOURCE_PATH)
   public ResponseEntity<StrategyConfig> createStrategy(
-      @AuthenticationPrincipal User user, @RequestBody StrategyConfig config) {
+      Principal principal, @RequestBody StrategyConfig config) {
 
-    LOG.info(() -> "POST " + STRATEGIES_RESOURCE_PATH + " - createStrategy() - caller: ");
-    // + user.getUsername()); // TODO: NPE thrown here...
+    LOG.info(
+        () ->
+            "POST "
+                + STRATEGIES_RESOURCE_PATH
+                + " - createStrategy() - caller: "
+                + principal.getName());
+
     LOG.info(() -> "Request: " + config);
 
     final StrategyConfig createdConfig = strategyConfigService.createStrategyConfig(config);
@@ -165,7 +179,7 @@ public class StrategyConfigController {
   /**
    * Deletes a Strategy configuration for a given id.
    *
-   * @param user the authenticated user.
+   * @param principal the authenticated user.
    * @param strategyId the id of the Strategy configuration to delete.
    * @return 204 'No Content' HTTP status code if delete successful, 404 'Not Found' HTTP status
    *     code if Strategy config not found.
@@ -173,7 +187,7 @@ public class StrategyConfigController {
   @PreAuthorize("hasRole('ADMIN')")
   @DeleteMapping(value = STRATEGIES_RESOURCE_PATH + "/{strategyId}")
   public ResponseEntity<StrategyConfig> deleteStrategy(
-      @AuthenticationPrincipal User user, @PathVariable String strategyId) {
+      Principal principal, @PathVariable String strategyId) {
 
     LOG.info(
         () ->
@@ -181,8 +195,8 @@ public class StrategyConfigController {
                 + STRATEGIES_RESOURCE_PATH
                 + "/"
                 + strategyId
-                + " - deleteStrategy() - caller: ");
-    // + user.getUsername()); // TODO: NPE thrown here...
+                + " - deleteStrategy() - caller: "
+                + principal.getName());
 
     final StrategyConfig deletedConfig = strategyConfigService.deleteStrategyConfig(strategyId);
     return deletedConfig == null
