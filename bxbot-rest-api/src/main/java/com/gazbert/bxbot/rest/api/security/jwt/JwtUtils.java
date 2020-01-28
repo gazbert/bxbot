@@ -159,7 +159,7 @@ public class JwtUtils {
    * @return a new (refreshed) JWT token in String format.
    * @throws JwtAuthenticationException if the token cannot be refreshed.
    */
-  public String refreshToken(String token) throws JwtAuthenticationException {
+  public String refreshToken(String token) {
     try {
       final Claims claims = getClaimsFromToken(token);
       claims.put(CLAIM_KEY_ISSUED_AT, new Date());
@@ -200,8 +200,7 @@ public class JwtUtils {
    * @return the user's Roles.
    * @throws JwtAuthenticationException if the user's roles cannot be extracted.
    */
-  public List<GrantedAuthority> getRolesFromTokenClaims(Claims claims)
-      throws JwtAuthenticationException {
+  public List<GrantedAuthority> getRolesFromTokenClaims(Claims claims) {
     final List<GrantedAuthority> roles = new ArrayList<>();
     try {
       @SuppressWarnings("unchecked")

@@ -38,9 +38,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -85,10 +85,9 @@ public class AuthenticationController {
    * @return a JWT if the client was authenticated successfully.
    * @throws AuthenticationException if the the client was not authenticated successfully.
    */
-  @RequestMapping(value = "/auth", method = RequestMethod.POST)
-  public ResponseEntity<?> getToken(@RequestBody JwtAuthenticationRequest authenticationRequest)
-      throws AuthenticationException {
-
+  @PostMapping(value = "/auth")
+  public ResponseEntity<JwtAuthenticationResponse> getToken(
+      @RequestBody JwtAuthenticationRequest authenticationRequest) {
     final Authentication authentication =
         authenticationManager.authenticate(
             new UsernamePasswordAuthenticationToken(
@@ -111,9 +110,8 @@ public class AuthenticationController {
    * @return the JWT with an extended expiry time if the client was authenticated, a 400 Bad Request
    *     otherwise.
    */
-  @RequestMapping(value = "/refresh", method = RequestMethod.GET)
-  public ResponseEntity<?> refreshToken(HttpServletRequest request) {
-
+  @GetMapping(value = "/refresh")
+  public ResponseEntity<JwtAuthenticationResponse> refreshToken(HttpServletRequest request) {
     final String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
     final Claims claims = jwtUtils.validateTokenAndGetClaims(authorizationHeader);
     final String username = jwtUtils.getUsernameFromTokenClaims(claims);
