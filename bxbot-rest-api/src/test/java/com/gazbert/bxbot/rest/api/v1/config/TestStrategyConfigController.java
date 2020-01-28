@@ -374,6 +374,7 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
 
     verify(strategyConfigService, times(1)).createStrategyConfig(any());
   }
+
   @Test
   public void testCreateStrategyConfigWithUserTokenForbidden() throws Exception {
     given(strategyConfigService.createStrategyConfig(someStrategyConfig()))

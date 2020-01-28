@@ -8,7 +8,7 @@
   <artifactId>bxbot-parent</artifactId>
   <packaging>pom</packaging>
   <version>${revision}</version>
-  <name>BX-bot</name>
+  <name>BX-bot Parent</name>
   <description>A simple Bitcoin trading bot written in Java.</description>
   <url>https://github.com/gazbert/bxbot</url>
   <inceptionYear>2015</inceptionYear>

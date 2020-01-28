@@ -114,7 +114,7 @@ public abstract class AbstractControllerTest {
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(jsonify(new UsernameAndPassword(username, password))))
             .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+            .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.token", is(notNullValue())))
             .andReturn()
             .getResponse()
