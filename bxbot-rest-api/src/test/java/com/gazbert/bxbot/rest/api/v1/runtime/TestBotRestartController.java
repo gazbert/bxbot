@@ -34,10 +34,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.gazbert.bxbot.core.engine.TradingEngine;
 import com.gazbert.bxbot.core.mail.EmailAlerter;
-import com.gazbert.bxbot.rest.api.security.jwt.JwtUtils;
 import com.gazbert.bxbot.services.runtime.BotRestartService;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.actuate.logging.LogFileWebEndpoint;
@@ -55,7 +53,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
  *
  * @author gazbert
  */
-@Ignore("Tests need converting to use JWT authentication")
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @WebAppConfiguration
@@ -71,7 +68,6 @@ public class TestBotRestartController extends AbstractRuntimeControllerTest {
   @MockBean private EmailAlerter emailAlerter;
   @MockBean private RestartEndpoint restartEndpoint;
   @MockBean private LogFileWebEndpoint logFileWebEndpoint;
-  @MockBean private JwtUtils jwtUtils;
   @MockBean private AuthenticationManager authenticationManager;
 
   @Before
@@ -80,15 +76,14 @@ public class TestBotRestartController extends AbstractRuntimeControllerTest {
   }
 
   @Test
-  public void testBotRestart() throws Exception {
+  public void testBotRestartWithValidToken() throws Exception {
     given(botRestartService.restart()).willReturn(BOT_STATUS);
 
     mockMvc
         .perform(
             post(RESTART_ENDPOINT_URI)
                 .header(
-                    "Authorization",
-                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD)))
+                    "Authorization", "Bearer " + getJwt(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD)))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$").value(BOT_STATUS));
@@ -97,26 +92,19 @@ public class TestBotRestartController extends AbstractRuntimeControllerTest {
   }
 
   @Test
-  public void testBotRestartWhenUnauthorizedWithBadCredentials() throws Exception {
+  public void testBotRestartWhenUnauthorizedWithInvalidToken() throws Exception {
     mockMvc
         .perform(
             get(RESTART_ENDPOINT_URI)
-                .header(
-                    "Authorization",
-                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, INVALID_USER_PASSWORD))
+                .header("Authorization", "Bearer junk.web.token")
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isUnauthorized());
   }
 
   @Test
-  public void testBotRestartWhenUnauthorizedWithMissingCredentials() throws Exception {
+  public void testBotRestartWhenUnauthorizedWithMissingToken() throws Exception {
     mockMvc
-        .perform(
-            get(RESTART_ENDPOINT_URI)
-                .header(
-                    "Authorization",
-                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, INVALID_USER_PASSWORD))
-                .accept(MediaType.APPLICATION_JSON))
+        .perform(get(RESTART_ENDPOINT_URI).accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isUnauthorized());
   }
 }

@@ -32,6 +32,7 @@ import com.gazbert.bxbot.services.runtime.BotStatusService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -67,11 +68,12 @@ public class BotStatusController {
    * @param user the authenticated user making the request.
    * @return the process status.
    */
+  @PreAuthorize("hasRole('USER')")
   @GetMapping(value = STATUS_RESOURCE_PATH)
   public BotStatus getStatus(@AuthenticationPrincipal User user) {
 
-    LOG.info(
-        () -> "GET " + STATUS_RESOURCE_PATH + " - getStatus() - caller: " + user.getUsername());
+    LOG.info(() -> "GET " + STATUS_RESOURCE_PATH + " - getStatus() - caller: ");
+    // + user.getUsername()); // TODO: NPE thrown here...
 
     final EngineConfig engineConfig = engineConfigService.getEngineConfig();
     final String status = botStatusService.getStatus();

@@ -86,8 +86,8 @@ public class AuthenticationController {
    * @throws AuthenticationException if the the client was not authenticated successfully.
    */
   @RequestMapping(value = "/auth", method = RequestMethod.POST)
-  public ResponseEntity<?> getToken(
-      @RequestBody JwtAuthenticationRequest authenticationRequest) throws AuthenticationException {
+  public ResponseEntity<?> getToken(@RequestBody JwtAuthenticationRequest authenticationRequest)
+      throws AuthenticationException {
 
     final Authentication authentication =
         authenticationManager.authenticate(

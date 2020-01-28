@@ -68,13 +68,6 @@ public abstract class AbstractControllerTest {
   // This must match a admin's PASSWORD in the user table in src/test/resources/import.sql
   protected static final String VALID_ADMIN_PASSWORD = "admin";
 
-  // We'll always be sending/receiving JSON content in REST API.
-  protected static final MediaType CONTENT_TYPE =
-      new MediaType(
-          MediaType.APPLICATION_JSON.getType(),
-          MediaType.APPLICATION_JSON.getSubtype(),
-          Charset.forName("utf8"));
-
   // Used to convert Java objects into JSON
   private HttpMessageConverter mappingJackson2HttpMessageConverter;
 
@@ -175,7 +168,8 @@ public abstract class AbstractControllerTest {
     private String token;
 
     // empty constructor needed by Jackson
-    public JwtResponse() {}
+    public JwtResponse() {
+    }
 
     String getToken() {
       return token;

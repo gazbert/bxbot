@@ -161,7 +161,7 @@ public class TestExchangeConfigController extends AbstractConfigControllerTest {
             put(EXCHANGE_CONFIG_ENDPOINT_URI)
                 .header(
                     "Authorization", "Bearer " + getJwt(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD))
-                .contentType(CONTENT_TYPE)
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonify(someExchangeConfig())))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.name").value(EXCHANGE_NAME))

@@ -63,10 +63,11 @@ public class BotRestartController {
    * @return 200 OK on success with 'Restarting' response on success, some other HTTP status code
    *     otherwise.
    */
+  // TODO: unit test for admin role @PreAuthorize("hasRole('ADMIN')")
   @PostMapping(value = RESTART_RESOURCE_PATH)
   public ResponseEntity<String> restart(@AuthenticationPrincipal User user) {
-    LOG.info(
-        () -> "POST " + RESTART_RESOURCE_PATH + " - restart() - caller: " + user.getUsername());
+    LOG.info(() -> "POST " + RESTART_RESOURCE_PATH + " - restart() - caller: ");
+    // + user.getUsername()); // TODO: NPE thrown here...
 
     final Object status = botRestartService.restart();
 

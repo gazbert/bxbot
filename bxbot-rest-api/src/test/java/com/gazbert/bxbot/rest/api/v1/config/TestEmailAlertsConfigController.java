@@ -134,7 +134,7 @@ public class TestEmailAlertsConfigController extends AbstractConfigControllerTes
             put(EMAIL_ALERTS_CONFIG_ENDPOINT_URI)
                 .header(
                     "Authorization", "Bearer " + getJwt(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD))
-                .contentType(CONTENT_TYPE)
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonify(someEmailAlertsConfig())))
         .andDo(print())
         .andExpect(status().isOk())

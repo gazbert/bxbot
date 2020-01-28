@@ -131,7 +131,7 @@ public class TestEngineConfigController extends AbstractConfigControllerTest {
             put(ENGINE_CONFIG_ENDPOINT_URI)
                 .header(
                     "Authorization", "Bearer " + getJwt(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD))
-                .contentType(CONTENT_TYPE)
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonify(someEngineConfig())))
         .andDo(print())
         .andExpect(status().isOk())

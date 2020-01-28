@@ -37,6 +37,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -71,23 +72,20 @@ public class BotLogfileController {
   /**
    * Returns the logfile as a download.
    *
-   * <p>If the file is larger than {@link RestApiConfiguration#getLogfileDownloadSize()}, the
-   * end of the logfile will be truncated.
+   * <p>If the file is larger than {@link RestApiConfiguration#getLogfileDownloadSize()}, the end of
+   * the logfile will be truncated.
    *
    * @param user the authenticated user making the request.
    * @param request the request.
    * @return the logfile as a download.
    */
+  @PreAuthorize("hasRole('USER')")
   @GetMapping(value = LOGFILE_DOWNLOAD_RESOURCE_PATH)
   public ResponseEntity<Resource> downloadLogfile(
       @AuthenticationPrincipal User user, HttpServletRequest request) {
 
-    LOG.info(
-        () ->
-            "GET "
-                + LOGFILE_RESOURCE_PATH
-                + " - downloadLogfile() - caller: "
-                + user.getUsername());
+    LOG.info(() -> "GET " + LOGFILE_RESOURCE_PATH + " - downloadLogfile() - caller: ");
+    // + user.getUsername()); // TODO: NPE thrown here...
 
     Resource logfile;
     try {
@@ -126,8 +124,7 @@ public class BotLogfileController {
    *   <li>For a head request, the end of the file will be truncated.
    *   <li>For a tail request, the start of the file will be truncated.
    *   <li>If head or tail param is not specified, the start of the file will be truncated.
-   *   <li>If both a head and tail param is present (just why?!!), a tail request will be
-   *       actioned.
+   *   <li>If both a head and tail param is present (just why?!!), a tail request will be actioned.
    * </ul>
    *
    * @param user the authenticated user making the request.
@@ -135,6 +132,7 @@ public class BotLogfileController {
    * @param tail the optional tail line count.
    * @return the logfile.
    */
+  @PreAuthorize("hasRole('USER')")
   @GetMapping(value = LOGFILE_RESOURCE_PATH)
   public ResponseEntity<String> getLogfile(
       @AuthenticationPrincipal User user,
@@ -146,7 +144,7 @@ public class BotLogfileController {
             "GET "
                 + LOGFILE_RESOURCE_PATH
                 + " - getLogfile() - caller: "
-                + user.getUsername()
+                // + user.getUsername()); // TODO: NPE thrown here...
                 + ", head="
                 + head
                 + ", tail="

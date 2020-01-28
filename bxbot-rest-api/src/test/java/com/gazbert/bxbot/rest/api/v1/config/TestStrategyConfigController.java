@@ -209,7 +209,7 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
             put(STRATEGIES_CONFIG_ENDPOINT_URI + STRAT_1_ID)
                 .header(
                     "Authorization", "Bearer " + getJwt(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD))
-                .contentType(CONTENT_TYPE)
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonify(someStrategyConfig())))
         .andDo(print())
         .andExpect(status().isOk())
@@ -229,7 +229,7 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
         .perform(
             put(STRATEGIES_CONFIG_ENDPOINT_URI + STRAT_1_ID)
                 .accept(MediaType.APPLICATION_JSON)
-                .contentType(CONTENT_TYPE)
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonify(someStrategyConfig())))
         .andExpect(status().isUnauthorized());
   }
@@ -241,7 +241,7 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
             put(STRATEGIES_CONFIG_ENDPOINT_URI + STRAT_1_ID)
                 .header("Authorization", "Bearer junk.web.token")
                 .accept(MediaType.APPLICATION_JSON)
-                .contentType(CONTENT_TYPE)
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonify(someStrategyConfig())))
         .andExpect(status().isUnauthorized());
   }
@@ -257,7 +257,7 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
                 .header(
                     "Authorization", "Bearer " + getJwt(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD))
                 .accept(MediaType.APPLICATION_JSON)
-                .contentType(CONTENT_TYPE)
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonify(unrecognizedStrategyConfig())))
         .andExpect(status().isNotFound());
   }
@@ -270,7 +270,7 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
                 .header(
                     "Authorization", "Bearer " + getJwt(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD))
                 .accept(MediaType.APPLICATION_JSON)
-                .contentType(CONTENT_TYPE)
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonify(someStrategyConfigWithMissingId())))
         .andExpect(status().isBadRequest());
   }
@@ -330,7 +330,7 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
             post(STRATEGIES_CONFIG_ENDPOINT_URI)
                 .header(
                     "Authorization", "Bearer " + getJwt(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD))
-                .contentType(CONTENT_TYPE)
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonify(someStrategyConfig())))
         .andDo(print())
         .andExpect(status().isCreated())
@@ -350,7 +350,7 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
         .perform(
             post(STRATEGIES_CONFIG_ENDPOINT_URI)
                 .accept(MediaType.APPLICATION_JSON)
-                .contentType(CONTENT_TYPE)
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonify(someStrategyConfig())))
         .andExpect(status().isUnauthorized());
   }
@@ -362,7 +362,7 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
             post(STRATEGIES_CONFIG_ENDPOINT_URI)
                 .header("Authorization", "Bearer junk.web.token")
                 .accept(MediaType.APPLICATION_JSON)
-                .contentType(CONTENT_TYPE)
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonify(someStrategyConfig())))
         .andExpect(status().isUnauthorized());
   }

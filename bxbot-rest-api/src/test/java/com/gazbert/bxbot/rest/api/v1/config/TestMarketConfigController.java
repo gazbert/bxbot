@@ -201,7 +201,7 @@ public class TestMarketConfigController extends AbstractConfigControllerTest {
             put(MARKETS_CONFIG_ENDPOINT_URI + MARKET_1_ID)
                 .header(
                     "Authorization", "Bearer " + getJwt(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD))
-                .contentType(CONTENT_TYPE)
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonify(someMarketConfig())))
         .andDo(print())
         .andExpect(status().isOk())
@@ -221,7 +221,7 @@ public class TestMarketConfigController extends AbstractConfigControllerTest {
         .perform(
             put(MARKETS_CONFIG_ENDPOINT_URI + MARKET_1_ID)
                 .accept(MediaType.APPLICATION_JSON)
-                .contentType(CONTENT_TYPE)
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonify(someMarketConfig())))
         .andExpect(status().isUnauthorized());
   }
@@ -233,7 +233,7 @@ public class TestMarketConfigController extends AbstractConfigControllerTest {
             put(MARKETS_CONFIG_ENDPOINT_URI + MARKET_1_ID)
                 .header("Authorization", "Bearer junk.web.token")
                 .accept(MediaType.APPLICATION_JSON)
-                .contentType(CONTENT_TYPE)
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonify(someMarketConfig())))
         .andExpect(status().isUnauthorized());
   }
@@ -248,7 +248,7 @@ public class TestMarketConfigController extends AbstractConfigControllerTest {
                 .header(
                     "Authorization", "Bearer " + getJwt(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD))
                 .accept(MediaType.APPLICATION_JSON)
-                .contentType(CONTENT_TYPE)
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonify(unrecognizedMarketConfig())))
         .andExpect(status().isNotFound());
   }
@@ -261,7 +261,7 @@ public class TestMarketConfigController extends AbstractConfigControllerTest {
                 .header(
                     "Authorization", "Bearer " + getJwt(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD))
                 .accept(MediaType.APPLICATION_JSON)
-                .contentType(CONTENT_TYPE)
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonify(someMarketConfigWithMissingId())))
         .andExpect(status().isBadRequest());
   }
@@ -321,7 +321,7 @@ public class TestMarketConfigController extends AbstractConfigControllerTest {
             post(MARKETS_CONFIG_ENDPOINT_URI)
                 .header(
                     "Authorization", "Bearer " + getJwt(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD))
-                .contentType(CONTENT_TYPE)
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonify(someMarketConfig())))
         .andDo(print())
         .andExpect(status().isCreated())
@@ -341,7 +341,7 @@ public class TestMarketConfigController extends AbstractConfigControllerTest {
         .perform(
             post(MARKETS_CONFIG_ENDPOINT_URI)
                 .accept(MediaType.APPLICATION_JSON)
-                .contentType(CONTENT_TYPE)
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonify(someMarketConfig())))
         .andExpect(status().isUnauthorized());
   }
@@ -353,7 +353,7 @@ public class TestMarketConfigController extends AbstractConfigControllerTest {
             post(MARKETS_CONFIG_ENDPOINT_URI)
                 .header("Authorization", "Bearer junk.web.token")
                 .accept(MediaType.APPLICATION_JSON)
-                .contentType(CONTENT_TYPE)
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonify(someMarketConfig())))
         .andExpect(status().isUnauthorized());
   }
@@ -366,7 +366,7 @@ public class TestMarketConfigController extends AbstractConfigControllerTest {
                 .header(
                     "Authorization", "Bearer " + getJwt(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD))
                 .accept(MediaType.APPLICATION_JSON)
-                .contentType(CONTENT_TYPE)
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonify(someMarketConfigWithMissingId())))
         .andExpect(status().isBadRequest());
   }
@@ -381,7 +381,7 @@ public class TestMarketConfigController extends AbstractConfigControllerTest {
                 .header(
                     "Authorization", "Bearer " + getJwt(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD))
                 .accept(MediaType.APPLICATION_JSON)
-                .contentType(CONTENT_TYPE)
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonify(someMarketConfigWithMissingStrategyId())))
         .andExpect(status().isBadRequest());
   }
