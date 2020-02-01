@@ -34,6 +34,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
@@ -66,18 +68,25 @@ public class JwtUtils {
   private static final String CLAIM_KEY_ISSUED_AT = "iat";
   private static final String CLAIM_KEY_AUDIENCE = "aud";
 
+  @NotNull
   @Value("${bxbot.restapi.jwt.secret}")
   private String secret;
 
+  @NotNull
   @Value("${bxbot.restapi.jwt.expiration}")
+  @Min(1)
   private long expirationInSecs;
 
+  @NotNull
   @Value("${bxbot.restapi.jwt.allowed_clock_skew}")
+  @Min(1)
   private long allowedClockSkewInSecs;
 
+  @NotNull
   @Value("${bxbot.restapi.jwt.issuer}")
   private String issuer;
 
+  @NotNull
   @Value("${bxbot.restapi.jwt.audience}")
   private String audience;
 

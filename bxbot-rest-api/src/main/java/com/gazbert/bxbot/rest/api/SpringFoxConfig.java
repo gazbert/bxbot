@@ -46,7 +46,7 @@ public class SpringFoxConfig {
     return new ApiInfoBuilder()
         .title("BX-bot REST API")
         .description(
-            "Here be the documentation for using the bot's REST API."
+            "Here is the documentation for using the bot's REST API."
                 + System.lineSeparator()
                 + System.lineSeparator()
                 + "_\"Had I the heaven's embroidered cloths,"

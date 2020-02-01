@@ -32,38 +32,38 @@ import org.junit.Test;
  *
  * @author gazbert
  */
-public class TestRestApiConfiguration {
+public class TestRestApiConfig {
 
   private static final int MAX_LOGFILE_LINES = 1000;
   private static final int MAX_LOGFILE_DOWNLOAD_SIZE = 2 * 1048;
 
   @Test
   public void testMaxLogfileLinesCanBeSetAndFetched() {
-    final RestApiConfiguration restApiConfiguration = new RestApiConfiguration();
-    restApiConfiguration.setMaxLogfileLines(MAX_LOGFILE_LINES);
-    assertThat(restApiConfiguration.getMaxLogfileLines()).isEqualTo(MAX_LOGFILE_LINES);
+    final RestApiConfig restApiConfig = new RestApiConfig();
+    restApiConfig.setMaxLogfileLines(MAX_LOGFILE_LINES);
+    assertThat(restApiConfig.getMaxLogfileLines()).isEqualTo(MAX_LOGFILE_LINES);
   }
 
   @Test
   public void testMaxLogfileLinesDefaultFallback() {
-    final RestApiConfiguration restApiConfiguration = new RestApiConfiguration();
-    restApiConfiguration.setMaxLogfileLines(0);
-    assertThat(restApiConfiguration.getMaxLogfileLines())
-        .isEqualTo(RestApiConfiguration.DEFAULT_MAX_LINES);
+    final RestApiConfig restApiConfig = new RestApiConfig();
+    restApiConfig.setMaxLogfileLines(0);
+    assertThat(restApiConfig.getMaxLogfileLines())
+        .isEqualTo(RestApiConfig.DEFAULT_MAX_LINES);
   }
 
   @Test
   public void testMaxLogfileDownloadSizeCanBeSetAndFetched() {
-    final RestApiConfiguration restApiConfiguration = new RestApiConfiguration();
-    restApiConfiguration.setMaxLogfileDownloadSize(MAX_LOGFILE_DOWNLOAD_SIZE);
-    assertThat(restApiConfiguration.getLogfileDownloadSize()).isEqualTo(MAX_LOGFILE_DOWNLOAD_SIZE);
+    final RestApiConfig restApiConfig = new RestApiConfig();
+    restApiConfig.setMaxLogfileDownloadSize(MAX_LOGFILE_DOWNLOAD_SIZE);
+    assertThat(restApiConfig.getLogfileDownloadSize()).isEqualTo(MAX_LOGFILE_DOWNLOAD_SIZE);
   }
 
   @Test
   public void testMaxLogfileDownloadSizeDefaultFallback() {
-    final RestApiConfiguration restApiConfiguration = new RestApiConfiguration();
-    restApiConfiguration.setMaxLogfileDownloadSize(0);
-    assertThat(restApiConfiguration.getLogfileDownloadSize())
-        .isEqualTo(RestApiConfiguration.DEFAULT_MAX_DOWNLOAD_SIZE);
+    final RestApiConfig restApiConfig = new RestApiConfig();
+    restApiConfig.setMaxLogfileDownloadSize(0);
+    assertThat(restApiConfig.getLogfileDownloadSize())
+        .isEqualTo(RestApiConfig.DEFAULT_MAX_DOWNLOAD_SIZE);
   }
 }

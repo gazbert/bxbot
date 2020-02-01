@@ -25,7 +25,7 @@ package com.gazbert.bxbot.rest.api.v1.runtime;
 
 import static com.gazbert.bxbot.rest.api.v1.EndpointLocations.RUNTIME_ENDPOINT_BASE_URI;
 
-import com.gazbert.bxbot.rest.api.RestApiConfiguration;
+import com.gazbert.bxbot.rest.api.RestApiConfig;
 import com.gazbert.bxbot.services.runtime.BotLogfileService;
 import java.io.IOException;
 import java.security.Principal;
@@ -58,20 +58,20 @@ public class BotLogfileController {
   private static final String LOGFILE_RESOURCE_PATH = "/logfile";
   private static final String LOGFILE_DOWNLOAD_RESOURCE_PATH = "/logfile/download";
 
-  private final RestApiConfiguration restApiConfiguration;
+  private final RestApiConfig restApiConfig;
   private final BotLogfileService botLogfileService;
 
   @Autowired
   public BotLogfileController(
-      RestApiConfiguration restApiConfiguration, BotLogfileService botLogfileService) {
-    this.restApiConfiguration = restApiConfiguration;
+      RestApiConfig restApiConfig, BotLogfileService botLogfileService) {
+    this.restApiConfig = restApiConfig;
     this.botLogfileService = botLogfileService;
   }
 
   /**
    * Returns the logfile as a download.
    *
-   * <p>If the file is larger than {@link RestApiConfiguration#getLogfileDownloadSize()}, the end of
+   * <p>If the file is larger than {@link RestApiConfig#getLogfileDownloadSize()}, the end of
    * the logfile will be truncated.
    *
    * @param principal the authenticated user making the request.
@@ -92,7 +92,7 @@ public class BotLogfileController {
     Resource logfile;
     try {
       logfile =
-          botLogfileService.getLogfileAsResource(restApiConfiguration.getLogfileDownloadSize());
+          botLogfileService.getLogfileAsResource(restApiConfig.getLogfileDownloadSize());
     } catch (IOException e) {
       return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -119,7 +119,7 @@ public class BotLogfileController {
   /**
    * Returns logfile content for the bot.
    *
-   * <p>If the file has more lines than {@link RestApiConfiguration#getMaxLogfileLines()}, the
+   * <p>If the file has more lines than {@link RestApiConfig#getMaxLogfileLines()}, the
    * content will be truncated accordingly:
    *
    * <ul>
@@ -153,7 +153,7 @@ public class BotLogfileController {
                 + tail);
 
     String logfile;
-    final int maxLogfileLineCount = restApiConfiguration.getMaxLogfileLines();
+    final int maxLogfileLineCount = restApiConfig.getMaxLogfileLines();
 
     try {
       if (head != null && head > 0) {
@@ -179,7 +179,7 @@ public class BotLogfileController {
         }
 
       } else {
-        logfile = botLogfileService.getLogfile(restApiConfiguration.getMaxLogfileLines());
+        logfile = botLogfileService.getLogfile(restApiConfig.getMaxLogfileLines());
       }
 
       return new ResponseEntity<>(logfile, null, HttpStatus.OK);
