@@ -101,7 +101,7 @@ public class TestAuthenticationController {
 
     mockMvc
         .perform(
-            post("/auth")
+            post("/api/token")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(jwtAuthenticationRequest)))
         .andExpect(status().is2xxSuccessful());
@@ -119,7 +119,7 @@ public class TestAuthenticationController {
 
     mockMvc
         .perform(
-            post("/auth")
+            post("/api/token")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(jwtAuthenticationRequest)))
         .andExpect(status().isUnauthorized());
@@ -145,7 +145,7 @@ public class TestAuthenticationController {
     when(userDetailsService.loadUserByUsername(eq(user.getUsername()))).thenReturn(jwtUser);
     when(jwtUtils.canTokenBeRefreshed(any(), any())).thenReturn(true);
 
-    mockMvc.perform(get("/refresh")).andExpect(status().is2xxSuccessful());
+    mockMvc.perform(get("/api/token/refresh")).andExpect(status().is2xxSuccessful());
   }
 
   @Test
@@ -168,13 +168,13 @@ public class TestAuthenticationController {
     when(userDetailsService.loadUserByUsername(eq(user.getUsername()))).thenReturn(jwtUser);
     when(jwtUtils.canTokenBeRefreshed(any(), any())).thenReturn(true);
 
-    mockMvc.perform(get("/refresh")).andExpect(status().is2xxSuccessful());
+    mockMvc.perform(get("/api/token/refresh")).andExpect(status().is2xxSuccessful());
   }
 
   @Test
   @WithAnonymousUser
   public void whenRefreshTokenCalledBuyAnonymousUserThenExpectUnauthorizedResponse()
       throws Exception {
-    mockMvc.perform(get("/refresh")).andExpect(status().isUnauthorized());
+    mockMvc.perform(get("/api/token/refresh")).andExpect(status().isUnauthorized());
   }
 }

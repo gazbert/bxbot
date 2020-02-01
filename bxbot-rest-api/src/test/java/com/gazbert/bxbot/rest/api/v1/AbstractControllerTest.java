@@ -110,7 +110,7 @@ public abstract class AbstractControllerTest {
     final String content =
         mockMvc
             .perform(
-                post("/auth")
+                post("/api/token")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(jsonify(new UsernameAndPassword(username, password))))
             .andExpect(status().isOk())

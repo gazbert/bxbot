@@ -30,6 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -67,8 +68,21 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
   }
 
   /**
-   * Creates an Authentication Manager implementation for authenticating users using
-   * Bcrypt passwords.
+   * Must be done to work with Spring Boot 2.0.
+   * https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-2.0-Migration-Guide#authenticationmanager-bean
+   *
+   * @return the authentication manager bean.
+   * @throws Exception id anything unexpected happens.
+   */
+  @Override
+  @Bean
+  public AuthenticationManager authenticationManagerBean() throws Exception {
+    return super.authenticationManagerBean();
+  }
+
+  /**
+   * Creates an Authentication Manager implementation for authenticating users using Bcrypt
+   * passwords.
    *
    * @param authenticationManagerBuilder the Authentication Manager.
    * @throws Exception if anything breaks building the Authentication Manager.
@@ -112,15 +126,26 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         .sessionManagement()
         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 
-        // Allow anyone to try and authenticate
+        // Allow anyone to try and authenticate to get a token
         .and()
         .authorizeRequests()
-        .antMatchers("/auth")
+        .antMatchers("/api/token")
         .permitAll()
 
         // Allow CORS pre-flighting for everything
         .antMatchers(HttpMethod.OPTIONS, "/**")
         .permitAll() // allow CORS pre-flighting
+
+        // Allow anyone access to Swagger docs
+        .antMatchers(
+            HttpMethod.GET,
+            "/api-docs",
+            "/swagger-resources/**",
+            "/swagger-resources/**",
+            "/swagger-ui.html**",
+            "/webjars/**",
+            "/favicon.ico")
+        .permitAll()
 
         // Lock down everything else
         .anyRequest()

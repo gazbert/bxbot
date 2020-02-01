@@ -85,9 +85,10 @@ public class AuthenticationController {
    * @return a JWT if the client was authenticated successfully.
    * @throws AuthenticationException if the the client was not authenticated successfully.
    */
-  @PostMapping(value = "/auth")
+  @PostMapping(value = "/api/token")
   public ResponseEntity<JwtAuthenticationResponse> getToken(
       @RequestBody JwtAuthenticationRequest authenticationRequest) {
+
     final Authentication authentication =
         authenticationManager.authenticate(
             new UsernamePasswordAuthenticationToken(
@@ -110,8 +111,9 @@ public class AuthenticationController {
    * @return the JWT with an extended expiry time if the client was authenticated, a 400 Bad Request
    *     otherwise.
    */
-  @GetMapping(value = "/refresh")
+  @GetMapping(value = "/api/token/refresh")
   public ResponseEntity<JwtAuthenticationResponse> refreshToken(HttpServletRequest request) {
+
     final String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
     final Claims claims = jwtUtils.validateTokenAndGetClaims(authorizationHeader);
     final String username = jwtUtils.getUsernameFromTokenClaims(claims);
