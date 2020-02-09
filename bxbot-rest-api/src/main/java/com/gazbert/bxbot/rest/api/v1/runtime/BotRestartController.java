@@ -26,6 +26,7 @@ package com.gazbert.bxbot.rest.api.v1.runtime;
 import static com.gazbert.bxbot.rest.api.v1.EndpointLocations.RUNTIME_ENDPOINT_BASE_URI;
 
 import com.gazbert.bxbot.services.runtime.BotRestartService;
+import io.swagger.annotations.Api;
 import java.security.Principal;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -43,6 +44,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author gazbert
  * @since 1.0
  */
+@Api(tags = {"Bot Restart"})
 @RestController
 @RequestMapping(RUNTIME_ENDPOINT_BASE_URI)
 public class BotRestartController {

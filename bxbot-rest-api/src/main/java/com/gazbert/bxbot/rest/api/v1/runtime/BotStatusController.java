@@ -29,6 +29,7 @@ import com.gazbert.bxbot.domain.bot.BotStatus;
 import com.gazbert.bxbot.domain.engine.EngineConfig;
 import com.gazbert.bxbot.services.config.EngineConfigService;
 import com.gazbert.bxbot.services.runtime.BotStatusService;
+import io.swagger.annotations.Api;
 import java.security.Principal;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -44,6 +45,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author gazbert
  * @since 1.0
  */
+@Api(tags = {"Bot Status"})
 @RestController
 @RequestMapping(RUNTIME_ENDPOINT_BASE_URI)
 public class BotStatusController {

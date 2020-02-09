@@ -24,6 +24,8 @@
 
 package com.gazbert.bxbot.rest.api.security.authentication;
 
+import javax.validation.constraints.NotNull;
+
 /**
  * Encapsulates a JWT Authentication response. It wraps the JWT (Base64 encoded String).
  *
@@ -31,6 +33,7 @@ package com.gazbert.bxbot.rest.api.security.authentication;
  */
 public class JwtAuthenticationResponse {
 
+  @NotNull(message = "Token cannot be null")
   private final String token;
 
   JwtAuthenticationResponse(String token) {

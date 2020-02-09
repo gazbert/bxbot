@@ -23,8 +23,15 @@
 
 package com.gazbert.bxbot.rest.api;
 
+import java.io.File;
+import java.io.InputStream;
+import java.net.URI;
+import java.net.URL;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
+import org.springframework.core.io.Resource;
+import springfox.bean.validators.configuration.BeanValidatorPluginsConfiguration;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
@@ -40,13 +47,14 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
  */
 @Configuration
 @EnableSwagger2
+@Import(BeanValidatorPluginsConfiguration.class)
 public class SpringFoxConfig {
 
   private ApiInfo apiInfo() {
     return new ApiInfoBuilder()
         .title("BX-bot REST API")
         .description(
-            "Here is the documentation for using the bot's REST API."
+            "Here is the documentation for using BX-bot's REST API."
                 + System.lineSeparator()
                 + System.lineSeparator()
                 + "_\"Had I the heaven's embroidered cloths,"
@@ -82,11 +90,17 @@ public class SpringFoxConfig {
    */
   @Bean
   public Docket api() {
+
+    final Class[] ignoredModelClasses = {
+      InputStream.class, File.class, Resource.class, URI.class, URL.class
+    };
+
     return new Docket(DocumentationType.SWAGGER_2)
         .select()
         .apis(RequestHandlerSelectors.basePackage("com.gazbert.bxbot.rest.api"))
         .paths(PathSelectors.ant("/api/**"))
         .build()
-        .apiInfo(apiInfo());
+        .apiInfo(apiInfo())
+        .ignoredParameterTypes(ignoredModelClasses);
   }
 }

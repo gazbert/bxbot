@@ -49,6 +49,9 @@
     <spring-boot-starter.version>2.1.4.RELEASE</spring-boot-starter.version>
     <jaxb-api.version>2.3.1</jaxb-api.version>
     <spotbugs.version>3.1.11</spotbugs.version>
+    <springfox.version>2.9.2</springfox.version>
+    <hibernate-vaildator.version>6.0.2.Final</hibernate-vaildator.version>
+    <javax-mail.version>1.6.2</javax-mail.version>
   </properties>
   <parent>
     <groupId>org.springframework.boot</groupId>
@@ -194,13 +197,13 @@
       <dependency>
         <groupId>javax.mail</groupId>
         <artifactId>javax.mail-api</artifactId>
-        <version>1.6.2</version>
+        <version>${javax-mail.version}</version>
         <scope>compile</scope>
       </dependency>
       <dependency>
         <groupId>com.sun.mail</groupId>
         <artifactId>javax.mail</artifactId>
-        <version>1.6.2</version>
+        <version>${javax-mail.version}</version>
         <scope>compile</scope>
       </dependency>
       <dependency>
@@ -221,12 +224,32 @@
       <dependency>
         <groupId>io.springfox</groupId>
         <artifactId>springfox-swagger2</artifactId>
-        <version>2.9.2</version>
+        <version>${springfox.version}</version>
       </dependency>
       <dependency>
         <groupId>io.springfox</groupId>
         <artifactId>springfox-swagger-ui</artifactId>
-        <version>2.9.2</version>
+        <version>${springfox.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.springfox</groupId>
+        <artifactId>springfox-bean-validators</artifactId>
+        <version>${springfox.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>javax.validation</groupId>
+        <artifactId>validation-api</artifactId>
+        <version>2.0.0.Final</version>
+      </dependency>
+      <dependency>
+        <groupId>org.hibernate.validator</groupId>
+        <artifactId>hibernate-validator</artifactId>
+        <version>${hibernate-vaildator.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.hibernate.validator</groupId>
+        <artifactId>hibernate-validator-annotation-processor</artifactId>
+        <version>${hibernate-vaildator.version}</version>
       </dependency>
 
       <!--

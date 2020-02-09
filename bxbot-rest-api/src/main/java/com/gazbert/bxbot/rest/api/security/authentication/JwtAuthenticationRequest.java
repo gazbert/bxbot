@@ -24,6 +24,8 @@
 
 package com.gazbert.bxbot.rest.api.security.authentication;
 
+import javax.validation.constraints.NotNull;
+
 /**
  * Encapsulates a JWT Authentication Request containing username/password sent from the client.
  *
@@ -34,11 +36,13 @@ package com.gazbert.bxbot.rest.api.security.authentication;
  */
 public class JwtAuthenticationRequest {
 
+  @NotNull(message = "Username cannot be null")
   private String username;
+
+  @NotNull(message = "Password cannot be null")
   private String password;
 
-  public JwtAuthenticationRequest() {
-  }
+  public JwtAuthenticationRequest() {}
 
   public JwtAuthenticationRequest(String username, String password) {
     this.setUsername(username);

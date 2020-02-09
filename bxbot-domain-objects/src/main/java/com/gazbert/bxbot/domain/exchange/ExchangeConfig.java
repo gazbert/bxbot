@@ -25,6 +25,7 @@ package com.gazbert.bxbot.domain.exchange;
 
 import com.google.common.base.MoreObjects;
 import java.util.Map;
+import javax.validation.constraints.NotNull;
 
 /**
  * Domain object representing the overall Exchange config.
@@ -33,7 +34,9 @@ import java.util.Map;
  */
 public class ExchangeConfig {
 
+  @NotNull(message = "Name cannot be null")
   private String name;
+
   private String adapter;
   private Map<String, String> authenticationConfig;
 

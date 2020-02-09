@@ -24,6 +24,8 @@
 package com.gazbert.bxbot.domain.emailalerts;
 
 import com.google.common.base.MoreObjects;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.Positive;
 
 /**
  * Domain object representing the SMTP config used for Email Alerts.
@@ -33,19 +35,23 @@ import com.google.common.base.MoreObjects;
 public class SmtpConfig {
 
   private String host;
+
+  @Positive(message = "Port must be positive integer")
   private int tlsPort;
+
   private String accountUsername;
   private String accountPassword;
+
+  @Email(message = "From Address must be a valid email address")
   private String fromAddress;
+
+  @Email(message = "To Address must be a valid email address")
   private String toAddress;
 
   // required for jackson
-  public SmtpConfig() {
-  }
+  public SmtpConfig() {}
 
-  /**
-   * Creates a new SmtpConfig.
-   */
+  /** Creates a new SmtpConfig. */
   public SmtpConfig(
       String host,
       int tlsPort,

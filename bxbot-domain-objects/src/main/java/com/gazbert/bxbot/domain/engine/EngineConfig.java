@@ -25,6 +25,9 @@ package com.gazbert.bxbot.domain.engine;
 
 import com.google.common.base.MoreObjects;
 import java.math.BigDecimal;
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 
 /**
  * Domain object representing the Engine config.
@@ -33,10 +36,16 @@ import java.math.BigDecimal;
  */
 public class EngineConfig {
 
+  @NotNull(message = "Bot Id cannot be null")
   private String botId;
+
   private String botName;
   private String emergencyStopCurrency;
+
+  @DecimalMin(message = "Emergency Stop Balance must be 0 or more", value = "0")
   private BigDecimal emergencyStopBalance;
+
+  @Min(value = 1, message = "Trace Cycle Interval must be more than 1 second")
   private int tradeCycleInterval;
 
   // required for jackson

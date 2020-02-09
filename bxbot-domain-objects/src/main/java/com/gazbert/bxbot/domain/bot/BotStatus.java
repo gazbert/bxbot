@@ -24,6 +24,7 @@
 package com.gazbert.bxbot.domain.bot;
 
 import com.google.common.base.MoreObjects;
+import javax.validation.constraints.NotNull;
 
 /**
  * Domain object representing the Bot's status.
@@ -32,7 +33,9 @@ import com.google.common.base.MoreObjects;
  */
 public class BotStatus {
 
+  @NotNull(message = "Bot Id cannot be null")
   private String botId;
+
   private String displayName;
   private String status;
 

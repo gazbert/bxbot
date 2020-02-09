@@ -27,6 +27,7 @@ import static com.gazbert.bxbot.rest.api.v1.EndpointLocations.RUNTIME_ENDPOINT_B
 
 import com.gazbert.bxbot.rest.api.RestApiConfig;
 import com.gazbert.bxbot.services.runtime.BotLogfileService;
+import io.swagger.annotations.Api;
 import java.io.IOException;
 import java.security.Principal;
 import javax.servlet.http.HttpServletRequest;
@@ -50,6 +51,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author gazbert
  * @since 1.0
  */
+@Api(tags = {"Bot Logfile"})
 @RestController
 @RequestMapping(RUNTIME_ENDPOINT_BASE_URI)
 public class BotLogfileController {

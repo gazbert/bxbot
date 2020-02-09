@@ -25,6 +25,7 @@ package com.gazbert.bxbot.domain.market;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
+import javax.validation.constraints.NotNull;
 
 /**
  * Domain object representing a Market config.
@@ -33,7 +34,9 @@ import com.google.common.base.Objects;
  */
 public class MarketConfig {
 
+  @NotNull(message = "Market Id cannot be null")
   private String id;
+
   private String name;
   private String baseCurrency;
   private String counterCurrency;

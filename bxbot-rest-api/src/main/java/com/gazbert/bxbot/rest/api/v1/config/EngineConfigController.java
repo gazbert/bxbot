@@ -27,6 +27,7 @@ import static com.gazbert.bxbot.rest.api.v1.EndpointLocations.CONFIG_ENDPOINT_BA
 
 import com.gazbert.bxbot.domain.engine.EngineConfig;
 import com.gazbert.bxbot.services.config.EngineConfigService;
+import io.swagger.annotations.Api;
 import java.security.Principal;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -50,6 +51,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author gazbert
  * @since 1.0
  */
+@Api(tags = {"Engine Configuration"})
 @RestController
 @RequestMapping(CONFIG_ENDPOINT_BASE_URI)
 public class EngineConfigController {

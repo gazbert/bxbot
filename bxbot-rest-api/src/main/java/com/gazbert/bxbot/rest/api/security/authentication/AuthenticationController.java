@@ -27,6 +27,7 @@ package com.gazbert.bxbot.rest.api.security.authentication;
 import com.gazbert.bxbot.rest.api.security.jwt.JwtUser;
 import com.gazbert.bxbot.rest.api.security.jwt.JwtUtils;
 import io.jsonwebtoken.Claims;
+import io.swagger.annotations.Api;
 import java.util.Date;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,6 +52,7 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * @author gazbert
  */
+@Api(tags = {"Authentication"})
 @RestController
 public class AuthenticationController {
 
