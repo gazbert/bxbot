@@ -136,6 +136,7 @@ public class BotLogfileController {
    * @param tail the optional tail line count.
    * @return the logfile.
    */
+  // TODO: Swagger doc the params!
   @PreAuthorize("hasRole('USER')")
   @GetMapping(value = LOGFILE_RESOURCE_PATH)
   public ResponseEntity<String> getLogfile(

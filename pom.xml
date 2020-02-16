@@ -66,8 +66,9 @@
       </activation>
       <properties>
         <build.profile.id>unit</build.profile.id>
-        <skip.integration.tests>true</skip.integration.tests>
         <skip.unit.tests>false</skip.unit.tests>
+        <skip.integration.tests>true</skip.integration.tests>
+        <skip.bdd.tests>true</skip.bdd.tests>
       </properties>
     </profile>
     <profile>
@@ -76,6 +77,16 @@
         <build.profile.id>int</build.profile.id>
         <skip.integration.tests>false</skip.integration.tests>
         <skip.unit.tests>true</skip.unit.tests>
+        <skip.bdd.tests>true</skip.bdd.tests>
+      </properties>
+    </profile>
+    <profile>
+      <id>bdd</id>
+      <properties>
+        <build.profile.id>bdd</build.profile.id>
+        <skip.integration.tests>true</skip.integration.tests>
+        <skip.unit.tests>true</skip.unit.tests>
+        <skip.bdd.tests>false</skip.bdd.tests>
       </properties>
     </profile>
     <profile>
@@ -84,6 +95,7 @@
         <build.profile.id>all</build.profile.id>
         <skip.integration.tests>false</skip.integration.tests>
         <skip.unit.tests>false</skip.unit.tests>
+        <skip.bdd.tests>true</skip.bdd.tests>
       </properties>
     </profile>
     <profile>
@@ -297,6 +309,28 @@
         <version>3.1.6</version>
         <scope>test</scope>
       </dependency>
+      <dependency>
+        <groupId>org.jbehave</groupId>
+        <artifactId>jbehave-core</artifactId>
+        <version>4.6</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.httpcomponents</groupId>
+        <artifactId>httpclient</artifactId>
+        <version>4.5.11</version>
+        <exclusions>
+          <exclusion>
+            <artifactId>commons-logging</artifactId>
+            <groupId>commons-logging</groupId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.httpcomponents</groupId>
+        <artifactId>httpcore</artifactId>
+        <version>4.4.13</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
@@ -330,6 +364,44 @@
               <goals>
                 <goal>integration-test</goal>
                 <goal>verify</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+        <plugin>
+          <groupId>org.jbehave</groupId>
+          <artifactId>jbehave-maven-plugin</artifactId>
+          <version>4.6.1</version>
+          <executions>
+            <execution>
+              <id>run-stories-as-embeddables</id>
+              <phase>integration-test</phase>
+              <configuration>
+                <skip>${skip.bdd.tests}</skip>
+                <scope>test</scope>
+                <includes>
+                  <include>**/*Story.java</include>
+                </includes>
+                <metaFilters>
+                </metaFilters>
+                <systemProperties>
+                  <property>
+                    <name>java.awt.headless</name>
+                    <value>true</value>
+                  </property>
+                </systemProperties>
+                <ignoreFailureInStories>false</ignoreFailureInStories>
+                <ignoreFailureInView>false</ignoreFailureInView>
+              </configuration>
+              <goals>
+                <goal>run-stories-as-embeddables</goal>
+              </goals>
+            </execution>
+            <execution>
+              <id>unpack-view-resources</id>
+              <phase>process-resources</phase>
+              <goals>
+                <goal>unpack-view-resources</goal>
               </goals>
             </execution>
           </executions>
@@ -516,6 +588,52 @@
                     <version>3.5.0</version>
                   </requireMavenVersion>
                 </rules>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-dependency-plugin</artifactId>
+          <executions>
+            <execution>
+              <id>unpack-jbehave-site-resources</id>
+              <phase>generate-resources</phase>
+              <goals>
+                <goal>unpack</goal>
+              </goals>
+              <configuration>
+                <overwriteReleases>false</overwriteReleases>
+                <overwriteSnapshots>true</overwriteSnapshots>
+                <artifactItems>
+                  <artifactItem>
+                    <groupId>org.jbehave.site</groupId>
+                    <artifactId>jbehave-site-resources</artifactId>
+                    <version>3.3</version>
+                    <type>zip</type>
+                    <outputDirectory>${project.build.directory}/jbehave/view</outputDirectory>
+                  </artifactItem>
+                </artifactItems>
+              </configuration>
+            </execution>
+            <execution>
+              <id>unpack-jbehave-reports-resources</id>
+              <phase>generate-resources</phase>
+              <goals>
+                <goal>unpack</goal>
+              </goals>
+              <configuration>
+                <overwriteReleases>false</overwriteReleases>
+                <overwriteSnapshots>true</overwriteSnapshots>
+                <artifactItems>
+                  <artifactItem>
+                    <groupId>org.jbehave</groupId>
+                    <artifactId>jbehave-core</artifactId>
+                    <version>4.6.1</version>
+                    <outputDirectory>${project.build.directory}/jbehave/view</outputDirectory>
+                    <includes>**\/*.css,**\/*.ftl,**\/*.js</includes>
+                  </artifactItem>
+                </artifactItems>
               </configuration>
             </execution>
           </executions>
