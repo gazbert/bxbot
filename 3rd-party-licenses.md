@@ -22,5 +22,6 @@
 * SpotBugs                  - https://spotbugs.github.io/index.html
 * JaCoCo                    - https://www.jacoco.org/license.html
 * SonarQube                 - https://www.sonarqube.org/downloads/license
+* JBehave                   - https://jbehave.org/license.html
 
 

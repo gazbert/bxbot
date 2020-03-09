@@ -24,6 +24,7 @@
 package com.gazbert.bxbot.domain.engine;
 
 import com.google.common.base.MoreObjects;
+import com.google.common.base.Objects;
 import java.math.BigDecimal;
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.Min;
@@ -105,6 +106,23 @@ public class EngineConfig {
 
   public void setTradeCycleInterval(int tradeCycleInterval) {
     this.tradeCycleInterval = tradeCycleInterval;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    final EngineConfig that = (EngineConfig) o;
+    return Objects.equal(botId, that.botId);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hashCode(botId);
   }
 
   @Override

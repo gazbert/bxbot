@@ -34,13 +34,20 @@ import javax.validation.constraints.NotNull;
 public class JwtAuthenticationResponse {
 
   @NotNull(message = "Token cannot be null")
-  private final String token;
+  private String token;
 
-  JwtAuthenticationResponse(String token) {
+  public JwtAuthenticationResponse() {
+  }
+
+  public JwtAuthenticationResponse(String token) {
     this.token = token;
   }
 
   public String getToken() {
     return this.token;
+  }
+
+  public void setToken(String token) {
+    this.token = token;
   }
 }

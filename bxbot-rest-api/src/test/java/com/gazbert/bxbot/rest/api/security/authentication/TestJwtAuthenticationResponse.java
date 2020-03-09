@@ -41,4 +41,11 @@ public class TestJwtAuthenticationResponse {
     final JwtAuthenticationResponse jwtAuthenticationResponse = new JwtAuthenticationResponse(JWT);
     assertEquals(JWT, jwtAuthenticationResponse.getToken());
   }
+
+  @Test
+  public void testSetterAndGettersWorkAsExpected() {
+    final JwtAuthenticationResponse jwtAuthenticationResponse = new JwtAuthenticationResponse();
+    jwtAuthenticationResponse.setToken(JWT);
+    assertEquals(JWT, jwtAuthenticationResponse.getToken());
+  }
 }
