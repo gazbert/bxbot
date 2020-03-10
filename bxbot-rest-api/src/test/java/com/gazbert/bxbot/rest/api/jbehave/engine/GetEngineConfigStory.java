@@ -26,7 +26,7 @@ package com.gazbert.bxbot.rest.api.jbehave.engine;
 import com.gazbert.bxbot.rest.api.jbehave.AbstractStory;
 
 /**
- * Tests story for fetching Engine Config.
+ * Tests story for getting Engine Config.
  *
  * @author gazbert
  */
