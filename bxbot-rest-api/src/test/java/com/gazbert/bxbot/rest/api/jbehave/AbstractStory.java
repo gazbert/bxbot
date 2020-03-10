@@ -81,15 +81,6 @@ public abstract class AbstractStory extends JUnitStories {
                 .withFailureTrace(true)
                 .withFailureTraceCompression(true))
         .useParameterConverters(parameterConverters);
-
-    //    return new MostUsefulConfiguration()
-    //        .useStoryLoader(new LoadFromClasspath(this.getClass()))
-    //        .useStoryReporterBuilder(
-    //            new StoryReporterBuilder()
-    //                .withCodeLocation(codeLocationFromClass(this.getClass()))
-    //                .withFormats(CONSOLE, TXT, HTML)
-    //                .withFailureTrace(true)
-    //                .withFailureTraceCompression(true));
   }
 
   @Override
