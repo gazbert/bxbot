@@ -28,7 +28,6 @@ import static junit.framework.TestCase.assertEquals;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gazbert.bxbot.domain.engine.EngineConfig;
 import com.gazbert.bxbot.rest.api.jbehave.AbstractSteps;
-import java.math.BigDecimal;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import org.apache.commons.codec.Charsets;
@@ -36,15 +35,18 @@ import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.util.EntityUtils;
 import org.jbehave.core.annotations.Given;
+import org.jbehave.core.annotations.Named;
 import org.jbehave.core.annotations.Then;
 import org.jbehave.core.annotations.When;
 
 /**
- * Steps for testing getting Engine Config story.
+ * Steps for testing updating Engine Config story.
  *
  * @author gazbert
  */
-public class GetEngineConfigSteps extends AbstractSteps {
+public class UpdateEngineConfigSteps extends AbstractSteps {
+
+  private String token;
 
   // --------------------------------------------------------------------------
   // Given step conditions
@@ -64,29 +66,71 @@ public class GetEngineConfigSteps extends AbstractSteps {
   // When step conditions
   // --------------------------------------------------------------------------
 
-  @When("a user calls the API with valid token")
-  public void whenUserCallsApiWithValidToken() throws Exception {
-    setHttpResponse(makeGetApiCallWithToken(getApiPath(), getUserToken()));
+  @When("administrator has a valid token")
+  public void whenAdministratorHasValidToken() throws Exception {
+    token = getAdminToken();
   }
 
-  @When("a user calls the API without valid token")
-  public void whenUserCallsApiWithoutValidToken() throws Exception {
-    setHttpResponse(makeGetApiCallWithoutToken(getApiPath()));
+  @When("administrator does not have valid token")
+  public void whenAdministratorDoesNotHaveValidToken() {
+    token = null;
+  }
+
+  /*
+   * Parameter injection method 1.
+   * The arguments extracted from the .story file step candidate are simply matched following
+   * natural order to the parameters in the annotated Java method.
+   */
+  @When(
+      "administrator calls API with botname $botname and tradeCycleInterval of $tradeCycleInterval")
+  public void whenAdminCallsApiToUpdateEngineConfig(String botname, int tradeCycleInterval)
+      throws Exception {
+
+    final EngineConfig updateEngineConfig = new EngineConfig();
+    updateEngineConfig.setBotId("my-bitstamp-bot_1");
+    updateEngineConfig.setBotName(botname);
+    updateEngineConfig.setTradeCycleInterval(tradeCycleInterval);
+
+    final ObjectMapper mapper = new ObjectMapper();
+    final String jsonPayload = mapper.writeValueAsString(updateEngineConfig);
+
+    setHttpResponse(makeUpdateApiCallWithToken(getApiPath(), token, jsonPayload));
+  }
+
+  @When(
+      "user calls API to update Engine Config with botname $botname and tradeCycleInterval of $tradeCycleInterval")
+  public void whenUserCallsApiToUpdateEngineConfig(String botname, int tradeCycleInterval)
+      throws Exception {
+
+    final EngineConfig updateEngineConfig = new EngineConfig();
+    updateEngineConfig.setBotId("my-bitstamp-bot_1");
+    updateEngineConfig.setBotName(botname);
+    updateEngineConfig.setTradeCycleInterval(tradeCycleInterval);
+
+    final ObjectMapper mapper = new ObjectMapper();
+    final String jsonPayload = mapper.writeValueAsString(updateEngineConfig);
+
+    setHttpResponse(makeUpdateApiCallWithToken(getApiPath(), getUserToken(), jsonPayload));
   }
 
   // --------------------------------------------------------------------------
   // Then step conditions
   // --------------------------------------------------------------------------
 
-  @Then("the bot will respond with expected Engine config")
-  public void thenBotRespondsWithEngineConfig() throws Exception {
+  /*
+   * Parameter injection method 2.
+   * Here, The arguments extracted from the .story file step candidate are mapped explicitly to
+   * the parameters in the annotated Java method.
+   */
+  @Then(
+      "the bot will respond with updated Engine config with botname $name and trade cycle interval $interval")
+  public void thenBotRespondsWithUpdatedEngineConfig(
+      @Named("name") String botname, @Named("interval") int tradeCycleInterval) throws Exception {
 
     final EngineConfig expectedEngineConfig = new EngineConfig();
     expectedEngineConfig.setBotId("my-bitstamp-bot_1");
-    expectedEngineConfig.setBotName("Bitstamp Bot");
-    expectedEngineConfig.setEmergencyStopCurrency("BTC");
-    expectedEngineConfig.setEmergencyStopBalance(new BigDecimal("1.0"));
-    expectedEngineConfig.setTradeCycleInterval(20);
+    expectedEngineConfig.setBotName(botname);
+    expectedEngineConfig.setTradeCycleInterval(tradeCycleInterval);
 
     final ObjectMapper mapper = new ObjectMapper();
     final HttpEntity responseEntity = getHttpResponse().getEntity();
@@ -100,6 +144,8 @@ public class GetEngineConfigSteps extends AbstractSteps {
     final String responseJson = EntityUtils.toString(responseEntity, encoding);
     final EngineConfig engineConfig = mapper.readValue(responseJson, EngineConfig.class);
 
-    assertEquals(expectedEngineConfig, engineConfig);
+    assertEquals(expectedEngineConfig, engineConfig); // equality based on id only
+    assertEquals(botname, engineConfig.getBotName());
+    assertEquals(tradeCycleInterval, engineConfig.getTradeCycleInterval());
   }
 }

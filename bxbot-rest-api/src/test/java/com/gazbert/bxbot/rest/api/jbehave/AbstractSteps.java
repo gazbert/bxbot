@@ -23,6 +23,11 @@
 
 package com.gazbert.bxbot.rest.api.jbehave;
 
+import static junit.framework.TestCase.assertEquals;
+import static org.apache.http.HttpStatus.SC_FORBIDDEN;
+import static org.apache.http.HttpStatus.SC_NOT_FOUND;
+import static org.apache.http.HttpStatus.SC_UNAUTHORIZED;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gazbert.bxbot.rest.api.security.authentication.JwtAuthenticationRequest;
 import com.gazbert.bxbot.rest.api.security.authentication.JwtAuthenticationResponse;
@@ -35,6 +40,7 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
@@ -42,6 +48,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import org.jbehave.core.annotations.Then;
 
 /**
  * Base class for all JBehave test steps.
@@ -51,6 +58,7 @@ import org.apache.http.util.EntityUtils;
 public abstract class AbstractSteps {
 
   // Creds must match real user entries in the ./java/resources/import.sql file
+  // TODO: Externalize this config at some point...
   private static final String AUTH_URI = "http://localhost:8080/api/token";
   private static final String USER_USERNAME = "user";
   private static final String USER_PASSWORD = "user";
@@ -62,6 +70,52 @@ public abstract class AbstractSteps {
     ADMIN
   }
 
+  private String apiPath;
+  private HttpResponse httpResponse;
+
+  // --------------------------------------------------------------------------
+  // Common candidate steps
+  // --------------------------------------------------------------------------
+
+  @Then("the bot will respond with 401 Unauthorized")
+  public void thenBotRespondsWith401Unauthorized() {
+    assertEquals(SC_UNAUTHORIZED, httpResponse.getStatusLine().getStatusCode());
+  }
+
+  @Then("the bot will respond with 404 Not Found")
+  public void thenBotRespondsWith404NotFound() {
+    assertEquals(SC_NOT_FOUND, httpResponse.getStatusLine().getStatusCode());
+  }
+
+  @Then("the bot will respond with 403 Forbidden")
+  public void thenBotRespondsWith403Forbidden() {
+    assertEquals(SC_FORBIDDEN, httpResponse.getStatusLine().getStatusCode());
+  }
+
+  // --------------------------------------------------------------------------
+  // Accessors for common resources
+  // --------------------------------------------------------------------------
+
+  protected String getApiPath() {
+    return apiPath;
+  }
+
+  protected void setApiPath(String apiPath) {
+    this.apiPath = apiPath;
+  }
+
+  protected HttpResponse getHttpResponse() {
+    return httpResponse;
+  }
+
+  protected void setHttpResponse(HttpResponse httpResponse) {
+    this.httpResponse = httpResponse;
+  }
+
+  // --------------------------------------------------------------------------
+  // Convenience methods for subclasses to call
+  // --------------------------------------------------------------------------
+
   protected String getUserToken() throws IOException {
     return getToken(UserType.USER);
   }
@@ -70,12 +124,22 @@ public abstract class AbstractSteps {
     return getToken(UserType.ADMIN);
   }
 
-  protected HttpResponse makeApiCallWithoutToken(String api) throws IOException {
-    return makeApiCall(api, null);
+  protected HttpResponse makeGetApiCallWithToken(String api, String token) throws IOException {
+    return makeGetApiCall(api, token);
   }
 
-  protected HttpResponse makeApiCallWithToken(String api, String token) throws IOException {
-    return makeApiCall(api, token);
+  protected HttpResponse makeGetApiCallWithoutToken(String api) throws IOException {
+    return makeGetApiCall(api, null);
+  }
+
+  protected HttpResponse makeUpdateApiCallWithToken(String api, String token, String payload)
+      throws IOException {
+    return makeUpdateApiCall(api, token, payload);
+  }
+
+  protected HttpResponse makeUpdateApiCallWithoutToken(String api, String payload)
+      throws IOException {
+    return makeUpdateApiCall(api, null, payload);
   }
 
   // --------------------------------------------------------------------------
@@ -120,11 +184,23 @@ public abstract class AbstractSteps {
     return authenticationResponse.getToken();
   }
 
-  private HttpResponse makeApiCall(String api, String token) throws IOException {
+  private HttpResponse makeGetApiCall(String api, String token) throws IOException {
     final HttpUriRequest request = new HttpGet(api);
     if (token != null) {
       request.setHeader("Authorization", "Bearer " + token);
     }
+    return HttpClientBuilder.create().build().execute(request);
+  }
+
+  private HttpResponse makeUpdateApiCall(String api, String token, String payload)
+      throws IOException {
+    final HttpPut request = new HttpPut(api);
+    if (token != null) {
+      request.setHeader("Authorization", "Bearer " + token);
+    }
+    final StringEntity requestEntity = new StringEntity(payload, ContentType.APPLICATION_JSON);
+    request.setEntity(requestEntity);
+    request.setHeader("Authorization", "Bearer " + token);
     return HttpClientBuilder.create().build().execute(request);
   }
 }
