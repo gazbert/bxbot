@@ -62,6 +62,15 @@ public class SpringFoxConfig {
             "Here is the documentation for using BX-bot's REST API."
                 + System.lineSeparator()
                 + System.lineSeparator()
+                + "1. First, you'll need to get a JWT by calling the Authentication '/api/token' endpoint with a valid username/password."
+                + System.lineSeparator()
+                + "1. Copy the token value (without the quotes) out of the response. "
+                + System.lineSeparator()
+                + "1. Click the 'Authorize' padlock button, enter the token value, click 'Authorize', click 'Close'."
+                + System.lineSeparator()
+                + "1. You should now be able to call the API operations."
+                + System.lineSeparator()
+                + System.lineSeparator()
                 + "_\"Had I the heaven's embroidered cloths,"
                 + System.lineSeparator()
                 + "Enwrought with golden and silver light,"

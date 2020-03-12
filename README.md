@@ -563,8 +563,8 @@ Other interesting configuration in the [./config/application.properties](./confi
 * `bxbot.restapi.maxLogfileDownloadSize` - the maximum size of the logfile to download. 
 If the size of the logfile exceeds this limit, the end of the file will be truncated.
 
-* `bxbot.restapi.jwt.expiration` - the expires time of the JWT. Set to 5 mins. Be sure you know the
-risks when extending the expires time for issued tokens.
+* `bxbot.restapi.jwt.expiration` - the expires time of the JWT. Set to 10 mins. Be sure you know the
+risks if you decide to extend the expires time.
 
 #### Users
 You _must_ change the `PASSWORD` values in the 
@@ -586,7 +586,7 @@ contained in the `import.sql` file. See the
 [Authentication](http://localhost:8080/swagger-ui.html#/Authentication/getTokenUsingPOST) 
 Swagger docs for how to do this.
 
-The returned JWT expires after 5 mins. Your client should call the `/api/refresh` endpoint with the
+The returned JWT expires after 10 mins. Your client should call the `/api/refresh` endpoint with the
 JWT before it expires in order to get a new one. Alternatively, you can re-authenticate using the
 `/api/token` endpoint.
 
