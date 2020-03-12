@@ -533,9 +533,8 @@ We recommend running at `info` level, as `debug` level logging will produce a *l
 output from the Exchange Adapters; it's very handy for debugging, but not so good for your disk space!
  
 ### REST API
-A REST API for managing the bot is available.
+The bot has a REST API that allows you to remotely:
 
-It allows you to:
 * View and update Engine, Exchange, Markets, Strategy, and Email Alerts config.
 * View and download the log file.
 * Restart the bot - this is necessary for any config changes to take effect.
@@ -564,7 +563,7 @@ Other interesting configuration in the [./config/application.properties](./confi
 If the size of the logfile exceeds this limit, the end of the file will be truncated.
 
 * `bxbot.restapi.jwt.expiration` - the expires time of the JWT. Set to 10 mins. Be sure you know the
-risks if you decide to extend the expires time.
+risks if you decide to extend the expiry time.
 
 #### Users
 You _must_ change the `PASSWORD` values in the 
@@ -572,7 +571,7 @@ You _must_ change the `PASSWORD` values in the
 before using the REST API over a public network - see instructions in the file on how to 
 [bcrypt](https://en.wikipedia.org/wiki/Bcrypt) your passwords.
 
-2 users have been set up out of the box: `user` and `admin`. These users have the `user` and `admin`
+2 users have been set up out of the box: `user` and `admin`. These users have `user` and `admin`
 roles respectively.
 
 When the bot starts up, Spring Boot will load the `import.sql` file and store the users and their 
@@ -611,12 +610,11 @@ server.ssl.key-password=another-secret
 
 You will need to 
 [create your own keystore](https://docs.oracle.com/cd/E19509-01/820-3503/ggfen/index.html) 
-and choose your own passwords! The keystore must be on the bot's classpath - you can put it in
+and choose your own passwords. The keystore must be on the bot's classpath - you can put it in
  the [./bxbot-rest-api/src/main/resources](./bxbot-rest-api/src/main/resources) and re-build the 
  bot to get up and running fast.
  
 ## Coming Soon... (Definitely Maybe)
-The following features are in the pipeline:
-- A UI built with [React](https://reactjs.org/) - it will consume the REST API. 
-  
+A UI built with [React](https://reactjs.org/) - it will consume the REST API. 
+
 See the [Project Board](https://github.com/gazbert/bxbot/projects/2) for timescales and progress.
