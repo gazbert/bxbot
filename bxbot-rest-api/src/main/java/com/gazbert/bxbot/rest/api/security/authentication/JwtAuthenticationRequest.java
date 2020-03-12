@@ -42,8 +42,6 @@ public class JwtAuthenticationRequest {
   @NotNull(message = "Password cannot be null")
   private String password;
 
-  public JwtAuthenticationRequest() {}
-
   public JwtAuthenticationRequest(String username, String password) {
     this.setUsername(username);
     this.setPassword(password);

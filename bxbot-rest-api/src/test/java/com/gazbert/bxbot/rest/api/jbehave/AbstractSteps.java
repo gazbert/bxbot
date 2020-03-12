@@ -148,13 +148,11 @@ public abstract class AbstractSteps {
 
   private String getToken(UserType userType) throws IOException {
 
-    final JwtAuthenticationRequest jwtAuthenticationRequest = new JwtAuthenticationRequest();
+    JwtAuthenticationRequest jwtAuthenticationRequest = null;
     if (userType == UserType.USER) {
-      jwtAuthenticationRequest.setUsername(USER_USERNAME);
-      jwtAuthenticationRequest.setPassword(USER_PASSWORD);
+      jwtAuthenticationRequest = new JwtAuthenticationRequest(USER_USERNAME, USER_PASSWORD);
     } else if (userType == UserType.ADMIN) {
-      jwtAuthenticationRequest.setUsername(ADMIN_USERNAME);
-      jwtAuthenticationRequest.setPassword(ADMIN_PASSWORD);
+      jwtAuthenticationRequest = new JwtAuthenticationRequest(ADMIN_USERNAME, ADMIN_PASSWORD);
     }
 
     final ObjectMapper mapper = new ObjectMapper();

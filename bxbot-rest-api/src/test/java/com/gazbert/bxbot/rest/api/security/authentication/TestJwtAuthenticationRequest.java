@@ -37,13 +37,8 @@ public class TestJwtAuthenticationRequest {
 
   private static final String USERNAME = "bxbot-ui";
   private static final String PASSWORD = "InSearchOfLostTime";
-
-  @Test
-  public void testEmptyConstructorWorksAsExpected() {
-    final JwtAuthenticationRequest jwtAuthenticationRequest = new JwtAuthenticationRequest();
-    assertNull(jwtAuthenticationRequest.getUsername());
-    assertNull(jwtAuthenticationRequest.getPassword());
-  }
+  private static final String USERNAME2 = "bxbot-ui-2";
+  private static final String PASSWORD2 = "InSearchOfLostTime2";
 
   @Test
   public void testArgsConstructorWorksAsExpected() {
@@ -55,10 +50,11 @@ public class TestJwtAuthenticationRequest {
 
   @Test
   public void testSettersWorkAsExpected() {
-    final JwtAuthenticationRequest jwtAuthenticationRequest = new JwtAuthenticationRequest();
-    jwtAuthenticationRequest.setUsername(USERNAME);
-    assertEquals(USERNAME, jwtAuthenticationRequest.getUsername());
-    jwtAuthenticationRequest.setPassword(PASSWORD);
-    assertEquals(PASSWORD, jwtAuthenticationRequest.getPassword());
+    final JwtAuthenticationRequest jwtAuthenticationRequest =
+        new JwtAuthenticationRequest(USERNAME, PASSWORD);
+    jwtAuthenticationRequest.setUsername(USERNAME2);
+    assertEquals(USERNAME2, jwtAuthenticationRequest.getUsername());
+    jwtAuthenticationRequest.setPassword(PASSWORD2);
+    assertEquals(PASSWORD2, jwtAuthenticationRequest.getPassword());
   }
 }

@@ -28,7 +28,6 @@ import com.google.common.base.Objects;
 import java.math.BigDecimal;
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
 
 /**
  * Domain object representing the Engine config.
@@ -37,7 +36,6 @@ import javax.validation.constraints.NotNull;
  */
 public class EngineConfig {
 
-  @NotNull(message = "Bot Id cannot be null")
   private String botId;
 
   private String botName;

@@ -36,9 +36,6 @@ public class JwtAuthenticationResponse {
   @NotNull(message = "Token cannot be null")
   private String token;
 
-  public JwtAuthenticationResponse() {
-  }
-
   public JwtAuthenticationResponse(String token) {
     this.token = token;
   }

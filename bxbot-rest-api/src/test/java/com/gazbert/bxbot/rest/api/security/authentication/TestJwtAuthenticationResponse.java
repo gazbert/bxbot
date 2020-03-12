@@ -35,6 +35,7 @@ import org.junit.Test;
 public class TestJwtAuthenticationResponse {
 
   private static final String JWT = "the.jwt.string";
+  private static final String ANOTHER_JWT = "another.jwt.string";
 
   @Test
   public void testInitialisationWorksAsExpected() {
@@ -44,8 +45,8 @@ public class TestJwtAuthenticationResponse {
 
   @Test
   public void testSetterAndGettersWorkAsExpected() {
-    final JwtAuthenticationResponse jwtAuthenticationResponse = new JwtAuthenticationResponse();
-    jwtAuthenticationResponse.setToken(JWT);
-    assertEquals(JWT, jwtAuthenticationResponse.getToken());
+    final JwtAuthenticationResponse jwtAuthenticationResponse = new JwtAuthenticationResponse(JWT);
+    jwtAuthenticationResponse.setToken(ANOTHER_JWT);
+    assertEquals(ANOTHER_JWT, jwtAuthenticationResponse.getToken());
   }
 }

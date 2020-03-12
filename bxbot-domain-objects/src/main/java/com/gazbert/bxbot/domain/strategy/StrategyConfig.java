@@ -27,7 +27,6 @@ import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import java.util.HashMap;
 import java.util.Map;
-import javax.validation.constraints.NotNull;
 
 /**
  * Domain object representing a Strategy config.
@@ -36,7 +35,6 @@ import javax.validation.constraints.NotNull;
  */
 public class StrategyConfig {
 
-  @NotNull(message = "Strategy Id cannot be null")
   private String id;
 
   private String name;
