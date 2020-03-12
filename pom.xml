@@ -391,7 +391,7 @@
                   </property>
                 </systemProperties>
                 <ignoreFailureInStories>true</ignoreFailureInStories>
-                <ignoreFailureInView>true</ignoreFailureInView>
+                <ignoreFailureInView>false</ignoreFailureInView>
               </configuration>
               <goals>
                 <goal>run-stories-as-embeddables</goal>

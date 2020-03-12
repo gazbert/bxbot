@@ -532,11 +532,89 @@ at `info`. You can change this default logging configuration in the [`config/log
 We recommend running at `info` level, as `debug` level logging will produce a *lot* of
 output from the Exchange Adapters; it's very handy for debugging, but not so good for your disk space!
  
+### REST API
+A REST API for managing the bot is available.
+
+It allows you to:
+* View and update Engine, Exchange, Markets, Strategy, and Email Alerts config.
+* View and download the log file.
+* Restart the bot - this is necessary for any config changes to take effect.
+
+You can view the [Swagger](https://swagger.io/tools/swagger-ui/) docs at: 
+[http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html) once you have started
+the bot.
+
+It has role based access control 
+([RBAC](https://en.wikipedia.org/wiki/Role-based_access_control)). Users can view config and the
+logs. Only admins can update config and restart the bot.
+
+It is secured using [JWT](https://jwt.io/) over [TLS](https://en.wikipedia.org/wiki/Transport_Layer_Security).
+
+#### Configuration
+You _must_ change the `bxbot.restapi.jwt.secret` value in the 
+[./config/application.properties](./config/application.properties) before using the REST API over a public network.
+This is the key that is used to sign your web tokens - the JWTs are signed using the HS512 algorithm.
+  
+Other interesting configuration in the [./config/application.properties](./config/application.properties) includes:
+
+* `bxbot.restapi.maxLogfileLines` - the maximum number of lines to be returned in a view log file request. 
+(For a head request, the end of the file is truncated; for a tail request the start of the file is truncated).
+
+* `bxbot.restapi.maxLogfileDownloadSize` - the maximum size of the logfile to download. 
+If the size of the logfile exceeds this limit, the end of the file will be truncated.
+
+* `bxbot.restapi.jwt.expiration` - the expires time of the JWT. Set to 5 mins. Be sure you know the
+risks of extending the expires time of the issued tokens.
+
+#### Users
+You _must_ change the `PASSWORD` values in the 
+[./bxbot-rest-api/src/main/resources/import.sql](./bxbot-rest-api/src/main/resources/import.sql)
+before using the REST API over a public network - see instructions in the file on how to bcrypt your passwords.
+
+2 users have been setup out of the box: `user` and `admin`. These users have the `user` and `admin`
+roles respectively.
+
+When the bot starts up, Spring Boot will load the `import.sql` file and store the users and their 
+access rights in the H2 in-memory database.
+
+#### Authentication
+The REST API endpoints require a valid JWT to be passed in the `Authorization` header of any requests.
+
+To obtain a JWT, your REST client needs to call the `/api/token` endpoint with a valid username/password 
+contained in the `import.sql` file. See the 
+[Authentication](http://localhost:8080/swagger-ui.html#/Authentication/getTokenUsingPOST) 
+Swagger docs for how to do this.
+
+The returned JWT expires after 5 mins. Your client should call the `/api/refresh` endpoint with the
+JWT before it expires in order to get a new one. Alternatively, you can re-authenticate using the
+`/api/token` endpoint.
+
+#### TLS
+The REST API _must_ be configured to use TLS before accessing it over a public network.
+
+The `TLS Configuration` section in the [./config/application.properties](./config/application.properties) 
+file must have the following properties set:
+
+``` properties
+# Spring Boot profile for REST API.
+# Must use https profile in Production environment.
+spring.profiles.active=https
+
+# SSL (TLS) configuration to secure the REST API.
+# Must be enabled in Production environment.
+server.port=8443
+server.ssl.key-store=classpath:keystore.jks
+server.ssl.key-store-password=secret
+server.ssl.key-password=another-secret
+```
+
+You will need to 
+[create your own keystore](https://docs.oracle.com/cd/E19509-01/820-3503/ggfen/index.html) 
+and choose your own passwords! The keystore must be on the bot's classpath - you can put it in
+ the [./bxbot-rest-api/src/main/resources](./bxbot-rest-api/src/main/resources) to get up and running fast.
+ 
 ## Coming Soon... (Definitely Maybe)
 The following features are in the pipeline:
-
-- A REST API for administering the bot. It's being developed on the 
-  [bxbot-restapi](https://github.com/gazbert/bxbot/tree/bxbot-restapi) branch.
 - A UI built with [React](https://reactjs.org/) - it will consume the REST API. 
   
 See the [Project Board](https://github.com/gazbert/bxbot/projects/2) for timescales and progress.
