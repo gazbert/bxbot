@@ -52,6 +52,7 @@
     <springfox.version>2.9.2</springfox.version>
     <hibernate-vaildator.version>6.0.2.Final</hibernate-vaildator.version>
     <javax-mail.version>1.6.2</javax-mail.version>
+    <sonar.coverage.jacoco.xmlReportPaths>./bxbot-rest-api/target/jacoco-report/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
   </properties>
   <parent>
     <groupId>org.springframework.boot</groupId>
@@ -96,7 +97,6 @@
         <skip.integration.tests>false</skip.integration.tests>
         <skip.unit.tests>false</skip.unit.tests>
         <skip.bdd.tests>true</skip.bdd.tests>
-        <sonar.coverage.jacoco.xmlReportPaths>./bxbot-rest-api/target/jacoco-report/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
       </properties>
     </profile>
     <profile>
@@ -583,11 +583,11 @@
 <!--        </plugin>-->
 
         <!-- sonar -->
-<!--        <plugin>-->
-<!--          <groupId>org.sonarsource.scanner.maven</groupId>-->
-<!--          <artifactId>sonar-maven-plugin</artifactId>-->
-<!--          <version>3.7.0.1746</version>-->
-<!--        </plugin>-->
+        <plugin>
+          <groupId>org.sonarsource.scanner.maven</groupId>
+          <artifactId>sonar-maven-plugin</artifactId>
+          <version>3.7.0.1746</version>
+        </plugin>
 
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
