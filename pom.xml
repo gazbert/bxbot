@@ -96,6 +96,7 @@
         <skip.integration.tests>false</skip.integration.tests>
         <skip.unit.tests>false</skip.unit.tests>
         <skip.bdd.tests>true</skip.bdd.tests>
+        <sonar.coverage.jacoco.xmlReportPaths>./bxbot-rest-api/target/jacoco-report/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
       </properties>
     </profile>
     <profile>
@@ -501,6 +502,19 @@
                 <goal>prepare-agent</goal>
               </goals>
             </execution>
+
+<!--            <execution>-->
+<!--              <id>report</id>-->
+<!--              <goals>-->
+<!--                <goal>report-aggregate</goal>-->
+<!--              </goals>-->
+<!--              <phase>test</phase>-->
+<!--              &lt;!&ndash; Override report location. Default is: target/jacoco/site/* &ndash;&gt;-->
+<!--              <configuration>-->
+<!--                <outputDirectory>target/jacoco-report</outputDirectory>-->
+<!--              </configuration>-->
+<!--            </execution>-->
+
             <execution>
               <id>jacoco-report</id>
               <phase>test</phase>
@@ -512,6 +526,7 @@
                 <outputDirectory>target/jacoco-report</outputDirectory>
               </configuration>
             </execution>
+
             <execution>
               <id>jacoco-check</id>
               <goals>
