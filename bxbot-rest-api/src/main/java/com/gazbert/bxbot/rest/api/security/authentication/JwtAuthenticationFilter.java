@@ -27,6 +27,7 @@ package com.gazbert.bxbot.rest.api.security.authentication;
 import com.gazbert.bxbot.rest.api.security.jwt.JwtUtils;
 import io.jsonwebtoken.Claims;
 import java.io.IOException;
+import java.text.MessageFormat;
 import javax.servlet.FilterChain;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -95,7 +96,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
       chain.doFilter(request, response);
 
     } catch (Exception e) {
-      LOG.error("JWT Authentication failure! Details: " + e.getMessage(), e);
+      LOG.error(MessageFormat.format("JWT Authentication failure! Details: {0}", e.getMessage()), e);
       response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
     }
   }

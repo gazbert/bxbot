@@ -39,6 +39,7 @@ import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.service.ApiInfo;
 import springfox.documentation.service.ApiKey;
 import springfox.documentation.service.AuthorizationScope;
+import springfox.documentation.service.Contact;
 import springfox.documentation.service.SecurityReference;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spi.service.contexts.SecurityContext;
@@ -92,7 +93,7 @@ public class SpringFoxConfig {
                 + System.lineSeparator()
                 + "W.B. Yeats")
         .termsOfServiceUrl("https://github.com/gazbert/bxbot")
-        .contact("https://github.com/gazbert")
+        .contact(new Contact("gazbert", "https://github.com/gazbert", ""))
         .license("MIT")
         .licenseUrl("https://github.com/gazbert/bxbot/blob/master/LICENSE")
         .version("1.0")

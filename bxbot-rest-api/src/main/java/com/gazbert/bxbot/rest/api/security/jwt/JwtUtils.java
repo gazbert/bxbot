@@ -256,10 +256,7 @@ public class JwtUtils {
     return Jwts.builder()
         .setClaims(claims)
         .setExpiration(expirationDate)
-        .setIssuedAt(
-            // TODO: Possible bug in jjwt - if this not set to override claims value, date is WAY
-            //  in the future...
-            issuedAtDate)
+        .setIssuedAt(issuedAtDate)
         .signWith(SignatureAlgorithm.HS512, secret)
         .compact();
   }
