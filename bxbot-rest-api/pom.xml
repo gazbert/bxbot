@@ -14,9 +14,6 @@
     <artifactId>bxbot-parent</artifactId>
     <version>${revision}</version>
   </parent>
-  <properties>
-    <sonar.coverage.jacoco.xmlReportPaths>target/jacoco-report/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
-  </properties>
   <dependencies>
     <!--
     BX-bot dependencies

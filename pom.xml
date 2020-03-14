@@ -52,7 +52,7 @@
     <springfox.version>2.9.2</springfox.version>
     <hibernate-vaildator.version>6.0.2.Final</hibernate-vaildator.version>
     <javax-mail.version>1.6.2</javax-mail.version>
-    <sonar.coverage.jacoco.xmlReportPaths>./bxbot-rest-api/target/jacoco-report/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
+    <sonar.coverage.jacoco.xmlReportPaths>target/jacoco-report/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
   </properties>
   <parent>
     <groupId>org.springframework.boot</groupId>
