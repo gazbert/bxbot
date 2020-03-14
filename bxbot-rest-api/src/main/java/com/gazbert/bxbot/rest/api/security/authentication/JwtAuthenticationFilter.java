@@ -96,7 +96,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
       chain.doFilter(request, response);
 
     } catch (Exception e) {
-      LOG.error(MessageFormat.format("JWT Authentication failure! Details: {0}", e.getMessage()), e);
+      LOG.error(
+          MessageFormat.format("JWT Authentication failure! Details: {0}", e.getMessage()), e);
       response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
     }
   }
