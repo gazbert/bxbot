@@ -28,6 +28,7 @@ import static com.gazbert.bxbot.rest.api.v1.EndpointLocations.RUNTIME_ENDPOINT_B
 import com.gazbert.bxbot.rest.api.RestApiConfig;
 import com.gazbert.bxbot.services.runtime.BotLogfileService;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiParam;
 import java.io.IOException;
 import java.security.Principal;
 import javax.servlet.http.HttpServletRequest;
@@ -44,6 +45,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import springfox.documentation.annotations.ApiIgnore;
 
 /**
  * Controller for directing Bot Logfile requests.
@@ -64,8 +66,7 @@ public class BotLogfileController {
   private final BotLogfileService botLogfileService;
 
   @Autowired
-  public BotLogfileController(
-      RestApiConfig restApiConfig, BotLogfileService botLogfileService) {
+  public BotLogfileController(RestApiConfig restApiConfig, BotLogfileService botLogfileService) {
     this.restApiConfig = restApiConfig;
     this.botLogfileService = botLogfileService;
   }
@@ -73,8 +74,8 @@ public class BotLogfileController {
   /**
    * Returns the logfile as a download.
    *
-   * <p>If the file is larger than {@link RestApiConfig#getLogfileDownloadSize()}, the end of
-   * the logfile will be truncated.
+   * <p>If the file is larger than {@link RestApiConfig#getLogfileDownloadSize()}, the end of the
+   * logfile will be truncated.
    *
    * @param principal the authenticated user making the request.
    * @param request the request.
@@ -82,7 +83,8 @@ public class BotLogfileController {
    */
   @PreAuthorize("hasRole('USER')")
   @GetMapping(value = LOGFILE_DOWNLOAD_RESOURCE_PATH)
-  public ResponseEntity<Resource> downloadLogfile(Principal principal, HttpServletRequest request) {
+  public ResponseEntity<Resource> downloadLogfile(
+      @ApiIgnore Principal principal, HttpServletRequest request) {
 
     LOG.info(
         () ->
@@ -93,8 +95,7 @@ public class BotLogfileController {
 
     Resource logfile;
     try {
-      logfile =
-          botLogfileService.getLogfileAsResource(restApiConfig.getLogfileDownloadSize());
+      logfile = botLogfileService.getLogfileAsResource(restApiConfig.getLogfileDownloadSize());
     } catch (IOException e) {
       return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -121,8 +122,8 @@ public class BotLogfileController {
   /**
    * Returns logfile content for the bot.
    *
-   * <p>If the file has more lines than {@link RestApiConfig#getMaxLogfileLines()}, the
-   * content will be truncated accordingly:
+   * <p>If the file has more lines than {@link RestApiConfig#getMaxLogfileLines()}, the content will
+   * be truncated accordingly:
    *
    * <ul>
    *   <li>For a head request, the end of the file will be truncated.
@@ -132,17 +133,20 @@ public class BotLogfileController {
    * </ul>
    *
    * @param principal the authenticated user making the request.
-   * @param head the optional head line count.
-   * @param tail the optional tail line count.
+   * @param head the number of lines to fetch from head of file.
+   * @param tail the number of lines to fetch from tail of file.
    * @return the logfile.
    */
-  // TODO: Swagger doc the params!
   @PreAuthorize("hasRole('USER')")
   @GetMapping(value = LOGFILE_RESOURCE_PATH)
   public ResponseEntity<String> getLogfile(
-      Principal principal,
-      @RequestParam(required = false) Integer head,
-      @RequestParam(required = false) Integer tail) {
+      @ApiIgnore Principal principal,
+      @ApiParam(value = "Number of lines to fetch from head of file.")
+          @RequestParam(required = false)
+          Integer head,
+      @ApiParam(value = "Number of lines to fetch from tail of file.", example = "100")
+          @RequestParam(required = false)
+          Integer tail) {
 
     LOG.info(
         () ->

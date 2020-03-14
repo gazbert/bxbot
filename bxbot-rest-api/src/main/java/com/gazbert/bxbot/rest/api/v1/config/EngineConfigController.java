@@ -40,6 +40,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import springfox.documentation.annotations.ApiIgnore;
 
 /**
  * Controller for directing Engine config requests.
@@ -73,7 +74,7 @@ public class EngineConfigController {
    */
   @PreAuthorize("hasRole('USER')")
   @GetMapping(value = ENGINE_RESOURCE_PATH)
-  public EngineConfig getEngine(Principal principal) {
+  public EngineConfig getEngine(@ApiIgnore Principal principal) {
 
     LOG.info(
         () -> "GET " + ENGINE_RESOURCE_PATH + " - getEngine() - caller: " + principal.getName());
@@ -94,7 +95,7 @@ public class EngineConfigController {
   @PreAuthorize("hasRole('ADMIN')")
   @PutMapping(value = ENGINE_RESOURCE_PATH)
   public ResponseEntity<EngineConfig> updateEngine(
-      Principal principal, @RequestBody EngineConfig config) {
+      @ApiIgnore Principal principal, @RequestBody EngineConfig config) {
 
     LOG.info(
         () -> "PUT " + ENGINE_RESOURCE_PATH + " - updateEngine() - caller: " + principal.getName());

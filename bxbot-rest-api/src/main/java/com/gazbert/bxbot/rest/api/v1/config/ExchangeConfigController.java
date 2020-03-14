@@ -39,6 +39,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import springfox.documentation.annotations.ApiIgnore;
 
 /**
  * Controller for directing Exchange config requests.
@@ -74,7 +75,7 @@ public class ExchangeConfigController {
    */
   @PreAuthorize("hasRole('USER')")
   @GetMapping(value = EXCHANGE_RESOURCE_PATH)
-  public ExchangeConfig getExchange(Principal principal) {
+  public ExchangeConfig getExchange(@ApiIgnore Principal principal) {
 
     LOG.info(
         () ->
@@ -100,7 +101,7 @@ public class ExchangeConfigController {
   @PreAuthorize("hasRole('ADMIN')")
   @PutMapping(value = EXCHANGE_RESOURCE_PATH)
   public ResponseEntity<ExchangeConfig> updateExchange(
-      Principal principal, @RequestBody ExchangeConfig config) {
+      @ApiIgnore Principal principal, @RequestBody ExchangeConfig config) {
 
     LOG.info(
         () ->

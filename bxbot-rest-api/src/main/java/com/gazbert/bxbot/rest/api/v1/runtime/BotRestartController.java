@@ -37,6 +37,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import springfox.documentation.annotations.ApiIgnore;
 
 /**
  * Controller for directing Bot restart requests.
@@ -67,7 +68,7 @@ public class BotRestartController {
    */
   @PreAuthorize("hasRole('ADMIN')")
   @PostMapping(value = RESTART_RESOURCE_PATH)
-  public ResponseEntity<String> restart(Principal principal) {
+  public ResponseEntity<String> restart(@ApiIgnore Principal principal) {
 
     LOG.info(
         () -> "POST " + RESTART_RESOURCE_PATH + " - restart() - caller: " + principal.getName());

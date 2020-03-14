@@ -44,6 +44,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import springfox.documentation.annotations.ApiIgnore;
 
 /**
  * Controller for directing Strategy config requests.
@@ -73,7 +74,7 @@ public class StrategyConfigController {
    */
   @PreAuthorize("hasRole('USER')")
   @GetMapping(value = STRATEGIES_RESOURCE_PATH)
-  public List<StrategyConfig> getAllStrategies(Principal principal) {
+  public List<StrategyConfig> getAllStrategies(@ApiIgnore Principal principal) {
 
     LOG.info(
         () ->
@@ -98,7 +99,7 @@ public class StrategyConfigController {
   @PreAuthorize("hasRole('USER')")
   @GetMapping(value = STRATEGIES_RESOURCE_PATH + "/{strategyId}")
   public ResponseEntity<StrategyConfig> getStrategy(
-      Principal principal, @PathVariable String strategyId) {
+      @ApiIgnore Principal principal, @PathVariable String strategyId) {
 
     LOG.info(
         () ->
@@ -127,7 +128,9 @@ public class StrategyConfigController {
   @PreAuthorize("hasRole('ADMIN')")
   @PutMapping(value = STRATEGIES_RESOURCE_PATH + "/{strategyId}")
   public ResponseEntity<StrategyConfig> updateStrategy(
-      Principal principal, @PathVariable String strategyId, @RequestBody StrategyConfig config) {
+      @ApiIgnore Principal principal,
+      @PathVariable String strategyId,
+      @RequestBody StrategyConfig config) {
 
     LOG.info(
         () ->
@@ -161,7 +164,7 @@ public class StrategyConfigController {
   @PreAuthorize("hasRole('ADMIN')")
   @PostMapping(value = STRATEGIES_RESOURCE_PATH)
   public ResponseEntity<StrategyConfig> createStrategy(
-      Principal principal, @RequestBody StrategyConfig config) {
+      @ApiIgnore Principal principal, @RequestBody StrategyConfig config) {
 
     LOG.info(
         () ->
@@ -189,7 +192,7 @@ public class StrategyConfigController {
   @PreAuthorize("hasRole('ADMIN')")
   @DeleteMapping(value = STRATEGIES_RESOURCE_PATH + "/{strategyId}")
   public ResponseEntity<StrategyConfig> deleteStrategy(
-      Principal principal, @PathVariable String strategyId) {
+      @ApiIgnore Principal principal, @PathVariable String strategyId) {
 
     LOG.info(
         () ->

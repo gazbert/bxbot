@@ -27,6 +27,7 @@ import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import java.util.HashMap;
 import java.util.Map;
+import javax.validation.constraints.NotNull;
 
 /**
  * Domain object representing a Strategy config.
@@ -35,6 +36,7 @@ import java.util.Map;
  */
 public class StrategyConfig {
 
+  @NotNull
   private String id;
 
   private String name;
@@ -44,8 +46,7 @@ public class StrategyConfig {
   private Map<String, String> configItems = new HashMap<>();
 
   // required for Jackson
-  public StrategyConfig() {
-  }
+  public StrategyConfig() {}
 
   /** Creates a StrategyConfig from an existing one. */
   public StrategyConfig(StrategyConfig other) {

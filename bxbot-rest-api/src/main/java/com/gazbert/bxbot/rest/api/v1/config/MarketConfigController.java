@@ -44,6 +44,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import springfox.documentation.annotations.ApiIgnore;
 
 /**
  * Controller for directing Market config requests.
@@ -73,7 +74,7 @@ public class MarketConfigController {
    */
   @PreAuthorize("hasRole('USER')")
   @GetMapping(value = MARKETS_RESOURCE_PATH)
-  public List<MarketConfig> getAllMarkets(Principal principal) {
+  public List<MarketConfig> getAllMarkets(@ApiIgnore Principal principal) {
 
     LOG.info(
         () ->
@@ -95,7 +96,7 @@ public class MarketConfigController {
   @PreAuthorize("hasRole('USER')")
   @GetMapping(value = MARKETS_RESOURCE_PATH + "/{marketId}")
   public ResponseEntity<MarketConfig> getMarket(
-      Principal principal, @PathVariable String marketId) {
+      @ApiIgnore Principal principal, @PathVariable String marketId) {
 
     LOG.info(
         () ->
@@ -124,7 +125,9 @@ public class MarketConfigController {
   @PreAuthorize("hasRole('ADMIN')")
   @PutMapping(value = MARKETS_RESOURCE_PATH + "/{marketId}")
   public ResponseEntity<MarketConfig> updateMarket(
-      Principal principal, @PathVariable String marketId, @RequestBody MarketConfig config) {
+      @ApiIgnore Principal principal,
+      @PathVariable String marketId,
+      @RequestBody MarketConfig config) {
 
     LOG.info(
         () ->
@@ -158,7 +161,7 @@ public class MarketConfigController {
   @PreAuthorize("hasRole('ADMIN')")
   @PostMapping(value = MARKETS_RESOURCE_PATH)
   public ResponseEntity<MarketConfig> createMarket(
-      Principal principal, @RequestBody MarketConfig config) {
+      @ApiIgnore Principal principal, @RequestBody MarketConfig config) {
 
     LOG.info(
         () ->
@@ -183,7 +186,7 @@ public class MarketConfigController {
   @PreAuthorize("hasRole('ADMIN')")
   @DeleteMapping(value = MARKETS_RESOURCE_PATH + "/{marketId}")
   public ResponseEntity<MarketConfig> deleteMarket(
-      Principal principal, @PathVariable String marketId) {
+      @ApiIgnore Principal principal, @PathVariable String marketId) {
 
     LOG.info(
         () ->

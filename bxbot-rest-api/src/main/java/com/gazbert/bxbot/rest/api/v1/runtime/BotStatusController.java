@@ -38,6 +38,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import springfox.documentation.annotations.ApiIgnore;
 
 /**
  * Controller for directing Bot Status requests.
@@ -71,7 +72,7 @@ public class BotStatusController {
    */
   @PreAuthorize("hasRole('USER')")
   @GetMapping(value = STATUS_RESOURCE_PATH)
-  public BotStatus getStatus(Principal principal) {
+  public BotStatus getStatus(@ApiIgnore Principal principal) {
 
     LOG.info(
         () -> "GET " + STATUS_RESOURCE_PATH + " - getStatus() - caller: " + principal.getName());

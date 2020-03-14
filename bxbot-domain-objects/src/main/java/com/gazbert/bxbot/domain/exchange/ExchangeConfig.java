@@ -34,10 +34,8 @@ import java.util.Map;
 public class ExchangeConfig {
 
   private String name;
-
   private String adapter;
   private Map<String, String> authenticationConfig;
-
   private NetworkConfig networkConfig;
   private Map<String, String> otherConfig;
 

@@ -40,6 +40,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import springfox.documentation.annotations.ApiIgnore;
 
 /**
  * Controller for directing Email Alerts config requests.
@@ -73,7 +74,7 @@ public class EmailAlertsConfigController {
    */
   @PreAuthorize("hasRole('USER')")
   @GetMapping(value = EMAIL_ALERTS_RESOURCE_PATH)
-  public EmailAlertsConfig getEmailAlerts(Principal principal) {
+  public EmailAlertsConfig getEmailAlerts(@ApiIgnore Principal principal) {
 
     LOG.info(
         () ->
@@ -98,7 +99,7 @@ public class EmailAlertsConfigController {
   @PreAuthorize("hasRole('ADMIN')")
   @PutMapping(value = EMAIL_ALERTS_RESOURCE_PATH)
   public ResponseEntity<EmailAlertsConfig> updateEmailAlerts(
-      Principal principal, @RequestBody EmailAlertsConfig config) {
+      @ApiIgnore Principal principal, @RequestBody EmailAlertsConfig config) {
 
     LOG.info(
         () ->
