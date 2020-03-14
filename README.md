@@ -545,17 +545,22 @@ The bot has a REST API that allows you to remotely:
 * View and download the log file.
 * Restart the bot - this is necessary for any config changes to take effect.
 
-You can view the [Swagger](https://swagger.io/tools/swagger-ui/) docs at: 
-[http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html) once you've started
-the bot.
-
 It has role based access control 
 ([RBAC](https://en.wikipedia.org/wiki/Role-based_access_control)): Users can view config and the
 logs, but only administrators can update config and restart the bot.
 
 It is secured using [JWT](https://jwt.io/) over [TLS](https://en.wikipedia.org/wiki/Transport_Layer_Security).
 
+You can view the [Swagger](https://swagger.io/tools/swagger-ui/) docs at: 
+[http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html) once you've configured
+and started the bot.
+
 #### Configuration
+The REST API is disabled by default to prevent accidental exposure of unencrypted traffic over public networks. 
+To enable it, you need to change the `server.port` in the 
+[./config/application.properties](./config/application.properties) from '-1' to the port you want 
+the bot to listen on - see the 'TLS' section if you plan on accessing the REST API over a public network.
+
 You _must_ change the `bxbot.restapi.jwt.secret` value in the 
 [./config/application.properties](./config/application.properties) before using the REST API over a public network.
 This is the key that is used to sign your web tokens - the JWTs are signed using the HS512 algorithm.
