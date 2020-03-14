@@ -559,7 +559,7 @@ and started the bot.
 The REST API is disabled by default to prevent accidental exposure of unencrypted traffic over public networks. 
 To enable it, you need to change the `server.port` in the 
 [./config/application.properties](./config/application.properties) from '-1' to the port you want 
-the bot to listen on - see the 'TLS' section if you plan on accessing the REST API over a public network.
+the bot to listen on - see the _[TLS](#tls)_ section below if you plan on accessing the REST API over a public network.
 
 You _must_ change the `bxbot.restapi.jwt.secret` value in the 
 [./config/application.properties](./config/application.properties) before using the REST API over a public network.
