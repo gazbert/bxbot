@@ -138,8 +138,6 @@ Clone the repo locally (master branch).
    
 ## Issue & Change Management
 
-_"I have spread my dreams under your feet; Tread softly because you tread on my dreams."_ - William Butler Yeats
-
 Issues and new features are managed using the project [Issue Tracker](https://github.com/gazbert/bxbot/issues) -
 submit bugs here.
  
