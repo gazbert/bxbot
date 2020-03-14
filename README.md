@@ -30,6 +30,7 @@ traded at the [spot price](http://www.investopedia.com/terms/s/spotprice.asp).
 and released under the [MIT license](http://opensource.org/licenses/MIT).
 
 ## Architecture
+
 ![bxbot-core-architecture.png](./docs/bxbot-core-architecture.png)
 
 - **Trading Engine** - the execution unit. It provides a framework for integrating Exchange Adapters and executing 
@@ -136,6 +137,9 @@ Clone the repo locally (master branch).
    bxbot-trading-api, bxbot-strategy-api, and bxbot-exchange-api modules.
    
 ## Issue & Change Management
+
+_"I have spread my dreams under your feet; Tread softly because you tread on my dreams."_ - William Butler Yeats
+
 Issues and new features are managed using the project [Issue Tracker](https://github.com/gazbert/bxbot/issues) -
 submit bugs here.
  
@@ -153,6 +157,8 @@ The SNAPSHOT builds on master are active development builds, but the tests shoul
 be deployable.
 
 ## User Guide
+_"Change your opinions, keep to your principles; change your leaves, keep intact your roots."_ - Victor Hugo
+
 ### Configuration
 The bot provides a simple plugin framework for:
 
@@ -391,8 +397,7 @@ All fields are mandatory unless stated otherwise.
   Sample SMTP config for using a Gmail account is shown above - all elements within `smtpConfig` are mandatory. 
 
 ### How do I write my own Trading Strategy?
-_"Battle not with monsters, lest ye become a monster, and if you gaze into the abyss, the abyss gazes also into you."_ -
-Friedrich Nietzsche
+_"I was seldom able to see an opportunity until it had ceased to be one."_ - Mark Twain
 
 The best place to start is with the
 [`ExampleScalpingStrategy`](./bxbot-strategies/src/main/java/com/gazbert/bxbot/strategies/ExampleScalpingStrategy.java) -
@@ -456,9 +461,10 @@ BX-bot jar. You can also create your own jar for your strats, e.g. `my-strats.ja
 runtime classpath - see the _[Installation Guide](#the-manual-way)_ for how to do this.
 
 ### How do I write my own Exchange Adapter?
-_"I was seldom able to see an opportunity until it had ceased to be one."_ - Mark Twain
+_"Battle not with monsters, lest ye become a monster, and if you gaze into the abyss, the abyss gazes also into you."_ -
+Friedrich Nietzsche
 
-The best place to start is with one of the inbuilt Exchange Adapters - see the latest 
+It's not easy, and can be frustrating at times, but a good place to start is with one of the inbuilt Exchange Adapters - see the latest 
 [`BitstampExchangeAdapter`](./bxbot-exchanges/src/main/java/com/gazbert/bxbot/exchanges/BitstampExchangeAdapter.java)
 for example. There is also an Exchange Adapter specific channel on [Gitter](https://gitter.im/BX-bot/exchange-adapters).
 
@@ -533,6 +539,8 @@ We recommend running at `info` level, as `debug` level logging will produce a *l
 output from the Exchange Adapters; it's very handy for debugging, but not so good for your disk space!
  
 ### REST API
+_"Enlightenment means taking full responsibility for your life."_ - William Blake
+
 The bot has a REST API that allows you to remotely:
 
 * View and update Engine, Exchange, Markets, Strategy, and Email Alerts config.
