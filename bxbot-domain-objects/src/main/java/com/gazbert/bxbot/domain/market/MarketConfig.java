@@ -25,7 +25,7 @@ package com.gazbert.bxbot.domain.market;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
-import javax.validation.constraints.NotNull;
+import io.swagger.annotations.ApiModelProperty;
 
 /**
  * Domain object representing a Market config.
@@ -34,7 +34,7 @@ import javax.validation.constraints.NotNull;
  */
 public class MarketConfig {
 
-  @NotNull
+  @ApiModelProperty(required = true, position = 1)
   private String id;
 
   private String name;
@@ -43,7 +43,7 @@ public class MarketConfig {
   private boolean enabled;
   private String tradingStrategyId;
 
-  // required for Jackson
+  // Required by ConfigurableComponentFactory
   public MarketConfig() {
   }
 

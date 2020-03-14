@@ -25,9 +25,9 @@ package com.gazbert.bxbot.domain.strategy;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
+import io.swagger.annotations.ApiModelProperty;
 import java.util.HashMap;
 import java.util.Map;
-import javax.validation.constraints.NotNull;
 
 /**
  * Domain object representing a Strategy config.
@@ -36,7 +36,7 @@ import javax.validation.constraints.NotNull;
  */
 public class StrategyConfig {
 
-  @NotNull
+  @ApiModelProperty(required = true, position = 1)
   private String id;
 
   private String name;
@@ -45,8 +45,9 @@ public class StrategyConfig {
   private String beanName;
   private Map<String, String> configItems = new HashMap<>();
 
-  // required for Jackson
-  public StrategyConfig() {}
+  // Required by ConfigurableComponentFactory
+  public StrategyConfig() {
+  }
 
   /** Creates a StrategyConfig from an existing one. */
   public StrategyConfig(StrategyConfig other) {

@@ -25,10 +25,10 @@ package com.gazbert.bxbot.domain.engine;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
+import io.swagger.annotations.ApiModelProperty;
 import java.math.BigDecimal;
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
 
 /**
  * Domain object representing the Engine config.
@@ -37,7 +37,7 @@ import javax.validation.constraints.NotNull;
  */
 public class EngineConfig {
 
-  @NotNull
+  @ApiModelProperty(required = true, position = 1)
   private String botId;
 
   private String botName;
@@ -49,7 +49,7 @@ public class EngineConfig {
   @Min(value = 1, message = "Trace Cycle Interval must be more than 1 second")
   private int tradeCycleInterval;
 
-  // required for jackson
+  // Required by ConfigurableComponentFactory
   public EngineConfig() {
   }
 
