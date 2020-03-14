@@ -49,6 +49,7 @@
     <spring-boot-starter.version>2.1.4.RELEASE</spring-boot-starter.version>
     <jaxb-api.version>2.3.1</jaxb-api.version>
     <spotbugs.version>3.1.11</spotbugs.version>
+    <sonar.coverage.jacoco.xmlReportPaths>target/jacoco-report/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
   </properties>
   <parent>
     <groupId>org.springframework.boot</groupId>
@@ -411,6 +412,11 @@
               </configuration>
             </execution>
           </executions>
+        </plugin>
+        <plugin>
+          <groupId>org.sonarsource.scanner.maven</groupId>
+          <artifactId>sonar-maven-plugin</artifactId>
+          <version>3.7.0.1746</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
