@@ -491,7 +491,6 @@
             </execution>
           </executions>
         </plugin>
-
         <plugin>
           <groupId>org.jacoco</groupId>
           <artifactId>jacoco-maven-plugin</artifactId>
@@ -502,19 +501,6 @@
                 <goal>prepare-agent</goal>
               </goals>
             </execution>
-
-<!--            <execution>-->
-<!--              <id>report</id>-->
-<!--              <goals>-->
-<!--                <goal>report-aggregate</goal>-->
-<!--              </goals>-->
-<!--              <phase>test</phase>-->
-<!--              &lt;!&ndash; Override report location. Default is: target/jacoco/site/* &ndash;&gt;-->
-<!--              <configuration>-->
-<!--                <outputDirectory>target/jacoco-report</outputDirectory>-->
-<!--              </configuration>-->
-<!--            </execution>-->
-
             <execution>
               <id>jacoco-report</id>
               <phase>test</phase>
@@ -526,7 +512,6 @@
                 <outputDirectory>target/jacoco-report</outputDirectory>
               </configuration>
             </execution>
-
             <execution>
               <id>jacoco-check</id>
               <goals>
@@ -549,40 +534,6 @@
             </execution>
           </executions>
         </plugin>
-
-<!--        <plugin>-->
-<!--          <groupId>org.jacoco</groupId>-->
-<!--          <artifactId>jacoco-maven-plugin</artifactId>-->
-<!--          <version>0.8.5</version>-->
-<!--          <executions>-->
-<!--            <execution>-->
-<!--              <id>default-prepare-agent</id>-->
-<!--              <goals>-->
-<!--                <goal>prepare-agent</goal>-->
-<!--              </goals>-->
-<!--            </execution>-->
-<!--            <execution>-->
-<!--              <id>default-prepare-agent-integration</id>-->
-<!--              <goals>-->
-<!--                <goal>prepare-agent-integration</goal>-->
-<!--              </goals>-->
-<!--            </execution>-->
-<!--            <execution>-->
-<!--              <id>default-report</id>-->
-<!--              <goals>-->
-<!--                <goal>report</goal>-->
-<!--              </goals>-->
-<!--            </execution>-->
-<!--            <execution>-->
-<!--              <id>default-report-integration</id>-->
-<!--              <goals>-->
-<!--                <goal>report-integration</goal>-->
-<!--              </goals>-->
-<!--            </execution>-->
-<!--          </executions>-->
-<!--        </plugin>-->
-
-        <!-- sonar -->
         <plugin>
           <groupId>org.sonarsource.scanner.maven</groupId>
           <artifactId>sonar-maven-plugin</artifactId>
