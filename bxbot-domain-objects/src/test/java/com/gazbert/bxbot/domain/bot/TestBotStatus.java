@@ -63,4 +63,11 @@ public class TestBotStatus {
     botStatus.setStatus(STATUS);
     assertEquals(STATUS, botStatus.getStatus());
   }
+
+  @Test
+  public void testToStringWorksAsExpected() {
+    final BotStatus botStatus = new BotStatus(BOT_ID, DISPLAY_NAME, STATUS);
+    assertEquals(
+        "BotStatus{botId=avro-707_1, displayName=Avro 707, status=running}", botStatus.toString());
+  }
 }

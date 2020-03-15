@@ -4,6 +4,10 @@ dependencies {
 
     compile libraries.spring_boot_starter_log4j2
     compile libraries.google_guava
+    compile libraries.springfox_swagger2
+    compile libraries.springfox_swagger_ui
+    compile libraries.springfox_bean_validators
+    compile libraries.jackson_annotations
 
     testCompile libraries.spring_boot_starter_test
 }
@@ -17,7 +21,7 @@ jacocoTestCoverageVerification {
             limit {
                 counter = 'LINE'
                 value = 'COVEREDRATIO'
-                minimum = 0.6
+                minimum = 0.8
             }
         }
     }

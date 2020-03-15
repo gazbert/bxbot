@@ -83,4 +83,19 @@ public class TestSmtpConfig {
     emailAlertsConfig.setToAddress(TO_ADDRESS);
     assertEquals(TO_ADDRESS, emailAlertsConfig.getToAddress());
   }
+
+  @Test
+  public void testToStringWorksAsExpected() {
+    final SmtpConfig emailAlertsConfig = new SmtpConfig();
+    emailAlertsConfig.setHost(HOST);
+    emailAlertsConfig.setTlsPort(TLS_PORT);
+    emailAlertsConfig.setAccountUsername(ACCOUNT_USERNAME);
+    emailAlertsConfig.setAccountPassword(ACCOUNT_PASSWORD);
+    emailAlertsConfig.setFromAddress(FROM_ADDRESS);
+    emailAlertsConfig.setToAddress(TO_ADDRESS);
+
+    assertEquals(
+        "SmtpConfig{host=mail.google.com, tlsPort=587, accountUsername=user@google.com, fromAddress=from.me@google.com, toAddress=to.them@google.com}",
+        emailAlertsConfig.toString());
+  }
 }

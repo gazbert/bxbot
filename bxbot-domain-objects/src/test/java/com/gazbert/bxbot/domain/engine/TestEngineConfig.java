@@ -24,6 +24,7 @@
 package com.gazbert.bxbot.domain.engine;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
 
 import java.math.BigDecimal;
@@ -82,5 +83,82 @@ public class TestEngineConfig {
 
     engineConfig.setTradeCycleInterval(TRADE_CYCLE_INTERVAL);
     assertEquals(TRADE_CYCLE_INTERVAL, engineConfig.getTradeCycleInterval());
+  }
+
+  @Test
+  public void testEqualsWorksAsExpected() {
+    final EngineConfig engineConfig1 =
+        new EngineConfig(
+            BOT_ID,
+            BOT_NAME,
+            EMERGENCY_STOP_CURRENCY,
+            EMERGENCY_STOP_BALANCE,
+            TRADE_CYCLE_INTERVAL);
+
+    final EngineConfig engineConfig2 =
+        new EngineConfig(
+            "different-id",
+            BOT_NAME,
+            EMERGENCY_STOP_CURRENCY,
+            EMERGENCY_STOP_BALANCE,
+            TRADE_CYCLE_INTERVAL);
+
+    final EngineConfig engineConfig3 =
+        new EngineConfig(
+            BOT_ID,
+            "different-name",
+            EMERGENCY_STOP_CURRENCY,
+            EMERGENCY_STOP_BALANCE,
+            TRADE_CYCLE_INTERVAL);
+
+    assertEquals(engineConfig1, engineConfig1);
+    assertNotEquals(engineConfig1, engineConfig2);
+    assertEquals(engineConfig1, engineConfig3);
+  }
+
+  @Test
+  public void testHashCodeWorksAsExpected() {
+    final EngineConfig engineConfig1 =
+        new EngineConfig(
+            BOT_ID,
+            BOT_NAME,
+            EMERGENCY_STOP_CURRENCY,
+            EMERGENCY_STOP_BALANCE,
+            TRADE_CYCLE_INTERVAL);
+
+    final EngineConfig engineConfig2 =
+        new EngineConfig(
+            "different-id",
+            BOT_NAME,
+            EMERGENCY_STOP_CURRENCY,
+            EMERGENCY_STOP_BALANCE,
+            TRADE_CYCLE_INTERVAL);
+
+    final EngineConfig engineConfig3 =
+        new EngineConfig(
+            BOT_ID,
+            "different-name",
+            EMERGENCY_STOP_CURRENCY,
+            EMERGENCY_STOP_BALANCE,
+            TRADE_CYCLE_INTERVAL);
+
+    assertEquals(engineConfig1.hashCode(), engineConfig1.hashCode());
+    assertNotEquals(engineConfig1.hashCode(), engineConfig2.hashCode());
+    assertEquals(engineConfig1.hashCode(), engineConfig3.hashCode());
+  }
+
+  @Test
+  public void testToStringWorksAsExpected() {
+    final EngineConfig engineConfig =
+        new EngineConfig(
+            BOT_ID,
+            BOT_NAME,
+            EMERGENCY_STOP_CURRENCY,
+            EMERGENCY_STOP_BALANCE,
+            TRADE_CYCLE_INTERVAL);
+
+    assertEquals(
+        "EngineConfig{botId=avro-707_1, botName=Avro 707, emergencyStopCurrency=BTC, emergencyStopBalance=1.5, tradeCycleInterval=30}",
+        engineConfig.toString());
   }
 }

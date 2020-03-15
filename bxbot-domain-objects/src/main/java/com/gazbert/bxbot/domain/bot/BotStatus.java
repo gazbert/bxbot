@@ -24,6 +24,7 @@
 package com.gazbert.bxbot.domain.bot;
 
 import com.google.common.base.MoreObjects;
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 /**
@@ -31,6 +32,7 @@ import io.swagger.annotations.ApiModelProperty;
  *
  * @author gazbert
  */
+@ApiModel
 public class BotStatus {
 
   @ApiModelProperty(required = true, position = 1)

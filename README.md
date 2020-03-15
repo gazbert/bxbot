@@ -604,7 +604,7 @@ JWT before it expires in order to get a new one. Alternatively, you can re-authe
 The REST API _must_ be configured to use TLS before accessing it over a public network.
 
 The 'TLS Configuration' section in the [./config/application.properties](./config/application.properties) 
-file must have the following properties set:
+file needs the following properties set:
 
 ``` properties
 # Spring Boot profile for REST API.

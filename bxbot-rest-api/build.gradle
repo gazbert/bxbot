@@ -14,6 +14,9 @@ dependencies {
     compile libraries.jjwt
     compile libraries.google_guava
     compile libraries.h2
+    compile libraries.springfox_swagger2
+    compile libraries.springfox_swagger_ui
+    compile libraries.springfox_bean_validators
 
     testCompile libraries.junit
     testCompile libraries.powermock_junit
@@ -22,6 +25,9 @@ dependencies {
     testCompile libraries.spring_boot_starter_test
     testCompile libraries.spring_security_test
     testCompile libraries.awaitility
+    testCompile libraries.jbehave_core
+    testCompile libraries.httpclient
+    testCompile libraries.httpcore
 }
 
 jacocoTestCoverageVerification {

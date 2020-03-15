@@ -27,7 +27,8 @@ buildScan {
 ext.versions = [
         springBootVersion : '2.1.4.RELEASE',
         springCloudVersion: '2.1.1.RELEASE',
-        springTxVersion   : '5.1.6.RELEASE'
+        springTxVersion   : '5.1.6.RELEASE',
+        springFoxVersion  : '2.9.2'
 ]
 
 ext.libraries = [
@@ -71,6 +72,11 @@ ext.libraries = [
         javax_xml_impl               : dependencies.create("com.sun.xml.bind:jaxb-impl:2.3.1"),
         snake_yaml                   : dependencies.create("org.yaml:snakeyaml:1.24"),
 
+        springfox_swagger2           : dependencies.create("io.springfox:springfox-swagger2:" + ext.versions.springFoxVersion),
+        springfox_swagger_ui         : dependencies.create("io.springfox:springfox-swagger-ui:" + ext.versions.springFoxVersion),
+        springfox_bean_validators    : dependencies.create("io.springfox:springfox-bean-validators:" + ext.versions.springFoxVersion),
+        jackson_annotations          : dependencies.create("com.fasterxml.jackson.core:jackson-annotations:2.9.5"),
+
         junit                        : dependencies.create("junit:junit:4.12"),
         powermock_junit              : dependencies.create("org.powermock:powermock-module-junit4:2.0.2"),
         powermock_api_easymock       : dependencies.create("org.powermock:powermock-api-easymock:2.0.2"),
@@ -82,6 +88,13 @@ ext.libraries = [
         },
         spring_security_test         : dependencies.create("org.springframework.security:spring-security-test:5.2.1.RELEASE"),
         awaitility                   : dependencies.create("org.awaitility:awaitility:3.1.6"),
+
+        jbehave_core                 : dependencies.create("org.jbehave:jbehave-core:4.6"),
+        httpclient                   : dependencies.create("org.apache.httpcomponents:httpclient:4.5.11") {
+            exclude module: "commons-logging"
+            force = true
+        },
+        httpcore                     : dependencies.create("org.apache.httpcomponents:httpcore:4.4.13"),
 ]
 
 allprojects {
@@ -152,7 +165,7 @@ subprojects {
     }
     jacocoTestReport {
         reports {
-            xml.enabled false
+            xml.enabled true
             csv.enabled false
             html.enabled true
         }

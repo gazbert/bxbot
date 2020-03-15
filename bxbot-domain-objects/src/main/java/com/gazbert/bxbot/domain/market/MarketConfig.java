@@ -25,6 +25,7 @@ package com.gazbert.bxbot.domain.market;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 /**
@@ -32,6 +33,7 @@ import io.swagger.annotations.ApiModelProperty;
  *
  * @author gazbert
  */
+@ApiModel
 public class MarketConfig {
 
   @ApiModelProperty(required = true, position = 1)
