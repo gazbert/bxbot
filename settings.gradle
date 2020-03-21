@@ -1,3 +1,7 @@
+plugins {
+    id "com.gradle.enterprise" version "3.1.1"
+}
+
 rootProject.name = 'bxbot-parent'
 include ':bxbot-trading-api'
 include ':bxbot-exchange-api'

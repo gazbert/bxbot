@@ -130,7 +130,10 @@ public class TestStrategyConfig {
         new StrategyConfig(ID, LABEL, DESCRIPTION, CLASSNAME, BEAN_NAME, CONFIG_ITEMS);
 
     assertEquals(
-        "StrategyConfig{id=macd-long-position, name=MACD Long Position Algo, description=Uses MACD as indicator and takes long position in base currency., className=com.gazbert.nova.algos.MacdLongBase, beanName=macdLongBase, configItems={}}",
+        "StrategyConfig{id=macd-long-position, name=MACD Long Position Algo, "
+            + "description=Uses MACD as indicator and takes long position in base currency., "
+            + "className=com.gazbert.nova.algos.MacdLongBase, beanName=macdLongBase,"
+            + " configItems={}}",
         strategy.toString());
   }
 }

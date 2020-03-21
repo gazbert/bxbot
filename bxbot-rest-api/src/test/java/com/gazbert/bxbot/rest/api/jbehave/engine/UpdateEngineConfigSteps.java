@@ -76,7 +76,7 @@ public class UpdateEngineConfigSteps extends AbstractSteps {
     token = null;
   }
 
-  /*
+  /**
    * Parameter injection method 1.
    * The arguments extracted from the .story file step candidate are simply matched following
    * natural order to the parameters in the annotated Java method.
@@ -97,8 +97,16 @@ public class UpdateEngineConfigSteps extends AbstractSteps {
     setHttpResponse(makeUpdateApiCallWithToken(getApiPath(), token, jsonPayload));
   }
 
+  /**
+   * Tests updating engine config.
+   *
+   * @param botname name of bot
+   * @param tradeCycleInterval trade cycle interval in secs.
+   * @throws Exception @throws Exception is anything unexpected happens.
+   */
   @When(
-      "user calls API to update Engine Config with botname $botname and tradeCycleInterval of $tradeCycleInterval")
+      "user calls API to update Engine Config with botname $botname and tradeCycleInterval of"
+          + " $tradeCycleInterval")
   public void whenUserCallsApiToUpdateEngineConfig(String botname, int tradeCycleInterval)
       throws Exception {
 
@@ -117,13 +125,14 @@ public class UpdateEngineConfigSteps extends AbstractSteps {
   // Then step conditions
   // --------------------------------------------------------------------------
 
-  /*
+  /**
    * Parameter injection method 2.
    * Here, The arguments extracted from the .story file step candidate are mapped explicitly to
    * the parameters in the annotated Java method.
    */
   @Then(
-      "the bot will respond with updated Engine config with botname $name and trade cycle interval $interval")
+      "the bot will respond with updated Engine config with botname $name and trade cycle interval "
+          + "$interval")
   public void thenBotRespondsWithUpdatedEngineConfig(
       @Named("name") String botname, @Named("interval") int tradeCycleInterval) throws Exception {
 

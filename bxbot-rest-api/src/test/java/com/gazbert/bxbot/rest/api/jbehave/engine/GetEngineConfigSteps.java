@@ -78,6 +78,12 @@ public class GetEngineConfigSteps extends AbstractSteps {
   // Then step conditions
   // --------------------------------------------------------------------------
 
+
+  /**
+   * Tests bot will respond with expected Engine config.
+   *
+   * @throws Exception is anything unexpected happens.
+   */
   @Then("the bot will respond with expected Engine config")
   public void thenBotRespondsWithEngineConfig() throws Exception {
 

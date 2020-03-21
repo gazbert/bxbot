@@ -133,7 +133,8 @@ public class TestMarketConfig {
         new MarketConfig(ID, NAME, BASE_CURRENCY, COUNTER_CURRENCY, IS_ENABLED, TRADING_STRATEGY);
 
     assertEquals(
-        "MarketConfig{id=gemini_usd/btc, name=BTC/USD, baseCurrency=BTC, counterCurrency=USD, enabled=true, tradingStrategyId=macd_trend_follower}",
+        "MarketConfig{id=gemini_usd/btc, name=BTC/USD, baseCurrency=BTC,"
+            + " counterCurrency=USD, enabled=true, tradingStrategyId=macd_trend_follower}",
         market1.toString());
   }
 }
