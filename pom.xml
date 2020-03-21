@@ -52,7 +52,8 @@
     <springfox.version>2.9.2</springfox.version>
     <hibernate-vaildator.version>6.0.2.Final</hibernate-vaildator.version>
     <javax-mail.version>1.6.2</javax-mail.version>
-    <sonar.coverage.jacoco.xmlReportPaths>target/jacoco-report/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
+    <sonar.coverage.jacoco.xmlReportPaths>target/jacoco-report/jacoco.xml
+    </sonar.coverage.jacoco.xmlReportPaths>
   </properties>
   <parent>
     <groupId>org.springframework.boot</groupId>
@@ -322,30 +323,6 @@
         <version>3.1.6</version>
         <scope>test</scope>
       </dependency>
-      <dependency>
-        <groupId>org.jbehave</groupId>
-        <artifactId>jbehave-core</artifactId>
-        <version>4.6</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.httpcomponents</groupId>
-        <artifactId>httpclient</artifactId>
-        <version>4.5.11</version>
-        <scope>test</scope>
-        <exclusions>
-          <exclusion>
-            <artifactId>commons-logging</artifactId>
-            <groupId>commons-logging</groupId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.httpcomponents</groupId>
-        <artifactId>httpcore</artifactId>
-        <version>4.4.13</version>
-        <scope>test</scope>
-      </dependency>
     </dependencies>
   </dependencyManagement>
 
@@ -379,44 +356,6 @@
               <goals>
                 <goal>integration-test</goal>
                 <goal>verify</goal>
-              </goals>
-            </execution>
-          </executions>
-        </plugin>
-        <plugin>
-          <groupId>org.jbehave</groupId>
-          <artifactId>jbehave-maven-plugin</artifactId>
-          <version>4.6.1</version>
-          <executions>
-            <execution>
-              <id>run-stories-as-embeddables</id>
-              <phase>integration-test</phase>
-              <configuration>
-                <skip>${skip.bdd.tests}</skip>
-                <scope>test</scope>
-                <includes>
-                  <include>**/*Story.java</include>
-                </includes>
-                <metaFilters>
-                </metaFilters>
-                <systemProperties>
-                  <property>
-                    <name>java.awt.headless</name>
-                    <value>true</value>
-                  </property>
-                </systemProperties>
-                <ignoreFailureInStories>true</ignoreFailureInStories>
-                <ignoreFailureInView>false</ignoreFailureInView>
-              </configuration>
-              <goals>
-                <goal>run-stories-as-embeddables</goal>
-              </goals>
-            </execution>
-            <execution>
-              <id>unpack-view-resources</id>
-              <phase>process-resources</phase>
-              <goals>
-                <goal>unpack-view-resources</goal>
               </goals>
             </execution>
           </executions>
@@ -608,48 +547,6 @@
                     <version>3.5.0</version>
                   </requireMavenVersion>
                 </rules>
-              </configuration>
-            </execution>
-          </executions>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-dependency-plugin</artifactId>
-          <executions>
-            <execution>
-              <id>unpack-jbehave-site-resources</id>
-              <phase>generate-resources</phase>
-              <goals>
-                <goal>unpack</goal>
-              </goals>
-              <configuration>
-                <artifactItems>
-                  <artifactItem>
-                    <groupId>org.jbehave.site</groupId>
-                    <artifactId>jbehave-site-resources</artifactId>
-                    <version>3.3</version>
-                    <type>zip</type>
-                    <outputDirectory>${project.build.directory}/jbehave/view</outputDirectory>
-                  </artifactItem>
-                </artifactItems>
-              </configuration>
-            </execution>
-            <execution>
-              <id>unpack-jbehave-reports-resources</id>
-              <phase>generate-resources</phase>
-              <goals>
-                <goal>unpack</goal>
-              </goals>
-              <configuration>
-                <artifactItems>
-                  <artifactItem>
-                    <groupId>org.jbehave</groupId>
-                    <artifactId>jbehave-core</artifactId>
-                    <version>4.6.1</version>
-                    <outputDirectory>${project.build.directory}/jbehave/view</outputDirectory>
-                    <includes>**\/*.css,**\/*.ftl,**\/*.js</includes>
-                  </artifactItem>
-                </artifactItems>
               </configuration>
             </execution>
           </executions>

@@ -90,14 +90,7 @@ ext.libraries = [
             force = true
         },
         spring_security_test                    : dependencies.create("org.springframework.security:spring-security-test:5.2.1.RELEASE"),
-        awaitility                              : dependencies.create("org.awaitility:awaitility:3.1.6"),
-
-        jbehave_core                            : dependencies.create("org.jbehave:jbehave-core:4.6"),
-        httpclient                              : dependencies.create("org.apache.httpcomponents:httpclient:4.5.11") {
-            exclude module: "commons-logging"
-            force = true
-        },
-        httpcore                                : dependencies.create("org.apache.httpcomponents:httpcore:4.4.13"),
+        awaitility                              : dependencies.create("org.awaitility:awaitility:3.1.6")
 ]
 
 allprojects {

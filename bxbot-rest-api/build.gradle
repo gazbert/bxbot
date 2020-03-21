@@ -25,9 +25,6 @@ dependencies {
     testCompile libraries.spring_boot_starter_test
     testCompile libraries.spring_security_test
     testCompile libraries.awaitility
-    testCompile libraries.jbehave_core
-    testCompile libraries.httpclient
-    testCompile libraries.httpcore
 }
 
 jacocoTestCoverageVerification {
