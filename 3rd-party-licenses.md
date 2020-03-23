@@ -8,6 +8,7 @@
 * JavaMail     - https://glassfish.java.net/public/CDDL+GPL_1_1.html
 * Spring Boot  - https://github.com/spring-projects/spring-boot/blob/master/LICENSE.txt
 * Snake YAML   - https://bitbucket.org/asomov/snakeyaml/src/default/LICENSE.txt
+* Springfox    - https://github.com/springfox/springfox/blob/master/LICENSE
 
 ## Build & Test
 

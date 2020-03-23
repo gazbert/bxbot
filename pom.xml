@@ -42,15 +42,15 @@
     </developer>
   </developers>
   <properties>
-    <revision>0.12.2-SNAPSHOT</revision>
+    <revision>1.0.0-SNAPSHOT</revision>
     <!-- spring-tx should be same version as Spring Boot's spring-core version -->
-    <spring-tx.version>5.1.6.RELEASE</spring-tx.version>
-    <powermock.version>2.0.2</powermock.version>
-    <spring-boot-starter.version>2.1.4.RELEASE</spring-boot-starter.version>
+    <spring-tx.version>5.1.14.RELEASE</spring-tx.version>
+    <powermock.version>2.0.6</powermock.version>
+    <spring-boot-starter.version>2.1.13.RELEASE</spring-boot-starter.version>
     <jaxb-api.version>2.3.1</jaxb-api.version>
-    <spotbugs.version>3.1.11</spotbugs.version>
+    <spotbugs.version>4.0.0</spotbugs.version>
     <springfox.version>2.9.2</springfox.version>
-    <hibernate-vaildator.version>6.0.2.Final</hibernate-vaildator.version>
+    <hibernate-vaildator.version>6.1.2.Final</hibernate-vaildator.version>
     <javax-mail.version>1.6.2</javax-mail.version>
     <sonar.coverage.jacoco.xmlReportPaths>target/jacoco-report/jacoco.xml
     </sonar.coverage.jacoco.xmlReportPaths>
@@ -58,7 +58,7 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>2.1.4.RELEASE</version>
+    <version>2.1.13.RELEASE</version>
   </parent>
   <profiles>
     <profile>
@@ -208,12 +208,12 @@
       <dependency>
         <groupId>com.google.guava</groupId>
         <artifactId>guava</artifactId>
-        <version>27.1-jre</version>
+        <version>28.2-jre</version>
       </dependency>
       <dependency>
         <groupId>com.h2database</groupId>
         <artifactId>h2</artifactId>
-        <version>1.4.199</version>
+        <version>1.4.200</version>
       </dependency>
       <dependency>
         <groupId>javax.mail</groupId>
@@ -240,7 +240,7 @@
       <dependency>
         <groupId>org.yaml</groupId>
         <artifactId>snakeyaml</artifactId>
-        <version>1.24</version>
+        <version>1.26</version>
       </dependency>
       <dependency>
         <groupId>io.springfox</groupId>
@@ -260,7 +260,7 @@
       <dependency>
         <groupId>io.swagger</groupId>
         <artifactId>swagger-annotations</artifactId>
-        <version>1.5.24</version>
+        <version>1.6.0</version>
       </dependency>
       <dependency>
         <groupId>javax.validation</groupId>
@@ -284,7 +284,7 @@
       <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
-        <version>4.12</version>
+        <version>4.13</version>
         <scope>test</scope>
       </dependency>
       <dependency>
@@ -302,7 +302,7 @@
       <dependency>
         <groupId>org.easymock</groupId>
         <artifactId>easymock</artifactId>
-        <version>4.0.2</version>
+        <version>4.2</version>
         <scope>test</scope>
       </dependency>
       <dependency>
@@ -314,13 +314,13 @@
       <dependency>
         <groupId>org.springframework.security</groupId>
         <artifactId>spring-security-test</artifactId>
-        <version>5.2.1.RELEASE</version>
+        <version>5.2.2.RELEASE</version>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.awaitility</groupId>
         <artifactId>awaitility</artifactId>
-        <version>3.1.6</version>
+        <version>4.0.2</version>
         <scope>test</scope>
       </dependency>
     </dependencies>
@@ -333,7 +333,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
-          <version>2.22.1</version>
+          <version>2.22.2</version>
           <configuration>
             <skipTests>${skip.unit.tests}</skipTests>
             <excludes>
@@ -347,7 +347,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-failsafe-plugin</artifactId>
-          <version>2.22.1</version>
+          <version>2.22.2</version>
           <configuration>
             <skipTests>${skip.integration.tests}</skipTests>
           </configuration>
@@ -362,7 +362,7 @@
         </plugin>
         <plugin>
           <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.8.0</version>
+          <version>3.8.1</version>
           <configuration>
             <source>11</source>
             <target>11</target>
@@ -406,12 +406,12 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-javadoc-plugin</artifactId>
-          <version>3.1.0</version>
+          <version>3.2.0</version>
         </plugin>
         <plugin>
           <groupId>org.springframework.boot</groupId>
           <artifactId>spring-boot-maven-plugin</artifactId>
-          <version>2.1.4.RELEASE</version>
+          <version>2.2.5.RELEASE</version>
           <executions>
             <execution>
               <goals>
@@ -423,7 +423,7 @@
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>flatten-maven-plugin</artifactId>
-          <version>1.1.0</version>
+          <version>1.2.1</version>
           <configuration>
             <updatePomFile>true</updatePomFile>
           </configuration>
@@ -447,7 +447,7 @@
         <plugin>
           <groupId>org.jacoco</groupId>
           <artifactId>jacoco-maven-plugin</artifactId>
-          <version>0.8.4</version>
+          <version>0.8.5</version>
           <executions>
             <execution>
               <goals>
@@ -495,7 +495,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-checkstyle-plugin</artifactId>
-          <version>3.1.0</version>
+          <version>3.1.1</version>
           <configuration>
             <configLocation>google_checks.xml</configLocation>
             <encoding>UTF-8</encoding>
@@ -534,7 +534,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-enforcer-plugin</artifactId>
-          <version>3.0.0-M2</version>
+          <version>3.0.0-M3</version>
           <executions>
             <execution>
               <id>enforce-maven</id>

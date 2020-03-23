@@ -24,7 +24,6 @@
 package com.gazbert.bxbot.datastore.yaml.strategy;
 
 import com.gazbert.bxbot.domain.strategy.StrategyConfig;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,9 +36,7 @@ public class StrategiesType {
 
   private List<StrategyConfig> strategies;
 
-  /**
-   * Returns the Strategy configs.
-   */
+  /** Returns the Strategy configs. */
   public List<StrategyConfig> getStrategies() {
     if (strategies == null) {
       strategies = new ArrayList<>();

@@ -155,10 +155,6 @@
         <artifactId>spotbugs-maven-plugin</artifactId>
       </plugin>
       <plugin>
-        <groupId>org.jbehave</groupId>
-        <artifactId>jbehave-maven-plugin</artifactId>
-      </plugin>
-      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
       </plugin>

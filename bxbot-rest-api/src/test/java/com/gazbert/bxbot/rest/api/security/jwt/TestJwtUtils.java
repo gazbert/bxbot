@@ -35,13 +35,13 @@ import com.gazbert.bxbot.rest.api.security.model.Role;
 import com.gazbert.bxbot.rest.api.security.model.RoleName;
 import com.gazbert.bxbot.rest.api.security.model.User;
 import io.jsonwebtoken.Claims;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import org.assertj.core.util.DateUtil;
-import org.awaitility.Duration;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -228,7 +228,7 @@ public class TestJwtUtils {
   public void whenCanTokenBeRefreshedCalledWithValidTokenThenExpectReturnFalse() {
     final String token = createTokenWithLastPasswordResetYesterday();
     final Claims tokenClaims = jwtUtils.validateTokenAndGetClaims(token);
-    await().atLeast(Duration.ONE_SECOND);
+    await().atLeast(Duration.ofSeconds(1));
 
     // Valid as token created after password last changed
     final boolean canBeRefreshed = jwtUtils.canTokenBeRefreshed(tokenClaims, DateUtil.yesterday());
