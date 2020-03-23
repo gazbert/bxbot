@@ -43,8 +43,8 @@ public class TestJwtAuthenticationRequest {
   @Test
   public void testEmptyConstructorWorksAsExpected() {
     final JwtAuthenticationRequest jwtAuthenticationRequest = new JwtAuthenticationRequest();
-    assertNull(jwtAuthenticationRequest.getUsername());
-    assertNull(jwtAuthenticationRequest.getPassword());
+    assertEquals("", jwtAuthenticationRequest.getUsername());
+    assertEquals("", jwtAuthenticationRequest.getPassword());
   }
 
   @Test

@@ -41,7 +41,7 @@ public class TestJwtAuthenticationResponse {
   @Test
   public void testEmptyConstructorWorksAsExpected() {
     final JwtAuthenticationResponse jwtAuthenticationResponse = new JwtAuthenticationResponse();
-    assertNull(jwtAuthenticationResponse.getToken());
+    assertEquals("", jwtAuthenticationResponse.getToken());
   }
 
   @Test
