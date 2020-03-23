@@ -27,12 +27,6 @@ dependencies {
     testCompile libraries.awaitility
 }
 
-// FIXME: For some reason all the REST tests have started failing with Gradle build!
-// All fine with maven and running in IDE... weird.
-test {
-    exclude '**/*Controller*'
-}
-
 jacocoTestCoverageVerification {
     violationRules {
         rule {
@@ -42,7 +36,7 @@ jacocoTestCoverageVerification {
             limit {
                 counter = 'LINE'
                 value = 'COVEREDRATIO'
-                minimum = 0 // TODO: Re-instate once tests fixed!
+                minimum = 0.8
             }
         }
     }

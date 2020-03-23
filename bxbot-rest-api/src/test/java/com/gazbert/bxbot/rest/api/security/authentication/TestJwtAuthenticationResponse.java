@@ -24,6 +24,7 @@
 package com.gazbert.bxbot.rest.api.security.authentication;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
 
@@ -38,9 +39,9 @@ public class TestJwtAuthenticationResponse {
   private static final String ANOTHER_JWT = "another.jwt.string";
 
   @Test
-  public void testInitialisationWorksAsExpected() {
-    final JwtAuthenticationResponse jwtAuthenticationResponse = new JwtAuthenticationResponse(JWT);
-    assertEquals(JWT, jwtAuthenticationResponse.getToken());
+  public void testEmptyConstructorWorksAsExpected() {
+    final JwtAuthenticationResponse jwtAuthenticationResponse = new JwtAuthenticationResponse();
+    assertNull(jwtAuthenticationResponse.getToken());
   }
 
   @Test

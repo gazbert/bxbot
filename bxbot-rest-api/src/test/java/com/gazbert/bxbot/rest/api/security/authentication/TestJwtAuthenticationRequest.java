@@ -41,6 +41,13 @@ public class TestJwtAuthenticationRequest {
   private static final String PASSWORD2 = "InSearchOfLostTime2";
 
   @Test
+  public void testEmptyConstructorWorksAsExpected() {
+    final JwtAuthenticationRequest jwtAuthenticationRequest = new JwtAuthenticationRequest();
+    assertNull(jwtAuthenticationRequest.getUsername());
+    assertNull(jwtAuthenticationRequest.getPassword());
+  }
+
+  @Test
   public void testArgsConstructorWorksAsExpected() {
     final JwtAuthenticationRequest jwtAuthenticationRequest =
         new JwtAuthenticationRequest(USERNAME, PASSWORD);
