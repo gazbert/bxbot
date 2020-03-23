@@ -42,6 +42,10 @@ public class JwtAuthenticationRequest {
   @NotNull(message = "Password cannot be null")
   private String password;
 
+  // For Jackson
+  public JwtAuthenticationRequest() {
+  }
+
   public JwtAuthenticationRequest(String username, String password) {
     this.username = username;
     this.password = password;

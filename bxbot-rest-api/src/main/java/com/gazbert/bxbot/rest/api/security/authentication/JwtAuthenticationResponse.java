@@ -36,6 +36,10 @@ public class JwtAuthenticationResponse {
   @NotNull(message = "Token cannot be null")
   private String token;
 
+  // For Jackson
+  public JwtAuthenticationResponse() {
+  }
+
   public JwtAuthenticationResponse(String token) {
     this.token = token;
   }
