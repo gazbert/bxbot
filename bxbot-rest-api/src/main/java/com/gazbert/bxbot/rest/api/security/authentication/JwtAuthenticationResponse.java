@@ -38,6 +38,7 @@ public class JwtAuthenticationResponse {
 
   // For Jackson
   public JwtAuthenticationResponse() {
+    token = "";
   }
 
   public JwtAuthenticationResponse(String token) {

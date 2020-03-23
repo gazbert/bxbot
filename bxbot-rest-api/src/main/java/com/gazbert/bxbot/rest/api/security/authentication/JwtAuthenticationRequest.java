@@ -44,6 +44,8 @@ public class JwtAuthenticationRequest {
 
   // For Jackson
   public JwtAuthenticationRequest() {
+    username = "";
+    password = "";
   }
 
   public JwtAuthenticationRequest(String username, String password) {
