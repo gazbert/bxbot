@@ -48,6 +48,7 @@
     <powermock.version>2.0.6</powermock.version>
     <spring-boot-starter.version>2.1.13.RELEASE</spring-boot-starter.version>
     <jaxb-api.version>2.3.1</jaxb-api.version>
+    <checkstlye.version>3.1.1</checkstlye.version>
     <spotbugs.version>4.0.0</spotbugs.version>
     <springfox.version>2.9.2</springfox.version>
     <hibernate-vaildator.version>6.1.2.Final</hibernate-vaildator.version>
@@ -495,7 +496,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-checkstyle-plugin</artifactId>
-          <version>3.1.1</version>
+          <version>${checkstlye.version}</version>
           <configuration>
             <configLocation>google_checks.xml</configLocation>
             <includeTestSourceDirectory>true</includeTestSourceDirectory>
@@ -557,6 +558,18 @@
   </build>
   <reporting>
     <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <version>${checkstlye.version}</version>
+        <reportSets>
+          <reportSet>
+            <reports>
+              <report>checkstyle</report>
+            </reports>
+          </reportSet>
+        </reportSets>
+      </plugin>
       <plugin>
         <groupId>com.github.spotbugs</groupId>
         <artifactId>spotbugs-maven-plugin</artifactId>
