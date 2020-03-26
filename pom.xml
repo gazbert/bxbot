@@ -498,6 +498,7 @@
           <version>3.1.1</version>
           <configuration>
             <configLocation>google_checks.xml</configLocation>
+            <includeTestSourceDirectory>true</includeTestSourceDirectory>
             <encoding>UTF-8</encoding>
             <consoleOutput>true</consoleOutput>
             <failsOnError>true</failsOnError>
