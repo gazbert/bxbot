@@ -51,6 +51,7 @@ import org.junit.Test;
  *
  * @author gazbert
  */
+@Ignore("gazbert 26/03/2020 - v1 API is now deprecated and disabled. Adapter needs updating!")
 public class OkCoinIT {
 
   private static final String MARKET_ID = "btc_usd";
