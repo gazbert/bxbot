@@ -68,17 +68,20 @@ import org.powermock.modules.junit4.PowerMockRunner;
  * Tests the behaviour of the OKCoin Exchange Adapter.
  *
  * @author gazbert
+ * @deprecated #120 : The OKCoin V1 API is now deprecated and no longer works - adapter needs
+ *     updating to use V3 API.
  */
 @RunWith(PowerMockRunner.class)
 @PowerMockIgnore({
-    "javax.crypto.*",
-    "javax.management.*",
-    "com.sun.org.apache.xerces.*",
-    "javax.xml.parsers.*",
-    "org.xml.sax.*",
-    "org.w3c.dom.*"
+  "javax.crypto.*",
+  "javax.management.*",
+  "com.sun.org.apache.xerces.*",
+  "javax.xml.parsers.*",
+  "org.xml.sax.*",
+  "org.w3c.dom.*"
 })
 @PrepareForTest(OkCoinExchangeAdapter.class)
+@Deprecated(forRemoval = true)
 public class TestOkcoinExchangeAdapter extends AbstractExchangeAdapterTest {
 
   private static final String DEPTH_JSON_RESPONSE = "./src/test/exchange-data/okcoin/depth.json";
