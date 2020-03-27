@@ -71,7 +71,6 @@
         <build.profile.id>unit</build.profile.id>
         <skip.unit.tests>false</skip.unit.tests>
         <skip.integration.tests>true</skip.integration.tests>
-        <skip.bdd.tests>true</skip.bdd.tests>
       </properties>
     </profile>
     <profile>
@@ -80,16 +79,6 @@
         <build.profile.id>int</build.profile.id>
         <skip.integration.tests>false</skip.integration.tests>
         <skip.unit.tests>true</skip.unit.tests>
-        <skip.bdd.tests>true</skip.bdd.tests>
-      </properties>
-    </profile>
-    <profile>
-      <id>bdd</id>
-      <properties>
-        <build.profile.id>bdd</build.profile.id>
-        <skip.integration.tests>true</skip.integration.tests>
-        <skip.unit.tests>true</skip.unit.tests>
-        <skip.bdd.tests>false</skip.bdd.tests>
       </properties>
     </profile>
     <profile>
@@ -98,7 +87,6 @@
         <build.profile.id>all</build.profile.id>
         <skip.integration.tests>false</skip.integration.tests>
         <skip.unit.tests>false</skip.unit.tests>
-        <skip.bdd.tests>true</skip.bdd.tests>
       </properties>
     </profile>
     <profile>
