@@ -27,7 +27,9 @@ ext.versions = [
         springCloudVersion       : '2.1.5.RELEASE',
         springTxVersion          : '5.1.14.RELEASE',
         springFoxVersion         : '2.9.2',
-        hibernateVaildatorVersion: '6.1.2.Final'
+        hibernateVaildatorVersion: '6.1.2.Final',
+        jaxbVersion              : '2.3.1',
+        javaxMailVersion         : '1.6.2'
 ]
 
 ext.libraries = [
@@ -65,10 +67,10 @@ ext.libraries = [
         google_guava                            : dependencies.create("com.google.guava:guava:28.2-jre"),
         google_gson                             : dependencies.create("com.google.code.gson:gson:2.8.6"),
         h2                                      : dependencies.create("com.h2database:h2:1.4.199"),
-        javax_mail_api                          : dependencies.create("javax.mail:javax.mail-api:1.6.2"),
-        javax_mail_sun                          : dependencies.create("com.sun.mail:javax.mail:1.6.2"),
-        javax_xml_api                           : dependencies.create("javax.xml.bind:jaxb-api:2.3.1"),
-        javax_xml_impl                          : dependencies.create("com.sun.xml.bind:jaxb-impl:2.3.1"),
+        javax_mail_api                          : dependencies.create("javax.mail:javax.mail-api:" + ext.versions.javaxMailVersion),
+        javax_mail_sun                          : dependencies.create("com.sun.mail:javax.mail:" + ext.versions.javaxMailVersion),
+        javax_xml_api                           : dependencies.create("javax.xml.bind:jaxb-api:" + ext.versions.jaxbVersion),
+        javax_xml_impl                          : dependencies.create("com.sun.xml.bind:jaxb-impl:" + ext.versions.jaxbVersion),
         snake_yaml                              : dependencies.create("org.yaml:snakeyaml:1.26"),
 
         springfox_swagger2                      : dependencies.create("io.springfox:springfox-swagger2:" + ext.versions.springFoxVersion),
