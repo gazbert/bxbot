@@ -583,7 +583,7 @@ before using the REST API over a public network - see instructions in the file o
 [bcrypt](https://en.wikipedia.org/wiki/Bcrypt) your passwords.
 
 2 users have been set up out of the box: `user` and `admin`. These users have `user` and `admin`
-roles respectively.
+roles respectively. Passwords are the same as the usernames - remember to change these :-)
 
 When the bot starts up, Spring Boot will load the `import.sql` file and store the users and their 
 access rights in its [H2](https://www.h2database.com/html/main.html) in-memory database.
