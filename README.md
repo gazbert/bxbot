@@ -603,6 +603,19 @@ JWT before it expires in order to get a new one. Alternatively, you can re-authe
 #### TLS
 The REST API _must_ be configured to use TLS before accessing it over a public network.
 
+You will need to 
+[create a keystore](https://docs.oracle.com/en/java/javase/11/tools/keytool.html) - the command to
+create a [PKCS12](https://en.wikipedia.org/wiki/PKCS_12) self-signed certificate is shown below:
+
+``` bash
+keytool -genkeypair -alias rest-api-keystore -keyalg RSA -keysize 2048 -storetype PKCS12 -keystore keystore.p12 -validity 3650
+```
+ 
+The keystore must be on the app's classpath - you can put it in
+the [./src/main/resources](./src/main/resources) and re-build the app to get up and running fast.
+For a Production system, you'll want to replace the self-signed certificate with a 
+CA signed certificate.
+
 The 'TLS Configuration' section in the [./config/application.properties](./config/application.properties) 
 file needs the following properties set:
 
@@ -614,17 +627,12 @@ spring.profiles.active=https
 # SSL (TLS) configuration to secure the REST API.
 # Must be enabled in Production environment.
 server.port=8443
-server.ssl.key-store=classpath:keystore.jks
+security.require-ssl=true
+server.ssl.key-store=classpath:keystore.p12
 server.ssl.key-store-password=secret
-server.ssl.key-password=another-secret
+server.ssl.key-store-type=PKCS12
 ```
 
-You will need to 
-[create your own keystore](https://docs.oracle.com/cd/E19509-01/820-3503/ggfen/index.html) 
-and choose your own passwords. The keystore must be on the bot's classpath - you can put it in
- the [./bxbot-rest-api/src/main/resources](./bxbot-rest-api/src/main/resources) and re-build the 
- bot to get up and running fast.
- 
 ## Coming Soon... (Definitely Maybe)
 A UI built with [React](https://reactjs.org/) - it will consume the REST API. 
 
