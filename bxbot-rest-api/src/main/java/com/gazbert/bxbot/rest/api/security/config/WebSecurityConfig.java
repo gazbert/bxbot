@@ -158,38 +158,5 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     // Disable page caching in the browser
     httpSecurity.headers().cacheControl().disable();
   }
-
-  // --------------------------------------------------------------------------
-  // TODO: Uncomment bean to redirect HTTP connections to HTTPS in Production
-  // --------------------------------------------------------------------------
-
-  //    @Bean
-  //    public EmbeddedServletContainerFactory servletContainer() {
-  //
-  //        final TomcatEmbeddedServletContainerFactory tomcat = new
-  // TomcatEmbeddedServletContainerFactory() {
-  //
-  //            @Override
-  //            protected void postProcessContext(Context context) {
-  //                final SecurityConstraint securityConstraint = new SecurityConstraint();
-  //                securityConstraint.setUserConstraint("CONFIDENTIAL");
-  //                final SecurityCollection collection = new SecurityCollection();
-  //                collection.addPattern("/*");
-  //                securityConstraint.addCollection(collection);
-  //                context.addConstraint(securityConstraint);
-  //            }
-  //        };
-  //
-  //        tomcat.addAdditionalTomcatConnectors(initiateHttpConnector());
-  //        return tomcat;
-  //    }
-  //
-  //    private Connector initiateHttpConnector() {
-  //        final Connector connector = new Connector("org.apache.coyote.http11.Http11NioProtocol");
-  //        connector.setScheme("http");
-  //        connector.setPort(8080); // TODO: get ports from config
-  //        connector.setSecure(false);
-  //        connector.setRedirectPort(8443);
-  //        return connector;
-  //    }
 }
+
