@@ -23,6 +23,10 @@
 
 package com.gazbert.bxbot.rest.api.security.config;
 
+import javax.validation.constraints.NotNull;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.CorsConfiguration;
@@ -40,6 +44,12 @@ import org.springframework.web.filter.CorsFilter;
 @Configuration
 public class RestCorsConfig {
 
+  private static final Logger LOG = LogManager.getLogger();
+
+  @NotNull
+  @Value("${restapi.cors.allowed_origin}")
+  private String allowedOrigin;
+
   /**
    * Creates the CORS filter.
    *
@@ -48,14 +58,12 @@ public class RestCorsConfig {
   @Bean
   public CorsFilter corsFilter() {
 
+    LOG.info(() -> String.format("CORS Allowed Origins: %s", allowedOrigin));
+
     final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
     final CorsConfiguration config = new CorsConfiguration();
     config.setAllowCredentials(true);
-
-    // TODO: Lock down to specific host in Production
-    config.addAllowedOrigin("*");
-    // config.addAllowedOrigin("http://localhost:3000");
-
+    config.addAllowedOrigin(allowedOrigin);
     config.addAllowedHeader("*");
     config.addAllowedMethod("OPTIONS");
     config.addAllowedMethod("GET");
