@@ -43,6 +43,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.cloud.context.restart.RestartEndpoint;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -67,6 +68,7 @@ public class TestBotRestartController extends AbstractRuntimeControllerTest {
   @MockBean private EmailAlerter emailAlerter;
   @MockBean private RestartEndpoint restartEndpoint;
   @MockBean private LogFileWebEndpoint logFileWebEndpoint;
+  @MockBean private AuthenticationManager authenticationManager;
 
   @Before
   public void setupBeforeEachTest() {
@@ -74,15 +76,14 @@ public class TestBotRestartController extends AbstractRuntimeControllerTest {
   }
 
   @Test
-  public void testBotRestart() throws Exception {
+  public void testBotRestartWithAdminTokenAuthorized() throws Exception {
     given(botRestartService.restart()).willReturn(BOT_STATUS);
 
     mockMvc
         .perform(
             post(RESTART_ENDPOINT_URI)
                 .header(
-                    "Authorization",
-                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD)))
+                    "Authorization", "Bearer " + getJwt(VALID_ADMIN_NAME, VALID_ADMIN_PASSWORD)))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$").value(BOT_STATUS));
@@ -91,26 +92,34 @@ public class TestBotRestartController extends AbstractRuntimeControllerTest {
   }
 
   @Test
-  public void testBotRestartWhenUnauthorizedWithBadCredentials() throws Exception {
+  public void testBotRestartWithUserTokenForbidden() throws Exception {
+    given(botRestartService.restart()).willReturn(BOT_STATUS);
+
+    mockMvc
+        .perform(
+            post(RESTART_ENDPOINT_URI)
+                .header(
+                    "Authorization", "Bearer " + getJwt(VALID_USER_NAME, VALID_USER_PASSWORD)))
+        .andDo(print())
+        .andExpect(status().isForbidden());
+
+    verify(botRestartService, times(0)).restart();
+  }
+
+  @Test
+  public void testBotRestartWhenUnauthorizedWithInvalidToken() throws Exception {
     mockMvc
         .perform(
             get(RESTART_ENDPOINT_URI)
-                .header(
-                    "Authorization",
-                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, INVALID_USER_PASSWORD))
+                .header("Authorization", "Bearer junk.web.token")
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isUnauthorized());
   }
 
   @Test
-  public void testBotRestartWhenUnauthorizedWithMissingCredentials() throws Exception {
+  public void testBotRestartWhenUnauthorizedWithMissingToken() throws Exception {
     mockMvc
-        .perform(
-            get(RESTART_ENDPOINT_URI)
-                .header(
-                    "Authorization",
-                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, INVALID_USER_PASSWORD))
-                .accept(MediaType.APPLICATION_JSON))
+        .perform(get(RESTART_ENDPOINT_URI).accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isUnauthorized());
   }
 }

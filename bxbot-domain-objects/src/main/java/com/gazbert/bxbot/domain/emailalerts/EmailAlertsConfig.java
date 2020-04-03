@@ -35,7 +35,7 @@ public class EmailAlertsConfig {
   private boolean enabled;
   private SmtpConfig smtpConfig;
 
-  // required for jackson
+  // Required by ConfigurableComponentFactory
   public EmailAlertsConfig() {
   }
 

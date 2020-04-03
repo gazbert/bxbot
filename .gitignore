@@ -37,3 +37,7 @@ hs_err_pid*
 
 # IT test output
 bxbot-exchanges/out
+
+# Ignore personal keystore used for REST API TLS
+**/keystore*
+

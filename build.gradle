@@ -1,20 +1,18 @@
 buildscript {
 
     repositories {
-        jcenter()
-        mavenLocal()
+        mavenCentral()
     }
 
     dependencies {
-        classpath("io.spring.gradle:dependency-management-plugin:1.0.7.RELEASE")
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:2.1.4.RELEASE")
+        classpath("io.spring.gradle:dependency-management-plugin:1.0.9.RELEASE")
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:2.1.13.RELEASE")
         classpath "gradle.plugin.com.github.spotbugs:spotbugs-gradle-plugin:2.0.0"
     }
 }
 
 plugins {
-    id 'com.gradle.build-scan' version '2.2.1'
-    id "org.sonarqube" version "2.7.1"
+    id "org.sonarqube" version "2.8"
     id 'jacoco'
 }
 
@@ -25,52 +23,76 @@ buildScan {
 }
 
 ext.versions = [
-        springBootVersion: '2.1.4.RELEASE',
-        springCloudVersion: '2.1.1.RELEASE',
-        springTxVersion  : '5.1.6.RELEASE'
+        springBootVersion        : '2.1.13.RELEASE',
+        springCloudVersion       : '2.1.5.RELEASE',
+        springTxVersion          : '5.1.14.RELEASE',
+        springFoxVersion         : '2.9.2',
+        hibernateVaildatorVersion: '6.1.2.Final',
+        jaxbVersion              : '2.3.1',
+        javaxMailVersion         : '1.6.2'
 ]
 
 ext.libraries = [
-        spring_boot_starter         : dependencies.create("org.springframework.boot:spring-boot-starter:" + ext.versions.springBootVersion) {
+        spring_boot_starter                     : dependencies.create("org.springframework.boot:spring-boot-starter:" + ext.versions.springBootVersion) {
             exclude module: "spring-boot-starter-logging"
             force = true
         },
-        spring_boot_starter_log4j2  : dependencies.create("org.springframework.boot:spring-boot-starter-log4j2:" + ext.versions.springBootVersion),
-        spring_boot_starter_web     : dependencies.create("org.springframework.boot:spring-boot-starter-web:" + ext.versions.springBootVersion) {
+        spring_boot_starter_log4j2              : dependencies.create("org.springframework.boot:spring-boot-starter-log4j2:" + ext.versions.springBootVersion),
+        spring_boot_starter_web                 : dependencies.create("org.springframework.boot:spring-boot-starter-web:" + ext.versions.springBootVersion) {
             exclude module: "spring-boot-starter-logging"
             force = true
         },
-        spring_boot_starter_actuator: dependencies.create("org.springframework.boot:spring-boot-starter-actuator:" + ext.versions.springBootVersion) {
+        spring_boot_starter_data_jpa            : dependencies.create("org.springframework.boot:spring-boot-starter-data-jpa:" + ext.versions.springBootVersion) {
             exclude module: "spring-boot-starter-logging"
             force = true
         },
-        spring_boot_starter_security: dependencies.create("org.springframework.boot:spring-boot-starter-security:" + ext.versions.springBootVersion) {
+        spring_boot_starter_data_rest           : dependencies.create("org.springframework.boot:spring-boot-starter-data-rest:" + ext.versions.springBootVersion) {
             exclude module: "spring-boot-starter-logging"
             force = true
         },
-        spring_cloud_starter: dependencies.create("org.springframework.cloud:spring-cloud-starter:" + ext.versions.springCloudVersion) {
+        spring_boot_starter_actuator            : dependencies.create("org.springframework.boot:spring-boot-starter-actuator:" + ext.versions.springBootVersion) {
             exclude module: "spring-boot-starter-logging"
             force = true
         },
-        spring_tx                   : dependencies.create("org.springframework:spring-tx:" + ext.versions.springTxVersion),
-        google_guava                : dependencies.create("com.google.guava:guava:27.1-jre"),
-        google_gson                 : dependencies.create("com.google.code.gson:gson:2.8.5"),
-        javax_mail_api              : dependencies.create("javax.mail:javax.mail-api:1.6.2"),
-        javax_mail_sun              : dependencies.create("com.sun.mail:javax.mail:1.6.2"),
-        javax_xml_api               : dependencies.create("javax.xml.bind:jaxb-api:2.3.1"),
-        javax_xml_impl              : dependencies.create("com.sun.xml.bind:jaxb-impl:2.3.1"),
-        snake_yaml                  : dependencies.create("org.yaml:snakeyaml:1.24"),
+        spring_boot_starter_security            : dependencies.create("org.springframework.boot:spring-boot-starter-security:" + ext.versions.springBootVersion) {
+            exclude module: "spring-boot-starter-logging"
+            force = true
+        },
+        spring_cloud_starter                    : dependencies.create("org.springframework.cloud:spring-cloud-starter:" + ext.versions.springCloudVersion) {
+            exclude module: "spring-boot-starter-logging"
+            force = true
+        },
+        spring_tx                               : dependencies.create("org.springframework:spring-tx:" + ext.versions.springTxVersion),
+        jjwt                                    : dependencies.create("io.jsonwebtoken:jjwt:0.9.1"),
+        google_guava                            : dependencies.create("com.google.guava:guava:28.2-jre"),
+        google_gson                             : dependencies.create("com.google.code.gson:gson:2.8.6"),
+        h2                                      : dependencies.create("com.h2database:h2:1.4.199"),
+        javax_mail_api                          : dependencies.create("javax.mail:javax.mail-api:" + ext.versions.javaxMailVersion),
+        javax_mail_sun                          : dependencies.create("com.sun.mail:javax.mail:" + ext.versions.javaxMailVersion),
+        javax_xml_api                           : dependencies.create("javax.xml.bind:jaxb-api:" + ext.versions.jaxbVersion),
+        javax_xml_impl                          : dependencies.create("com.sun.xml.bind:jaxb-impl:" + ext.versions.jaxbVersion),
+        snake_yaml                              : dependencies.create("org.yaml:snakeyaml:1.26"),
 
-        junit                       : dependencies.create("junit:junit:4.12"),
-        powermock_junit             : dependencies.create("org.powermock:powermock-module-junit4:2.0.2"),
-        powermock_api_easymock      : dependencies.create("org.powermock:powermock-api-easymock:2.0.2"),
-        easymock                    : dependencies.create("org.easymock:easymock:4.0.2"),
+        springfox_swagger2                      : dependencies.create("io.springfox:springfox-swagger2:" + ext.versions.springFoxVersion),
+        springfox_swagger_ui                    : dependencies.create("io.springfox:springfox-swagger-ui:" + ext.versions.springFoxVersion),
+        springfox_bean_validators               : dependencies.create("io.springfox:springfox-bean-validators:" + ext.versions.springFoxVersion),
+        swagger_annotations                     : dependencies.create("io.swagger:swagger-annotations:1.6.0"),
 
-        spring_boot_starter_test    : dependencies.create("org.springframework.boot:spring-boot-starter-test:" + ext.versions.springBootVersion) {
+        validation_api                          : dependencies.create("javax.validation:validation-api:2.0.0.Final"),
+        hibernate_validator                     : dependencies.create("org.hibernate.validator:hibernate-validator:" + ext.versions.hibernateVaildatorVersion),
+        hibernate_validator_annotation_processor: dependencies.create("org.hibernate.validator:hibernate-validator-annotation-processor:" + ext.versions.hibernateVaildatorVersion),
+
+        junit                                   : dependencies.create("junit:junit:4.13"),
+        powermock_junit                         : dependencies.create("org.powermock:powermock-module-junit4:2.0.6"),
+        powermock_api_easymock                  : dependencies.create("org.powermock:powermock-api-easymock:2.0.6"),
+        easymock                                : dependencies.create("org.easymock:easymock:4.2"),
+
+        spring_boot_starter_test                : dependencies.create("org.springframework.boot:spring-boot-starter-test:" + ext.versions.springBootVersion) {
             exclude module: "spring-boot-starter-logging"
             force = true
         },
-        awaitility                  : dependencies.create("org.awaitility:awaitility:3.1.6"),
+        spring_security_test                    : dependencies.create("org.springframework.security:spring-security-test:5.2.2.RELEASE"),
+        awaitility                              : dependencies.create("org.awaitility:awaitility:4.0.2")
 ]
 
 allprojects {
@@ -82,7 +104,7 @@ allprojects {
     apply plugin: "jacoco"
 
     group = 'com.gazbert.bxbot'
-    version = '0.12.2-SNAPSHOT'
+    version = '1.0.0-SNAPSHOT'
 }
 
 subprojects {
@@ -93,8 +115,7 @@ subprojects {
     targetCompatibility = 1.11
 
     repositories {
-        mavenLocal()
-        maven { url "http://repo.maven.apache.org/maven2" }
+        mavenCentral()
     }
 
     test {
@@ -137,11 +158,11 @@ subprojects {
     }
 
     jacoco {
-        toolVersion = "0.8.3"
+        toolVersion = "0.8.5"
     }
     jacocoTestReport {
         reports {
-            xml.enabled false
+            xml.enabled true
             csv.enabled false
             html.enabled true
         }

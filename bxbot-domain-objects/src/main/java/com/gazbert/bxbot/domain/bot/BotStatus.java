@@ -24,19 +24,24 @@
 package com.gazbert.bxbot.domain.bot;
 
 import com.google.common.base.MoreObjects;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 
 /**
  * Domain object representing the Bot's status.
  *
  * @author gazbert
  */
+@ApiModel
 public class BotStatus {
 
+  @ApiModelProperty(required = true, position = 1)
   private String botId;
+
   private String displayName;
   private String status;
 
-  // required for jackson
+  // Required by ConfigurableComponentFactory
   public BotStatus() {
   }
 

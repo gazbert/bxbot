@@ -8,10 +8,23 @@ dependencies {
     compile libraries.spring_boot_starter_web
     compile libraries.spring_boot_starter_security
     compile libraries.spring_boot_starter
+    compile libraries.spring_boot_starter_data_jpa
+    compile libraries.spring_boot_starter_data_rest
     compile libraries.spring_boot_starter_log4j2
+    compile libraries.jjwt
     compile libraries.google_guava
+    compile libraries.h2
+    compile libraries.springfox_swagger2
+    compile libraries.springfox_swagger_ui
+    compile libraries.springfox_bean_validators
 
+    testCompile libraries.junit
     testCompile libraries.spring_boot_starter_test
+    testCompile libraries.spring_security_test
+    testCompile libraries.easymock
+    testCompile libraries.powermock_junit
+    testCompile libraries.powermock_api_easymock
+    testCompile libraries.awaitility
 }
 
 jacocoTestCoverageVerification {

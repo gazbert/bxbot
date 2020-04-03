@@ -45,6 +45,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.cloud.context.restart.RestartEndpoint;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -77,6 +78,7 @@ public class TestBotStatusController extends AbstractRuntimeControllerTest {
   @MockBean private EmailAlerter emailAlerter;
   @MockBean private RestartEndpoint restartEndpoint;
   @MockBean private LogFileWebEndpoint logFileWebEndpoint;
+  @MockBean private AuthenticationManager authenticationManager;
 
   @Before
   public void setupBeforeEachTest() {
@@ -84,7 +86,7 @@ public class TestBotStatusController extends AbstractRuntimeControllerTest {
   }
 
   @Test
-  public void testGetBotStatus() throws Exception {
+  public void testGetBotStatusWithValidToken() throws Exception {
     given(botStatusService.getStatus()).willReturn(BOT_STATUS);
     given(engineConfigService.getEngineConfig()).willReturn(someEngineConfig());
 
@@ -92,8 +94,7 @@ public class TestBotStatusController extends AbstractRuntimeControllerTest {
         .perform(
             get(STATUS_ENDPOINT_URI)
                 .header(
-                    "Authorization",
-                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD)))
+                    "Authorization", "Bearer " + getJwt(VALID_USER_NAME, VALID_USER_PASSWORD)))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.botId").value(BOT_ID))
@@ -104,26 +105,19 @@ public class TestBotStatusController extends AbstractRuntimeControllerTest {
   }
 
   @Test
-  public void testGetBotStatusWhenUnauthorizedWithBadCredentials() throws Exception {
+  public void testGetBotStatusWhenUnauthorizedWithInvalidToken() throws Exception {
     mockMvc
         .perform(
             get(STATUS_ENDPOINT_URI)
-                .header(
-                    "Authorization",
-                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, INVALID_USER_PASSWORD))
+                .header("Authorization", "Bearer junk.web.token")
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isUnauthorized());
   }
 
   @Test
-  public void testGetBotStatusWhenUnauthorizedWithMissingCredentials() throws Exception {
+  public void testGetBotStatusWhenUnauthorizedWithMissingToken() throws Exception {
     mockMvc
-        .perform(
-            get(STATUS_ENDPOINT_URI)
-                .header(
-                    "Authorization",
-                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, INVALID_USER_PASSWORD))
-                .accept(MediaType.APPLICATION_JSON))
+        .perform(get(STATUS_ENDPOINT_URI).accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isUnauthorized());
   }
 

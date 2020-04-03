@@ -26,16 +26,18 @@ package com.gazbert.bxbot.rest.api.v1.runtime;
 import static com.gazbert.bxbot.rest.api.v1.EndpointLocations.RUNTIME_ENDPOINT_BASE_URI;
 
 import com.gazbert.bxbot.services.runtime.BotRestartService;
+import io.swagger.annotations.Api;
+import java.security.Principal;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import springfox.documentation.annotations.ApiIgnore;
 
 /**
  * Controller for directing Bot restart requests.
@@ -43,6 +45,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author gazbert
  * @since 1.0
  */
+@Api(tags = {"Bot Restart"})
 @RestController
 @RequestMapping(RUNTIME_ENDPOINT_BASE_URI)
 public class BotRestartController {
@@ -59,14 +62,16 @@ public class BotRestartController {
   /**
    * Restarts the bot.
    *
-   * @param user the authenticated user making the request.
+   * @param principal the authenticated user making the request.
    * @return 200 OK on success with 'Restarting' response on success, some other HTTP status code
    *     otherwise.
    */
+  @PreAuthorize("hasRole('ADMIN')")
   @PostMapping(value = RESTART_RESOURCE_PATH)
-  public ResponseEntity<String> restart(@AuthenticationPrincipal User user) {
+  public ResponseEntity<String> restart(@ApiIgnore Principal principal) {
+
     LOG.info(
-        () -> "POST " + RESTART_RESOURCE_PATH + " - restart() - caller: " + user.getUsername());
+        () -> "POST " + RESTART_RESOURCE_PATH + " - restart() - caller: " + principal.getName());
 
     final Object status = botRestartService.restart();
 

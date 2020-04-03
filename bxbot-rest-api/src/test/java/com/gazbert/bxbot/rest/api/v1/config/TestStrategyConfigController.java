@@ -23,7 +23,6 @@
 
 package com.gazbert.bxbot.rest.api.v1.config;
 
-import static org.junit.Assert.assertEquals;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.times;
@@ -52,9 +51,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.cloud.context.restart.RestartEndpoint;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 /**
@@ -97,6 +96,7 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
   @MockBean private EmailAlerter emailAlerter;
   @MockBean private RestartEndpoint restartEndpoint;
   @MockBean private LogFileWebEndpoint logFileWebEndpoint;
+  @MockBean private AuthenticationManager authenticationManager;
 
   @Before
   public void setupBeforeEachTest() {
@@ -104,15 +104,14 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
   }
 
   @Test
-  public void testGetAllStrategyConfig() throws Exception {
+  public void testGetAllStrategyConfigWithValidToken() throws Exception {
     given(strategyConfigService.getAllStrategyConfig()).willReturn(allTheStrategiesConfig());
 
     mockMvc
         .perform(
             get(STRATEGIES_CONFIG_ENDPOINT_URI)
                 .header(
-                    "Authorization",
-                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD)))
+                    "Authorization", "Bearer " + getJwt(VALID_USER_NAME, VALID_USER_PASSWORD)))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.[0].id").value(STRAT_1_ID))
@@ -132,34 +131,31 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
   }
 
   @Test
-  public void testGetAllStrategyConfigWhenUnauthorizedWithMissingCredentials() throws Exception {
+  public void testGetAllStrategyConfigWhenUnauthorizedWithMissingToken() throws Exception {
     mockMvc
         .perform(get(STRATEGIES_CONFIG_ENDPOINT_URI).accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isUnauthorized());
   }
 
   @Test
-  public void testGetAllStrategyConfigWhenUnauthorizedWithInvalidCredentials() throws Exception {
+  public void testGetAllStrategyConfigWhenUnauthorizedWithInvalidToken() throws Exception {
     mockMvc
         .perform(
             get(STRATEGIES_CONFIG_ENDPOINT_URI)
-                .header(
-                    "Authorization",
-                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, INVALID_USER_PASSWORD))
+                .header("Authorization", "Bearer junk.web.token")
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isUnauthorized());
   }
 
   @Test
-  public void testGetStrategyConfig() throws Exception {
+  public void testGetStrategyConfigWithValidToken() throws Exception {
     given(strategyConfigService.getStrategyConfig(STRAT_1_ID)).willReturn(someStrategyConfig());
 
     mockMvc
         .perform(
             get(STRATEGIES_CONFIG_ENDPOINT_URI + STRAT_1_ID)
                 .header(
-                    "Authorization",
-                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD)))
+                    "Authorization", "Bearer " + getJwt(VALID_USER_NAME, VALID_USER_PASSWORD)))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.id").value(STRAT_1_ID))
@@ -173,7 +169,7 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
   }
 
   @Test
-  public void testGetStrategyConfigByIdWhenUnauthorizedWithMissingCredentials() throws Exception {
+  public void testGetStrategyConfigByIdWhenUnauthorizedWithMissingToken() throws Exception {
     mockMvc
         .perform(
             get(STRATEGIES_CONFIG_ENDPOINT_URI + STRAT_1_ID).accept(MediaType.APPLICATION_JSON))
@@ -181,13 +177,11 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
   }
 
   @Test
-  public void testGetStrategyConfigByIdWhenUnauthorizedWithInvalidCredentials() throws Exception {
+  public void testGetStrategyConfigByIdWhenUnauthorizedWithInvalidToken() throws Exception {
     mockMvc
         .perform(
             get(STRATEGIES_CONFIG_ENDPOINT_URI + STRAT_1_ID)
-                .header(
-                    "Authorization",
-                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, INVALID_USER_PASSWORD))
+                .header("Authorization", "Bearer junk.web.token")
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isUnauthorized());
   }
@@ -200,55 +194,71 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
         .perform(
             get(STRATEGIES_CONFIG_ENDPOINT_URI + UNKNOWN_STRAT_ID)
                 .header(
-                    "Authorization",
-                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD))
+                    "Authorization", "Bearer " + getJwt(VALID_USER_NAME, VALID_USER_PASSWORD))
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isNotFound());
   }
 
   @Test
-  public void testUpdateStrategyConfig() throws Exception {
+  public void testUpdateStrategyConfigWithAdminTokenAuthorized() throws Exception {
     given(strategyConfigService.updateStrategyConfig(someStrategyConfig()))
         .willReturn(someStrategyConfig());
 
-    final MvcResult result =
-        mockMvc
-            .perform(
-                put(STRATEGIES_CONFIG_ENDPOINT_URI + STRAT_1_ID)
-                    .header(
-                        "Authorization",
-                        buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD))
-                    .contentType(CONTENT_TYPE)
-                    .content(jsonify(someStrategyConfig())))
-            .andDo(print())
-            .andExpect(status().isOk())
-            .andReturn();
+    mockMvc
+        .perform(
+            put(STRATEGIES_CONFIG_ENDPOINT_URI + STRAT_1_ID)
+                .header(
+                    "Authorization", "Bearer " + getJwt(VALID_ADMIN_NAME, VALID_ADMIN_PASSWORD))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonify(someStrategyConfig())))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.id").value(STRAT_1_ID))
+        .andExpect(jsonPath("$.name").value(STRAT_1_NAME))
+        .andExpect(jsonPath("$.description").value(STRAT_1_DESCRIPTION))
+        .andExpect(jsonPath("$.className").value(STRAT_1_CLASSNAME))
+        .andExpect(jsonPath("$.configItems.buy-price").value(BUY_PRICE_CONFIG_ITEM_VALUE))
+        .andExpect(jsonPath("$.configItems.buy-amount").value(AMOUNT_TO_BUY_CONFIG_ITEM_VALUE));
 
-    assertEquals(jsonify(someStrategyConfig()), result.getResponse().getContentAsString());
     verify(strategyConfigService, times(1)).updateStrategyConfig(any());
   }
 
   @Test
-  public void testUpdateStrategyConfigWhenUnauthorizedWithMissingCredentials() throws Exception {
+  public void testUpdateStrategyConfigWithUserTokenForbidden() throws Exception {
+    given(strategyConfigService.updateStrategyConfig(someStrategyConfig()))
+        .willReturn(someStrategyConfig());
+
+    mockMvc
+        .perform(
+            put(STRATEGIES_CONFIG_ENDPOINT_URI + STRAT_1_ID)
+                .header(
+                    "Authorization", "Bearer " + getJwt(VALID_USER_NAME, VALID_USER_PASSWORD))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonify(someStrategyConfig())))
+        .andExpect(status().isForbidden());
+
+    verify(strategyConfigService, times(0)).updateStrategyConfig(any());
+  }
+
+  @Test
+  public void testUpdateStrategyConfigWhenUnauthorizedWithMissingToken() throws Exception {
     mockMvc
         .perform(
             put(STRATEGIES_CONFIG_ENDPOINT_URI + STRAT_1_ID)
                 .accept(MediaType.APPLICATION_JSON)
-                .contentType(CONTENT_TYPE)
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonify(someStrategyConfig())))
         .andExpect(status().isUnauthorized());
   }
 
   @Test
-  public void testUpdateStrategyConfigWhenUnauthorizedWithInvalidCredentials() throws Exception {
+  public void testUpdateStrategyConfigWhenUnauthorizedWithInvalidToken() throws Exception {
     mockMvc
         .perform(
             put(STRATEGIES_CONFIG_ENDPOINT_URI + STRAT_1_ID)
-                .header(
-                    "Authorization",
-                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, INVALID_USER_PASSWORD))
+                .header("Authorization", "Bearer junk.web.token")
                 .accept(MediaType.APPLICATION_JSON)
-                .contentType(CONTENT_TYPE)
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonify(someStrategyConfig())))
         .andExpect(status().isUnauthorized());
   }
@@ -262,10 +272,9 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
         .perform(
             put(STRATEGIES_CONFIG_ENDPOINT_URI + UNKNOWN_STRAT_ID)
                 .header(
-                    "Authorization",
-                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD))
+                    "Authorization", "Bearer " + getJwt(VALID_ADMIN_NAME, VALID_ADMIN_PASSWORD))
                 .accept(MediaType.APPLICATION_JSON)
-                .contentType(CONTENT_TYPE)
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonify(unrecognizedStrategyConfig())))
         .andExpect(status().isNotFound());
   }
@@ -276,31 +285,43 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
         .perform(
             put(STRATEGIES_CONFIG_ENDPOINT_URI + STRAT_1_ID)
                 .header(
-                    "Authorization",
-                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD))
+                    "Authorization", "Bearer " + getJwt(VALID_ADMIN_NAME, VALID_ADMIN_PASSWORD))
                 .accept(MediaType.APPLICATION_JSON)
-                .contentType(CONTENT_TYPE)
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonify(someStrategyConfigWithMissingId())))
         .andExpect(status().isBadRequest());
   }
 
   @Test
-  public void testDeleteStrategyConfig() throws Exception {
+  public void testDeleteStrategyConfigWithAdminTokenAuthorized() throws Exception {
     given(strategyConfigService.deleteStrategyConfig(STRAT_1_ID)).willReturn(someStrategyConfig());
 
     mockMvc
         .perform(
             delete(STRATEGIES_CONFIG_ENDPOINT_URI + STRAT_1_ID)
                 .header(
-                    "Authorization",
-                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD)))
+                    "Authorization", "Bearer " + getJwt(VALID_ADMIN_NAME, VALID_ADMIN_PASSWORD)))
         .andExpect(status().isNoContent());
 
     verify(strategyConfigService, times(1)).deleteStrategyConfig(STRAT_1_ID);
   }
 
   @Test
-  public void testDeleteStrategyConfigWhenUnauthorizedWithMissingCredentials() throws Exception {
+  public void testDeleteStrategyConfigWithUserTokenForbidden() throws Exception {
+    given(strategyConfigService.deleteStrategyConfig(STRAT_1_ID)).willReturn(someStrategyConfig());
+
+    mockMvc
+        .perform(
+            delete(STRATEGIES_CONFIG_ENDPOINT_URI + STRAT_1_ID)
+                .header(
+                    "Authorization", "Bearer " + getJwt(VALID_USER_NAME, VALID_USER_PASSWORD)))
+        .andExpect(status().isForbidden());
+
+    verify(strategyConfigService, times(0)).deleteStrategyConfig(STRAT_1_ID);
+  }
+
+  @Test
+  public void testDeleteStrategyConfigWhenUnauthorizedWithMissingToken() throws Exception {
     mockMvc
         .perform(
             delete(STRATEGIES_CONFIG_ENDPOINT_URI + STRAT_1_ID).accept(MediaType.APPLICATION_JSON))
@@ -308,13 +329,11 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
   }
 
   @Test
-  public void testDeleteStrategyConfigWhenUnauthorizedWithInvalidCredentials() throws Exception {
+  public void testDeleteStrategyConfigWhenUnauthorizedWithInvalidToken() throws Exception {
     mockMvc
         .perform(
             delete(STRATEGIES_CONFIG_ENDPOINT_URI + STRAT_1_ID)
-                .header(
-                    "Authorization",
-                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, INVALID_USER_PASSWORD))
+                .header("Authorization", "Bearer junk.web.token")
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isUnauthorized());
   }
@@ -327,55 +346,71 @@ public class TestStrategyConfigController extends AbstractConfigControllerTest {
         .perform(
             delete(STRATEGIES_CONFIG_ENDPOINT_URI + UNKNOWN_STRAT_ID)
                 .header(
-                    "Authorization",
-                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD))
+                    "Authorization", "Bearer " + getJwt(VALID_ADMIN_NAME, VALID_ADMIN_PASSWORD))
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isNotFound());
   }
 
   @Test
-  public void testCreateStrategyConfig() throws Exception {
+  public void testCreateStrategyConfigWithAdminTokenAuthorized() throws Exception {
     given(strategyConfigService.createStrategyConfig(someStrategyConfig()))
         .willReturn(someStrategyConfig());
 
-    final MvcResult result =
-        mockMvc
-            .perform(
-                post(STRATEGIES_CONFIG_ENDPOINT_URI)
-                    .header(
-                        "Authorization",
-                        buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD))
-                    .contentType(CONTENT_TYPE)
-                    .content(jsonify(someStrategyConfig())))
-            .andDo(print())
-            .andExpect(status().isCreated())
-            .andReturn();
+    mockMvc
+        .perform(
+            post(STRATEGIES_CONFIG_ENDPOINT_URI)
+                .header(
+                    "Authorization", "Bearer " + getJwt(VALID_ADMIN_NAME, VALID_ADMIN_PASSWORD))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonify(someStrategyConfig())))
+        .andDo(print())
+        .andExpect(status().isCreated())
+        .andExpect(jsonPath("$.id").value(STRAT_1_ID))
+        .andExpect(jsonPath("$.name").value(STRAT_1_NAME))
+        .andExpect(jsonPath("$.description").value(STRAT_1_DESCRIPTION))
+        .andExpect(jsonPath("$.className").value(STRAT_1_CLASSNAME))
+        .andExpect(jsonPath("$.configItems.buy-price").value(BUY_PRICE_CONFIG_ITEM_VALUE))
+        .andExpect(jsonPath("$.configItems.buy-amount").value(AMOUNT_TO_BUY_CONFIG_ITEM_VALUE));
 
-    assertEquals(jsonify(someStrategyConfig()), result.getResponse().getContentAsString());
     verify(strategyConfigService, times(1)).createStrategyConfig(any());
   }
 
   @Test
-  public void testCreateStrategyConfigWhenUnauthorizedWithMissingCredentials() throws Exception {
+  public void testCreateStrategyConfigWithUserTokenForbidden() throws Exception {
+    given(strategyConfigService.createStrategyConfig(someStrategyConfig()))
+        .willReturn(someStrategyConfig());
+
+    mockMvc
+        .perform(
+            post(STRATEGIES_CONFIG_ENDPOINT_URI)
+                .header(
+                    "Authorization", "Bearer " + getJwt(VALID_USER_NAME, VALID_USER_PASSWORD))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonify(someStrategyConfig())))
+        .andExpect(status().isForbidden());
+
+    verify(strategyConfigService, times(0)).createStrategyConfig(any());
+  }
+
+  @Test
+  public void testCreateStrategyConfigWhenUnauthorizedWithMissingToken() throws Exception {
     mockMvc
         .perform(
             post(STRATEGIES_CONFIG_ENDPOINT_URI)
                 .accept(MediaType.APPLICATION_JSON)
-                .contentType(CONTENT_TYPE)
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonify(someStrategyConfig())))
         .andExpect(status().isUnauthorized());
   }
 
   @Test
-  public void testCreateStrategyConfigWhenUnauthorizedWithInvalidCredentials() throws Exception {
+  public void testCreateStrategyConfigWhenUnauthorizedWithInvalidToken() throws Exception {
     mockMvc
         .perform(
             post(STRATEGIES_CONFIG_ENDPOINT_URI)
-                .header(
-                    "Authorization",
-                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, INVALID_USER_PASSWORD))
+                .header("Authorization", "Bearer junk.web.token")
                 .accept(MediaType.APPLICATION_JSON)
-                .contentType(CONTENT_TYPE)
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonify(someStrategyConfig())))
         .andExpect(status().isUnauthorized());
   }

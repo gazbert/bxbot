@@ -24,22 +24,34 @@
 package com.gazbert.bxbot.domain.engine;
 
 import com.google.common.base.MoreObjects;
+import com.google.common.base.Objects;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import java.math.BigDecimal;
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.Min;
 
 /**
  * Domain object representing the Engine config.
  *
  * @author gazbert
  */
+@ApiModel
 public class EngineConfig {
 
+  @ApiModelProperty(required = true, position = 1)
   private String botId;
+
   private String botName;
   private String emergencyStopCurrency;
+
+  @DecimalMin(message = "Emergency Stop Balance must be 0 or more", value = "0")
   private BigDecimal emergencyStopBalance;
+
+  @Min(value = 1, message = "Trace Cycle Interval must be more than 1 second")
   private int tradeCycleInterval;
 
-  // required for jackson
+  // Required by ConfigurableComponentFactory
   public EngineConfig() {
   }
 
@@ -96,6 +108,23 @@ public class EngineConfig {
 
   public void setTradeCycleInterval(int tradeCycleInterval) {
     this.tradeCycleInterval = tradeCycleInterval;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    final EngineConfig that = (EngineConfig) o;
+    return Objects.equal(botId, that.botId);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hashCode(botId);
   }
 
   @Override

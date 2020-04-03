@@ -51,6 +51,7 @@ public class TestStrategyConfig {
   public void testInitialisationWorksAsExpected() {
     final StrategyConfig strategyConfig =
         new StrategyConfig(ID, LABEL, DESCRIPTION, CLASSNAME, BEAN_NAME, CONFIG_ITEMS);
+
     assertEquals(ID, strategyConfig.getId());
     assertEquals(LABEL, strategyConfig.getName());
     assertEquals(DESCRIPTION, strategyConfig.getDescription());
@@ -91,6 +92,7 @@ public class TestStrategyConfig {
     final StrategyConfig strategyConfig =
         new StrategyConfig(ID, LABEL, DESCRIPTION, CLASSNAME, BEAN_NAME, CONFIG_ITEMS);
     final StrategyConfig clonedStrategyConfig = new StrategyConfig(strategyConfig);
+
     assertEquals(clonedStrategyConfig, strategyConfig);
   }
 
@@ -100,7 +102,38 @@ public class TestStrategyConfig {
         new StrategyConfig(ID, LABEL, DESCRIPTION, CLASSNAME, BEAN_NAME, CONFIG_ITEMS);
     final StrategyConfig strategy2 =
         new StrategyConfig("different-id", LABEL, DESCRIPTION, CLASSNAME, BEAN_NAME, CONFIG_ITEMS);
+    final StrategyConfig strategy3 =
+        new StrategyConfig(ID, "different-label", DESCRIPTION, CLASSNAME, BEAN_NAME, CONFIG_ITEMS);
+
     assertEquals(strategy1, strategy1);
     assertNotEquals(strategy1, strategy2);
+    assertEquals(strategy1, strategy3);
+  }
+
+  @Test
+  public void testHashCodeWorksAsExpected() {
+    final StrategyConfig strategy1 =
+        new StrategyConfig(ID, LABEL, DESCRIPTION, CLASSNAME, BEAN_NAME, CONFIG_ITEMS);
+    final StrategyConfig strategy2 =
+        new StrategyConfig("different-id", LABEL, DESCRIPTION, CLASSNAME, BEAN_NAME, CONFIG_ITEMS);
+    final StrategyConfig strategy3 =
+        new StrategyConfig(ID, "different-label", DESCRIPTION, CLASSNAME, BEAN_NAME, CONFIG_ITEMS);
+
+    assertEquals(strategy1.hashCode(), strategy1.hashCode());
+    assertNotEquals(strategy1.hashCode(), strategy2.hashCode());
+    assertEquals(strategy1.hashCode(), strategy3.hashCode());
+  }
+
+  @Test
+  public void testToStringWorksAsExpected() {
+    final StrategyConfig strategy =
+        new StrategyConfig(ID, LABEL, DESCRIPTION, CLASSNAME, BEAN_NAME, CONFIG_ITEMS);
+
+    assertEquals(
+        "StrategyConfig{id=macd-long-position, name=MACD Long Position Algo, "
+            + "description=Uses MACD as indicator and takes long position in base currency., "
+            + "className=com.gazbert.nova.algos.MacdLongBase, beanName=macdLongBase,"
+            + " configItems={}}",
+        strategy.toString());
   }
 }

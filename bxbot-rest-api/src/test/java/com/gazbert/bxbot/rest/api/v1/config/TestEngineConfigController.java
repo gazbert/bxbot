@@ -46,6 +46,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.cloud.context.restart.RestartEndpoint;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -75,6 +76,7 @@ public class TestEngineConfigController extends AbstractConfigControllerTest {
   @MockBean private EmailAlerter emailAlerter;
   @MockBean private RestartEndpoint restartEndpoint;
   @MockBean private LogFileWebEndpoint logFileWebEndpoint;
+  @MockBean private AuthenticationManager authenticationManager;
 
   @Before
   public void setupBeforeEachTest() {
@@ -82,15 +84,14 @@ public class TestEngineConfigController extends AbstractConfigControllerTest {
   }
 
   @Test
-  public void testGetEngineConfig() throws Exception {
+  public void testGetEngineConfigWithValidToken() throws Exception {
     given(engineConfigService.getEngineConfig()).willReturn(someEngineConfig());
 
     mockMvc
         .perform(
             get(ENGINE_CONFIG_ENDPOINT_URI)
                 .header(
-                    "Authorization",
-                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD)))
+                    "Authorization", "Bearer " + getJwt(VALID_USER_NAME, VALID_USER_PASSWORD)))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.botId").value(BOT_ID))
@@ -104,40 +105,32 @@ public class TestEngineConfigController extends AbstractConfigControllerTest {
   }
 
   @Test
-  public void testGetEngineConfigWhenUnauthorizedWithBadCredentials() throws Exception {
+  public void testGetEngineConfigWhenUnauthorizedWithMissingToken() throws Exception {
+    mockMvc
+        .perform(get(ENGINE_CONFIG_ENDPOINT_URI).accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isUnauthorized());
+  }
+
+  @Test
+  public void testGetEngineConfigWhenUnauthorizedWithInvalidToken() throws Exception {
     mockMvc
         .perform(
             get(ENGINE_CONFIG_ENDPOINT_URI)
-                .header(
-                    "Authorization",
-                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, INVALID_USER_PASSWORD))
+                .header("Authorization", "Bearer junk.web.token")
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isUnauthorized());
   }
 
   @Test
-  public void testGetEngineConfigWhenUnauthorizedWithMissingCredentials() throws Exception {
-    mockMvc
-        .perform(
-            get(ENGINE_CONFIG_ENDPOINT_URI)
-                .header(
-                    "Authorization",
-                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, INVALID_USER_PASSWORD))
-                .accept(MediaType.APPLICATION_JSON))
-        .andExpect(status().isUnauthorized());
-  }
-
-  @Test
-  public void testUpdateEngineConfig() throws Exception {
+  public void testUpdateEngineConfigWithAdminTokenAuthorized() throws Exception {
     given(engineConfigService.updateEngineConfig(any())).willReturn(someEngineConfig());
 
     mockMvc
         .perform(
             put(ENGINE_CONFIG_ENDPOINT_URI)
                 .header(
-                    "Authorization",
-                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD))
-                .contentType(CONTENT_TYPE)
+                    "Authorization", "Bearer " + getJwt(VALID_ADMIN_NAME, VALID_ADMIN_PASSWORD))
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonify(someEngineConfig())))
         .andDo(print())
         .andExpect(status().isOk())
@@ -152,20 +145,34 @@ public class TestEngineConfigController extends AbstractConfigControllerTest {
   }
 
   @Test
-  public void testUpdateEngineConfigWhenUnauthorizedWithMissingCredentials() throws Exception {
+  public void testUpdateEngineConfigWithUserTokenForbidden() throws Exception {
+    given(engineConfigService.updateEngineConfig(any())).willReturn(someEngineConfig());
+
+    mockMvc
+        .perform(
+            put(ENGINE_CONFIG_ENDPOINT_URI)
+                .header(
+                    "Authorization", "Bearer " + getJwt(VALID_USER_NAME, VALID_USER_PASSWORD))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonify(someEngineConfig())))
+        .andExpect(status().isForbidden());
+
+    verify(engineConfigService, times(0)).updateEngineConfig(any());
+  }
+
+  @Test
+  public void testUpdateEngineConfigWhenUnauthorizedWithMissingToken() throws Exception {
     mockMvc
         .perform(put(ENGINE_CONFIG_ENDPOINT_URI).accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isUnauthorized());
   }
 
   @Test
-  public void testUpdateEngineConfigWhenUnauthorizedWithInvalidCredentials() throws Exception {
+  public void testUpdateEngineConfigWhenUnauthorizedWithInvalidToken() throws Exception {
     mockMvc
         .perform(
             put(ENGINE_CONFIG_ENDPOINT_URI)
-                .header(
-                    "Authorization",
-                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, INVALID_USER_PASSWORD))
+                .header("Authorization", "Bearer junk.web.token")
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isUnauthorized());
   }

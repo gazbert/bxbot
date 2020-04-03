@@ -24,7 +24,7 @@
 package com.gazbert.bxbot.rest.api.v1;
 
 /**
- * Base paths for BX-bot REST endpoints.
+ * Base paths for BX-bot v1 REST endpoints.
  *
  * @author gazbert
  */

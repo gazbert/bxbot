@@ -1,6 +1,6 @@
 # BX-bot
 
-[![Build Status](https://travis-ci.org/gazbert/bxbot.svg?branch=master)](https://travis-ci.org/gazbert/bxbot)
+[![Build Status](https://travis-ci.org/gazbert/bxbot.svg?branch=bxbot-restapi)](https://travis-ci.org/gazbert/bxbot)
 [![Sonarcloud Status](https://sonarcloud.io/api/project_badges/measure?project=gazbert_bxbot&metric=alert_status)](https://sonarcloud.io/dashboard?id=gazbert_bxbot)
 [![Join the chat at https://gitter.im/BX-bot/Lobby](https://badges.gitter.im/BX-bot/Lobby.svg)](https://gitter.im/BX-bot/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)		 	 
  
@@ -29,6 +29,7 @@ traded at the [spot price](http://www.investopedia.com/terms/s/spotprice.asp).
 and released under the [MIT license](http://opensource.org/licenses/MIT).
 
 ## Architecture
+
 ![bxbot-core-architecture.png](./docs/bxbot-core-architecture.png)
 
 - **Trading Engine** - the execution unit. It provides a framework for integrating Exchange Adapters and executing 
@@ -96,7 +97,7 @@ and evaluate the bot, Docker is the way to go.
 1. Install [Docker](https://docs.docker.com/engine/installation/) on the machine you want to run the bot.
 1. Fetch the BX-bot image from [Docker Hub](https://hub.docker.com/r/gazbert/bxbot/): `docker pull gazbert/bxbot:x.x.x` -
    replace `x.x.x` with the [Release](https://github.com/gazbert/bxbot/releases) version of the bot you want to run, e.g.
-   `docker pull gazbert/bxbot:0.12.1`
+   `docker pull gazbert/bxbot:1.0.0`
 1. Run the Docker container: `docker container run --name bxbot-x.x.x -it gazbert/bxbot:x.x.x bash`
 1. Change into the bot's directory: `cd bxbot*`
 1. Configure the bot as described in step 4 of the previous [Maven](#maven) section.
@@ -135,6 +136,7 @@ Clone the repo locally (master branch).
    bxbot-trading-api, bxbot-strategy-api, and bxbot-exchange-api modules.
    
 ## Issue & Change Management
+
 Issues and new features are managed using the project [Issue Tracker](https://github.com/gazbert/bxbot/issues) -
 submit bugs here.
  
@@ -152,6 +154,8 @@ The SNAPSHOT builds on master are active development builds, but the tests shoul
 be deployable.
 
 ## User Guide
+_"Change your opinions, keep to your principles; change your leaves, keep intact your roots."_ - Victor Hugo
+
 ### Configuration
 The bot provides a simple plugin framework for:
 
@@ -390,8 +394,7 @@ All fields are mandatory unless stated otherwise.
   Sample SMTP config for using a Gmail account is shown above - all elements within `smtpConfig` are mandatory. 
 
 ### How do I write my own Trading Strategy?
-_"Battle not with monsters, lest ye become a monster, and if you gaze into the abyss, the abyss gazes also into you."_ -
-Friedrich Nietzsche
+_"I was seldom able to see an opportunity until it had ceased to be one."_ - Mark Twain
 
 The best place to start is with the
 [`ExampleScalpingStrategy`](./bxbot-strategies/src/main/java/com/gazbert/bxbot/strategies/ExampleScalpingStrategy.java) -
@@ -455,9 +458,10 @@ BX-bot jar. You can also create your own jar for your strats, e.g. `my-strats.ja
 runtime classpath - see the _[Installation Guide](#the-manual-way)_ for how to do this.
 
 ### How do I write my own Exchange Adapter?
-_"I was seldom able to see an opportunity until it had ceased to be one."_ - Mark Twain
+_"Battle not with monsters, lest ye become a monster, and if you gaze into the abyss, the abyss gazes also into you."_ -
+Friedrich Nietzsche
 
-The best place to start is with one of the inbuilt Exchange Adapters - see the latest 
+It's not easy, and can be frustrating at times, but a good place to start is with one of the inbuilt Exchange Adapters - see the latest 
 [`BitstampExchangeAdapter`](./bxbot-exchanges/src/main/java/com/gazbert/bxbot/exchanges/BitstampExchangeAdapter.java)
 for example. There is also an Exchange Adapter specific channel on [Gitter](https://gitter.im/BX-bot/exchange-adapters).
 
@@ -531,11 +535,104 @@ at `info`. You can change this default logging configuration in the [`config/log
 We recommend running at `info` level, as `debug` level logging will produce a *lot* of
 output from the Exchange Adapters; it's very handy for debugging, but not so good for your disk space!
  
-## Coming Soon... (Definitely Maybe)
-The following features are in the pipeline:
+### REST API
+_"Enlightenment means taking full responsibility for your life."_ - William Blake
 
-- A REST API for administering the bot. It's being developed on the 
-  [bxbot-restapi](https://github.com/gazbert/bxbot/tree/bxbot-restapi) branch.
-- A UI built with [React](https://reactjs.org/) - it will consume the REST API. 
+The bot has a REST API that allows you to remotely:
+
+* View and update Engine, Exchange, Markets, Strategy, and Email Alerts config.
+* View and download the log file.
+* Restart the bot - this is necessary for any config changes to take effect.
+
+It has role based access control 
+([RBAC](https://en.wikipedia.org/wiki/Role-based_access_control)): Users can view config and the
+logs, but only administrators can update config and restart the bot.
+
+It is secured using [JWT](https://jwt.io/) over [TLS](https://en.wikipedia.org/wiki/Transport_Layer_Security).
+
+You can view the [Swagger](https://swagger.io/tools/swagger-ui/) docs at: 
+[http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html) once you've configured
+and started the bot.
+
+#### Configuration
+The REST API is disabled by default to prevent accidental exposure of unencrypted traffic over public networks. 
+To enable it, you need to change the `server.port` in the 
+[./config/application.properties](./config/application.properties) from '-1' to the port you want 
+the bot to listen on - see the _[TLS](#tls)_ section below if you plan on accessing the REST API over a public network.
+
+You _must_ change the `bxbot.restapi.jwt.secret` value in the 
+[./config/application.properties](./config/application.properties) before using the REST API over a public network.
+This is the key that is used to sign your web tokens - the JWTs are signed using the HS512 algorithm.
   
+Other interesting configuration in the [./config/application.properties](./config/application.properties) includes:
+
+* `bxbot.restapi.maxLogfileLines` - the maximum number of lines to be returned in a view log file request. 
+(For a head request, the end of the file is truncated; for a tail request the start of the file is truncated).
+
+* `bxbot.restapi.maxLogfileDownloadSize` - the maximum size of the logfile to download. 
+If the size of the logfile exceeds this limit, the end of the file will be truncated.
+
+* `bxbot.restapi.jwt.expiration` - the expires time of the JWT. Set to 10 mins. Be sure you know the
+risks if you decide to extend the expiry time.
+
+#### Users
+You _must_ change the `PASSWORD` values in the 
+[./bxbot-rest-api/src/main/resources/import.sql](./bxbot-rest-api/src/main/resources/import.sql)
+before using the REST API over a public network - see instructions in the file on how to 
+[bcrypt](https://en.wikipedia.org/wiki/Bcrypt) your passwords.
+
+2 users have been set up out of the box: `user` and `admin`. These users have `user` and `admin`
+roles respectively. Passwords are the same as the usernames - remember to change these :-)
+
+When the bot starts up, Spring Boot will load the `import.sql` file and store the users and their 
+access rights in its [H2](https://www.h2database.com/html/main.html) in-memory database.
+
+#### Authentication
+The REST API endpoints require a valid JWT to be passed in the `Authorization` header of any requests.
+
+To obtain a JWT, your REST client needs to call the `/api/token` endpoint with a valid username/password 
+contained in the `import.sql` file. See the 
+[Authentication](http://localhost:8080/swagger-ui.html#/Authentication/getTokenUsingPOST) 
+Swagger docs for how to do this.
+
+The returned JWT expires after 10 mins. Your client should call the `/api/refresh` endpoint with the
+JWT before it expires in order to get a new one. Alternatively, you can re-authenticate using the
+`/api/token` endpoint.
+
+#### TLS
+The REST API _must_ be configured to use TLS before accessing it over a public network.
+
+You will need to 
+[create a keystore](https://docs.oracle.com/en/java/javase/11/tools/keytool.html) - the command to
+create a [PKCS12](https://en.wikipedia.org/wiki/PKCS_12) self-signed certificate is shown below:
+
+``` bash
+keytool -genkeypair -alias rest-api-keystore -keyalg RSA -keysize 2048 -storetype PKCS12 -keystore keystore.p12 -validity 3650
+```
+ 
+The keystore must be on the app's classpath - you can put it in
+the [./src/main/resources](./src/main/resources) and re-build the app to get up and running fast.
+For a Production system, you'll want to replace the self-signed certificate with a 
+CA signed certificate.
+
+The 'TLS Configuration' section in the [./config/application.properties](./config/application.properties) 
+file needs the following properties set:
+
+``` properties
+# Spring Boot profile for REST API.
+# Must use https profile in Production environment.
+spring.profiles.active=https
+
+# SSL (TLS) configuration to secure the REST API.
+# Must be enabled in Production environment.
+server.port=8443
+security.require-ssl=true
+server.ssl.key-store=classpath:keystore.p12
+server.ssl.key-store-password=secret
+server.ssl.key-store-type=PKCS12
+```
+
+## Coming Soon... (Definitely Maybe)
+A UI built with [React](https://reactjs.org/) - it will consume the REST API. 
+
 See the [Project Board](https://github.com/gazbert/bxbot/projects/2) for timescales and progress.

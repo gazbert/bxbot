@@ -50,6 +50,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.cloud.context.restart.RestartEndpoint;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -96,6 +97,7 @@ public class TestExchangeConfigController extends AbstractConfigControllerTest {
   @MockBean private EmailAlerter emailAlerter;
   @MockBean private RestartEndpoint restartEndpoint;
   @MockBean private LogFileWebEndpoint logFileWebEndpoint;
+  @MockBean private AuthenticationManager authenticationManager;
 
   @Before
   public void setupBeforeEachTest() {
@@ -103,15 +105,14 @@ public class TestExchangeConfigController extends AbstractConfigControllerTest {
   }
 
   @Test
-  public void testGetExchangeConfig() throws Exception {
+  public void testGetExchangeConfigWithValidToken() throws Exception {
     given(exchangeConfigService.getExchangeConfig()).willReturn(someExchangeConfig());
 
     mockMvc
         .perform(
             get(EXCHANGE_CONFIG_ENDPOINT_URI)
                 .header(
-                    "Authorization",
-                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD)))
+                    "Authorization", "Bearer " + getJwt(VALID_USER_NAME, VALID_USER_PASSWORD)))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.name").value(EXCHANGE_NAME))
@@ -134,26 +135,24 @@ public class TestExchangeConfigController extends AbstractConfigControllerTest {
   }
 
   @Test
-  public void testGetExchangeConfigWhenUnauthorizedWithMissingCredentials() throws Exception {
+  public void testGetExchangeConfigWhenUnauthorizedWithMissingToken() throws Exception {
     mockMvc
         .perform(get(EXCHANGE_CONFIG_ENDPOINT_URI).accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isUnauthorized());
   }
 
   @Test
-  public void testGetExchangeConfigWhenUnauthorizedWithInvalidCredentials() throws Exception {
+  public void testGetExchangeConfigWhenUnauthorizedWithInvalidToken() throws Exception {
     mockMvc
         .perform(
             get(EXCHANGE_CONFIG_ENDPOINT_URI)
-                .header(
-                    "Authorization",
-                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, INVALID_USER_PASSWORD))
+                .header("Authorization", "Bearer junk.web.token")
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isUnauthorized());
   }
 
   @Test
-  public void testUpdateExchangeConfig() throws Exception {
+  public void testUpdateExchangeConfigWithAdminTokenAuthorized() throws Exception {
     given(exchangeConfigService.getExchangeConfig()).willReturn(someExchangeConfig());
     given(exchangeConfigService.updateExchangeConfig(any())).willReturn(someExchangeConfig());
 
@@ -161,9 +160,8 @@ public class TestExchangeConfigController extends AbstractConfigControllerTest {
         .perform(
             put(EXCHANGE_CONFIG_ENDPOINT_URI)
                 .header(
-                    "Authorization",
-                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, VALID_USER_PASSWORD))
-                .contentType(CONTENT_TYPE)
+                    "Authorization", "Bearer " + getJwt(VALID_ADMIN_NAME, VALID_ADMIN_PASSWORD))
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonify(someExchangeConfig())))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.name").value(EXCHANGE_NAME))
@@ -187,20 +185,36 @@ public class TestExchangeConfigController extends AbstractConfigControllerTest {
   }
 
   @Test
-  public void testUpdateExchangeConfigWhenUnauthorizedWithMissingCredentials() throws Exception {
+  public void testUpdateExchangeConfigWithUserTokenForbidden() throws Exception {
+    given(exchangeConfigService.getExchangeConfig()).willReturn(someExchangeConfig());
+    given(exchangeConfigService.updateExchangeConfig(any())).willReturn(someExchangeConfig());
+
+    mockMvc
+        .perform(
+            put(EXCHANGE_CONFIG_ENDPOINT_URI)
+                .header(
+                    "Authorization", "Bearer " + getJwt(VALID_USER_NAME, VALID_USER_PASSWORD))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonify(someExchangeConfig())))
+        .andExpect(status().isForbidden());
+
+    verify(exchangeConfigService, times(0)).getExchangeConfig();
+    verify(exchangeConfigService, times(0)).updateExchangeConfig(any());
+  }
+
+  @Test
+  public void testUpdateExchangeConfigWhenUnauthorizedWithMissingToken() throws Exception {
     mockMvc
         .perform(put(EXCHANGE_CONFIG_ENDPOINT_URI).accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isUnauthorized());
   }
 
   @Test
-  public void testUpdateExchangeConfigWhenUnauthorizedWithInvalidCredentials() throws Exception {
+  public void testUpdateExchangeConfigWhenUnauthorizedWithInvalidToken() throws Exception {
     mockMvc
         .perform(
             put(EXCHANGE_CONFIG_ENDPOINT_URI)
-                .header(
-                    "Authorization",
-                    buildAuthorizationHeaderValue(VALID_USER_LOGIN_ID, INVALID_USER_PASSWORD))
+                .header("Authorization", "Bearer junk.web.token")
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isUnauthorized());
   }

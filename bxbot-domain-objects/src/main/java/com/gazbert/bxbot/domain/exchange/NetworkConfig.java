@@ -26,6 +26,7 @@ package com.gazbert.bxbot.domain.exchange;
 import com.google.common.base.MoreObjects;
 import java.util.ArrayList;
 import java.util.List;
+import javax.validation.constraints.Min;
 
 /**
  * Domain object representing the Exchange Network config.
@@ -34,7 +35,9 @@ import java.util.List;
  */
 public class NetworkConfig {
 
+  @Min(message = "Connection must be more than 1 second", value = 1)
   private Integer connectionTimeout;
+
   private List<Integer> nonFatalErrorCodes;
   private List<String> nonFatalErrorMessages;
 

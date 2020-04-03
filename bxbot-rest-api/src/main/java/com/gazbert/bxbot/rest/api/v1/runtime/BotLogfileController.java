@@ -25,9 +25,12 @@ package com.gazbert.bxbot.rest.api.v1.runtime;
 
 import static com.gazbert.bxbot.rest.api.v1.EndpointLocations.RUNTIME_ENDPOINT_BASE_URI;
 
-import com.gazbert.bxbot.rest.api.v1.RestApiConfiguration;
+import com.gazbert.bxbot.rest.api.RestApiConfig;
 import com.gazbert.bxbot.services.runtime.BotLogfileService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiParam;
 import java.io.IOException;
+import java.security.Principal;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -37,12 +40,12 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import springfox.documentation.annotations.ApiIgnore;
 
 /**
  * Controller for directing Bot Logfile requests.
@@ -50,6 +53,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author gazbert
  * @since 1.0
  */
+@Api(tags = {"Bot Logfile"})
 @RestController
 @RequestMapping(RUNTIME_ENDPOINT_BASE_URI)
 public class BotLogfileController {
@@ -58,41 +62,40 @@ public class BotLogfileController {
   private static final String LOGFILE_RESOURCE_PATH = "/logfile";
   private static final String LOGFILE_DOWNLOAD_RESOURCE_PATH = "/logfile/download";
 
-  private final RestApiConfiguration restApiConfiguration;
+  private final RestApiConfig restApiConfig;
   private final BotLogfileService botLogfileService;
 
   @Autowired
-  public BotLogfileController(
-      RestApiConfiguration restApiConfiguration, BotLogfileService botLogfileService) {
-    this.restApiConfiguration = restApiConfiguration;
+  public BotLogfileController(RestApiConfig restApiConfig, BotLogfileService botLogfileService) {
+    this.restApiConfig = restApiConfig;
     this.botLogfileService = botLogfileService;
   }
 
   /**
    * Returns the logfile as a download.
    *
-   * <p>If the file is larger than {@link RestApiConfiguration#getLogfileDownloadSize()}, the
-   * end of the logfile will be truncated.
+   * <p>If the file is larger than {@link RestApiConfig#getLogfileDownloadSize()}, the end of the
+   * logfile will be truncated.
    *
-   * @param user the authenticated user making the request.
+   * @param principal the authenticated user making the request.
    * @param request the request.
    * @return the logfile as a download.
    */
+  @PreAuthorize("hasRole('USER')")
   @GetMapping(value = LOGFILE_DOWNLOAD_RESOURCE_PATH)
   public ResponseEntity<Resource> downloadLogfile(
-      @AuthenticationPrincipal User user, HttpServletRequest request) {
+      @ApiIgnore Principal principal, HttpServletRequest request) {
 
     LOG.info(
         () ->
             "GET "
                 + LOGFILE_RESOURCE_PATH
                 + " - downloadLogfile() - caller: "
-                + user.getUsername());
+                + principal.getName());
 
     Resource logfile;
     try {
-      logfile =
-          botLogfileService.getLogfileAsResource(restApiConfiguration.getLogfileDownloadSize());
+      logfile = botLogfileService.getLogfileAsResource(restApiConfig.getLogfileDownloadSize());
     } catch (IOException e) {
       return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -119,41 +122,45 @@ public class BotLogfileController {
   /**
    * Returns logfile content for the bot.
    *
-   * <p>If the file has more lines than {@link RestApiConfiguration#getMaxLogfileLines()}, the
-   * content will be truncated accordingly:
+   * <p>If the file has more lines than {@link RestApiConfig#getMaxLogfileLines()}, the content will
+   * be truncated accordingly:
    *
    * <ul>
    *   <li>For a head request, the end of the file will be truncated.
    *   <li>For a tail request, the start of the file will be truncated.
    *   <li>If head or tail param is not specified, the start of the file will be truncated.
-   *   <li>If both a head and tail param is present (just why?!!), a tail request will be
-   *       actioned.
+   *   <li>If both a head and tail param is present (just why?!!), a tail request will be actioned.
    * </ul>
    *
-   * @param user the authenticated user making the request.
-   * @param head the optional head line count.
-   * @param tail the optional tail line count.
+   * @param principal the authenticated user making the request.
+   * @param head the number of lines to fetch from head of file.
+   * @param tail the number of lines to fetch from tail of file.
    * @return the logfile.
    */
+  @PreAuthorize("hasRole('USER')")
   @GetMapping(value = LOGFILE_RESOURCE_PATH)
   public ResponseEntity<String> getLogfile(
-      @AuthenticationPrincipal User user,
-      @RequestParam(required = false) Integer head,
-      @RequestParam(required = false) Integer tail) {
+      @ApiIgnore Principal principal,
+      @ApiParam(value = "Number of lines to fetch from head of file.")
+          @RequestParam(required = false)
+          Integer head,
+      @ApiParam(value = "Number of lines to fetch from tail of file.", example = "100")
+          @RequestParam(required = false)
+          Integer tail) {
 
     LOG.info(
         () ->
             "GET "
                 + LOGFILE_RESOURCE_PATH
                 + " - getLogfile() - caller: "
-                + user.getUsername()
+                + principal.getName()
                 + ", head="
                 + head
                 + ", tail="
                 + tail);
 
     String logfile;
-    final int maxLogfileLineCount = restApiConfiguration.getMaxLogfileLines();
+    final int maxLogfileLineCount = restApiConfig.getMaxLogfileLines();
 
     try {
       if (head != null && head > 0) {
@@ -179,7 +186,7 @@ public class BotLogfileController {
         }
 
       } else {
-        logfile = botLogfileService.getLogfile(restApiConfiguration.getMaxLogfileLines());
+        logfile = botLogfileService.getLogfile(restApiConfig.getMaxLogfileLines());
       }
 
       return new ResponseEntity<>(logfile, null, HttpStatus.OK);

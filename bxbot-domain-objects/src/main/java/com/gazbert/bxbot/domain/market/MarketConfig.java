@@ -25,22 +25,27 @@ package com.gazbert.bxbot.domain.market;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 
 /**
  * Domain object representing a Market config.
  *
  * @author gazbert
  */
+@ApiModel
 public class MarketConfig {
 
+  @ApiModelProperty(required = true, position = 1)
   private String id;
+
   private String name;
   private String baseCurrency;
   private String counterCurrency;
   private boolean enabled;
   private String tradingStrategyId;
 
-  // required for Jackson
+  // Required by ConfigurableComponentFactory
   public MarketConfig() {
   }
 
