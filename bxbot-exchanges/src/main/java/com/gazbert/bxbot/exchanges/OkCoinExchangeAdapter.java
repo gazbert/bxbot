@@ -90,8 +90,10 @@ import org.apache.logging.log4j.Logger;
  * <em>all</em> other failures.
  *
  * @author gazbert
- * @since 1.0
+ * @deprecated #120 : The OKCoin V1 API is now deprecated and no longer works - adapter needs
+ *     updating to use V3 API.
  */
+@Deprecated(forRemoval = true)
 public final class OkCoinExchangeAdapter extends AbstractExchangeAdapter
     implements ExchangeAdapter {
 
