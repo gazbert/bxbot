@@ -99,7 +99,8 @@ public class TestBotStatusController extends AbstractRuntimeControllerTest {
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.botId").value(BOT_ID))
         .andExpect(jsonPath("$.displayName").value(BOT_NAME))
-        .andExpect(jsonPath("$.status").value(BOT_STATUS));
+        .andExpect(jsonPath("$.status").value(BOT_STATUS))
+        .andExpect(jsonPath("$.datetime").isNotEmpty());
 
     verify(engineConfigService, times(1)).getEngineConfig();
   }

@@ -25,7 +25,9 @@ package com.gazbert.bxbot.domain.bot;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
+import java.util.Date;
 import org.junit.Test;
 
 /**
@@ -38,13 +40,21 @@ public class TestBotStatus {
   private static final String BOT_ID = "avro-707_1";
   private static final String DISPLAY_NAME = "Avro 707";
   private static final String STATUS = "running";
+  private static final Date DATE = new Date();
 
   @Test
   public void testInitialisationWorksAsExpected() {
-    final BotStatus botStatus = new BotStatus(BOT_ID, DISPLAY_NAME, STATUS);
+    final BotStatus botStatus = new BotStatus(BOT_ID, DISPLAY_NAME, STATUS, DATE);
     assertEquals(BOT_ID, botStatus.getBotId());
     assertEquals(DISPLAY_NAME, botStatus.getDisplayName());
     assertEquals(STATUS, botStatus.getStatus());
+    assertEquals(DATE.getTime(), botStatus.getDatetime().getTime());
+
+    final BotStatus botStatusNullDate = new BotStatus(BOT_ID, DISPLAY_NAME, STATUS, null);
+    assertEquals(BOT_ID, botStatusNullDate.getBotId());
+    assertEquals(DISPLAY_NAME, botStatusNullDate.getDisplayName());
+    assertEquals(STATUS, botStatusNullDate.getStatus());
+    assertNull(botStatusNullDate.getDatetime());
   }
 
   @Test
@@ -53,6 +63,7 @@ public class TestBotStatus {
     assertNull(botStatus.getBotId());
     assertNull(botStatus.getDisplayName());
     assertNull(botStatus.getStatus());
+    assertNull(botStatus.getDatetime());
 
     botStatus.setBotId(BOT_ID);
     assertEquals(BOT_ID, botStatus.getBotId());
@@ -62,12 +73,18 @@ public class TestBotStatus {
 
     botStatus.setStatus(STATUS);
     assertEquals(STATUS, botStatus.getStatus());
+
+    botStatus.setDatetime(null);
+    assertNull(botStatus.getDatetime());
+
+    botStatus.setDatetime(DATE);
+    assertEquals(DATE.getTime(), botStatus.getDatetime().getTime());
   }
 
   @Test
   public void testToStringWorksAsExpected() {
-    final BotStatus botStatus = new BotStatus(BOT_ID, DISPLAY_NAME, STATUS);
-    assertEquals(
-        "BotStatus{botId=avro-707_1, displayName=Avro 707, status=running}", botStatus.toString());
+    final BotStatus botStatus = new BotStatus(BOT_ID, DISPLAY_NAME, STATUS, DATE);
+    assertTrue(botStatus.toString().startsWith(
+        "BotStatus{botId=avro-707_1, displayName=Avro 707, status=running, datetime="));
   }
 }

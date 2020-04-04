@@ -26,6 +26,7 @@ package com.gazbert.bxbot.domain.bot;
 import com.google.common.base.MoreObjects;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import java.util.Date;
 
 /**
  * Domain object representing the Bot's status.
@@ -40,16 +41,18 @@ public class BotStatus {
 
   private String displayName;
   private String status;
+  private Date datetime;
 
   // Required by ConfigurableComponentFactory
   public BotStatus() {
   }
 
   /** Creates a new BotStatus. */
-  public BotStatus(String botId, String displayName, String status) {
+  public BotStatus(String botId, String displayName, String status, Date datetime) {
     this.botId = botId;
     this.displayName = displayName;
     this.status = status;
+    setDatetime(datetime);
   }
 
   public String getBotId() {
@@ -76,12 +79,21 @@ public class BotStatus {
     this.status = status;
   }
 
+  public Date getDatetime() {
+    return datetime != null ? new Date(datetime.getTime()) : null;
+  }
+
+  public void setDatetime(Date datetime) {
+    this.datetime = datetime != null ? new Date(datetime.getTime()) : null;
+  }
+
   @Override
   public String toString() {
     return MoreObjects.toStringHelper(this)
         .add("botId", botId)
         .add("displayName", displayName)
         .add("status", status)
+        .add("datetime", getDatetime())
         .toString();
   }
 }

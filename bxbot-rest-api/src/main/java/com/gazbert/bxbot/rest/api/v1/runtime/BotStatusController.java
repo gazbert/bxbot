@@ -31,6 +31,7 @@ import com.gazbert.bxbot.services.config.EngineConfigService;
 import com.gazbert.bxbot.services.runtime.BotStatusService;
 import io.swagger.annotations.Api;
 import java.security.Principal;
+import java.util.Date;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -84,6 +85,7 @@ public class BotStatusController {
     botStatus.setBotId(engineConfig.getBotId());
     botStatus.setDisplayName(engineConfig.getBotName());
     botStatus.setStatus(status);
+    botStatus.setDatetime(new Date());
 
     LOG.info(() -> "Response: " + botStatus);
     return botStatus;
