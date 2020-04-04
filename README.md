@@ -560,7 +560,7 @@ and started the bot.
 The REST API listens for plain HTTP traffic on port `8080` by default - you can change the 
 `server.port` in the [./config/application.properties](./config/application.properties) file.
  
-**IMPORTANT:** The bot must be configured to use TLS if you plan on accessing the REST API over a
+**Warning:** The bot must be configured to use TLS if you plan on accessing the REST API over a
 public network - see the _[TLS](#tls)_ section below.
 
 You _must_ change the `bxbot.restapi.jwt.secret` value in the 
