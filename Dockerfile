@@ -1,4 +1,5 @@
 FROM openjdk:11
+
 RUN apt-get update
 RUN apt-get install -y maven
 
@@ -12,3 +13,5 @@ WORKDIR /
 RUN tar -xzf bxbot-parent-*-dist.tar.gz
 RUN rm bxbot-parent-*-dist.tar.gz
 RUN rm -rf ./bxbot-staging
+
+EXPOSE 8080

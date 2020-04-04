@@ -95,10 +95,8 @@ If you want to just play around with the
 and evaluate the bot, Docker is the way to go.
 
 1. Install [Docker](https://docs.docker.com/engine/installation/) on the machine you want to run the bot.
-1. Fetch the BX-bot image from [Docker Hub](https://hub.docker.com/r/gazbert/bxbot/): `docker pull gazbert/bxbot:x.x.x` -
-   replace `x.x.x` with the [Release](https://github.com/gazbert/bxbot/releases) version of the bot you want to run, e.g.
-   `docker pull gazbert/bxbot:1.0.0`
-1. Run the Docker container: `docker container run --name bxbot-x.x.x -it gazbert/bxbot:x.x.x bash`
+1. Fetch the BX-bot image from [Docker Hub](https://hub.docker.com/r/gazbert/bxbot/): `docker pull gazbert/bxbot:1.0.0`
+1. Run the Docker container: `docker container run --publish=8080:8080 --name bxbot-1.0.0 -it gazbert/bxbot:1.0.0 bash`
 1. Change into the bot's directory: `cd bxbot*`
 1. Configure the bot as described in step 4 of the previous [Maven](#maven) section.
 1. Usage: `./bxbot.sh [start|stop|status]`
