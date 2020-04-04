@@ -141,7 +141,7 @@ public class BotLogfileController {
   @GetMapping(value = LOGFILE_RESOURCE_PATH)
   public ResponseEntity<String> getLogfile(
       @ApiIgnore Principal principal,
-      @ApiParam(value = "Number of lines to fetch from head of file.")
+      @ApiParam(value = "Number of lines to fetch from head of file.", example = "100")
           @RequestParam(required = false)
           Integer head,
       @ApiParam(value = "Number of lines to fetch from tail of file.", example = "100")
