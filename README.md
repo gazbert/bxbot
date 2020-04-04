@@ -114,8 +114,11 @@ If you plan on developing the bot, you'll need [openjdk-11-jdk](http://openjdk.j
 You can use [Maven](https://maven.apache.org) or [Gradle](https://gradle.org/) to build the bot and pull down the 
 dependencies. BX-bot depends on [Spring Boot](http://projects.spring.io/spring-boot/), 
 [log4j](http://logging.apache.org/log4j), [JavaMail](https://java.net/projects/javamail/pages/Home), 
-[Google Gson](https://code.google.com/p/google-gson/), [Google Guava](https://github.com/google/guava), and 
-[Snake YAML](https://bitbucket.org/asomov/snakeyaml).
+[Google Gson](https://code.google.com/p/google-gson/), [Google Guava](https://github.com/google/guava), 
+[Snake YAML](https://bitbucket.org/asomov/snakeyaml), [Java JWT](https://github.com/jwtk/jjwt),
+[H2](https://www.h2database.com/html/main.html), [JAXB](https://javaee.github.io/jaxb-v2/),
+[Jakarta Bean Validation](https://beanvalidation.org/), [Springfox](https://github.com/springfox/springfox),
+and [Swagger](https://github.com/swagger-api/swagger-core).
 
 The instructions below are for Linux/macOS, but equivalent Windows scripts are included.
 
@@ -611,7 +614,7 @@ keytool -genkeypair -alias rest-api-keystore -keyalg RSA -keysize 2048 -storetyp
 ```
  
 The keystore must be on the app's classpath - you can put it in
-the [./src/main/resources](./src/main/resources) and re-build the app to get up and running fast.
+the [./bxbot-rest-api/src/main/resources](./bxbot-rest-api/src/main/resources) and re-build the app to get up and running fast.
 For a Production system, you'll want to replace the self-signed certificate with a 
 CA signed certificate.
 
