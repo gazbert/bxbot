@@ -549,17 +549,19 @@ It has role based access control
 ([RBAC](https://en.wikipedia.org/wiki/Role-based_access_control)): Users can view config and the
 logs, but only administrators can update config and restart the bot.
 
-It is secured using [JWT](https://jwt.io/) over [TLS](https://en.wikipedia.org/wiki/Transport_Layer_Security).
+It is secured using [JWT](https://jwt.io/) and has [TLS](https://en.wikipedia.org/wiki/Transport_Layer_Security)
+support for Production environments. 
 
 You can view the [Swagger](https://swagger.io/tools/swagger-ui/) docs at: 
 [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html) once you've configured
 and started the bot.
 
 #### Configuration
-The REST API is disabled by default to prevent accidental exposure of unencrypted traffic over public networks. 
-To enable it, you need to change the `server.port` in the 
-[./config/application.properties](./config/application.properties) from '-1' to the port you want 
-the bot to listen on - see the _[TLS](#tls)_ section below if you plan on accessing the REST API over a public network.
+The REST API listens for plain HTTP traffic on port `8080` by default - you can change the 
+`server.port` in the [./config/application.properties](./config/application.properties) file.
+ 
+**IMPORTANT:** The bot must be configured to use TLS if you plan on accessing the REST API over a
+public network - see the _[TLS](#tls)_ section below.
 
 You _must_ change the `bxbot.restapi.jwt.secret` value in the 
 [./config/application.properties](./config/application.properties) before using the REST API over a public network.
