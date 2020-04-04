@@ -42,7 +42,7 @@
     </developer>
   </developers>
   <properties>
-    <revision>1.0.0-SNAPSHOT</revision>
+    <revision>1.0.0</revision>
     <!-- spring-tx should be same version as Spring Boot's spring-core version -->
     <spring-tx.version>5.1.14.RELEASE</spring-tx.version>
     <powermock.version>2.0.6</powermock.version>
