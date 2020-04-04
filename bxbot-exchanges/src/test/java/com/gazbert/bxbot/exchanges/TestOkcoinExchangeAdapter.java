@@ -67,6 +67,8 @@ import org.powermock.modules.junit4.PowerMockRunner;
 /**
  * Tests the behaviour of the OKCoin Exchange Adapter.
  *
+ * <p>DO NOT USE: See https://github.com/gazbert/bxbot/issues/122
+ *
  * @author gazbert
  * @deprecated #120 : The OKCoin V1 API is now deprecated and no longer works - adapter needs
  *     updating to use V3 API.

@@ -1,6 +1,8 @@
 ############################################################################################
 # Exchange Adapter YAML config.
 #
+# DO NOT USE: See https://github.com/gazbert/bxbot/issues/122
+#
 # - Sample config below currently set to run against OKCoin.
 # - All fields are mandatory unless stated otherwise.
 # - BX-bot only supports running 1 exchange per bot.

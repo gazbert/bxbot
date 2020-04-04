@@ -1,6 +1,8 @@
 ############################################################################################
 # Market YAML config.
 #
+# DO NOT USE: See https://github.com/gazbert/bxbot/pull/120
+#
 # - All fields are mandatory unless stated otherwise.
 # - Multiple market blocks can be listed.
 # - The indentation levels are significant in YAML: https://en.wikipedia.org/wiki/YAML

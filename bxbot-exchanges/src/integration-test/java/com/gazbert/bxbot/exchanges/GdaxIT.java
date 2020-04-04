@@ -49,6 +49,8 @@ import org.junit.Test;
 /**
  * Basic integration testing with GDAX exchange.
  *
+ * <p>DO NOT USE: See https://github.com/gazbert/bxbot/pull/120
+ *
  * @author gazbert
  * @deprecated #120 : GDAX exchange has been superseded by Coinbase Pro: https://pro.coinbase.com/
  */
@@ -74,9 +76,7 @@ public class GdaxIT {
   private NetworkConfig networkConfig;
   private OtherConfig otherConfig;
 
-  /**
-   * Create some exchange config - the TradingEngine would normally do this.
-   */
+  /** Create some exchange config - the TradingEngine would normally do this. */
   @Before
   public void setupForEachTest() {
     authenticationConfig = createMock(AuthenticationConfig.class);

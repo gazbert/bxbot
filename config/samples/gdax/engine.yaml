@@ -1,6 +1,8 @@
 ############################################################################################
 # Trading Engine YAML config.
 #
+# DO NOT USE: See https://github.com/gazbert/bxbot/pull/120
+#
 # - All fields are mandatory unless stated otherwise.
 # - Only 1 engine block can be specified.
 # - The indentation levels are significant in YAML: https://en.wikipedia.org/wiki/YAML

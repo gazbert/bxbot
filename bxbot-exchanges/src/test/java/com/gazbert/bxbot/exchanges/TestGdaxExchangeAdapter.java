@@ -70,6 +70,8 @@ import org.powermock.modules.junit4.PowerMockRunner;
 /**
  * Tests the behaviour of the GDAX Exchange Adapter.
  *
+ * <p>DO NOT USE: See https://github.com/gazbert/bxbot/pull/120
+ *
  * @author gazbert
  * @deprecated #120 : GDAX exchange has been superseded by Coinbase Pro: https://pro.coinbase.com/
  */

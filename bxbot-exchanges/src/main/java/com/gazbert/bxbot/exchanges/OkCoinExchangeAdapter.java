@@ -64,7 +64,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * Exchange Adapter for integrating with the OKCoin exchange. The OKCoin API is documented <a
+ * DO NOT USE: See https://github.com/gazbert/bxbot/issues/122
+ *
+ * <p>Exchange Adapter for integrating with the OKCoin exchange. The OKCoin API is documented <a
  * href="https://www.okcoin.com/about/rest_getStarted.do">here</a>.
  *
  * <p><strong> DISCLAIMER: This Exchange Adapter is provided as-is; it might have bugs in it and you

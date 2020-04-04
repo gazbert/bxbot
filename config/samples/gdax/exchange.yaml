@@ -1,7 +1,7 @@
 ############################################################################################
 # Exchange Adapter YAML config.
 #
-# #120 : Deprecated: GDAX exchange has been superseded by Coinbase Pro: https://pro.coinbase.com/
+# DO NOT USE: See https://github.com/gazbert/bxbot/pull/120
 #
 # - Sample config below currently set to run against GDAX (formerly Coinbase).
 # - All fields are mandatory unless stated otherwise.

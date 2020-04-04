@@ -49,8 +49,11 @@ import org.junit.Test;
 /**
  * Basic integration testing with OKCoin exchange.
  *
+ * <p>DO NOT USE: See https://github.com/gazbert/bxbot/issues/122
+ *
  * @author gazbert
  */
+@Deprecated(forRemoval = true)
 @Ignore("gazbert 26/03/2020 - v1 API is now deprecated and disabled. Adapter needs updating!")
 public class OkCoinIT {
 
@@ -72,9 +75,7 @@ public class OkCoinIT {
   private NetworkConfig networkConfig;
   private OtherConfig otherConfig;
 
-  /**
-   * Create some exchange config - the TradingEngine would normally do this.
-   */
+  /** Create some exchange config - the TradingEngine would normally do this. */
   @Before
   public void setupForEachTest() {
     authenticationConfig = createMock(AuthenticationConfig.class);

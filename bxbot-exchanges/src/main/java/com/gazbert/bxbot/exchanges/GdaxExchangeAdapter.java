@@ -71,6 +71,8 @@ import org.apache.logging.log4j.Logger;
 /**
  * <strong>GDAX exchange has been superseded by Coinbase Pro: https://pro.coinbase.com/</strong>
  *
+ * <p>DO NOT USE: See https://github.com/gazbert/bxbot/pull/120
+ *
  * <p>Exchange Adapter for integrating with the GDAX (formerly Coinbase) exchange. The GDAX API is
  * documented <a href="https://www.gdax.com/">here</a>.
  *
