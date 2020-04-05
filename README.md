@@ -95,8 +95,8 @@ If you want to just play around with the
 and evaluate the bot, Docker is the way to go.
 
 1. Install [Docker](https://docs.docker.com/engine/installation/) on the machine you want to run the bot.
-1. Fetch the BX-bot image from [Docker Hub](https://hub.docker.com/r/gazbert/bxbot/): `docker pull gazbert/bxbot:1.0.0`
-1. Run the Docker container: `docker container run --publish=8080:8080 --name bxbot-1.0.0 -it gazbert/bxbot:1.0.0 bash`
+1. Fetch the BX-bot image from [Docker Hub](https://hub.docker.com/r/gazbert/bxbot/): `docker pull gazbert/bxbot:1.0.1`
+1. Run the Docker container: `docker container run --publish=8080:8080 --name bxbot-1.0.1 -it gazbert/bxbot:1.0.1 bash`
 1. Change into the bot's directory: `cd bxbot*`
 1. Configure the bot as described in step 4 of the previous [Maven](#maven) section.
 1. Usage: `./bxbot.sh [start|stop|status]`
@@ -563,7 +563,7 @@ The REST API listens for plain HTTP traffic on port `8080` by default - you can 
 **Warning:** The bot must be configured to use TLS if you plan on accessing the REST API over a
 public network - see the _[TLS](#tls)_ section below.
 
-You _must_ change the `bxbot.restapi.jwt.secret` value in the 
+You _must_ also change the `bxbot.restapi.jwt.secret` value in the 
 [./config/application.properties](./config/application.properties) before using the REST API over a public network.
 This is the key that is used to sign your web tokens - the JWTs are signed using the HS512 algorithm.
   
