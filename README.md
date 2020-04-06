@@ -24,6 +24,8 @@ Feel free to improve these or contribute new adapters to the project; that would
 
 The Trading API provides support for [limit orders](http://www.investopedia.com/terms/l/limitorder.asp)
 traded at the [spot price](http://www.investopedia.com/terms/s/spotprice.asp).
+If you're looking for something more sophisticated with a much richer Trading API, take a look at
+[XChange](https://github.com/knowm/XChange).
  
 **Warning:** Trading Bitcoin carries significant financial risk; you could lose money. This software is provided 'as is'
 and released under the [MIT license](http://opensource.org/licenses/MIT).
