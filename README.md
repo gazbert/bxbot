@@ -53,7 +53,7 @@ it will log the error, send an email alert (if configured), and then shut down.
   
 The bot runs on Linux, macOS, and Windows.
 
-BX-bot requires a Java 11+ JDK ([openjdk-11-jdk](http://openjdk.java.net/projects/jdk/11/) or 
+BX-bot requires a Java 11+ JDK (e.g. [openjdk-11-jdk](http://openjdk.java.net/projects/jdk/11/) or 
 [Oracle JDK 11](https://www.oracle.com/technetwork/java/javase/downloads/jdk11-downloads-5066655.html))
 to be installed on the machine you are going to use to build and run the bot. 
 
