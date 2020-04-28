@@ -53,7 +53,7 @@ it will log the error, send an email alert (if configured), and then shut down.
   
 The bot runs on Linux, macOS, and Windows.
 
-BX-bot requires a Java 11 JDK ([openjdk-11-jdk](http://openjdk.java.net/projects/jdk/11/) or 
+BX-bot requires a Java 11+ JDK ([openjdk-11-jdk](http://openjdk.java.net/projects/jdk/11/) or 
 [Oracle JDK 11](https://www.oracle.com/technetwork/java/javase/downloads/jdk11-downloads-5066655.html))
 to be installed on the machine you are going to use to build and run the bot. 
 
@@ -107,11 +107,9 @@ and evaluate the bot, Docker is the way to go.
    Then run: `docker container attach <CONTAINER ID>`   
    
 ## Build Guide
-If you plan on developing the bot, you'll need [openjdk-11-jdk](http://openjdk.java.net/projects/jdk/11/) or 
-[Oracle JDK 11](https://www.oracle.com/technetwork/java/javase/downloads/jdk11-downloads-5066655.html) installed on your
- dev box.
+If you plan on developing the bot, you'll need JDK 11+ installed on your dev box.
 
-You can use [Maven](https://maven.apache.org) or [Gradle](https://gradle.org/) to build the bot and pull down the 
+You can use Maven or Gradle to build the bot and pull down the 
 dependencies. BX-bot depends on [Spring Boot](http://projects.spring.io/spring-boot/), 
 [log4j](http://logging.apache.org/log4j), [JavaMail](https://java.net/projects/javamail/pages/Home), 
 [Google Gson](https://code.google.com/p/google-gson/), [Google Guava](https://github.com/google/guava), 
