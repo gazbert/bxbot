@@ -55,7 +55,9 @@ The bot runs on Linux, macOS, and Windows.
 
 BX-bot requires a Java 11+ JDK (e.g. [openjdk-11-jdk](http://openjdk.java.net/projects/jdk/11/) or 
 [Oracle JDK 11](https://www.oracle.com/technetwork/java/javase/downloads/jdk11-downloads-5066655.html))
-to be installed on the machine you are going to use to build and run the bot. 
+to be installed on the machine you are going to use to build and run the bot.
+Be mindful of Oracle's recent [licensing changes](https://www.oracle.com/technetwork/java/javase/overview/oracle-jdk-faqs.html)
+and how you intend to use the bot.
 
 You can use [Maven](https://maven.apache.org) or [Gradle](https://gradle.org/) to build the bot.
 The instructions below are for Linux/macOS, but equivalent Windows scripts are included.
