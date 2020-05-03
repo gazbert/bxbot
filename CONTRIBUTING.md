@@ -78,7 +78,8 @@ The following conventions should be followed:
   All public API methods should have detailed Javadoc describing the contract and what they do.
 * Add the MIT license header comment to all new `.java` files - copy from existing files in the 
   project.
-* Did we mention tests? All code changes should be accompanied by new or modified tests.
+* Did we mention tests? All code changes should be accompanied by new or modified tests. 
+  Someone has to do it...
 * Add yourself as an `@author` to the `.java` files that you modify substantially 
   (more than cosmetic changes).
 * In general commits should be atomic and diffs should be easy to read. For this reason do not mix 
@@ -90,5 +91,5 @@ The following conventions should be followed:
   code.
 * We like static analysis: the build uses [JaCoCo](https://www.jacoco.org/jacoco/) to enforce code 
   coverage and [SpotBugs](https://spotbugs.github.io/) to weed out bugs. 
-  [Sonorcloud](https://sonarcloud.io/dashboard?id=gazbert_bxbot) is used for analysing and 
+  [Sonarcloud](https://sonarcloud.io/dashboard?id=gazbert_bxbot) is used for analysing and 
   maintaining the quality of our code. Please maintain this, or better still, help improve it! 
