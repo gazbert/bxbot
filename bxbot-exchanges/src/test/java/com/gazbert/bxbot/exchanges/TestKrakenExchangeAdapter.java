@@ -502,7 +502,7 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
     expect(
             requestParamMap.put(
                 "price",
-                new DecimalFormat("#.########", getDecimalFormatSymbols())
+                new DecimalFormat("#.#", getDecimalFormatSymbols())
                     .format(SELL_ORDER_PRICE)))
         .andStubReturn(null);
     expect(
@@ -1259,7 +1259,7 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
     expect(
             requestParamMap.put(
                 "price",
-                new DecimalFormat("#.########", getDecimalFormatSymbols())
+                new DecimalFormat("#.#", getDecimalFormatSymbols())
                     .format(SELL_ORDER_PRICE)))
         .andStubReturn(null);
     expect(
@@ -1320,7 +1320,7 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
     expect(
             requestParamMap.put(
                 "price",
-                new DecimalFormat("#.########", getDecimalFormatSymbols())
+                new DecimalFormat("#.#", getDecimalFormatSymbols())
                     .format(SELL_ORDER_PRICE)))
         .andStubReturn(null);
     expect(
@@ -1378,7 +1378,7 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
     expect(
             requestParamMap.put(
                 "price",
-                new DecimalFormat("#.########", getDecimalFormatSymbols())
+                new DecimalFormat("#.#", getDecimalFormatSymbols())
                     .format(SELL_ORDER_PRICE)))
         .andStubReturn(null);
     expect(
