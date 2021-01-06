@@ -193,7 +193,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
     setNetworkConfig(config);
     setOtherConfig(config);
 
-    nonce = System.currentTimeMillis() / 1000;
+    nonce = System.currentTimeMillis();
     initSecureMessageLayer();
     initGson();
   }
@@ -325,11 +325,13 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
 
       params.put("ordertype", "limit"); // this exchange adapter only supports limit orders
       params.put(PRICE, new DecimalFormat("#.########", getDecimalFormatSymbols()).format(price));
-      params.put(
-          "volume", new DecimalFormat("#.########", getDecimalFormatSymbols()).format(quantity));
+      params.put("volume",
+              new DecimalFormat("#.########", getDecimalFormatSymbols()).format(quantity));
 
       response = sendAuthenticatedRequestToExchange("AddOrder", params);
-      LOG.debug(() -> "Create Order response: " + response);
+      LOG.error(() -> "Request params" + params);
+      LOG.error(() -> "Create Order response: " + response);
+      LOG.error(() -> "MarketID" + marketId);
 
       if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
 
