@@ -27,7 +27,7 @@
   </issueManagement>
   <ciManagement>
     <system>Travis CI</system>
-    <url>https://travis-ci.org/gazbert/bxbot</url>
+    <url>https://travis-ci.com/gazbert/bxbot</url>
   </ciManagement>
   <developers>
     <developer>
