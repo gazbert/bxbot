@@ -324,7 +324,11 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
       }
 
       params.put("ordertype", "limit"); // this exchange adapter only supports limit orders
-      params.put(PRICE, new DecimalFormat("#.########", getDecimalFormatSymbols()).format(price));
+      if (orderType == OrderType.SELL) {
+        params.put(PRICE, new DecimalFormat("#.#", getDecimalFormatSymbols()).format(price));
+      } else {
+        params.put(PRICE, new DecimalFormat("#.########", getDecimalFormatSymbols()).format(price));
+      }
       params.put("volume",
               new DecimalFormat("#.########", getDecimalFormatSymbols()).format(quantity));
 
