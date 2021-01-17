@@ -23,10 +23,14 @@
 
 package com.gazbert.bxbot.exchanges;
 
+import static java.util.Collections.emptyMap;
+
 import com.gazbert.bxbot.exchange.api.AuthenticationConfig;
 import com.gazbert.bxbot.exchange.api.ExchangeAdapter;
 import com.gazbert.bxbot.exchange.api.ExchangeConfig;
 import com.gazbert.bxbot.exchange.api.OtherConfig;
+import com.gazbert.bxbot.exchange.api.PairPrecisionConfig;
+import com.gazbert.bxbot.exchanges.config.PairPrecisionConfigImpl;
 import com.gazbert.bxbot.exchanges.trading.api.impl.BalanceInfoImpl;
 import com.gazbert.bxbot.exchanges.trading.api.impl.MarketOrderBookImpl;
 import com.gazbert.bxbot.exchanges.trading.api.impl.MarketOrderImpl;
@@ -171,6 +175,8 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
       "keep-alive-during-maintenance";
   private static final String EXCHANGE_UNDERGOING_MAINTENANCE_RESPONSE = "EService:Unavailable";
 
+  private PairPrecisionConfig pairPrecisionConfig;
+
   private long nonce = 0;
 
   private BigDecimal buyFeePercentage;
@@ -189,13 +195,14 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
   @Override
   public void init(ExchangeConfig config) {
     LOG.info(() -> "About to initialise Kraken ExchangeConfig: " + config);
+    initGson();
     setAuthenticationConfig(config);
     setNetworkConfig(config);
+    loadPairPrecisionConfig();
     setOtherConfig(config);
 
     nonce = System.currentTimeMillis() / 1000;
     initSecureMessageLayer();
-    initGson();
   }
 
   // --------------------------------------------------------------------------
@@ -323,10 +330,13 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
         throw new IllegalArgumentException(errorMsg);
       }
 
+      String pricePrecision = "#." + "#".repeat(pairPrecisionConfig.getPricePrecision(marketId));
+      String volumePrecision = "#." + "#".repeat(pairPrecisionConfig.getVolumePrecision(marketId));
+
       params.put("ordertype", "limit"); // this exchange adapter only supports limit orders
-      params.put(PRICE, new DecimalFormat("#.########", getDecimalFormatSymbols()).format(price));
+      params.put(PRICE, new DecimalFormat(pricePrecision, getDecimalFormatSymbols()).format(price));
       params.put(
-          "volume", new DecimalFormat("#.########", getDecimalFormatSymbols()).format(quantity));
+          "volume", new DecimalFormat(volumePrecision, getDecimalFormatSymbols()).format(quantity));
 
       response = sendAuthenticatedRequestToExchange("AddOrder", params);
       LOG.debug(() -> "Create Order response: " + response);
@@ -640,6 +650,29 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
     private static final long serialVersionUID = -4913711010647027759L;
 
     KrakenTickerResult() {
+    }
+  }
+
+  private static class KrakenAssetPairsConfig extends HashMap<String, Object> {
+
+    public PairPrecisionConfig loadPrecisionConfig() {
+      Gson gson = new Gson();
+      Map<String, Integer> prices = new HashMap<>();
+      Map<String, Integer> volumes = new HashMap<>();
+
+      for (Entry<String, Object> entry : this.entrySet()) {
+        JsonElement jsonElement = gson.toJsonTree(entry);
+
+        JsonObject jsonObject = jsonElement.getAsJsonObject().get("value").getAsJsonObject();
+        String name = jsonObject.get("altname").getAsString();
+        int price = jsonObject.get("pair_decimals").getAsInt();
+        int volume = jsonObject.get("lot_decimals").getAsInt();
+
+        prices.put(name, price);
+        volumes.put(name, volume);
+      }
+
+      return new PairPrecisionConfigImpl(prices, volumes);
     }
   }
 
@@ -1044,6 +1077,31 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
       LOG.info(() -> "Keep Alive During Maintenance: " + keepAliveDuringMaintenance);
     } else {
       LOG.info(() -> KEEP_ALIVE_DURING_MAINTENANCE_PROPERTY_NAME + " is not set in exchange.yaml");
+    }
+  }
+
+  private void loadPairPrecisionConfig() {
+    ExchangeHttpResponse response;
+
+    try {
+      response = sendPublicRequestToExchange("AssetPairs", emptyMap());
+
+      if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
+        Type type = new TypeToken<KrakenResponse<KrakenAssetPairsConfig>>() {}.getType();
+        KrakenResponse<KrakenAssetPairsConfig> krakenResponse = gson.fromJson(
+            response.getPayload(), type);
+
+        if (krakenResponse.error != null && !krakenResponse.error.isEmpty()) {
+          LOG.error(String.format("Error when fetching pair precision: %s", krakenResponse.error));
+          return;
+        }
+
+        this.pairPrecisionConfig = krakenResponse.result.loadPrecisionConfig();
+      }
+    } catch (ExchangeNetworkException | TradingApiException e) {
+      final String errorMsg = "Failed to load price precision config";
+      LOG.error(errorMsg);
+      e.printStackTrace();
     }
   }
 
