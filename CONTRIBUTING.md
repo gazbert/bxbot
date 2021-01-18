@@ -9,7 +9,7 @@ provide enough information for someone else to reproduce it. Equally, submit an 
 to create a new feature or enhance an existing one - refactoring, improving Javadoc, and boosting 
 test coverage is always welcome!
 
-One of the project's maintainers should respond to your issue within 48 hours... if not, bump the 
+One of the project's maintainers should respond to your issue within a few days... if not, bump the 
 issue and request that it be reviewed.
 
 ## Contributor workflow
