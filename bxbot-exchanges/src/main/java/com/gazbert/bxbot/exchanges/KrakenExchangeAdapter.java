@@ -201,7 +201,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
     loadPairPrecisionConfig();
     setOtherConfig(config);
 
-    nonce = System.currentTimeMillis() / 1000;
+    nonce = System.currentTimeMillis();
     initSecureMessageLayer();
   }
 
