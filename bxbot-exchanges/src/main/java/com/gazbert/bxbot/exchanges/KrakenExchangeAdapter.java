@@ -2,6 +2,7 @@
  * The MIT License (MIT)
  *
  * Copyright (c) 2016 Gareth Jon Lynch
+ * Copyright (c) 2021 maiph
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -655,7 +656,9 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
 
   private static class KrakenAssetPairsConfig extends HashMap<String, Object> {
 
-    public PairPrecisionConfig loadPrecisionConfig() {
+    private static final long serialVersionUID = -9226840830768795L;
+
+    PairPrecisionConfig loadPrecisionConfig() {
       Gson gson = new Gson();
       Map<String, Integer> prices = new HashMap<>();
       Map<String, Integer> volumes = new HashMap<>();
