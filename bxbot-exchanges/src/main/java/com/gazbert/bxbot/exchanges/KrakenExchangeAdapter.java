@@ -1095,7 +1095,8 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
             response.getPayload(), type);
 
         if (krakenResponse.error != null && !krakenResponse.error.isEmpty()) {
-          LOG.error(String.format("Error when fetching pair precision: %s", krakenResponse.error));
+          LOG.error(
+              () -> String.format("Error when fetching pair precision: %s", krakenResponse.error));
           return;
         }
 
