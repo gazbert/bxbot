@@ -23,6 +23,7 @@
 
 package com.gazbert.bxbot.exchanges;
 
+import static java.util.Collections.emptyMap;
 import static org.easymock.EasyMock.anyObject;
 import static org.easymock.EasyMock.anyString;
 import static org.easymock.EasyMock.eq;
@@ -38,6 +39,7 @@ import com.gazbert.bxbot.exchange.api.ExchangeAdapter;
 import com.gazbert.bxbot.exchange.api.ExchangeConfig;
 import com.gazbert.bxbot.exchange.api.NetworkConfig;
 import com.gazbert.bxbot.exchange.api.OtherConfig;
+import com.gazbert.bxbot.exchanges.AbstractExchangeAdapter.ExchangeHttpResponse;
 import com.gazbert.bxbot.trading.api.BalanceInfo;
 import com.gazbert.bxbot.trading.api.ExchangeNetworkException;
 import com.gazbert.bxbot.trading.api.MarketOrderBook;
@@ -45,6 +47,7 @@ import com.gazbert.bxbot.trading.api.OpenOrder;
 import com.gazbert.bxbot.trading.api.OrderType;
 import com.gazbert.bxbot.trading.api.Ticker;
 import com.gazbert.bxbot.trading.api.TradingApiException;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.URL;
@@ -81,6 +84,8 @@ import org.powermock.modules.junit4.PowerMockRunner;
 @PrepareForTest(KrakenExchangeAdapter.class)
 public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
 
+  private static final String ASSET_PAIR_JSON_RESPONSE
+      = "./src/test/exchange-data/kraken/AssetPairs.json";
   private static final String DEPTH_JSON_RESPONSE = "./src/test/exchange-data/kraken/Depth.json";
   private static final String DEPTH_ERROR_JSON_RESPONSE =
       "./src/test/exchange-data/kraken/Depth-error.json";
@@ -109,6 +114,7 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
   private static final String DEPTH = "Depth";
   private static final String BALANCE = "Balance";
   private static final String TICKER = "Ticker";
+  private static final String ASSET_PAIRS = "AssetPairs";
   private static final String OPEN_ORDERS = "OpenOrders";
   private static final String ADD_ORDER = "AddOrder";
   private static final String CANCEL_ORDER = "CancelOrder";
@@ -202,6 +208,7 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
             MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD,
             MOCKED_CREATE_REQUEST_PARAM_MAP_METHOD);
 
+    mockAssetPairsPublicRequest(exchangeAdapter);
     PowerMock.expectPrivate(exchangeAdapter, MOCKED_CREATE_REQUEST_PARAM_MAP_METHOD)
         .andReturn(requestParamMap);
     PowerMock.expectPrivate(
@@ -259,6 +266,7 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
             MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD,
             MOCKED_CREATE_REQUEST_PARAM_MAP_METHOD);
 
+    mockAssetPairsPublicRequest(exchangeAdapter);
     PowerMock.expectPrivate(exchangeAdapter, MOCKED_CREATE_REQUEST_PARAM_MAP_METHOD)
         .andReturn(requestParamMap);
     PowerMock.expectPrivate(
@@ -281,6 +289,7 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
         PowerMock.createPartialMockAndInvokeDefaultConstructor(
             KrakenExchangeAdapter.class, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD);
 
+    mockAssetPairsPublicRequest(exchangeAdapter);
     PowerMock.expectPrivate(
             exchangeAdapter,
             MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD,
@@ -302,6 +311,7 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
         PowerMock.createPartialMockAndInvokeDefaultConstructor(
             KrakenExchangeAdapter.class, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD);
 
+    mockAssetPairsPublicRequest(exchangeAdapter);
     PowerMock.expectPrivate(
             exchangeAdapter,
             MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD,
@@ -453,12 +463,12 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
     expect(
             requestParamMap.put(
                 "price",
-                new DecimalFormat("#.########", getDecimalFormatSymbols()).format(BUY_ORDER_PRICE)))
+                new DecimalFormat("#.#", getDecimalFormatSymbols()).format(BUY_ORDER_PRICE)))
         .andStubReturn(null);
     expect(
             requestParamMap.put(
                 "volume",
-                new DecimalFormat("#.########", getDecimalFormatSymbols())
+                new DecimalFormat("#.###", getDecimalFormatSymbols())
                     .format(BUY_ORDER_QUANTITY)))
         .andStubReturn(null);
 
@@ -466,8 +476,10 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
         PowerMock.createPartialMockAndInvokeDefaultConstructor(
             KrakenExchangeAdapter.class,
             MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD,
+            MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD,
             MOCKED_CREATE_REQUEST_PARAM_MAP_METHOD);
 
+    mockAssetPairsPublicRequest(exchangeAdapter);
     PowerMock.expectPrivate(exchangeAdapter, MOCKED_CREATE_REQUEST_PARAM_MAP_METHOD)
         .andReturn(requestParamMap);
     PowerMock.expectPrivate(
@@ -502,13 +514,13 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
     expect(
             requestParamMap.put(
                 "price",
-                new DecimalFormat("#.########", getDecimalFormatSymbols())
+                new DecimalFormat("#.#", getDecimalFormatSymbols())
                     .format(SELL_ORDER_PRICE)))
         .andStubReturn(null);
     expect(
             requestParamMap.put(
                 "volume",
-                new DecimalFormat("#.########", getDecimalFormatSymbols())
+                new DecimalFormat("#.###", getDecimalFormatSymbols())
                     .format(SELL_ORDER_QUANTITY)))
         .andStubReturn(null);
 
@@ -516,8 +528,10 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
         PowerMock.createPartialMockAndInvokeDefaultConstructor(
             KrakenExchangeAdapter.class,
             MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD,
+            MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD,
             MOCKED_CREATE_REQUEST_PARAM_MAP_METHOD);
 
+    mockAssetPairsPublicRequest(exchangeAdapter);
     PowerMock.expectPrivate(exchangeAdapter, MOCKED_CREATE_REQUEST_PARAM_MAP_METHOD)
         .andReturn(requestParamMap);
     PowerMock.expectPrivate(
@@ -842,6 +856,7 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
             MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD,
             MOCKED_CREATE_REQUEST_PARAM_MAP_METHOD);
 
+    mockAssetPairsPublicRequest(exchangeAdapter);
     PowerMock.expectPrivate(exchangeAdapter, MOCKED_CREATE_REQUEST_PARAM_MAP_METHOD)
         .andReturn(requestParamMap);
     PowerMock.expectPrivate(
@@ -870,6 +885,7 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
     final KrakenExchangeAdapter exchangeAdapter =
         PowerMock.createPartialMockAndInvokeDefaultConstructor(
             KrakenExchangeAdapter.class, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD);
+    mockAssetPairsPublicRequest(exchangeAdapter);
     PowerMock.expectPrivate(
             exchangeAdapter,
             MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD,
@@ -889,6 +905,7 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
     final KrakenExchangeAdapter exchangeAdapter =
         PowerMock.createPartialMockAndInvokeDefaultConstructor(
             KrakenExchangeAdapter.class, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD);
+    mockAssetPairsPublicRequest(exchangeAdapter);
     PowerMock.expectPrivate(
             exchangeAdapter,
             MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD,
@@ -913,6 +930,7 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
     final KrakenExchangeAdapter exchangeAdapter =
         PowerMock.createPartialMockAndInvokeDefaultConstructor(
             KrakenExchangeAdapter.class, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD);
+    mockAssetPairsPublicRequest(exchangeAdapter);
     PowerMock.expectPrivate(
             exchangeAdapter,
             MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD,
@@ -953,6 +971,7 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
             MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD,
             MOCKED_CREATE_REQUEST_PARAM_MAP_METHOD);
 
+    mockAssetPairsPublicRequest(exchangeAdapter);
     PowerMock.expectPrivate(exchangeAdapter, MOCKED_CREATE_REQUEST_PARAM_MAP_METHOD)
         .andReturn(requestParamMap);
     PowerMock.expectPrivate(
@@ -989,6 +1008,7 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
     final KrakenExchangeAdapter exchangeAdapter =
         PowerMock.createPartialMockAndInvokeDefaultConstructor(
             KrakenExchangeAdapter.class, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD);
+    mockAssetPairsPublicRequest(exchangeAdapter);
     PowerMock.expectPrivate(
             exchangeAdapter,
             MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD,
@@ -1008,6 +1028,7 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
     final KrakenExchangeAdapter exchangeAdapter =
         PowerMock.createPartialMockAndInvokeDefaultConstructor(
             KrakenExchangeAdapter.class, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD);
+    mockAssetPairsPublicRequest(exchangeAdapter);
     PowerMock.expectPrivate(
             exchangeAdapter,
             MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD,
@@ -1027,6 +1048,7 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
     final KrakenExchangeAdapter exchangeAdapter =
         PowerMock.createPartialMockAndInvokeDefaultConstructor(
             KrakenExchangeAdapter.class, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD);
+    mockAssetPairsPublicRequest(exchangeAdapter);
     PowerMock.expectPrivate(
             exchangeAdapter,
             MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD,
@@ -1146,8 +1168,8 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
         PowerMock.createPartialMockAndInvokeDefaultConstructor(
             KrakenExchangeAdapter.class,
             MOCKED_MAKE_NETWORK_REQUEST_METHOD,
-            MOCKED_CREATE_REQUEST_PARAM_MAP_METHOD,
             MOCKED_CREATE_REQUEST_PARAM_MAP_METHOD);
+    mockAssetPairsNetworkRequest(exchangeAdapter);
     PowerMock.expectPrivate(exchangeAdapter, MOCKED_CREATE_REQUEST_PARAM_MAP_METHOD)
         .andReturn(requestParamMap);
 
@@ -1178,6 +1200,7 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
             KrakenExchangeAdapter.class,
             MOCKED_MAKE_NETWORK_REQUEST_METHOD,
             MOCKED_CREATE_REQUEST_PARAM_MAP_METHOD);
+    mockAssetPairsNetworkRequest(exchangeAdapter);
 
     final Map<String, String> requestParamMap = PowerMock.createPartialMock(HashMap.class, "put");
     expect(requestParamMap.put("pair", MARKET_ID)).andStubReturn(null);
@@ -1214,6 +1237,7 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
             MOCKED_MAKE_NETWORK_REQUEST_METHOD,
             MOCKED_CREATE_REQUEST_PARAM_MAP_METHOD,
             MOCKED_CREATE_REQUEST_PARAM_MAP_METHOD);
+    mockAssetPairsNetworkRequest(exchangeAdapter);
 
     final Map<String, String> requestParamMap = PowerMock.createPartialMock(HashMap.class, "put");
     expect(requestParamMap.put("pair", MARKET_ID)).andStubReturn(null);
@@ -1259,13 +1283,13 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
     expect(
             requestParamMap.put(
                 "price",
-                new DecimalFormat("#.########", getDecimalFormatSymbols())
+                new DecimalFormat("#.#", getDecimalFormatSymbols())
                     .format(SELL_ORDER_PRICE)))
         .andStubReturn(null);
     expect(
             requestParamMap.put(
                 "volume",
-                new DecimalFormat("#.########", getDecimalFormatSymbols())
+                new DecimalFormat("#.###", getDecimalFormatSymbols())
                     .format(SELL_ORDER_QUANTITY)))
         .andStubReturn(null);
     expect(requestParamMap.put(eq("nonce"), anyString())).andStubReturn(null);
@@ -1283,6 +1307,9 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
             MOCKED_MAKE_NETWORK_REQUEST_METHOD,
             MOCKED_CREATE_REQUEST_HEADER_MAP_METHOD,
             MOCKED_CREATE_REQUEST_PARAM_MAP_METHOD);
+    mockAssetPairsNetworkRequest(exchangeAdapter);
+    PowerMock.expectPrivate(exchangeAdapter, MOCKED_CREATE_REQUEST_HEADER_MAP_METHOD)
+        .andReturn(emptyMap());
     PowerMock.expectPrivate(exchangeAdapter, MOCKED_CREATE_REQUEST_HEADER_MAP_METHOD)
         .andReturn(requestHeaderMap);
     PowerMock.expectPrivate(exchangeAdapter, MOCKED_CREATE_REQUEST_PARAM_MAP_METHOD)
@@ -1320,13 +1347,13 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
     expect(
             requestParamMap.put(
                 "price",
-                new DecimalFormat("#.########", getDecimalFormatSymbols())
+                new DecimalFormat("#.#", getDecimalFormatSymbols())
                     .format(SELL_ORDER_PRICE)))
         .andStubReturn(null);
     expect(
             requestParamMap.put(
                 "volume",
-                new DecimalFormat("#.########", getDecimalFormatSymbols())
+                new DecimalFormat("#.###", getDecimalFormatSymbols())
                     .format(SELL_ORDER_QUANTITY)))
         .andStubReturn(null);
     expect(requestParamMap.put(eq("nonce"), anyString())).andStubReturn(null);
@@ -1344,6 +1371,9 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
             MOCKED_MAKE_NETWORK_REQUEST_METHOD,
             MOCKED_CREATE_REQUEST_HEADER_MAP_METHOD,
             MOCKED_CREATE_REQUEST_PARAM_MAP_METHOD);
+    mockAssetPairsNetworkRequest(exchangeAdapter);
+    PowerMock.expectPrivate(exchangeAdapter, MOCKED_CREATE_REQUEST_HEADER_MAP_METHOD)
+        .andReturn(emptyMap());
     PowerMock.expectPrivate(exchangeAdapter, MOCKED_CREATE_REQUEST_HEADER_MAP_METHOD)
         .andReturn(requestHeaderMap);
     PowerMock.expectPrivate(exchangeAdapter, MOCKED_CREATE_REQUEST_PARAM_MAP_METHOD)
@@ -1378,13 +1408,13 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
     expect(
             requestParamMap.put(
                 "price",
-                new DecimalFormat("#.########", getDecimalFormatSymbols())
+                new DecimalFormat("#.#", getDecimalFormatSymbols())
                     .format(SELL_ORDER_PRICE)))
         .andStubReturn(null);
     expect(
             requestParamMap.put(
                 "volume",
-                new DecimalFormat("#.########", getDecimalFormatSymbols())
+                new DecimalFormat("#.###", getDecimalFormatSymbols())
                     .format(SELL_ORDER_QUANTITY)))
         .andStubReturn(null);
     expect(requestParamMap.put(eq("nonce"), anyString())).andStubReturn(null);
@@ -1402,6 +1432,9 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
             MOCKED_MAKE_NETWORK_REQUEST_METHOD,
             MOCKED_CREATE_REQUEST_HEADER_MAP_METHOD,
             MOCKED_CREATE_REQUEST_PARAM_MAP_METHOD);
+    mockAssetPairsNetworkRequest(exchangeAdapter);
+    PowerMock.expectPrivate(exchangeAdapter, MOCKED_CREATE_REQUEST_HEADER_MAP_METHOD)
+        .andReturn(emptyMap());
     PowerMock.expectPrivate(exchangeAdapter, MOCKED_CREATE_REQUEST_HEADER_MAP_METHOD)
         .andReturn(requestHeaderMap);
     PowerMock.expectPrivate(exchangeAdapter, MOCKED_CREATE_REQUEST_PARAM_MAP_METHOD)
@@ -1429,5 +1462,36 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
     exchangeAdapter.createOrder(MARKET_ID, OrderType.SELL, SELL_ORDER_QUANTITY, SELL_ORDER_PRICE);
 
     PowerMock.verifyAll();
+  }
+
+  private void mockAssetPairsPublicRequest(Object exchangeAdapter) throws Exception {
+    final ExchangeHttpResponse assetsResponse = createMockAssetPairs();
+    PowerMock.expectPrivate(
+        exchangeAdapter,
+        MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD,
+        eq(ASSET_PAIRS),
+        anyObject()
+    ).andReturn(assetsResponse);
+  }
+
+  private void mockAssetPairsNetworkRequest(Object exchangeAdapter) throws Exception {
+    final ExchangeHttpResponse assetsResponse = createMockAssetPairs();
+    final URL url = new URL(PUBLIC_API_BASE_URL + ASSET_PAIRS);
+    PowerMock.expectPrivate(
+        exchangeAdapter,
+        MOCKED_MAKE_NETWORK_REQUEST_METHOD,
+        eq(url),
+        eq("GET"),
+        anyObject(),
+        anyObject()
+    ).andReturn(assetsResponse);
+  }
+
+  private ExchangeHttpResponse createMockAssetPairs() throws IOException {
+    final byte[] assetsMsg = Files.readAllBytes(Paths.get(
+        TestKrakenExchangeAdapter.ASSET_PAIR_JSON_RESPONSE));
+
+    return new ExchangeHttpResponse(200, "OK",
+        new String(assetsMsg, StandardCharsets.UTF_8));
   }
 }
