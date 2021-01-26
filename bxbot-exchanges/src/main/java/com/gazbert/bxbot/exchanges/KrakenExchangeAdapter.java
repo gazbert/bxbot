@@ -1103,8 +1103,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
       }
     } catch (ExchangeNetworkException | TradingApiException e) {
       final String errorMsg = "Failed to load price precision config";
-      LOG.error(errorMsg);
-      e.printStackTrace();
+      LOG.error(errorMsg, e);
     }
   }
 
