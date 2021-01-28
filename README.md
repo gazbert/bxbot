@@ -99,8 +99,8 @@ If you want to just play around with the
 and evaluate the bot, Docker is the way to go.
 
 1. Install [Docker](https://docs.docker.com/engine/installation/) on the machine you want to run the bot.
-1. Fetch the BX-bot image from [Docker Hub](https://hub.docker.com/r/gazbert/bxbot/): `docker pull gazbert/bxbot:1.1.0
-1. Run the Docker container: `docker container run --publish=8080:8080 --name bxbot-1.1.0 -it gazbert/bxbot:1.1.0 bash`
+1. Fetch the BX-bot image from [Docker Hub](https://hub.docker.com/r/gazbert/bxbot/): `docker pull gazbert/bxbot:1.1.1
+1. Run the Docker container: `docker container run --publish=8080:8080 --name bxbot-1.1.1 -it gazbert/bxbot:1.1.1 bash`
 1. Change into the bot's directory: `cd bxbot*`
 1. Configure the bot as described in step 4 of the previous [Maven](#maven) section.
 1. Usage: `./bxbot.sh [start|stop|status]`
@@ -638,6 +638,9 @@ server.ssl.key-store-type=PKCS12
 ```
 
 ## Coming Soon... (Definitely Maybe)
-A UI built with [React](https://reactjs.org/) - it will consume the REST API. 
+
+1. A [Coinbase Pro](https://pro.coinbase.com/) exchange adapter.
+1. A UI built with [React](https://reactjs.org/) - it will consume the REST API. 
+
 
 See the [Project Board](https://github.com/gazbert/bxbot/projects/2) for timescales and progress.
