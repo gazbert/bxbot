@@ -2,6 +2,7 @@
  * The MIT License (MIT)
  *
  * Copyright (c) 2015 Gareth Jon Lynch
+ * Copyright (c) 2019 David Huertas
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -86,17 +87,20 @@ import org.powermock.modules.junit4.PowerMockRunner;
 public class TestCoinbaseProExchangeAdapter extends AbstractExchangeAdapterTest {
 
   private static final String BOOK_JSON_RESPONSE = "./src/test/exchange-data/coinbasepro/book.json";
-  private static final String ORDERS_JSON_RESPONSE = "./src/test/exchange-data/coinbasepro/orders.json";
+  private static final String ORDERS_JSON_RESPONSE =
+      "./src/test/exchange-data/coinbasepro/orders.json";
   private static final String ACCOUNTS_JSON_RESPONSE =
       "./src/test/exchange-data/coinbasepro/accounts.json";
-  private static final String TICKER_JSON_RESPONSE = "./src/test/exchange-data/coinbasepro/ticker.json";
+  private static final String TICKER_JSON_RESPONSE =
+      "./src/test/exchange-data/coinbasepro/ticker.json";
   private static final String NEW_BUY_ORDER_JSON_RESPONSE =
       "./src/test/exchange-data/coinbasepro/new_buy_order.json";
   private static final String NEW_SELL_ORDER_JSON_RESPONSE =
       "./src/test/exchange-data/coinbasepro/new_sell_order.json";
   private static final String CANCEL_ORDER_JSON_RESPONSE =
       "./src/test/exchange-data/coinbasepro/cancel.json";
-  private static final String STATS_JSON_RESPONSE = "./src/test/exchange-data/coinbasepro/stats.json";
+  private static final String STATS_JSON_RESPONSE =
+      "./src/test/exchange-data/coinbasepro/stats.json";
 
   private static final String MARKET_ID = "BTC-GBP";
   private static final String ORDER_BOOK_DEPTH_LEVEL =
@@ -106,7 +110,7 @@ public class TestCoinbaseProExchangeAdapter extends AbstractExchangeAdapterTest 
   private static final BigDecimal SELL_ORDER_PRICE = new BigDecimal("300.176");
   private static final BigDecimal SELL_ORDER_QUANTITY = new BigDecimal("0.01");
   private static final String ORDER_ID_TO_CANCEL = "3ecf7a12-fc89-4d3d-baef-f158f80b3bd3";
-  
+
   private static final String BOOK = "products/" + MARKET_ID + "/book";
   private static final String ORDERS = "orders";
   private static final String ACCOUNTS = "accounts";
@@ -141,9 +145,7 @@ public class TestCoinbaseProExchangeAdapter extends AbstractExchangeAdapterTest 
   private NetworkConfig networkConfig;
   private OtherConfig otherConfig;
 
-  /**
-   * Create some exchange config - the TradingEngine would normally do this.
-   */
+  /** Create some exchange config - the TradingEngine would normally do this. */
   @Before
   public void setupForEachTest() {
     authenticationConfig = PowerMock.createMock(AuthenticationConfig.class);
@@ -1035,7 +1037,7 @@ public class TestCoinbaseProExchangeAdapter extends AbstractExchangeAdapterTest 
             eq(new HashMap<>()))
         .andThrow(
             new ExchangeNetworkException("One wrong note eventually ruins the entire symphony."));
-    
+
     PowerMock.replayAll();
     exchangeAdapter.init(exchangeConfig);
 
@@ -1100,7 +1102,7 @@ public class TestCoinbaseProExchangeAdapter extends AbstractExchangeAdapterTest 
             MOCKED_CREATE_REQUEST_HEADER_MAP_METHOD);
     PowerMock.expectPrivate(exchangeAdapter, MOCKED_CREATE_REQUEST_HEADER_MAP_METHOD)
         .andReturn(requestHeaderMap);
-        
+
     final URL url = new URL(AUTHENTICATED_API_URL + NEW_ORDER);
     PowerMock.expectPrivate(
             exchangeAdapter,
@@ -1110,7 +1112,7 @@ public class TestCoinbaseProExchangeAdapter extends AbstractExchangeAdapterTest 
             eq(new GsonBuilder().create().toJson(requestParamMap)),
             eq(requestHeaderMap))
         .andReturn(exchangeResponse);
-    
+
     PowerMock.replayAll();
     exchangeAdapter.init(exchangeConfig);
 
@@ -1150,7 +1152,7 @@ public class TestCoinbaseProExchangeAdapter extends AbstractExchangeAdapterTest 
             MOCKED_CREATE_REQUEST_HEADER_MAP_METHOD);
     PowerMock.expectPrivate(exchangeAdapter, MOCKED_CREATE_REQUEST_HEADER_MAP_METHOD)
         .andReturn(requestHeaderMap);
-        
+
     final URL url = new URL(AUTHENTICATED_API_URL + NEW_ORDER);
     PowerMock.expectPrivate(
             exchangeAdapter,
@@ -1164,7 +1166,7 @@ public class TestCoinbaseProExchangeAdapter extends AbstractExchangeAdapterTest 
                 "Allow me then a moment to consider. You seek your creator. "
                     + "I am looking at mine. I will serve you, yet you're human. "
                     + "You will die, I will not."));
-    
+
     PowerMock.replayAll();
     exchangeAdapter.init(exchangeConfig);
 
@@ -1201,7 +1203,7 @@ public class TestCoinbaseProExchangeAdapter extends AbstractExchangeAdapterTest 
             MOCKED_CREATE_REQUEST_HEADER_MAP_METHOD);
     PowerMock.expectPrivate(exchangeAdapter, MOCKED_CREATE_REQUEST_HEADER_MAP_METHOD)
         .andReturn(requestHeaderMap);
-        
+
     final URL url = new URL(AUTHENTICATED_API_URL + NEW_ORDER);
     PowerMock.expectPrivate(
             exchangeAdapter,
@@ -1211,7 +1213,7 @@ public class TestCoinbaseProExchangeAdapter extends AbstractExchangeAdapterTest 
             eq(new GsonBuilder().create().toJson(requestParamMap)),
             eq(requestHeaderMap))
         .andThrow(new TradingApiException("When you close your eyes do you dream of me?"));
-    
+
     PowerMock.replayAll();
     exchangeAdapter.init(exchangeConfig);
 

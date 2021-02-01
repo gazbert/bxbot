@@ -69,31 +69,30 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * Exchange Adapter for integrating with the CoinbasePro exchange. The CoinbasePro API is
- * documented <a href="https://docs.pro.coinbase.com">here</a>.
+ * Exchange Adapter for integrating with the CoinbasePro exchange. The CoinbasePro API is documented
+ * <a href="https://docs.pro.coinbase.com">here</a>.
  *
  * <p><strong> DISCLAIMER: This Exchange Adapter is provided as-is; it might have bugs in it and you
- * could lose money. Despite running live on COINBASE PRO, it has only been unit tested up until
- * the point of calling the {@link #sendPublicRequestToExchange(String, Map)} and {@link
+ * could lose money. Despite running live on COINBASE PRO, it has only been unit tested up until the
+ * point of calling the {@link #sendPublicRequestToExchange(String, Map)} and {@link
  * #sendAuthenticatedRequestToExchange(String, String, Map)} methods. Use it at our own risk!
  * </strong>
  *
- * <p>This adapter only supports the CoinbasePro <a href="https://docs.pro.coinbase.com/#api">
- * REST API</a>. The design of the API and documentation is excellent.
+ * <p>This adapter only supports the CoinbasePro <a href="https://docs.pro.coinbase.com/#api">REST
+ * API</a>. The design of the API and documentation is excellent.
  *
- * <p>The adapter currently only supports
- * <a href="https://docs.pro.coinbase.com/#place-a-new-order">Limit Orders</a>. It was originally
+ * <p>The adapter currently only supports <a
+ * href="https://docs.pro.coinbase.com/#place-a-new-order">Limit Orders</a>. It was originally
  * developed and tested for BTC-GBP market, but it should work for BTC-USD or BTC-EUR.
  *
  * <p>Exchange fees are loaded from the exchange.yaml file on startup; they are not fetched from the
  * exchange at runtime as the CoinbasePro REST API does not support this. The fees are used across
- * all markets. Make sure you keep an eye on the
- * <a href="https://docs.pro.coinbase.com/#fees">exchange fees</a> and update the config
- * accordingly.
+ * all markets. Make sure you keep an eye on the <a
+ * href="https://docs.pro.coinbase.com/#fees">exchange fees</a> and update the config accordingly.
  *
  * <p>NOTE: CoinbasePro requires all price values to be limited to 2 decimal places when creating
- * orders. This adapter truncates any prices with more than 2 decimal places and rounds using
- * {@link java.math.RoundingMode#HALF_EVEN}, E.g. 250.176 would be sent to the exchange as 250.18.
+ * orders. This adapter truncates any prices with more than 2 decimal places and rounds using {@link
+ * java.math.RoundingMode#HALF_EVEN}, E.g. 250.176 would be sent to the exchange as 250.18.
  *
  * <p>The Exchange Adapter is <em>not</em> thread safe. It expects to be called using a single
  * thread in order to preserve trade execution order. The {@link URLConnection} achieves this by
@@ -106,7 +105,7 @@ import org.apache.logging.log4j.Logger;
  * @author davidhuertas
  * @since 1.0
  */
-public final class CoinbaseProExchangeAdapter extends AbstractExchangeAdapter 
+public final class CoinbaseProExchangeAdapter extends AbstractExchangeAdapter
     implements ExchangeAdapter {
 
   private static final Logger LOG = LogManager.getLogger();
@@ -133,7 +132,7 @@ public final class CoinbaseProExchangeAdapter extends AbstractExchangeAdapter
   private BigDecimal buyFeePercentage;
   private BigDecimal sellFeePercentage;
   private Long timeServerBias;
-  
+
   private String passphrase = "";
   private String key = "";
   private String secret = "";
@@ -149,7 +148,7 @@ public final class CoinbaseProExchangeAdapter extends AbstractExchangeAdapter
     setAuthenticationConfig(config);
     setNetworkConfig(config);
     setOtherConfig(config);
-    
+
     initSecureMessageLayer();
     initGson();
   }
@@ -205,8 +204,8 @@ public final class CoinbaseProExchangeAdapter extends AbstractExchangeAdapter
       LOG.debug(() -> "Create Order response: " + response);
 
       if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
-        final CoinbaseProOrder createOrderResponse = gson.fromJson(response.getPayload(),
-            CoinbaseProOrder.class);
+        final CoinbaseProOrder createOrderResponse =
+            gson.fromJson(response.getPayload(), CoinbaseProOrder.class);
         if (createOrderResponse != null
             && (createOrderResponse.id != null && !createOrderResponse.id.isEmpty())) {
           return createOrderResponse.id;
@@ -274,8 +273,8 @@ public final class CoinbaseProExchangeAdapter extends AbstractExchangeAdapter
       LOG.debug(() -> "Open Orders response: " + response);
 
       if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
-        final CoinbaseProOrder[] coinbaseProOpenOrders = gson.fromJson(response.getPayload(),
-            CoinbaseProOrder[].class);
+        final CoinbaseProOrder[] coinbaseProOpenOrders =
+            gson.fromJson(response.getPayload(), CoinbaseProOrder[].class);
         final List<OpenOrder> ordersToReturn = new ArrayList<>();
         for (final CoinbaseProOrder openOrder : coinbaseProOpenOrders) {
 
@@ -429,8 +428,8 @@ public final class CoinbaseProExchangeAdapter extends AbstractExchangeAdapter
       LOG.debug(() -> "Latest Market Price response: " + response);
 
       if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
-        final CoinbaseProTicker coinbaseProTicker = gson.fromJson(response.getPayload(),
-            CoinbaseProTicker.class);
+        final CoinbaseProTicker coinbaseProTicker =
+            gson.fromJson(response.getPayload(), CoinbaseProTicker.class);
         return coinbaseProTicker.price;
       } else {
         final String errorMsg = "Failed to get market ticker from exchange. Details: " + response;
@@ -481,8 +480,8 @@ public final class CoinbaseProExchangeAdapter extends AbstractExchangeAdapter
       LOG.debug(() -> "Ticker response: " + tickerResponse);
 
       if (tickerResponse.getStatusCode() == HttpURLConnection.HTTP_OK) {
-        final CoinbaseProTicker coinbaseProTicker = gson.fromJson(tickerResponse.getPayload(),
-            CoinbaseProTicker.class);
+        final CoinbaseProTicker coinbaseProTicker =
+            gson.fromJson(tickerResponse.getPayload(), CoinbaseProTicker.class);
 
         final TickerImpl ticker =
             new TickerImpl(
@@ -503,8 +502,8 @@ public final class CoinbaseProExchangeAdapter extends AbstractExchangeAdapter
         LOG.debug(() -> "Stats response: " + statsResponse);
 
         if (statsResponse.getStatusCode() == HttpURLConnection.HTTP_OK) {
-          final CoinbaseProStats coinbaseProStats = gson.fromJson(statsResponse.getPayload(),
-              CoinbaseProStats.class);
+          final CoinbaseProStats coinbaseProStats =
+              gson.fromJson(statsResponse.getPayload(), CoinbaseProStats.class);
           ticker.setLow(coinbaseProStats.low);
           ticker.setHigh(coinbaseProStats.high);
           ticker.setOpen(coinbaseProStats.open);
@@ -742,44 +741,44 @@ public final class CoinbaseProExchangeAdapter extends AbstractExchangeAdapter
   }
 
   /*
-  * Makes an authenticated API call to the COINBASE PRO exchange.
-  *
-  * The COINBASE PRO authentication process is complex, but well documented:
-  * https://docs.pro.coinbase.com/#creating-a-request
-  *
-  * All REST requests must contain the following headers:
-  *
-  * CB-ACCESS-KEY          The api key as a string.
-  * CB-ACCESS-SIGN         The base64-encoded signature (see Signing a Message).
-  * CB-ACCESS-TIMESTAMP    A timestamp for your request.
-  * CB-ACCESS-PASSPHRASE   The passphrase you specified when creating the API key.
-  *
-  * The CB-ACCESS-TIMESTAMP header MUST be number of seconds since Unix Epoch in UTC.
-  * Decimal values are allowed.
-  *
-  * Your timestamp must be within 30 seconds of the api service time or your request will be
-  * considered expired and rejected. We recommend using the time endpoint to query for the API
-  * server time if you believe there many be time skew between your server and the API servers.
-  *
-  * All request bodies should have content type application/json and be valid JSON.
-  *
-  * The CB-ACCESS-SIGN header is generated by creating a sha256 HMAC using the base64-decoded
-  * secret key on the prehash string:
-  *
-  * timestamp + method + requestPath + body (where + represents string concatenation)
-  *
-  * and base64-encode the output.
-  * The timestamp value is the same as the CB-ACCESS-TIMESTAMP header.
-  *
-  * The body is the request body string or omitted if there is no request body
-  * (typically for GET requests).
-  *
-  * The method should be UPPER CASE.
-  *
-  * Remember to first base64-decode the alphanumeric secret string (resulting in 64 bytes) before
-  * using it as the key for HMAC. Also, base64-encode the digest output before sending in the
-  * header.
-  */
+   * Makes an authenticated API call to the COINBASE PRO exchange.
+   *
+   * The COINBASE PRO authentication process is complex, but well documented:
+   * https://docs.pro.coinbase.com/#creating-a-request
+   *
+   * All REST requests must contain the following headers:
+   *
+   * CB-ACCESS-KEY          The api key as a string.
+   * CB-ACCESS-SIGN         The base64-encoded signature (see Signing a Message).
+   * CB-ACCESS-TIMESTAMP    A timestamp for your request.
+   * CB-ACCESS-PASSPHRASE   The passphrase you specified when creating the API key.
+   *
+   * The CB-ACCESS-TIMESTAMP header MUST be number of seconds since Unix Epoch in UTC.
+   * Decimal values are allowed.
+   *
+   * Your timestamp must be within 30 seconds of the api service time or your request will be
+   * considered expired and rejected. We recommend using the time endpoint to query for the API
+   * server time if you believe there many be time skew between your server and the API servers.
+   *
+   * All request bodies should have content type application/json and be valid JSON.
+   *
+   * The CB-ACCESS-SIGN header is generated by creating a sha256 HMAC using the base64-decoded
+   * secret key on the prehash string:
+   *
+   * timestamp + method + requestPath + body (where + represents string concatenation)
+   *
+   * and base64-encode the output.
+   * The timestamp value is the same as the CB-ACCESS-TIMESTAMP header.
+   *
+   * The body is the request body string or omitted if there is no request body
+   * (typically for GET requests).
+   *
+   * The method should be UPPER CASE.
+   *
+   * Remember to first base64-decode the alphanumeric secret string (resulting in 64 bytes) before
+   * using it as the key for HMAC. Also, base64-encode the digest output before sending in the
+   * header.
+   */
   private ExchangeHttpResponse sendAuthenticatedRequestToExchange(
       String httpMethod, String apiMethod, Map<String, String> params)
       throws ExchangeNetworkException, TradingApiException {
@@ -844,7 +843,7 @@ public final class CoinbaseProExchangeAdapter extends AbstractExchangeAdapter
       final Long timeServer = Instant.now().getEpochSecond() + timeServerBias;
       final String timestamp = timeServer.toString();
       LOG.debug(() -> "Server UNIX EPOCH in seconds: " + timestamp);
-      
+
       // Build the signature string: timestamp + method + requestPath + body
       final String signatureBuilder =
           timestamp + httpMethod.toUpperCase() + "/" + apiMethod + requestBody;
@@ -921,11 +920,10 @@ public final class CoinbaseProExchangeAdapter extends AbstractExchangeAdapter
     sellFeePercentage =
         new BigDecimal(sellFeeInConfig).divide(new BigDecimal("100"), 8, RoundingMode.HALF_UP);
     LOG.info(() -> "Sell fee % in BigDecimal format: " + sellFeePercentage);
-    
-    final String serverTimeBiasInConfig = getOtherConfigItem(otherConfig,
-        SERVER_TIME_BIAS_PROPERTY_NAME);
-    timeServerBias =
-        Long.parseLong(serverTimeBiasInConfig);
+
+    final String serverTimeBiasInConfig =
+        getOtherConfigItem(otherConfig, SERVER_TIME_BIAS_PROPERTY_NAME);
+    timeServerBias = Long.parseLong(serverTimeBiasInConfig);
     LOG.info(() -> "Time server bias in long format: " + timeServerBias);
   }
 
@@ -960,5 +958,4 @@ public final class CoinbaseProExchangeAdapter extends AbstractExchangeAdapter
       throws TradingApiException, ExchangeNetworkException {
     return super.sendNetworkRequest(url, httpMethod, postData, requestHeaders);
   }
-  
 }
