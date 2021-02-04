@@ -117,7 +117,7 @@ public class CoinbaseProIT {
     assertNotNull(ticker.getLow());
     assertNotNull(ticker.getOpen());
     assertNotNull(ticker.getVolume());
-    assertNull(ticker.getVwap()); // not provided by GDAX
+    assertNull(ticker.getVwap()); // not provided by Coinbase Pro
     assertNotNull(ticker.getTimestamp());
 
     verify(authenticationConfig, networkConfig, otherConfig, exchangeConfig);

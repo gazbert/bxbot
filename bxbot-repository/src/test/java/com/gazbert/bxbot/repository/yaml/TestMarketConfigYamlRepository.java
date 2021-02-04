@@ -71,7 +71,7 @@ public class TestMarketConfigYamlRepository {
   private static final boolean MARKET_1_IS_ENABLED = true;
   private static final String MARKET_1_TRADING_STRATEGY_ID = "macd_trend_follower";
 
-  private static final String MARKET_2_ID = "gdax_gbp/btc";
+  private static final String MARKET_2_ID = "coinbasepro_gbp/btc";
   private static final String MARKET_2_NAME = "BTC/GBP";
   private static final String MARKET_2_BASE_CURRENCY = "BTC";
   private static final String MARKET_2_COUNTER_CURRENCY = "GBP";

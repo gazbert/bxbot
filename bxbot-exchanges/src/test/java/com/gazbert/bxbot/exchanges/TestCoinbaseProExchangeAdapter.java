@@ -71,7 +71,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 /**
  * Tests the behaviour of the COINBASE PRO Exchange Adapter.
  *
- * @author gazbert
+ * @author davidhuertas
  */
 @RunWith(PowerMockRunner.class)
 @PowerMockIgnore({

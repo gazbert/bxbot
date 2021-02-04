@@ -1,8 +1,6 @@
 ############################################################################################
 # Trading Strategy YAML config.
 #
-# DO NOT USE: See https://github.com/gazbert/bxbot/pull/120
-#
 # - You configure the loading of your strategy using either a className or a beanName field.
 # - All fields are mandatory unless stated otherwise.
 # - Multiple strategy blocks can be listed.

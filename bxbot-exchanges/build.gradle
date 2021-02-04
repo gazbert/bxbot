@@ -53,7 +53,6 @@ jacocoTestCoverageVerification {
             excludes = [
                     'com.gazbert.bxbot.exchanges.BitfinexExchangeAdapter*',
                     'com.gazbert.bxbot.exchanges.BitstampExchangeAdapter*',
-                    'com.gazbert.bxbot.exchanges.GdaxExchangeAdapter*',
                     'com.gazbert.bxbot.exchanges.GeminiExchangeAdapter*',
                     'com.gazbert.bxbot.exchanges.ItBitExchangeAdapter*',
                     'com.gazbert.bxbot.exchanges.KrakenExchangeAdapter*',

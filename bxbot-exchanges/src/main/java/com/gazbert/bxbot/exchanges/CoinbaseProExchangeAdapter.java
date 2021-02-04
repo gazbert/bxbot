@@ -841,8 +841,8 @@ public final class CoinbaseProExchangeAdapter extends AbstractExchangeAdapter
       }
 
       // Get UNIX EPOCH in secs and add the time server bias
-      final Long timeServer = Instant.now().getEpochSecond() + timeServerBias;
-      final String timestamp = timeServer.toString();
+      final long timeServer = Instant.now().getEpochSecond() + timeServerBias;
+      final String timestamp = Long.toString(timeServer);
       LOG.debug(() -> "Server UNIX EPOCH in seconds: " + timestamp);
 
       // Build the signature string: timestamp + method + requestPath + body

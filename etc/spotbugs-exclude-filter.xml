@@ -46,12 +46,6 @@
         <Bug pattern="REC_CATCH_EXCEPTION"/>
     </Match>
 
-    <!-- Ignore Exception not thrown for catch warnings in GDAX adapter -->
-    <Match>
-        <Class name="com.gazbert.bxbot.exchanges.GdaxExchangeAdapter"/>
-        <Bug pattern="REC_CATCH_EXCEPTION"/>
-    </Match>
-
     <!-- Ignore Exception not thrown for catch warnings in ItBit adapter -->
     <Match>
         <Class name="com.gazbert.bxbot.exchanges.ItBitExchangeAdapter"/>
@@ -64,7 +58,7 @@
         <Bug pattern="REC_CATCH_EXCEPTION"/>
     </Match>
 
-    <!-- Ignore Exception not thrown for catch warnings in GDAX adapter -->
+    <!-- Ignore Exception not thrown for catch warnings in Coinbase Pro adapter -->
     <Match>
         <Class name="com.gazbert.bxbot.exchanges.CoinbaseProExchangeAdapter"/>
         <Bug pattern="REC_CATCH_EXCEPTION"/>
@@ -75,14 +69,6 @@
     -->
     <Match>
         <Class name="com.gazbert.bxbot.exchanges.BitfinexExchangeAdapter"/>
-        <Bug pattern="DM_CONVERT_CASE"/>
-    </Match>
-
-    <!-- Ignore toLowerCase/toUpperCase warnings without locale in GDAX adapter
-         Exchange uses US English.
-    -->
-    <Match>
-        <Class name="com.gazbert.bxbot.exchanges.GdaxExchangeAdapter"/>
         <Bug pattern="DM_CONVERT_CASE"/>
     </Match>
 

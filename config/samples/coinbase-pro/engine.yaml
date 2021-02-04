@@ -1,8 +1,6 @@
 ############################################################################################
 # Trading Engine YAML config.
 #
-# DO NOT USE: See https://github.com/gazbert/bxbot/pull/120
-#
 # - All fields are mandatory unless stated otherwise.
 # - Only 1 engine block can be specified.
 # - The indentation levels are significant in YAML: https://en.wikipedia.org/wiki/YAML
@@ -11,11 +9,11 @@
 engine:
 
   # A unique identifier for the bot. Value must be an alphanumeric string.
-  # Underscores and dashes are also permitted. E.g. my-gdax-bot_1
-  botId: my-gdax-bot_1
+  # Underscores and dashes are also permitted.
+  botId: my-coinbasepro-bot-1
 
-  # A friendly name for the bot. Value must be an alphanumeric string. Spaces are allowed. E.g. GDAX Bot
-  botName: GDAX Bot
+  # A friendly name for the bot. Value must be an alphanumeric string. Spaces are allowed.
+  botName: CoinbasePro Bot
 
   # This must be set to prevent catastrophic loss on the exchange.
   # This is normally the currency you intend to hold a long position in. It should be set to the currency short code for the
@@ -26,7 +24,7 @@ engine:
   # The Trading Engine checks this value at the start of every trade cycle: if your emergencyStopCurrency balance on
   # the trading drops below this value, the Trading Engine will stop trading on all markets and shutdown.
   # Manual intervention is then required to restart the bot. You can set this value to 0 to override this check.
-  emergencyStopBalance: 1.7
+  emergencyStopBalance: 0.7
 
   # The is the interval in seconds that the Trading Engine will wait/sleep before executing
   # the next trade cycle. The minimum value is 1 second. Some exchanges allow you to hit them harder than others. However,
@@ -34,3 +32,9 @@ engine:
   # hit it too hard - you cannot perform ultra low latency trading over the public internet ;-)
   # You'll need to experiment with the trade cycle interval for different exchanges.
   tradeCycleInterval: 60
+
+  # Amount of time in seconds to add to the locally calculated timestamp used to sign the message
+  # sent to the exchange. This allows for slight skew between the bot's local time and that
+  # of the exchange. See: https://docs.pro.coinbase.com/#selecting-a-timestamp
+  # Start with 0 and see how you get on...
+  time-server-bias: 0

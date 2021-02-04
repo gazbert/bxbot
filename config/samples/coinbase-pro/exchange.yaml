@@ -1,9 +1,7 @@
 ############################################################################################
 # Exchange Adapter YAML config.
 #
-# DO NOT USE: See https://github.com/gazbert/bxbot/pull/120
-#
-# - Sample config below currently set to run against GDAX (formerly Coinbase).
+# - Sample config below currently set to run against Coinbase Pro
 # - All fields are mandatory unless stated otherwise.
 # - BX-bot only supports running 1 exchange per bot.
 # - The indentation levels are significant in YAML: https://en.wikipedia.org/wiki/YAML
@@ -14,14 +12,14 @@
 exchange:
 
   # A friendly name for the Exchange. Value must be an alphanumeric string. Spaces are allowed.
-  name>: GDAX
+  name>: Coinbase Pro
 
   # For the adapter value, you must specify the fully qualified name of your Exchange Adapter class so the Trading Engine
   # can load and execute it. The class must be on the runtime classpath.
-  adapter: com.gazbert.bxbot.exchanges.GdaxExchangeAdapter
+  adapter: com.gazbert.bxbot.exchanges.CoinbaseProExchangeAdapter
 
   authenticationConfig:
-    # See https://gdax.com/settings/api to get your GDAX Trading API credentials.
+    # See: https://docs.pro.coinbase.com/#authentication to get your Coinbase Pro Trading API credentials.
     passphrase: your-passphrase
     key: your-api-key
     secret: your-secret-key
@@ -51,11 +49,11 @@ exchange:
 
   otherConfig:
     # Exchange Taker Buy fee in %
-    # IMPORTANT - keep an eye on the fees: https://docs.gdax.com/#fees
-    # Taker fee on 29 Jul 2016 = 0.25%
-    buy-fee: 0.25
+    # IMPORTANT - keep an eye on the fees:
+    # https://help.coinbase.com/en/pro/trading-and-funding/trading-rules-and-fees/fees.html
+    buy-fee: 0.5
 
     # Exchange Taker Sell fee in %
-    # IMPORTANT - keep an eye on the fees: https://docs.gdax.com/#fees
-    # Taker fee on 29 Jul 2016 = 0.25%
-    sell-fee: 0.25
+    # IMPORTANT - keep an eye on the fees:
+    # https://help.coinbase.com/en/pro/trading-and-funding/trading-rules-and-fees/fees.html
+    sell-fee: 0.5
