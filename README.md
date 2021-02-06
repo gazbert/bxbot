@@ -1,6 +1,6 @@
 # BX-bot
 
-[![Build Status](https://travis-ci.com/gazbert/bxbot.svg?branch=coinbase-pro)](https://travis-ci.com/gazbert/bxbot)
+[![Build Status](https://travis-ci.com/gazbert/bxbot.svg?branch=master)](https://travis-ci.com/gazbert/bxbot)
 [![Sonarcloud Status](https://sonarcloud.io/api/project_badges/measure?project=gazbert_bxbot&metric=alert_status)](https://sonarcloud.io/dashboard?id=gazbert_bxbot)
 [![Join the chat at https://gitter.im/BX-bot/Lobby](https://badges.gitter.im/BX-bot/Lobby.svg)](https://gitter.im/BX-bot/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)		 	 
  
@@ -640,8 +640,6 @@ server.ssl.key-store-type=PKCS12
 
 ## Coming Soon... (Definitely Maybe)
 
-1. A [Coinbase Pro](https://pro.coinbase.com/) exchange adapter.
-1. A UI built with [React](https://reactjs.org/) - it will consume the REST API. 
-
+A UI built with [React](https://reactjs.org/) - it will consume the REST API. 
 
 See the [Project Board](https://github.com/gazbert/bxbot/projects/2) for timescales and progress.
