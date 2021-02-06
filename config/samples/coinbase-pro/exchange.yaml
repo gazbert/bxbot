@@ -12,7 +12,7 @@
 exchange:
 
   # A friendly name for the Exchange. Value must be an alphanumeric string. Spaces are allowed.
-  name>: Coinbase Pro
+  name: Coinbase Pro
 
   # For the adapter value, you must specify the fully qualified name of your Exchange Adapter class so the Trading Engine
   # can load and execute it. The class must be on the runtime classpath.
