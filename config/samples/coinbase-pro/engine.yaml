@@ -32,9 +32,3 @@ engine:
   # hit it too hard - you cannot perform ultra low latency trading over the public internet ;-)
   # You'll need to experiment with the trade cycle interval for different exchanges.
   tradeCycleInterval: 60
-
-  # Amount of time in seconds to add to the locally calculated timestamp used to sign the message
-  # sent to the exchange. This allows for slight skew between the bot's local time and that
-  # of the exchange. See: https://docs.pro.coinbase.com/#selecting-a-timestamp
-  # Start with 0 and see how you get on...
-  time-server-bias: 0
