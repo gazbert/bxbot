@@ -1,8 +1,6 @@
 ############################################################################################
 # Email Alerts YAML config.
 #
-# DO NOT USE: See https://github.com/gazbert/bxbot/issues/122
-#
 # - All fields are mandatory unless stated otherwise.
 # - Only 1 emailAlerts block can be specified.
 # - The email is sent using TLS.

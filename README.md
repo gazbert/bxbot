@@ -1,6 +1,6 @@
 # BX-bot
 
-[![Build Status](https://travis-ci.com/gazbert/bxbot.svg?branch=master)](https://travis-ci.com/gazbert/bxbot)
+[![Build Status](https://travis-ci.com/gazbert/bxbot.svg?branch=coinbase-pro)](https://travis-ci.com/gazbert/bxbot)
 [![Sonarcloud Status](https://sonarcloud.io/api/project_badges/measure?project=gazbert_bxbot&metric=alert_status)](https://sonarcloud.io/dashboard?id=gazbert_bxbot)
 [![Join the chat at https://gitter.im/BX-bot/Lobby](https://badges.gitter.im/BX-bot/Lobby.svg)](https://gitter.im/BX-bot/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)		 	 
  
@@ -18,7 +18,8 @@ except for the trading strategies - you'll need to write those yourself! A simpl
 Trading API - take a look [here](https://github.com/ta4j/ta4j) for more ideas.
 
 Exchange Adapters for using [Bitstamp](https://www.bitstamp.net), [Bitfinex](https://www.bitfinex.com),
-[itBit](https://www.itbit.com/), [Kraken](https://www.kraken.com), and [Gemini](https://gemini.com/) are included.
+[itBit](https://www.itbit.com/), [Kraken](https://www.kraken.com), [Gemini](https://gemini.com/),
+and [Coinbase Pro](https://pro.coinbase.com/) are included.
 Feel free to improve these or contribute new adapters to the project; that would be 
 [shiny!](https://en.wikipedia.org/wiki/Firefly_(TV_series))
 

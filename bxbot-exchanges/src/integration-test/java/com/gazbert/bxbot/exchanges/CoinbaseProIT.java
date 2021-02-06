@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016 Gareth Jon Lynch
+ * Copyright (c) 2021 Gareth Jon Lynch
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -47,15 +47,11 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 /**
- * Basic integration testing with GDAX exchange.
- *
- * <p>DO NOT USE: See https://github.com/gazbert/bxbot/pull/120
+ * Basic integration testing with Coinbase Pro exchange.
  *
  * @author gazbert
- * @deprecated #120 : GDAX exchange has been superseded by Coinbase Pro: https://pro.coinbase.com/
  */
-@Deprecated(forRemoval = true)
-public class GdaxIT {
+public class CoinbaseProIT {
 
   private static final String MARKET_ID = "BTC-GBP";
   private static final BigDecimal BUY_ORDER_PRICE = new BigDecimal("450.176");
@@ -92,6 +88,7 @@ public class GdaxIT {
     otherConfig = createMock(OtherConfig.class);
     expect(otherConfig.getItem("buy-fee")).andReturn("0.25");
     expect(otherConfig.getItem("sell-fee")).andReturn("0.25");
+    expect(otherConfig.getItem("time-server-bias")).andReturn("1");
 
     exchangeConfig = createMock(ExchangeConfig.class);
     expect(exchangeConfig.getAuthenticationConfig()).andReturn(authenticationConfig);
@@ -103,7 +100,7 @@ public class GdaxIT {
   public void testPublicApiCalls() throws Exception {
     replay(authenticationConfig, networkConfig, otherConfig, exchangeConfig);
 
-    final ExchangeAdapter exchangeAdapter = new GdaxExchangeAdapter();
+    final ExchangeAdapter exchangeAdapter = new CoinbaseProExchangeAdapter();
     exchangeAdapter.init(exchangeConfig);
 
     assertNotNull(exchangeAdapter.getLatestMarketPrice(MARKET_ID));
@@ -120,7 +117,7 @@ public class GdaxIT {
     assertNotNull(ticker.getLow());
     assertNotNull(ticker.getOpen());
     assertNotNull(ticker.getVolume());
-    assertNull(ticker.getVwap()); // not provided by GDAX
+    assertNull(ticker.getVwap()); // not provided by Coinbase Pro
     assertNotNull(ticker.getTimestamp());
 
     verify(authenticationConfig, networkConfig, otherConfig, exchangeConfig);
@@ -134,7 +131,7 @@ public class GdaxIT {
   public void testAuthenticatedApiCalls() throws Exception {
     replay(authenticationConfig, networkConfig, otherConfig, exchangeConfig);
 
-    final ExchangeAdapter exchangeAdapter = new GdaxExchangeAdapter();
+    final ExchangeAdapter exchangeAdapter = new CoinbaseProExchangeAdapter();
     exchangeAdapter.init(exchangeConfig);
 
     final BalanceInfo balanceInfo = exchangeAdapter.getBalanceInfo();

@@ -1,9 +1,7 @@
 ############################################################################################
 # Exchange Adapter YAML config.
 #
-# DO NOT USE: See https://github.com/gazbert/bxbot/issues/122
-#
-# - Sample config below currently set to run against OKCoin.
+# - Sample config below currently set to run against Coinbase Pro
 # - All fields are mandatory unless stated otherwise.
 # - BX-bot only supports running 1 exchange per bot.
 # - The indentation levels are significant in YAML: https://en.wikipedia.org/wiki/YAML
@@ -14,14 +12,15 @@
 exchange:
 
   # A friendly name for the Exchange. Value must be an alphanumeric string. Spaces are allowed.
-  name: OKCoin
+  name>: Coinbase Pro
 
   # For the adapter value, you must specify the fully qualified name of your Exchange Adapter class so the Trading Engine
   # can load and execute it. The class must be on the runtime classpath.
-  adapter: com.gazbert.bxbot.exchanges.OkCoinExchangeAdapter
+  adapter: com.gazbert.bxbot.exchanges.CoinbaseProExchangeAdapter
 
   authenticationConfig:
-    # See https://www.okcoin.com/user/api.do to get your OKCoin Trading API credentials.
+    # See: https://docs.pro.coinbase.com/#authentication to get your Coinbase Pro Trading API credentials.
+    passphrase: your-passphrase
     key: your-api-key
     secret: your-secret-key
 
@@ -50,11 +49,18 @@ exchange:
 
   otherConfig:
     # Exchange Taker Buy fee in %
-    # IMPORTANT - keep an eye on the fees: https://www.okcoin.com/about/fees.do
-    # Taker fee on 29 Jul 2016 = 0.2%
-    buy-fee: 0.2
+    # IMPORTANT - keep an eye on the fees:
+    # https://help.coinbase.com/en/pro/trading-and-funding/trading-rules-and-fees/fees.html
+    buy-fee: 0.5
 
     # Exchange Taker Sell fee in %
-    # IMPORTANT - keep an eye on the fees: https://www.okcoin.com/about/fees.do
-    # Taker fee on 29 Jul 2016 = 0.2%
-    sell-fee: 0.2
+    # IMPORTANT - keep an eye on the fees:
+    # https://help.coinbase.com/en/pro/trading-and-funding/trading-rules-and-fees/fees.html
+    sell-fee: 0.5
+
+    # Amount of time in seconds to add to the locally calculated timestamp used to sign the message
+    # sent to the exchange. This allows for slight skew between the bot's local time and that
+    # of the exchange. See: https://docs.pro.coinbase.com/#selecting-a-timestamp
+    # Start with 0 and see how you get on...
+    time-server-bias: 0
+
