@@ -104,7 +104,7 @@ allprojects {
     apply plugin: "jacoco"
 
     group = 'com.gazbert.bxbot'
-    version = '1.1.2-SNAPSHOT'
+    version = '1.2.0'
 }
 
 subprojects {
