@@ -7,7 +7,9 @@ dependencies {
 
     compile libraries.spring_boot_starter
     compile libraries.spring_boot_starter_log4j2
+    compile libraries.google_gson
     compile libraries.google_guava
+    compile libraries.ta4j
 
     testCompile libraries.junit
     testCompile libraries.powermock_junit
