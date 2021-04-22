@@ -1,0 +1,35 @@
+############################################################################################
+# Market YAML config.
+#
+# - All fields are mandatory unless stated otherwise.
+# - Multiple market blocks can be listed.
+# - The indentation levels are significant in YAML: https://en.wikipedia.org/wiki/YAML
+############################################################################################
+---
+markets:
+
+  # The id value is the market id as defined on the exchange, e.g. 'btcusd'.
+  - id: XRPEUR
+
+    # A friendly name for the market. Value must be an alphanumeric string. Spaces are allowed. E.g. BTC/USD
+    name: XRP/EUR
+
+    # The baseCurrency value is the currency short code for the base currency in the currency pair. When you buy or
+    # sell a currency pair, you are performing that action on the base currency. The base currency is the commodity you
+    # are buying or selling. E.g. in a BTC/USD market, the first currency (BTC) is the base currency and the second
+    # currency (USD) is the counter currency.
+    baseCurrency: XXRP
+
+    # The counterCurrency value is the currency short code for the counter currency in the currency pair. This is also
+    # known as the quote currency.
+    counterCurrency: ZEUR
+
+    # The enabled value allows you toggle trading on the market - config changes are only applied on startup.
+    enabled: true
+
+    # The tradingStrategyId value must match a strategy id defined in your strategies.yaml config.
+    # Currently, BX-bot only supports 1 strategy per market.
+
+    tradingStrategyId: ta4j-backtest-strategy
+
+
