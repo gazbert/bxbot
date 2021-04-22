@@ -34,7 +34,6 @@ public class TA4JRecordingAdapter extends AbstractExchangeAdapter implements Exc
 
     private BigDecimal buyFeePercentage;
     private BigDecimal sellFeePercentage;
-    private BigDecimal sellLimitDistancePercentage;
     private String tradingSeriesTradingPath;
     private String simulatedCounterCurrency;
     private String simulatedBaseCurrency;
@@ -77,11 +76,6 @@ public class TA4JRecordingAdapter extends AbstractExchangeAdapter implements Exc
         sellFeePercentage =
                 new BigDecimal(sellFeeInConfig).divide(new BigDecimal("100"), 8, RoundingMode.HALF_UP);
         LOG.info(() -> "Sell fee % in BigDecimal format: " + sellFeePercentage);
-
-        final String sellLimitDistanceInConfig = getOtherConfigItem(otherConfig, "sell-stop-limit-percentage-distance");
-        sellLimitDistancePercentage =
-                new BigDecimal(sellLimitDistanceInConfig).divide(new BigDecimal("100"), 8, RoundingMode.HALF_UP);
-        LOG.info(() -> "Sell (stop-limit order) limit distance % in BigDecimal format: " + sellLimitDistancePercentage);
 
         tradingSeriesTradingPath = getOtherConfigItem(otherConfig, PATH_TO_SERIES_JSON_PROPERTY_NAME);
         LOG.info(() -> "path to load series json from for recording:" + tradingSeriesTradingPath);
