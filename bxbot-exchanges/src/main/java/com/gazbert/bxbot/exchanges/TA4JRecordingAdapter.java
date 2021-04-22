@@ -30,7 +30,6 @@ public class TA4JRecordingAdapter extends AbstractExchangeAdapter implements Exc
     private static final String SHOULD_GENERATE_CHARTS_PROPERTY_NAME = "generate-order-overview-charts";
 
 
-
     private BigDecimal orderFeePercentage;
     private String tradingSeriesTradingPath;
     private String simulatedCounterCurrency;
@@ -57,7 +56,7 @@ public class TA4JRecordingAdapter extends AbstractExchangeAdapter implements Exc
 
     private void loadRecodingSeriesFromJson() {
         tradingSeries = JsonBarsSerializer.loadSeries(tradingSeriesTradingPath);
-        if(tradingSeries == null || tradingSeries.isEmpty()) {
+        if (tradingSeries == null || tradingSeries.isEmpty()) {
             throw new IllegalArgumentException("Could not load ta4j series from json '" + tradingSeriesTradingPath + "'");
         }
     }
@@ -180,13 +179,13 @@ public class TA4JRecordingAdapter extends AbstractExchangeAdapter implements Exc
                     checkOpenSellOrderExecution(marketId);
                     break;
                 default:
-                    throw new TradingApiException("Order type not recognized: " +currentOpenOrder.getType());
+                    throw new TradingApiException("Order type not recognized: " + currentOpenOrder.getType());
             }
         }
     }
 
     private void checkOpenSellOrderExecution(String marketId) throws TradingApiException, ExchangeNetworkException {
-        BigDecimal currentBidPrice = (BigDecimal)tradingSeries.getBar(currentTick).getLowPrice().getDelegate(); // assumes that the stored series json contains the bid price in the low price property
+        BigDecimal currentBidPrice = (BigDecimal) tradingSeries.getBar(currentTick).getLowPrice().getDelegate(); // assumes that the stored series json contains the bid price in the low price property
         if (currentBidPrice.compareTo(currentOpenOrder.getPrice()) >= 0) {
             LOG.info("SELL: the market's bid price moved above the limit price --> record sell order execution with the current bid price");
             sellOrderRule.addTrigger(currentTick);
@@ -200,8 +199,8 @@ public class TA4JRecordingAdapter extends AbstractExchangeAdapter implements Exc
     }
 
     private void checkOpenBuyOrderExecution(String marketId) throws TradingApiException, ExchangeNetworkException {
-        BigDecimal currentAskPrice = (BigDecimal)tradingSeries.getBar(currentTick).getHighPrice().getDelegate(); // assumes that the stored series json contains the ask price in the high price property
-        if (currentAskPrice.compareTo(currentOpenOrder.getPrice()) <=0) {
+        BigDecimal currentAskPrice = (BigDecimal) tradingSeries.getBar(currentTick).getHighPrice().getDelegate(); // assumes that the stored series json contains the ask price in the high price property
+        if (currentAskPrice.compareTo(currentOpenOrder.getPrice()) <= 0) {
             LOG.info("BUY: the market's current ask price moved below the limit price --> record buy order execution with the current ask price");
             buyOrderRule.addTrigger(currentTick);
             BigDecimal orderPrice = currentOpenOrder.getOriginalQuantity().multiply(currentAskPrice);
@@ -225,7 +224,7 @@ public class TA4JRecordingAdapter extends AbstractExchangeAdapter implements Exc
         TradePriceRespectingBacktestExecutor backtestExecutor = new TradePriceRespectingBacktestExecutor(tradingSeries, new LinearTransactionCostModel(getPercentageOfBuyOrderTakenForExchangeFee(marketId).doubleValue()));
         List<TradingStatement> statements = backtestExecutor.execute(strategies, tradingSeries.numOf(25), Order.OrderType.BUY);
         logReports(statements);
-        if(shouldPrintCharts) {
+        if (shouldPrintCharts) {
             BuyAndSellSignalsToChart.printSeries(tradingSeries, strategy);
             BuyAndSellSignalsToChart.printSeries(tradingSeries, optimalTradingStrategy);
         }
@@ -233,12 +232,12 @@ public class TA4JRecordingAdapter extends AbstractExchangeAdapter implements Exc
     }
 
     private void logReports(List<TradingStatement> statements) {
-        for(TradingStatement statement:statements) {
-            LOG.info( () ->
-            "\n######### "+statement.getStrategy().getName()+" #########\n" +
-            createPerformanceReport(statement) + "\n" +
-            createTradesReport(statement)+ "\n"+
-                    "###########################"
+        for (TradingStatement statement : statements) {
+            LOG.info(() ->
+                    "\n######### " + statement.getStrategy().getName() + " #########\n" +
+                            createPerformanceReport(statement) + "\n" +
+                            createTradesReport(statement) + "\n" +
+                            "###########################"
             );
         }
     }
