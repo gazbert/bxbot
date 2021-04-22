@@ -24,21 +24,24 @@ public class TA4JRecordingAdapter extends AbstractExchangeAdapter implements Exc
     private static final Logger LOG = LogManager.getLogger();
     private static final String BUY_FEE_PROPERTY_NAME = "buy-fee";
     private static final String SELL_FEE_PROPERTY_NAME = "sell-fee";
+    private static final String SIMULATED_COUNTER_CURRENCY_PROPERTY_NAME = "simulatedCounterCurrency";
+    private static final String COUNTER_CURRENCY_START_BALANCE_PROPERTY_NAME = "counterCurrencyStartingBalance";
+    private static final String SIMULATED_BASE_CURRENCY_PROPERTY_NAME = "simulatedBaseCurrency";
 
 
     private BigDecimal buyFeePercentage;
     private BigDecimal sellFeePercentage;
     private BigDecimal sellLimitDistancePercentage;
     private String tradingSeriesTradingPath;
-
+    private String simulatedCounterCurrency;
+    private String simulatedBaseCurrency;
 
     private BarSeries tradingSeries;
 
-    private static final String counterCurrency = "ZEUR";
-    private static final String baseCurrency = "XXRP";
+
 
     private BigDecimal baseCurrencyBalance = BigDecimal.ZERO;
-    private BigDecimal counterCurrencyBalance = new BigDecimal(100); // simulated starting balance
+    private BigDecimal counterCurrencyBalance;
     private OpenOrder currentOpenOrder;
     private int currentTick;
     private final TA4JRecordingRule sellOrderRule = new TA4JRecordingRule();
@@ -79,6 +82,16 @@ public class TA4JRecordingAdapter extends AbstractExchangeAdapter implements Exc
 
         tradingSeriesTradingPath = getOtherConfigItem(otherConfig, "trading-series-json-path");
         LOG.info(() -> "path to load series json from for recording:" + tradingSeriesTradingPath);
+
+        simulatedBaseCurrency = getOtherConfigItem(otherConfig, SIMULATED_BASE_CURRENCY_PROPERTY_NAME);
+        LOG.info(() -> "Base currency to be simulated:" + simulatedBaseCurrency);
+
+        simulatedCounterCurrency = getOtherConfigItem(otherConfig, SIMULATED_COUNTER_CURRENCY_PROPERTY_NAME);
+        LOG.info(() -> "Counter currency to be simulated:" + simulatedCounterCurrency);
+
+        final String startingBalanceInConfig = getOtherConfigItem(otherConfig, COUNTER_CURRENCY_START_BALANCE_PROPERTY_NAME);
+        counterCurrencyBalance = new BigDecimal(startingBalanceInConfig);
+        LOG.info(() -> "Counter currency balance at simulation start in BigDecimal format: " + counterCurrencyBalance);
     }
 
     @Override
@@ -133,8 +146,8 @@ public class TA4JRecordingAdapter extends AbstractExchangeAdapter implements Exc
     @Override
     public BalanceInfo getBalanceInfo() throws ExchangeNetworkException, TradingApiException {
         HashMap<String, BigDecimal> availableBalances = new HashMap<>();
-        availableBalances.put(baseCurrency, baseCurrencyBalance);
-        availableBalances.put(counterCurrency, counterCurrencyBalance);
+        availableBalances.put(simulatedBaseCurrency, baseCurrencyBalance);
+        availableBalances.put(simulatedCounterCurrency, counterCurrencyBalance);
         return new BalanceInfoImpl(availableBalances, new HashMap<>());
     }
 
