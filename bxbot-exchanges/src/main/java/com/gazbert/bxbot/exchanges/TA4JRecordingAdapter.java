@@ -22,8 +22,7 @@ import java.util.*;
 
 public class TA4JRecordingAdapter extends AbstractExchangeAdapter implements ExchangeAdapter {
     private static final Logger LOG = LogManager.getLogger();
-    private static final String BUY_FEE_PROPERTY_NAME = "buy-fee";
-    private static final String SELL_FEE_PROPERTY_NAME = "sell-fee";
+    private static final String ORDER_FEE_PROPERTY_NAME = "order-fee";
     private static final String SIMULATED_COUNTER_CURRENCY_PROPERTY_NAME = "simulatedCounterCurrency";
     private static final String COUNTER_CURRENCY_START_BALANCE_PROPERTY_NAME = "counterCurrencyStartingBalance";
     private static final String SIMULATED_BASE_CURRENCY_PROPERTY_NAME = "simulatedBaseCurrency";
@@ -32,8 +31,7 @@ public class TA4JRecordingAdapter extends AbstractExchangeAdapter implements Exc
 
 
 
-    private BigDecimal buyFeePercentage;
-    private BigDecimal sellFeePercentage;
+    private BigDecimal orderFeePercentage;
     private String tradingSeriesTradingPath;
     private String simulatedCounterCurrency;
     private String simulatedBaseCurrency;
@@ -67,15 +65,10 @@ public class TA4JRecordingAdapter extends AbstractExchangeAdapter implements Exc
     private void setOtherConfig(ExchangeConfig exchangeConfig) {
         final OtherConfig otherConfig = getOtherConfig(exchangeConfig);
 
-        final String buyFeeInConfig = getOtherConfigItem(otherConfig, BUY_FEE_PROPERTY_NAME);
-        buyFeePercentage =
-                new BigDecimal(buyFeeInConfig).divide(new BigDecimal("100"), 8, RoundingMode.HALF_UP);
-        LOG.info(() -> "Buy fee % in BigDecimal format: " + buyFeePercentage);
-
-        final String sellFeeInConfig = getOtherConfigItem(otherConfig, SELL_FEE_PROPERTY_NAME);
-        sellFeePercentage =
-                new BigDecimal(sellFeeInConfig).divide(new BigDecimal("100"), 8, RoundingMode.HALF_UP);
-        LOG.info(() -> "Sell fee % in BigDecimal format: " + sellFeePercentage);
+        final String orderFeeInConfig = getOtherConfigItem(otherConfig, ORDER_FEE_PROPERTY_NAME);
+        orderFeePercentage =
+                new BigDecimal(orderFeeInConfig).divide(new BigDecimal("100"), 8, RoundingMode.HALF_UP);
+        LOG.info(() -> "Order fee % in BigDecimal format: " + orderFeePercentage);
 
         tradingSeriesTradingPath = getOtherConfigItem(otherConfig, PATH_TO_SERIES_JSON_PROPERTY_NAME);
         LOG.info(() -> "path to load series json from for recording:" + tradingSeriesTradingPath);
@@ -271,11 +264,11 @@ public class TA4JRecordingAdapter extends AbstractExchangeAdapter implements Exc
 
     @Override
     public BigDecimal getPercentageOfBuyOrderTakenForExchangeFee(String marketId) throws TradingApiException, ExchangeNetworkException {
-        return buyFeePercentage;
+        return orderFeePercentage;
     }
 
     @Override
     public BigDecimal getPercentageOfSellOrderTakenForExchangeFee(String marketId) throws TradingApiException, ExchangeNetworkException {
-        return sellFeePercentage;
+        return orderFeePercentage;
     }
 }
