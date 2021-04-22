@@ -36,7 +36,6 @@ public class TA4JRecordingAdapter extends AbstractExchangeAdapter implements Exc
 
     private static final String counterCurrency = "ZEUR";
     private static final String baseCurrency = "XXRP";
-    private static final String marketID = "XRPEUR";
 
     private BigDecimal baseCurrencyBalance = BigDecimal.ZERO;
     private BigDecimal counterCurrencyBalance = new BigDecimal(100); // simulated starting balance
@@ -103,9 +102,6 @@ public class TA4JRecordingAdapter extends AbstractExchangeAdapter implements Exc
 
     @Override
     public String createOrder(String marketId, OrderType orderType, BigDecimal quantity, BigDecimal price) throws ExchangeNetworkException, TradingApiException {
-        if (!marketID.equals(marketId)) {
-            throw new TradingApiException("Market did not match. Expected: "+ marketID+ ", actual: " + marketId);
-        }
         if (currentOpenOrder != null) {
             throw new TradingApiException("Can only record/execute one order at a time. Wait for the open order to fulfill");
         }
@@ -113,15 +109,12 @@ public class TA4JRecordingAdapter extends AbstractExchangeAdapter implements Exc
         Date creationDate = Date.from(tradingSeries.getBar(currentTick).getEndTime().toInstant());
         BigDecimal total = price.multiply(quantity);
         currentOpenOrder = new OpenOrderImpl(newOrderID, creationDate, marketId, orderType, price, quantity, quantity, total);
-        checkOpenOrderExecution();
+        checkOpenOrderExecution(marketId);
         return newOrderID;
     }
 
     @Override
     public boolean cancelOrder(String orderId, String marketId) throws ExchangeNetworkException, TradingApiException {
-        if (!marketID.equals(marketId)) {
-            throw new TradingApiException("Market did not match. Expected: "+ marketID+ ", actual: " + marketId);
-        }
         if (currentOpenOrder == null) {
             throw new TradingApiException("Tried to cancel a order, but no open order found");
         }
@@ -150,11 +143,11 @@ public class TA4JRecordingAdapter extends AbstractExchangeAdapter implements Exc
         currentTick++;
         LOG.info("Tick increased to '" + currentTick + "'");
         if (currentTick > tradingSeries.getEndIndex()) {
-            finishRecording();
+            finishRecording(marketId);
             return null;
         }
 
-        checkOpenOrderExecution();
+        checkOpenOrderExecution(marketId);
 
         Bar currentBar = tradingSeries.getBar(currentTick);
         BigDecimal last = (BigDecimal) currentBar.getClosePrice().getDelegate();
@@ -169,14 +162,14 @@ public class TA4JRecordingAdapter extends AbstractExchangeAdapter implements Exc
         return new TickerImpl(last, bid, ask, low, high, open, volume, vwap, timestamp);
     }
 
-    private void checkOpenOrderExecution() throws TradingApiException, ExchangeNetworkException {
+    private void checkOpenOrderExecution(String marketId) throws TradingApiException, ExchangeNetworkException {
         if (currentOpenOrder != null) {
             switch (currentOpenOrder.getType()) {
                 case BUY:
-                    checkOpenBuyOrderExecution();
+                    checkOpenBuyOrderExecution(marketId);
                     break;
                 case SELL:
-                    checkOpenSellOrderExecution();
+                    checkOpenSellOrderExecution(marketId);
                     break;
                 default:
                     throw new TradingApiException("Order type not recognized: " +currentOpenOrder.getType());
@@ -184,13 +177,13 @@ public class TA4JRecordingAdapter extends AbstractExchangeAdapter implements Exc
         }
     }
 
-    private void checkOpenSellOrderExecution() throws TradingApiException, ExchangeNetworkException {
+    private void checkOpenSellOrderExecution(String marketId) throws TradingApiException, ExchangeNetworkException {
         BigDecimal currentBidPrice = (BigDecimal)tradingSeries.getBar(currentTick).getLowPrice().getDelegate();
         if (currentBidPrice.compareTo(currentOpenOrder.getPrice()) <= 0) {
             LOG.info("SELL: the bid price is below or equal to the stop price --> record sell order execution with the bid price");
             sellOrderRule.addTrigger(currentTick);
             BigDecimal orderPrice = currentOpenOrder.getOriginalQuantity().multiply(currentBidPrice);
-            BigDecimal buyFees = getPercentageOfSellOrderTakenForExchangeFee(marketID).multiply(orderPrice);
+            BigDecimal buyFees = getPercentageOfSellOrderTakenForExchangeFee(marketId).multiply(orderPrice);
             BigDecimal netOrderPrice = orderPrice.subtract(buyFees);
             counterCurrencyBalance = counterCurrencyBalance.add(netOrderPrice);
             baseCurrencyBalance = baseCurrencyBalance.subtract(currentOpenOrder.getOriginalQuantity());
@@ -198,13 +191,13 @@ public class TA4JRecordingAdapter extends AbstractExchangeAdapter implements Exc
         }
     }
 
-    private void checkOpenBuyOrderExecution() throws TradingApiException, ExchangeNetworkException {
+    private void checkOpenBuyOrderExecution(String marketId) throws TradingApiException, ExchangeNetworkException {
         BigDecimal currentAskPrice = (BigDecimal)tradingSeries.getBar(currentTick).getHighPrice().getDelegate();
         if (currentAskPrice.compareTo(currentOpenOrder.getPrice()) <=0) {
             LOG.info("BUY: the current ask price is below or queal to the limit price --> record buy order execution with the current ask price");
             buyOrderRule.addTrigger(currentTick);
             BigDecimal orderPrice = currentOpenOrder.getOriginalQuantity().multiply(currentAskPrice);
-            BigDecimal buyFees = getPercentageOfBuyOrderTakenForExchangeFee(marketID).multiply(orderPrice);
+            BigDecimal buyFees = getPercentageOfBuyOrderTakenForExchangeFee(marketId).multiply(orderPrice);
             BigDecimal netOrderPrice = orderPrice.add(buyFees);
             counterCurrencyBalance = counterCurrencyBalance.subtract(netOrderPrice);
             baseCurrencyBalance = baseCurrencyBalance.add(currentOpenOrder.getOriginalQuantity());
@@ -213,14 +206,14 @@ public class TA4JRecordingAdapter extends AbstractExchangeAdapter implements Exc
     }
 
 
-    private void finishRecording() throws TradingApiException, ExchangeNetworkException {
+    private void finishRecording(String marketId) throws TradingApiException, ExchangeNetworkException {
         final List<Strategy> strategies = new ArrayList<>();
         Strategy strategy = new BaseStrategy("Recorded ta4j trades", buyOrderRule, sellOrderRule);
         strategies.add(strategy);
-        Ta4jOptimalTradingStrategy optimalTradingStrategy = new Ta4jOptimalTradingStrategy(tradingSeries, getPercentageOfBuyOrderTakenForExchangeFee(marketID), getPercentageOfSellOrderTakenForExchangeFee(marketID));
+        Ta4jOptimalTradingStrategy optimalTradingStrategy = new Ta4jOptimalTradingStrategy(tradingSeries, getPercentageOfBuyOrderTakenForExchangeFee(marketId), getPercentageOfSellOrderTakenForExchangeFee(marketId));
         strategies.add(optimalTradingStrategy);
 
-        TradePriceRespectingBacktestExecutor backtestExecutor = new TradePriceRespectingBacktestExecutor(tradingSeries, new LinearTransactionCostModel(getPercentageOfBuyOrderTakenForExchangeFee(marketID).doubleValue()));
+        TradePriceRespectingBacktestExecutor backtestExecutor = new TradePriceRespectingBacktestExecutor(tradingSeries, new LinearTransactionCostModel(getPercentageOfBuyOrderTakenForExchangeFee(marketId).doubleValue()));
         List<TradingStatement> statements = backtestExecutor.execute(strategies, tradingSeries.numOf(25), Order.OrderType.BUY);
         logReports(statements);
         BuyAndSellSignalsToChart.printSeries(tradingSeries, strategy);
@@ -266,9 +259,5 @@ public class TA4JRecordingAdapter extends AbstractExchangeAdapter implements Exc
     @Override
     public BigDecimal getPercentageOfSellOrderTakenForExchangeFee(String marketId) throws TradingApiException, ExchangeNetworkException {
         return sellFeePercentage;
-    }
-
-    public int getMaxIndex() {
-        return tradingSeries.getEndIndex();
     }
 }
