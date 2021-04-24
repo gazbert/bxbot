@@ -165,7 +165,7 @@ public class TA4JRecordingAdapter extends AbstractExchangeAdapter implements Exc
         BigDecimal open = (BigDecimal) currentBar.getOpenPrice().getDelegate();
         BigDecimal volume = (BigDecimal) currentBar.getVolume().getDelegate();
         BigDecimal vwap = BigDecimal.ZERO;
-        Long timestamp = currentBar.getEndTime().toEpochSecond();
+        Long timestamp = currentBar.getEndTime().toInstant().toEpochMilli();
         return new TickerImpl(last, bid, ask, low, high, open, volume, vwap, timestamp);
     }
 
