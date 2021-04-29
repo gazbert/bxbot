@@ -34,6 +34,7 @@ public class TryModeExchangeAdapter extends AbstractExchangeAdapter implements E
 
     private OpenOrder currentOpenOrder;
     private BigDecimal baseCurrencyBalance;
+    private boolean isOpenOrderCheckReentering;
 
     @Override
     public void init(ExchangeConfig config) {
@@ -49,12 +50,14 @@ public class TryModeExchangeAdapter extends AbstractExchangeAdapter implements E
 
     @Override
     public MarketOrderBook getMarketOrders(String marketId) throws ExchangeNetworkException, TradingApiException {
+        checkOpenOrderExecution(marketId);
         LOG.info(() -> "Delegate 'getMarketOrders' to the configured delegation exchange adapter.");
         return delegateExchange.getMarketOrders(marketId);
     }
 
     @Override
     public List<OpenOrder> getYourOpenOrders(String marketId) throws ExchangeNetworkException, TradingApiException {
+        checkOpenOrderExecution(marketId);
         LinkedList<OpenOrder> result = new LinkedList<>();
         if (currentOpenOrder != null) {
             result.add(currentOpenOrder);
@@ -67,6 +70,7 @@ public class TryModeExchangeAdapter extends AbstractExchangeAdapter implements E
 
     @Override
     public String createOrder(String marketId, OrderType orderType, BigDecimal quantity, BigDecimal price) throws ExchangeNetworkException, TradingApiException {
+        checkOpenOrderExecution(marketId);
         if (currentOpenOrder != null) {
             throw new TradingApiException("Can only record/execute one order at a time. Wait for the open order to fulfill");
         }
@@ -81,6 +85,7 @@ public class TryModeExchangeAdapter extends AbstractExchangeAdapter implements E
 
     @Override
     public boolean cancelOrder(String orderId, String marketId) throws ExchangeNetworkException, TradingApiException {
+        checkOpenOrderExecution(marketId);
         if (currentOpenOrder == null) {
             throw new TradingApiException("Tried to cancel a order, but no open order found");
         }
@@ -94,6 +99,7 @@ public class TryModeExchangeAdapter extends AbstractExchangeAdapter implements E
 
     @Override
     public BigDecimal getLatestMarketPrice(String marketId) throws ExchangeNetworkException, TradingApiException {
+        checkOpenOrderExecution(marketId);
         LOG.info(() -> "Delegate 'getLatestMarketPrice' to the configured delegation exchange adapter.");
         return delegateExchange.getLatestMarketPrice(marketId);
     }
@@ -122,7 +128,7 @@ public class TryModeExchangeAdapter extends AbstractExchangeAdapter implements E
 
     @Override
     public Ticker getTicker(String marketId) throws TradingApiException, ExchangeNetworkException {
-        // TODO where to put this check? checkOpenOrderExecution(marketId);
+        checkOpenOrderExecution(marketId);
         LOG.info(() -> "Delegate 'getTicker' to the configured delegation exchange adapter.");
         return delegateExchange.getTicker(marketId);
     }
@@ -171,22 +177,30 @@ public class TryModeExchangeAdapter extends AbstractExchangeAdapter implements E
     }
 
     private void checkOpenOrderExecution(String marketId) throws TradingApiException, ExchangeNetworkException {
-        if (currentOpenOrder != null) {
-            switch (currentOpenOrder.getType()) {
-                case BUY:
-                    checkOpenBuyOrderExecution(marketId);
-                    break;
-                case SELL:
-                    checkOpenSellOrderExecution(marketId);
-                    break;
-                default:
-                    throw new TradingApiException("Order type not recognized: " + currentOpenOrder.getType());
+        if (isOpenOrderCheckReentering) {
+            return;
+        }
+        isOpenOrderCheckReentering = true;
+        try {
+            if (currentOpenOrder != null) {
+                switch (currentOpenOrder.getType()) {
+                    case BUY:
+                        checkOpenBuyOrderExecution(marketId);
+                        break;
+                    case SELL:
+                        checkOpenSellOrderExecution(marketId);
+                        break;
+                    default:
+                        throw new TradingApiException("Order type not recognized: " + currentOpenOrder.getType());
+                }
             }
+        } finally {
+            isOpenOrderCheckReentering = false;
         }
     }
 
     private void checkOpenSellOrderExecution(String marketId) throws TradingApiException, ExchangeNetworkException {
-        BigDecimal currentBidPrice =getTicker(marketId).getBid();
+        BigDecimal currentBidPrice = getTicker(marketId).getBid();
         if (currentBidPrice.compareTo(currentOpenOrder.getPrice()) >= 0) {
             LOG.info("SELL: the market's bid price moved above the limit price --> record sell order execution with the current bid price");
             BigDecimal orderPrice = currentOpenOrder.getOriginalQuantity().multiply(currentBidPrice);
