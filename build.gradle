@@ -105,6 +105,10 @@ allprojects {
 
     group = 'com.gazbert.bxbot'
     version = '1.2.1-SNAPSHOT'
+
+    dependencyManagement {
+        applyMavenExclusions = false
+    }
 }
 
 subprojects {
