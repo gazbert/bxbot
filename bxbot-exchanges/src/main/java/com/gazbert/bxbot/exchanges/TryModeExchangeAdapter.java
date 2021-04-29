@@ -9,6 +9,7 @@ import com.gazbert.bxbot.trading.api.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
@@ -21,10 +22,14 @@ public class TryModeExchangeAdapter extends AbstractExchangeAdapter implements E
     private static final String SIMULATED_COUNTER_CURRENCY_PROPERTY_NAME = "simulatedCounterCurrency";
     private static final String COUNTER_CURRENCY_START_BALANCE_PROPERTY_NAME = "counterCurrencyStartingBalance";
     private static final String SIMULATED_BASE_CURRENCY_PROPERTY_NAME = "simulatedBaseCurrency";
+    private static final String DELEGATE_ADAPTER_CLASS_PROPERTY_NAME = "delegateAdapter";
 
     private String simulatedBaseCurrency;
     private String simulatedCounterCurrency;
     private BigDecimal counterCurrencyBalance;
+    private String delegateExchangeClassName;
+
+    private ExchangeAdapter delegateExchange;
 
     private OpenOrder currentOpenOrder;
     private BigDecimal baseCurrencyBalance = BigDecimal.ZERO;
@@ -33,17 +38,18 @@ public class TryModeExchangeAdapter extends AbstractExchangeAdapter implements E
     public void init(ExchangeConfig config) {
         LOG.info(() -> "About to initialise try-mode adapter with the following exchange config: " + config);
         setOtherConfig(config);
+        initializeAdapterDelegation(config);
     }
 
     @Override
     public String getImplName() {
-        return "Try-mode test adapter: does not place orders, but keeps track of them in Dummys";
+        return "Try-mode test adapter with public API delegation";
     }
 
     @Override
     public MarketOrderBook getMarketOrders(String marketId) throws ExchangeNetworkException, TradingApiException {
-        // TODO
-        return null;
+        LOG.info(() -> "Delegate 'getMarketOrders' to the configured delegation exchange adapter.");
+        return delegateExchange.getMarketOrders(marketId);
     }
 
     @Override
@@ -51,6 +57,9 @@ public class TryModeExchangeAdapter extends AbstractExchangeAdapter implements E
         LinkedList<OpenOrder> result = new LinkedList<>();
         if (currentOpenOrder != null) {
             result.add(currentOpenOrder);
+            LOG.info(() -> "getYourOpenOrders: Found an open DUMMY order: " + currentOpenOrder);
+        } else {
+            LOG.info(() -> "getYourOpenOrders: no open order found. Return empty order list");
         }
         return result;
     }
@@ -64,6 +73,7 @@ public class TryModeExchangeAdapter extends AbstractExchangeAdapter implements E
         Date creationDate = new Date();
         BigDecimal total = price.multiply(quantity);
         currentOpenOrder = new OpenOrderImpl(newOrderID, creationDate, marketId, orderType, price, quantity, quantity, total);
+        LOG.info(() -> "Created a new dummy order: " + currentOpenOrder);
         checkOpenOrderExecution(marketId);
         return newOrderID;
     }
@@ -76,14 +86,15 @@ public class TryModeExchangeAdapter extends AbstractExchangeAdapter implements E
         if (!currentOpenOrder.getId().equals(orderId)) {
             throw new TradingApiException("Tried to cancel a order, but the order id does not match the current open order. Expected: " + currentOpenOrder.getId() + ", actual: " + orderId);
         }
+        LOG.info(() -> "The following order is canceled: " + currentOpenOrder);
         currentOpenOrder = null;
         return true;
     }
 
     @Override
     public BigDecimal getLatestMarketPrice(String marketId) throws ExchangeNetworkException, TradingApiException {
-        // TODO
-        return null;
+        LOG.info(() -> "Delegate 'getLatestMarketPrice' to the configured delegation exchange adapter.");
+        return delegateExchange.getLatestMarketPrice(marketId);
     }
 
     @Override
@@ -91,27 +102,32 @@ public class TryModeExchangeAdapter extends AbstractExchangeAdapter implements E
         HashMap<String, BigDecimal> availableBalances = new HashMap<>();
         availableBalances.put(simulatedBaseCurrency, baseCurrencyBalance);
         availableBalances.put(simulatedCounterCurrency, counterCurrencyBalance);
-        return new BalanceInfoImpl(availableBalances, new HashMap<>());
+        BalanceInfoImpl currentBalance = new BalanceInfoImpl(availableBalances, new HashMap<>());
+        LOG.info(() -> "Return the following simulated balances: " + currentBalance);
+        return currentBalance;
     }
 
     @Override
     public BigDecimal getPercentageOfBuyOrderTakenForExchangeFee(String marketId) throws TradingApiException, ExchangeNetworkException {
-        return null;
+        LOG.info(() -> "Delegate 'getPercentageOfBuyOrderTakenForExchangeFee' to the configured delegation exchange adapter.");
+        return delegateExchange.getPercentageOfBuyOrderTakenForExchangeFee(marketId);
     }
 
     @Override
     public BigDecimal getPercentageOfSellOrderTakenForExchangeFee(String marketId) throws TradingApiException, ExchangeNetworkException {
-        return null;
+        LOG.info(() -> "Delegate 'getPercentageOfSellOrderTakenForExchangeFee' to the configured delegation exchange adapter.");
+        return delegateExchange.getPercentageOfSellOrderTakenForExchangeFee(marketId);
     }
 
     @Override
     public Ticker getTicker(String marketId) throws TradingApiException, ExchangeNetworkException {
         // TODO where to put this check? checkOpenOrderExecution(marketId);
-        // TODO
-        return null;
+        LOG.info(() -> "Delegate 'getTicker' to the configured delegation exchange adapter.");
+        return delegateExchange.getTicker(marketId);
     }
 
     private void setOtherConfig(ExchangeConfig exchangeConfig) {
+        LOG.info(() -> "Load try-mode adapter config...");
         final OtherConfig otherConfig = getOtherConfig(exchangeConfig);
 
         simulatedBaseCurrency = getOtherConfigItem(otherConfig, SIMULATED_BASE_CURRENCY_PROPERTY_NAME);
@@ -124,6 +140,29 @@ public class TryModeExchangeAdapter extends AbstractExchangeAdapter implements E
         counterCurrencyBalance = new BigDecimal(startingBalanceInConfig);
         LOG.info(() -> "Counter currency balance at simulation start in BigDecimal format: " + counterCurrencyBalance);
 
+        delegateExchangeClassName = getOtherConfigItem(otherConfig, DELEGATE_ADAPTER_CLASS_PROPERTY_NAME);
+        LOG.info(() -> "Delegate exchange adapter to be used for public API calls:" + delegateExchangeClassName;
+        LOG.info(() -> "Try-mode adapter config successfully loaded.");
+    }
+
+    private void initializeAdapterDelegation(ExchangeConfig config) {
+        LOG.info(() -> "Initializing the delegate exchange adapter '" + delegateExchangeClassName + "'...");
+        try {
+            final Class componentClass = Class.forName(delegateExchangeClassName);
+            final Object rawComponentObject = componentClass.getDeclaredConstructor().newInstance();
+            LOG.info(() -> "Successfully created the delegate exchange adapter class for: " + delegateExchangeClassName);
+            ExchangeAdapter loadedExchange = (ExchangeAdapter) rawComponentObject;
+            loadedExchange.init(config);
+            this.delegateExchange = loadedExchange;
+        } catch (ClassNotFoundException
+                | InstantiationException
+                | IllegalAccessException
+                | NoSuchMethodException
+                | InvocationTargetException e) {
+            final String errorMsg = "Failed to load and initialise delegate exchange adapter.";
+            LOG.error(errorMsg, e);
+            throw new IllegalStateException(errorMsg, e);
+        }
     }
 
     private void checkOpenOrderExecution(String marketId) throws TradingApiException, ExchangeNetworkException {
