@@ -22,6 +22,7 @@ public class TryModeExchangeAdapter extends AbstractExchangeAdapter implements E
     private static final String SIMULATED_COUNTER_CURRENCY_PROPERTY_NAME = "simulatedCounterCurrency";
     private static final String COUNTER_CURRENCY_START_BALANCE_PROPERTY_NAME = "counterCurrencyStartingBalance";
     private static final String SIMULATED_BASE_CURRENCY_PROPERTY_NAME = "simulatedBaseCurrency";
+    private static final String BASE_CURRENCY_START_BALANCE_PROPERTY_NAME = "baseCurrencyStartingBalance";
     private static final String DELEGATE_ADAPTER_CLASS_PROPERTY_NAME = "delegateAdapter";
 
     private String simulatedBaseCurrency;
@@ -32,7 +33,7 @@ public class TryModeExchangeAdapter extends AbstractExchangeAdapter implements E
     private ExchangeAdapter delegateExchange;
 
     private OpenOrder currentOpenOrder;
-    private BigDecimal baseCurrencyBalance = BigDecimal.ZERO;
+    private BigDecimal baseCurrencyBalance;
 
     @Override
     public void init(ExchangeConfig config) {
@@ -133,6 +134,10 @@ public class TryModeExchangeAdapter extends AbstractExchangeAdapter implements E
         simulatedBaseCurrency = getOtherConfigItem(otherConfig, SIMULATED_BASE_CURRENCY_PROPERTY_NAME);
         LOG.info(() -> "Base currency to be simulated:" + simulatedBaseCurrency);
 
+        final String startingBaseBalanceInConfig = getOtherConfigItem(otherConfig, BASE_CURRENCY_START_BALANCE_PROPERTY_NAME);
+        baseCurrencyBalance = new BigDecimal(startingBaseBalanceInConfig);
+        LOG.info(() -> "Base currency balance at simulation start in BigDecimal format: " + baseCurrencyBalance);
+
         simulatedCounterCurrency = getOtherConfigItem(otherConfig, SIMULATED_COUNTER_CURRENCY_PROPERTY_NAME);
         LOG.info(() -> "Counter currency to be simulated:" + simulatedCounterCurrency);
 
@@ -141,7 +146,7 @@ public class TryModeExchangeAdapter extends AbstractExchangeAdapter implements E
         LOG.info(() -> "Counter currency balance at simulation start in BigDecimal format: " + counterCurrencyBalance);
 
         delegateExchangeClassName = getOtherConfigItem(otherConfig, DELEGATE_ADAPTER_CLASS_PROPERTY_NAME);
-        LOG.info(() -> "Delegate exchange adapter to be used for public API calls:" + delegateExchangeClassName;
+        LOG.info(() -> "Delegate exchange adapter to be used for public API calls:" + delegateExchangeClassName);
         LOG.info(() -> "Try-mode adapter config successfully loaded.");
     }
 
