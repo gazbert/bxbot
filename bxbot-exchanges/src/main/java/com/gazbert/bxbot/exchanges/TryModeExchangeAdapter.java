@@ -5,16 +5,21 @@ import com.gazbert.bxbot.exchange.api.ExchangeConfig;
 import com.gazbert.bxbot.exchange.api.OtherConfig;
 import com.gazbert.bxbot.exchanges.trading.api.impl.BalanceInfoImpl;
 import com.gazbert.bxbot.exchanges.trading.api.impl.OpenOrderImpl;
-import com.gazbert.bxbot.trading.api.*;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
+import com.gazbert.bxbot.trading.api.BalanceInfo;
+import com.gazbert.bxbot.trading.api.ExchangeNetworkException;
+import com.gazbert.bxbot.trading.api.MarketOrderBook;
+import com.gazbert.bxbot.trading.api.OpenOrder;
+import com.gazbert.bxbot.trading.api.OrderType;
+import com.gazbert.bxbot.trading.api.Ticker;
+import com.gazbert.bxbot.trading.api.TradingApiException;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class TryModeExchangeAdapter extends AbstractExchangeAdapter implements ExchangeAdapter {
   private static final Logger LOG = LogManager.getLogger();
@@ -102,8 +107,8 @@ public class TryModeExchangeAdapter extends AbstractExchangeAdapter implements E
     }
     if (!currentOpenOrder.getId().equals(orderId)) {
       throw new TradingApiException(
-          "Tried to cancel a order, but the order id does not match the current open order. Expected: "
-              + currentOpenOrder.getId()
+          "Tried to cancel a order, but the order id does not match the current open order." +
+                  " Expected: " + currentOpenOrder.getId()
               + ", actual: "
               + orderId);
     }
@@ -136,7 +141,8 @@ public class TryModeExchangeAdapter extends AbstractExchangeAdapter implements E
       throws TradingApiException, ExchangeNetworkException {
     LOG.info(
         () ->
-            "Delegate 'getPercentageOfBuyOrderTakenForExchangeFee' to the configured delegation exchange adapter.");
+            "Delegate 'getPercentageOfBuyOrderTakenForExchangeFee'" +
+                    "to the configured delegation exchange adapter.");
     return delegateExchange.getPercentageOfBuyOrderTakenForExchangeFee(marketId);
   }
 
@@ -145,7 +151,8 @@ public class TryModeExchangeAdapter extends AbstractExchangeAdapter implements E
       throws TradingApiException, ExchangeNetworkException {
     LOG.info(
         () ->
-            "Delegate 'getPercentageOfSellOrderTakenForExchangeFee' to the configured delegation exchange adapter.");
+            "Delegate 'getPercentageOfSellOrderTakenForExchangeFee'" +
+                    "to the configured delegation exchange adapter.");
     return delegateExchange.getPercentageOfSellOrderTakenForExchangeFee(marketId);
   }
 
@@ -246,7 +253,8 @@ public class TryModeExchangeAdapter extends AbstractExchangeAdapter implements E
     BigDecimal currentBidPrice = getTicker(marketId).getBid();
     if (currentBidPrice.compareTo(currentOpenOrder.getPrice()) >= 0) {
       LOG.info(
-          "SELL: the market's bid price moved above the limit price --> record sell order execution with the current bid price");
+          "SELL: the market's bid price moved above the limit price " +
+                  "--> record sell order execution with the current bid price");
       BigDecimal orderPrice = currentOpenOrder.getOriginalQuantity().multiply(currentBidPrice);
       BigDecimal buyFees =
           getPercentageOfSellOrderTakenForExchangeFee(marketId).multiply(orderPrice);
@@ -262,7 +270,8 @@ public class TryModeExchangeAdapter extends AbstractExchangeAdapter implements E
     BigDecimal currentAskPrice = getTicker(marketId).getAsk();
     if (currentAskPrice.compareTo(currentOpenOrder.getPrice()) <= 0) {
       LOG.info(
-          "BUY: the market's current ask price moved below the limit price --> record buy order execution with the current ask price");
+          "BUY: the market's current ask price moved below the limit price " +
+                  "--> record buy order execution with the current ask price");
       BigDecimal orderPrice = currentOpenOrder.getOriginalQuantity().multiply(currentAskPrice);
       BigDecimal buyFees =
           getPercentageOfBuyOrderTakenForExchangeFee(marketId).multiply(orderPrice);
