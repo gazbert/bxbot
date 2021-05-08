@@ -107,8 +107,8 @@ public class TryModeExchangeAdapter extends AbstractExchangeAdapter implements E
     }
     if (!currentOpenOrder.getId().equals(orderId)) {
       throw new TradingApiException(
-          "Tried to cancel a order, but the order id does not match the current open order." +
-                  " Expected: " + currentOpenOrder.getId()
+          "Tried to cancel a order, but the order id does not match the current open order."
+              + " Expected: " + currentOpenOrder.getId()
               + ", actual: "
               + orderId);
     }
@@ -141,8 +141,8 @@ public class TryModeExchangeAdapter extends AbstractExchangeAdapter implements E
       throws TradingApiException, ExchangeNetworkException {
     LOG.info(
         () ->
-            "Delegate 'getPercentageOfBuyOrderTakenForExchangeFee'" +
-                    "to the configured delegation exchange adapter.");
+            "Delegate 'getPercentageOfBuyOrderTakenForExchangeFee'"
+              + "to the configured delegation exchange adapter.");
     return delegateExchange.getPercentageOfBuyOrderTakenForExchangeFee(marketId);
   }
 
@@ -151,8 +151,8 @@ public class TryModeExchangeAdapter extends AbstractExchangeAdapter implements E
       throws TradingApiException, ExchangeNetworkException {
     LOG.info(
         () ->
-            "Delegate 'getPercentageOfSellOrderTakenForExchangeFee'" +
-                    "to the configured delegation exchange adapter.");
+            "Delegate 'getPercentageOfSellOrderTakenForExchangeFee'"
+                    + "to the configured delegation exchange adapter.");
     return delegateExchange.getPercentageOfSellOrderTakenForExchangeFee(marketId);
   }
 
@@ -253,8 +253,8 @@ public class TryModeExchangeAdapter extends AbstractExchangeAdapter implements E
     BigDecimal currentBidPrice = getTicker(marketId).getBid();
     if (currentBidPrice.compareTo(currentOpenOrder.getPrice()) >= 0) {
       LOG.info(
-          "SELL: the market's bid price moved above the limit price " +
-                  "--> record sell order execution with the current bid price");
+          "SELL: the market's bid price moved above the limit price "
+                  + "--> record sell order execution with the current bid price");
       BigDecimal orderPrice = currentOpenOrder.getOriginalQuantity().multiply(currentBidPrice);
       BigDecimal buyFees =
           getPercentageOfSellOrderTakenForExchangeFee(marketId).multiply(orderPrice);
@@ -270,8 +270,8 @@ public class TryModeExchangeAdapter extends AbstractExchangeAdapter implements E
     BigDecimal currentAskPrice = getTicker(marketId).getAsk();
     if (currentAskPrice.compareTo(currentOpenOrder.getPrice()) <= 0) {
       LOG.info(
-          "BUY: the market's current ask price moved below the limit price " +
-                  "--> record buy order execution with the current ask price");
+          "BUY: the market's current ask price moved below the limit price "
+                  + "--> record buy order execution with the current ask price");
       BigDecimal orderPrice = currentOpenOrder.getOriginalQuantity().multiply(currentAskPrice);
       BigDecimal buyFees =
           getPercentageOfBuyOrderTakenForExchangeFee(marketId).multiply(orderPrice);
