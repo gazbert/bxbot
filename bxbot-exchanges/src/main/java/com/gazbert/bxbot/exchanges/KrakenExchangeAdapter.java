@@ -662,6 +662,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
       Gson gson = new Gson();
       Map<String, Integer> prices = new HashMap<>();
       Map<String, Integer> volumes = new HashMap<>();
+      Map<String, BigDecimal> orderMins = new HashMap<>();
 
       for (Entry<String, Object> entry : this.entrySet()) {
         JsonElement jsonElement = gson.toJsonTree(entry);
@@ -670,12 +671,15 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
         String name = jsonObject.get("altname").getAsString();
         int price = jsonObject.get("pair_decimals").getAsInt();
         int volume = jsonObject.get("lot_decimals").getAsInt();
+        BigDecimal orderMin = jsonObject.get("ordermin").getAsBigDecimal();
+
 
         prices.put(name, price);
         volumes.put(name, volume);
+        orderMins.put(name, orderMin);
       }
 
-      return new PairPrecisionConfigImpl(prices, volumes);
+      return new PairPrecisionConfigImpl(prices, volumes, orderMins);
     }
   }
 
