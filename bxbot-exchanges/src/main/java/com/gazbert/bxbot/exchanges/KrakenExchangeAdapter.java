@@ -671,12 +671,14 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
         String name = jsonObject.get("altname").getAsString();
         int price = jsonObject.get("pair_decimals").getAsInt();
         int volume = jsonObject.get("lot_decimals").getAsInt();
-        BigDecimal orderMin = jsonObject.get("ordermin").getAsBigDecimal();
+        if (jsonObject.has("ordermin")) {
+          BigDecimal orderMin = jsonObject.get("ordermin").getAsBigDecimal();
+          orderMins.put(name, orderMin);
+        }
 
 
         prices.put(name, price);
         volumes.put(name, volume);
-        orderMins.put(name, orderMin);
       }
 
       return new PairPrecisionConfigImpl(prices, volumes, orderMins);
