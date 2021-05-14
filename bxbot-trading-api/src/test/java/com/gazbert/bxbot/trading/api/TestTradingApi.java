@@ -109,5 +109,10 @@ public class TestTradingApi {
     public BigDecimal getPercentageOfSellOrderTakenForExchangeFee(String marketId) {
       return null;
     }
+
+    @Override
+    public BigDecimal getMinimumOrderVolume(String marketId) throws TradingApiException, ExchangeNetworkException {
+      return null;
+    }
   }
 }

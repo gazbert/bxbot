@@ -57,6 +57,6 @@ public class PairPrecisionConfigImpl implements PairPrecisionConfig {
 
   @Override
   public BigDecimal getMinimalOrderVolume(String pair) {
-    return orderMins.getOrDefault(pair, new BigDecimal("-1"));
+    return orderMins.getOrDefault(pair, null);
   }
 }
