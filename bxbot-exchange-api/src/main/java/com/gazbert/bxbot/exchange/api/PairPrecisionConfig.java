@@ -56,7 +56,7 @@ public interface PairPrecisionConfig {
 
   /**
    * Gets the minimal amount  of order volume for this pair. The default value if no pair is found
-   * will be -1.
+   * will be null.
    *
    * @param pair the coin pair.
    * @return the minimum amount of order volume.
