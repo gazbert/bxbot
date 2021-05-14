@@ -26,10 +26,10 @@ package com.gazbert.bxbot.exchange.api;
 import java.math.BigDecimal;
 
 /**
- * <p>Some Exchange Adapters will need custom precision configs when placing orders.</p>
+ * Some Exchange Adapters will need custom precision configs when placing orders.
  *
- * <p>This interface allows us to have a uniform way to fetch this precision for the
- * various Exchange houses.</p>
+ * <p>This interface allows us to have a uniform way to fetch this precision for the various
+ * Exchange houses.
  *
  * @author maiph
  * @since 1.2
@@ -55,12 +55,11 @@ public interface PairPrecisionConfig {
   int getVolumePrecision(String pair);
 
   /**
-   * Gets the minimal amount  of order volume for this pair. The default value if no pair is found
+   * Gets the minimal amount of order volume for this pair. The default value if no pair is found
    * will be null.
    *
    * @param pair the coin pair.
    * @return the minimum amount of order volume.
    */
   BigDecimal getMinimalOrderVolume(String pair);
-
 }

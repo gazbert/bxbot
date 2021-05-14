@@ -534,7 +534,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
   }
 
   @Override
-  public BigDecimal getMinimumOrderVolume(String marketId) throws TradingApiException, ExchangeNetworkException {
+  public BigDecimal getMinimumOrderVolume(String marketId) {
     return pairPrecisionConfig.getMinimalOrderVolume(marketId);
   }
 

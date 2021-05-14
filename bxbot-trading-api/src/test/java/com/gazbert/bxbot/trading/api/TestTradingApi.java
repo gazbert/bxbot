@@ -41,7 +41,7 @@ public class TestTradingApi {
   @Test
   public void testGetVersion() {
     final MyApiImpl myApi = new MyApiImpl();
-    assertEquals("1.1", myApi.getVersion());
+    assertEquals("1.2", myApi.getVersion());
   }
 
   @Test
@@ -59,6 +59,13 @@ public class TestTradingApi {
     assertNull(ticker.getVolume());
     assertNull(ticker.getVwap());
     assertNull(ticker.getTimestamp());
+  }
+
+  @Test
+  public void testGetMinOrder() throws Exception {
+    final MyApiImpl myApi = new MyApiImpl();
+    final BigDecimal minimumOrderVolume = myApi.getMinimumOrderVolume("market-123");
+    assertNull(minimumOrderVolume);
   }
 
   /** Test class. */
@@ -107,11 +114,6 @@ public class TestTradingApi {
 
     @Override
     public BigDecimal getPercentageOfSellOrderTakenForExchangeFee(String marketId) {
-      return null;
-    }
-
-    @Override
-    public BigDecimal getMinimumOrderVolume(String marketId) throws TradingApiException, ExchangeNetworkException {
       return null;
     }
   }
