@@ -26,10 +26,12 @@ package com.gazbert.bxbot.trading.api;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.math.BigDecimal;
 import java.util.List;
 import org.junit.Test;
+
 
 /**
  * Tests default impl methods of TradingApi interface.
@@ -41,7 +43,7 @@ public class TestTradingApi {
   @Test
   public void testGetVersion() {
     final MyApiImpl myApi = new MyApiImpl();
-    assertEquals("1.1", myApi.getVersion());
+    assertEquals("1.2", myApi.getVersion());
   }
 
   @Test
@@ -59,6 +61,26 @@ public class TestTradingApi {
     assertNull(ticker.getVolume());
     assertNull(ticker.getVwap());
     assertNull(ticker.getTimestamp());
+  }
+
+  @Test
+  public void testGetOhlcHasDefaultImpl() throws Exception {
+    final MyApiImpl myApi = new MyApiImpl();
+    final Ohlc ohlc = myApi.getOhlc("market-123", OhlcInterval.OneWeek);
+
+    assertNotNull(ohlc);
+    assertNull(ohlc.getResumeID());
+    assertTrue(ohlc.getFrames().isEmpty());
+  }
+
+  @Test
+  public void testGetOhlcResumeHasDefaultImpl() throws Exception {
+    final MyApiImpl myApi = new MyApiImpl();
+    final Ohlc ohlc = myApi.getOhlc("market-123", OhlcInterval.OneWeek, 5);
+
+    assertNotNull(ohlc);
+    assertNull(ohlc.getResumeID());
+    assertTrue(ohlc.getFrames().isEmpty());
   }
 
   /** Test class. */

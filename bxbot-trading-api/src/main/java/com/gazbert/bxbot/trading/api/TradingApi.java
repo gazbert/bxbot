@@ -24,6 +24,7 @@
 package com.gazbert.bxbot.trading.api;
 
 import java.math.BigDecimal;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -51,7 +52,7 @@ public interface TradingApi {
    * @since 1.0
    */
   default String getVersion() {
-    return "1.1";
+    return "1.2";
   }
 
   /**
@@ -281,6 +282,89 @@ public interface TradingApi {
       @Override
       public Long getTimestamp() {
         return null;
+      }
+    };
+  }
+
+  /**
+   * Returns the exchange OHLC data for a given market id and the prefredred interval.
+   *
+   * <p>Not all exchanges provide the information returned in the OHLC method or requested interval
+   * - you'll need to check the relevant Exchange Adapter code/Javadoc and online Exchange API
+   * documentation.
+   *
+   * <p>If the exchange does not provide the information, a enmoty result value is returned.
+   *
+   * @param marketId the id of the market.
+   * @param interval the interval in which the OHLC data should be requested
+   * @return the OHLC answer as a sorted list of the exchange OHLC data for a given market,
+   *     seperated into the requested interval. And an resume id, if subseqeutn data is to be
+   *     requested. Not all exchanges support this
+   * @throws ExchangeNetworkException if a network error occurred trying to connect to the exchange.
+   *     This is implementation specific for each Exchange Adapter - see the documentation for the
+   *     adapter you are using. You could retry the API call, or exit from your Trading Strategy and
+   *     let the Trading Engine execute your Trading Strategy at the next trade cycle.
+   * @throws TradingApiException if the API call failed for any reason other than a network error.
+   *     This means something bad as happened; you would probably want to wrap this exception in a
+   *     StrategyException and let the Trading Engine shutdown the bot immediately to prevent
+   *     unexpected losses.
+   * @since 1.2
+   */
+  default Ohlc getOhlc(String marketId, OhlcInterval interval)
+      throws TradingApiException, ExchangeNetworkException {
+
+    return new Ohlc() {
+      @Override
+      public Integer getResumeID() {
+        return null;
+      }
+
+      @Override
+      public List<OhlcFrame> getFrames() {
+        return Collections.emptyList();
+      }
+    };
+  }
+
+  /**
+   * Returns the exchange OHLC data for a given market id in the prefredred interval. The market
+   * data queried is limitited by the resumeID, which must be catched first with an initial OHLC
+   * call.
+   *
+   * <p>Not all exchanges provide the information returned in the OHLC method or requested interval
+   * - you'll need to check the relevant Exchange Adapter code/Javadoc and online Exchange API
+   * documentation.
+   *
+   * <p>If the exchange does not provide the information, a enmoty result value is returned.
+   *
+   * @param marketId the id of the market.
+   * @param interval the interval in which the OHLC data should be requested
+   * @param resumeID the ID from which the OHLC data retrieval should be resumed
+   * @return the OHLC answer as a sorted list of the exchange OHLC data for a given market,
+   *     seperated into the requested interval. And an resume id, if subseqeutn data is to be
+   *     requested. Not all exchanges support this
+   * @throws ExchangeNetworkException if a network error occurred trying to connect to the exchange.
+   *     This is implementation specific for each Exchange Adapter - see the documentation for the
+   *     adapter you are using. You could retry the API call, or exit from your Trading Strategy and
+   *     let the Trading Engine execute your Trading Strategy at the next trade cycle.
+   * @throws TradingApiException if the API call failed for any reason other than a network error.
+   *     This means something bad as happened; you would probably want to wrap this exception in a
+   *     StrategyException and let the Trading Engine shutdown the bot immediately to prevent
+   *     unexpected losses.
+   * @since 1.2
+   */
+  default Ohlc getOhlc(String marketId, OhlcInterval interval, Integer resumeID)
+      throws TradingApiException, ExchangeNetworkException {
+
+    return new Ohlc() {
+      @Override
+      public Integer getResumeID() {
+        return null;
+      }
+
+      @Override
+      public List<OhlcFrame> getFrames() {
+        return Collections.emptyList();
       }
     };
   }
