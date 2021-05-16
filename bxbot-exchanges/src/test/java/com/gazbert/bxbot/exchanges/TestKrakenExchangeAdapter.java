@@ -30,6 +30,7 @@ import static org.easymock.EasyMock.anyString;
 import static org.easymock.EasyMock.eq;
 import static org.easymock.EasyMock.expect;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
@@ -44,6 +45,9 @@ import com.gazbert.bxbot.exchanges.AbstractExchangeAdapter.ExchangeHttpResponse;
 import com.gazbert.bxbot.trading.api.BalanceInfo;
 import com.gazbert.bxbot.trading.api.ExchangeNetworkException;
 import com.gazbert.bxbot.trading.api.MarketOrderBook;
+import com.gazbert.bxbot.trading.api.Ohlc;
+import com.gazbert.bxbot.trading.api.OhlcFrame;
+import com.gazbert.bxbot.trading.api.OhlcInterval;
 import com.gazbert.bxbot.trading.api.OpenOrder;
 import com.gazbert.bxbot.trading.api.OrderType;
 import com.gazbert.bxbot.trading.api.Ticker;
@@ -1087,6 +1091,35 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
     final BigDecimal sellPercentageFee =
         exchangeAdapter.getPercentageOfSellOrderTakenForExchangeFee(MARKET_ID);
     assertEquals(0, sellPercentageFee.compareTo(new BigDecimal("0.002")));
+
+    PowerMock.verifyAll();
+  }
+
+  @Test
+  public void testGetOhlcWorksAsExpected() throws Exception {
+    PowerMock.replayAll();
+
+    final ExchangeAdapter exchangeAdapter = new KrakenExchangeAdapter();
+    exchangeAdapter.init(exchangeConfig);
+
+    final Ohlc firstOhlc =
+            exchangeAdapter.getOhlc(MARKET_ID, OhlcInterval.FiveMinutes);
+    assertFalse(firstOhlc.getFrames().isEmpty());
+
+    for (OhlcFrame frame : firstOhlc.getFrames()) {
+      assertTrue(frame.getHigh().compareTo(frame.getClose()) >= 0);
+      assertTrue(frame.getLow().compareTo(frame.getClose()) <= 0);
+      assertTrue(frame.getOpen().compareTo(frame.getHigh()) <= 0);
+      assertTrue(frame.getOpen().compareTo(frame.getLow()) >= 0);
+      assertTrue(frame.toString().contains("open"));
+      assertTrue(frame.toString().contains("high"));
+      assertTrue(frame.toString().contains("low"));
+      assertTrue(frame.toString().contains("close"));
+    }
+
+    final Ohlc onlyNewestUpdates =
+            exchangeAdapter.getOhlc(MARKET_ID, OhlcInterval.FiveMinutes, firstOhlc.getResumeID());
+    assertEquals(1, onlyNewestUpdates.getFrames().size());
 
     PowerMock.verifyAll();
   }
