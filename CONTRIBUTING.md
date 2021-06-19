@@ -9,7 +9,7 @@ provide enough information for someone else to reproduce it. Equally, submit an 
 to create a new feature or enhance an existing one - refactoring, improving Javadoc, and boosting 
 test coverage is always welcome!
 
-One of the project's maintainers should respond to your issue within 48 hours... if not, bump the 
+One of the project's maintainers should respond to your issue within a few days... if not, bump the 
 issue and request that it be reviewed.
 
 ## Contributor workflow
@@ -61,7 +61,7 @@ To work on something, whether a new feature or a bug fix:
   corresponding changes (or additions) to the documentation and tests. This will ensure that if 
   the merged PR is reversed, all traces of the change will be reversed as well.
 
-  7. When you're done, make sure your [Travis](https://travis-ci.org/) 
+  7. When you're done, make sure your [Travis](https://travis-ci.com/) 
   Continuous Integration (CI) build is green and create a 
   [Pull Request (PR)](https://help.github.com/articles/using-pull-requests/) to submit your changes.
 

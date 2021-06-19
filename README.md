@@ -1,6 +1,6 @@
 # BX-bot
 
-[![Build Status](https://travis-ci.org/gazbert/bxbot.svg?branch=master)](https://travis-ci.org/gazbert/bxbot)
+[![Build Status](https://travis-ci.com/gazbert/bxbot.svg?branch=master)](https://travis-ci.com/gazbert/bxbot)
 [![Sonarcloud Status](https://sonarcloud.io/api/project_badges/measure?project=gazbert_bxbot&metric=alert_status)](https://sonarcloud.io/dashboard?id=gazbert_bxbot)
 [![Join the chat at https://gitter.im/BX-bot/Lobby](https://badges.gitter.im/BX-bot/Lobby.svg)](https://gitter.im/BX-bot/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)		 	 
  
@@ -18,7 +18,8 @@ except for the trading strategies - you'll need to write those yourself! A simpl
 Trading API - take a look [here](https://github.com/ta4j/ta4j) for more ideas.
 
 Exchange Adapters for using [Bitstamp](https://www.bitstamp.net), [Bitfinex](https://www.bitfinex.com),
-[itBit](https://www.itbit.com/), [Kraken](https://www.kraken.com), and [Gemini](https://gemini.com/) are included.
+[itBit](https://www.itbit.com/), [Kraken](https://www.kraken.com), [Gemini](https://gemini.com/),
+and [Coinbase Pro](https://pro.coinbase.com/) are included.
 Feel free to improve these or contribute new adapters to the project; that would be 
 [shiny!](https://en.wikipedia.org/wiki/Firefly_(TV_series))
 
@@ -99,8 +100,8 @@ If you want to just play around with the
 and evaluate the bot, Docker is the way to go.
 
 1. Install [Docker](https://docs.docker.com/engine/installation/) on the machine you want to run the bot.
-1. Fetch the BX-bot image from [Docker Hub](https://hub.docker.com/r/gazbert/bxbot/): `docker pull gazbert/bxbot:1.0.1`
-1. Run the Docker container: `docker container run --publish=8080:8080 --name bxbot-1.0.1 -it gazbert/bxbot:1.0.1 bash`
+1. Fetch the BX-bot image from [Docker Hub](https://hub.docker.com/r/gazbert/bxbot/): `docker pull gazbert/bxbot:1.2.0
+1. Run the Docker container: `docker container run --publish=8080:8080 --name bxbot-1.2.0 -it gazbert/bxbot:1.2.0 bash`
 1. Change into the bot's directory: `cd bxbot*`
 1. Configure the bot as described in step 4 of the previous [Maven](#maven) section.
 1. Usage: `./bxbot.sh [start|stop|status]`
@@ -150,7 +151,7 @@ For help and general questions about BX-bot, check out the [Gitter](https://gitt
 ## Testing
 The bot has undergone basic unit testing on a _best-effort_ basis. 
 
-There is a continuous integration build running on [Travis CI](https://travis-ci.org/gazbert/bxbot).
+There is a continuous integration build running on [Travis CI](https://travis-ci.com/github/gazbert/bxbot/branches).
 
 The latest stable build can always be found on the [Releases](https://github.com/gazbert/bxbot/releases) page. 
 The SNAPSHOT builds on master are active development builds, but the tests should always pass and the bot should always 
@@ -638,6 +639,7 @@ server.ssl.key-store-type=PKCS12
 ```
 
 ## Coming Soon... (Definitely Maybe)
+
 A UI built with [React](https://reactjs.org/) - it will consume the REST API. 
 
 See the [Project Board](https://github.com/gazbert/bxbot/projects/2) for timescales and progress.

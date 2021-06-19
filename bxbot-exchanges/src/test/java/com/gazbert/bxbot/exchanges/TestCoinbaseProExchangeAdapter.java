@@ -2,6 +2,7 @@
  * The MIT License (MIT)
  *
  * Copyright (c) 2015 Gareth Jon Lynch
+ * Copyright (c) 2019 David Huertas
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -68,12 +69,9 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 /**
- * Tests the behaviour of the GDAX Exchange Adapter.
+ * Tests the behaviour of the COINBASE PRO Exchange Adapter.
  *
- * <p>DO NOT USE: See https://github.com/gazbert/bxbot/pull/120
- *
- * @author gazbert
- * @deprecated #120 : GDAX exchange has been superseded by Coinbase Pro: https://pro.coinbase.com/
+ * @author davidhuertas
  */
 @RunWith(PowerMockRunner.class)
 @PowerMockIgnore({
@@ -85,22 +83,24 @@ import org.powermock.modules.junit4.PowerMockRunner;
     "org.w3c.dom.*",
     "javax.xml.datatype.*"
 })
-@PrepareForTest(GdaxExchangeAdapter.class)
-@Deprecated(forRemoval = true)
-public class TestGdaxExchangeAdapter extends AbstractExchangeAdapterTest {
+@PrepareForTest(CoinbaseProExchangeAdapter.class)
+public class TestCoinbaseProExchangeAdapter extends AbstractExchangeAdapterTest {
 
-  private static final String BOOK_JSON_RESPONSE = "./src/test/exchange-data/gdax/book.json";
-  private static final String ORDERS_JSON_RESPONSE = "./src/test/exchange-data/gdax/orders.json";
+  private static final String BOOK_JSON_RESPONSE = "./src/test/exchange-data/coinbasepro/book.json";
+  private static final String ORDERS_JSON_RESPONSE =
+      "./src/test/exchange-data/coinbasepro/orders.json";
   private static final String ACCOUNTS_JSON_RESPONSE =
-      "./src/test/exchange-data/gdax/accounts.json";
-  private static final String TICKER_JSON_RESPONSE = "./src/test/exchange-data/gdax/ticker.json";
+      "./src/test/exchange-data/coinbasepro/accounts.json";
+  private static final String TICKER_JSON_RESPONSE =
+      "./src/test/exchange-data/coinbasepro/ticker.json";
   private static final String NEW_BUY_ORDER_JSON_RESPONSE =
-      "./src/test/exchange-data/gdax/new_buy_order.json";
+      "./src/test/exchange-data/coinbasepro/new_buy_order.json";
   private static final String NEW_SELL_ORDER_JSON_RESPONSE =
-      "./src/test/exchange-data/gdax/new_sell_order.json";
+      "./src/test/exchange-data/coinbasepro/new_sell_order.json";
   private static final String CANCEL_ORDER_JSON_RESPONSE =
-      "./src/test/exchange-data/gdax/cancel.json";
-  private static final String STATS_JSON_RESPONSE = "./src/test/exchange-data/gdax/stats.json";
+      "./src/test/exchange-data/coinbasepro/cancel.json";
+  private static final String STATS_JSON_RESPONSE =
+      "./src/test/exchange-data/coinbasepro/stats.json";
 
   private static final String MARKET_ID = "BTC-GBP";
   private static final String ORDER_BOOK_DEPTH_LEVEL =
@@ -137,7 +137,7 @@ public class TestGdaxExchangeAdapter extends AbstractExchangeAdapterTest {
           "Connection reset",
           "Remote host closed connection during handshake");
 
-  private static final String PUBLIC_API_BASE_URL = "https://api.gdax.com/";
+  private static final String PUBLIC_API_BASE_URL = "https://api.pro.coinbase.com/";
   private static final String AUTHENTICATED_API_URL = PUBLIC_API_BASE_URL;
 
   private ExchangeConfig exchangeConfig;
@@ -145,9 +145,7 @@ public class TestGdaxExchangeAdapter extends AbstractExchangeAdapterTest {
   private NetworkConfig networkConfig;
   private OtherConfig otherConfig;
 
-  /**
-   * Create some exchange config - the TradingEngine would normally do this.
-   */
+  /** Create some exchange config - the TradingEngine would normally do this. */
   @Before
   public void setupForEachTest() {
     authenticationConfig = PowerMock.createMock(AuthenticationConfig.class);
@@ -163,6 +161,7 @@ public class TestGdaxExchangeAdapter extends AbstractExchangeAdapterTest {
     otherConfig = PowerMock.createMock(OtherConfig.class);
     expect(otherConfig.getItem("buy-fee")).andReturn("0.25");
     expect(otherConfig.getItem("sell-fee")).andReturn("0.25");
+    expect(otherConfig.getItem("time-server-bias")).andReturn("82");
 
     exchangeConfig = PowerMock.createMock(ExchangeConfig.class);
     expect(exchangeConfig.getAuthenticationConfig()).andReturn(authenticationConfig);
@@ -201,9 +200,9 @@ public class TestGdaxExchangeAdapter extends AbstractExchangeAdapterTest {
     expect(requestParamMap.put("product_id", MARKET_ID)).andStubReturn(null);
 
     // Partial mock so we do not send stuff down the wire
-    final GdaxExchangeAdapter exchangeAdapter =
+    final CoinbaseProExchangeAdapter exchangeAdapter =
         PowerMock.createPartialMockAndInvokeDefaultConstructor(
-            GdaxExchangeAdapter.class,
+            CoinbaseProExchangeAdapter.class,
             MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD,
             MOCKED_CREATE_REQUEST_PARAM_MAP_METHOD);
 
@@ -250,9 +249,9 @@ public class TestGdaxExchangeAdapter extends AbstractExchangeAdapterTest {
     expect(requestParamMap.put("side", "sell")).andStubReturn(null);
     expect(requestParamMap.put("product_id", MARKET_ID)).andStubReturn(null);
 
-    final GdaxExchangeAdapter exchangeAdapter =
+    final CoinbaseProExchangeAdapter exchangeAdapter =
         PowerMock.createPartialMockAndInvokeDefaultConstructor(
-            GdaxExchangeAdapter.class,
+            CoinbaseProExchangeAdapter.class,
             MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD,
             MOCKED_CREATE_REQUEST_PARAM_MAP_METHOD);
 
@@ -279,9 +278,9 @@ public class TestGdaxExchangeAdapter extends AbstractExchangeAdapterTest {
 
   @Test(expected = ExchangeNetworkException.class)
   public void testCreateOrderHandlesExchangeNetworkException() throws Exception {
-    final GdaxExchangeAdapter exchangeAdapter =
+    final CoinbaseProExchangeAdapter exchangeAdapter =
         PowerMock.createPartialMockAndInvokeDefaultConstructor(
-            GdaxExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
+            CoinbaseProExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
     PowerMock.expectPrivate(
             exchangeAdapter,
             MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD,
@@ -302,9 +301,9 @@ public class TestGdaxExchangeAdapter extends AbstractExchangeAdapterTest {
 
   @Test(expected = TradingApiException.class)
   public void testCreateOrderHandlesUnexpectedException() throws Exception {
-    final GdaxExchangeAdapter exchangeAdapter =
+    final CoinbaseProExchangeAdapter exchangeAdapter =
         PowerMock.createPartialMockAndInvokeDefaultConstructor(
-            GdaxExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
+            CoinbaseProExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
     PowerMock.expectPrivate(
             exchangeAdapter,
             MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD,
@@ -334,9 +333,9 @@ public class TestGdaxExchangeAdapter extends AbstractExchangeAdapterTest {
         new AbstractExchangeAdapter.ExchangeHttpResponse(
             200, "OK", new String(encoded, StandardCharsets.UTF_8));
 
-    final GdaxExchangeAdapter exchangeAdapter =
+    final CoinbaseProExchangeAdapter exchangeAdapter =
         PowerMock.createPartialMockAndInvokeDefaultConstructor(
-            GdaxExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
+            CoinbaseProExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
 
     PowerMock.expectPrivate(
             exchangeAdapter,
@@ -357,9 +356,9 @@ public class TestGdaxExchangeAdapter extends AbstractExchangeAdapterTest {
 
   @Test(expected = ExchangeNetworkException.class)
   public void testCancelOrderHandlesExchangeNetworkException() throws Exception {
-    final GdaxExchangeAdapter exchangeAdapter =
+    final CoinbaseProExchangeAdapter exchangeAdapter =
         PowerMock.createPartialMockAndInvokeDefaultConstructor(
-            GdaxExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
+            CoinbaseProExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
 
     PowerMock.expectPrivate(
             exchangeAdapter,
@@ -382,9 +381,9 @@ public class TestGdaxExchangeAdapter extends AbstractExchangeAdapterTest {
 
   @Test(expected = TradingApiException.class)
   public void testCancelOrderHandlesUnexpectedException() throws Exception {
-    final GdaxExchangeAdapter exchangeAdapter =
+    final CoinbaseProExchangeAdapter exchangeAdapter =
         PowerMock.createPartialMockAndInvokeDefaultConstructor(
-            GdaxExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
+            CoinbaseProExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
 
     PowerMock.expectPrivate(
             exchangeAdapter,
@@ -415,9 +414,9 @@ public class TestGdaxExchangeAdapter extends AbstractExchangeAdapterTest {
         new AbstractExchangeAdapter.ExchangeHttpResponse(
             200, "OK", new String(encoded, StandardCharsets.UTF_8));
 
-    final GdaxExchangeAdapter exchangeAdapter =
+    final CoinbaseProExchangeAdapter exchangeAdapter =
         PowerMock.createPartialMockAndInvokeDefaultConstructor(
-            GdaxExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
+            CoinbaseProExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
 
     PowerMock.expectPrivate(
             exchangeAdapter,
@@ -456,9 +455,9 @@ public class TestGdaxExchangeAdapter extends AbstractExchangeAdapterTest {
 
   @Test(expected = ExchangeNetworkException.class)
   public void testGettingYourOpenOrdersHandlesExchangeNetworkException() throws Exception {
-    final GdaxExchangeAdapter exchangeAdapter =
+    final CoinbaseProExchangeAdapter exchangeAdapter =
         PowerMock.createPartialMockAndInvokeDefaultConstructor(
-            GdaxExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
+            CoinbaseProExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
     PowerMock.expectPrivate(
             exchangeAdapter,
             MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD,
@@ -476,9 +475,9 @@ public class TestGdaxExchangeAdapter extends AbstractExchangeAdapterTest {
 
   @Test(expected = TradingApiException.class)
   public void testGettingYourOpenOrdersHandlesUnexpectedException() throws Exception {
-    final GdaxExchangeAdapter exchangeAdapter =
+    final CoinbaseProExchangeAdapter exchangeAdapter =
         PowerMock.createPartialMockAndInvokeDefaultConstructor(
-            GdaxExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
+            CoinbaseProExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
     PowerMock.expectPrivate(
             exchangeAdapter,
             MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD,
@@ -511,9 +510,9 @@ public class TestGdaxExchangeAdapter extends AbstractExchangeAdapterTest {
     final Map<String, String> requestParamMap = PowerMock.createMock(Map.class);
     expect(requestParamMap.put("level", ORDER_BOOK_DEPTH_LEVEL)).andStubReturn(null);
 
-    final GdaxExchangeAdapter exchangeAdapter =
+    final CoinbaseProExchangeAdapter exchangeAdapter =
         PowerMock.createPartialMockAndInvokeDefaultConstructor(
-            GdaxExchangeAdapter.class,
+            CoinbaseProExchangeAdapter.class,
             MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD,
             MOCKED_CREATE_REQUEST_PARAM_MAP_METHOD);
 
@@ -559,9 +558,9 @@ public class TestGdaxExchangeAdapter extends AbstractExchangeAdapterTest {
 
   @Test(expected = ExchangeNetworkException.class)
   public void testGettingMarketOrdersHandlesExchangeNetworkException() throws Exception {
-    final GdaxExchangeAdapter exchangeAdapter =
+    final CoinbaseProExchangeAdapter exchangeAdapter =
         PowerMock.createPartialMockAndInvokeDefaultConstructor(
-            GdaxExchangeAdapter.class, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD);
+            CoinbaseProExchangeAdapter.class, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD);
 
     PowerMock.expectPrivate(
             exchangeAdapter,
@@ -579,9 +578,9 @@ public class TestGdaxExchangeAdapter extends AbstractExchangeAdapterTest {
 
   @Test(expected = TradingApiException.class)
   public void testGettingMarketOrdersHandlesUnexpectedException() throws Exception {
-    final GdaxExchangeAdapter exchangeAdapter =
+    final CoinbaseProExchangeAdapter exchangeAdapter =
         PowerMock.createPartialMockAndInvokeDefaultConstructor(
-            GdaxExchangeAdapter.class, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD);
+            CoinbaseProExchangeAdapter.class, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD);
 
     PowerMock.expectPrivate(
             exchangeAdapter,
@@ -613,9 +612,9 @@ public class TestGdaxExchangeAdapter extends AbstractExchangeAdapterTest {
         new AbstractExchangeAdapter.ExchangeHttpResponse(
             200, "OK", new String(encoded, StandardCharsets.UTF_8));
 
-    final GdaxExchangeAdapter exchangeAdapter =
+    final CoinbaseProExchangeAdapter exchangeAdapter =
         PowerMock.createPartialMockAndInvokeDefaultConstructor(
-            GdaxExchangeAdapter.class, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD);
+            CoinbaseProExchangeAdapter.class, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD);
 
     PowerMock.expectPrivate(
             exchangeAdapter, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD, eq(TICKER), eq(null))
@@ -633,9 +632,9 @@ public class TestGdaxExchangeAdapter extends AbstractExchangeAdapterTest {
 
   @Test(expected = ExchangeNetworkException.class)
   public void testGettingLatestMarketPriceHandlesExchangeNetworkException() throws Exception {
-    final GdaxExchangeAdapter exchangeAdapter =
+    final CoinbaseProExchangeAdapter exchangeAdapter =
         PowerMock.createPartialMockAndInvokeDefaultConstructor(
-            GdaxExchangeAdapter.class, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD);
+            CoinbaseProExchangeAdapter.class, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD);
     PowerMock.expectPrivate(
             exchangeAdapter, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD, eq(TICKER), eq(null))
         .andThrow(
@@ -650,9 +649,9 @@ public class TestGdaxExchangeAdapter extends AbstractExchangeAdapterTest {
 
   @Test(expected = TradingApiException.class)
   public void testGettingLatestMarketPriceHandlesUnexpectedException() throws Exception {
-    final GdaxExchangeAdapter exchangeAdapter =
+    final CoinbaseProExchangeAdapter exchangeAdapter =
         PowerMock.createPartialMockAndInvokeDefaultConstructor(
-            GdaxExchangeAdapter.class, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD);
+            CoinbaseProExchangeAdapter.class, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD);
     PowerMock.expectPrivate(
             exchangeAdapter, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD, eq(TICKER), eq(null))
         .andThrow(new IllegalArgumentException("Come with me if you want to live."));
@@ -675,9 +674,9 @@ public class TestGdaxExchangeAdapter extends AbstractExchangeAdapterTest {
         new AbstractExchangeAdapter.ExchangeHttpResponse(
             200, "OK", new String(encoded, StandardCharsets.UTF_8));
 
-    final GdaxExchangeAdapter exchangeAdapter =
+    final CoinbaseProExchangeAdapter exchangeAdapter =
         PowerMock.createPartialMockAndInvokeDefaultConstructor(
-            GdaxExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
+            CoinbaseProExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
     PowerMock.expectPrivate(
             exchangeAdapter,
             MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD,
@@ -725,9 +724,9 @@ public class TestGdaxExchangeAdapter extends AbstractExchangeAdapterTest {
 
   @Test(expected = ExchangeNetworkException.class)
   public void testGettingBalanceInfoHandlesExchangeNetworkException() throws Exception {
-    final GdaxExchangeAdapter exchangeAdapter =
+    final CoinbaseProExchangeAdapter exchangeAdapter =
         PowerMock.createPartialMockAndInvokeDefaultConstructor(
-            GdaxExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
+            CoinbaseProExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
     PowerMock.expectPrivate(
             exchangeAdapter,
             MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD,
@@ -747,9 +746,9 @@ public class TestGdaxExchangeAdapter extends AbstractExchangeAdapterTest {
 
   @Test(expected = TradingApiException.class)
   public void testGettingBalanceInfoHandlesUnexpectedException() throws Exception {
-    final GdaxExchangeAdapter exchangeAdapter =
+    final CoinbaseProExchangeAdapter exchangeAdapter =
         PowerMock.createPartialMockAndInvokeDefaultConstructor(
-            GdaxExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
+            CoinbaseProExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
     PowerMock.expectPrivate(
             exchangeAdapter,
             MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD,
@@ -783,9 +782,9 @@ public class TestGdaxExchangeAdapter extends AbstractExchangeAdapterTest {
         new AbstractExchangeAdapter.ExchangeHttpResponse(
             200, "OK", new String(encodedStats, StandardCharsets.UTF_8));
 
-    final GdaxExchangeAdapter exchangeAdapter =
+    final CoinbaseProExchangeAdapter exchangeAdapter =
         PowerMock.createPartialMockAndInvokeDefaultConstructor(
-            GdaxExchangeAdapter.class, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD);
+            CoinbaseProExchangeAdapter.class, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD);
 
     PowerMock.expectPrivate(
             exchangeAdapter, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD, eq(TICKER), eq(null))
@@ -806,7 +805,7 @@ public class TestGdaxExchangeAdapter extends AbstractExchangeAdapterTest {
     assertEquals(0, ticker.getLow().compareTo(new BigDecimal("13409.97000000")));
     assertEquals(0, ticker.getOpen().compareTo(new BigDecimal("13609.53000000")));
     assertEquals(0, ticker.getVolume().compareTo(new BigDecimal("607.54445656")));
-    assertNull(ticker.getVwap()); // not provided by GDAX
+    assertNull(ticker.getVwap()); // not provided by COINBASE PRO
     assertEquals(1508008776604L, (long) ticker.getTimestamp());
 
     PowerMock.verifyAll();
@@ -814,9 +813,9 @@ public class TestGdaxExchangeAdapter extends AbstractExchangeAdapterTest {
 
   @Test(expected = ExchangeNetworkException.class)
   public void testGettingTickerHandlesExchangeNetworkException() throws Exception {
-    final GdaxExchangeAdapter exchangeAdapter =
+    final CoinbaseProExchangeAdapter exchangeAdapter =
         PowerMock.createPartialMockAndInvokeDefaultConstructor(
-            GdaxExchangeAdapter.class, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD);
+            CoinbaseProExchangeAdapter.class, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD);
     PowerMock.expectPrivate(
             exchangeAdapter, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD, eq(TICKER), eq(null))
         .andThrow(
@@ -833,9 +832,9 @@ public class TestGdaxExchangeAdapter extends AbstractExchangeAdapterTest {
 
   @Test(expected = TradingApiException.class)
   public void testGettingTickerHandlesUnexpectedException() throws Exception {
-    final GdaxExchangeAdapter exchangeAdapter =
+    final CoinbaseProExchangeAdapter exchangeAdapter =
         PowerMock.createPartialMockAndInvokeDefaultConstructor(
-            GdaxExchangeAdapter.class, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD);
+            CoinbaseProExchangeAdapter.class, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD);
     PowerMock.expectPrivate(
             exchangeAdapter, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD, eq(TICKER), eq(null))
         .andThrow(
@@ -858,7 +857,7 @@ public class TestGdaxExchangeAdapter extends AbstractExchangeAdapterTest {
   @Test
   public void testGettingExchangeSellingFeeIsAsExpected() {
     PowerMock.replayAll();
-    final GdaxExchangeAdapter exchangeAdapter = new GdaxExchangeAdapter();
+    final CoinbaseProExchangeAdapter exchangeAdapter = new CoinbaseProExchangeAdapter();
     exchangeAdapter.init(exchangeConfig);
 
     final BigDecimal sellPercentageFee =
@@ -870,7 +869,7 @@ public class TestGdaxExchangeAdapter extends AbstractExchangeAdapterTest {
   @Test
   public void testGettingExchangeBuyingFeeIsAsExpected() {
     PowerMock.replayAll();
-    final GdaxExchangeAdapter exchangeAdapter = new GdaxExchangeAdapter();
+    final CoinbaseProExchangeAdapter exchangeAdapter = new CoinbaseProExchangeAdapter();
     exchangeAdapter.init(exchangeConfig);
 
     final BigDecimal buyPercentageFee =
@@ -882,10 +881,10 @@ public class TestGdaxExchangeAdapter extends AbstractExchangeAdapterTest {
   @Test
   public void testGettingImplNameIsAsExpected() {
     PowerMock.replayAll();
-    final GdaxExchangeAdapter exchangeAdapter = new GdaxExchangeAdapter();
+    final CoinbaseProExchangeAdapter exchangeAdapter = new CoinbaseProExchangeAdapter();
     exchangeAdapter.init(exchangeConfig);
 
-    assertEquals("GDAX REST API v1", exchangeAdapter.getImplName());
+    assertEquals("COINBASE PRO REST API v1", exchangeAdapter.getImplName());
     PowerMock.verifyAll();
   }
 
@@ -897,7 +896,7 @@ public class TestGdaxExchangeAdapter extends AbstractExchangeAdapterTest {
   public void testExchangeAdapterInitialisesSuccessfully() {
     PowerMock.replayAll();
 
-    final GdaxExchangeAdapter exchangeAdapter = new GdaxExchangeAdapter();
+    final CoinbaseProExchangeAdapter exchangeAdapter = new CoinbaseProExchangeAdapter();
     exchangeAdapter.init(exchangeConfig);
     assertNotNull(exchangeAdapter);
 
@@ -912,7 +911,7 @@ public class TestGdaxExchangeAdapter extends AbstractExchangeAdapterTest {
     expect(authenticationConfig.getItem("secret")).andReturn("your_client_secret");
     PowerMock.replayAll();
 
-    final ExchangeAdapter exchangeAdapter = new GdaxExchangeAdapter();
+    final ExchangeAdapter exchangeAdapter = new CoinbaseProExchangeAdapter();
     exchangeAdapter.init(exchangeConfig);
 
     PowerMock.verifyAll();
@@ -926,7 +925,7 @@ public class TestGdaxExchangeAdapter extends AbstractExchangeAdapterTest {
     expect(authenticationConfig.getItem("secret")).andReturn("your_client_secret");
     PowerMock.replayAll();
 
-    final ExchangeAdapter exchangeAdapter = new GdaxExchangeAdapter();
+    final ExchangeAdapter exchangeAdapter = new CoinbaseProExchangeAdapter();
     exchangeAdapter.init(exchangeConfig);
 
     PowerMock.verifyAll();
@@ -940,7 +939,7 @@ public class TestGdaxExchangeAdapter extends AbstractExchangeAdapterTest {
     expect(authenticationConfig.getItem("secret")).andReturn(null);
     PowerMock.replayAll();
 
-    final ExchangeAdapter exchangeAdapter = new GdaxExchangeAdapter();
+    final ExchangeAdapter exchangeAdapter = new CoinbaseProExchangeAdapter();
     exchangeAdapter.init(exchangeConfig);
 
     PowerMock.verifyAll();
@@ -953,7 +952,7 @@ public class TestGdaxExchangeAdapter extends AbstractExchangeAdapterTest {
     expect(otherConfig.getItem("sell-fee")).andReturn("0.25");
     PowerMock.replayAll();
 
-    final ExchangeAdapter exchangeAdapter = new GdaxExchangeAdapter();
+    final ExchangeAdapter exchangeAdapter = new CoinbaseProExchangeAdapter();
     exchangeAdapter.init(exchangeConfig);
 
     PowerMock.verifyAll();
@@ -966,7 +965,7 @@ public class TestGdaxExchangeAdapter extends AbstractExchangeAdapterTest {
     expect(otherConfig.getItem("sell-fee")).andReturn("");
 
     PowerMock.replayAll();
-    final ExchangeAdapter exchangeAdapter = new GdaxExchangeAdapter();
+    final ExchangeAdapter exchangeAdapter = new CoinbaseProExchangeAdapter();
     exchangeAdapter.init(exchangeConfig);
 
     PowerMock.verifyAll();
@@ -978,7 +977,7 @@ public class TestGdaxExchangeAdapter extends AbstractExchangeAdapterTest {
     expect(networkConfig.getConnectionTimeout()).andReturn(0);
     PowerMock.replayAll();
 
-    final ExchangeAdapter exchangeAdapter = new GdaxExchangeAdapter();
+    final ExchangeAdapter exchangeAdapter = new CoinbaseProExchangeAdapter();
     exchangeAdapter.init(exchangeConfig);
 
     PowerMock.verifyAll();
@@ -999,9 +998,9 @@ public class TestGdaxExchangeAdapter extends AbstractExchangeAdapterTest {
         new AbstractExchangeAdapter.ExchangeHttpResponse(
             200, "OK", new String(encoded, StandardCharsets.UTF_8));
 
-    final GdaxExchangeAdapter exchangeAdapter =
+    final CoinbaseProExchangeAdapter exchangeAdapter =
         PowerMock.createPartialMockAndInvokeDefaultConstructor(
-            GdaxExchangeAdapter.class, MOCKED_MAKE_NETWORK_REQUEST_METHOD);
+            CoinbaseProExchangeAdapter.class, MOCKED_MAKE_NETWORK_REQUEST_METHOD);
 
     final URL url = new URL(PUBLIC_API_BASE_URL + TICKER);
     PowerMock.expectPrivate(
@@ -1024,9 +1023,9 @@ public class TestGdaxExchangeAdapter extends AbstractExchangeAdapterTest {
 
   @Test(expected = ExchangeNetworkException.class)
   public void testSendingPublicRequestToExchangeHandlesExchangeNetworkException() throws Exception {
-    final GdaxExchangeAdapter exchangeAdapter =
+    final CoinbaseProExchangeAdapter exchangeAdapter =
         PowerMock.createPartialMockAndInvokeDefaultConstructor(
-            GdaxExchangeAdapter.class, MOCKED_MAKE_NETWORK_REQUEST_METHOD);
+            CoinbaseProExchangeAdapter.class, MOCKED_MAKE_NETWORK_REQUEST_METHOD);
 
     final URL url = new URL(PUBLIC_API_BASE_URL + TICKER);
     PowerMock.expectPrivate(
@@ -1049,9 +1048,9 @@ public class TestGdaxExchangeAdapter extends AbstractExchangeAdapterTest {
 
   @Test(expected = TradingApiException.class)
   public void testSendingPublicRequestToExchangeHandlesTradingApiException() throws Exception {
-    final GdaxExchangeAdapter exchangeAdapter =
+    final CoinbaseProExchangeAdapter exchangeAdapter =
         PowerMock.createPartialMockAndInvokeDefaultConstructor(
-            GdaxExchangeAdapter.class, MOCKED_MAKE_NETWORK_REQUEST_METHOD);
+            CoinbaseProExchangeAdapter.class, MOCKED_MAKE_NETWORK_REQUEST_METHOD);
 
     final URL url = new URL(PUBLIC_API_BASE_URL + TICKER);
     PowerMock.expectPrivate(
@@ -1096,9 +1095,9 @@ public class TestGdaxExchangeAdapter extends AbstractExchangeAdapterTest {
     expect(requestHeaderMap.put(eq("CB-ACCESS-PASSPHRASE"), eq(PASSPHRASE))).andStubReturn(null);
     PowerMock.replay(requestHeaderMap); // map needs to be in play early
 
-    final GdaxExchangeAdapter exchangeAdapter =
+    final CoinbaseProExchangeAdapter exchangeAdapter =
         PowerMock.createPartialMockAndInvokeDefaultConstructor(
-            GdaxExchangeAdapter.class,
+            CoinbaseProExchangeAdapter.class,
             MOCKED_MAKE_NETWORK_REQUEST_METHOD,
             MOCKED_CREATE_REQUEST_HEADER_MAP_METHOD);
     PowerMock.expectPrivate(exchangeAdapter, MOCKED_CREATE_REQUEST_HEADER_MAP_METHOD)
@@ -1146,9 +1145,9 @@ public class TestGdaxExchangeAdapter extends AbstractExchangeAdapterTest {
     expect(requestHeaderMap.put(eq("CB-ACCESS-PASSPHRASE"), eq(PASSPHRASE))).andStubReturn(null);
     PowerMock.replay(requestHeaderMap); // map needs to be in play early
 
-    final GdaxExchangeAdapter exchangeAdapter =
+    final CoinbaseProExchangeAdapter exchangeAdapter =
         PowerMock.createPartialMockAndInvokeDefaultConstructor(
-            GdaxExchangeAdapter.class,
+            CoinbaseProExchangeAdapter.class,
             MOCKED_MAKE_NETWORK_REQUEST_METHOD,
             MOCKED_CREATE_REQUEST_HEADER_MAP_METHOD);
     PowerMock.expectPrivate(exchangeAdapter, MOCKED_CREATE_REQUEST_HEADER_MAP_METHOD)
@@ -1197,9 +1196,9 @@ public class TestGdaxExchangeAdapter extends AbstractExchangeAdapterTest {
     expect(requestHeaderMap.put(eq("CB-ACCESS-PASSPHRASE"), eq(PASSPHRASE))).andStubReturn(null);
     PowerMock.replay(requestHeaderMap); // map needs to be in play early
 
-    final GdaxExchangeAdapter exchangeAdapter =
+    final CoinbaseProExchangeAdapter exchangeAdapter =
         PowerMock.createPartialMockAndInvokeDefaultConstructor(
-            GdaxExchangeAdapter.class,
+            CoinbaseProExchangeAdapter.class,
             MOCKED_MAKE_NETWORK_REQUEST_METHOD,
             MOCKED_CREATE_REQUEST_HEADER_MAP_METHOD);
     PowerMock.expectPrivate(exchangeAdapter, MOCKED_CREATE_REQUEST_HEADER_MAP_METHOD)

@@ -53,13 +53,12 @@ jacocoTestCoverageVerification {
             excludes = [
                     'com.gazbert.bxbot.exchanges.BitfinexExchangeAdapter*',
                     'com.gazbert.bxbot.exchanges.BitstampExchangeAdapter*',
-                    'com.gazbert.bxbot.exchanges.GdaxExchangeAdapter*',
                     'com.gazbert.bxbot.exchanges.GeminiExchangeAdapter*',
                     'com.gazbert.bxbot.exchanges.ItBitExchangeAdapter*',
                     'com.gazbert.bxbot.exchanges.KrakenExchangeAdapter*',
-                    'com.gazbert.bxbot.exchanges.OkCoinExchangeAdapter*',
                     'com.gazbert.bxbot.exchanges.TestExchangeAdapter*',
                     'com.gazbert.bxbot.exchanges.AbstractExchangeAdapter*',
+                    'com.gazbert.bxbot.exchanges.CoinbaseProExchangeAdapter*',
             ]
             limit {
                 counter = 'LINE'

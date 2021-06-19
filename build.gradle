@@ -5,8 +5,8 @@ buildscript {
     }
 
     dependencies {
-        classpath("io.spring.gradle:dependency-management-plugin:1.0.9.RELEASE")
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:2.1.13.RELEASE")
+        classpath("io.spring.gradle:dependency-management-plugin:1.0.10.RELEASE")
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:2.1.18.RELEASE")
         classpath "gradle.plugin.com.github.spotbugs:spotbugs-gradle-plugin:2.0.0"
     }
 }
@@ -23,11 +23,11 @@ buildScan {
 }
 
 ext.versions = [
-        springBootVersion        : '2.1.13.RELEASE',
-        springCloudVersion       : '2.1.5.RELEASE',
-        springTxVersion          : '5.1.14.RELEASE',
+        springBootVersion        : '2.1.18.RELEASE',
+        springCloudVersion       : '2.1.6.RELEASE',
+        springTxVersion          : '5.1.19.RELEASE',
         springFoxVersion         : '2.9.2',
-        hibernateVaildatorVersion: '6.1.2.Final',
+        hibernateVaildatorVersion: '6.2.0.Final',
         jaxbVersion              : '2.3.1',
         javaxMailVersion         : '1.6.2'
 ]
@@ -64,35 +64,35 @@ ext.libraries = [
         },
         spring_tx                               : dependencies.create("org.springframework:spring-tx:" + ext.versions.springTxVersion),
         jjwt                                    : dependencies.create("io.jsonwebtoken:jjwt:0.9.1"),
-        google_guava                            : dependencies.create("com.google.guava:guava:28.2-jre"),
+        google_guava                            : dependencies.create("com.google.guava:guava:30.1-jre"),
         google_gson                             : dependencies.create("com.google.code.gson:gson:2.8.6"),
-        h2                                      : dependencies.create("com.h2database:h2:1.4.199"),
+        h2                                      : dependencies.create("com.h2database:h2:1.4.200"),
         javax_mail_api                          : dependencies.create("javax.mail:javax.mail-api:" + ext.versions.javaxMailVersion),
         javax_mail_sun                          : dependencies.create("com.sun.mail:javax.mail:" + ext.versions.javaxMailVersion),
         javax_xml_api                           : dependencies.create("javax.xml.bind:jaxb-api:" + ext.versions.jaxbVersion),
         javax_xml_impl                          : dependencies.create("com.sun.xml.bind:jaxb-impl:" + ext.versions.jaxbVersion),
-        snake_yaml                              : dependencies.create("org.yaml:snakeyaml:1.26"),
+        snake_yaml                              : dependencies.create("org.yaml:snakeyaml:1.27"),
 
         springfox_swagger2                      : dependencies.create("io.springfox:springfox-swagger2:" + ext.versions.springFoxVersion),
         springfox_swagger_ui                    : dependencies.create("io.springfox:springfox-swagger-ui:" + ext.versions.springFoxVersion),
         springfox_bean_validators               : dependencies.create("io.springfox:springfox-bean-validators:" + ext.versions.springFoxVersion),
-        swagger_annotations                     : dependencies.create("io.swagger:swagger-annotations:1.6.0"),
+        swagger_annotations                     : dependencies.create("io.swagger:swagger-annotations:1.5.20"),
 
-        validation_api                          : dependencies.create("javax.validation:validation-api:2.0.0.Final"),
+        validation_api                          : dependencies.create("javax.validation:validation-api:2.0.1.Final"),
         hibernate_validator                     : dependencies.create("org.hibernate.validator:hibernate-validator:" + ext.versions.hibernateVaildatorVersion),
         hibernate_validator_annotation_processor: dependencies.create("org.hibernate.validator:hibernate-validator-annotation-processor:" + ext.versions.hibernateVaildatorVersion),
 
-        junit                                   : dependencies.create("junit:junit:4.13"),
-        powermock_junit                         : dependencies.create("org.powermock:powermock-module-junit4:2.0.6"),
-        powermock_api_easymock                  : dependencies.create("org.powermock:powermock-api-easymock:2.0.6"),
+        junit                                   : dependencies.create("junit:junit:4.13.1"),
+        powermock_junit                         : dependencies.create("org.powermock:powermock-module-junit4:2.0.9"),
+        powermock_api_easymock                  : dependencies.create("org.powermock:powermock-api-easymock:2.0.9"),
         easymock                                : dependencies.create("org.easymock:easymock:4.2"),
 
         spring_boot_starter_test                : dependencies.create("org.springframework.boot:spring-boot-starter-test:" + ext.versions.springBootVersion) {
             exclude module: "spring-boot-starter-logging"
             force = true
         },
-        spring_security_test                    : dependencies.create("org.springframework.security:spring-security-test:5.2.2.RELEASE"),
-        awaitility                              : dependencies.create("org.awaitility:awaitility:4.0.2")
+        spring_security_test                    : dependencies.create("org.springframework.security:spring-security-test:5.2.8.RELEASE"),
+        awaitility                              : dependencies.create("org.awaitility:awaitility:4.0.3")
 ]
 
 allprojects {
@@ -104,7 +104,7 @@ allprojects {
     apply plugin: "jacoco"
 
     group = 'com.gazbert.bxbot'
-    version = '1.0.1'
+    version = '1.2.1-SNAPSHOT'
 }
 
 subprojects {
