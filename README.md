@@ -57,6 +57,10 @@ The bot runs on Linux, macOS, and Windows.
 BX-bot requires a Java 11+ JDK (e.g. [openjdk-11-jdk](http://openjdk.java.net/projects/jdk/11/) or 
 [Oracle JDK 11](https://www.oracle.com/technetwork/java/javase/downloads/jdk11-downloads-5066655.html))
 to be installed on the machine you are going to use to build and run the bot.
+
+BXBot uses a version of PowerMock that's relies on reflective access in a way that's no longer permitted in Java 11+. 
+As workaround, set the following parameter for the JDK compiler: --illegal-access=permit. 
+
 Be mindful of Oracle's recent [licensing changes](https://www.oracle.com/technetwork/java/javase/overview/oracle-jdk-faqs.html)
 and how you intend to use the bot.
 
