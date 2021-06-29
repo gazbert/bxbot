@@ -161,7 +161,6 @@ public class ExampleScalpingStrategy implements TradingStrategy {
   /**
    * Initialises the Trading Strategy. Called once by the Trading Engine when the bot starts up;
    * it's a bit like a servlet init() method.
-   *
    * tradingApi the Trading API. Use this to make trades and stuff.
    * market the market for this strategy. This is the market the strategy is currently
    *     running on - you wire this up in the markets.yaml and strategies.yaml files.
@@ -307,7 +306,7 @@ public class ExampleScalpingStrategy implements TradingStrategy {
    *
    * @param currentBidPrice the current market BID price.
    * should throw StrategyException if an unexpected exception is received from the Exchange Adapter.
-   *     Throwing this exception indicates we want the Trading Engine to shutdown the bot.
+   * Throwing this exception indicates we want the Trading Engine to shutdown the bot.
    */
 
   private boolean readyToBuy(BigDecimal currentBidPrice)
