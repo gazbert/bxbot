@@ -303,14 +303,10 @@ public class ExampleScalpingStrategy implements TradingStrategy {
   /**
    * Algo for executing when the Trading Strategy is invoked for the first time. We start off with a
    * buy order at current BID price.
-   *
    * @param currentBidPrice the current market BID price.
-   * should throw StrategyException if an unexpected exception is received from the Exchange Adapter.
-   * Throwing this exception indicates we want the Trading Engine to shutdown the bot.
    */
 
-  private boolean readyToBuy(BigDecimal currentBidPrice)
-          throws StrategyException {
+  private boolean readyToBuy(BigDecimal currentBidPrice) {
 
     boolean buy = false;
 
@@ -564,7 +560,7 @@ public class ExampleScalpingStrategy implements TradingStrategy {
                       + "]");
       }
 
-      if (!lastOrderFound || (lastOrderFound && countTradeCycles > 240)) {
+      if (!lastOrderFound || countTradeCycles > 240) {
         //now check if we're ready to place a new buy order
         if (readyToBuy(currentAskPrice)) {
           // Get amount of base currency (BTC) we can buy for given counter currency (USD) amount.
