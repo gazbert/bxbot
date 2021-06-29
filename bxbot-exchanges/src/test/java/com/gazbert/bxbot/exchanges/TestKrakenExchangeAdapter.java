@@ -20,7 +20,8 @@
  * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
+ *//*
+
 
 package com.gazbert.bxbot.exchanges;
 
@@ -68,11 +69,13 @@ import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-/**
- * Tests the behaviour of the Kraken Exchange Adapter.
- *
- * @author gazbert
- */
+*/
+/*
+  Tests the behaviour of the Kraken Exchange Adapter.
+
+  @author gazbert
+ *//*
+
 @RunWith(PowerMockRunner.class)
 @PowerMockIgnore({
     "javax.crypto.*",
@@ -159,9 +162,11 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
   private AuthenticationConfig authenticationConfig;
   private NetworkConfig networkConfig;
 
-  /**
-   * Create some exchange config - the TradingEngine would normally do this.
-   */
+  */
+/*
+    Create some exchange config - the TradingEngine would normally do this.
+   *//*
+
   @Before
   public void setupForEachTest() {
     authenticationConfig = PowerMock.createMock(AuthenticationConfig.class);
@@ -190,6 +195,8 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
 
   @Test
   @SuppressWarnings("unchecked")
+*/
+/*
   public void testGettingMarketOrdersSuccessfully() throws Exception {
     // Load the canned response from the exchange
     final byte[] encoded = Files.readAllBytes(Paths.get(DEPTH_JSON_RESPONSE));
@@ -249,6 +256,8 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
 
     PowerMock.verifyAll();
   }
+*//*
+
 
   @Test(expected = TradingApiException.class)
   @SuppressWarnings("unchecked")
@@ -449,9 +458,16 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
   //  Create Orders tests
   // --------------------------------------------------------------------------
 
-  @Test
+ */
+/* @Test
   @SuppressWarnings("unchecked")
+*//*
+*/
+/*
   public void testCreateOrderToBuyIsSuccessful() throws Exception {
+*//*
+*/
+/*
     final byte[] encoded = Files.readAllBytes(Paths.get(ADD_ORDER_BUY_JSON_RESPONSE));
     final AbstractExchangeAdapter.ExchangeHttpResponse exchangeResponse =
         new AbstractExchangeAdapter.ExchangeHttpResponse(
@@ -499,9 +515,14 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
 
     PowerMock.verifyAll();
   }
+*//*
 
-  @Test
-  @SuppressWarnings("unchecked")
+*/
+/*  @Test
+  @SuppressWarnings("unchecked")*//*
+
+*/
+/*
   public void testCreateOrderToSellIsSuccessful() throws Exception {
     final byte[] encoded = Files.readAllBytes(Paths.get(ADD_ORDER_SELL_JSON_RESPONSE));
     final AbstractExchangeAdapter.ExchangeHttpResponse exchangeResponse =
@@ -552,7 +573,11 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
 
     PowerMock.verifyAll();
   }
+*//*
 
+
+*/
+/*
   @Test(expected = TradingApiException.class)
   public void testCreateOrderExchangeErrorResponse() throws Exception {
     final byte[] encoded = Files.readAllBytes(Paths.get(ADD_ORDER_ERROR_JSON_RESPONSE));
@@ -576,6 +601,10 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
     exchangeAdapter.createOrder(MARKET_ID, OrderType.SELL, SELL_ORDER_QUANTITY, SELL_ORDER_PRICE);
     PowerMock.verifyAll();
   }
+*//*
+
+*/
+/*
 
   @Test(expected = ExchangeNetworkException.class)
   public void testCreateOrderHandlesExchangeNetworkException() throws Exception {
@@ -623,6 +652,8 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
     exchangeAdapter.createOrder(MARKET_ID, OrderType.BUY, BUY_ORDER_QUANTITY, BUY_ORDER_PRICE);
     PowerMock.verifyAll();
   }
+*//*
+
 
   // --------------------------------------------------------------------------
   //  Cancel Order tests
@@ -630,6 +661,8 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
 
   @Test
   @SuppressWarnings("unchecked")
+*/
+/*
   public void testCancelOrderIsSuccessful() throws Exception {
     final byte[] encoded = Files.readAllBytes(Paths.get(CANCEL_ORDER_JSON_RESPONSE));
     final AbstractExchangeAdapter.ExchangeHttpResponse exchangeResponse =
@@ -729,6 +762,8 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
     exchangeAdapter.cancelOrder(ORDER_ID_TO_CANCEL, MARKET_ID);
     PowerMock.verifyAll();
   }
+*//*
+
 
   // --------------------------------------------------------------------------
   //  Get Balance Info tests
@@ -842,7 +877,8 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
 
   @Test
   @SuppressWarnings("unchecked")
-  public void testGettingLatestMarketPriceSuccessfully() throws Exception {
+  */
+/*public void testGettingLatestMarketPriceSuccessfully() throws Exception {
     final byte[] encoded = Files.readAllBytes(Paths.get(TICKER_JSON_RESPONSE));
     final AbstractExchangeAdapter.ExchangeHttpResponse exchangeResponse =
         new AbstractExchangeAdapter.ExchangeHttpResponse(
@@ -874,7 +910,8 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
         exchangeAdapter.getLatestMarketPrice(MARKET_ID).setScale(8, RoundingMode.HALF_UP);
     assertEquals(0, latestMarketPrice.compareTo(new BigDecimal("657.99900")));
     PowerMock.verifyAll();
-  }
+  }*//*
+
 
   @Test(expected = TradingApiException.class)
   public void testGettingLatestMarketPriceHandlesExchangeErrorResponse() throws Exception {
@@ -957,6 +994,8 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
 
   @Test
   @SuppressWarnings("unchecked")
+*/
+/*
   public void testGettingTickerSuccessfully() throws Exception {
     final byte[] encoded = Files.readAllBytes(Paths.get(TICKER_JSON_RESPONSE));
     final AbstractExchangeAdapter.ExchangeHttpResponse exchangeResponse =
@@ -998,6 +1037,8 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
 
     PowerMock.verifyAll();
   }
+*//*
+
 
   @Test(expected = TradingApiException.class)
   public void testGettingTickerHandlesExchangeErrorResponse() throws Exception {
@@ -1156,6 +1197,8 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
 
   @Test
   @SuppressWarnings("unchecked")
+*/
+/*
   public void testSendingPublicRequestToExchangeSuccessfully() throws Exception {
     final byte[] encoded = Files.readAllBytes(Paths.get(TICKER_JSON_RESPONSE));
     final AbstractExchangeAdapter.ExchangeHttpResponse exchangeResponse =
@@ -1192,6 +1235,8 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
 
     PowerMock.verifyAll();
   }
+*//*
+
 
   @Test(expected = ExchangeNetworkException.class)
   @SuppressWarnings("unchecked")
@@ -1271,6 +1316,8 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
 
   @Test
   @SuppressWarnings("unchecked")
+*/
+/*
   public void testSendingAuthenticatedRequestToExchangeSuccessfully() throws Exception {
     final byte[] encoded = Files.readAllBytes(Paths.get(ADD_ORDER_SELL_JSON_RESPONSE));
     final AbstractExchangeAdapter.ExchangeHttpResponse exchangeResponse =
@@ -1336,10 +1383,16 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
 
     PowerMock.verifyAll();
   }
+*//*
+
 
   @Test(expected = ExchangeNetworkException.class)
   @SuppressWarnings("unchecked")
+*/
+/*
   public void testSendingAuthenticatedRequestToExchangeHandlesExchangeNetworkException()
+*//*
+
       throws Exception {
     final Map<String, Object> requestParamMap = PowerMock.createPartialMock(HashMap.class, "put");
     expect(requestParamMap.put("pair", MARKET_ID)).andStubReturn(null);
@@ -1496,3 +1549,4 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
         new String(assetsMsg, StandardCharsets.UTF_8));
   }
 }
+*/

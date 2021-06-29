@@ -162,12 +162,18 @@ public class ExampleScalpingStrategy implements TradingStrategy {
    * Initialises the Trading Strategy. Called once by the Trading Engine when the bot starts up;
    * it's a bit like a servlet init() method.
    *
-   * @param tradingApi the Trading API. Use this to make trades and stuff.
-   * @param market the market for this strategy. This is the market the strategy is currently
+   * tradingApi the Trading API. Use this to make trades and stuff.
+   * market the market for this strategy. This is the market the strategy is currently
    *     running on - you wire this up in the markets.yaml and strategies.yaml files.
-   * @param config configuration for the strategy. Contains any (optional) config you set up in the
+   * config configuration for the strategy. Contains any (optional) config you set up in the
    *     strategies.yaml file.
    */
+
+  //todo explain these vars and make it configurable
+  private BigDecimal latestHigh = BigDecimal.valueOf(0);
+  private final BigDecimal priceDrop = BigDecimal.valueOf(0.03);
+  private int countTradeCycles = 0;
+
   @Override
   public void init(TradingApi tradingApi, Market market, StrategyConfig config) {
     LOG.info(() -> "Initialising Trading Strategy...");
@@ -186,8 +192,18 @@ public class ExampleScalpingStrategy implements TradingStrategy {
    * @throws StrategyException if something unexpected occurs. This tells the Trading Engine to
    *     shutdown the bot immediately to help prevent unexpected losses.
    */
+
+
+
   @Override
   public void execute() throws StrategyException {
+    //Only buy if the current price has dropped 3% from latest high before buying (done)
+    //check the price since last time and check if it's lower than latest know highest price
+    //if 3% lower that latest highest, then buy, otherwise do nothing and wait for next cycle
+    //if 4 hours have gone by and sell has not succeeded, reset strategy
+
+    countTradeCycles++;
+
     LOG.info(() -> market.getName() + " Checking order status...");
 
     try {
@@ -241,7 +257,15 @@ public class ExampleScalpingStrategy implements TradingStrategy {
       // Always handy to log what the last order was during each trace cycle.
       LOG.info(() -> market.getName() + " Last Order was: " + lastOrder);
 
+      //see if we need to update the latestHigh
+      if (latestHigh.compareTo(currentBidPrice) < 0) {
+        latestHigh = currentBidPrice;
+      }
+
+
       // Execute the appropriate algorithm based on the last order type.
+
+
       if (lastOrder.type == OrderType.BUY) {
         executeAlgoForWhenLastOrderWasBuy();
 
@@ -280,61 +304,84 @@ public class ExampleScalpingStrategy implements TradingStrategy {
    * buy order at current BID price.
    *
    * @param currentBidPrice the current market BID price.
-   * @throws StrategyException if an unexpected exception is received from the Exchange Adapter.
+   * should throw StrategyException if an unexpected exception is received from the Exchange Adapter.
    *     Throwing this exception indicates we want the Trading Engine to shutdown the bot.
    */
+
+  private boolean readyToBuy(BigDecimal currentBidPrice) {
+    boolean buy = false;
+
+    if (latestHigh.multiply(priceDrop).compareTo(currentBidPrice) > 0) {
+      buy = true;
+      //latestHigh set to current bid price
+      latestHigh = currentBidPrice;
+      LOG.info(" Ready to buy");
+    } else {
+      LOG.info(" not ready currentPrice" + currentBidPrice + " latestHigh " + latestHigh);
+    }
+    return buy;
+  }
+
   private void executeAlgoForWhenLastOrderWasNone(BigDecimal currentBidPrice)
       throws StrategyException {
-    LOG.info(
-        () ->
-            market.getName()
-                + " OrderType is NONE - placing new BUY order at ["
-                + new DecimalFormat(DECIMAL_FORMAT).format(currentBidPrice)
-                + "]");
 
-    try {
-      // Calculate the amount of base currency (BTC) to buy for given amount of counter currency
-      // (USD).
-      final BigDecimal amountOfBaseCurrencyToBuy =
-          getAmountOfBaseCurrencyToBuyForGivenCounterCurrencyAmount(counterCurrencyBuyOrderAmount);
-
-      // Send the order to the exchange
-      LOG.info(() -> market.getName() + " Sending initial BUY order to exchange --->");
-
-      lastOrder.id =
-          tradingApi.createOrder(
-              market.getId(), OrderType.BUY, amountOfBaseCurrencyToBuy, currentBidPrice);
-
+    if (readyToBuy(currentBidPrice)) {
       LOG.info(
-          () -> market.getName() + " Initial BUY Order sent successfully. ID: " + lastOrder.id);
-
-      // update last order details
-      lastOrder.price = currentBidPrice;
-      lastOrder.type = OrderType.BUY;
-      lastOrder.amount = amountOfBaseCurrencyToBuy;
-
-    } catch (ExchangeNetworkException e) {
-      // Your timeout handling code could go here, e.g. you might want to check if the order
-      // actually made it to the exchange? And if not, resend it...
-      // We are just going to log it and swallow it, and wait for next trade cycle.
-      LOG.error(
           () ->
               market.getName()
-                  + " Initial order to BUY base currency failed because Exchange threw network "
-                  + "exception. Waiting until next trade cycle.",
-          e);
+                  + " OrderType is NONE - placing new BUY order at ["
+                  + new DecimalFormat(DECIMAL_FORMAT).format(currentBidPrice)
+                  + "]");
 
-    } catch (TradingApiException e) {
-      // Your error handling code could go here...
-      // We are just going to re-throw as StrategyException for engine to deal with - it will
-      // shutdown the bot.
-      LOG.error(
-          () ->
-              market.getName()
-                  + " Initial order to BUY base currency failed because Exchange threw TradingApi "
-                  + "exception. Telling Trading Engine to shutdown bot!",
-          e);
-      throw new StrategyException(e);
+      try {
+        // Calculate the amount of base currency (BTC) to buy for given amount of counter currency
+        // (USD).
+        BigDecimal ccBuy = counterCurrencyBuyOrderAmount;
+        final BigDecimal amountOfBaseCurrencyToBuy =
+                getAmountOfBaseCurrencyToBuyForGivenCounterCurrencyAmount(ccBuy);
+
+        // Send the order to the exchange
+        LOG.info(() -> market.getName()
+                + " Sending initial BUY order to exchange --->");
+
+        lastOrder.id =
+            tradingApi.createOrder(
+                market.getId(), OrderType.BUY, amountOfBaseCurrencyToBuy, currentBidPrice);
+
+        LOG.info(
+            () -> market.getName()
+                    + " Initial BUY Order sent successfully. ID: " + lastOrder.id);
+
+        // update last order details
+        lastOrder.price = currentBidPrice;
+        lastOrder.type = OrderType.BUY;
+        lastOrder.amount = amountOfBaseCurrencyToBuy;
+
+      } catch (ExchangeNetworkException e) {
+        // Your timeout handling code could go here, e.g. you might want to check if the order
+        // actually made it to the exchange? And if not, resend it...
+        // We are just going to log it and swallow it, and wait for next trade cycle.
+        LOG.error(
+            () ->
+                market.getName()
+                    + " Initial order to BUY base currency failed because Exchange threw network "
+                    + "exception. Waiting until next trade cycle.",
+            e);
+
+      } catch (TradingApiException e) {
+        // Your error handling code could go here...
+        // We are just going to re-throw as StrategyException for engine to deal with - it will
+        // shutdown the bot.
+        LOG.error(
+            () ->
+                market.getName()
+                    + " Initial order to BUY base currency failed bc Exchange threw TradingApi "
+                    + "exception. Telling Trading Engine to shutdown bot!",
+            e);
+        throw new StrategyException(e);
+      }
+    } else {
+      LOG.info(" not ready currentPrice" + currentBidPrice + " latestHigh " + latestHigh);
     }
   }
 
@@ -360,6 +407,7 @@ public class ExampleScalpingStrategy implements TradingStrategy {
       }
 
       // If the order is not there, it must have all filled.
+      // also check if we're ready to buy again
       if (!lastOrderFound) {
         LOG.info(
             () ->
@@ -482,6 +530,8 @@ public class ExampleScalpingStrategy implements TradingStrategy {
    */
   private void executeAlgoForWhenLastOrderWasSell(
       BigDecimal currentBidPrice, BigDecimal currentAskPrice) throws StrategyException {
+
+
     try {
       final List<OpenOrder> myOrders = tradingApi.getYourOpenOrders(market.getId());
       boolean lastOrderFound = false;
@@ -492,41 +542,57 @@ public class ExampleScalpingStrategy implements TradingStrategy {
         }
       }
 
-      // If the order is not there, it must have all filled.
+      // If the order is not there, it must have all filled and we place a new buy
+      // Also if we've been waiting >240 minutes since last sell order was placed,
+      // just place new buy
+      if (countTradeCycles > 240) {
+        LOG.info(
+            () ->
+              "Waited for 240 minutes");
+      }
       if (!lastOrderFound) {
         LOG.info(
             () ->
-                market.getName()
-                    + " ^^^ Yay!!! Last SELL Order Id ["
-                    + lastOrder.id
-                    + "] filled at ["
-                    + lastOrder.price
-                    + "]");
+              market.getName()
+                      + " ^^^ Yay!!! Last SELL Order Id ["
+                      + lastOrder.id
+                      + "] filled at ["
+                      + lastOrder.price
+                      + "]");
+      }
 
-        // Get amount of base currency (BTC) we can buy for given counter currency (USD) amount.
-        final BigDecimal amountOfBaseCurrencyToBuy =
-            getAmountOfBaseCurrencyToBuyForGivenCounterCurrencyAmount(
-                counterCurrencyBuyOrderAmount);
+      if (!lastOrderFound || countTradeCycles > 240) {
+        //now check if we're ready to place a new buy order
+        if (readyToBuy(currentAskPrice)) {
+          // Get amount of base currency (BTC) we can buy for given counter currency (USD) amount.
+          final BigDecimal amountOfBaseCurrencyToBuy =
+                  getAmountOfBaseCurrencyToBuyForGivenCounterCurrencyAmount(
+                          counterCurrencyBuyOrderAmount);
 
-        LOG.info(
-            () ->
-                market.getName()
-                    + " Placing new BUY order at bid price ["
-                    + new DecimalFormat(DECIMAL_FORMAT).format(currentBidPrice)
-                    + "]");
+          LOG.info(
+              () ->
+              market.getName()
+                      + " Placing new BUY order at bid price ["
+                      + new DecimalFormat(DECIMAL_FORMAT).format(currentBidPrice)
+                      + "]");
 
-        LOG.info(() -> market.getName() + " Sending new BUY order to exchange --->");
+          LOG.info(() -> market.getName() + " Sending new BUY order to exchange --->");
 
-        // Send the buy order to the exchange.
-        lastOrder.id =
-            tradingApi.createOrder(
-                market.getId(), OrderType.BUY, amountOfBaseCurrencyToBuy, currentBidPrice);
-        LOG.info(() -> market.getName() + " New BUY Order sent successfully. ID: " + lastOrder.id);
+          // Send the buy order to the exchange.
+          lastOrder.id =
+                  tradingApi.createOrder(
+                        market.getId(), OrderType.BUY, amountOfBaseCurrencyToBuy, currentBidPrice);
+          LOG.info(
+              () -> market.getName() + " New BUY Order sent successfully. ID: " + lastOrder.id);
 
-        // update last order details
-        lastOrder.price = currentBidPrice;
-        lastOrder.type = OrderType.BUY;
-        lastOrder.amount = amountOfBaseCurrencyToBuy;
+          // update last order details
+          lastOrder.price = currentBidPrice;
+          lastOrder.type = OrderType.BUY;
+          lastOrder.amount = amountOfBaseCurrencyToBuy;
+
+          //reset countTradeCycles to start counting again
+          countTradeCycles = 0;
+        }
       } else {
 
         /*

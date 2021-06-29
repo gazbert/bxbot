@@ -97,6 +97,9 @@
             <goals>
               <goal>repackage</goal>
             </goals>
+            <configuration>
+              <classifier>bak</classifier>
+            </configuration>
           </execution>
         </executions>
       </plugin>
