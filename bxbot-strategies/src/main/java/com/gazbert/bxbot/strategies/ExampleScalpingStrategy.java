@@ -260,6 +260,8 @@ public class ExampleScalpingStrategy implements TradingStrategy {
       //see if we need to update the latestHigh
       if (latestHigh.compareTo(currentBidPrice) < 0) {
         latestHigh = currentBidPrice;
+        LOG.info("Latesthigh update. Is now " + latestHigh);
+
       }
 
 
@@ -308,7 +310,9 @@ public class ExampleScalpingStrategy implements TradingStrategy {
    *     Throwing this exception indicates we want the Trading Engine to shutdown the bot.
    */
 
-  private boolean readyToBuy(BigDecimal currentBidPrice) {
+  private boolean readyToBuy(BigDecimal currentBidPrice)
+          throws StrategyException {
+
     boolean buy = false;
 
     if (latestHigh.multiply(priceDrop).compareTo(currentBidPrice) > 0) {
@@ -317,7 +321,7 @@ public class ExampleScalpingStrategy implements TradingStrategy {
       latestHigh = currentBidPrice;
       LOG.info(" Ready to buy");
     } else {
-      LOG.info(" not ready currentPrice" + currentBidPrice + " latestHigh " + latestHigh);
+      LOG.info(" not ready at currentPrice" + currentBidPrice + " latestHigh " + latestHigh);
     }
     return buy;
   }
@@ -545,7 +549,7 @@ public class ExampleScalpingStrategy implements TradingStrategy {
       // If the order is not there, it must have all filled and we place a new buy
       // Also if we've been waiting >240 minutes since last sell order was placed,
       // just place new buy
-      if (countTradeCycles > 240) {
+      if (countTradeCycles > 240 && lastOrderFound) {
         LOG.info(
             () ->
               "Waited for 240 minutes");
@@ -561,7 +565,7 @@ public class ExampleScalpingStrategy implements TradingStrategy {
                       + "]");
       }
 
-      if (!lastOrderFound || countTradeCycles > 240) {
+      if (!lastOrderFound || (lastOrderFound && countTradeCycles > 240)) {
         //now check if we're ready to place a new buy order
         if (readyToBuy(currentAskPrice)) {
           // Get amount of base currency (BTC) we can buy for given counter currency (USD) amount.
