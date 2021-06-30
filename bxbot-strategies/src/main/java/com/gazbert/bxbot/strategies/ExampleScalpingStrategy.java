@@ -170,7 +170,7 @@ public class ExampleScalpingStrategy implements TradingStrategy {
 
   //todo explain these vars and make it configurable
   private BigDecimal latestHigh = BigDecimal.valueOf(0);
-  private final BigDecimal priceDrop = BigDecimal.valueOf(0.03);
+  private final BigDecimal priceDrop = BigDecimal.valueOf(0.97);
   private int countTradeCycles = 0;
 
   @Override
