@@ -309,7 +309,6 @@ public class ExampleScalpingStrategy implements TradingStrategy {
   private boolean readyToBuy(BigDecimal currentBidPrice) {
 
     boolean buy = false;
-
     LOG.info("3% below LatestHigh = " + latestHigh.multiply(priceDrop).compareTo(currentBidPrice));
     if (latestHigh.multiply(priceDrop).compareTo(currentBidPrice) > 0) {
       buy = true;
