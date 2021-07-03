@@ -45,6 +45,6 @@ strategies:
     configItems:
       counter-currency-buy-order-amount: 20
       minimum-percentage-gain: 2
-      price-drop: 0.97
+      price-drop: 97
       latest-high:
       max-trade-cycles: 240

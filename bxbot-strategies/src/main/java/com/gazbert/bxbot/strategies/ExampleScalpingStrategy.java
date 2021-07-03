@@ -803,10 +803,8 @@ public class ExampleScalpingStrategy implements TradingStrategy {
       LOG.info("<latest-high> from config is: " + latestHighFromConfigAsString);
 
       // Will fail fast if value is not a number
-      final BigDecimal latestHighFromConfig =
-              new BigDecimal(latestHighFromConfigAsString);
       latestHigh =
-              latestHighFromConfig.divide(new BigDecimal(100), 8, RoundingMode.HALF_UP);
+              new BigDecimal(latestHighFromConfigAsString);
 
       LOG.info(() -> "<latest-high> in decimal is: " + minimumPercentageGain);
     }
