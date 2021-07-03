@@ -158,6 +158,17 @@ public class ExampleScalpingStrategy implements TradingStrategy {
    */
   private BigDecimal minimumPercentageGain;
 
+  /** These can be set in the strategies.yaml file
+   * used latestHigh is optional and default value for maxTradeCycles is 240
+   */
+  private BigDecimal latestHigh;
+  private BigDecimal priceDrop;
+  private int maxTradeCycles;
+
+
+  //keep track of number of cycles since bot has started
+  private int countTradeCycles = 0;
+
   /**
    * Initialises the Trading Strategy. Called once by the Trading Engine when the bot starts up;
    * it's a bit like a servlet init() method.
@@ -168,10 +179,6 @@ public class ExampleScalpingStrategy implements TradingStrategy {
    *     strategies.yaml file.
    */
 
-  //todo explain these vars and make it configurable
-  private BigDecimal latestHigh = BigDecimal.valueOf(0);
-  private final BigDecimal priceDrop = BigDecimal.valueOf(0.97);
-  private int countTradeCycles = 0;
 
   @Override
   public void init(TradingApi tradingApi, Market market, StrategyConfig config) {
@@ -544,7 +551,7 @@ public class ExampleScalpingStrategy implements TradingStrategy {
       // If the order is not there, it must have all filled and we place a new buy
       // Also if we've been waiting >240 minutes since last sell order was placed,
       // just place new buy
-      if (countTradeCycles > 240 && lastOrderFound) {
+      if (countTradeCycles > maxTradeCycles && lastOrderFound) {
         LOG.info(
             () ->
               "Waited for 240 minutes");
@@ -560,7 +567,7 @@ public class ExampleScalpingStrategy implements TradingStrategy {
                       + "]");
       }
 
-      if (!lastOrderFound || countTradeCycles > 240) {
+      if (!lastOrderFound || countTradeCycles > maxTradeCycles) {
         //now check if we're ready to place a new buy order
         if (readyToBuy(currentAskPrice)) {
           // Get amount of base currency (BTC) we can buy for given counter currency (USD) amount.
@@ -765,6 +772,65 @@ public class ExampleScalpingStrategy implements TradingStrategy {
         minimumPercentageGainFromConfig.divide(new BigDecimal(100), 8, RoundingMode.HALF_UP);
 
     LOG.info(() -> "minimumPercentageGain in decimal is: " + minimumPercentageGain);
+
+
+    //getpricedrop
+    final String priceDropFromConfigAsString =
+            config.getConfigItem("price-drop");
+    if (priceDropFromConfigAsString == null) {
+      // game over
+      throw new IllegalArgumentException(
+              "Mandatory <price-drop> value missing in strategy.xml config.");
+    }
+    LOG.info(
+            () ->
+                    "<price-drop> from config is: " + priceDropFromConfigAsString);
+
+    // Will fail fast if value is not a number
+    final BigDecimal priceDropFromConfig =
+            new BigDecimal(priceDropFromConfigAsString);
+    priceDrop =
+            priceDropFromConfig.divide(new BigDecimal(100), 8, RoundingMode.HALF_UP);
+
+    LOG.info(() -> "<price-drop> in decimal is: " + priceDrop);
+
+    //getlatesthigh
+    final String latestHighFromConfigAsString =
+            config.getConfigItem("latest-high");
+    if (latestHighFromConfigAsString == null) {
+      // set to zero
+      latestHigh = BigDecimal.valueOf(0);
+      LOG.info(() -> "No config setting for <latest-high> setting to " + latestHigh);
+    } else {
+      LOG.info(
+              () ->
+                      "<latest-high> from config is: " + latestHighFromConfigAsString);
+
+      // Will fail fast if value is not a number
+      final BigDecimal latestHighFromConfig =
+              new BigDecimal(latestHighFromConfigAsString);
+      latestHigh =
+              latestHighFromConfig.divide(new BigDecimal(100), 8, RoundingMode.HALF_UP);
+
+      LOG.info(() -> "<latest-high> in decimal is: " + minimumPercentageGain);
+    }
+    // getTradecycles to wait before restarting strategy
+    final String maxTradeCyclesFromConfigAsString =
+            config.getConfigItem("max-trade-cycles");
+    if (maxTradeCyclesFromConfigAsString == null) {
+      // default to 240 cycles (minutes)
+      maxTradeCycles = 240;
+      LOG.info(() -> "<max-trade-cycles> default setting: " + maxTradeCycles);
+    } else {
+
+
+      // Set the integer value to config setting
+      maxTradeCycles = Integer.parseInt(maxTradeCyclesFromConfigAsString);
+      LOG.info(
+              () ->
+                      "<max-trade-cycles> from config is: " + maxTradeCycles);
+    }
+
   }
 
   /**

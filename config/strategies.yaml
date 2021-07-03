@@ -41,6 +41,10 @@ strategies:
 
     # The configItems section is optional and allows you to set custom key/value pair config items. This config
     # is passed to your Trading Strategy when the bot starts up.
+    # get latestHigh is optional
     configItems:
       counter-currency-buy-order-amount: 20
       minimum-percentage-gain: 2
+      price-drop: 0.97
+      latest-high:
+      max-trade-cycles: 240
