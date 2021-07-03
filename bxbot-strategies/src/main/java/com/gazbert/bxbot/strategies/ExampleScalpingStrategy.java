@@ -782,9 +782,7 @@ public class ExampleScalpingStrategy implements TradingStrategy {
       throw new IllegalArgumentException(
               "Mandatory <price-drop> value missing in strategy.xml config.");
     }
-    LOG.info(
-            () ->
-                    "<price-drop> from config is: " + priceDropFromConfigAsString);
+    LOG.info("<price-drop> from config is: " + priceDropFromConfigAsString);
 
     // Will fail fast if value is not a number
     final BigDecimal priceDropFromConfig =
@@ -792,7 +790,7 @@ public class ExampleScalpingStrategy implements TradingStrategy {
     priceDrop =
             priceDropFromConfig.divide(new BigDecimal(100), 8, RoundingMode.HALF_UP);
 
-    LOG.info(() -> "<price-drop> in decimal is: " + priceDrop);
+    LOG.info("<price-drop> in decimal is: " + priceDrop);
 
     //getlatesthigh
     final String latestHighFromConfigAsString =
@@ -800,11 +798,9 @@ public class ExampleScalpingStrategy implements TradingStrategy {
     if (latestHighFromConfigAsString == null) {
       // set to zero
       latestHigh = BigDecimal.valueOf(0);
-      LOG.info(() -> "No config setting for <latest-high> setting to " + latestHigh);
+      LOG.info("No config setting for <latest-high> setting to " + latestHigh);
     } else {
-      LOG.info(
-              () ->
-                      "<latest-high> from config is: " + latestHighFromConfigAsString);
+      LOG.info("<latest-high> from config is: " + latestHighFromConfigAsString);
 
       // Will fail fast if value is not a number
       final BigDecimal latestHighFromConfig =
@@ -820,15 +816,13 @@ public class ExampleScalpingStrategy implements TradingStrategy {
     if (maxTradeCyclesFromConfigAsString == null) {
       // default to 240 cycles (minutes)
       maxTradeCycles = 240;
-      LOG.info(() -> "<max-trade-cycles> default setting: " + maxTradeCycles);
+      LOG.info("<max-trade-cycles> default setting: " + maxTradeCycles);
     } else {
 
 
       // Set the integer value to config setting
       maxTradeCycles = Integer.parseInt(maxTradeCyclesFromConfigAsString);
-      LOG.info(
-              () ->
-                      "<max-trade-cycles> from config is: " + maxTradeCycles);
+      LOG.info("<max-trade-cycles> from config is: " + maxTradeCycles);
     }
 
   }
