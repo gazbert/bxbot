@@ -501,6 +501,11 @@ public class ExampleScalpingStrategy implements TradingStrategy {
 
           //return latestHigh value to previous latestHigh based on lastOrder price
           latestHigh = lastOrder.price.divide(priceDrop, RoundingMode.HALF_UP);
+
+          // set Orderstate to null so basically strategy resets and tries to find
+          // new buy opportunity
+          lastOrder = null;
+
         }
       }
 
