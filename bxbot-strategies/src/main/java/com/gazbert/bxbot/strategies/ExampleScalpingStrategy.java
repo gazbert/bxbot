@@ -263,10 +263,10 @@ public class ExampleScalpingStrategy implements TradingStrategy {
       // Always handy to log what the last order was during each trace cycle.
       LOG.info(() -> market.getName() + " Last Order was: " + lastOrder);
 
-      //see if we need to update the latestHigh
+      // See if we need to update the latestHigh
       if (latestHigh.compareTo(currentBidPrice) < 0) {
         latestHigh = currentBidPrice;
-        LOG.info("Latesthigh update. Is now " + latestHigh);
+        LOG.info("Latest high update. Is now " + latestHigh);
 
       }
 
@@ -494,6 +494,14 @@ public class ExampleScalpingStrategy implements TradingStrategy {
                     + " waiting to fill at ["
                     + lastOrder.price
                     + "] - holding last BUY order...");
+
+        if (countTradeCycles > 30) {
+          // If we waited for 30 minutes and it's still not filled, cancel buy order
+          tradingApi.cancelOrder(lastOrder.id, market.getId());
+
+          //return latestHigh value to previous latestHigh based on lastOrder price
+          latestHigh = lastOrder.price.divide(priceDrop, RoundingMode.HALF_UP);
+        }
       }
 
     } catch (ExchangeNetworkException e) {
@@ -554,7 +562,7 @@ public class ExampleScalpingStrategy implements TradingStrategy {
       if (countTradeCycles > maxTradeCycles && lastOrderFound) {
         LOG.info(
             () ->
-              "Waited for 240 minutes");
+              "Waited for 240 minutes and last sell order failed");
       }
       if (!lastOrderFound) {
         LOG.info(
@@ -602,7 +610,7 @@ public class ExampleScalpingStrategy implements TradingStrategy {
       } else {
 
         /*
-         * SELL order not filled yet.
+         * SELL order not filled yet and we have not waited for the specified time
          * Could be nobody has jumped on it yet... or the order is only part filled... or market
          * has gone down and we've been undercut and have a stuck sell order. In which case, we
          * have to wait for market to recover for the order to fill... or you could tweak this
