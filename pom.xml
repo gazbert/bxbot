@@ -368,7 +368,7 @@
           </configuration>
         </plugin>
 
-        <!-- Surely must be better way than this?!! -->
+
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-antrun-plugin</artifactId>
@@ -380,7 +380,6 @@
               <configuration>
                 <tasks>
                   <mkdir dir="./target/logs"/>
-                  <mkdir dir="./target/libs"/>
                 </tasks>
               </configuration>
               <goals>
@@ -389,21 +388,27 @@
             </execution>
           </executions>
         </plugin>
-        <plugin>
+         <plugin>
           <artifactId>maven-assembly-plugin</artifactId>
-          <!--
-          Pinned at 2.6 because the distro fails with 3.0+
-          Needs rework to get distro built on 3.0+
-           -->
-          <version>2.6</version>
-          <configuration>
-            <descriptors>
-              <descriptor>assembly/distribution.xml</descriptor>
-            </descriptors>
-          </configuration>
-        </plugin>
-        <plugin>
+           <executions>
+             <execution>
+               <id>dist</id>
+               <phase>package</phase>
+               <goals>
+                 <goal>single</goal>
+               </goals>
 
+             </execution>
+           </executions>
+           <configuration>
+             <descriptors>
+               <descriptor>assembly/distribution.xml</descriptor>
+             </descriptors>
+           </configuration>
+           <version>3.3.0</version>
+
+     </plugin>
+        <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-javadoc-plugin</artifactId>
           <version>3.2.0</version>
