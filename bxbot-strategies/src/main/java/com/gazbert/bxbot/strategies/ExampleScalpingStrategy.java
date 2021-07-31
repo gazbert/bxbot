@@ -267,13 +267,10 @@ public class ExampleScalpingStrategy implements TradingStrategy {
       if (latestHigh.compareTo(currentBidPrice) < 0) {
         latestHigh = currentBidPrice;
         LOG.info("Latest high update. Is now " + latestHigh);
-
       }
 
 
       // Execute the appropriate algorithm based on the last order type.
-
-
       if (lastOrder.type == OrderType.BUY) {
         executeAlgoForWhenLastOrderWasBuy();
 
@@ -307,16 +304,9 @@ public class ExampleScalpingStrategy implements TradingStrategy {
     }
   }
 
-  /**
-   * Algo for executing when the Trading Strategy is invoked for the first time. We start off with a
-   * buy order at current BID price.
-   * @param currentBidPrice the current market BID price.
-   */
-
   private boolean readyToBuy(BigDecimal currentBidPrice) {
 
     boolean buy = false;
-    LOG.info("3% below LatestHigh = " + latestHigh.multiply(priceDrop).compareTo(currentBidPrice));
     if (latestHigh.multiply(priceDrop).compareTo(currentBidPrice) > 0) {
       buy = true;
       //latestHigh set to current bid price
@@ -328,6 +318,11 @@ public class ExampleScalpingStrategy implements TradingStrategy {
     return buy;
   }
 
+  /**
+   * Algo for executing when the Trading Strategy is invoked for the first time. We start off with a
+   * buy order at current BID price.
+   * @param currentBidPrice the current market BID price.
+   */
   private void executeAlgoForWhenLastOrderWasNone(BigDecimal currentBidPrice)
       throws StrategyException {
 
@@ -499,12 +494,14 @@ public class ExampleScalpingStrategy implements TradingStrategy {
           // If we waited for 30 minutes and it's still not filled, cancel buy order
           tradingApi.cancelOrder(lastOrder.id, market.getId());
 
+          LOG.info("cancelling buy order, it didn't fill");
+
           //return latestHigh value to previous latestHigh based on lastOrder price
           latestHigh = lastOrder.price.divide(priceDrop, RoundingMode.HALF_UP);
 
-          // set Orderstate to null so basically strategy resets and tries to find
+          // set Orderstate.type to null so basically strategy resets and tries to find
           // new buy opportunity
-          lastOrder = null;
+          lastOrder.type = null;
 
         }
       }
@@ -705,14 +702,15 @@ public class ExampleScalpingStrategy implements TradingStrategy {
                 + market.getCounterCurrency());
 
     // Fetch the last trade price
-    final BigDecimal lastTradePriceInUsdForOneBtc = tradingApi.getLatestMarketPrice(market.getId());
+    final BigDecimal lastTradePriceInCounterCurrencyForOneBtc =
+            tradingApi.getLatestMarketPrice(market.getId());
     LOG.info(
         () ->
             market.getName()
                 + " Last trade price for 1 "
                 + market.getBaseCurrency()
                 + " was: "
-                + new DecimalFormat(DECIMAL_FORMAT).format(lastTradePriceInUsdForOneBtc)
+                + new DecimalFormat(DECIMAL_FORMAT).format(lastTradePriceInCounterCurrencyForOneBtc)
                 + " "
                 + market.getCounterCurrency());
 
@@ -722,7 +720,7 @@ public class ExampleScalpingStrategy implements TradingStrategy {
      */
     final BigDecimal amountOfBaseCurrencyToBuy =
         amountOfCounterCurrencyToTrade.divide(
-            lastTradePriceInUsdForOneBtc, 8, RoundingMode.HALF_DOWN);
+            lastTradePriceInCounterCurrencyForOneBtc, 8, RoundingMode.HALF_DOWN);
 
     LOG.info(
         () ->
@@ -787,7 +785,7 @@ public class ExampleScalpingStrategy implements TradingStrategy {
     LOG.info(() -> "minimumPercentageGain in decimal is: " + minimumPercentageGain);
 
 
-    //getpricedrop
+    //get price drop needed to activate a buy order
     final String priceDropFromConfigAsString =
             config.getConfigItem("price-drop");
     if (priceDropFromConfigAsString == null) {
