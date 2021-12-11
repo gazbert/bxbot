@@ -35,12 +35,17 @@ import com.gazbert.bxbot.exchanges.config.PairPrecisionConfigImpl;
 import com.gazbert.bxbot.exchanges.trading.api.impl.BalanceInfoImpl;
 import com.gazbert.bxbot.exchanges.trading.api.impl.MarketOrderBookImpl;
 import com.gazbert.bxbot.exchanges.trading.api.impl.MarketOrderImpl;
+import com.gazbert.bxbot.exchanges.trading.api.impl.OhlcFrameImpl;
+import com.gazbert.bxbot.exchanges.trading.api.impl.OhlcImpl;
 import com.gazbert.bxbot.exchanges.trading.api.impl.OpenOrderImpl;
 import com.gazbert.bxbot.exchanges.trading.api.impl.TickerImpl;
 import com.gazbert.bxbot.trading.api.BalanceInfo;
 import com.gazbert.bxbot.trading.api.ExchangeNetworkException;
 import com.gazbert.bxbot.trading.api.MarketOrder;
 import com.gazbert.bxbot.trading.api.MarketOrderBook;
+import com.gazbert.bxbot.trading.api.Ohlc;
+import com.gazbert.bxbot.trading.api.OhlcFrame;
+import com.gazbert.bxbot.trading.api.OhlcInterval;
 import com.gazbert.bxbot.trading.api.OpenOrder;
 import com.gazbert.bxbot.trading.api.OrderType;
 import com.gazbert.bxbot.trading.api.Ticker;
@@ -49,12 +54,14 @@ import com.gazbert.bxbot.trading.api.TradingApiException;
 import com.google.common.base.MoreObjects;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
+import java.io.Serializable;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -68,6 +75,9 @@ import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Date;
@@ -157,6 +167,8 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
       "Failed to get Balance from exchange. Details: ";
   private static final String FAILED_TO_GET_TICKER =
       "Failed to get Ticker from exchange. Details: ";
+  private static final String FAILED_TO_GET_OHLC =
+      "Failed to get OHLC Data from exchange. Details: ";
 
   private static final String FAILED_TO_GET_OPEN_ORDERS =
       "Failed to get Open Orders from exchange. Details: ";
@@ -599,6 +611,92 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
     }
   }
 
+  @Override
+  public Ohlc getOhlc(String marketId, OhlcInterval interval)
+      throws TradingApiException, ExchangeNetworkException {
+    return getOhlc(marketId, interval, null);
+  }
+
+  @Override
+  public Ohlc getOhlc(String marketId, OhlcInterval interval, Integer resumeID)
+      throws TradingApiException, ExchangeNetworkException {
+    ExchangeHttpResponse response;
+    String intervalInMinutes = calculateMinuteParamFrom(interval);
+
+    try {
+      final Map<String, String> params = createRequestParamMap();
+      params.put("pair", marketId);
+      params.put("interval", intervalInMinutes);
+      if (resumeID != null) {
+        params.put("since", String.valueOf(resumeID));
+      }
+
+      response = sendPublicRequestToExchange("OHLC", params);
+      LOG.debug(() -> "OHLC response: " + response);
+
+      if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
+
+        final Type resultType = new TypeToken<KrakenResponse<KrakenOhlcResult>>() {}.getType();
+        final KrakenResponse<KrakenOhlcResult> krakenResponse =
+            gson.fromJson(response.getPayload(), resultType);
+
+        final List errors = krakenResponse.error;
+        if (errors == null || errors.isEmpty()) {
+
+          // Assume we'll always get something here if errors array is empty; else blow fast wih NPE
+          return krakenResponse.result.parseOhlcResult();
+
+        } else {
+          if (isExchangeUndergoingMaintenance(response) && keepAliveDuringMaintenance) {
+            LOG.warn(() -> UNDER_MAINTENANCE_WARNING_MESSAGE);
+            throw new ExchangeNetworkException(UNDER_MAINTENANCE_WARNING_MESSAGE);
+          }
+
+          final String errorMsg = FAILED_TO_GET_OHLC + response;
+          LOG.error(errorMsg);
+          throw new TradingApiException(errorMsg);
+        }
+
+      } else {
+        final String errorMsg = FAILED_TO_GET_OHLC + response;
+        LOG.error(errorMsg);
+        throw new TradingApiException(errorMsg);
+      }
+
+    } catch (ExchangeNetworkException | TradingApiException e) {
+      throw e;
+
+    } catch (Exception e) {
+      LOG.error(UNEXPECTED_ERROR_MSG, e);
+      throw new TradingApiException(UNEXPECTED_ERROR_MSG, e);
+    }
+  }
+
+  private String calculateMinuteParamFrom(OhlcInterval interval) {
+    switch (interval) {
+      case OneMinute:
+        return "1";
+      case FiveMinutes:
+        return "5";
+      case FifteenMinutes:
+        return "15";
+      case HalfHour:
+        return "30";
+      case OneHour:
+        return "60";
+      case FourHours:
+        return "240";
+      case OneDay:
+        return "1440";
+      case OneWeek:
+        return "10080";
+      case FifteenDays:
+        return "21600";
+      default:
+        return null;
+    }
+  }
+
   // --------------------------------------------------------------------------
   //  GSON classes for JSON responses.
   //  See https://www.kraken.com/en-gb/help/api
@@ -810,6 +908,46 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
   private static class KrakenMarketOrder extends ArrayList<BigDecimal> {
 
     private static final long serialVersionUID = -4959711260742077759L;
+  }
+
+  private static class KrakenOhlcResult extends HashMap<String, Object> implements Serializable {
+    private static final long serialVersionUID = 5632663477504483978L;
+
+    Ohlc parseOhlcResult() {
+      Gson gson = new Gson();
+      List<OhlcFrame> frames = new ArrayList<>();
+      Integer last = null;
+      if (this.entrySet().size() != 2) {
+        throw new IllegalStateException(
+            "Unknown OHLC result from the API. Maybe the api changed?"
+                + "Known are currently only 'last' and the required frames in '<pair>'");
+      }
+      for (Entry<String, Object> entry : this.entrySet()) {
+        if (entry.getKey().equalsIgnoreCase("last")) {
+          JsonElement resumeId = gson.toJsonTree(entry).getAsJsonObject().get("value");
+          last = resumeId.getAsInt();
+        } else {
+          JsonElement jsonElement = gson.toJsonTree(entry);
+          for (JsonElement frame : jsonElement.getAsJsonObject().get("value").getAsJsonArray()) {
+            if (frame.isJsonArray()) {
+              JsonArray frameAsArray = frame.getAsJsonArray();
+              Instant timeInstant = Instant.ofEpochSecond(frameAsArray.get(0).getAsInt());
+              ZonedDateTime time = ZonedDateTime.ofInstant(timeInstant, ZoneId.systemDefault());
+              BigDecimal open = frameAsArray.get(1).getAsBigDecimal();
+              BigDecimal high = frameAsArray.get(2).getAsBigDecimal();
+              BigDecimal low = frameAsArray.get(3).getAsBigDecimal();
+              BigDecimal close = frameAsArray.get(4).getAsBigDecimal();
+              BigDecimal vwap = frameAsArray.get(5).getAsBigDecimal();
+              BigDecimal volume = frameAsArray.get(6).getAsBigDecimal();
+              Integer count = frameAsArray.get(7).getAsInt();
+
+              frames.add(new OhlcFrameImpl(time, open, high, low, close, vwap, volume, count));
+            }
+          }
+        }
+      }
+      return new OhlcImpl(last, frames);
+    }
   }
 
   /**
@@ -1091,8 +1229,8 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
 
       if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
         Type type = new TypeToken<KrakenResponse<KrakenAssetPairsConfig>>() {}.getType();
-        KrakenResponse<KrakenAssetPairsConfig> krakenResponse = gson.fromJson(
-            response.getPayload(), type);
+        KrakenResponse<KrakenAssetPairsConfig> krakenResponse =
+            gson.fromJson(response.getPayload(), type);
 
         if (krakenResponse.error != null && !krakenResponse.error.isEmpty()) {
           LOG.error(
