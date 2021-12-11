@@ -1,0 +1,37 @@
+############################################################################################
+# Trading Strategy YAML config.
+#
+# - You configure the loading of your strategy using either a className or a beanName field.
+# - All fields are mandatory unless stated otherwise.
+# - Multiple strategy blocks can be listed.
+# - The indentation levels are significant in YAML: https://en.wikipedia.org/wiki/YAML
+#
+# See the README "How do I write my own Trading Strategy?" section for full details.
+############################################################################################
+---
+strategies:
+
+  # A unique identifier for the strategy. The markets.yaml tradingStrategyId entries reference this.
+  # Value must be an alphanumeric string. Underscores and dashes are also permitted. E.g. scalping-strategy
+  - id: ta4j-recording-strategy
+
+    # A friendly name for the strategy. Value must be an alphanumeric string. Spaces are allowed. E.g. My Super Strat
+    name: ta4j recording strategy
+
+    # The description value is optional.
+    description: >
+      a strategy showing how to live record a market from a real exchange into a ta4j barseries and stores it as json
+
+    # For the className value, you must specify the fully qualified name of your Strategy class for the Trading Engine
+    # to load and execute. This class must be on the runtime classpath.
+    # If you set this value to load your strategy, you cannot set the beanName value.
+    #
+    #className: com.gazbert.bxbot.strategies.ExampleTA4JRecordingStrategy
+
+    # For the beanName value, you must specify the Spring bean name of you Strategy component class
+    # for the Trading Engine to load and execute.
+    # You will also need to annotate your strategy class with `@Component("exampleScalpingStrategy")` -
+    # take a look at ExampleScalpingStrategy.java. This results in Spring injecting the bean.
+    # (see https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/stereotype/Component.html)
+    # If you set this value to load your strategy, you cannot set the className value.
+    beanName: exampleTa4jRecordingStrategy

@@ -66,6 +66,8 @@ ext.libraries = [
         jjwt                                    : dependencies.create("io.jsonwebtoken:jjwt:0.9.1"),
         google_guava                            : dependencies.create("com.google.guava:guava:30.1-jre"),
         google_gson                             : dependencies.create("com.google.code.gson:gson:2.8.6"),
+        ta4j                                    : dependencies.create("org.ta4j:ta4j-core:0.13"),
+        jfreechart                              : dependencies.create("org.jfree:jfreechart:1.0.17"),
         h2                                      : dependencies.create("com.h2database:h2:1.4.200"),
         javax_mail_api                          : dependencies.create("javax.mail:javax.mail-api:" + ext.versions.javaxMailVersion),
         javax_mail_sun                          : dependencies.create("com.sun.mail:javax.mail:" + ext.versions.javaxMailVersion),
@@ -105,6 +107,10 @@ allprojects {
 
     group = 'com.gazbert.bxbot'
     version = '1.2.1-SNAPSHOT'
+
+    dependencyManagement {
+        applyMavenExclusions = false
+    }
 }
 
 subprojects {

@@ -1,0 +1,46 @@
+############################################################################################
+# Exchange Adapter YAML config.
+#
+# - Sample config below currently set to run against a totally stubbed exchange which
+#   is based on TA4J for backtesting a given strategy
+# - All fields are mandatory unless stated otherwise.
+# - BX-bot only supports running 1 exchange per bot.
+# - The indentation levels are significant in YAML: https://en.wikipedia.org/wiki/YAML
+#
+# See the README "How do I write my own Exchange Adapter?" section for more details.
+############################################################################################
+---
+exchange:
+
+  # A friendly name for the Exchange. Value must be an alphanumeric string. Spaces are allowed.
+  name: ta4j
+
+  # For the adapter value, you must specify the fully qualified name of your Exchange Adapter class so the Trading Engine
+  # can load and execute it. The class must be on the runtime classpath.
+  adapter: com.gazbert.bxbot.exchanges.TA4JRecordingAdapter
+
+  otherConfig:
+    # Exchange Order fee in % for the given market. It counts for sell as well as for buy orders in the simulation
+    order-fee: 0.26
+
+    # the counter currency which is simulated. This must fit to your used markets counter currency
+    simulatedCounterCurrency: ZEUR
+
+    # the starting balance for the simulation. The simulation starts with this amount as counter currency and 0 as base currency
+    counterCurrencyStartingBalance: 100
+
+    # the base currency which is simulated. This must fit to your used markets base currency
+    simulatedBaseCurrency: XXRP
+
+    # the path to a json containing a recording of a market with ta4j BarSeries
+    # See the example ta4j strategies to find out how to record market or to simulate a strategy
+    #trading-series-json-path: barData_1618580976288.json
+    trading-series-json-path: path-to-your-json
+
+    # if enabled, the simulation will open
+    # a) a graph for the executed strategy on the market, showing the buy and sell points
+    # b) a graph showing the optimal trading is opened besides your executed trades to compare your trades to the optimum
+    # No matter if you enable chart printing or not, the results of the simulation are printed to log on simulation end
+    generate-order-overview-charts: true
+
+

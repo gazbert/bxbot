@@ -276,6 +276,16 @@
         <artifactId>hibernate-validator-annotation-processor</artifactId>
         <version>${hibernate-vaildator.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.ta4j</groupId>
+        <artifactId>ta4j-core</artifactId>
+        <version>0.13</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jfree</groupId>
+        <artifactId>jfreechart</artifactId>
+        <version>1.0.17</version>
+      </dependency>
 
       <!--
       Testing dependencies
