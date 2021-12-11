@@ -151,7 +151,7 @@ For help and general questions about BX-bot, check out the [Gitter](https://gitt
 ## Testing
 The bot has undergone basic unit testing on a _best-effort_ basis. 
 
-There is a continuous integration build running on [Travis CI](https://travis-ci.com/github/gazbert/bxbot/branches).
+There is a continuous integration build running on [GitHub Actions](https://github.com/gazbert/bxbot/actions).
 
 The latest stable build can always be found on the [Releases](https://github.com/gazbert/bxbot/releases) page. 
 The SNAPSHOT builds on master are active development builds, but the tests should always pass and the bot should always 

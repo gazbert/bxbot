@@ -26,8 +26,8 @@
     <url>https://github.com/gazbert/bxbot/issues</url>
   </issueManagement>
   <ciManagement>
-    <system>Travis CI</system>
-    <url>https://travis-ci.com/gazbert/bxbot</url>
+    <system>GitHub Actions</system>
+    <url>https://github.com/gazbert/bxbot/actions</url>
   </ciManagement>
   <developers>
     <developer>
