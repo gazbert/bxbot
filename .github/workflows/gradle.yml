@@ -1,6 +1,10 @@
 name: Gradle CI
 
-on: [push]
+on: 
+  push:
+    branches:
+      - main
+      - 'tech-refresh'
 
 jobs:
   build:
