@@ -57,7 +57,6 @@
     </sonar.coverage.jacoco.xmlReportPaths>
     <sonar.host.url>https://sonarcloud.io</sonar.host.url>
     <sonar.organization>gazbert-github</sonar.organization>
-    <sonar.projectKey>gazbert_bxbot</sonar.projectKey>
   </properties>
   <parent>
     <groupId>org.springframework.boot</groupId>
