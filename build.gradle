@@ -102,6 +102,7 @@ allprojects {
     apply plugin: 'checkstyle'
     apply plugin: "com.github.spotbugs"
     apply plugin: "jacoco"
+    apply plugin: "org.sonarqube"
 
     group = 'com.gazbert.bxbot'
     version = '1.2.1-SNAPSHOT'
@@ -169,6 +170,14 @@ subprojects {
     }
     test.finalizedBy jacocoTestReport
     check.dependsOn jacocoTestCoverageVerification
+}
+
+sonarqube {
+    properties {
+        property 'sonar.host.url', 'https://sonarcloud.io'
+        property 'sonar.organization', 'gazbert-github'
+        property 'sonar.projectKey', 'gazbert_bxbot'
+    }
 }
 
 // TODO: Strip out common stuff into separate method?
