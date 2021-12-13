@@ -49,7 +49,7 @@
     <spring-boot-starter.version>2.1.18.RELEASE</spring-boot-starter.version>
     <jaxb-api.version>2.3.1</jaxb-api.version>
     <checkstlye.version>3.1.2</checkstlye.version>
-    <spotbugs.version>4.2.0</spotbugs.version>
+    <spotbugs.version>4.2.3</spotbugs.version>
     <springfox.version>2.9.2</springfox.version>
     <hibernate-vaildator.version>7.0.1.Final</hibernate-vaildator.version>
     <javax-mail.version>1.6.2</javax-mail.version>
