@@ -37,11 +37,15 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.mock.http.MockHttpOutputMessage;
 import org.springframework.security.web.FilterChainProxy;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.util.Base64Utils;
 import org.springframework.web.context.WebApplicationContext;
@@ -51,10 +55,11 @@ import org.springframework.web.context.WebApplicationContext;
  *
  * @author gazbert
  */
+@DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
+@AutoConfigureTestDatabase(replace = Replace.ANY)
 public abstract class AbstractControllerTest {
 
   protected static final String API_ENDPOINT_BASE_URI = "/api/v1";
-  protected static final String INVALID_USER_PASSWORD = "not-valid-password";
 
   // This must match a user's USERNAME in the user table in src/test/resources/import.sql
   protected static final String VALID_USER_NAME = "user";
