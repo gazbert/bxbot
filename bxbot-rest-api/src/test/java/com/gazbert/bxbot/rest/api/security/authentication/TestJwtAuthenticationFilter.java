@@ -23,7 +23,7 @@
 
 package com.gazbert.bxbot.rest.api.security.authentication;
 
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -35,25 +35,25 @@ import io.jsonwebtoken.Claims;
 import javax.servlet.FilterChain;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.actuate.logging.LogFileWebEndpoint;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.cloud.context.restart.RestartEndpoint;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 /**
  * Tests the JWT Authentication Filter behaves as expected.
  *
  * @author gazbert
  */
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest
-public class TestJwtAuthenticationFilter {
+class TestJwtAuthenticationFilter {
 
   private static final String AUTHORIZATION_HEADER = "Authorization";
   private static final String BEARER_PREFIX = "Bearer ";
@@ -74,15 +74,15 @@ public class TestJwtAuthenticationFilter {
 
   private JwtAuthenticationFilter jwtAuthenticationFilter;
 
-  @Before
-  public void setup() {
+  @BeforeEach
+  void setup() {
     jwtAuthenticationFilter = new JwtAuthenticationFilter();
     jwtAuthenticationFilter.setJwtUtils(jwtUtils);
   }
 
   @Test
-  public void whenFilterCalledWithValidTokenThenExpectSuccessfulAuthenticationAndCallNextFilter()
-          throws Exception {
+  void whenFilterCalledWithValidTokenThenExpectSuccessfulAuthenticationAndCallNextFilter()
+      throws Exception {
 
     // Need to reset this in case previous test sets it
     SecurityContextHolder.getContext().setAuthentication(null);
@@ -101,8 +101,7 @@ public class TestJwtAuthenticationFilter {
   }
 
   @Test
-  public void whenFilterCalledWithoutAuthorizationHeaderThenCallNextFilter()
-      throws Exception {
+  void whenFilterCalledWithoutAuthorizationHeaderThenCallNextFilter() throws Exception {
     when(request.getHeader(AUTHORIZATION_HEADER)).thenReturn(null);
 
     jwtAuthenticationFilter.doFilterInternal(request, response, filterChain);
@@ -112,8 +111,7 @@ public class TestJwtAuthenticationFilter {
   }
 
   @Test
-  public void whenFilterCalledWithBearerTokenWithMissingUsernameThenCallNextFilter()
-      throws Exception {
+  void whenFilterCalledWithBearerTokenWithMissingUsernameThenCallNextFilter() throws Exception {
     when(request.getHeader(AUTHORIZATION_HEADER)).thenReturn(BEARER_PREFIX + "dummy-token");
 
     jwtAuthenticationFilter.doFilterInternal(request, response, filterChain);
@@ -124,8 +122,7 @@ public class TestJwtAuthenticationFilter {
   }
 
   @Test
-  public void whenFilterCalledWithTokenWithMissingUsernameThenCallNextFilter()
-      throws Exception {
+  void whenFilterCalledWithTokenWithMissingUsernameThenCallNextFilter() throws Exception {
     when(request.getHeader(AUTHORIZATION_HEADER)).thenReturn("dummy-token");
     when(jwtUtils.getUsernameFromTokenClaims((any()))).thenReturn(null);
 
@@ -137,7 +134,7 @@ public class TestJwtAuthenticationFilter {
   }
 
   @Test
-  public void whenFilterCalledWithInvalidTokenThenCallNextFilter() throws Exception {
+  void whenFilterCalledWithInvalidTokenThenCallNextFilter() throws Exception {
     when(request.getHeader(AUTHORIZATION_HEADER)).thenReturn("dummy-token");
     when(jwtUtils.getUsernameFromTokenClaims((any()))).thenReturn(USERNAME);
     when(jwtUtils.validateTokenAndGetClaims((any()))).thenReturn(claims);

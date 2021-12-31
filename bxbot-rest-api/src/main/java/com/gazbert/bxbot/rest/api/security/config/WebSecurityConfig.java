@@ -141,8 +141,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             HttpMethod.GET,
             "/api-docs",
             "/swagger-resources/**",
-            "/swagger-resources/**",
             "/swagger-ui.html**",
+            "/swagger-ui/**",
+            "/v3/api-docs/**",
+            "/api-docs/**",
             "/webjars/**",
             "/favicon.ico")
         .permitAll()
@@ -159,4 +161,3 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     httpSecurity.headers().cacheControl().disable();
   }
 }
-

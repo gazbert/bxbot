@@ -30,14 +30,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests User model behaves as expected.
  *
  * @author gazbert
  */
-public class TestUser {
+class TestUser {
 
   private static final Long ADMIN_ROLE_ID = Long.valueOf("213443242342");
   private static final Long USER_ROLE_ID = Long.valueOf("21344565442342");
@@ -52,7 +52,7 @@ public class TestUser {
   private static final Date USER_1_LAST_PASSWORD_RESET_DATE = new Date();
 
   @Test
-  public void testInitialisationWorksAsExpected() {
+  void testInitialisationWorksAsExpected() {
     final User user = new User();
     assertNull(user.getId());
     assertNull(user.getUsername());
@@ -66,7 +66,7 @@ public class TestUser {
   }
 
   @Test
-  public void testSettersWorkAsExpected() {
+  void testSettersWorkAsExpected() {
     final User user = new User();
 
     user.setId(USER_1_ID);

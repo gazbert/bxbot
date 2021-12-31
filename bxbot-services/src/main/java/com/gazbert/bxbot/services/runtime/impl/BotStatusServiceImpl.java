@@ -27,7 +27,7 @@ import com.gazbert.bxbot.services.runtime.BotStatusService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.actuate.health.Health;
+import org.springframework.boot.actuate.health.HealthComponent;
 import org.springframework.boot.actuate.health.HealthEndpoint;
 import org.springframework.boot.actuate.health.Status;
 import org.springframework.stereotype.Service;
@@ -50,7 +50,7 @@ public class BotStatusServiceImpl implements BotStatusService {
 
   @Override
   public String getStatus() {
-    final Health health = healthEndpoint.health();
+    final HealthComponent health = healthEndpoint.health();
     final Status status = health.getStatus();
     LOG.info(() -> "Health Status: " + status);
     return status.getCode();

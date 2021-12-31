@@ -24,6 +24,7 @@
 package com.gazbert.bxbot.domain.exchange;
 
 import com.google.common.base.MoreObjects;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
 import java.util.List;
 import javax.validation.constraints.Min;
@@ -33,6 +34,7 @@ import javax.validation.constraints.Min;
  *
  * @author gazbert
  */
+@Schema
 public class NetworkConfig {
 
   @Min(message = "Connection must be more than 1 second", value = 1)

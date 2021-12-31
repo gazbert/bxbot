@@ -37,16 +37,16 @@ import com.gazbert.bxbot.domain.engine.EngineConfig;
 import com.gazbert.bxbot.services.config.EngineConfigService;
 import com.gazbert.bxbot.services.runtime.BotStatusService;
 import java.math.BigDecimal;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.actuate.logging.LogFileWebEndpoint;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.cloud.context.restart.RestartEndpoint;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
@@ -55,10 +55,10 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
  *
  * @author gazbert
  */
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest
 @WebAppConfiguration
-public class TestBotStatusController extends AbstractRuntimeControllerTest {
+class TestBotStatusController extends AbstractRuntimeControllerTest {
 
   private static final String STATUS_ENDPOINT_URI = RUNTIME_ENDPOINT_BASE_URI + "/status";
 
@@ -80,21 +80,20 @@ public class TestBotStatusController extends AbstractRuntimeControllerTest {
   @MockBean private LogFileWebEndpoint logFileWebEndpoint;
   @MockBean private AuthenticationManager authenticationManager;
 
-  @Before
-  public void setupBeforeEachTest() {
+  @BeforeEach
+  void setupBeforeEachTest() {
     mockMvc = MockMvcBuilders.webAppContextSetup(ctx).addFilter(springSecurityFilterChain).build();
   }
 
   @Test
-  public void testGetBotStatusWithValidToken() throws Exception {
+  void testGetBotStatusWithValidToken() throws Exception {
     given(botStatusService.getStatus()).willReturn(BOT_STATUS);
     given(engineConfigService.getEngineConfig()).willReturn(someEngineConfig());
 
     mockMvc
         .perform(
             get(STATUS_ENDPOINT_URI)
-                .header(
-                    "Authorization", "Bearer " + getJwt(VALID_USER_NAME, VALID_USER_PASSWORD)))
+                .header("Authorization", "Bearer " + getJwt(VALID_USER_NAME, VALID_USER_PASSWORD)))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.botId").value(BOT_ID))
@@ -106,7 +105,7 @@ public class TestBotStatusController extends AbstractRuntimeControllerTest {
   }
 
   @Test
-  public void testGetBotStatusWhenUnauthorizedWithInvalidToken() throws Exception {
+  void testGetBotStatusWhenUnauthorizedWithInvalidToken() throws Exception {
     mockMvc
         .perform(
             get(STATUS_ENDPOINT_URI)
@@ -116,7 +115,7 @@ public class TestBotStatusController extends AbstractRuntimeControllerTest {
   }
 
   @Test
-  public void testGetBotStatusWhenUnauthorizedWithMissingToken() throws Exception {
+  void testGetBotStatusWhenUnauthorizedWithMissingToken() throws Exception {
     mockMvc
         .perform(get(STATUS_ENDPOINT_URI).accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isUnauthorized());

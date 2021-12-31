@@ -24,12 +24,14 @@
 package com.gazbert.bxbot.domain.emailalerts;
 
 import com.google.common.base.MoreObjects;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
  * Domain object representing the Email Alerts config.
  *
  * @author gazbert
  */
+@Schema
 public class EmailAlertsConfig {
 
   private boolean enabled;

@@ -24,6 +24,7 @@
 package com.gazbert.bxbot.domain.exchange;
 
 import com.google.common.base.MoreObjects;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.Map;
 
 /**
@@ -31,6 +32,7 @@ import java.util.Map;
  *
  * @author gazbert
  */
+@Schema
 public class ExchangeConfig {
 
   private String name;

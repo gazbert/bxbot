@@ -25,8 +25,7 @@ package com.gazbert.bxbot.domain.strategy;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -35,10 +34,10 @@ import java.util.Map;
  *
  * @author gazbert
  */
-@ApiModel
+@Schema
 public class StrategyConfig {
 
-  @ApiModelProperty(required = true, position = 1)
+  @Schema(required = true)
   private String id;
 
   private String name;

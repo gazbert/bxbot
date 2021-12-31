@@ -25,8 +25,7 @@ package com.gazbert.bxbot.domain.engine;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.math.BigDecimal;
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.Min;
@@ -36,10 +35,10 @@ import javax.validation.constraints.Min;
  *
  * @author gazbert
  */
-@ApiModel
+@Schema
 public class EngineConfig {
 
-  @ApiModelProperty(required = true, position = 1)
+  @Schema(required = true)
   private String botId;
 
   private String botName;

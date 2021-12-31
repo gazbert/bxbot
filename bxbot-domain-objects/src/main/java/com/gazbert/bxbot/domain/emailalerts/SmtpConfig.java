@@ -24,6 +24,7 @@
 package com.gazbert.bxbot.domain.emailalerts;
 
 import com.google.common.base.MoreObjects;
+import io.swagger.v3.oas.annotations.media.Schema;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.Positive;
 
@@ -32,6 +33,7 @@ import javax.validation.constraints.Positive;
  *
  * @author gazbert
  */
+@Schema(required = true)
 public class SmtpConfig {
 
   private String host;

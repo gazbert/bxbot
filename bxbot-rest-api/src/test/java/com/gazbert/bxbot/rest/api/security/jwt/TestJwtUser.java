@@ -33,7 +33,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
@@ -42,7 +42,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
  *
  * @author gazbert
  */
-public class TestJwtUser {
+class TestJwtUser {
 
   private static final Long ADMIN_ROLE_ID = Long.valueOf("213443242342");
   private static final Long USER_ROLE_ID = Long.valueOf("21344565442342");
@@ -57,7 +57,7 @@ public class TestJwtUser {
   private static final Date LAST_PASSWORD_RESET_DATE = new Date();
 
   @Test
-  public void testInitialisationWorksAsExpected() {
+  void testInitialisationWorksAsExpected() {
     final List<Role> roles = createRoles(createUser());
 
     final JwtUser jwtUser =
