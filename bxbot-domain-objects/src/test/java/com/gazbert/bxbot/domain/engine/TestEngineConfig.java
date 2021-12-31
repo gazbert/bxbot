@@ -35,7 +35,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author gazbert
  */
-public class TestEngineConfig {
+class TestEngineConfig {
 
   private static final String BOT_ID = "avro-707_1";
   private static final String BOT_NAME = "Avro 707";
