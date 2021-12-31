@@ -33,9 +33,8 @@ import com.gazbert.bxbot.rest.api.security.jwt.JwtUserFactory;
 import com.gazbert.bxbot.rest.api.security.model.User;
 import com.gazbert.bxbot.rest.api.security.repository.UserRepository;
 import org.easymock.EasyMock;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.powermock.api.easymock.PowerMock;
 import org.powermock.core.classloader.annotations.PrepareForTest;
@@ -49,21 +48,24 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
  */
 @ExtendWith(SpringExtension.class)
 @PrepareForTest({JwtUserFactory.class})
-class TestJwtUserDetailsService {
+public class TestJwtUserDetailsService {
 
   private static final String KNOWN_USERNAME = "known-username";
   private static final String UNKNOWN_USERNAME = "unknown-username";
 
   private UserRepository userRepository;
 
-  @BeforeEach
-  void setup() {
+  @Before
+  public void setup() {
     userRepository = PowerMock.createMock(UserRepository.class);
   }
 
+  /**
+   * Stuck on JUnit4 as Powermock doesn't play with JUnit5.
+   * See: https://github.com/powermock/powermock/issues/929
+   */
   @Test
-  @Disabled("FIXME: Powermock broken with Junit5")
-  void whenLoadByUsernameCalledWithKnownUsernameThenExpectUserDetailsToBeReturned() {
+  public void whenLoadByUsernameCalledWithKnownUsernameThenExpectUserDetailsToBeReturned() {
     PowerMock.mockStatic(JwtUserFactory.class);
     final User user = PowerMock.createMock(User.class);
     final JwtUser jwtUser = EasyMock.createMock(JwtUser.class);
@@ -80,7 +82,7 @@ class TestJwtUserDetailsService {
   }
 
   @Test
-  void whenLoadByUsernameCalledWithUnknownUsernameThenExpectUsernameNotFoundException() {
+  public void whenLoadByUsernameCalledWithUnknownUsernameThenExpectUsernameNotFoundException() {
     expect(userRepository.findByUsername(UNKNOWN_USERNAME)).andStubReturn(null);
     PowerMock.replayAll();
 

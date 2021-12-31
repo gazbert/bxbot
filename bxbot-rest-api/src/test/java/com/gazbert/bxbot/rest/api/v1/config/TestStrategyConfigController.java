@@ -404,6 +404,23 @@ class TestStrategyConfigController extends AbstractConfigControllerTest {
         .andExpect(status().isUnauthorized());
   }
 
+  @Test
+  void testCreateInvalidStrategyConfigWithAdminTokenAuthorized() throws Exception {
+    given(strategyConfigService.createStrategyConfig(someStrategyConfig()))
+        .willReturn(someStrategyConfig());
+
+    mockMvc
+        .perform(
+            post(STRATEGIES_CONFIG_ENDPOINT_URI)
+                .header("Authorization", "Bearer " + getJwt(VALID_ADMIN_NAME, VALID_ADMIN_PASSWORD))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonify(someStrategyConfigWithMissingId())))
+        .andDo(print())
+        .andExpect(status().isBadRequest());
+
+    verify(strategyConfigService, times(1)).createStrategyConfig(any());
+  }
+
   // --------------------------------------------------------------------------
   // Private utils
   // --------------------------------------------------------------------------

@@ -322,15 +322,15 @@ class TestMarketConfigController extends AbstractConfigControllerTest {
   }
 
   @Test
-  void testDeleteMarketConfigWhenIdNotRecognized() throws Exception {
-    given(marketConfigService.deleteMarketConfig(UNKNOWN_MARKET_ID)).willReturn(null);
+  void testDeleteMarketConfigByIdWhenNotRecognized() throws Exception {
+    given(marketConfigService.getMarketConfig(UNKNOWN_MARKET_ID)).willReturn(null);
 
     mockMvc
         .perform(
             delete(MARKETS_CONFIG_ENDPOINT_URI + UNKNOWN_MARKET_ID)
-                .header("Authorization", "Bearer " + getJwt(VALID_USER_NAME, VALID_USER_PASSWORD))
+                .header("Authorization", "Bearer " + getJwt(VALID_ADMIN_NAME, VALID_ADMIN_PASSWORD))
                 .accept(MediaType.APPLICATION_JSON))
-        .andExpect(status().isForbidden());
+        .andExpect(status().isNotFound());
   }
 
   @Test

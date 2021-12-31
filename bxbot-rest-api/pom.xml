@@ -116,6 +116,15 @@
       <artifactId>awaitility</artifactId>
       <scope>test</scope>
     </dependency>
+    <!--
+     JUnit4 still needed as Powermock doesn't play with JUnit5 in TestJwtUserDetailsService
+     See: https://github.com/powermock/powermock/issues/929
+    -->
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>
