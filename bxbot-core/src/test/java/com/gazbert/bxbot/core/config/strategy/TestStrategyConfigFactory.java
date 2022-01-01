@@ -25,12 +25,13 @@ package com.gazbert.bxbot.core.config.strategy;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.easymock.EasyMock.expect;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.gazbert.bxbot.core.config.strategy.strategies.TradingStrategyForBeanNameInstantiation;
 import com.gazbert.bxbot.domain.strategy.StrategyConfig;
 import com.gazbert.bxbot.strategy.api.TradingStrategy;
 import org.easymock.EasyMock;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.context.ApplicationContext;
 
 /**
@@ -38,7 +39,7 @@ import org.springframework.context.ApplicationContext;
  *
  * @author gazbert
  */
-public class TestStrategyConfigFactory {
+class TestStrategyConfigFactory {
 
   private static final String STRATEGY_ID = "strat-123";
   private static final String STRATEGY_NAME = "ema-strat";
@@ -49,7 +50,7 @@ public class TestStrategyConfigFactory {
   private static final String INVALID_STRATEGY_BEAN_NAME = "invalid-bean";
 
   @Test
-  public void testCreatingStrategyUsingClassname() {
+  void testCreatingStrategyUsingClassname() {
     final StrategyConfig strategyConfig = new StrategyConfig();
     strategyConfig.setId(STRATEGY_ID);
     strategyConfig.setName(STRATEGY_NAME);
@@ -64,7 +65,7 @@ public class TestStrategyConfigFactory {
   }
 
   @Test
-  public void testCreatingStrategyUsingBeanName() {
+  void testCreatingStrategyUsingBeanName() {
     final StrategyConfig strategyConfig = new StrategyConfig();
     strategyConfig.setId(STRATEGY_ID);
     strategyConfig.setName(STRATEGY_NAME);
@@ -85,8 +86,8 @@ public class TestStrategyConfigFactory {
     EasyMock.verify(applicationContext);
   }
 
-  @Test (expected = IllegalArgumentException.class)
-  public void testCreatingStrategyUsingInvalidName() {
+  @Test
+  void testCreatingStrategyUsingInvalidName() {
     final StrategyConfig strategyConfig = new StrategyConfig();
     strategyConfig.setId(STRATEGY_ID);
     strategyConfig.setName(STRATEGY_NAME);
@@ -100,10 +101,9 @@ public class TestStrategyConfigFactory {
     tradingStrategyFactory.setSpringContext(applicationContext);
     EasyMock.replay(applicationContext);
 
-    final TradingStrategy tradingStrategy =
-        tradingStrategyFactory.createTradingStrategy(strategyConfig);
-
-    assertThat(tradingStrategy).isNotNull();
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> tradingStrategyFactory.createTradingStrategy(strategyConfig));
     EasyMock.verify(applicationContext);
   }
 }

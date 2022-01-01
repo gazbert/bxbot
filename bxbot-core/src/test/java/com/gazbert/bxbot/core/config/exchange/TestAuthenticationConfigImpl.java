@@ -25,14 +25,14 @@ package com.gazbert.bxbot.core.config.exchange;
 
 import static org.junit.Assert.assertEquals;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests Authentication Config exchange API config object behaves as expected.
  *
  * @author gazbert
  */
-public class TestAuthenticationConfigImpl {
+class TestAuthenticationConfigImpl {
 
   private static final String API_KEY_CONFIG_ITEM_KEY = "api-key";
   private static final String API_KEY_CONFIG_ITEM_VALUE = "apiKey--123";
@@ -41,7 +41,7 @@ public class TestAuthenticationConfigImpl {
   private static final String SECRET_FEE_CONFIG_ITEM_VALUE = "secret-key";
 
   @Test
-  public void testAddingAndFetchingAuthenticationConfig() {
+  void testAddingAndFetchingAuthenticationConfig() {
     final AuthenticationConfigImpl authenticationConfig = new AuthenticationConfigImpl();
     authenticationConfig.getItems().put(API_KEY_CONFIG_ITEM_KEY, API_KEY_CONFIG_ITEM_VALUE);
     authenticationConfig.getItems().put(SECRET_CONFIG_ITEM_KEY, SECRET_FEE_CONFIG_ITEM_VALUE);
@@ -54,7 +54,7 @@ public class TestAuthenticationConfigImpl {
   }
 
   @Test
-  public void testFetchingSingleAuthenticationConfigItem() {
+  void testFetchingSingleAuthenticationConfigItem() {
     final AuthenticationConfigImpl authenticationConfig = new AuthenticationConfigImpl();
     authenticationConfig.getItems().put(API_KEY_CONFIG_ITEM_KEY, API_KEY_CONFIG_ITEM_VALUE);
     assertEquals(API_KEY_CONFIG_ITEM_VALUE, authenticationConfig.getItem(API_KEY_CONFIG_ITEM_KEY));

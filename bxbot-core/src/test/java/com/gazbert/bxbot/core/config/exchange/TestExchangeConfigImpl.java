@@ -29,14 +29,14 @@ import static org.junit.Assert.assertNull;
 import com.gazbert.bxbot.exchange.api.AuthenticationConfig;
 import com.gazbert.bxbot.exchange.api.NetworkConfig;
 import com.gazbert.bxbot.exchange.api.OtherConfig;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests Exchange Config exchange API config object behaves as expected.
  *
  * @author gazbert
  */
-public class TestExchangeConfigImpl {
+class TestExchangeConfigImpl {
 
   private static final String EXCHANGE_NAME = "Bitstamp";
   private static final String EXCHANGE_ADAPTER = "com.gazbert.bxbot.exchanges.TestExchangeAdapter";
@@ -45,7 +45,7 @@ public class TestExchangeConfigImpl {
   private static final OtherConfig OTHER_CONFIG = new OtherConfigImpl();
 
   @Test
-  public void testInitialisationWorksAsExpected() {
+  void testInitialisationWorksAsExpected() {
     final ExchangeConfigImpl exchangeConfig = new ExchangeConfigImpl();
     assertNull(exchangeConfig.getExchangeName());
     assertNull(exchangeConfig.getExchangeAdapter());
@@ -55,7 +55,7 @@ public class TestExchangeConfigImpl {
   }
 
   @Test
-  public void testSettersWorkAsExpected() {
+  void testSettersWorkAsExpected() {
     final ExchangeConfigImpl exchangeConfig = new ExchangeConfigImpl();
 
     exchangeConfig.setExchangeName(EXCHANGE_NAME);

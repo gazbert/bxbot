@@ -24,6 +24,7 @@
 package com.gazbert.bxbot.core.config.strategy;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.gazbert.bxbot.domain.market.MarketConfig;
 import com.gazbert.bxbot.domain.strategy.StrategyConfig;
@@ -34,14 +35,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.easymock.EasyMock;
-import org.junit.Test;
-
+import org.junit.jupiter.api.Test;
 /**
  * Tests the Trading Strategies Builder works as expected.
  *
  * @author gazbert
  */
-public class TestTradingStrategiesBuilder {
+class TestTradingStrategiesBuilder {
 
   private static final String STRATEGY_1_ID = "MyMacdStrategy_v3";
   private static final String STRATEGY_1_NAME = "MACD Shorting algo";
@@ -80,7 +80,7 @@ public class TestTradingStrategiesBuilder {
   private static final boolean MARKET_3_NOT_ENABLED = false;
 
   @Test
-  public void testBuildingStrategiesSuccessfully() {
+  void testBuildingStrategiesSuccessfully() {
     final ExchangeAdapter exchangeAdapter = EasyMock.createMock(ExchangeAdapter.class);
     final TradingStrategyFactory tradingStrategyFactory = new TradingStrategyFactory();
     final TradingStrategiesBuilder tradingStrategiesBuilder = new TradingStrategiesBuilder();
@@ -91,24 +91,34 @@ public class TestTradingStrategiesBuilder {
     assertThat(strategies.size()).isEqualTo(2);
   }
 
-  @Test(expected = IllegalArgumentException.class)
-  public void testBuildingStrategiesFailsForUnknownStrategyId() {
+  @Test
+  void testBuildingStrategiesFailsForUnknownStrategyId() {
     final ExchangeAdapter exchangeAdapter = EasyMock.createMock(ExchangeAdapter.class);
     final TradingStrategyFactory tradingStrategyFactory = new TradingStrategyFactory();
     final TradingStrategiesBuilder tradingStrategiesBuilder = new TradingStrategiesBuilder();
     tradingStrategiesBuilder.setTradingStrategyFactory(tradingStrategyFactory);
-    tradingStrategiesBuilder.buildStrategies(
-        someStrategiesConfig(), someMarketsConfigUsingUnknownStrategyId(), exchangeAdapter);
+
+    assertThrows(
+        IllegalArgumentException.class,
+        () ->
+            tradingStrategiesBuilder.buildStrategies(
+                someStrategiesConfig(),
+                someMarketsConfigUsingUnknownStrategyId(),
+                exchangeAdapter));
   }
 
-  @Test(expected = IllegalArgumentException.class)
-  public void testBuildingStrategiesFailsDuplicateMarket() {
+  @Test
+  void testBuildingStrategiesFailsDuplicateMarket() {
     final ExchangeAdapter exchangeAdapter = EasyMock.createMock(ExchangeAdapter.class);
     final TradingStrategyFactory tradingStrategyFactory = new TradingStrategyFactory();
     final TradingStrategiesBuilder tradingStrategiesBuilder = new TradingStrategiesBuilder();
     tradingStrategiesBuilder.setTradingStrategyFactory(tradingStrategyFactory);
-    tradingStrategiesBuilder.buildStrategies(
-        someStrategiesConfig(), someMarketsConfigWithDuplicateMarket(), exchangeAdapter);
+
+    assertThrows(
+        IllegalArgumentException.class,
+        () ->
+            tradingStrategiesBuilder.buildStrategies(
+                someStrategiesConfig(), someMarketsConfigWithDuplicateMarket(), exchangeAdapter));
   }
 
   private static List<StrategyConfig> someStrategiesConfig() {

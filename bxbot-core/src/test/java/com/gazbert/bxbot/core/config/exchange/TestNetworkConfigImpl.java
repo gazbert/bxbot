@@ -29,14 +29,14 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.List;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests Network Config exchange API config object behaves as expected.
  *
  * @author gazbert
  */
-public class TestNetworkConfigImpl {
+class TestNetworkConfigImpl {
 
   private static final Integer CONNECTION_TIMEOUT = 30;
   private static final List<Integer> NON_FATAL_ERROR_CODES = Arrays.asList(502, 503, 504);
@@ -47,7 +47,7 @@ public class TestNetworkConfigImpl {
           "Remote host closed connection during handshake");
 
   @Test
-  public void testInitialisationWorksAsExpected() {
+  void testInitialisationWorksAsExpected() {
 
     final NetworkConfigImpl networkConfig = new NetworkConfigImpl();
     assertNull(networkConfig.getConnectionTimeout());
@@ -56,7 +56,7 @@ public class TestNetworkConfigImpl {
   }
 
   @Test
-  public void testSettersWorkAsExpected() {
+  void testSettersWorkAsExpected() {
 
     final NetworkConfigImpl networkConfig = new NetworkConfigImpl();
 

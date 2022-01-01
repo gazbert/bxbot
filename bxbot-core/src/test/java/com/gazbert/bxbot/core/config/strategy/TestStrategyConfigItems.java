@@ -25,14 +25,14 @@ package com.gazbert.bxbot.core.config.strategy;
 
 import static org.junit.Assert.assertEquals;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test the StrategyConfigItems behaves as expected.
  *
  * @author gazbert
  */
-public class TestStrategyConfigItems {
+class TestStrategyConfigItems {
 
   private static final String BUY_PRICE_CONFIG_ITEM_KEY = "buyPrice";
   private static final String BUY_PRICE_CONFIG_ITEM_VALUE = "671.15";
@@ -41,7 +41,7 @@ public class TestStrategyConfigItems {
   private static final String AMOUNT_TO_BUY_CONFIG_ITEM_VALUE = "0.5";
 
   @Test
-  public void testAddingAndFetchingConfigItems() {
+  void testAddingAndFetchingConfigItems() {
     final StrategyConfigItems strategyConfig = new StrategyConfigItems();
     strategyConfig.getItems().put(BUY_PRICE_CONFIG_ITEM_KEY, BUY_PRICE_CONFIG_ITEM_VALUE);
     strategyConfig.getItems().put(AMOUNT_TO_BUY_CONFIG_ITEM_KEY, AMOUNT_TO_BUY_CONFIG_ITEM_VALUE);
