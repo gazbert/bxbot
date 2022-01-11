@@ -23,8 +23,10 @@
 
 package com.gazbert.bxbot.core.config.exchange;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import com.gazbert.bxbot.exchange.api.AuthenticationConfig;
 import com.gazbert.bxbot.exchange.api.NetworkConfig;
