@@ -97,6 +97,15 @@
     Testing dependencies
     -->
     <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <!--
+     JUnit4 still needed for testing adapters as Powermock doesn't play with JUnit5.
+     See: https://github.com/powermock/powermock/issues/929
+    -->
+    <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <scope>test</scope>

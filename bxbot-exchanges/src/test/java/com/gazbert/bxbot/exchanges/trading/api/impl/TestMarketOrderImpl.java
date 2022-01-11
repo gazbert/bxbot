@@ -23,26 +23,26 @@
 
 package com.gazbert.bxbot.exchanges.trading.api.impl;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import com.gazbert.bxbot.trading.api.OrderType;
 import java.math.BigDecimal;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests the Market Order impl behaves as expected.
  *
  * @author gazbert
  */
-public class TestMarketOrderImpl {
+class TestMarketOrderImpl {
 
   private static final BigDecimal PRICE = new BigDecimal("671.91");
   private static final BigDecimal QUANTITY = new BigDecimal("0.01345453");
   private static final BigDecimal TOTAL = PRICE.multiply(QUANTITY);
 
   @Test
-  public void testMarketOrderIsInitialisedAsExpected() {
+  void testMarketOrderIsInitialisedAsExpected() {
     final MarketOrderImpl marketOrder = new MarketOrderImpl(OrderType.BUY, PRICE, QUANTITY, TOTAL);
 
     assertEquals(OrderType.BUY, marketOrder.getType());
@@ -52,7 +52,7 @@ public class TestMarketOrderImpl {
   }
 
   @Test
-  public void testSettersWorkAsExpected() {
+  void testSettersWorkAsExpected() {
     final MarketOrderImpl marketOrder = new MarketOrderImpl(null, null, null, null);
     assertNull(marketOrder.getType());
     assertNull(marketOrder.getPrice());

@@ -23,24 +23,24 @@
 
 package com.gazbert.bxbot.exchanges.trading.api.impl;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gazbert.bxbot.trading.api.MarketOrder;
 import com.gazbert.bxbot.trading.api.OrderType;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests the Market Order Book impl behaves as expected.
  *
  * @author gazbert
  */
-public class TestMarketOrderBookImpl {
+class TestMarketOrderBookImpl {
 
   private static final String MARKET_ID = "BTC_USD";
 
@@ -68,8 +68,8 @@ public class TestMarketOrderBookImpl {
   private MarketOrder buyOrder3;
 
   /** Sets up some MarketOrders for the tests. */
-  @Before
-  public void setupOrdersBeforeEachTest() {
+  @BeforeEach
+  void setupOrdersBeforeEachTest() {
     sellOrder1 =
         new MarketOrderImpl(OrderType.SELL, ORDER_1_PRICE, ORDER_1_QUANTITY, ORDER_1_TOTAL);
     sellOrder2 =
@@ -93,7 +93,7 @@ public class TestMarketOrderBookImpl {
   }
 
   @Test
-  public void testMarketOrderBookIsInitialisedAsExpected() {
+  void testMarketOrderBookIsInitialisedAsExpected() {
     final MarketOrderBookImpl marketOrderBook =
         new MarketOrderBookImpl(MARKET_ID, sellOrders, buyOrders);
     assertEquals(MARKET_ID, marketOrderBook.getMarketId());
@@ -112,7 +112,7 @@ public class TestMarketOrderBookImpl {
   }
 
   @Test
-  public void testSettersWorkAsExpected() {
+  void testSettersWorkAsExpected() {
     final MarketOrderBookImpl marketOrderBook = new MarketOrderBookImpl(null, null, null);
     assertNull(marketOrderBook.getMarketId());
     assertNull(marketOrderBook.getSellOrders());

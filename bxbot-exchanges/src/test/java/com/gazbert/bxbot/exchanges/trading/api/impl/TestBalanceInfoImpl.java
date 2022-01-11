@@ -23,21 +23,21 @@
 
 package com.gazbert.bxbot.exchanges.trading.api.impl;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test the Balance Info impl behaves as expected.
  *
  * @author gazbert
  */
-public class TestBalanceInfoImpl {
+class TestBalanceInfoImpl {
 
   private static final String BTC_CURRENCY_ID = "BTC";
   private static final BigDecimal BTC_BALANCE_AVAILABLE = new BigDecimal("1000.24546282");
@@ -60,8 +60,8 @@ public class TestBalanceInfoImpl {
   private Map<String, BigDecimal> balancesOnHold;
 
   /** Sets up some test balances. */
-  @Before
-  public void setupBalancesBeforeEachTest() {
+  @BeforeEach
+  void setupBalancesBeforeEachTest() {
     balancesAvailable = new HashMap<>();
     balancesAvailable.put(BTC_CURRENCY_ID, BTC_BALANCE_AVAILABLE);
     balancesAvailable.put(USD_CURRENCY_ID, USD_BALANCE_AVAILABLE);
@@ -72,7 +72,7 @@ public class TestBalanceInfoImpl {
   }
 
   @Test
-  public void testBalanceInfoIsInitialisedAsExpected() {
+  void testBalanceInfoIsInitialisedAsExpected() {
     final BalanceInfoImpl balanceInfo = new BalanceInfoImpl(balancesAvailable, balancesOnHold);
 
     assertEquals(balancesAvailable, balanceInfo.getBalancesAvailable());
@@ -85,7 +85,7 @@ public class TestBalanceInfoImpl {
   }
 
   @Test
-  public void testSettersWorkAsExpected() {
+  void testSettersWorkAsExpected() {
     final BalanceInfoImpl balanceInfo = new BalanceInfoImpl(null, null);
     assertNull(balanceInfo.getBalancesAvailable());
     assertNull(balanceInfo.getBalancesOnHold());
