@@ -23,19 +23,19 @@
 
 package com.gazbert.bxbot.domain.exchange;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.util.HashMap;
 import java.util.Map;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests ExchangeConfig domain object behaves as expected.
  *
  * @author gazbert
  */
-public class TestExchangeConfig {
+class TestExchangeConfig {
 
   private static final String EXCHANGE_NAME = "Bitstamp";
   private static final String EXCHANGE_ADAPTER = "com.gazbert.bxbot.exchanges.TestExchangeAdapter";
@@ -44,7 +44,7 @@ public class TestExchangeConfig {
   private static final Map<String, String> OTHER_CONFIG = new HashMap<>();
 
   @Test
-  public void testInitialisationWorksAsExpected() {
+  void testInitialisationWorksAsExpected() {
     final ExchangeConfig exchangeConfig = new ExchangeConfig();
     assertNull(exchangeConfig.getName());
     assertNull(exchangeConfig.getAdapter());
@@ -54,7 +54,7 @@ public class TestExchangeConfig {
   }
 
   @Test
-  public void testSettersWorkAsExpected() {
+  void testSettersWorkAsExpected() {
     final ExchangeConfig exchangeConfig = new ExchangeConfig();
 
     exchangeConfig.setName(EXCHANGE_NAME);
@@ -74,7 +74,7 @@ public class TestExchangeConfig {
   }
 
   @Test
-  public void testToStringWorksAsExpected() {
+  void testToStringWorksAsExpected() {
     final ExchangeConfig exchangeConfig = new ExchangeConfig();
     exchangeConfig.setName(EXCHANGE_NAME);
     exchangeConfig.setAdapter(EXCHANGE_ADAPTER);
