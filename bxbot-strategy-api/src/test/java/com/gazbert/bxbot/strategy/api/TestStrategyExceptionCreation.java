@@ -23,38 +23,37 @@
 
 package com.gazbert.bxbot.strategy.api;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests Strategy Exception is created as expected.
  *
  * @author gazbert
  */
-public class TestStrategyExceptionCreation {
+class TestStrategyExceptionCreation {
 
   private static final String ERROR_MSG =
       "Received unknown order id in current active orders API call";
   private static final RuntimeException CAUSE = new RuntimeException("The cause of the exception");
 
   @Test
-  public void testCreationOfExceptionIsAsExpected() {
+  void testCreationOfExceptionIsAsExpected() {
     final StrategyException exception = new StrategyException(ERROR_MSG);
     assertEquals(ERROR_MSG, exception.getMessage());
   }
 
   @Test
-  public void testCreationOfExceptionWithCauseIsAsExpected() {
+  void testCreationOfExceptionWithCauseIsAsExpected() {
     final StrategyException exception = new StrategyException(ERROR_MSG, CAUSE);
     assertEquals(ERROR_MSG, exception.getMessage());
     assertEquals(CAUSE, exception.getCause());
   }
 
   @Test
-  public void testCreationOfExceptionWithThrowableIsAsExpected() {
+  void testCreationOfExceptionWithThrowableIsAsExpected() {
     final StrategyException exception = new StrategyException(CAUSE);
     assertEquals(CAUSE, exception.getCause());
   }
-
 }
