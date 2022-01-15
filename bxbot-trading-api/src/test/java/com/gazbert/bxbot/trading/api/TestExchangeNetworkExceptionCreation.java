@@ -32,19 +32,19 @@ import org.junit.jupiter.api.Test;
  *
  * @author gazbert
  */
- class TestExchangeNetworkExceptionCreation {
+class TestExchangeNetworkExceptionCreation {
 
   private static final String ERROR_MSG = "Network timeout connecting to exchange";
   private static final RuntimeException CAUSE = new RuntimeException("The cause of the exception");
 
   @Test
-   void testCreationOfExceptionIsAsExpected() {
+  void testCreationOfExceptionIsAsExpected() {
     final ExchangeNetworkException exception = new ExchangeNetworkException(ERROR_MSG);
     assertEquals(ERROR_MSG, exception.getMessage());
   }
 
   @Test
-   void testCreationOfExceptionWithCauseIsAsExpected() {
+  void testCreationOfExceptionWithCauseIsAsExpected() {
     final ExchangeNetworkException exception = new ExchangeNetworkException(ERROR_MSG, CAUSE);
     assertEquals(ERROR_MSG, exception.getMessage());
     assertEquals(CAUSE, exception.getCause());
