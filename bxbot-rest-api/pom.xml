@@ -117,12 +117,12 @@
       <scope>test</scope>
     </dependency>
     <!--
-     JUnit4 still needed as Powermock doesn't play with JUnit5 in TestJwtUserDetailsService
+     JUnit4 still needed as Powermock doesn't play with JUnit5
      See: https://github.com/powermock/powermock/issues/929
     -->
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
+      <groupId>org.junit.vintage</groupId>
+      <artifactId>junit-vintage-engine</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

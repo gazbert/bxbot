@@ -35,18 +35,18 @@ import com.gazbert.bxbot.rest.api.security.repository.UserRepository;
 import org.easymock.EasyMock;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.runner.RunWith;
 import org.powermock.api.easymock.PowerMock;
 import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 /**
  * Tests the JWT User Details service behaves as expected.
  *
  * @author gazbert
  */
-@ExtendWith(SpringExtension.class)
+@RunWith(PowerMockRunner.class)
 @PrepareForTest({JwtUserFactory.class})
 public class TestJwtUserDetailsService {
 
@@ -61,8 +61,8 @@ public class TestJwtUserDetailsService {
   }
 
   /**
-   * Stuck on JUnit4 as Powermock doesn't play with JUnit5.
-   * See: https://github.com/powermock/powermock/issues/929
+   * Stuck on JUnit4 as Powermock doesn't play with JUnit5. See:
+   * https://github.com/powermock/powermock/issues/929
    */
   @Test
   public void whenLoadByUsernameCalledWithKnownUsernameThenExpectUserDetailsToBeReturned() {
