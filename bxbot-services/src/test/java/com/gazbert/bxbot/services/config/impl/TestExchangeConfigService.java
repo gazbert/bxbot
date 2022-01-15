@@ -30,19 +30,18 @@ import static org.easymock.EasyMock.verify;
 
 import com.gazbert.bxbot.domain.exchange.ExchangeConfig;
 import com.gazbert.bxbot.repository.ExchangeConfigRepository;
-import com.gazbert.bxbot.services.config.impl.ExchangeConfigServiceImpl;
 import org.easymock.EasyMock;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests Exchange configuration service behaves as expected.
  *
  * @author gazbert
  */
-public class TestExchangeConfigService {
+class TestExchangeConfigService {
 
   @Test
-  public void whenGetExchangeConfigCalledThenExpectConfigToBeReturned() {
+  void whenGetExchangeConfigCalledThenExpectConfigToBeReturned() {
     final ExchangeConfig exchangeConfig = new ExchangeConfig();
     final ExchangeConfigRepository exchangeConfigRepository =
         EasyMock.createMock(ExchangeConfigRepository.class);
@@ -57,7 +56,7 @@ public class TestExchangeConfigService {
   }
 
   @Test
-  public void whenUpdateExchangeConfigCalledThenExpectUpdatedConfigToBeReturned() {
+  void whenUpdateExchangeConfigCalledThenExpectUpdatedConfigToBeReturned() {
     final ExchangeConfig exchangeConfig = new ExchangeConfig();
     final ExchangeConfigRepository exchangeConfigRepository =
         EasyMock.createMock(ExchangeConfigRepository.class);

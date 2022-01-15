@@ -29,7 +29,7 @@ import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
 
 import org.easymock.EasyMock;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthEndpoint;
 import org.springframework.boot.actuate.health.Status;
@@ -39,10 +39,10 @@ import org.springframework.boot.actuate.health.Status;
  *
  * @author gazbert
  */
-public class TestBotStatusService {
+class TestBotStatusService {
 
   @Test
-  public void whenGetStatusCalledThenExpectBotStatusToBeReturned() {
+  void whenGetStatusCalledThenExpectBotStatusToBeReturned() {
     final String botStatus = "UP";
     final Status upStatus = new Status(botStatus);
     final Health health = Health.status(upStatus).build();
