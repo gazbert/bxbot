@@ -128,7 +128,7 @@ class TestMarketConfig {
   }
 
   @Test
-  public void testToStringWorksAsExpected() {
+  void testToStringWorksAsExpected() {
     final MarketConfig market1 =
         new MarketConfig(ID, NAME, BASE_CURRENCY, COUNTER_CURRENCY, IS_ENABLED, TRADING_STRATEGY);
 
