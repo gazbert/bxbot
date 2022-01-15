@@ -24,22 +24,23 @@
 package com.gazbert.bxbot.datastore.yaml.market;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gazbert.bxbot.datastore.yaml.ConfigurationManager;
 import com.gazbert.bxbot.domain.market.MarketConfig;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests the Market configuration is loaded as expected.
  *
  * @author gazbert
  */
-public class TestMarketConfigurationManagement {
+class TestMarketConfigurationManagement {
 
   private static final String VALID_YAML_CONFIG_FILENAME =
       "src/test/config/markets/valid-markets.yaml";
@@ -67,7 +68,7 @@ public class TestMarketConfigurationManagement {
   private static final String MARKET_2_TRADING_STRATEGY_ID = "scalper";
 
   @Test
-  public void testLoadingValidYamlConfigFileIsSuccessful() {
+  void testLoadingValidYamlConfigFileIsSuccessful() {
     final MarketsType marketsType =
         ConfigurationManager.loadConfig(MarketsType.class, VALID_YAML_CONFIG_FILENAME);
 
@@ -88,18 +89,22 @@ public class TestMarketConfigurationManagement {
     assertEquals("scalping-strategy", marketsType.getMarkets().get(1).getTradingStrategyId());
   }
 
-  @Test(expected = IllegalStateException.class)
-  public void testLoadingMissingYamlConfigFileThrowsException() {
-    ConfigurationManager.loadConfig(MarketsType.class, MISSING_YAML_CONFIG_FILENAME);
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testLoadingInvalidYamlConfigFileThrowsException() {
-    ConfigurationManager.loadConfig(MarketsType.class, INVALID_YAML_CONFIG_FILENAME);
+  @Test
+  void testLoadingMissingYamlConfigFileThrowsException() {
+    assertThrows(
+        IllegalStateException.class,
+        () -> ConfigurationManager.loadConfig(MarketsType.class, MISSING_YAML_CONFIG_FILENAME));
   }
 
   @Test
-  public void testSavingConfigToYamlIsSuccessful() throws Exception {
+  void testLoadingInvalidYamlConfigFileThrowsException() {
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> ConfigurationManager.loadConfig(MarketsType.class, INVALID_YAML_CONFIG_FILENAME));
+  }
+
+  @Test
+  void testSavingConfigToYamlIsSuccessful() throws Exception {
     final MarketConfig market1 = new MarketConfig();
     market1.setEnabled(MARKET_1_IS_ENABLED);
     market1.setId(MARKET_1_ID);
@@ -150,8 +155,8 @@ public class TestMarketConfigurationManagement {
     Files.delete(FileSystems.getDefault().getPath(YAML_CONFIG_TO_SAVE_FILENAME));
   }
 
-  @Test(expected = IllegalStateException.class)
-  public void testSavingConfigToInvalidYamlFileIsHandled() {
+  @Test
+  void testSavingConfigToInvalidYamlFileIsHandled() {
     final MarketConfig market1 = new MarketConfig();
     market1.setEnabled(MARKET_1_IS_ENABLED);
     market1.setId(MARKET_1_ID);
@@ -172,7 +177,10 @@ public class TestMarketConfigurationManagement {
     marketsConfig.getMarkets().add(market1);
     marketsConfig.getMarkets().add(market2);
 
-    ConfigurationManager.saveConfig(
-        MarketsType.class, marketsConfig, INVALID_YAML_CONFIG_TO_SAVE_FILENAME);
+    assertThrows(
+        IllegalStateException.class,
+        () ->
+            ConfigurationManager.saveConfig(
+                MarketsType.class, marketsConfig, INVALID_YAML_CONFIG_TO_SAVE_FILENAME));
   }
 }
