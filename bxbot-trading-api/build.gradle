@@ -2,10 +2,10 @@ description = 'BX-bot Trading API'
 
 dependencies {
 
-    compile libraries.spring_boot_starter_log4j2
-    compile libraries.google_guava
+    implementation libraries.spring_boot_starter_log4j2
+    implementation libraries.google_guava
 
-    testCompile libraries.spring_boot_starter_test
+    testImplementation libraries.spring_boot_starter_test
 }
 
 jacocoTestCoverageVerification {

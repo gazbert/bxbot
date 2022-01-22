@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Map;
 import org.easymock.EasyMock;
 import org.junit.jupiter.api.Test;
+
 /**
  * Tests the Trading Strategies Builder works as expected.
  *

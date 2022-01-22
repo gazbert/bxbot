@@ -249,9 +249,9 @@
         <version>${springdoc-openapi.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.springdoc</groupId>
-        <artifactId>springdoc-openapi-security</artifactId>
-        <version>${springdoc-openapi.version}</version>
+        <groupId>io.swagger.core.v3</groupId>
+        <artifactId>swagger-annotations</artifactId>
+        <version>2.1.11</version>
       </dependency>
       <dependency>
         <groupId>javax.validation</groupId>
@@ -296,11 +296,17 @@
         <version>${spring-boot-starter.version}</version>
         <scope>test</scope>
       </dependency>
+
+      <!--
+       JUnit4 still needed as Powermock doesn't play with JUnit5 :-(
+       See: https://github.com/powermock/powermock/issues/929
+      -->
       <dependency>
         <groupId>org.junit.vintage</groupId>
         <artifactId>junit-vintage-engine</artifactId>
         <version>5.8.2</version>
       </dependency>
+
       <dependency>
         <groupId>org.springframework.security</groupId>
         <artifactId>spring-security-test</artifactId>
