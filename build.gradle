@@ -92,7 +92,7 @@ allprojects {
     apply plugin: "io.spring.dependency-management"
     apply plugin: 'maven-publish'
     apply plugin: 'checkstyle'
-//    apply plugin: "com.github.spotbugs"
+//FIXME!   apply plugin: "com.github.spotbugs"
     apply plugin: "jacoco"
     apply plugin: "org.sonarqube"
 
