@@ -19,30 +19,33 @@ dependencies {
     testImplementation libraries.spring_boot_starter_test
 }
 
-//sourceSets {
-//    integrationTest {
-//        compileClasspath += main.output + test.output
-//        runtimeClasspath += main.output + test.output
-//
-//        java.srcDir 'src/integration-test/java'
-//        resources.srcDir 'src/integration-test/resources'
-//    }
-//}
-//
-////configurations {
-////    integrationTestCompile.extendsFrom compileClasspath
-////    integrationTestRuntime.extendsFrom runtimeClasspath
-////}
-//
-//task integrationTests(type: Test) {
-//
-//    testClassesDirs = sourceSets.integrationTest.output.classesDirs
-//    classpath = sourceSets.integrationTest.runtimeClasspath
-//
-//    testLogging {
-//        events "passed", "skipped", "failed"
-//    }
-//}
+sourceSets{
+    integrationTests {
+        compileClasspath += sourceSets.main.output
+        runtimeClasspath += sourceSets.main.output
+
+        java.srcDir 'src/integration-test/java'
+        resources.srcDir 'src/integration-test/resources'
+    }
+}
+
+task integrationTests(type: Test) {
+    description = "Run integration tests"
+    group = "verification"
+    testClassesDirs = sourceSets.integrationTests.output.classesDirs
+    classpath = sourceSets.integrationTests.runtimeClasspath
+}
+
+integrationTests {
+    testLogging {
+        events "passed","skipped", "failed"
+    }
+}
+
+configurations {
+    integrationTestsImplementation.extendsFrom(testImplementation)
+    integrationTestsRuntimeOnly.extendsFrom(testRuntimeOnly)
+}
 
 jacocoTestCoverageVerification {
     violationRules {
