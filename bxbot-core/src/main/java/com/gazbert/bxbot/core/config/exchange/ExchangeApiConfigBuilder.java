@@ -39,7 +39,8 @@ public final class ExchangeApiConfigBuilder {
 
   private static final Logger LOG = LogManager.getLogger();
 
-  private ExchangeApiConfigBuilder() {}
+  private ExchangeApiConfigBuilder() {
+  }
 
   /**
    * Builds Exchange API config.

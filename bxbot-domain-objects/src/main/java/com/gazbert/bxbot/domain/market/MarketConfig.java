@@ -45,7 +45,8 @@ public class MarketConfig {
   private String tradingStrategyId;
 
   // Required by ConfigurableComponentFactory
-  public MarketConfig() {}
+  public MarketConfig() {
+  }
 
   /**
    * Creates a MarketConfig from an existing one.

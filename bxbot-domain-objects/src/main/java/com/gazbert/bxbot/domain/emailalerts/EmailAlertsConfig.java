@@ -38,7 +38,8 @@ public class EmailAlertsConfig {
   private SmtpConfig smtpConfig;
 
   // Required by ConfigurableComponentFactory
-  public EmailAlertsConfig() {}
+  public EmailAlertsConfig() {
+  }
 
   /**
    * Creates a new EmailAlertsConfig.

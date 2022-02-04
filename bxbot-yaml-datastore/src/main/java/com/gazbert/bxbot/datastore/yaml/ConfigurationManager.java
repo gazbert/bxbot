@@ -53,7 +53,8 @@ public final class ConfigurationManager {
   private static final Logger LOG = LogManager.getLogger();
   private static final String YAML_HEADER = "---" + System.getProperty("line.separator");
 
-  private ConfigurationManager() {}
+  private ConfigurationManager() {
+  }
 
   /**
    * Loads the config from the YAML file.

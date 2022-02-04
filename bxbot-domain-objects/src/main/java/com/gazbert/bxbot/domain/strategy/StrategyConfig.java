@@ -47,7 +47,8 @@ public class StrategyConfig {
   private Map<String, String> configItems = new HashMap<>();
 
   // Required by ConfigurableComponentFactory
-  public StrategyConfig() {}
+  public StrategyConfig() {
+  }
 
   /**
    * Creates a StrategyConfig from an existing one.
