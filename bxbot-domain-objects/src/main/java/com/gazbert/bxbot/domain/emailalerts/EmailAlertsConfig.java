@@ -38,10 +38,14 @@ public class EmailAlertsConfig {
   private SmtpConfig smtpConfig;
 
   // Required by ConfigurableComponentFactory
-  public EmailAlertsConfig() {
-  }
+  public EmailAlertsConfig() {}
 
-  /** Creates a new EmailAlertsConfig. */
+  /**
+   * Creates a new EmailAlertsConfig.
+   *
+   * @param enabled is enabled?
+   * @param smtpConfig the SMTP config.
+   */
   public EmailAlertsConfig(boolean enabled, SmtpConfig smtpConfig) {
     this.enabled = enabled;
     this.smtpConfig = smtpConfig;

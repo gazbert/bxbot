@@ -54,7 +54,15 @@ public class EngineConfig {
   public EngineConfig() {
   }
 
-  /** Creates an EngineConfig. */
+  /**
+   * Creates an EngineConfig.
+   *
+   * @param botId the bot ID.
+   * @param botName the bot name.
+   * @param emergencyStopCurrency  the emergency stop currency.
+   * @param emergencyStopBalance the emergency stop balance.
+   * @param tradeCycleInterval the trade cycle interval (in secs).
+   */
   public EngineConfig(
       String botId,
       String botName,

@@ -45,10 +45,13 @@ public class MarketConfig {
   private String tradingStrategyId;
 
   // Required by ConfigurableComponentFactory
-  public MarketConfig() {
-  }
+  public MarketConfig() {}
 
-  /** Creates a MarketConfig from an existing one. */
+  /**
+   * Creates a MarketConfig from an existing one.
+   *
+   * @param other the MarketConfig to copy.
+   */
   public MarketConfig(MarketConfig other) {
     this.id = other.id;
     this.name = other.name;
@@ -58,7 +61,16 @@ public class MarketConfig {
     this.tradingStrategyId = other.tradingStrategyId;
   }
 
-  /** Creates a new MarketConfig. */
+  /**
+   * Creates a new MarketConfig.
+   *
+   * @param id the market ID.
+   * @param name the market name.
+   * @param baseCurrency the market base currency.
+   * @param counterCurrency the market counter currency.
+   * @param enabled is market enabled?
+   * @param tradingStrategyId the trading strategy id to use for the market.
+   */
   public MarketConfig(
       String id,
       String name,

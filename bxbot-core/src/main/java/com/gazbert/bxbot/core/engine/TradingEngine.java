@@ -99,7 +99,16 @@ public class TradingEngine {
 
   private final TradingStrategiesBuilder tradingStrategiesBuilder;
 
-  /** Creates the Trading Engine. */
+  /**
+   * Creates the Trading Engine.
+   *
+   * @param exchangeConfigService the Exchange config service.
+   * @param engineConfigService the Engine config service.
+   * @param strategyConfigService the Strategy config service.
+   * @param marketConfigService the Market config service.
+   * @param emailAlerter the Email Alerter.
+   * @param tradingStrategiesBuilder the Trading Strategies Builder.
+   */
   @Autowired
   public TradingEngine(
       ExchangeConfigService exchangeConfigService,

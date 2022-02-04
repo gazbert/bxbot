@@ -47,10 +47,13 @@ public class StrategyConfig {
   private Map<String, String> configItems = new HashMap<>();
 
   // Required by ConfigurableComponentFactory
-  public StrategyConfig() {
-  }
+  public StrategyConfig() {}
 
-  /** Creates a StrategyConfig from an existing one. */
+  /**
+   * Creates a StrategyConfig from an existing one.
+   *
+   * @param other the Strategy Config to copy.
+   */
   public StrategyConfig(StrategyConfig other) {
     this.id = other.id;
     this.name = other.name;
@@ -60,7 +63,16 @@ public class StrategyConfig {
     this.configItems = other.configItems;
   }
 
-  /** Creates a new StrategyConfig. */
+  /**
+   * Creates a new StrategyConfig.
+   *
+   * @param id the strategy ID.
+   * @param name the strategy name.
+   * @param description the strategy description.
+   * @param className the strategy class name.
+   * @param beanName the strategy bean name.
+   * @param configItems the strategy config.
+   */
   public StrategyConfig(
       String id,
       String name,

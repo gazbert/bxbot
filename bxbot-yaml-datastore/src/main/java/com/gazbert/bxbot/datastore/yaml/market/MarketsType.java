@@ -38,6 +38,8 @@ public class MarketsType {
 
   /**
    * Returns the Market configs.
+   *
+   * @return a list of Market configs.
    */
   public List<MarketConfig> getMarkets() {
     if (markets == null) {

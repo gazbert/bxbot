@@ -46,7 +46,14 @@ public class BotStatus {
   public BotStatus() {
   }
 
-  /** Creates a new BotStatus. */
+  /**
+   * Creates a new BotStatus.
+   *
+   * @param botId the bot Id.
+   * @param displayName the bot display name.
+   * @param status the bot's status.
+   * @param datetime the current datetime.
+   */
   public BotStatus(String botId, String displayName, String status, Date datetime) {
     this.botId = botId;
     this.displayName = displayName;

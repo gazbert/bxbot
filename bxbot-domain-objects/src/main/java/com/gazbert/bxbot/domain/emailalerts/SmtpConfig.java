@@ -51,10 +51,18 @@ public class SmtpConfig {
   private String toAddress;
 
   // required for jackson
-  public SmtpConfig() {
-  }
+  public SmtpConfig() {}
 
-  /** Creates a new SmtpConfig. */
+  /**
+   * Creates a new SmtpConfig.
+   *
+   * @param host the SMTP host.
+   * @param tlsPort the TLS port to use.
+   * @param accountUsername the SMTP account name.
+   * @param accountPassword the SMTP account password.
+   * @param fromAddress the email From address.
+   * @param toAddress the email To address.
+   */
   public SmtpConfig(
       String host,
       int tlsPort,

@@ -36,7 +36,11 @@ public class StrategiesType {
 
   private List<StrategyConfig> strategies;
 
-  /** Returns the Strategy configs. */
+  /**
+   * Returns the Strategy configs.
+   *
+   * @return a list of Strategy configs.
+   */
   public List<StrategyConfig> getStrategies() {
     if (strategies == null) {
       strategies = new ArrayList<>();
