@@ -45,7 +45,7 @@ and released under the [MIT license](http://opensource.org/licenses/MIT).
  
 Trading Strategies and Exchange Adapters are injected by the Trading Engine on startup. The bot uses a simple 
 [YAML](https://en.wikipedia.org/wiki/YAML) backed dependency injection framework to achieve this; the long term goal is
-to convert it into a fully configurable [Spring Boot](http://projects.spring.io/spring-boot/) app.
+to convert it into a fully configurable [Spring Boot](https://spring.io/projects/spring-boot) app.
 
 The bot was designed to fail hard and fast if any unexpected errors occur in the Exchange Adapters or Trading Strategies:
 it will log the error, send an email alert (if configured), and then shut down.
@@ -113,7 +113,7 @@ and evaluate the bot, Docker is the way to go.
 If you plan on developing the bot, you'll need JDK 11+ installed on your dev box.
 
 You can use Gradle or Maven to build the bot and pull down the 
-dependencies. BX-bot depends on [Spring Boot](http://projects.spring.io/spring-boot/), 
+dependencies. BX-bot depends on [Spring Boot](https://spring.io/projects/spring-boot), 
 [log4j](http://logging.apache.org/log4j), [JavaMail](https://java.net/projects/javamail/pages/Home), 
 [Google Gson](https://code.google.com/p/google-gson/), [Google Guava](https://github.com/google/guava), 
 [Snake YAML](https://bitbucket.org/asomov/snakeyaml), [Java JWT](https://github.com/jwtk/jjwt),
@@ -151,7 +151,7 @@ For help and general questions about BX-bot, check out the [Gitter](https://gitt
 ## Testing
 The bot has undergone basic unit testing on a _best-effort_ basis. 
 
-There is a continuous integration build running on [GitHub Actions](https://github.com/gazbert/bxbot/actions).
+There is a CI build running on [GitHub Actions](https://github.com/gazbert/bxbot/actions).
 
 The latest stable build can always be found on the [Releases](https://github.com/gazbert/bxbot/releases) page. 
 The SNAPSHOT builds on master are active development builds, but the tests should always pass and the bot should always 
