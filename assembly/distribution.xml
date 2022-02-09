@@ -8,7 +8,7 @@
   </formats>
   <fileSets>
     <fileSet>
-      <directory>${project.basedir}/</directory>
+      <directory>../</directory>
       <outputDirectory/>
       <includes>
         <include>README.md</include>
@@ -24,7 +24,7 @@
       </includes>
     </fileSet>
     <fileSet>
-      <directory>bxbot-app/target</directory>
+      <directory>target</directory>
       <outputDirectory>libs</outputDirectory>
       <includes>
         <include>bxbot-app-*.jar</include>

@@ -81,8 +81,8 @@ Download the latest [Release](https://github.com/gazbert/bxbot/releases) and unz
 #### Maven
 1. If you plan on using your own Trading Strategies/Exchange Adapters packaged in separate jar files, you'll need to add
    the dependency in the [bxbot-app/pom.xml](./bxbot-app/pom.xml) - see the commented out dependency examples inside it.
-1. From the project root, run `./mvnw clean assembly:assembly` to produce the distribution 
-   artifacts `bxbot-app-<version>-dist.tar.gz` and `bxbot-app-<version>-dist.zip` in the `./target` folder.
+1. From the project root, run `./mvnw clean package` to produce the distribution 
+   artifacts `bxbot-app-<version>-dist.tar.gz` and `bxbot-app-<version>-dist.zip` in the `./bxbot-app/target` folder.
 1. Copy either the `bxbot-app-<version>-dist.tar.gz` or the `bxbot-app-<version>-dist.zip` onto the machine you 
    want to run the bot and unzip it someplace.
 1. Configure the bot as required - see the main _[Configuration](#configuration)_ section.
