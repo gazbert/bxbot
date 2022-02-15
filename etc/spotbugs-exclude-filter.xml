@@ -96,7 +96,6 @@
         <Bug pattern="DM_CONVERT_CASE"/>
     </Match>
 
-
     <!-- False positive generated in BotLogfileServiceImpl:
 
          [ERROR] Nullcheck of stream at line 108 of value previously dereferenced in
@@ -111,6 +110,233 @@
     <Match>
         <Class name="com.gazbert.bxbot.services.runtime.impl.BotLogfileServiceImpl"/>
         <Bug pattern="RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE"/>
+    </Match>
+
+    <!-- Ignore bxbot-domain-objects warnings -->
+    <Match>
+        <Class name="com.gazbert.bxbot.domain.emailalerts.EmailAlertsConfig"/>
+        <Bug pattern="EI_EXPOSE_REP"/>
+    </Match>
+
+    <Match>
+        <Class name="com.gazbert.bxbot.domain.exchange.ExchangeConfig"/>
+        <Bug pattern="EI_EXPOSE_REP"/>
+    </Match>
+
+    <Match>
+        <Class name="com.gazbert.bxbot.domain.exchange.NetworkConfig"/>
+        <Bug pattern="EI_EXPOSE_REP"/>
+    </Match>
+
+    <Match>
+        <Class name="com.gazbert.bxbot.domain.strategy.StrategyConfig"/>
+        <Bug pattern="EI_EXPOSE_REP"/>
+    </Match>
+
+    <Match>
+        <Class name="com.gazbert.bxbot.domain.emailalerts.EmailAlertsConfig"/>
+        <Bug pattern="EI_EXPOSE_REP2"/>
+    </Match>
+
+    <Match>
+        <Class name="com.gazbert.bxbot.domain.exchange.ExchangeConfig"/>
+        <Bug pattern="EI_EXPOSE_REP2"/>
+    </Match>
+
+    <Match>
+        <Class name="com.gazbert.bxbot.domain.exchange.NetworkConfig"/>
+        <Bug pattern="EI_EXPOSE_REP2"/>
+    </Match>
+
+    <Match>
+        <Class name="com.gazbert.bxbot.domain.strategy.StrategyConfig"/>
+        <Bug pattern="EI_EXPOSE_REP2"/>
+    </Match>
+
+    <!-- Ignore bxbot-exchanges warnings -->
+    <Match>
+        <Class name="com.gazbert.bxbot.exchanges.trading.api.impl.BalanceInfoImpl"/>
+        <Bug pattern="EI_EXPOSE_REP"/>
+    </Match>
+
+    <Match>
+        <Class name="com.gazbert.bxbot.exchanges.trading.api.impl.MarketOrderBookImpl"/>
+        <Bug pattern="EI_EXPOSE_REP"/>
+    </Match>
+
+    <Match>
+        <Class name="com.gazbert.bxbot.exchanges.trading.api.impl.BalanceInfoImpl"/>
+        <Bug pattern="EI_EXPOSE_REP2"/>
+    </Match>
+
+    <Match>
+        <Class name="com.gazbert.bxbot.exchanges.trading.api.impl.MarketOrderBookImpl"/>
+        <Bug pattern="EI_EXPOSE_REP2"/>
+    </Match>
+
+    <Match>
+        <Class name="com.gazbert.bxbot.exchanges.config.PairPrecisionConfigImpl"/>
+        <Bug pattern="EI_EXPOSE_REP2"/>
+    </Match>
+
+    <!-- Ignore bxbot-strategies warnings -->
+    <Match>
+        <Class name="com.gazbert.bxbot.strategies.ExampleScalpingStrategy"/>
+        <Bug pattern="EI_EXPOSE_REP2"/>
+    </Match>
+
+    <!-- Ignore bxbot-core warnings -->
+    <Match>
+        <Class name="com.gazbert.bxbot.core.config.exchange.NetworkConfigImpl"/>
+        <Bug pattern="EI_EXPOSE_REP"/>
+    </Match>
+
+    <Match>
+        <Class name="com.gazbert.bxbot.core.config.exchange.AuthenticationConfigImpl"/>
+        <Bug pattern="EI_EXPOSE_REP2"/>
+    </Match>
+
+    <Match>
+        <Class name="com.gazbert.bxbot.core.config.exchange.NetworkConfigImpl"/>
+        <Bug pattern="EI_EXPOSE_REP2"/>
+    </Match>
+
+    <Match>
+        <Class name="com.gazbert.bxbot.core.config.exchange.OtherConfigImpl"/>
+        <Bug pattern="EI_EXPOSE_REP2"/>
+    </Match>
+
+    <Match>
+        <Class name="com.gazbert.bxbot.core.config.strategy.StrategyConfigItems"/>
+        <Bug pattern="EI_EXPOSE_REP2"/>
+    </Match>
+
+    <Match>
+        <Class name="com.gazbert.bxbot.core.config.strategy.TradingStrategiesBuilder"/>
+        <Bug pattern="EI_EXPOSE_REP2"/>
+    </Match>
+
+    <Match>
+        <Class name="com.gazbert.bxbot.core.engine.TradingEngine"/>
+        <Bug pattern="EI_EXPOSE_REP2"/>
+    </Match>
+
+    <Match>
+        <Class name="com.gazbert.bxbot.core.config.strategy.TradingStrategyFactory"/>
+        <Bug pattern="DCN_NULLPOINTER_EXCEPTION"/>
+    </Match>
+
+    <!-- Ignore bxbot-rest-api warnings -->
+    <Match>
+        <Class name="com.gazbert.bxbot.rest.api.security.jwt.JwtUser"/>
+        <Bug pattern="EI_EXPOSE_REP"/>
+    </Match>
+
+    <Match>
+        <Class name="com.gazbert.bxbot.rest.api.security.model.Role"/>
+        <Bug pattern="EI_EXPOSE_REP"/>
+    </Match>
+
+    <Match>
+        <Class name="com.gazbert.bxbot.rest.api.security.model.User"/>
+        <Bug pattern="EI_EXPOSE_REP"/>
+    </Match>
+
+    <Match>
+        <Class name="com.gazbert.bxbot.rest.api.security.jwt.JwtUser"/>
+        <Bug pattern="EI_EXPOSE_REP2"/>
+    </Match>
+
+    <Match>
+        <Class name="com.gazbert.bxbot.rest.api.security.model.Role"/>
+        <Bug pattern="EI_EXPOSE_REP2"/>
+    </Match>
+
+    <Match>
+        <Class name="com.gazbert.bxbot.rest.api.security.model.User"/>
+        <Bug pattern="EI_EXPOSE_REP2"/>
+    </Match>
+
+    <Match>
+        <Class name="com.gazbert.bxbot.rest.api.v1.config.MarketConfigController"/>
+        <Bug pattern="EI_EXPOSE_REP2"/>
+    </Match>
+
+    <Match>
+        <Class name="com.gazbert.bxbot.rest.api.v1.config.StrategyConfigController"/>
+        <Bug pattern="EI_EXPOSE_REP2"/>
+    </Match>
+
+    <Match>
+        <Class name="com.gazbert.bxbot.rest.api.v1.runtime.BotLogfileController"/>
+        <Bug pattern="EI_EXPOSE_REP2"/>
+    </Match>
+
+    <!-- Ignore bxbot-services warnings -->
+    <Match>
+        <Class name="com.gazbert.bxbot.services.config.impl.MarketConfigServiceImpl"/>
+        <Bug pattern="EI_EXPOSE_REP2"/>
+    </Match>
+
+    <Match>
+        <Class name="com.gazbert.bxbot.services.config.impl.StrategyConfigServiceImpl"/>
+        <Bug pattern="EI_EXPOSE_REP2"/>
+    </Match>
+
+    <Match>
+        <Class name="com.gazbert.bxbot.services.runtime.impl.BotRestartServiceImpl"/>
+        <Bug pattern="EI_EXPOSE_REP2"/>
+    </Match>
+
+    <!-- Ignore bxbot-yaml-datastore warnings -->
+    <Match>
+        <Class name="com.gazbert.bxbot.datastore.yaml.emailalerts.EmailAlertsType"/>
+        <Bug pattern="EI_EXPOSE_REP"/>
+    </Match>
+
+    <Match>
+        <Class name="com.gazbert.bxbot.datastore.yaml.engine.EngineType"/>
+        <Bug pattern="EI_EXPOSE_REP"/>
+    </Match>
+
+    <Match>
+        <Class name="com.gazbert.bxbot.datastore.yaml.exchange.ExchangeType"/>
+        <Bug pattern="EI_EXPOSE_REP"/>
+    </Match>
+
+    <Match>
+        <Class name="com.gazbert.bxbot.datastore.yaml.strategy.StrategiesType"/>
+        <Bug pattern="EI_EXPOSE_REP"/>
+    </Match>
+
+    <Match>
+        <Class name="com.gazbert.bxbot.datastore.yaml.market.MarketsType"/>
+        <Bug pattern="EI_EXPOSE_REP"/>
+    </Match>
+
+    <Match>
+        <Class name="com.gazbert.bxbot.datastore.yaml.emailalerts.EmailAlertsType"/>
+        <Bug pattern="EI_EXPOSE_REP2"/>
+    </Match>
+
+    <Match>
+        <Class name="com.gazbert.bxbot.datastore.yaml.engine.EngineType"/>
+        <Bug pattern="EI_EXPOSE_REP2"/>
+    </Match>
+
+    <Match>
+        <Class name="com.gazbert.bxbot.datastore.yaml.exchange.ExchangeType"/>
+        <Bug pattern="EI_EXPOSE_REP2"/>
+    </Match>
+
+    <Match>
+        <Class name="com.gazbert.bxbot.datastore.yaml.strategy.StrategiesType"/>
+        <Bug pattern="EI_EXPOSE_REP2"/>
+    </Match>
+
+    <Match>
+        <Class name="com.gazbert.bxbot.datastore.yaml.market.MarketsType"/>
+        <Bug pattern="EI_EXPOSE_REP2"/>
     </Match>
 
 </FindBugsFilter>
