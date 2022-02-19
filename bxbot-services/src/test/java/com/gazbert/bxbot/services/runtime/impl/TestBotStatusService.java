@@ -31,6 +31,7 @@ import static org.easymock.EasyMock.verify;
 import org.easymock.EasyMock;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.actuate.health.Health;
+import org.springframework.boot.actuate.health.HealthComponent;
 import org.springframework.boot.actuate.health.HealthEndpoint;
 import org.springframework.boot.actuate.health.Status;
 
@@ -45,10 +46,10 @@ class TestBotStatusService {
   void whenGetStatusCalledThenExpectBotStatusToBeReturned() {
     final String botStatus = "UP";
     final Status upStatus = new Status(botStatus);
-    final Health health = Health.status(upStatus).build();
+    final HealthComponent healthComponent = Health.status(upStatus).build();
     final HealthEndpoint healthEndpoint = EasyMock.createMock(HealthEndpoint.class);
 
-    expect(healthEndpoint.health()).andReturn(health);
+    expect(healthEndpoint.health()).andReturn(healthComponent);
     replay(healthEndpoint);
 
     final BotStatusServiceImpl botStatusService = new BotStatusServiceImpl(healthEndpoint);
