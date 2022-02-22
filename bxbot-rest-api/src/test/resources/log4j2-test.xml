@@ -20,7 +20,7 @@
     </Appenders>
     <Loggers>
         <!-- debug | info | warn | error | fatal -->
-        <Root level="info">
+        <Root level="error">
             <AppenderRef ref="STDOUT"/>
             <!--<AppenderRef ref="BXBot_RollingFile"/>-->
         </Root>

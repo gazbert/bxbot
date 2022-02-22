@@ -61,16 +61,16 @@ public abstract class AbstractControllerTest {
 
   protected static final String API_ENDPOINT_BASE_URI = "/api/v1";
 
-  // This must match a user's USERNAME in the user table in src/test/resources/import.sql
+  // This must match a user's USERNAME in the user table in src/main/config/import.sql
   protected static final String VALID_USER_NAME = "user";
 
-  // This must match a user's PASSWORD in the user table in src/test/resources/import.sql
+  // This must match a user's PASSWORD in the user table in src/main/resources/import.sql
   protected static final String VALID_USER_PASSWORD = "user";
 
-  // This must match a admin's USERNAME in the user table in src/test/resources/import.sql
+  // This must match a admin's USERNAME in the user table in src/main/resources/import.sql
   protected static final String VALID_ADMIN_NAME = "admin";
 
-  // This must match a admin's PASSWORD in the user table in src/test/resources/import.sql
+  // This must match a admin's PASSWORD in the user table in src/main/resources/import.sql
   protected static final String VALID_ADMIN_PASSWORD = "admin";
 
   // Used to convert Java objects into JSON
