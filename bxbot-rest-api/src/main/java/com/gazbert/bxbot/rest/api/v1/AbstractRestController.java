@@ -26,6 +26,7 @@ package com.gazbert.bxbot.rest.api.v1;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.info.Info;
 import io.swagger.v3.oas.annotations.info.License;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.context.annotation.PropertySource;
 
 /**
@@ -37,14 +38,15 @@ import org.springframework.context.annotation.PropertySource;
 @PropertySource({"classpath:swagger.properties"})
 @OpenAPIDefinition(
     info =
-    @Info(
-        title = "{swagger.info.title}",
-        version = "{application.version}",
-        description = "{swagger.info.description}",
-        license =
-        @License(
-            name = "MIT",
-            url = "https://github.com/gazbert/bxbot/blob/master/LICENSE"),
-        termsOfService = "https://github.com/gazbert/bxbot"))
-public class AbstractRestController {
+        @Info(
+            title = "${swagger.info.title}",
+            version = "${application.version}",
+            description = "${swagger.info.description}",
+            license =
+                @License(
+                    name = "MIT",
+                    url = "https://github.com/gazbert/bxbot/blob/master/LICENSE"),
+            termsOfService = "https://github.com/gazbert/bxbot"))
+@SecurityRequirement(name = "Authorization")
+public abstract class AbstractRestController {
 }

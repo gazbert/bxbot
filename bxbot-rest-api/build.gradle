@@ -19,6 +19,7 @@ dependencies {
     implementation libraries.h2
 
     implementation libraries.springdoc_openapi_ui
+    implementation libraries.springdoc_openapi_security
     implementation libraries.swagger_annotations
 
     testImplementation libraries.junit_vintage_engine
@@ -31,17 +32,17 @@ dependencies {
 }
 
 // FIXME: Broken with Gradle 7.3.3.
-//jacocoTestCoverageVerification {
-//    violationRules {
-//        rule {
-//            element = 'CLASS'
-//            excludes = [
-//            ]
-//            limit {
-//                counter = 'LINE'
-//                value = 'COVEREDRATIO'
-//                minimum = 0
-//            }
-//        }
-//    }
-//}
+jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            element = 'CLASS'
+            excludes = [
+            ]
+            limit {
+                counter = 'LINE'
+                value = 'COVEREDRATIO'
+                minimum = 0
+            }
+        }
+    }
+}

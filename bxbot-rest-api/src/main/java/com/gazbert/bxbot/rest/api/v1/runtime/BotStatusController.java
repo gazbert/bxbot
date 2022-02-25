@@ -36,6 +36,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.security.Principal;
 import java.util.Date;
 import org.apache.logging.log4j.LogManager;
@@ -54,6 +55,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping(RUNTIME_ENDPOINT_BASE_URI)
+@Tag(name = "Bot Status")
 public class BotStatusController extends AbstractRestController {
 
   private static final Logger LOG = LogManager.getLogger();

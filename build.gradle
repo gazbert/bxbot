@@ -26,7 +26,7 @@ ext.versions = [
         springBootVersion        : '2.6.3',
         springCloudVersion       : '3.1.0',
         springTxVersion          : '5.3.14',
-        springdocOpenapiVersion  : '1.5.12',
+        springdocOpenapiVersion  : '1.6.3',
         hibernateVaildatorVersion: '7.0.1.Final',
         jaxbVersion              : '2.3.1',
         javaxMailVersion         : '1.6.2',
@@ -68,6 +68,7 @@ ext.libraries = [
         snake_yaml                              : dependencies.create("org.yaml:snakeyaml:1.29"),
 
         springdoc_openapi_ui                    : dependencies.create("org.springdoc:springdoc-openapi-ui:" + ext.versions.springdocOpenapiVersion),
+        springdoc_openapi_security              : dependencies.create("org.springdoc:springdoc-openapi-security:" + ext.versions.springdocOpenapiVersion),
         swagger_annotations                     : dependencies.create("io.swagger.core.v3:swagger-annotations:2.1.11"),
 
         validation_api                          : dependencies.create("javax.validation:validation-api:2.0.1.Final"),

@@ -80,6 +80,14 @@
       <artifactId>javax.mail</artifactId>
       <scope>compile</scope>
     </dependency>
+    <dependency>
+      <groupId>org.springdoc</groupId>
+      <artifactId>springdoc-openapi-ui</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springdoc</groupId>
+      <artifactId>springdoc-openapi-security</artifactId>
+    </dependency>
 
     <!--
     Testing dependencies
