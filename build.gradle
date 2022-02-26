@@ -7,14 +7,14 @@ buildscript {
 
     dependencies {
         classpath('io.spring.gradle:dependency-management-plugin:1.0.11.RELEASE')
-        classpath('org.springframework.boot:spring-boot-gradle-plugin:2.6.2')
+        classpath('org.springframework.boot:spring-boot-gradle-plugin:2.6.4')
     }
 }
 
 plugins {
     id 'org.sonarqube' version '3.3'
     id 'jacoco'
-    id 'com.github.spotbugs' version '5.0.5'
+    id 'com.github.spotbugs' version '5.0.6'
 }
 
 buildScan {
@@ -23,14 +23,17 @@ buildScan {
 }
 
 ext.versions = [
-        springBootVersion        : '2.6.3',
-        springCloudVersion       : '3.1.0',
-        springTxVersion          : '5.3.14',
-        springdocOpenapiVersion  : '1.6.3',
+        springBootVersion        : '2.6.4',
+        springCloudVersion       : '3.1.1',
+
+        // Should be same as dependency used by springBootVersion
+        springCoreVersion        : '5.3.16',
+
+        springdocOpenapiVersion  : '1.6.6',
         hibernateVaildatorVersion: '7.0.1.Final',
         jaxbVersion              : '2.3.1',
         javaxMailVersion         : '1.6.2',
-        spotBugsVersion          : '4.5.3'
+        spotBugsVersion          : '4.5.3.0'
 ]
 
 ext.libraries = [
@@ -56,20 +59,20 @@ ext.libraries = [
         spring_cloud_starter                    : dependencies.create("org.springframework.cloud:spring-cloud-starter:" + ext.versions.springCloudVersion) {
             exclude module: "spring-boot-starter-logging"
         },
-        spring_tx                               : dependencies.create("org.springframework:spring-tx:" + ext.versions.springTxVersion),
+        spring_tx                               : dependencies.create("org.springframework:spring-tx:" + ext.versions.springCoreVersion),
         jjwt                                    : dependencies.create("io.jsonwebtoken:jjwt:0.9.1"),
         google_guava                            : dependencies.create("com.google.guava:guava:31.0.1-jre"),
-        google_gson                             : dependencies.create("com.google.code.gson:gson:2.8.9"),
+        google_gson                             : dependencies.create("com.google.code.gson:gson:2.9.0"),
         h2                                      : dependencies.create("com.h2database:h2:2.1.210"),
         javax_mail_api                          : dependencies.create("javax.mail:javax.mail-api:" + ext.versions.javaxMailVersion),
         javax_mail_sun                          : dependencies.create("com.sun.mail:javax.mail:" + ext.versions.javaxMailVersion),
         javax_xml_api                           : dependencies.create("javax.xml.bind:jaxb-api:" + ext.versions.jaxbVersion),
         javax_xml_impl                          : dependencies.create("com.sun.xml.bind:jaxb-impl:" + ext.versions.jaxbVersion),
-        snake_yaml                              : dependencies.create("org.yaml:snakeyaml:1.29"),
+        snake_yaml                              : dependencies.create("org.yaml:snakeyaml:1.30"),
 
         springdoc_openapi_ui                    : dependencies.create("org.springdoc:springdoc-openapi-ui:" + ext.versions.springdocOpenapiVersion),
         springdoc_openapi_security              : dependencies.create("org.springdoc:springdoc-openapi-security:" + ext.versions.springdocOpenapiVersion),
-        swagger_annotations                     : dependencies.create("io.swagger.core.v3:swagger-annotations:2.1.11"),
+        swagger_annotations                     : dependencies.create("io.swagger.core.v3:swagger-annotations:2.1.12"),
 
         validation_api                          : dependencies.create("javax.validation:validation-api:2.0.1.Final"),
         hibernate_validator                     : dependencies.create("org.hibernate.validator:hibernate-validator:" + ext.versions.hibernateVaildatorVersion),
@@ -85,7 +88,7 @@ ext.libraries = [
         spring_boot_starter_test                : dependencies.create("org.springframework.boot:spring-boot-starter-test:" + ext.versions.springBootVersion) {
             exclude module: "spring-boot-starter-logging"
         },
-        spring_security_test                    : dependencies.create("org.springframework.security:spring-security-test:5.6.0"),
+        spring_security_test                    : dependencies.create("org.springframework.security:spring-security-test:5.6.2"),
         awaitility                              : dependencies.create("org.awaitility:awaitility:4.1.1")
 ]
 
