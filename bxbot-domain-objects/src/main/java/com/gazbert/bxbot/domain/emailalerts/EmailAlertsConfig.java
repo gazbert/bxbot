@@ -34,7 +34,14 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @Schema
 public class EmailAlertsConfig {
 
+  @Schema(
+      required = true,
+      description =
+          "If set to true, the bot will send email alerts if it needs to shut down due to a "
+              + " critical error.")
   private boolean enabled;
+
+  @Schema(description = "The SMTP details. Only required if enabled is set to true.")
   private SmtpConfig smtpConfig;
 
   // Required by ConfigurableComponentFactory

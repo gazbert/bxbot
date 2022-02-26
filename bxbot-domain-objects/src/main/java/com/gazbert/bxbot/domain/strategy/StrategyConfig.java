@@ -37,13 +37,28 @@ import java.util.Map;
 @Schema
 public class StrategyConfig {
 
-  @Schema(required = true)
+  @Schema(
+      required = true,
+      description =
+          "A unique identifier for the Strategy. Value must be an alphanumeric string. "
+              + "Underscores and dashes are also permitted.")
   private String id;
 
+  @Schema(description = "An optional friendly name for the Strategy.")
   private String name;
+
+  @Schema(description = "An optional description of the Strategy.")
   private String description;
+
+  @Schema(required = true, description = "The fully qualified Strategy Class name, "
+      + "e.g. com.me.mybot.SuperStrat. Must be specified if beanName not set.")
   private String className;
+
+  @Schema(required = true, description = "The Strategy Spring Bean name. "
+      + "Must be specified if className not set.")
   private String beanName;
+
+  @Schema(description = "The optional Strategy config items.")
   private Map<String, String> configItems = new HashMap<>();
 
   // Required by ConfigurableComponentFactory

@@ -24,6 +24,7 @@
 
 package com.gazbert.bxbot.rest.api.security.authentication;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import javax.validation.constraints.NotNull;
 
 /**
@@ -33,6 +34,7 @@ import javax.validation.constraints.NotNull;
  */
 public class JwtAuthenticationResponse {
 
+  @Schema(required = true, description = "The JWT.")
   @NotNull(message = "Token cannot be null")
   private String token;
 

@@ -37,10 +37,25 @@ import javax.validation.constraints.Min;
 @Schema
 public class NetworkConfig {
 
-  @Min(message = "Connection must be more than 1 second", value = 1)
+  @Schema(
+      description =
+          "Optional connection timeout (secs) to wait for exchange response. Must be more than 1s."
+              + " Defaults to 30s.")
+  @Min(message = "Connection timeout must be more than 1 second", value = 1)
   private Integer connectionTimeout;
 
+  @Schema(
+      description =
+          "Optional list of HTTP status codes that will trigger the adapter to throw a non-fatal"
+              + " ExchangeNetworkException. This allows the bot to recover from temporary network"
+              + " issues.")
   private List<Integer> nonFatalErrorCodes;
+
+  @Schema(
+      description =
+          "An optional list of `java.io` Exception message content that will trigger the adapter"
+              + " to throw a non-fatal ExchangeNetworkException. This allows the bot to recover "
+              + "from temporary network issues.")
   private List<String> nonFatalErrorMessages;
 
   public NetworkConfig() {

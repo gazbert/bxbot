@@ -36,17 +36,24 @@ import javax.validation.constraints.Positive;
 @Schema(required = true)
 public class SmtpConfig {
 
+  @Schema(required = true, description = "The SMTP hostname.")
   private String host;
 
+  @Schema(required = true, description = "The SMTP TLS port.")
   @Positive(message = "Port must be positive integer")
   private int tlsPort;
 
+  @Schema(required = true, description = "The sender email account name.")
   private String accountUsername;
+
+  @Schema(required = true, description = "The sender email account password.")
   private String accountPassword;
 
+  @Schema(required = true, description = "The email From address.")
   @Email(message = "From Address must be a valid email address")
   private String fromAddress;
 
+  @Schema(required = true, description = "The email To address.")
   @Email(message = "To Address must be a valid email address")
   private String toAddress;
 

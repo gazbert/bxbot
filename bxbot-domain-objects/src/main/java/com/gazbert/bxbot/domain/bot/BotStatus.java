@@ -35,11 +35,16 @@ import java.util.Date;
 @Schema
 public class BotStatus {
 
-  @Schema(required = true)
+  @Schema(required = true, description = "The Bot ID.")
   private String botId;
 
+  @Schema(description = "The friendly name for the Bot.")
   private String displayName;
+
+  @Schema(description = "The Bot's runtime status.")
   private String status;
+
+  @Schema(description = "The current datetime.")
   private Date datetime;
 
   // Required by ConfigurableComponentFactory
