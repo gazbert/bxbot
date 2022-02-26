@@ -43,15 +43,17 @@
   </developers>
   <properties>
     <revision>1.2.1-SNAPSHOT</revision>
-    <!-- spring-tx should be same version as Spring Boot's spring-core version -->
-    <spring-tx.version>5.3.15</spring-tx.version>
+
+    <!-- Should be same as dependency used by spring-boot-starter.version -->
+    <spring-core.version>5.3.16</spring-core.version>
+
     <powermock.version>2.0.9</powermock.version>
-    <spring-boot-starter.version>2.6.3</spring-boot-starter.version>
-    <springdoc-openapi.version>1.6.3</springdoc-openapi.version>
+    <spring-boot-starter.version>2.6.4</spring-boot-starter.version>
+    <springdoc-openapi.version>1.6.6</springdoc-openapi.version>
     <jaxb-api.version>2.3.1</jaxb-api.version>
     <checkstlye.version>3.1.2</checkstlye.version>
-    <spotbugs.version>4.2.3</spotbugs.version>
-    <hibernate-vaildator.version>7.0.1.Final</hibernate-vaildator.version>
+    <spotbugs.version>4.5.3.0</spotbugs.version>
+    <hibernate-vaildator.version>7.0.2.Final</hibernate-vaildator.version>
     <javax-mail.version>1.6.2</javax-mail.version>
     <sonar.coverage.jacoco.xmlReportPaths>target/jacoco-report/jacoco.xml
     </sonar.coverage.jacoco.xmlReportPaths>
@@ -61,7 +63,7 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>2.6.3</version>
+    <version>2.6.4</version>
   </parent>
   <profiles>
     <profile>
@@ -147,7 +149,7 @@
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-tx</artifactId>
-        <version>${spring-tx.version}</version>
+        <version>${spring-core.version}</version>
       </dependency>
       <dependency>
         <groupId>org.springframework.boot</groupId>
@@ -193,7 +195,7 @@
       <dependency>
         <groupId>org.springframework.cloud</groupId>
         <artifactId>spring-cloud-starter</artifactId>
-        <version>3.1.0</version>
+        <version>3.1.1</version>
       </dependency>
       <dependency>
         <groupId>io.jsonwebtoken</groupId>
@@ -203,7 +205,7 @@
       <dependency>
         <groupId>com.google.code.gson</groupId>
         <artifactId>gson</artifactId>
-        <version>2.8.9</version>
+        <version>2.9.0</version>
         <scope>compile</scope>
       </dependency>
       <dependency>
@@ -241,7 +243,7 @@
       <dependency>
         <groupId>org.yaml</groupId>
         <artifactId>snakeyaml</artifactId>
-        <version>1.29</version>
+        <version>1.30</version>
       </dependency>
       <dependency>
         <groupId>org.springdoc</groupId>
@@ -256,7 +258,7 @@
       <dependency>
         <groupId>io.swagger.core.v3</groupId>
         <artifactId>swagger-annotations</artifactId>
-        <version>2.1.11</version>
+        <version>2.1.12</version>
       </dependency>
       <dependency>
         <groupId>javax.validation</groupId>
@@ -315,7 +317,7 @@
       <dependency>
         <groupId>org.springframework.security</groupId>
         <artifactId>spring-security-test</artifactId>
-        <version>5.6.0</version>
+        <version>5.6.2</version>
         <scope>test</scope>
       </dependency>
       <dependency>
@@ -363,7 +365,7 @@
         </plugin>
         <plugin>
           <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.8.1</version>
+          <version>3.10.0</version>
           <configuration>
             <source>11</source>
             <target>11</target>
@@ -374,7 +376,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-antrun-plugin</artifactId>
-          <version>1.8</version>
+          <version>3.0.0</version>
           <executions>
             <execution>
               <id>createDistLogDir</id>
@@ -398,7 +400,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-javadoc-plugin</artifactId>
-          <version>3.3.1</version>
+          <version>3.3.2</version>
           <executions>
             <execution>
               <id>attach-javadocs</id>
@@ -411,7 +413,7 @@
         <plugin>
           <groupId>org.springframework.boot</groupId>
           <artifactId>spring-boot-maven-plugin</artifactId>
-          <version>2.2.5.RELEASE</version>
+          <version>2.6.4</version>
           <executions>
             <execution>
               <goals>
