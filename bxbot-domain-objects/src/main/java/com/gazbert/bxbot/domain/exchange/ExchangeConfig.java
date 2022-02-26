@@ -53,8 +53,8 @@ public class ExchangeConfig {
 
   @Schema(
       description =
-          "Optional, but required by the inbuilt Exchange Adapters to configure their exchange trading "
-              + " API credentials - see the sample exchange.yaml config files for details")
+          "Optional, but required by the inbuilt Exchange Adapters to configure their exchange "
+              + "trading API credentials - see the sample exchange.yaml config files for details")
   private Map<String, String> authenticationConfig;
 
   @Schema(
