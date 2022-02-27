@@ -187,13 +187,13 @@ sonarqube {
 task buildZipDist(type: Zip) {
 
     archiveBaseName = 'bxbot-app'
-    archiveExtension = '.zip'
+    archiveExtension = 'zip'
 
-    into("$archiveBaseName-$archiveVersion") {
+    into ("bxbot-app-$project.version") {
 
         into('libs') {
             from 'bxbot-app/build/libs'
-            include '*.jar' //copy the fat jar created by bootRepackage
+            include "bxbot-app-${project.version}.jar" //copy the fat jar created by bootRepackage
         }
 
         into('') {
@@ -239,11 +239,11 @@ task buildTarGzipDist(type: Tar) {
     archiveExtension = 'tar.gz'
     compression = Compression.GZIP
 
-    into("$archiveBaseName-$archiveVersion") {
+    into("bxbot-app-$project.version") {
 
         into('libs') {
             from 'bxbot-app/build/libs'
-            include '*.jar' //copy the fat jar created by bootRepackage
+            include "bxbot-app-${project.version}.jar" //copy the fat jar created by bootRepackage
         }
 
         into('') {
