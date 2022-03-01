@@ -113,14 +113,7 @@ and evaluate the bot, Docker is the way to go.
 ## Build Guide
 If you plan on developing the bot, you'll need JDK 11+ installed on your dev box.
 
-You can use Gradle or Maven to build the bot and pull down the 
-dependencies. BX-bot depends on [Spring Boot](https://spring.io/projects/spring-boot), 
-[log4j](http://logging.apache.org/log4j), [JavaMail](https://java.net/projects/javamail/pages/Home), 
-[Google Gson](https://code.google.com/p/google-gson/), [Google Guava](https://github.com/google/guava), 
-[Snake YAML](https://bitbucket.org/asomov/snakeyaml), [Java JWT](https://github.com/jwtk/jjwt),
-[H2](https://www.h2database.com/html/main.html), [JAXB](https://javaee.github.io/jaxb-v2/),
-[Jakarta Bean Validation](https://beanvalidation.org/), [Springfox](https://github.com/springfox/springfox),
-and [Swagger](https://github.com/swagger-api/swagger-core).
+You can use Gradle or Maven to build the bot and pull down the dependencies.
 
 The instructions below are for Linux/macOS, but equivalent Windows scripts are included.
 
@@ -556,7 +549,7 @@ logs, but only administrators can update config and restart the bot.
 It is secured using [JWT](https://jwt.io/) and has [TLS](https://en.wikipedia.org/wiki/Transport_Layer_Security)
 support for Production environments. 
 
-You can view the [Swagger](https://swagger.io/tools/swagger-ui/) docs at: 
+You can view the [Springdocs](https://springdoc.org/) at: 
 [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html) once you've configured
 and started the bot.
 
@@ -600,7 +593,7 @@ The REST API endpoints require a valid JWT to be passed in the `Authorization` h
 To obtain a JWT, your REST client needs to call the `/api/token` endpoint with a valid username/password 
 contained in the `import.sql` file. See the 
 [Authentication](http://localhost:8080/swagger-ui.html#/Authentication/getTokenUsingPOST) 
-Swagger docs for how to do this.
+Springdocs for how to do this.
 
 The returned JWT expires after 10 mins. Your client should call the `/api/refresh` endpoint with the
 JWT before it expires in order to get a new one. Alternatively, you can re-authenticate using the
