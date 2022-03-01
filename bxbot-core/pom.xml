@@ -134,6 +134,17 @@
       <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
+        <configuration>
+          <!--
+            Ignore classes tested using Powermock. JaCoCo won't/can't instrument them:
+            "... right now there is NO WAY TO USE PowerMock with JaCoCo On-the-fly instrumentation."
+            See https://github.com/powermock/powermock/wiki/Code-coverage-with-JaCoCo
+           -->
+          <excludes>
+            <exclude>**/EmailAlerter*class</exclude> <!-- Powermock tests -->
+            <exclude>**/BxBot.class</exclude>        <!-- Nothing to test -->
+          </excludes>
+        </configuration>
         <executions>
           <execution>
             <id>jacoco-check</id>
@@ -143,12 +154,12 @@
             <configuration>
               <rules>
                 <rule>
-                  <element>BUNDLE</element>
+                  <element>CLASS</element>
                   <limits>
                     <limit>
                       <counter>LINE</counter>
                       <value>COVEREDRATIO</value>
-                      <minimum>0.7</minimum>
+                      <minimum>0.8</minimum>
                     </limit>
                   </limits>
                 </rule>

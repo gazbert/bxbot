@@ -26,6 +26,7 @@ package com.gazbert.bxbot.core.config.market;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
@@ -78,5 +79,13 @@ class TestMarketImpl {
     final MarketImpl market2 = new MarketImpl(null, "id-2", null, null);
     assertEquals(market1, market1);
     assertNotEquals(market1, market2);
+  }
+
+  @Test
+  void testToStringWorksAsExpected() {
+    final MarketImpl market =
+        new MarketImpl(MARKET_NAME, MARKET_ID, BASE_CURRENCY, COUNTER_CURRENCY);
+    market.setName(MARKET_NAME);
+    assertTrue(market.toString().contains(MARKET_NAME));
   }
 }

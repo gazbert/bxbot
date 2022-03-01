@@ -24,7 +24,10 @@
 package com.gazbert.bxbot.core.config.exchange;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.HashMap;
+import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -42,12 +45,27 @@ class TestOtherConfigImpl {
 
   @Test
   void testAddingAndFetchingOtherConfigItems() {
+
+    final Map<String, String> items = new HashMap<>();
+    items.put(BUY_FEE_CONFIG_ITEM_KEY, BUY_FEE_CONFIG_ITEM_VALUE);
+    items.put(SELL_FEE_CONFIG_ITEM_KEY, SELL_FEE_CONFIG_ITEM_VALUE);
+
     final OtherConfigImpl otherConfig = new OtherConfigImpl();
-    otherConfig.getItems().put(BUY_FEE_CONFIG_ITEM_KEY, BUY_FEE_CONFIG_ITEM_VALUE);
-    otherConfig.getItems().put(SELL_FEE_CONFIG_ITEM_KEY, SELL_FEE_CONFIG_ITEM_VALUE);
+    otherConfig.setItems(items);
 
     assertEquals(2, otherConfig.getItems().size());
-    assertEquals(BUY_FEE_CONFIG_ITEM_VALUE, otherConfig.getItems().get(BUY_FEE_CONFIG_ITEM_KEY));
-    assertEquals(SELL_FEE_CONFIG_ITEM_VALUE, otherConfig.getItems().get(SELL_FEE_CONFIG_ITEM_KEY));
+    assertEquals(BUY_FEE_CONFIG_ITEM_VALUE, otherConfig.getItem(BUY_FEE_CONFIG_ITEM_KEY));
+    assertEquals(SELL_FEE_CONFIG_ITEM_VALUE, otherConfig.getItem(SELL_FEE_CONFIG_ITEM_KEY));
+  }
+
+  @Test
+  void testToStringWorksAsExpected() {
+    final Map<String, String> items = new HashMap<>();
+    items.put(BUY_FEE_CONFIG_ITEM_KEY, BUY_FEE_CONFIG_ITEM_VALUE);
+    items.put(SELL_FEE_CONFIG_ITEM_KEY, SELL_FEE_CONFIG_ITEM_VALUE);
+
+    final OtherConfigImpl otherConfig = new OtherConfigImpl();
+    otherConfig.setItems(items);
+    assertTrue(otherConfig.toString().contains(items.toString()));
   }
 }

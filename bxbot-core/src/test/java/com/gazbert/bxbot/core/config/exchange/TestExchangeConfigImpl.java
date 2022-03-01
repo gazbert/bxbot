@@ -25,6 +25,7 @@ package com.gazbert.bxbot.core.config.exchange;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gazbert.bxbot.exchange.api.AuthenticationConfig;
 import com.gazbert.bxbot.exchange.api.NetworkConfig;
@@ -55,7 +56,7 @@ class TestExchangeConfigImpl {
   }
 
   @Test
-  void testSettersWorkAsExpected() {
+  void testSettersAndGettersWorkAsExpected() {
     final ExchangeConfigImpl exchangeConfig = new ExchangeConfigImpl();
 
     exchangeConfig.setExchangeName(EXCHANGE_NAME);
@@ -72,5 +73,12 @@ class TestExchangeConfigImpl {
 
     exchangeConfig.setOtherConfig(OTHER_CONFIG);
     assertEquals(OTHER_CONFIG, exchangeConfig.getOtherConfig());
+  }
+
+  @Test
+  void testToStringWorksAsExpected() {
+    final ExchangeConfigImpl exchangeConfig = new ExchangeConfigImpl();
+    exchangeConfig.setExchangeName(EXCHANGE_NAME);
+    assertTrue(exchangeConfig.toString().contains(EXCHANGE_NAME));
   }
 }

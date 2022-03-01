@@ -69,4 +69,11 @@ class TestNetworkConfigImpl {
     networkConfig.setNonFatalErrorMessages(NON_FATAL_ERROR_MESSAGES);
     assertEquals(NON_FATAL_ERROR_MESSAGES, networkConfig.getNonFatalErrorMessages());
   }
+
+  @Test
+  void testToStringWorksAsExpected() {
+    final NetworkConfigImpl networkConfig = new NetworkConfigImpl();
+    networkConfig.setConnectionTimeout(CONNECTION_TIMEOUT);
+    assertTrue(networkConfig.toString().contains(CONNECTION_TIMEOUT.toString()));
+  }
 }
