@@ -25,6 +25,7 @@ package com.gazbert.bxbot.exchanges.trading.api.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gazbert.bxbot.trading.api.OrderType;
 import java.math.BigDecimal;
@@ -70,5 +71,11 @@ class TestMarketOrderImpl {
 
     marketOrder.setTotal(TOTAL);
     assertEquals(TOTAL, marketOrder.getTotal());
+  }
+
+  @Test
+  void testToStringWorksAsExpected() {
+    final MarketOrderImpl marketOrder = new MarketOrderImpl(OrderType.BUY, PRICE, QUANTITY, TOTAL);
+    assertTrue(marketOrder.toString().contains(TOTAL.toString()));
   }
 }

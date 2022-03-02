@@ -25,6 +25,7 @@ package com.gazbert.bxbot.exchanges.trading.api.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -99,5 +100,11 @@ class TestBalanceInfoImpl {
     assertEquals(balancesOnHold, balanceInfo.getBalancesOnHold());
     assertEquals(BTC_BALANCE_ON_HOLD, balancesOnHold.get(BTC_CURRENCY_ID));
     assertEquals(USD_BALANCE_ON_HOLD, balancesOnHold.get(USD_CURRENCY_ID));
+  }
+
+  @Test
+  void testToStringWorksAsExpected() {
+    final BalanceInfoImpl balanceInfo = new BalanceInfoImpl(balancesAvailable, balancesOnHold);
+    assertTrue(balanceInfo.toString().contains(balancesAvailable.toString()));
   }
 }

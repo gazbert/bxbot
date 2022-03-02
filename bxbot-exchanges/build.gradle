@@ -55,19 +55,12 @@ jacocoTestCoverageVerification {
             // "... right now there is NO WAY TO USE PowerMock with JaCoCo On-the-fly instrumentation."
             // See https://github.com/powermock/powermock/wiki/Code-coverage-with-JaCoCo
             excludes = [
-                    'com.gazbert.bxbot.exchanges.BitfinexExchangeAdapter*',
-                    'com.gazbert.bxbot.exchanges.BitstampExchangeAdapter*',
-                    'com.gazbert.bxbot.exchanges.GeminiExchangeAdapter*',
-                    'com.gazbert.bxbot.exchanges.ItBitExchangeAdapter*',
-                    'com.gazbert.bxbot.exchanges.KrakenExchangeAdapter*',
-                    'com.gazbert.bxbot.exchanges.TestExchangeAdapter*',
-                    'com.gazbert.bxbot.exchanges.AbstractExchangeAdapter*',
-                    'com.gazbert.bxbot.exchanges.CoinbaseProExchangeAdapter*',
+                    'com.gazbert.bxbot.exchanges.*'
             ]
             limit {
                 counter = 'LINE'
                 value = 'COVEREDRATIO'
-                minimum = 0.3
+                minimum = 0.8
             }
         }
     }

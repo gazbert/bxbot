@@ -26,7 +26,8 @@ package com.gazbert.bxbot.core.config.strategy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.gazbert.bxbot.core.config.exchange.ExchangeConfigImpl;
+import java.util.HashMap;
+import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -44,9 +45,13 @@ class TestStrategyConfigItems {
 
   @Test
   void testAddingAndFetchingConfigItems() {
+
+    final Map<String, String> items = new HashMap<>();
+    items.put(BUY_PRICE_CONFIG_ITEM_KEY, BUY_PRICE_CONFIG_ITEM_VALUE);
+    items.put(AMOUNT_TO_BUY_CONFIG_ITEM_KEY, AMOUNT_TO_BUY_CONFIG_ITEM_VALUE);
+
     final StrategyConfigItems strategyConfig = new StrategyConfigItems();
-    strategyConfig.getItems().put(BUY_PRICE_CONFIG_ITEM_KEY, BUY_PRICE_CONFIG_ITEM_VALUE);
-    strategyConfig.getItems().put(AMOUNT_TO_BUY_CONFIG_ITEM_KEY, AMOUNT_TO_BUY_CONFIG_ITEM_VALUE);
+    strategyConfig.setItems(items);
 
     assertEquals(2, strategyConfig.getNumberOfConfigItems());
 

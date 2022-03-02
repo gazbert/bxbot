@@ -84,7 +84,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
  * @author gazbert
  */
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ConfigurableComponentFactory.class, Market.class, BalanceInfo.class})
+@PrepareForTest({ConfigurableComponentFactory.class})
 @PowerMockIgnore({
     "javax.crypto.*",
     "javax.management.*",

@@ -127,4 +127,11 @@ class TestMarketOrderBookImpl {
     marketOrderBook.setBuyOrders(buyOrders);
     assertEquals(buyOrders, marketOrderBook.getBuyOrders());
   }
+
+  @Test
+  void testToStringWorksAsExpected() {
+    final MarketOrderBookImpl marketOrderBook =
+        new MarketOrderBookImpl(MARKET_ID, sellOrders, buyOrders);
+    assertTrue(marketOrderBook.toString().contains(MARKET_ID));
+  }
 }

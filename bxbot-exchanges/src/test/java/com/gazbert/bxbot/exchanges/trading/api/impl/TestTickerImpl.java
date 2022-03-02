@@ -25,6 +25,7 @@ package com.gazbert.bxbot.exchanges.trading.api.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.math.BigDecimal;
 import org.junit.jupiter.api.Test;
@@ -104,5 +105,13 @@ class TestTickerImpl {
 
     ticker.setTimestamp(TIMESTAMP);
     assertEquals(TIMESTAMP, ticker.getTimestamp());
+  }
+
+  @Test
+  void testToStringWorksAsExpected() {
+    final TickerImpl ticker =
+        new TickerImpl(LAST, BID, ASK, LOW, HIGH, OPEN, VOLUME, VWAP, TIMESTAMP);
+
+    assertTrue(ticker.toString().contains(TIMESTAMP.toString()));
   }
 }
