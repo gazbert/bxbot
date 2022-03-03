@@ -37,9 +37,9 @@ import com.gazbert.bxbot.core.mail.EmailAlerter;
 import com.gazbert.bxbot.services.runtime.BotLogfileService;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.cloud.context.restart.RestartEndpoint;
@@ -47,7 +47,7 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
@@ -56,10 +56,10 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
  *
  * @author gazbert
  */
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest
 @WebAppConfiguration
-public class TestBotLogfileController extends AbstractRuntimeControllerTest {
+class TestBotLogfileController extends AbstractRuntimeControllerTest {
 
   private static final String LOGFILE_ENDPOINT_URI = RUNTIME_ENDPOINT_BASE_URI + "/logfile";
   private static final String LOGFILE_DOWNLOAD_URI = LOGFILE_ENDPOINT_URI + "/download";
@@ -83,21 +83,20 @@ public class TestBotLogfileController extends AbstractRuntimeControllerTest {
   @MockBean private RestartEndpoint restartEndpoint;
   @MockBean private AuthenticationManager authenticationManager;
 
-  @Before
-  public void setupBeforeEachTest() {
+  @BeforeEach
+  void setupBeforeEachTest() {
     mockMvc = MockMvcBuilders.webAppContextSetup(ctx).addFilter(springSecurityFilterChain).build();
   }
 
   @Test
-  public void testDownloadLogfile() throws Exception {
+  void testDownloadLogfile() throws Exception {
     final Resource resource = new ByteArrayResource(LOGFILE.getBytes(Charset.forName("UTF-8")));
     given(botLogfileService.getLogfileAsResource(MAX_LOGFILE_DOWNLOAD_SIZE)).willReturn(resource);
 
     mockMvc
         .perform(
             get(LOGFILE_DOWNLOAD_URI)
-                .header(
-                    "Authorization", "Bearer " + getJwt(VALID_USER_NAME, VALID_USER_PASSWORD)))
+                .header("Authorization", "Bearer " + getJwt(VALID_USER_NAME, VALID_USER_PASSWORD)))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(header().string("Content-Type", "application/octet-stream"))
@@ -107,15 +106,14 @@ public class TestBotLogfileController extends AbstractRuntimeControllerTest {
   }
 
   @Test
-  public void testDownloadLogfileReturnsInternalServerErrorForIoException() throws Exception {
+  void testDownloadLogfileReturnsInternalServerErrorForIoException() throws Exception {
     given(botLogfileService.getLogfileAsResource(MAX_LOGFILE_DOWNLOAD_SIZE))
         .willThrow(new IOException("Oops!"));
 
     mockMvc
         .perform(
             get(LOGFILE_DOWNLOAD_URI)
-                .header(
-                    "Authorization", "Bearer " + getJwt(VALID_USER_NAME, VALID_USER_PASSWORD)))
+                .header("Authorization", "Bearer " + getJwt(VALID_USER_NAME, VALID_USER_PASSWORD)))
         .andDo(print())
         .andExpect(status().is5xxServerError());
 
@@ -123,15 +121,14 @@ public class TestBotLogfileController extends AbstractRuntimeControllerTest {
   }
 
   @Test
-  public void testGetLogfile() throws Exception {
+  void testGetLogfile() throws Exception {
     given(botLogfileService.getLogfile(MAX_LOGFILE_LINES))
         .willReturn(LOGFILE_LINE_1 + System.lineSeparator() + LOGFILE_LINE_2);
 
     mockMvc
         .perform(
             get(LOGFILE_ENDPOINT_URI)
-                .header(
-                    "Authorization", "Bearer " + getJwt(VALID_USER_NAME, VALID_USER_PASSWORD)))
+                .header("Authorization", "Bearer " + getJwt(VALID_USER_NAME, VALID_USER_PASSWORD)))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$").value(LOGFILE_LINE_1 + System.lineSeparator() + LOGFILE_LINE_2));
@@ -140,15 +137,14 @@ public class TestBotLogfileController extends AbstractRuntimeControllerTest {
   }
 
   @Test
-  public void testGetLogfileHead() throws Exception {
+  void testGetLogfileHead() throws Exception {
     final int headLineCount = 1;
     given(botLogfileService.getLogfileHead(headLineCount)).willReturn(LOGFILE_LINE_1);
 
     mockMvc
         .perform(
             get(LOGFILE_ENDPOINT_URI + "?head=" + headLineCount)
-                .header(
-                    "Authorization", "Bearer " + getJwt(VALID_USER_NAME, VALID_USER_PASSWORD)))
+                .header("Authorization", "Bearer " + getJwt(VALID_USER_NAME, VALID_USER_PASSWORD)))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$").value(LOGFILE_LINE_1));
@@ -157,7 +153,7 @@ public class TestBotLogfileController extends AbstractRuntimeControllerTest {
   }
 
   @Test
-  public void testGetLogfileHeadWithTailParamSetToZero() throws Exception {
+  void testGetLogfileHeadWithTailParamSetToZero() throws Exception {
     final int headLineCount = 0;
     given(botLogfileService.getLogfile(MAX_LOGFILE_LINES))
         .willReturn(LOGFILE_LINE_2 + System.lineSeparator() + LOGFILE_LINE_3);
@@ -165,8 +161,7 @@ public class TestBotLogfileController extends AbstractRuntimeControllerTest {
     mockMvc
         .perform(
             get(LOGFILE_ENDPOINT_URI + "?head=" + headLineCount)
-                .header(
-                    "Authorization", "Bearer " + getJwt(VALID_USER_NAME, VALID_USER_PASSWORD)))
+                .header("Authorization", "Bearer " + getJwt(VALID_USER_NAME, VALID_USER_PASSWORD)))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$").value(LOGFILE_LINE_2 + System.lineSeparator() + LOGFILE_LINE_3));
@@ -175,7 +170,7 @@ public class TestBotLogfileController extends AbstractRuntimeControllerTest {
   }
 
   @Test
-  public void testGetLogfileHeadWhenRequestedLineCountExceedsMaxAllowed() throws Exception {
+  void testGetLogfileHeadWhenRequestedLineCountExceedsMaxAllowed() throws Exception {
     final int headLineCount = MAX_LOGFILE_LINES + 1;
     given(botLogfileService.getLogfileHead(MAX_LOGFILE_LINES))
         .willReturn(LOGFILE_LINE_1 + System.lineSeparator() + LOGFILE_LINE_2);
@@ -183,8 +178,7 @@ public class TestBotLogfileController extends AbstractRuntimeControllerTest {
     mockMvc
         .perform(
             get(LOGFILE_ENDPOINT_URI + "?head=" + headLineCount)
-                .header(
-                    "Authorization", "Bearer " + getJwt(VALID_USER_NAME, VALID_USER_PASSWORD)))
+                .header("Authorization", "Bearer " + getJwt(VALID_USER_NAME, VALID_USER_PASSWORD)))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$").value(LOGFILE_LINE_1 + System.lineSeparator() + LOGFILE_LINE_2));
@@ -193,15 +187,14 @@ public class TestBotLogfileController extends AbstractRuntimeControllerTest {
   }
 
   @Test
-  public void testGetLogfileTail() throws Exception {
+  void testGetLogfileTail() throws Exception {
     final int tailLineCount = 1;
     given(botLogfileService.getLogfileTail(tailLineCount)).willReturn(LOGFILE_LINE_3);
 
     mockMvc
         .perform(
             get(LOGFILE_ENDPOINT_URI + "?tail=" + tailLineCount)
-                .header(
-                    "Authorization", "Bearer " + getJwt(VALID_USER_NAME, VALID_USER_PASSWORD)))
+                .header("Authorization", "Bearer " + getJwt(VALID_USER_NAME, VALID_USER_PASSWORD)))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$").value(LOGFILE_LINE_3));
@@ -210,7 +203,7 @@ public class TestBotLogfileController extends AbstractRuntimeControllerTest {
   }
 
   @Test
-  public void testGetLogfileTailWithTailParamSetToZero() throws Exception {
+  void testGetLogfileTailWithTailParamSetToZero() throws Exception {
     final int tailLineCount = 0;
     given(botLogfileService.getLogfile(MAX_LOGFILE_LINES))
         .willReturn(LOGFILE_LINE_2 + System.lineSeparator() + LOGFILE_LINE_3);
@@ -218,8 +211,7 @@ public class TestBotLogfileController extends AbstractRuntimeControllerTest {
     mockMvc
         .perform(
             get(LOGFILE_ENDPOINT_URI + "?tail=" + tailLineCount)
-                .header(
-                    "Authorization", "Bearer " + getJwt(VALID_USER_NAME, VALID_USER_PASSWORD)))
+                .header("Authorization", "Bearer " + getJwt(VALID_USER_NAME, VALID_USER_PASSWORD)))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$").value(LOGFILE_LINE_2 + System.lineSeparator() + LOGFILE_LINE_3));
@@ -228,7 +220,7 @@ public class TestBotLogfileController extends AbstractRuntimeControllerTest {
   }
 
   @Test
-  public void testGetLogfileTailWhenRequestedLineCountExceedsMaxAllowed() throws Exception {
+  void testGetLogfileTailWhenRequestedLineCountExceedsMaxAllowed() throws Exception {
     final int tailLineCount = MAX_LOGFILE_LINES + 1;
     given(botLogfileService.getLogfileTail(MAX_LOGFILE_LINES))
         .willReturn(LOGFILE_LINE_2 + System.lineSeparator() + LOGFILE_LINE_3);
@@ -236,8 +228,7 @@ public class TestBotLogfileController extends AbstractRuntimeControllerTest {
     mockMvc
         .perform(
             get(LOGFILE_ENDPOINT_URI + "?tail=" + tailLineCount)
-                .header(
-                    "Authorization", "Bearer " + getJwt(VALID_USER_NAME, VALID_USER_PASSWORD)))
+                .header("Authorization", "Bearer " + getJwt(VALID_USER_NAME, VALID_USER_PASSWORD)))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$").value(LOGFILE_LINE_2 + System.lineSeparator() + LOGFILE_LINE_3));
@@ -246,15 +237,14 @@ public class TestBotLogfileController extends AbstractRuntimeControllerTest {
   }
 
   @Test
-  public void testGetLogfileReturnsInternalServerErrorForIoException() throws Exception {
+  void testGetLogfileReturnsInternalServerErrorForIoException() throws Exception {
     given(botLogfileService.getLogfile(MAX_LOGFILE_LINES))
         .willThrow(new IOException("Something bad happened!"));
 
     mockMvc
         .perform(
             get(LOGFILE_ENDPOINT_URI)
-                .header(
-                    "Authorization", "Bearer " + getJwt(VALID_USER_NAME, VALID_USER_PASSWORD)))
+                .header("Authorization", "Bearer " + getJwt(VALID_USER_NAME, VALID_USER_PASSWORD)))
         .andDo(print())
         .andExpect(status().is5xxServerError());
 
@@ -262,7 +252,7 @@ public class TestBotLogfileController extends AbstractRuntimeControllerTest {
   }
 
   @Test
-  public void testGetLogfileWhenUnauthorizedWithInvalidToken() throws Exception {
+  void testGetLogfileWhenUnauthorizedWithInvalidToken() throws Exception {
     mockMvc
         .perform(
             get(LOGFILE_ENDPOINT_URI)
@@ -272,7 +262,7 @@ public class TestBotLogfileController extends AbstractRuntimeControllerTest {
   }
 
   @Test
-  public void testGetLogfileWhenUnauthorizedWithMissingToken() throws Exception {
+  void testGetLogfileWhenUnauthorizedWithMissingToken() throws Exception {
     mockMvc
         .perform(get(LOGFILE_ENDPOINT_URI).accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isUnauthorized());

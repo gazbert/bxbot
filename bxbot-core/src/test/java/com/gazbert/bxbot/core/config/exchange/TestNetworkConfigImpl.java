@@ -23,20 +23,20 @@
 
 package com.gazbert.bxbot.core.config.exchange;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
 import java.util.List;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests Network Config exchange API config object behaves as expected.
  *
  * @author gazbert
  */
-public class TestNetworkConfigImpl {
+class TestNetworkConfigImpl {
 
   private static final Integer CONNECTION_TIMEOUT = 30;
   private static final List<Integer> NON_FATAL_ERROR_CODES = Arrays.asList(502, 503, 504);
@@ -47,7 +47,7 @@ public class TestNetworkConfigImpl {
           "Remote host closed connection during handshake");
 
   @Test
-  public void testInitialisationWorksAsExpected() {
+  void testInitialisationWorksAsExpected() {
 
     final NetworkConfigImpl networkConfig = new NetworkConfigImpl();
     assertNull(networkConfig.getConnectionTimeout());
@@ -56,7 +56,7 @@ public class TestNetworkConfigImpl {
   }
 
   @Test
-  public void testSettersWorkAsExpected() {
+  void testSettersWorkAsExpected() {
 
     final NetworkConfigImpl networkConfig = new NetworkConfigImpl();
 
@@ -68,5 +68,12 @@ public class TestNetworkConfigImpl {
 
     networkConfig.setNonFatalErrorMessages(NON_FATAL_ERROR_MESSAGES);
     assertEquals(NON_FATAL_ERROR_MESSAGES, networkConfig.getNonFatalErrorMessages());
+  }
+
+  @Test
+  void testToStringWorksAsExpected() {
+    final NetworkConfigImpl networkConfig = new NetworkConfigImpl();
+    networkConfig.setConnectionTimeout(CONNECTION_TIMEOUT);
+    assertTrue(networkConfig.toString().contains(CONNECTION_TIMEOUT.toString()));
   }
 }

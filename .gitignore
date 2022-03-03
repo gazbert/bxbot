@@ -25,14 +25,14 @@ hs_err_pid*
 **/logs
 **/out
 
-# Allow maven and gradle wrapper jars - we need these for TravisCI
+# Allow maven and gradle wrapper jars - we need these for GitHub Actions
 !.mvn/wrapper/maven-wrapper.jar
 !/gradle/wrapper/gradle-wrapper.jar
 
 # bot pid when running locally
 .bxbot.pid
 
-# Gradle
+# GradleF
 .gradle
 
 # IT test output

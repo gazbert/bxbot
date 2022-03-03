@@ -23,16 +23,19 @@
 
 package com.gazbert.bxbot.core.config.strategy;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.Test;
+import java.util.HashMap;
+import java.util.Map;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test the StrategyConfigItems behaves as expected.
  *
  * @author gazbert
  */
-public class TestStrategyConfigItems {
+class TestStrategyConfigItems {
 
   private static final String BUY_PRICE_CONFIG_ITEM_KEY = "buyPrice";
   private static final String BUY_PRICE_CONFIG_ITEM_VALUE = "671.15";
@@ -41,16 +44,34 @@ public class TestStrategyConfigItems {
   private static final String AMOUNT_TO_BUY_CONFIG_ITEM_VALUE = "0.5";
 
   @Test
-  public void testAddingAndFetchingConfigItems() {
-    final StrategyConfigItems strategyConfig = new StrategyConfigItems();
-    strategyConfig.getItems().put(BUY_PRICE_CONFIG_ITEM_KEY, BUY_PRICE_CONFIG_ITEM_VALUE);
-    strategyConfig.getItems().put(AMOUNT_TO_BUY_CONFIG_ITEM_KEY, AMOUNT_TO_BUY_CONFIG_ITEM_VALUE);
+  void testAddingAndFetchingConfigItems() {
 
-    assertEquals(2, strategyConfig.getItems().size());
+    final Map<String, String> items = new HashMap<>();
+    items.put(BUY_PRICE_CONFIG_ITEM_KEY, BUY_PRICE_CONFIG_ITEM_VALUE);
+    items.put(AMOUNT_TO_BUY_CONFIG_ITEM_KEY, AMOUNT_TO_BUY_CONFIG_ITEM_VALUE);
+
+    final StrategyConfigItems strategyConfig = new StrategyConfigItems();
+    strategyConfig.setItems(items);
+
+    assertEquals(2, strategyConfig.getNumberOfConfigItems());
+
+    assertTrue(strategyConfig.getConfigItemKeys().contains(BUY_PRICE_CONFIG_ITEM_KEY));
+    assertTrue(strategyConfig.getConfigItemKeys().contains(AMOUNT_TO_BUY_CONFIG_ITEM_KEY));
+
+    assertTrue(strategyConfig.getItems().containsValue(BUY_PRICE_CONFIG_ITEM_VALUE));
+    assertTrue(strategyConfig.getItems().containsValue(AMOUNT_TO_BUY_CONFIG_ITEM_VALUE));
+
     assertEquals(
-        BUY_PRICE_CONFIG_ITEM_VALUE, strategyConfig.getItems().get(BUY_PRICE_CONFIG_ITEM_KEY));
+        BUY_PRICE_CONFIG_ITEM_VALUE, strategyConfig.getConfigItem(BUY_PRICE_CONFIG_ITEM_KEY));
     assertEquals(
         AMOUNT_TO_BUY_CONFIG_ITEM_VALUE,
-        strategyConfig.getItems().get(AMOUNT_TO_BUY_CONFIG_ITEM_KEY));
+        strategyConfig.getConfigItem(AMOUNT_TO_BUY_CONFIG_ITEM_KEY));
+  }
+
+  @Test
+  void testToStringWorksAsExpected() {
+    final StrategyConfigItems strategyConfig = new StrategyConfigItems();
+    strategyConfig.getItems().put(BUY_PRICE_CONFIG_ITEM_KEY, BUY_PRICE_CONFIG_ITEM_VALUE);
+    assertTrue(strategyConfig.toString().contains(BUY_PRICE_CONFIG_ITEM_VALUE));
   }
 }

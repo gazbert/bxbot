@@ -23,19 +23,19 @@
 
 package com.gazbert.bxbot.domain.engine;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.math.BigDecimal;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests a EngineConfig domain object behaves as expected.
  *
  * @author gazbert
  */
-public class TestEngineConfig {
+class TestEngineConfig {
 
   private static final String BOT_ID = "avro-707_1";
   private static final String BOT_NAME = "Avro 707";
@@ -44,7 +44,7 @@ public class TestEngineConfig {
   private static final int TRADE_CYCLE_INTERVAL = 30;
 
   @Test
-  public void testInitialisationWorksAsExpected() {
+  void testInitialisationWorksAsExpected() {
     final EngineConfig engineConfig =
         new EngineConfig(
             BOT_ID,
@@ -61,7 +61,7 @@ public class TestEngineConfig {
   }
 
   @Test
-  public void testSettersWorkAsExpected() {
+  void testSettersWorkAsExpected() {
     final EngineConfig engineConfig = new EngineConfig();
     assertNull(engineConfig.getBotId());
     assertNull(engineConfig.getBotName());
@@ -86,7 +86,7 @@ public class TestEngineConfig {
   }
 
   @Test
-  public void testEqualsWorksAsExpected() {
+  void testEqualsWorksAsExpected() {
     final EngineConfig engineConfig1 =
         new EngineConfig(
             BOT_ID,
@@ -117,7 +117,7 @@ public class TestEngineConfig {
   }
 
   @Test
-  public void testHashCodeWorksAsExpected() {
+  void testHashCodeWorksAsExpected() {
     final EngineConfig engineConfig1 =
         new EngineConfig(
             BOT_ID,
@@ -148,7 +148,7 @@ public class TestEngineConfig {
   }
 
   @Test
-  public void testToStringWorksAsExpected() {
+  void testToStringWorksAsExpected() {
     final EngineConfig engineConfig =
         new EngineConfig(
             BOT_ID,

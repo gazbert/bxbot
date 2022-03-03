@@ -26,8 +26,15 @@ package com.gazbert.bxbot.rest.api.v1.config;
 import static com.gazbert.bxbot.rest.api.v1.EndpointLocations.CONFIG_ENDPOINT_BASE_URI;
 
 import com.gazbert.bxbot.domain.market.MarketConfig;
+import com.gazbert.bxbot.rest.api.v1.AbstractRestController;
 import com.gazbert.bxbot.services.config.MarketConfigService;
-import io.swagger.annotations.Api;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.security.Principal;
 import java.util.List;
 import org.apache.logging.log4j.LogManager;
@@ -44,7 +51,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import springfox.documentation.annotations.ApiIgnore;
 
 /**
  * Controller for directing Market config requests.
@@ -52,10 +58,10 @@ import springfox.documentation.annotations.ApiIgnore;
  * @author gazbert
  * @since 1.0
  */
-@Api(tags = {"Market Configuration"})
 @RestController
 @RequestMapping(CONFIG_ENDPOINT_BASE_URI)
-public class MarketConfigController {
+@Tag(name = "Market Configuration")
+public class MarketConfigController extends AbstractRestController {
 
   private static final Logger LOG = LogManager.getLogger();
   private static final String MARKETS_RESOURCE_PATH = "/markets";
@@ -74,7 +80,19 @@ public class MarketConfigController {
    */
   @PreAuthorize("hasRole('USER')")
   @GetMapping(value = MARKETS_RESOURCE_PATH)
-  public List<MarketConfig> getAllMarkets(@ApiIgnore Principal principal) {
+  @Operation(summary = "Fetches all Market config")
+  @ApiResponses(
+      value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "OK",
+            content = @Content(schema = @Schema(implementation = MarketConfig.class))),
+        @ApiResponse(
+            responseCode = "400",
+            description = "Bad Request",
+            content = @Content(schema = @Schema(implementation = String.class)))
+      })
+  public List<MarketConfig> getAllMarkets(@Parameter(hidden = true) Principal principal) {
 
     LOG.info(
         () ->
@@ -95,8 +113,24 @@ public class MarketConfigController {
    */
   @PreAuthorize("hasRole('USER')")
   @GetMapping(value = MARKETS_RESOURCE_PATH + "/{marketId}")
+  @Operation(summary = "Fetches a Market config")
+  @ApiResponses(
+      value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "OK",
+            content = @Content(schema = @Schema(implementation = MarketConfig.class))),
+        @ApiResponse(
+            responseCode = "404",
+            description = "Not Found",
+            content = @Content(schema = @Schema(implementation = String.class))),
+        @ApiResponse(
+            responseCode = "400",
+            description = "Bad Request",
+            content = @Content(schema = @Schema(implementation = String.class)))
+      })
   public ResponseEntity<MarketConfig> getMarket(
-      @ApiIgnore Principal principal, @PathVariable String marketId) {
+      @Parameter(hidden = true) Principal principal, @PathVariable String marketId) {
 
     LOG.info(
         () ->
@@ -119,13 +153,29 @@ public class MarketConfigController {
    * @param principal the authenticated user.
    * @param marketId id of the Market config to update.
    * @param config the updated Market config.
-   * @return 204 'No Content' HTTP status code if update successful, 404 'Not Found' HTTP status
-   *     code if Market config not found.
+   * @return 200 'OK' HTTP status code if update successful, 404 'Not Found' HTTP status code if
+   *     Market config not found.
    */
   @PreAuthorize("hasRole('ADMIN')")
   @PutMapping(value = MARKETS_RESOURCE_PATH + "/{marketId}")
+  @Operation(summary = "Updates a Market config")
+  @ApiResponses(
+      value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "OK",
+            content = @Content(schema = @Schema(implementation = MarketConfig.class))),
+        @ApiResponse(
+            responseCode = "404",
+            description = "Not Found",
+            content = @Content(schema = @Schema(implementation = String.class))),
+        @ApiResponse(
+            responseCode = "400",
+            description = "Bad Request",
+            content = @Content(schema = @Schema(implementation = String.class)))
+      })
   public ResponseEntity<MarketConfig> updateMarket(
-      @ApiIgnore Principal principal,
+      @Parameter(hidden = true) Principal principal,
       @PathVariable String marketId,
       @RequestBody MarketConfig config) {
 
@@ -160,8 +210,20 @@ public class MarketConfigController {
    */
   @PreAuthorize("hasRole('ADMIN')")
   @PostMapping(value = MARKETS_RESOURCE_PATH)
+  @Operation(summary = "Creates a Market config")
+  @ApiResponses(
+      value = {
+        @ApiResponse(
+            responseCode = "201",
+            description = "Created",
+            content = @Content(schema = @Schema(implementation = MarketConfig.class))),
+        @ApiResponse(
+            responseCode = "400",
+            description = "Bad Request",
+            content = @Content(schema = @Schema(implementation = String.class)))
+      })
   public ResponseEntity<MarketConfig> createMarket(
-      @ApiIgnore Principal principal, @RequestBody MarketConfig config) {
+      @Parameter(hidden = true) Principal principal, @RequestBody MarketConfig config) {
 
     LOG.info(
         () ->
@@ -185,8 +247,24 @@ public class MarketConfigController {
    */
   @PreAuthorize("hasRole('ADMIN')")
   @DeleteMapping(value = MARKETS_RESOURCE_PATH + "/{marketId}")
+  @Operation(summary = "Deletes a Market config")
+  @ApiResponses(
+      value = {
+        @ApiResponse(
+            responseCode = "204",
+            description = "No Content",
+            content = @Content(schema = @Schema(implementation = MarketConfig.class))),
+        @ApiResponse(
+            responseCode = "404",
+            description = "Not Found",
+            content = @Content(schema = @Schema(implementation = String.class))),
+        @ApiResponse(
+            responseCode = "400",
+            description = "Bad Request",
+            content = @Content(schema = @Schema(implementation = String.class)))
+      })
   public ResponseEntity<MarketConfig> deleteMarket(
-      @ApiIgnore Principal principal, @PathVariable String marketId) {
+      @Parameter(hidden = true) Principal principal, @PathVariable String marketId) {
 
     LOG.info(
         () ->

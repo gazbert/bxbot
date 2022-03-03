@@ -25,31 +25,47 @@ package com.gazbert.bxbot.domain.market;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
  * Domain object representing a Market config.
  *
  * @author gazbert
  */
-@ApiModel
+@Schema
 public class MarketConfig {
 
-  @ApiModelProperty(required = true, position = 1)
+  @Schema(
+      required = true,
+      description =
+          "A unique identifier for the Market. Value must be an alphanumeric string. "
+              + "Underscores and dashes are also permitted.")
   private String id;
 
+  @Schema(description = "An optional friendly name for the Market.")
   private String name;
+
+  @Schema(required = true, description = "The Market Base Currency.")
   private String baseCurrency;
+
+  @Schema(required = true, description = "The Market Counter Currency.")
   private String counterCurrency;
+
+  @Schema(required = true, description = "Enable trading on this Market?")
   private boolean enabled;
+
+  @Schema(required = true, description = "The Strategy ID to use for the Market.")
   private String tradingStrategyId;
 
   // Required by ConfigurableComponentFactory
   public MarketConfig() {
   }
 
-  /** Creates a MarketConfig from an existing one. */
+  /**
+   * Creates a MarketConfig from an existing one.
+   *
+   * @param other the MarketConfig to copy.
+   */
   public MarketConfig(MarketConfig other) {
     this.id = other.id;
     this.name = other.name;
@@ -59,7 +75,16 @@ public class MarketConfig {
     this.tradingStrategyId = other.tradingStrategyId;
   }
 
-  /** Creates a new MarketConfig. */
+  /**
+   * Creates a new MarketConfig.
+   *
+   * @param id the market ID.
+   * @param name the market name.
+   * @param baseCurrency the market base currency.
+   * @param counterCurrency the market counter currency.
+   * @param enabled is market enabled?
+   * @param tradingStrategyId the trading strategy id to use for the market.
+   */
   public MarketConfig(
       String id,
       String name,

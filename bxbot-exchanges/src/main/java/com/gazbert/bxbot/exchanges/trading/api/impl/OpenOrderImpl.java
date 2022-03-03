@@ -46,7 +46,18 @@ public final class OpenOrderImpl implements OpenOrder {
   private BigDecimal originalQuantity;
   private BigDecimal total;
 
-  /** Creates a new Open Order. */
+  /**
+   * Creates a new Open Order.
+   *
+   * @param id the order ID.
+   * @param creationDate the creation date.
+   * @param marketId the market ID.
+   * @param type the order type.
+   * @param price the price.
+   * @param quantity the quantity remaining.
+   * @param originalQuantity the original quantity.
+   * @param total the total cost.
+   */
   public OpenOrderImpl(
       String id,
       Date creationDate,

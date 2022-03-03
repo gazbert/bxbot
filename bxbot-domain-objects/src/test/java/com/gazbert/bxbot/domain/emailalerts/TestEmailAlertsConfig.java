@@ -23,31 +23,31 @@
 
 package com.gazbert.bxbot.domain.emailalerts;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests a EmailAlertsConfig domain object behaves as expected.
  *
  * @author gazbert
  */
-public class TestEmailAlertsConfig {
+class TestEmailAlertsConfig {
 
   private static final boolean ENABLED = true;
   private static final SmtpConfig SMTP_CONFIG = new SmtpConfig();
 
   @Test
-  public void testInitialisationWorksAsExpected() {
+  void testInitialisationWorksAsExpected() {
     final EmailAlertsConfig emailAlertsConfig = new EmailAlertsConfig(ENABLED, SMTP_CONFIG);
     assertEquals(ENABLED, emailAlertsConfig.isEnabled());
     assertEquals(SMTP_CONFIG, emailAlertsConfig.getSmtpConfig());
   }
 
   @Test
-  public void testSettersWorkAsExpected() {
+  void testSettersWorkAsExpected() {
     final EmailAlertsConfig emailAlertsConfig = new EmailAlertsConfig();
     assertFalse(emailAlertsConfig.isEnabled());
     assertNull(emailAlertsConfig.getSmtpConfig());
@@ -60,7 +60,7 @@ public class TestEmailAlertsConfig {
   }
 
   @Test
-  public void testToStringWorksAsExpected() {
+  void testToStringWorksAsExpected() {
     final EmailAlertsConfig emailAlertsConfig = new EmailAlertsConfig();
     emailAlertsConfig.setEnabled(ENABLED);
     emailAlertsConfig.setSmtpConfig(SMTP_CONFIG);

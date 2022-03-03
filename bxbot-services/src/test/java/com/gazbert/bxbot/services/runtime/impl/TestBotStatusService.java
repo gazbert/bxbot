@@ -29,8 +29,8 @@ import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
 
 import org.easymock.EasyMock;
-import org.junit.Test;
-import org.springframework.boot.actuate.health.Health;
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.actuate.health.HealthComponent;
 import org.springframework.boot.actuate.health.HealthEndpoint;
 import org.springframework.boot.actuate.health.Status;
 
@@ -39,22 +39,26 @@ import org.springframework.boot.actuate.health.Status;
  *
  * @author gazbert
  */
-public class TestBotStatusService {
+class TestBotStatusService {
 
   @Test
-  public void whenGetStatusCalledThenExpectBotStatusToBeReturned() {
+  void whenGetStatusCalledThenExpectBotStatusToBeReturned() {
     final String botStatus = "UP";
     final Status upStatus = new Status(botStatus);
-    final Health health = Health.status(upStatus).build();
+    final HealthComponent healthComponent = EasyMock.createMock(HealthComponent.class);
     final HealthEndpoint healthEndpoint = EasyMock.createMock(HealthEndpoint.class);
 
-    expect(healthEndpoint.health()).andReturn(health);
+    expect(healthEndpoint.health()).andReturn(healthComponent);
+    expect(healthComponent.getStatus()).andReturn(upStatus);
     replay(healthEndpoint);
+    replay(healthComponent);
 
     final BotStatusServiceImpl botStatusService = new BotStatusServiceImpl(healthEndpoint);
     final String fetchedBotStatus = botStatusService.getStatus();
 
     assertThat(fetchedBotStatus).isEqualTo(botStatus);
+
     verify(healthEndpoint);
+    verify(healthComponent);
   }
 }

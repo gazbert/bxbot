@@ -31,24 +31,24 @@ import com.gazbert.bxbot.core.mail.EmailAlerter;
 import com.gazbert.bxbot.rest.api.security.jwt.JwtUtils;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.actuate.logging.LogFileWebEndpoint;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.cloud.context.restart.RestartEndpoint;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 /**
  * Tests the JWT Authentication Entry Point behaves as expected.
  *
  * @author gazbert
  */
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest
-public class TestJwtAuthenticationEntryPoint {
+class TestJwtAuthenticationEntryPoint {
 
   @MockBean private HttpServletRequest request;
   @MockBean private HttpServletResponse response;
@@ -63,7 +63,7 @@ public class TestJwtAuthenticationEntryPoint {
   @MockBean private AuthenticationManager authenticationManager;
 
   @Test
-  public void whenCommenceCalledThenExpectUnauthorizedResponse() throws Exception {
+  void whenCommenceCalledThenExpectUnauthorizedResponse() throws Exception {
     final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint =
         new JwtAuthenticationEntryPoint();
     jwtAuthenticationEntryPoint.commence(request, response, authException);

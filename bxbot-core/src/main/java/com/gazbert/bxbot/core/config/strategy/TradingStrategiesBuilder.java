@@ -56,7 +56,14 @@ public class TradingStrategiesBuilder {
     this.tradingStrategyFactory = tradingStrategyFactory;
   }
 
-  /** Builds the Trading Strategy execution list. */
+  /**
+   * Builds the Trading Strategy execution list.
+   *
+   * @param strategies the strategies.
+   * @param markets the markets.
+   * @param exchangeAdapter the Exchange Adapter.
+   * @return the Trading Strategy list.
+   */
   public List<TradingStrategy> buildStrategies(
       List<StrategyConfig> strategies,
       List<MarketConfig> markets,

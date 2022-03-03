@@ -24,8 +24,7 @@
 package com.gazbert.bxbot.domain.bot;
 
 import com.google.common.base.MoreObjects;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.Date;
 
 /**
@@ -33,21 +32,33 @@ import java.util.Date;
  *
  * @author gazbert
  */
-@ApiModel
+@Schema
 public class BotStatus {
 
-  @ApiModelProperty(required = true, position = 1)
+  @Schema(required = true, description = "The Bot ID.")
   private String botId;
 
+  @Schema(description = "The friendly name for the Bot.")
   private String displayName;
+
+  @Schema(description = "The Bot's runtime status.")
   private String status;
+
+  @Schema(description = "The current datetime.")
   private Date datetime;
 
   // Required by ConfigurableComponentFactory
   public BotStatus() {
   }
 
-  /** Creates a new BotStatus. */
+  /**
+   * Creates a new BotStatus.
+   *
+   * @param botId the bot Id.
+   * @param displayName the bot display name.
+   * @param status the bot's status.
+   * @param datetime the current datetime.
+   */
   public BotStatus(String botId, String displayName, String status, Date datetime) {
     this.botId = botId;
     this.displayName = displayName;

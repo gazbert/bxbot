@@ -27,9 +27,16 @@ import static com.gazbert.bxbot.rest.api.v1.EndpointLocations.RUNTIME_ENDPOINT_B
 
 import com.gazbert.bxbot.domain.bot.BotStatus;
 import com.gazbert.bxbot.domain.engine.EngineConfig;
+import com.gazbert.bxbot.rest.api.v1.AbstractRestController;
 import com.gazbert.bxbot.services.config.EngineConfigService;
 import com.gazbert.bxbot.services.runtime.BotStatusService;
-import io.swagger.annotations.Api;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.security.Principal;
 import java.util.Date;
 import org.apache.logging.log4j.LogManager;
@@ -39,7 +46,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import springfox.documentation.annotations.ApiIgnore;
 
 /**
  * Controller for directing Bot Status requests.
@@ -47,10 +53,10 @@ import springfox.documentation.annotations.ApiIgnore;
  * @author gazbert
  * @since 1.0
  */
-@Api(tags = {"Bot Status"})
 @RestController
 @RequestMapping(RUNTIME_ENDPOINT_BASE_URI)
-public class BotStatusController {
+@Tag(name = "Bot Status")
+public class BotStatusController extends AbstractRestController {
 
   private static final Logger LOG = LogManager.getLogger();
   private static final String STATUS_RESOURCE_PATH = "/status";
@@ -73,7 +79,19 @@ public class BotStatusController {
    */
   @PreAuthorize("hasRole('USER')")
   @GetMapping(value = STATUS_RESOURCE_PATH)
-  public BotStatus getStatus(@ApiIgnore Principal principal) {
+  @Operation(summary = "Fetches the bot status")
+  @ApiResponses(
+      value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "OK",
+            content = @Content(schema = @Schema(implementation = BotStatus.class))),
+        @ApiResponse(
+            responseCode = "400",
+            description = "Bad Request",
+            content = @Content(schema = @Schema(implementation = String.class)))
+      })
+  public BotStatus getStatus(@Parameter(hidden = true) Principal principal) {
 
     LOG.info(
         () -> "GET " + STATUS_RESOURCE_PATH + " - getStatus() - caller: " + principal.getName());

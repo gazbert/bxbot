@@ -25,8 +25,7 @@ package com.gazbert.bxbot.domain.engine;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.math.BigDecimal;
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.Min;
@@ -36,18 +35,43 @@ import javax.validation.constraints.Min;
  *
  * @author gazbert
  */
-@ApiModel
+@Schema
 public class EngineConfig {
 
-  @ApiModelProperty(required = true, position = 1)
+  @Schema(
+      required = true,
+      description =
+          "A unique identifier for the bot. Value must be an alphanumeric string."
+              + " Underscores and dashes are also permitted.")
   private String botId;
 
+  @Schema(description = "A friendly name for the bot. Value must be an alphanumeric string. "
+      + "Spaces are allowed.")
   private String botName;
+
+  @Schema(
+      required = true,
+      description =
+          "This is normally the currency you intend to hold a long position in. It should be set "
+              + "to the currency short code for the wallet, e.g. BTC, LTC, USD.")
   private String emergencyStopCurrency;
 
+  @Schema(
+      required = true,
+      description =
+          "The Trading Engine checks this value at the start of every trade cycle: if "
+              + "your emergencyStopCurrency wallet balance on the exchange drops below this "
+              + "value, the Trading Engine will log it, send an Email Alert (if configured)"
+              + " and then shut down. If you set this value to 0, the bot will bypass the check"
+              + " - be careful.")
   @DecimalMin(message = "Emergency Stop Balance must be 0 or more", value = "0")
   private BigDecimal emergencyStopBalance;
 
+  @Schema(
+      required = true,
+      description =
+          "The interval in (secs) that the Trading Engine will wait/sleep before executing"
+              + " each trade cycle. The minimum value is 1 second.")
   @Min(value = 1, message = "Trace Cycle Interval must be more than 1 second")
   private int tradeCycleInterval;
 
@@ -55,7 +79,15 @@ public class EngineConfig {
   public EngineConfig() {
   }
 
-  /** Creates an EngineConfig. */
+  /**
+   * Creates an EngineConfig.
+   *
+   * @param botId the bot ID.
+   * @param botName the bot name.
+   * @param emergencyStopCurrency  the emergency stop currency.
+   * @param emergencyStopBalance the emergency stop balance.
+   * @param tradeCycleInterval the trade cycle interval (in secs).
+   */
   public EngineConfig(
       String botId,
       String botName,

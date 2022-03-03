@@ -26,8 +26,15 @@ package com.gazbert.bxbot.rest.api.v1.config;
 import static com.gazbert.bxbot.rest.api.v1.EndpointLocations.CONFIG_ENDPOINT_BASE_URI;
 
 import com.gazbert.bxbot.domain.strategy.StrategyConfig;
+import com.gazbert.bxbot.rest.api.v1.AbstractRestController;
 import com.gazbert.bxbot.services.config.StrategyConfigService;
-import io.swagger.annotations.Api;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.security.Principal;
 import java.util.List;
 import org.apache.logging.log4j.LogManager;
@@ -44,7 +51,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import springfox.documentation.annotations.ApiIgnore;
 
 /**
  * Controller for directing Strategy config requests.
@@ -52,10 +58,10 @@ import springfox.documentation.annotations.ApiIgnore;
  * @author gazbert
  * @since 1.0
  */
-@Api(tags = {"Strategy Configuration"})
 @RestController
 @RequestMapping(CONFIG_ENDPOINT_BASE_URI)
-public class StrategyConfigController {
+@Tag(name = "Strategy Configuration")
+public class StrategyConfigController extends AbstractRestController {
 
   private static final Logger LOG = LogManager.getLogger();
   private static final String STRATEGIES_RESOURCE_PATH = "/strategies";
@@ -74,7 +80,19 @@ public class StrategyConfigController {
    */
   @PreAuthorize("hasRole('USER')")
   @GetMapping(value = STRATEGIES_RESOURCE_PATH)
-  public List<StrategyConfig> getAllStrategies(@ApiIgnore Principal principal) {
+  @Operation(summary = "Fetches all Strategy config")
+  @ApiResponses(
+      value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "OK",
+            content = @Content(schema = @Schema(implementation = StrategyConfig.class))),
+        @ApiResponse(
+            responseCode = "400",
+            description = "Bad Request",
+            content = @Content(schema = @Schema(implementation = String.class)))
+      })
+  public List<StrategyConfig> getAllStrategies(@Parameter(hidden = true) Principal principal) {
 
     LOG.info(
         () ->
@@ -98,8 +116,24 @@ public class StrategyConfigController {
    */
   @PreAuthorize("hasRole('USER')")
   @GetMapping(value = STRATEGIES_RESOURCE_PATH + "/{strategyId}")
+  @Operation(summary = "Fetches a Strategy config")
+  @ApiResponses(
+      value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "OK",
+            content = @Content(schema = @Schema(implementation = StrategyConfig.class))),
+        @ApiResponse(
+            responseCode = "404",
+            description = "Not Found",
+            content = @Content(schema = @Schema(implementation = String.class))),
+        @ApiResponse(
+            responseCode = "400",
+            description = "Bad Request",
+            content = @Content(schema = @Schema(implementation = String.class)))
+      })
   public ResponseEntity<StrategyConfig> getStrategy(
-      @ApiIgnore Principal principal, @PathVariable String strategyId) {
+      @Parameter(hidden = true) Principal principal, @PathVariable String strategyId) {
 
     LOG.info(
         () ->
@@ -127,8 +161,24 @@ public class StrategyConfigController {
    */
   @PreAuthorize("hasRole('ADMIN')")
   @PutMapping(value = STRATEGIES_RESOURCE_PATH + "/{strategyId}")
+  @Operation(summary = "Updates a Strategy config")
+  @ApiResponses(
+      value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "OK",
+            content = @Content(schema = @Schema(implementation = StrategyConfig.class))),
+        @ApiResponse(
+            responseCode = "404",
+            description = "Not Found",
+            content = @Content(schema = @Schema(implementation = String.class))),
+        @ApiResponse(
+            responseCode = "400",
+            description = "Bad Request",
+            content = @Content(schema = @Schema(implementation = String.class)))
+      })
   public ResponseEntity<StrategyConfig> updateStrategy(
-      @ApiIgnore Principal principal,
+      @Parameter(hidden = true) Principal principal,
       @PathVariable String strategyId,
       @RequestBody StrategyConfig config) {
 
@@ -163,8 +213,24 @@ public class StrategyConfigController {
    */
   @PreAuthorize("hasRole('ADMIN')")
   @PostMapping(value = STRATEGIES_RESOURCE_PATH)
+  @Operation(summary = "Creates a Strategy config")
+  @ApiResponses(
+      value = {
+        @ApiResponse(
+            responseCode = "201",
+            description = "Created",
+            content = @Content(schema = @Schema(implementation = StrategyConfig.class))),
+        @ApiResponse(
+            responseCode = "404",
+            description = "Not Found",
+            content = @Content(schema = @Schema(implementation = String.class))),
+        @ApiResponse(
+            responseCode = "400",
+            description = "Bad Request",
+            content = @Content(schema = @Schema(implementation = String.class)))
+      })
   public ResponseEntity<StrategyConfig> createStrategy(
-      @ApiIgnore Principal principal, @RequestBody StrategyConfig config) {
+      @Parameter(hidden = true) Principal principal, @RequestBody StrategyConfig config) {
 
     LOG.info(
         () ->
@@ -191,8 +257,24 @@ public class StrategyConfigController {
    */
   @PreAuthorize("hasRole('ADMIN')")
   @DeleteMapping(value = STRATEGIES_RESOURCE_PATH + "/{strategyId}")
+  @Operation(summary = "Deletes a Strategy config")
+  @ApiResponses(
+      value = {
+        @ApiResponse(
+            responseCode = "204",
+            description = "No Content",
+            content = @Content(schema = @Schema(implementation = StrategyConfig.class))),
+        @ApiResponse(
+            responseCode = "404",
+            description = "Not Found",
+            content = @Content(schema = @Schema(implementation = String.class))),
+        @ApiResponse(
+            responseCode = "400",
+            description = "Bad Request",
+            content = @Content(schema = @Schema(implementation = String.class)))
+      })
   public ResponseEntity<StrategyConfig> deleteStrategy(
-      @ApiIgnore Principal principal, @PathVariable String strategyId) {
+      @Parameter(hidden = true) Principal principal, @PathVariable String strategyId) {
 
     LOG.info(
         () ->

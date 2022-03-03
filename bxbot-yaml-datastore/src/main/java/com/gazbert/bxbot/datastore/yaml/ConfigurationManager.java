@@ -56,7 +56,14 @@ public final class ConfigurationManager {
   private ConfigurationManager() {
   }
 
-  /** Loads the config from the YAML file. */
+  /**
+   * Loads the config from the YAML file.
+   *
+   * @param configClass the config class.
+   * @param yamlConfigFile the YAML config filename.
+   * @param <T> the type of config.
+   * @return the loaded config.
+   */
   public static synchronized <T> T loadConfig(final Class<T> configClass, String yamlConfigFile) {
 
     LOG.info(
@@ -82,7 +89,14 @@ public final class ConfigurationManager {
     }
   }
 
-  /** Saves the config to the YAML file. */
+  /**
+   * Saves the config to the YAML file.
+   *
+   * @param configClass the config Class.
+   * @param config the config object to save.
+   * @param yamlConfigFile the YAML config filename.
+   * @param <T> the type of config.
+   */
   public static synchronized <T> void saveConfig(
       Class<T> configClass, T config, String yamlConfigFile) {
 

@@ -23,19 +23,19 @@
 
 package com.gazbert.bxbot.domain.market;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests a MarketConfig domain object behaves as expected.
  *
  * @author gazbert
  */
-public class TestMarketConfig {
+class TestMarketConfig {
 
   private static final String ID = "gemini_usd/btc";
   private static final String NAME = "BTC/USD";
@@ -45,7 +45,7 @@ public class TestMarketConfig {
   private static final String TRADING_STRATEGY = "macd_trend_follower";
 
   @Test
-  public void testInitialisationWorksAsExpected() {
+  void testInitialisationWorksAsExpected() {
     final MarketConfig marketConfig =
         new MarketConfig(ID, NAME, BASE_CURRENCY, COUNTER_CURRENCY, IS_ENABLED, TRADING_STRATEGY);
 
@@ -58,7 +58,7 @@ public class TestMarketConfig {
   }
 
   @Test
-  public void testSettersWorkAsExpected() {
+  void testSettersWorkAsExpected() {
     final MarketConfig marketConfig = new MarketConfig();
     assertNull(marketConfig.getId());
     assertNull(marketConfig.getName());
@@ -87,7 +87,7 @@ public class TestMarketConfig {
   }
 
   @Test
-  public void testCloningWorksAsExpected() {
+  void testCloningWorksAsExpected() {
     final MarketConfig marketConfig =
         new MarketConfig(ID, NAME, BASE_CURRENCY, COUNTER_CURRENCY, IS_ENABLED, TRADING_STRATEGY);
     final MarketConfig clonedMarketConfig = new MarketConfig(marketConfig);
@@ -96,7 +96,7 @@ public class TestMarketConfig {
   }
 
   @Test
-  public void testEqualsWorksAsExpected() {
+  void testEqualsWorksAsExpected() {
     final MarketConfig market1 =
         new MarketConfig(ID, NAME, BASE_CURRENCY, COUNTER_CURRENCY, IS_ENABLED, TRADING_STRATEGY);
     final MarketConfig market2 =
@@ -112,7 +112,7 @@ public class TestMarketConfig {
   }
 
   @Test
-  public void testHashCodeWorksAsExpected() {
+  void testHashCodeWorksAsExpected() {
     final MarketConfig market1 =
         new MarketConfig(ID, NAME, BASE_CURRENCY, COUNTER_CURRENCY, IS_ENABLED, TRADING_STRATEGY);
     final MarketConfig market2 =
@@ -128,7 +128,7 @@ public class TestMarketConfig {
   }
 
   @Test
-  public void testToStringWorksAsExpected() {
+  void testToStringWorksAsExpected() {
     final MarketConfig market1 =
         new MarketConfig(ID, NAME, BASE_CURRENCY, COUNTER_CURRENCY, IS_ENABLED, TRADING_STRATEGY);
 

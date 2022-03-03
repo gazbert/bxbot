@@ -39,7 +39,14 @@ public final class MarketImpl implements Market {
   private String baseCurrency;
   private String counterCurrency;
 
-  /** Creates a new MarketImpl. */
+  /**
+   * Creates a new MarketImpl.
+   *
+   * @param name the name of the market.
+   * @param id the ID of the the market.
+   * @param baseCurrency the market base currency.
+   * @param counterCurrency the market counter currency.
+   */
   public MarketImpl(String name, String id, String baseCurrency, String counterCurrency) {
     this.id = id;
     this.name = name;

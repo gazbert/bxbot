@@ -2,17 +2,15 @@ description = 'BX-bot Domain Objects'
 
 dependencies {
 
-    compile libraries.spring_boot_starter_log4j2
-    compile libraries.google_guava
-    compile libraries.validation_api
-    compile libraries.hibernate_validator
-    compile libraries.hibernate_validator_annotation_processor
-//    compile libraries.springfox_swagger2
-//    compile libraries.springfox_swagger_ui
-//    compile libraries.springfox_bean_validators
-    compile libraries.swagger_annotations
+    implementation libraries.spring_boot_starter_log4j2
+    implementation libraries.google_guava
+    implementation libraries.validation_api
+    implementation libraries.hibernate_validator
+    implementation libraries.hibernate_validator_annotation_processor
+    implementation libraries.springdoc_openapi_ui
+    implementation libraries.swagger_annotations
 
-    testCompile libraries.spring_boot_starter_test
+    testImplementation libraries.spring_boot_starter_test
 }
 
 jacocoTestCoverageVerification {

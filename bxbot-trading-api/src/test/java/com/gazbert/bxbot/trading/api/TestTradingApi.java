@@ -23,29 +23,29 @@
 
 package com.gazbert.bxbot.trading.api;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.math.BigDecimal;
 import java.util.List;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests default impl methods of TradingApi interface.
  *
  * @author gazbert
  */
-public class TestTradingApi {
+class TestTradingApi {
 
   @Test
-  public void testGetVersion() {
+  void testGetVersion() {
     final MyApiImpl myApi = new MyApiImpl();
     assertEquals("1.1", myApi.getVersion());
   }
 
   @Test
-  public void testGetTicker() throws Exception {
+  void testGetTicker() throws Exception {
     final MyApiImpl myApi = new MyApiImpl();
     final Ticker ticker = myApi.getTicker("market-123");
     assertNotNull(ticker);

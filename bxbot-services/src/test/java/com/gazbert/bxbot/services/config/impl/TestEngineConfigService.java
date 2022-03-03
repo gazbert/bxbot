@@ -30,19 +30,18 @@ import static org.easymock.EasyMock.verify;
 
 import com.gazbert.bxbot.domain.engine.EngineConfig;
 import com.gazbert.bxbot.repository.EngineConfigRepository;
-import com.gazbert.bxbot.services.config.impl.EngineConfigServiceImpl;
 import org.easymock.EasyMock;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests Engine configuration service behaves as expected.
  *
  * @author gazbert
  */
-public class TestEngineConfigService {
+class TestEngineConfigService {
 
   @Test
-  public void whenGetEngineConfigCalledThenExpectConfigToBeReturned() {
+  void whenGetEngineConfigCalledThenExpectConfigToBeReturned() {
     final EngineConfig engineConfig = new EngineConfig();
     final EngineConfigRepository engineConfigRepository =
         EasyMock.createMock(EngineConfigRepository.class);
@@ -57,7 +56,7 @@ public class TestEngineConfigService {
   }
 
   @Test
-  public void whenUpdateEngineConfigCalledThenExpectUpdatedConfigToBeReturned() {
+  void whenUpdateEngineConfigCalledThenExpectUpdatedConfigToBeReturned() {
     final EngineConfig engineConfig = new EngineConfig();
     final EngineConfigRepository engineConfigRepository =
         EasyMock.createMock(EngineConfigRepository.class);

@@ -26,8 +26,16 @@ package com.gazbert.bxbot.rest.api.v1.config;
 import static com.gazbert.bxbot.rest.api.v1.EndpointLocations.CONFIG_ENDPOINT_BASE_URI;
 
 import com.gazbert.bxbot.domain.emailalerts.EmailAlertsConfig;
+import com.gazbert.bxbot.domain.engine.EngineConfig;
+import com.gazbert.bxbot.rest.api.v1.AbstractRestController;
 import com.gazbert.bxbot.services.config.EmailAlertsConfigService;
-import io.swagger.annotations.Api;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.security.Principal;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -40,7 +48,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import springfox.documentation.annotations.ApiIgnore;
 
 /**
  * Controller for directing Email Alerts config requests.
@@ -52,10 +59,10 @@ import springfox.documentation.annotations.ApiIgnore;
  * @author gazbert
  * @since 1.0
  */
-@Api(tags = {"Email Alerts Configuration"})
 @RestController
 @RequestMapping(CONFIG_ENDPOINT_BASE_URI)
-public class EmailAlertsConfigController {
+@Tag(name = "Email Alerts Configuration")
+public class EmailAlertsConfigController extends AbstractRestController {
 
   private static final Logger LOG = LogManager.getLogger();
   private static final String EMAIL_ALERTS_RESOURCE_PATH = "/email-alerts";
@@ -74,7 +81,19 @@ public class EmailAlertsConfigController {
    */
   @PreAuthorize("hasRole('USER')")
   @GetMapping(value = EMAIL_ALERTS_RESOURCE_PATH)
-  public EmailAlertsConfig getEmailAlerts(@ApiIgnore Principal principal) {
+  @Operation(summary = "Fetches Email Alerts config")
+  @ApiResponses(
+      value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "OK",
+            content = @Content(schema = @Schema(implementation = EngineConfig.class))),
+        @ApiResponse(
+            responseCode = "400",
+            description = "Bad Request",
+            content = @Content(schema = @Schema(implementation = String.class)))
+      })
+  public EmailAlertsConfig getEmailAlerts(@Parameter(hidden = true) Principal principal) {
 
     LOG.info(
         () ->
@@ -98,8 +117,20 @@ public class EmailAlertsConfigController {
    */
   @PreAuthorize("hasRole('ADMIN')")
   @PutMapping(value = EMAIL_ALERTS_RESOURCE_PATH)
+  @Operation(summary = "Updates Email Alerts config")
+  @ApiResponses(
+      value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "OK",
+            content = @Content(schema = @Schema(implementation = EngineConfig.class))),
+        @ApiResponse(
+            responseCode = "400",
+            description = "Bad Request",
+            content = @Content(schema = @Schema(implementation = String.class)))
+      })
   public ResponseEntity<EmailAlertsConfig> updateEmailAlerts(
-      @ApiIgnore Principal principal, @RequestBody EmailAlertsConfig config) {
+      @Parameter(hidden = true) Principal principal, @RequestBody EmailAlertsConfig config) {
 
     LOG.info(
         () ->

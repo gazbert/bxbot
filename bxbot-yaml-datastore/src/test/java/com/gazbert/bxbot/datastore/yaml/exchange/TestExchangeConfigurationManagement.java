@@ -24,7 +24,8 @@
 package com.gazbert.bxbot.datastore.yaml.exchange;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gazbert.bxbot.datastore.yaml.ConfigurationManager;
 import com.gazbert.bxbot.domain.exchange.ExchangeConfig;
@@ -35,14 +36,14 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests the Exchange Adapter configuration is loaded as expected.
  *
  * @author gazbert
  */
-public class TestExchangeConfigurationManagement {
+class TestExchangeConfigurationManagement {
 
   private static final String VALID_YAML_CONFIG_FILENAME =
       "src/test/config/exchange/valid-exchange.yaml";
@@ -82,7 +83,7 @@ public class TestExchangeConfigurationManagement {
   private static final String SELL_FEE_CONFIG_ITEM_VALUE = "0.5";
 
   @Test
-  public void testLoadingValidYamlConfigFileIsSuccessful() {
+  void testLoadingValidYamlConfigFileIsSuccessful() {
     final ExchangeType exchangeType =
         ConfigurationManager.loadConfig(ExchangeType.class, VALID_YAML_CONFIG_FILENAME);
 
@@ -117,18 +118,22 @@ public class TestExchangeConfigurationManagement {
         .isEqualTo(SELL_FEE_CONFIG_ITEM_VALUE);
   }
 
-  @Test(expected = IllegalStateException.class)
-  public void testLoadingMissingYamlConfigFileThrowsException() {
-    ConfigurationManager.loadConfig(ExchangeType.class, MISSING_XML_CONFIG_FILENAME);
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testLoadingInvalidYamlConfigFileThrowsException() {
-    ConfigurationManager.loadConfig(ExchangeType.class, INVALID_YAML_CONFIG_FILENAME);
+  @Test
+  void testLoadingMissingYamlConfigFileThrowsException() {
+    assertThrows(
+        IllegalStateException.class,
+        () -> ConfigurationManager.loadConfig(ExchangeType.class, MISSING_XML_CONFIG_FILENAME));
   }
 
   @Test
-  public void testSavingConfigToYamlIsSuccessful() throws Exception {
+  void testLoadingInvalidYamlConfigFileThrowsException() {
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> ConfigurationManager.loadConfig(ExchangeType.class, INVALID_YAML_CONFIG_FILENAME));
+  }
+
+  @Test
+  void testSavingConfigToYamlIsSuccessful() throws Exception {
     final Map<String, String> authenticationConfig = new HashMap<>();
     authenticationConfig.put(API_KEY_CONFIG_ITEM_KEY, API_KEY_CONFIG_ITEM_VALUE);
     authenticationConfig.put(SECRET_CONFIG_ITEM_KEY, SECRET_CONFIG_ITEM_VALUE);
@@ -192,8 +197,8 @@ public class TestExchangeConfigurationManagement {
     Files.delete(FileSystems.getDefault().getPath(YAML_CONFIG_TO_SAVE_FILENAME));
   }
 
-  @Test(expected = IllegalStateException.class)
-  public void testSavingConfigToInvalidYamlFileIsHandled() {
+  @Test
+  void testSavingConfigToInvalidYamlFileIsHandled() {
     final Map<String, String> authenticationConfig = new HashMap<>();
     authenticationConfig.put(API_KEY_CONFIG_ITEM_KEY, API_KEY_CONFIG_ITEM_VALUE);
     authenticationConfig.put(SECRET_CONFIG_ITEM_KEY, SECRET_CONFIG_ITEM_VALUE);
@@ -217,7 +222,10 @@ public class TestExchangeConfigurationManagement {
     final ExchangeType exchangeType = new ExchangeType();
     exchangeType.setExchange(exchangeConfig);
 
-    ConfigurationManager.saveConfig(
-        ExchangeType.class, exchangeType, INVALID_YAML_CONFIG_TO_SAVE_FILENAME);
+    assertThrows(
+        IllegalStateException.class,
+        () ->
+            ConfigurationManager.saveConfig(
+                ExchangeType.class, exchangeType, INVALID_YAML_CONFIG_TO_SAVE_FILENAME));
   }
 }

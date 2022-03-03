@@ -26,8 +26,15 @@ package com.gazbert.bxbot.rest.api.v1.config;
 import static com.gazbert.bxbot.rest.api.v1.EndpointLocations.CONFIG_ENDPOINT_BASE_URI;
 
 import com.gazbert.bxbot.domain.exchange.ExchangeConfig;
+import com.gazbert.bxbot.rest.api.v1.AbstractRestController;
 import com.gazbert.bxbot.services.config.ExchangeConfigService;
-import io.swagger.annotations.Api;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.security.Principal;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -39,7 +46,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import springfox.documentation.annotations.ApiIgnore;
 
 /**
  * Controller for directing Exchange config requests.
@@ -51,10 +57,10 @@ import springfox.documentation.annotations.ApiIgnore;
  * @author gazbert
  * @since 1.0
  */
-@Api(tags = {"Exchange Configuration"})
 @RestController
 @RequestMapping(CONFIG_ENDPOINT_BASE_URI)
-public class ExchangeConfigController {
+@Tag(name = "Exchange Configuration")
+public class ExchangeConfigController extends AbstractRestController {
 
   private static final Logger LOG = LogManager.getLogger();
   private static final String EXCHANGE_RESOURCE_PATH = "/exchange";
@@ -75,7 +81,19 @@ public class ExchangeConfigController {
    */
   @PreAuthorize("hasRole('USER')")
   @GetMapping(value = EXCHANGE_RESOURCE_PATH)
-  public ExchangeConfig getExchange(@ApiIgnore Principal principal) {
+  @Operation(summary = "Fetches Exchange config")
+  @ApiResponses(
+      value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "OK",
+            content = @Content(schema = @Schema(implementation = ExchangeConfig.class))),
+        @ApiResponse(
+            responseCode = "400",
+            description = "Bad Request",
+            content = @Content(schema = @Schema(implementation = String.class)))
+      })
+  public ExchangeConfig getExchange(@Parameter(hidden = true) Principal principal) {
 
     LOG.info(
         () ->
@@ -100,8 +118,20 @@ public class ExchangeConfigController {
    */
   @PreAuthorize("hasRole('ADMIN')")
   @PutMapping(value = EXCHANGE_RESOURCE_PATH)
+  @Operation(summary = "Updates Exchange config")
+  @ApiResponses(
+      value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "OK",
+            content = @Content(schema = @Schema(implementation = ExchangeConfig.class))),
+        @ApiResponse(
+            responseCode = "400",
+            description = "Bad Request",
+            content = @Content(schema = @Schema(implementation = String.class)))
+      })
   public ResponseEntity<ExchangeConfig> updateExchange(
-      @ApiIgnore Principal principal, @RequestBody ExchangeConfig config) {
+      @Parameter(hidden = true) Principal principal, @RequestBody ExchangeConfig config) {
 
     LOG.info(
         () ->

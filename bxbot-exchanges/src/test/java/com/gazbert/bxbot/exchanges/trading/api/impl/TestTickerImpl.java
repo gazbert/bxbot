@@ -23,11 +23,12 @@
 
 package com.gazbert.bxbot.exchanges.trading.api.impl;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.math.BigDecimal;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests the Market Order impl behaves as expected.
@@ -37,7 +38,7 @@ import org.junit.Test;
  *
  * @author gazbert
  */
-public class TestTickerImpl {
+class TestTickerImpl {
 
   private static final BigDecimal LAST = new BigDecimal("18789.58");
   private static final BigDecimal BID = new BigDecimal("18778.25");
@@ -50,7 +51,7 @@ public class TestTickerImpl {
   private static final Long TIMESTAMP = 1513439945L;
 
   @Test
-  public void testTickerIsInitialisedAsExpected() {
+  void testTickerIsInitialisedAsExpected() {
     final TickerImpl ticker =
         new TickerImpl(LAST, BID, ASK, LOW, HIGH, OPEN, VOLUME, VWAP, TIMESTAMP);
 
@@ -66,7 +67,7 @@ public class TestTickerImpl {
   }
 
   @Test
-  public void testSettersWorkAsExpected() {
+  void testSettersWorkAsExpected() {
     final TickerImpl ticker = new TickerImpl(null, null, null, null, null, null, null, null, null);
     assertNull(ticker.getLast());
     assertNull(ticker.getBid());
@@ -104,5 +105,13 @@ public class TestTickerImpl {
 
     ticker.setTimestamp(TIMESTAMP);
     assertEquals(TIMESTAMP, ticker.getTimestamp());
+  }
+
+  @Test
+  void testToStringWorksAsExpected() {
+    final TickerImpl ticker =
+        new TickerImpl(LAST, BID, ASK, LOW, HIGH, OPEN, VOLUME, VWAP, TIMESTAMP);
+
+    assertTrue(ticker.toString().contains(TIMESTAMP.toString()));
   }
 }

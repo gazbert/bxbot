@@ -35,16 +35,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.gazbert.bxbot.core.engine.TradingEngine;
 import com.gazbert.bxbot.core.mail.EmailAlerter;
 import com.gazbert.bxbot.services.runtime.BotRestartService;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.actuate.logging.LogFileWebEndpoint;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.cloud.context.restart.RestartEndpoint;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
@@ -53,10 +53,10 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
  *
  * @author gazbert
  */
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest
 @WebAppConfiguration
-public class TestBotRestartController extends AbstractRuntimeControllerTest {
+class TestBotRestartController extends AbstractRuntimeControllerTest {
 
   private static final String RESTART_ENDPOINT_URI = RUNTIME_ENDPOINT_BASE_URI + "/restart";
   private static final String BOT_STATUS = "restarting";
@@ -70,13 +70,13 @@ public class TestBotRestartController extends AbstractRuntimeControllerTest {
   @MockBean private LogFileWebEndpoint logFileWebEndpoint;
   @MockBean private AuthenticationManager authenticationManager;
 
-  @Before
-  public void setupBeforeEachTest() {
+  @BeforeEach
+  void setupBeforeEachTest() {
     mockMvc = MockMvcBuilders.webAppContextSetup(ctx).addFilter(springSecurityFilterChain).build();
   }
 
   @Test
-  public void testBotRestartWithAdminTokenAuthorized() throws Exception {
+  void testBotRestartWithAdminTokenAuthorized() throws Exception {
     given(botRestartService.restart()).willReturn(BOT_STATUS);
 
     mockMvc
@@ -92,14 +92,13 @@ public class TestBotRestartController extends AbstractRuntimeControllerTest {
   }
 
   @Test
-  public void testBotRestartWithUserTokenForbidden() throws Exception {
+  void testBotRestartWithUserTokenForbidden() throws Exception {
     given(botRestartService.restart()).willReturn(BOT_STATUS);
 
     mockMvc
         .perform(
             post(RESTART_ENDPOINT_URI)
-                .header(
-                    "Authorization", "Bearer " + getJwt(VALID_USER_NAME, VALID_USER_PASSWORD)))
+                .header("Authorization", "Bearer " + getJwt(VALID_USER_NAME, VALID_USER_PASSWORD)))
         .andDo(print())
         .andExpect(status().isForbidden());
 
@@ -107,7 +106,7 @@ public class TestBotRestartController extends AbstractRuntimeControllerTest {
   }
 
   @Test
-  public void testBotRestartWhenUnauthorizedWithInvalidToken() throws Exception {
+  void testBotRestartWhenUnauthorizedWithInvalidToken() throws Exception {
     mockMvc
         .perform(
             get(RESTART_ENDPOINT_URI)
@@ -117,7 +116,7 @@ public class TestBotRestartController extends AbstractRuntimeControllerTest {
   }
 
   @Test
-  public void testBotRestartWhenUnauthorizedWithMissingToken() throws Exception {
+  void testBotRestartWhenUnauthorizedWithMissingToken() throws Exception {
     mockMvc
         .perform(get(RESTART_ENDPOINT_URI).accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isUnauthorized());

@@ -23,21 +23,22 @@
 
 package com.gazbert.bxbot.exchanges.trading.api.impl;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gazbert.bxbot.trading.api.OrderType;
 import java.math.BigDecimal;
 import java.util.Date;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests the Open Order impl behaves as expected.
  *
  * @author gazbert
  */
-public class TestOpenOrderImpl {
+class TestOpenOrderImpl {
 
   private static final String ID = "abc_123_def_456_ghi_789";
   private static final Date CREATION_DATE = new Date();
@@ -49,7 +50,7 @@ public class TestOpenOrderImpl {
       ORIGINAL_QUANTITY.subtract(new BigDecimal("0.00112112"));
 
   @Test
-  public void testOpenOrderIsInitialisedAsExpected() {
+  void testOpenOrderIsInitialisedAsExpected() {
     final OpenOrderImpl openOrder =
         new OpenOrderImpl(
             ID,
@@ -72,7 +73,7 @@ public class TestOpenOrderImpl {
   }
 
   @Test
-  public void testSettersWorkAsExpected() {
+  void testSettersWorkAsExpected() {
     final OpenOrderImpl openOrder =
         new OpenOrderImpl(null, null, null, null, null, null, null, null);
     assertNull(openOrder.getId());
@@ -110,7 +111,7 @@ public class TestOpenOrderImpl {
   }
 
   @Test
-  public void testEqualsWorksAsExpected() {
+  void testEqualsWorksAsExpected() {
     final OpenOrderImpl openOrder1 =
         new OpenOrderImpl(
             ID,
@@ -153,5 +154,21 @@ public class TestOpenOrderImpl {
     assertNotEquals(openOrder1, openOrder2);
     assertNotEquals(openOrder1, openOrder3);
     assertNotEquals(openOrder1, openOrder4);
+  }
+
+  @Test
+  void testToStringWorksAsExpected() {
+    final OpenOrderImpl openOrder =
+        new OpenOrderImpl(
+            ID,
+            CREATION_DATE,
+            MARKET_ID,
+            OrderType.SELL,
+            PRICE,
+            QUANTITY,
+            ORIGINAL_QUANTITY,
+            TOTAL);
+
+    assertTrue(openOrder.toString().contains(ID));
   }
 }

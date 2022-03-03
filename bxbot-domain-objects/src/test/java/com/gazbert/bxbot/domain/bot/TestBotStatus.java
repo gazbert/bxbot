@@ -23,19 +23,19 @@
 
 package com.gazbert.bxbot.domain.bot;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Date;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests a BotStatus domain object behaves as expected.
  *
  * @author gazbert
  */
-public class TestBotStatus {
+class TestBotStatus {
 
   private static final String BOT_ID = "avro-707_1";
   private static final String DISPLAY_NAME = "Avro 707";
@@ -43,7 +43,7 @@ public class TestBotStatus {
   private static final Date DATE = new Date();
 
   @Test
-  public void testInitialisationWorksAsExpected() {
+  void testInitialisationWorksAsExpected() {
     final BotStatus botStatus = new BotStatus(BOT_ID, DISPLAY_NAME, STATUS, DATE);
     assertEquals(BOT_ID, botStatus.getBotId());
     assertEquals(DISPLAY_NAME, botStatus.getDisplayName());
@@ -58,7 +58,7 @@ public class TestBotStatus {
   }
 
   @Test
-  public void testSettersWorkAsExpected() {
+  void testSettersWorkAsExpected() {
     final BotStatus botStatus = new BotStatus();
     assertNull(botStatus.getBotId());
     assertNull(botStatus.getDisplayName());
@@ -82,9 +82,12 @@ public class TestBotStatus {
   }
 
   @Test
-  public void testToStringWorksAsExpected() {
+  void testToStringWorksAsExpected() {
     final BotStatus botStatus = new BotStatus(BOT_ID, DISPLAY_NAME, STATUS, DATE);
-    assertTrue(botStatus.toString().startsWith(
-        "BotStatus{botId=avro-707_1, displayName=Avro 707, status=running, datetime="));
+    assertTrue(
+        botStatus
+            .toString()
+            .startsWith(
+                "BotStatus{botId=avro-707_1, displayName=Avro 707, status=running, datetime="));
   }
 }

@@ -1,57 +1,34 @@
-<assembly xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0"
-          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0 http://maven.apache.org/xsd/assembly-1.1.0.xsd">
-
-    <id>dist</id>
-    <formats>
-        <format>tar.gz</format>
-        <format>zip</format>
-    </formats>
-    <fileSets>
-        <fileSet>
-            <directory>${project.basedir}/</directory>
-            <outputDirectory>/</outputDirectory>
-            <includes>
-                <include>README.md</include>
-                <include>LICENSE</include>
-                <include>3rd-party-licenses.md</include>
-                <include>CONTRIBUTING.md</include>
-                <include>bxbot.sh</include>
-                <include>bxbot.bat</include>
-                <include>config/*.xml</include>
-                <include>config/*.yaml</include>
-                <include>config/application.properties</include>
-                <include>config/log4j2.xml</include>
-            </includes>
-        </fileSet>
-
-        <!--  bit of a hack to create the empty libs dir in dist - must be better way? -->
-        <fileSet>
-            <directory>${project.build.directory}</directory>
-            <outputDirectory>/</outputDirectory>
-            <includes>
-                <include>libs</include>
-            </includes>
-        </fileSet>
-        <fileSet>
-            <directory>bxbot-app/target</directory>
-            <outputDirectory>libs</outputDirectory>
-            <includes>
-                <include>bxbot-app-*.jar</include>
-            </includes>
-        </fileSet>
-
-        <!--  bit of a hack to create the empty logs dir in dist - must be better way? -->
-        <fileSet>
-            <directory>${project.build.directory}</directory>
-            <outputDirectory>/</outputDirectory>
-            <includes>
-                <include>logs</include>
-            </includes>
-        </fileSet>
-        <fileSet>
-            <directory>${project.build.directory}/site</directory>
-            <outputDirectory>docs</outputDirectory>
-        </fileSet>
-    </fileSets>
+<assembly xmlns="http://maven.apache.org/ASSEMBLY/2.1.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.1.0 http://maven.apache.org/xsd/assembly-2.1.0.xsd">
+  <id>dist</id>
+  <formats>
+    <format>tar.gz</format>
+    <format>zip</format>
+  </formats>
+  <fileSets>
+    <fileSet>
+      <directory>../</directory>
+      <outputDirectory/>
+      <includes>
+        <include>README.md</include>
+        <include>LICENSE</include>
+        <include>3rd-party-licenses.md</include>
+        <include>CONTRIBUTING.md</include>
+        <include>bxbot.sh</include>
+        <include>bxbot.bat</include>
+        <include>config/*.xml</include>
+        <include>config/*.yaml</include>
+        <include>config/application.properties</include>
+        <include>config/log4j2.xml</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+      <directory>target</directory>
+      <outputDirectory>libs</outputDirectory>
+      <includes>
+        <include>bxbot-app-*.jar</include>
+      </includes>
+    </fileSet>
+  </fileSets>
 </assembly>

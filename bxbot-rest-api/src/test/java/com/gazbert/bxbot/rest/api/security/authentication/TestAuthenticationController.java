@@ -24,8 +24,8 @@
 
 package com.gazbert.bxbot.rest.api.security.authentication;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -44,9 +44,9 @@ import com.gazbert.bxbot.rest.api.security.model.User;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.logging.LogFileWebEndpoint;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -58,7 +58,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
@@ -71,9 +71,9 @@ import org.springframework.web.context.WebApplicationContext;
  *
  * @author gazbert
  */
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest
-public class TestAuthenticationController {
+class TestAuthenticationController {
 
   @Autowired private WebApplicationContext context;
   @MockBean private AuthenticationManager authenticationManager;
@@ -88,14 +88,14 @@ public class TestAuthenticationController {
   @MockBean private RestartEndpoint restartEndpoint;
   @MockBean private LogFileWebEndpoint logFileWebEndpoint;
 
-  @Before
-  public void setup() {
+  @BeforeEach
+  void setup() {
     mockMvc = MockMvcBuilders.webAppContextSetup(context).apply(springSecurity()).build();
   }
 
   @Test
   @WithAnonymousUser
-  public void expectAnonymousUsersToBeAbleToCallGetToken() throws Exception {
+  void expectAnonymousUsersToBeAbleToCallGetToken() throws Exception {
     final JwtAuthenticationRequest jwtAuthenticationRequest =
         new JwtAuthenticationRequest("not-being-tested-here", "not-being-tested-here");
 
@@ -109,8 +109,7 @@ public class TestAuthenticationController {
 
   @Test
   @WithAnonymousUser
-  public void whenGetTokenCalledWithBadCredentialsThenExpectUnauthorizedResponse()
-      throws Exception {
+  void whenGetTokenCalledWithBadCredentialsThenExpectUnauthorizedResponse() throws Exception {
     final JwtAuthenticationRequest jwtAuthenticationRequest =
         new JwtAuthenticationRequest("user", "bad-password");
 
@@ -127,7 +126,7 @@ public class TestAuthenticationController {
 
   @Test
   @WithMockUser(roles = "USER")
-  public void whenRefreshTokenCalledWithUserRoleThenExpectSuccessResponse() throws Exception {
+  void whenRefreshTokenCalledWithUserRoleThenExpectSuccessResponse() throws Exception {
     final Role role = new Role();
     role.setId(0L);
     role.setName(RoleName.ROLE_USER);
@@ -150,7 +149,7 @@ public class TestAuthenticationController {
 
   @Test
   @WithMockUser(roles = "ADMIN")
-  public void whenRefreshTokenCalledWithAdminRoleThenExpectSuccessResponse() throws Exception {
+  void whenRefreshTokenCalledWithAdminRoleThenExpectSuccessResponse() throws Exception {
     final Role authority = new Role();
     authority.setId(1L);
     authority.setName(RoleName.ROLE_ADMIN);
@@ -173,8 +172,7 @@ public class TestAuthenticationController {
 
   @Test
   @WithAnonymousUser
-  public void whenRefreshTokenCalledBuyAnonymousUserThenExpectUnauthorizedResponse()
-      throws Exception {
+  void whenRefreshTokenCalledBuyAnonymousUserThenExpectUnauthorizedResponse() throws Exception {
     mockMvc.perform(get("/api/token/refresh")).andExpect(status().isUnauthorized());
   }
 }

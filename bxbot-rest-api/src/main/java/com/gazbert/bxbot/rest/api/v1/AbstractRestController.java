@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2019 gazbert
+ * Copyright (c) 2021 gazbert
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -21,24 +21,32 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gazbert.bxbot.rest.api.security.config;
+package com.gazbert.bxbot.rest.api.v1;
 
-import static org.junit.Assert.assertNotNull;
-
-import org.junit.jupiter.api.Test;
-import org.springframework.web.filter.CorsFilter;
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.info.Info;
+import io.swagger.v3.oas.annotations.info.License;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import org.springframework.context.annotation.PropertySource;
 
 /**
- * Tests the REST CORS config filter is created as expected.
+ * Base controller for all REST config and runtime operations.
  *
  * @author gazbert
+ * @since 1.0
  */
-class TestRestCorsConfig {
-
-  @Test
-  void testInitialisationWorksAsExpected() {
-    final RestCorsConfig restCorsConfig = new RestCorsConfig();
-    final CorsFilter corsFilter = restCorsConfig.corsFilter();
-    assertNotNull(corsFilter);
-  }
+@PropertySource({"classpath:swagger.properties"})
+@OpenAPIDefinition(
+    info =
+        @Info(
+            title = "${swagger.info.title}",
+            version = "${application.version}",
+            description = "${swagger.info.description}",
+            license =
+                @License(
+                    name = "MIT",
+                    url = "https://github.com/gazbert/bxbot/blob/master/LICENSE"),
+            termsOfService = "https://github.com/gazbert/bxbot"))
+@SecurityRequirement(name = "Authorization")
+public abstract class AbstractRestController {
 }

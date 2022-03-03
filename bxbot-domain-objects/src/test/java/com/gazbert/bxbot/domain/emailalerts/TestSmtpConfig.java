@@ -23,17 +23,17 @@
 
 package com.gazbert.bxbot.domain.emailalerts;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests a SmtpConfig domain object behaves as expected.
  *
  * @author gazbert
  */
-public class TestSmtpConfig {
+class TestSmtpConfig {
 
   private static final String HOST = "mail.google.com";
   private static final int TLS_PORT = 587;
@@ -43,7 +43,7 @@ public class TestSmtpConfig {
   private static final String TO_ADDRESS = "to.them@google.com";
 
   @Test
-  public void testInitialisationWorksAsExpected() {
+  void testInitialisationWorksAsExpected() {
     final SmtpConfig emailAlertsConfig =
         new SmtpConfig(
             HOST, TLS_PORT, ACCOUNT_USERNAME, ACCOUNT_PASSWORD, FROM_ADDRESS, TO_ADDRESS);
@@ -56,7 +56,7 @@ public class TestSmtpConfig {
   }
 
   @Test
-  public void testSettersWorkAsExpected() {
+  void testSettersWorkAsExpected() {
     final SmtpConfig emailAlertsConfig = new SmtpConfig();
     assertNull(emailAlertsConfig.getHost());
     assertEquals(0, emailAlertsConfig.getTlsPort());
@@ -85,7 +85,7 @@ public class TestSmtpConfig {
   }
 
   @Test
-  public void testToStringWorksAsExpected() {
+  void testToStringWorksAsExpected() {
     final SmtpConfig emailAlertsConfig = new SmtpConfig();
     emailAlertsConfig.setHost(HOST);
     emailAlertsConfig.setTlsPort(TLS_PORT);

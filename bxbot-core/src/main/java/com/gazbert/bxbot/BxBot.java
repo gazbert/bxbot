@@ -24,6 +24,9 @@
 package com.gazbert.bxbot;
 
 import com.gazbert.bxbot.core.engine.TradingEngine;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
+import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -35,6 +38,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @author gazbert
  */
 @SpringBootApplication
+@SecurityScheme(
+    name = "Authorization",
+    scheme = "Bearer",
+    type = SecuritySchemeType.APIKEY,
+    in = SecuritySchemeIn.HEADER)
 public class BxBot implements CommandLineRunner {
 
   private final TradingEngine tradingEngine;

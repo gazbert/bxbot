@@ -25,42 +25,41 @@ package com.gazbert.bxbot.rest.api;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests the REST API configuration can be set and loaded as expected.
  *
  * @author gazbert
  */
-public class TestRestApiConfig {
+class TestRestApiConfig {
 
   private static final int MAX_LOGFILE_LINES = 1000;
   private static final int MAX_LOGFILE_DOWNLOAD_SIZE = 2 * 1048;
 
   @Test
-  public void testMaxLogfileLinesCanBeSetAndFetched() {
+  void testMaxLogfileLinesCanBeSetAndFetched() {
     final RestApiConfig restApiConfig = new RestApiConfig();
     restApiConfig.setMaxLogfileLines(MAX_LOGFILE_LINES);
     assertThat(restApiConfig.getMaxLogfileLines()).isEqualTo(MAX_LOGFILE_LINES);
   }
 
   @Test
-  public void testMaxLogfileLinesDefaultFallback() {
+  void testMaxLogfileLinesDefaultFallback() {
     final RestApiConfig restApiConfig = new RestApiConfig();
     restApiConfig.setMaxLogfileLines(0);
-    assertThat(restApiConfig.getMaxLogfileLines())
-        .isEqualTo(RestApiConfig.DEFAULT_MAX_LINES);
+    assertThat(restApiConfig.getMaxLogfileLines()).isEqualTo(RestApiConfig.DEFAULT_MAX_LINES);
   }
 
   @Test
-  public void testMaxLogfileDownloadSizeCanBeSetAndFetched() {
+  void testMaxLogfileDownloadSizeCanBeSetAndFetched() {
     final RestApiConfig restApiConfig = new RestApiConfig();
     restApiConfig.setMaxLogfileDownloadSize(MAX_LOGFILE_DOWNLOAD_SIZE);
     assertThat(restApiConfig.getLogfileDownloadSize()).isEqualTo(MAX_LOGFILE_DOWNLOAD_SIZE);
   }
 
   @Test
-  public void testMaxLogfileDownloadSizeDefaultFallback() {
+  void testMaxLogfileDownloadSizeDefaultFallback() {
     final RestApiConfig restApiConfig = new RestApiConfig();
     restApiConfig.setMaxLogfileDownloadSize(0);
     assertThat(restApiConfig.getLogfileDownloadSize())

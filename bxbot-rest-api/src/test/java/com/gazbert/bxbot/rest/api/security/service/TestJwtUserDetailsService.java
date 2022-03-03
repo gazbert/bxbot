@@ -26,6 +26,7 @@ package com.gazbert.bxbot.rest.api.security.service;
 import static org.easymock.EasyMock.eq;
 import static org.easymock.EasyMock.expect;
 import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.gazbert.bxbot.rest.api.security.jwt.JwtUser;
 import com.gazbert.bxbot.rest.api.security.jwt.JwtUserFactory;
@@ -59,6 +60,10 @@ public class TestJwtUserDetailsService {
     userRepository = PowerMock.createMock(UserRepository.class);
   }
 
+  /**
+   * Stuck on JUnit4 as Powermock doesn't play with JUnit5. See:
+   * https://github.com/powermock/powermock/issues/929
+   */
   @Test
   public void whenLoadByUsernameCalledWithKnownUsernameThenExpectUserDetailsToBeReturned() {
     PowerMock.mockStatic(JwtUserFactory.class);
@@ -76,13 +81,15 @@ public class TestJwtUserDetailsService {
     PowerMock.verifyAll();
   }
 
-  @Test(expected = UsernameNotFoundException.class)
+  @Test
   public void whenLoadByUsernameCalledWithUnknownUsernameThenExpectUsernameNotFoundException() {
     expect(userRepository.findByUsername(UNKNOWN_USERNAME)).andStubReturn(null);
     PowerMock.replayAll();
 
     final JwtUserDetailsService jwtUserDetailsService = new JwtUserDetailsService(userRepository);
-    jwtUserDetailsService.loadUserByUsername(UNKNOWN_USERNAME);
+    assertThrows(
+        UsernameNotFoundException.class,
+        () -> jwtUserDetailsService.loadUserByUsername(UNKNOWN_USERNAME));
 
     PowerMock.verifyAll();
   }

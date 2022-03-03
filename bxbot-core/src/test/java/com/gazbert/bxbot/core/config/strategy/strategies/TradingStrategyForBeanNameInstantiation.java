@@ -28,7 +28,6 @@ import com.gazbert.bxbot.strategy.api.StrategyException;
 import com.gazbert.bxbot.strategy.api.TradingStrategy;
 import com.gazbert.bxbot.trading.api.Market;
 import com.gazbert.bxbot.trading.api.TradingApi;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 /**
