@@ -22,13 +22,15 @@ dependencies {
     implementation libraries.springdoc_openapi_security
     implementation libraries.swagger_annotations
 
-    testImplementation libraries.junit_vintage_engine
+    testImplementation libraries.spring_boot_starter_test
+    testImplementation libraries.spring_security_test
     testImplementation libraries.easymock
     testImplementation libraries.powermock_junit
     testImplementation libraries.powermock_api_easymock
-    testImplementation libraries.spring_boot_starter_test
-    testImplementation libraries.spring_security_test
     testImplementation libraries.awaitility
+    testImplementation libraries.junit_vintage_engine
+
+
 }
 
 // FIXME: Broken with Gradle 7.3.3.
@@ -37,6 +39,7 @@ jacocoTestCoverageVerification {
         rule {
             element = 'CLASS'
             excludes = [
+                    'com.gazbert.bxbot.rest.api.security.jwt.JwtUserFactory*'
             ]
             limit {
                 counter = 'LINE'
