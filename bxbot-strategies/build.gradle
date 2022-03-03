@@ -17,7 +17,7 @@ dependencies {
 jacocoTestCoverageVerification {
     violationRules {
         rule {
-            element = 'PACKAGE'
+            element = 'CLASS'
             excludes = [
             ]
             limit {

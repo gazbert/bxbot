@@ -55,7 +55,7 @@ jacocoTestCoverageVerification {
             // "... right now there is NO WAY TO USE PowerMock with JaCoCo On-the-fly instrumentation."
             // See https://github.com/powermock/powermock/wiki/Code-coverage-with-JaCoCo
             excludes = [
-                    'com.gazbert.bxbot.exchanges.*'
+                    'com.gazbert.bxbot.exchanges.*' // * needed for the inner classes
             ]
             limit {
                 counter = 'LINE'
