@@ -141,7 +141,7 @@ class TestAuthenticationController {
     final JwtUser jwtUser = JwtUserFactory.create(user);
 
     when(jwtUtils.getUsernameFromTokenClaims(any())).thenReturn(user.getUsername());
-    when(userDetailsService.loadUserByUsername(eq(user.getUsername()))).thenReturn(jwtUser);
+    when(userDetailsService.loadUserByUsername(user.getUsername())).thenReturn(jwtUser);
     when(jwtUtils.canTokenBeRefreshed(any(), any())).thenReturn(true);
 
     mockMvc.perform(get("/api/token/refresh")).andExpect(status().is2xxSuccessful());
@@ -164,7 +164,7 @@ class TestAuthenticationController {
     final JwtUser jwtUser = JwtUserFactory.create(user);
 
     when(jwtUtils.getUsernameFromTokenClaims(any())).thenReturn(user.getUsername());
-    when(userDetailsService.loadUserByUsername(eq(user.getUsername()))).thenReturn(jwtUser);
+    when(userDetailsService.loadUserByUsername(user.getUsername())).thenReturn(jwtUser);
     when(jwtUtils.canTokenBeRefreshed(any(), any())).thenReturn(true);
 
     mockMvc.perform(get("/api/token/refresh")).andExpect(status().is2xxSuccessful());

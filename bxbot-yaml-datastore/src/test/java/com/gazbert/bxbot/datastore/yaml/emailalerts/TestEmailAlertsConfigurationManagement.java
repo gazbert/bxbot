@@ -124,8 +124,7 @@ class TestEmailAlertsConfigurationManagement {
     // Read it back in
     final EmailAlertsType emailAlertsReloaded =
         ConfigurationManager.loadConfig(EmailAlertsType.class, YAML_CONFIG_TO_SAVE_FILENAME);
-
-    assertThat(emailAlertsReloaded.getEmailAlerts().isEnabled()).isEqualTo(true);
+    assertTrue(emailAlertsReloaded.getEmailAlerts().isEnabled());
     assertThat(emailAlertsReloaded.getEmailAlerts().getSmtpConfig().getAccountUsername())
         .isEqualTo(ACCOUNT_USERNAME);
     assertThat(emailAlertsReloaded.getEmailAlerts().getSmtpConfig().getAccountPassword())
