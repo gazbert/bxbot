@@ -42,7 +42,7 @@
     </developer>
   </developers>
   <properties>
-    <revision>1.3.0</revision>
+    <revision>1.3.1-SNAPSHOT</revision>
 
     <!-- Should be same as dependency used by spring-boot-starter.version -->
     <spring-core.version>5.3.16</spring-core.version>
