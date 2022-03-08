@@ -267,9 +267,10 @@ public class ExampleScalpingStrategy implements TradingStrategy {
       // We are just going to re-throw as StrategyException for engine to deal with - it will
       // shutdown the bot.
       LOG.error(
-          market.getName()
-              + " Failed to get market orders because Exchange threw TradingApi exception. "
-              + "Telling Trading Engine to shutdown bot!",
+          () ->
+              market.getName()
+                  + " Failed to get market orders because Exchange threw TradingApi exception. "
+                  + "Telling Trading Engine to shutdown bot!",
           e);
       throw new StrategyException(e);
     }
