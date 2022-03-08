@@ -89,7 +89,7 @@ class TestTradingStrategiesBuilder {
     final List<TradingStrategy> strategies =
         tradingStrategiesBuilder.buildStrategies(
             someStrategiesConfig(), someMarketsConfig(), exchangeAdapter);
-    assertThat(strategies.size()).isEqualTo(2);
+    assertThat(strategies).hasSize(2);
   }
 
   @Test

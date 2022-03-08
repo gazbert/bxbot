@@ -26,7 +26,7 @@ package com.gazbert.bxbot.rest.api.security.authentication;
 
 import com.gazbert.bxbot.rest.api.security.jwt.JwtUser;
 import com.gazbert.bxbot.rest.api.security.jwt.JwtUtils;
-import com.gazbert.bxbot.rest.api.v1.AbstractRestController;
+import com.gazbert.bxbot.rest.api.v1.RestController;
 import io.jsonwebtoken.Claims;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -48,7 +48,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
 
 /**
  * REST Controller for handling initial authentication requests to obtain a JWT.
@@ -58,9 +57,9 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * @author gazbert
  */
-@RestController
+@org.springframework.web.bind.annotation.RestController
 @Tag(name = "Authentication")
-public class AuthenticationController extends AbstractRestController {
+public class AuthenticationController implements RestController {
 
   private final AuthenticationManager authenticationManager;
   private final UserDetailsService userDetailsService;

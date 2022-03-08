@@ -26,7 +26,7 @@ package com.gazbert.bxbot.rest.api.v1.config;
 import static com.gazbert.bxbot.rest.api.v1.EndpointLocations.CONFIG_ENDPOINT_BASE_URI;
 
 import com.gazbert.bxbot.domain.market.MarketConfig;
-import com.gazbert.bxbot.rest.api.v1.AbstractRestController;
+import com.gazbert.bxbot.rest.api.v1.RestController;
 import com.gazbert.bxbot.services.config.MarketConfigService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -50,7 +50,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 /**
  * Controller for directing Market config requests.
@@ -58,10 +57,10 @@ import org.springframework.web.bind.annotation.RestController;
  * @author gazbert
  * @since 1.0
  */
-@RestController
+@org.springframework.web.bind.annotation.RestController
 @RequestMapping(CONFIG_ENDPOINT_BASE_URI)
 @Tag(name = "Market Configuration")
-public class MarketConfigController extends AbstractRestController {
+public class MarketConfigController implements RestController {
 
   private static final Logger LOG = LogManager.getLogger();
   private static final String MARKETS_RESOURCE_PATH = "/markets";

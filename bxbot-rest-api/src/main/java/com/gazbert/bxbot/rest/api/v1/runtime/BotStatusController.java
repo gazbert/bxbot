@@ -27,7 +27,7 @@ import static com.gazbert.bxbot.rest.api.v1.EndpointLocations.RUNTIME_ENDPOINT_B
 
 import com.gazbert.bxbot.domain.bot.BotStatus;
 import com.gazbert.bxbot.domain.engine.EngineConfig;
-import com.gazbert.bxbot.rest.api.v1.AbstractRestController;
+import com.gazbert.bxbot.rest.api.v1.RestController;
 import com.gazbert.bxbot.services.config.EngineConfigService;
 import com.gazbert.bxbot.services.runtime.BotStatusService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -45,7 +45,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 /**
  * Controller for directing Bot Status requests.
@@ -53,10 +52,10 @@ import org.springframework.web.bind.annotation.RestController;
  * @author gazbert
  * @since 1.0
  */
-@RestController
+@org.springframework.web.bind.annotation.RestController
 @RequestMapping(RUNTIME_ENDPOINT_BASE_URI)
 @Tag(name = "Bot Status")
-public class BotStatusController extends AbstractRestController {
+public class BotStatusController implements RestController {
 
   private static final Logger LOG = LogManager.getLogger();
   private static final String STATUS_RESOURCE_PATH = "/status";

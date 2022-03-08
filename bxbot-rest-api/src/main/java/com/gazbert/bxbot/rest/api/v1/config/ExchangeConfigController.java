@@ -26,7 +26,7 @@ package com.gazbert.bxbot.rest.api.v1.config;
 import static com.gazbert.bxbot.rest.api.v1.EndpointLocations.CONFIG_ENDPOINT_BASE_URI;
 
 import com.gazbert.bxbot.domain.exchange.ExchangeConfig;
-import com.gazbert.bxbot.rest.api.v1.AbstractRestController;
+import com.gazbert.bxbot.rest.api.v1.RestController;
 import com.gazbert.bxbot.services.config.ExchangeConfigService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -45,7 +45,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 /**
  * Controller for directing Exchange config requests.
@@ -57,10 +56,10 @@ import org.springframework.web.bind.annotation.RestController;
  * @author gazbert
  * @since 1.0
  */
-@RestController
+@org.springframework.web.bind.annotation.RestController
 @RequestMapping(CONFIG_ENDPOINT_BASE_URI)
 @Tag(name = "Exchange Configuration")
-public class ExchangeConfigController extends AbstractRestController {
+public class ExchangeConfigController implements RestController {
 
   private static final Logger LOG = LogManager.getLogger();
   private static final String EXCHANGE_RESOURCE_PATH = "/exchange";

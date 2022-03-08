@@ -25,7 +25,7 @@ package com.gazbert.bxbot.rest.api.v1.runtime;
 
 import static com.gazbert.bxbot.rest.api.v1.EndpointLocations.RUNTIME_ENDPOINT_BASE_URI;
 
-import com.gazbert.bxbot.rest.api.v1.AbstractRestController;
+import com.gazbert.bxbot.rest.api.v1.RestController;
 import com.gazbert.bxbot.services.runtime.BotRestartService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -43,7 +43,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 /**
  * Controller for directing Bot restart requests.
@@ -51,10 +50,10 @@ import org.springframework.web.bind.annotation.RestController;
  * @author gazbert
  * @since 1.0
  */
-@RestController
+@org.springframework.web.bind.annotation.RestController
 @RequestMapping(RUNTIME_ENDPOINT_BASE_URI)
 @Tag(name = "Bot Restart")
-public class BotRestartController extends AbstractRestController {
+public class BotRestartController implements RestController {
 
   private static final Logger LOG = LogManager.getLogger();
   private static final String RESTART_RESOURCE_PATH = "/restart";

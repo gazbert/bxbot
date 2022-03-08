@@ -30,7 +30,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.context.annotation.PropertySource;
 
 /**
- * Base controller for all REST config and runtime operations.
+ * Controller for all REST config and runtime operations.
  *
  * @author gazbert
  * @since 1.0
@@ -48,5 +48,5 @@ import org.springframework.context.annotation.PropertySource;
                     url = "https://github.com/gazbert/bxbot/blob/master/LICENSE"),
             termsOfService = "https://github.com/gazbert/bxbot"))
 @SecurityRequirement(name = "Authorization")
-public abstract class AbstractRestController {
+public interface RestController {
 }
