@@ -30,14 +30,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests Role model behaves as expected.
  *
  * @author gazbert
  */
-public class TestRole {
+class TestRole {
 
   private static final Long USER_ROLE_ID = Long.valueOf("213443242342");
   private static final Long ADMIN_ROLE_ID = Long.valueOf("55687686786");
@@ -64,7 +64,7 @@ public class TestRole {
   private User user2;
 
   @Test
-  public void testInitialisationWorksAsExpected() {
+  void testInitialisationWorksAsExpected() {
     final Role role = new Role();
     assertNull(role.getId());
     assertNull(role.getName());
@@ -72,7 +72,7 @@ public class TestRole {
   }
 
   @Test
-  public void testSettersWorkAsExpected() {
+  void testSettersWorkAsExpected() {
     final Role role = new Role();
 
     role.setId(ADMIN_ROLE_ID);

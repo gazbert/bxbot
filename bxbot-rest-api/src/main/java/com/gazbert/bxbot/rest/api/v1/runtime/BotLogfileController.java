@@ -26,9 +26,15 @@ package com.gazbert.bxbot.rest.api.v1.runtime;
 import static com.gazbert.bxbot.rest.api.v1.EndpointLocations.RUNTIME_ENDPOINT_BASE_URI;
 
 import com.gazbert.bxbot.rest.api.RestApiConfig;
+import com.gazbert.bxbot.rest.api.v1.RestController;
 import com.gazbert.bxbot.services.runtime.BotLogfileService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiParam;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.io.IOException;
 import java.security.Principal;
 import javax.servlet.http.HttpServletRequest;
@@ -44,8 +50,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-import springfox.documentation.annotations.ApiIgnore;
 
 /**
  * Controller for directing Bot Logfile requests.
@@ -53,10 +57,10 @@ import springfox.documentation.annotations.ApiIgnore;
  * @author gazbert
  * @since 1.0
  */
-@Api(tags = {"Bot Logfile"})
-@RestController
+@org.springframework.web.bind.annotation.RestController
 @RequestMapping(RUNTIME_ENDPOINT_BASE_URI)
-public class BotLogfileController {
+@Tag(name = "Bot Logfile")
+public class BotLogfileController implements RestController {
 
   private static final Logger LOG = LogManager.getLogger();
   private static final String LOGFILE_RESOURCE_PATH = "/logfile";
@@ -83,8 +87,20 @@ public class BotLogfileController {
    */
   @PreAuthorize("hasRole('USER')")
   @GetMapping(value = LOGFILE_DOWNLOAD_RESOURCE_PATH)
+  @Operation(summary = "Downloads the logfile")
+  @ApiResponses(
+      value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "OK",
+            content = @Content(schema = @Schema(implementation = String.class))),
+        @ApiResponse(
+            responseCode = "400",
+            description = "Bad Request",
+            content = @Content(schema = @Schema(implementation = String.class)))
+      })
   public ResponseEntity<Resource> downloadLogfile(
-      @ApiIgnore Principal principal, HttpServletRequest request) {
+      @Parameter(hidden = true) Principal principal, HttpServletRequest request) {
 
     LOG.info(
         () ->
@@ -139,12 +155,24 @@ public class BotLogfileController {
    */
   @PreAuthorize("hasRole('USER')")
   @GetMapping(value = LOGFILE_RESOURCE_PATH)
+  @Operation(summary = "Fetches section of logfile")
+  @ApiResponses(
+      value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "OK",
+            content = @Content(schema = @Schema(implementation = String.class))),
+        @ApiResponse(
+            responseCode = "400",
+            description = "Bad Request",
+            content = @Content(schema = @Schema(implementation = String.class)))
+      })
   public ResponseEntity<String> getLogfile(
-      @ApiIgnore Principal principal,
-      @ApiParam(value = "Number of lines to fetch from head of file.", example = "100")
+      @Parameter(hidden = true) Principal principal,
+      @Parameter(description = "Number of lines to fetch from head of file.", example = "100")
           @RequestParam(required = false)
           Integer head,
-      @ApiParam(value = "Number of lines to fetch from tail of file.", example = "100")
+      @Parameter(description = "Number of lines to fetch from tail of file.", example = "100")
           @RequestParam(required = false)
           Integer tail) {
 

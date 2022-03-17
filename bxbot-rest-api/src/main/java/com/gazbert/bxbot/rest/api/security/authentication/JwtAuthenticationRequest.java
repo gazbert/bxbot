@@ -24,6 +24,7 @@
 
 package com.gazbert.bxbot.rest.api.security.authentication;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import javax.validation.constraints.NotNull;
 
 /**
@@ -36,9 +37,11 @@ import javax.validation.constraints.NotNull;
  */
 public class JwtAuthenticationRequest {
 
+  @Schema(required = true, description = "The username.")
   @NotNull(message = "Username cannot be null")
   private String username;
 
+  @Schema(required = true, description = "The password.")
   @NotNull(message = "Password cannot be null")
   private String password;
 

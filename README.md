@@ -1,6 +1,7 @@
 # BX-bot
 
-[![Build Status](https://travis-ci.com/gazbert/bxbot.svg?branch=master)](https://travis-ci.com/gazbert/bxbot)
+[![Gradle CI](https://github.com/gazbert/bxbot/actions/workflows/gradle.yml/badge.svg?branch=master)](https://github.com/gazbert/bxbot/actions/workflows/gradle.yml)
+[![Maven CI](https://github.com/gazbert/bxbot/actions/workflows/maven.yml/badge.svg?branch=master)](https://github.com/gazbert/bxbot/actions/workflows/maven.yml)
 [![Sonarcloud Status](https://sonarcloud.io/api/project_badges/measure?project=gazbert_bxbot&metric=alert_status)](https://sonarcloud.io/dashboard?id=gazbert_bxbot)
 [![Join the chat at https://gitter.im/BX-bot/Lobby](https://badges.gitter.im/BX-bot/Lobby.svg)](https://gitter.im/BX-bot/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)		 	 
  
@@ -45,7 +46,7 @@ and released under the [MIT license](http://opensource.org/licenses/MIT).
  
 Trading Strategies and Exchange Adapters are injected by the Trading Engine on startup. The bot uses a simple 
 [YAML](https://en.wikipedia.org/wiki/YAML) backed dependency injection framework to achieve this; the long term goal is
-to convert it into a fully configurable [Spring Boot](http://projects.spring.io/spring-boot/) app.
+to convert it into a fully configurable [Spring Boot](https://spring.io/projects/spring-boot) app.
 
 The bot was designed to fail hard and fast if any unexpected errors occur in the Exchange Adapters or Trading Strategies:
 it will log the error, send an email alert (if configured), and then shut down.
@@ -60,28 +61,11 @@ to be installed on the machine you are going to use to build and run the bot.
 Be mindful of Oracle's recent [licensing changes](https://www.oracle.com/technetwork/java/javase/overview/oracle-jdk-faqs.html)
 and how you intend to use the bot.
 
-You can use [Maven](https://maven.apache.org) or [Gradle](https://gradle.org/) to build the bot.
+You can use [Gradle](https://gradle.org/) or [Maven](https://maven.apache.org) to build the bot.
 The instructions below are for Linux/macOS, but equivalent Windows scripts are included.
 
 Download the latest [Release](https://github.com/gazbert/bxbot/releases) and unzip the bot.
 
-#### Maven
-1. If you plan on using your own Trading Strategies/Exchange Adapters packaged in separate jar files, you'll need to add
-   the dependency in the [bxbot-app/pom.xml](./bxbot-app/pom.xml) - see the commented out dependency examples inside it.
-1. From the project root, run `./mvnw clean assembly:assembly` to produce the distribution 
-   artifacts `bxbot-app-<version>-dist.tar.gz` and `bxbot-app-<version>-dist.zip` in the `./target` folder.
-1. Copy either the `bxbot-app-<version>-dist.tar.gz` or the `bxbot-app-<version>-dist.zip` onto the machine you 
-   want to run the bot and unzip it someplace.
-1. Configure the bot as required - see the main _[Configuration](#configuration)_ section.
-   The bot's default configuration uses the 
-   [`ExampleScalpingStrategy`](./bxbot-strategies/src/main/java/com/gazbert/bxbot/strategies/ExampleScalpingStrategy.java), 
-   but you'll probably want to [code your own](#how-do-i-write-my-own-trading-strategy)! The 
-   [`TestExchangeAdapter`](./bxbot-exchanges/src/main/java/com/gazbert/bxbot/exchanges/TestExchangeAdapter.java) is
-   configured by default - it makes public API calls to [Bitstamp](https://www.bitstamp.net), but stubs out the private
-   API (order management) calls; it's good for testing your initial setup without actually sending orders to the
-   exchange.   
-1. Usage: `./bxbot.sh [start|stop|status]`   
-    
 #### Gradle    
 1. If you plan on using your own Trading Strategies/Exchange Adapters packaged in separate jar files, you'll need to add
    the dependency in the [bxbot-app/build.gradle](bxbot-app/build.gradle) - see the commented out dependency examples 
@@ -94,14 +78,31 @@ Download the latest [Release](https://github.com/gazbert/bxbot/releases) and unz
 1. Configure the bot as described in step 4 of the previous [Maven](#maven) section.
 1. Usage: `./bxbot.sh [start|stop|status]`
 
+#### Maven
+1. If you plan on using your own Trading Strategies/Exchange Adapters packaged in separate jar files, you'll need to add
+   the dependency in the [bxbot-app/pom.xml](./bxbot-app/pom.xml) - see the commented out dependency examples inside it.
+1. From the project root, run `./mvnw clean package` to produce the distribution 
+   artifacts `bxbot-app-<version>-dist.tar.gz` and `bxbot-app-<version>-dist.zip` in the `./bxbot-app/target` folder.
+1. Copy either the `bxbot-app-<version>-dist.tar.gz` or the `bxbot-app-<version>-dist.zip` onto the machine you 
+   want to run the bot and unzip it someplace.
+1. Configure the bot as required - see the main _[Configuration](#configuration)_ section.
+   The bot's default configuration uses the 
+   [`ExampleScalpingStrategy`](./bxbot-strategies/src/main/java/com/gazbert/bxbot/strategies/ExampleScalpingStrategy.java), 
+   but you'll probably want to [code your own](#how-do-i-write-my-own-trading-strategy)! The 
+   [`TestExchangeAdapter`](./bxbot-exchanges/src/main/java/com/gazbert/bxbot/exchanges/TestExchangeAdapter.java) is
+   configured by default - it makes public API calls to [Bitstamp](https://www.bitstamp.net), but stubs out the private
+   API (order management) calls; it's good for testing your initial setup without actually sending orders to the
+   exchange.   
+1. Usage: `./bxbot.sh [start|stop|status]`  
+
 ### Docker
 If you want to just play around with the 
 [`ExampleScalpingStrategy`](./bxbot-strategies/src/main/java/com/gazbert/bxbot/strategies/ExampleScalpingStrategy.java) 
 and evaluate the bot, Docker is the way to go.
 
 1. Install [Docker](https://docs.docker.com/engine/installation/) on the machine you want to run the bot.
-1. Fetch the BX-bot image from [Docker Hub](https://hub.docker.com/r/gazbert/bxbot/): `docker pull gazbert/bxbot:1.2.0
-1. Run the Docker container: `docker container run --publish=8080:8080 --name bxbot-1.2.0 -it gazbert/bxbot:1.2.0 bash`
+1. Fetch the BX-bot image from [Docker Hub](https://hub.docker.com/r/gazbert/bxbot/): `docker pull gazbert/bxbot:1.3.0`
+1. Run the Docker container: `docker container run --publish=8080:8080 --name bxbot-1.3.0 -it gazbert/bxbot:1.3.0 bash`
 1. Change into the bot's directory: `cd bxbot*`
 1. Configure the bot as described in step 4 of the previous [Maven](#maven) section.
 1. Usage: `./bxbot.sh [start|stop|status]`
@@ -112,26 +113,12 @@ and evaluate the bot, Docker is the way to go.
 ## Build Guide
 If you plan on developing the bot, you'll need JDK 11+ installed on your dev box.
 
-You can use Maven or Gradle to build the bot and pull down the 
-dependencies. BX-bot depends on [Spring Boot](http://projects.spring.io/spring-boot/), 
-[log4j](http://logging.apache.org/log4j), [JavaMail](https://java.net/projects/javamail/pages/Home), 
-[Google Gson](https://code.google.com/p/google-gson/), [Google Guava](https://github.com/google/guava), 
-[Snake YAML](https://bitbucket.org/asomov/snakeyaml), [Java JWT](https://github.com/jwtk/jjwt),
-[H2](https://www.h2database.com/html/main.html), [JAXB](https://javaee.github.io/jaxb-v2/),
-[Jakarta Bean Validation](https://beanvalidation.org/), [Springfox](https://github.com/springfox/springfox),
-and [Swagger](https://github.com/swagger-api/swagger-core).
+You can use Gradle or Maven to build the bot and pull down the dependencies.
 
 The instructions below are for Linux/macOS, but equivalent Windows scripts are included.
 
 Clone the repo locally (master branch).
 
-### Maven
-1. From the project root, run `./mvnw clean install`.
-   If you want to run the exchange integration tests, use `./mvnw clean install -Pint`. 
-   To execute both unit and integration tests, use `./mvnw clean install -Pall`.
-1. Take a look at the Javadoc in the `./target/apidocs` folders of the bxbot-trading-api, bxbot-strategy-api, 
-   and bxbot-exchange-api modules after the build completes.
-   
 ### Gradle
 1. From the project root, run `./gradlew build`.
    If you want to run the exchange integration tests, use `./gradlew integrationTests`.
@@ -139,6 +126,13 @@ Clone the repo locally (master branch).
 1. To generate the Javadoc, run `./gradlew javadoc` and look in the `./build/docs/javadoc` folders of the 
    bxbot-trading-api, bxbot-strategy-api, and bxbot-exchange-api modules.
    
+### Maven
+1. From the project root, run `./mvnw clean install`.
+   If you want to run the exchange integration tests, use `./mvnw clean install -Pint`. 
+   To execute both unit and integration tests, use `./mvnw clean install -Pall`.
+1. Take a look at the Javadoc in the `./target/apidocs` folders of the bxbot-trading-api, bxbot-strategy-api, 
+   and bxbot-exchange-api modules after the build completes.
+
 ## Issue & Change Management
 
 Issues and new features are managed using the project [Issue Tracker](https://github.com/gazbert/bxbot/issues) -
@@ -151,7 +145,7 @@ For help and general questions about BX-bot, check out the [Gitter](https://gitt
 ## Testing
 The bot has undergone basic unit testing on a _best-effort_ basis. 
 
-There is a continuous integration build running on [Travis CI](https://travis-ci.com/github/gazbert/bxbot/branches).
+There is a CI build running on [GitHub Actions](https://github.com/gazbert/bxbot/actions).
 
 The latest stable build can always be found on the [Releases](https://github.com/gazbert/bxbot/releases) page. 
 The SNAPSHOT builds on master are active development builds, but the tests should always pass and the bot should always 
@@ -555,7 +549,7 @@ logs, but only administrators can update config and restart the bot.
 It is secured using [JWT](https://jwt.io/) and has [TLS](https://en.wikipedia.org/wiki/Transport_Layer_Security)
 support for Production environments. 
 
-You can view the [Swagger](https://swagger.io/tools/swagger-ui/) docs at: 
+You can view the [Springdocs](https://springdoc.org/) at: 
 [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html) once you've configured
 and started the bot.
 
@@ -599,7 +593,7 @@ The REST API endpoints require a valid JWT to be passed in the `Authorization` h
 To obtain a JWT, your REST client needs to call the `/api/token` endpoint with a valid username/password 
 contained in the `import.sql` file. See the 
 [Authentication](http://localhost:8080/swagger-ui.html#/Authentication/getTokenUsingPOST) 
-Swagger docs for how to do this.
+Springdocs for how to do this.
 
 The returned JWT expires after 10 mins. Your client should call the `/api/refresh` endpoint with the
 JWT before it expires in order to get a new one. Alternatively, you can re-authenticate using the

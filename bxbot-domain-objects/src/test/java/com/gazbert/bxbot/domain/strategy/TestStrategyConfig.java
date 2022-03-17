@@ -23,21 +23,21 @@
 
 package com.gazbert.bxbot.domain.strategy;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.HashMap;
 import java.util.Map;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests a StrategyConfig domain object behaves as expected.
  *
  * @author gazbert
  */
-public class TestStrategyConfig {
+class TestStrategyConfig {
 
   private static final String ID = "macd-long-position";
   private static final String LABEL = "MACD Long Position Algo";
@@ -48,7 +48,7 @@ public class TestStrategyConfig {
   private static final Map<String, String> CONFIG_ITEMS = new HashMap<>();
 
   @Test
-  public void testInitialisationWorksAsExpected() {
+  void testInitialisationWorksAsExpected() {
     final StrategyConfig strategyConfig =
         new StrategyConfig(ID, LABEL, DESCRIPTION, CLASSNAME, BEAN_NAME, CONFIG_ITEMS);
 
@@ -60,7 +60,7 @@ public class TestStrategyConfig {
   }
 
   @Test
-  public void testSettersWorkAsExpected() {
+  void testSettersWorkAsExpected() {
     final StrategyConfig strategyConfig = new StrategyConfig();
     assertNull(strategyConfig.getId());
     assertNull(strategyConfig.getName());
@@ -88,7 +88,7 @@ public class TestStrategyConfig {
   }
 
   @Test
-  public void testCloningWorksAsExpected() {
+  void testCloningWorksAsExpected() {
     final StrategyConfig strategyConfig =
         new StrategyConfig(ID, LABEL, DESCRIPTION, CLASSNAME, BEAN_NAME, CONFIG_ITEMS);
     final StrategyConfig clonedStrategyConfig = new StrategyConfig(strategyConfig);
@@ -97,7 +97,7 @@ public class TestStrategyConfig {
   }
 
   @Test
-  public void testEqualsWorksAsExpected() {
+  void testEqualsWorksAsExpected() {
     final StrategyConfig strategy1 =
         new StrategyConfig(ID, LABEL, DESCRIPTION, CLASSNAME, BEAN_NAME, CONFIG_ITEMS);
     final StrategyConfig strategy2 =
@@ -111,7 +111,7 @@ public class TestStrategyConfig {
   }
 
   @Test
-  public void testHashCodeWorksAsExpected() {
+  void testHashCodeWorksAsExpected() {
     final StrategyConfig strategy1 =
         new StrategyConfig(ID, LABEL, DESCRIPTION, CLASSNAME, BEAN_NAME, CONFIG_ITEMS);
     final StrategyConfig strategy2 =
@@ -125,7 +125,7 @@ public class TestStrategyConfig {
   }
 
   @Test
-  public void testToStringWorksAsExpected() {
+  void testToStringWorksAsExpected() {
     final StrategyConfig strategy =
         new StrategyConfig(ID, LABEL, DESCRIPTION, CLASSNAME, BEAN_NAME, CONFIG_ITEMS);
 

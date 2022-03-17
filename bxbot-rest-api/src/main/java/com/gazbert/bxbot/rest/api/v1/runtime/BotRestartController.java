@@ -25,8 +25,15 @@ package com.gazbert.bxbot.rest.api.v1.runtime;
 
 import static com.gazbert.bxbot.rest.api.v1.EndpointLocations.RUNTIME_ENDPOINT_BASE_URI;
 
+import com.gazbert.bxbot.rest.api.v1.RestController;
 import com.gazbert.bxbot.services.runtime.BotRestartService;
-import io.swagger.annotations.Api;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.security.Principal;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -36,8 +43,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import springfox.documentation.annotations.ApiIgnore;
 
 /**
  * Controller for directing Bot restart requests.
@@ -45,10 +50,10 @@ import springfox.documentation.annotations.ApiIgnore;
  * @author gazbert
  * @since 1.0
  */
-@Api(tags = {"Bot Restart"})
-@RestController
+@org.springframework.web.bind.annotation.RestController
 @RequestMapping(RUNTIME_ENDPOINT_BASE_URI)
-public class BotRestartController {
+@Tag(name = "Bot Restart")
+public class BotRestartController implements RestController {
 
   private static final Logger LOG = LogManager.getLogger();
   private static final String RESTART_RESOURCE_PATH = "/restart";
@@ -68,7 +73,19 @@ public class BotRestartController {
    */
   @PreAuthorize("hasRole('ADMIN')")
   @PostMapping(value = RESTART_RESOURCE_PATH)
-  public ResponseEntity<String> restart(@ApiIgnore Principal principal) {
+  @Operation(summary = "Restarts the bot")
+  @ApiResponses(
+      value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "OK",
+            content = @Content(schema = @Schema(implementation = String.class))),
+        @ApiResponse(
+            responseCode = "400",
+            description = "Bad Request",
+            content = @Content(schema = @Schema(implementation = String.class)))
+      })
+  public ResponseEntity<String> restart(@Parameter(hidden = true) Principal principal) {
 
     LOG.info(
         () -> "POST " + RESTART_RESOURCE_PATH + " - restart() - caller: " + principal.getName());

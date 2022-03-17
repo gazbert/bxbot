@@ -23,16 +23,16 @@
 
 package com.gazbert.bxbot.core.mail;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests the behaviour of the Email Alert Message Builder is as expected.
  *
  * @author gazbert
  */
-public class TestEmailAlertMessageBuilder {
+class TestEmailAlertMessageBuilder {
 
   private static final String NEWLINE = System.getProperty("line.separator");
 
@@ -40,7 +40,7 @@ public class TestEmailAlertMessageBuilder {
    * Tough one to test with timestamp + stacktrace, so best (lazy!) effort here.
    */
   @Test
-  public void testBuildingCriticalMsgContent() {
+  void testBuildingCriticalMsgContent() {
 
     final String expectedStartOfMsg =
         "A CRITICAL error event has occurred on BX-bot."

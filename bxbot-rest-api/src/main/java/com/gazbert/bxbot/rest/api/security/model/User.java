@@ -49,7 +49,7 @@ import org.springframework.util.Assert;
  * @author gazbert
  */
 @Entity
-@Table(name = "USER")
+@Table(name = "BXBOT_USER")
 public class User {
 
   @Id

@@ -64,7 +64,12 @@ public class EmailAlerter {
     initialise();
   }
 
-  /** Sends an email message. */
+  /**
+   * Sends an email message.
+   *
+   * @param subject the email subject.
+   * @param msgContent the email content.
+   */
   public void sendMessage(String subject, String msgContent) {
     if (sendEmailAlertsEnabled) {
       final Session session =

@@ -42,7 +42,12 @@ public final class ExchangeApiConfigBuilder {
   private ExchangeApiConfigBuilder() {
   }
 
-  /** Builds Exchange API config. */
+  /**
+   * Builds Exchange API config.
+   *
+   * @param exchangeConfig the raw Exchange config.
+   * @return the API Exchange config.
+   */
   public static ExchangeConfigImpl buildConfig(ExchangeConfig exchangeConfig) {
 
     final ExchangeConfigImpl exchangeApiConfig = new ExchangeConfigImpl();

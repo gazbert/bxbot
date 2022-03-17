@@ -30,19 +30,18 @@ import static org.easymock.EasyMock.verify;
 
 import com.gazbert.bxbot.domain.emailalerts.EmailAlertsConfig;
 import com.gazbert.bxbot.repository.EmailAlertsConfigRepository;
-import com.gazbert.bxbot.services.config.impl.EmailAlertsConfigServiceImpl;
 import org.easymock.EasyMock;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests Email Alerts configuration service behaves as expected.
  *
  * @author gazbert
  */
-public class TestEmailAlertsConfigService {
+class TestEmailAlertsConfigService {
 
   @Test
-  public void whenGetEmailAlertsConfigCalledThenExpectConfigToBeReturned() {
+  void whenGetEmailAlertsConfigCalledThenExpectConfigToBeReturned() {
     final EmailAlertsConfig emailAlertsConfig = new EmailAlertsConfig();
     final EmailAlertsConfigRepository emailAlertsConfigRepository =
         EasyMock.createMock(EmailAlertsConfigRepository.class);
@@ -57,7 +56,7 @@ public class TestEmailAlertsConfigService {
   }
 
   @Test
-  public void whenUpdateEmailAlertsConfigCalledThenExpectUpdatedConfigToBeReturned() {
+  void whenUpdateEmailAlertsConfigCalledThenExpectUpdatedConfigToBeReturned() {
     final EmailAlertsConfig emailAlertsConfig = new EmailAlertsConfig();
     final EmailAlertsConfigRepository emailAlertsConfigRepository =
         EasyMock.createMock(EmailAlertsConfigRepository.class);

@@ -31,14 +31,14 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests the behaviour of the Exchange API Config Builder is as expected.
  *
  * @author gazbert
  */
-public class TestExchangeApiConfigBuilder {
+class TestExchangeApiConfigBuilder {
 
   private static final String EXCHANGE_NAME = "Bitstamp";
   private static final String EXCHANGE_ADAPTER = "com.gazbert.bxbot.exchanges.TestExchangeAdapter";
@@ -59,7 +59,7 @@ public class TestExchangeApiConfigBuilder {
   private static final String SELL_FEE_CONFIG_ITEM_VALUE = "0.25";
 
   @Test
-  public void testBuildingConfig() {
+  void testBuildingConfig() {
     final com.gazbert.bxbot.exchange.api.ExchangeConfig exchangeApiConfig =
         ExchangeApiConfigBuilder.buildConfig(buildExchangeConfig());
 
@@ -85,7 +85,7 @@ public class TestExchangeApiConfigBuilder {
   }
 
   @Test
-  public void testBuildingConfigWithMandatoryConfigOnly() {
+  void testBuildingConfigWithMandatoryConfigOnly() {
     final com.gazbert.bxbot.exchange.api.ExchangeConfig exchangeApiConfig =
         ExchangeApiConfigBuilder.buildConfig(buildExchangeConfigWithMandatoryConfigOnly());
 
@@ -98,7 +98,7 @@ public class TestExchangeApiConfigBuilder {
   }
 
   @Test
-  public void testBuildingConfigWithoutOptionalNetworkConfig() {
+  void testBuildingConfigWithoutOptionalNetworkConfig() {
     final com.gazbert.bxbot.exchange.api.ExchangeConfig exchangeApiConfig =
         ExchangeApiConfigBuilder.buildConfig(buildExchangeConfigWithoutOptionalNetworkConfig());
 

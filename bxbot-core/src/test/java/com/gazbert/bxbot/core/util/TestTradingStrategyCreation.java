@@ -23,18 +23,19 @@
 
 package com.gazbert.bxbot.core.util;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.gazbert.bxbot.strategy.api.TradingStrategy;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests Trading Strategies are created as expected.
  *
  * @author gazbert
  */
-public class TestTradingStrategyCreation {
+class TestTradingStrategyCreation {
 
   private static final String VALID_TRADING_STRATEGY_IMPL =
       "com.gazbert.bxbot.core.util.strategies.ValidTradingStrategy";
@@ -46,22 +47,27 @@ public class TestTradingStrategyCreation {
       "com.gazbert.bxbot.core.util.strategies.MissingInvalidTradingStrategy";
 
   @Test
-  public void testCreationOfValidTradingStrategyImpl() {
+  void testCreationOfValidTradingStrategyImpl() {
     final TradingStrategy tradingStrategy =
         ConfigurableComponentFactory.createComponent(VALID_TRADING_STRATEGY_IMPL);
     assertNotNull(tradingStrategy);
     assertEquals(VALID_TRADING_STRATEGY_IMPL, tradingStrategy.getClass().getCanonicalName());
   }
 
-  @Test(expected = ClassCastException.class)
-  public void testCreatingTradingStrategyImplThatDoesNotImplementTradingStrategyThrowsException() {
-    final TradingStrategy tradingStrategy =
-        ConfigurableComponentFactory.createComponent(INVALID_TRADING_STRATEGY_IMPL);
+  @Test
+  void testCreatingTradingStrategyImplThatDoesNotImplementTradingStrategyThrowsException() {
+    assertThrows(
+        ClassCastException.class,
+        () -> {
+          final TradingStrategy tradingStrategy =
+              ConfigurableComponentFactory.createComponent(INVALID_TRADING_STRATEGY_IMPL);
+        });
   }
 
-  @Test(expected = IllegalStateException.class)
-  public void testCreatingTradingStrategyImplThatDoesNotExistThrowsException() {
-    final TradingStrategy tradingStrategy =
-        ConfigurableComponentFactory.createComponent(MISSING_TRADING_STRATEGY_IMPL);
+  @Test
+  void testCreatingTradingStrategyImplThatDoesNotExistThrowsException() {
+    assertThrows(
+        IllegalStateException.class,
+        () -> ConfigurableComponentFactory.createComponent(MISSING_TRADING_STRATEGY_IMPL));
   }
 }

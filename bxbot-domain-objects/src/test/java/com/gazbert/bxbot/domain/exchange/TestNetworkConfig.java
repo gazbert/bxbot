@@ -23,20 +23,20 @@
 
 package com.gazbert.bxbot.domain.exchange;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
 import java.util.List;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests NetworkConfig domain object behaves as expected.
  *
  * @author gazbert
  */
-public class TestNetworkConfig {
+class TestNetworkConfig {
 
   private static final Integer CONNECTION_TIMEOUT = 30;
   private static final List<Integer> NON_FATAL_ERROR_CODES = Arrays.asList(502, 503, 504);
@@ -47,7 +47,7 @@ public class TestNetworkConfig {
           "Remote host closed connection during handshake");
 
   @Test
-  public void testInitialisationWorksAsExpected() {
+  void testInitialisationWorksAsExpected() {
     final NetworkConfig networkConfig = new NetworkConfig();
     assertNull(networkConfig.getConnectionTimeout());
     assertTrue(networkConfig.getNonFatalErrorCodes().isEmpty());
@@ -55,7 +55,7 @@ public class TestNetworkConfig {
   }
 
   @Test
-  public void testSettersWorkAsExpected() {
+  void testSettersWorkAsExpected() {
     final NetworkConfig networkConfig = new NetworkConfig();
 
     networkConfig.setConnectionTimeout(CONNECTION_TIMEOUT);
@@ -69,7 +69,7 @@ public class TestNetworkConfig {
   }
 
   @Test
-  public void testToStringWorksAsExpected() {
+  void testToStringWorksAsExpected() {
     final NetworkConfig networkConfig = new NetworkConfig();
     networkConfig.setConnectionTimeout(CONNECTION_TIMEOUT);
     networkConfig.setNonFatalErrorCodes(NON_FATAL_ERROR_CODES);

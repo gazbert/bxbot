@@ -44,7 +44,19 @@ public final class TickerImpl implements Ticker {
   private BigDecimal vwap;
   private Long timestamp;
 
-  /** Creates a new TicketImpl. */
+  /**
+   * Creates a new TicketImpl.
+   *
+   * @param last the last trade price.
+   * @param bid the current bid.
+   * @param ask the current ask.
+   * @param low the current low.
+   * @param high the current high.
+   * @param open the current open.
+   * @param volume the current volume.
+   * @param vwap the current vwap.
+   * @param timestamp the timestamp for the tick.
+   */
   public TickerImpl(
       BigDecimal last,
       BigDecimal bid,

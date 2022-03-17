@@ -24,6 +24,7 @@
 package com.gazbert.bxbot.domain.emailalerts;
 
 import com.google.common.base.MoreObjects;
+import io.swagger.v3.oas.annotations.media.Schema;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.Positive;
 
@@ -32,19 +33,27 @@ import javax.validation.constraints.Positive;
  *
  * @author gazbert
  */
+@Schema(required = true)
 public class SmtpConfig {
 
+  @Schema(required = true, description = "The SMTP hostname.")
   private String host;
 
+  @Schema(required = true, description = "The SMTP TLS port.")
   @Positive(message = "Port must be positive integer")
   private int tlsPort;
 
+  @Schema(required = true, description = "The sender email account name.")
   private String accountUsername;
+
+  @Schema(required = true, description = "The sender email account password.")
   private String accountPassword;
 
+  @Schema(required = true, description = "The email From address.")
   @Email(message = "From Address must be a valid email address")
   private String fromAddress;
 
+  @Schema(required = true, description = "The email To address.")
   @Email(message = "To Address must be a valid email address")
   private String toAddress;
 
@@ -52,7 +61,16 @@ public class SmtpConfig {
   public SmtpConfig() {
   }
 
-  /** Creates a new SmtpConfig. */
+  /**
+   * Creates a new SmtpConfig.
+   *
+   * @param host the SMTP host.
+   * @param tlsPort the TLS port to use.
+   * @param accountUsername the SMTP account name.
+   * @param accountPassword the SMTP account password.
+   * @param fromAddress the email From address.
+   * @param toAddress the email To address.
+   */
   public SmtpConfig(
       String host,
       int tlsPort,

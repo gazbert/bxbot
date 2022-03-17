@@ -26,6 +26,7 @@ package com.gazbert.bxbot.rest.api.security.jwt;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -42,14 +43,14 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import org.assertj.core.util.DateUtil;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
 /**
@@ -60,8 +61,8 @@ import org.springframework.test.util.ReflectionTestUtils;
  *
  * @author gazbert
  */
-@RunWith(SpringRunner.class)
-public class TestJwtUtils {
+@ExtendWith(SpringExtension.class)
+class TestJwtUtils {
 
   private static final long GRADLE_FRIENDLY_TIME_TOLERANCE_IN_MILLIS = 10000L;
 
@@ -88,8 +89,8 @@ public class TestJwtUtils {
   @MockBean private Claims claims;
 
   /** Setup for all tests. */
-  @Before
-  public void init() {
+  @BeforeEach
+  void init() {
     MockitoAnnotations.initMocks(this);
     ReflectionTestUtils.setField(jwtUtils, "expirationInSecs", EXPIRATION_PERIOD);
     ReflectionTestUtils.setField(jwtUtils, "secret", SECRET_KEY);
@@ -103,21 +104,22 @@ public class TestJwtUtils {
   // ------------------------------------------------------------------------
 
   @Test
-  public void testUsernameCanBeExtractedFromTokenClaims() {
+  void testUsernameCanBeExtractedFromTokenClaims() {
     when(claims.getSubject()).thenReturn(USERNAME);
     assertThat(jwtUtils.getUsernameFromTokenClaims(claims)).isEqualTo(USERNAME);
     verify(claims, times(1)).getSubject();
   }
 
-  @Test(expected = JwtAuthenticationException.class)
-  public void testExceptionThrownIfUsernameCannotBeExtractedFromTokenClaims() {
+  @Test
+  void testExceptionThrownIfUsernameCannotBeExtractedFromTokenClaims() {
     when(claims.getSubject()).thenReturn(null);
-    jwtUtils.getUsernameFromTokenClaims(claims);
+    assertThrows(
+        JwtAuthenticationException.class, () -> jwtUtils.getUsernameFromTokenClaims(claims));
     verify(claims, times(1)).getSubject();
   }
 
   @Test
-  public void testIssuedAtDateCanBeExtractedFromTokenClaims() {
+  void testIssuedAtDateCanBeExtractedFromTokenClaims() {
     when(claims.getIssuedAt()).thenReturn(ISSUED_AT_DATE);
     assertThat(jwtUtils.getIssuedAtDateFromTokenClaims(claims))
         .isCloseTo(ISSUED_AT_DATE, GRADLE_FRIENDLY_TIME_TOLERANCE_IN_MILLIS);
@@ -125,7 +127,7 @@ public class TestJwtUtils {
   }
 
   @Test
-  public void testExpirationDateCanBeExtractedFromTokenClaims() {
+  void testExpirationDateCanBeExtractedFromTokenClaims() {
     when(claims.getExpiration()).thenReturn(EXPIRATION_DATE);
     assertThat(jwtUtils.getExpirationDateFromTokenClaims(claims))
         .isCloseTo(EXPIRATION_DATE, GRADLE_FRIENDLY_TIME_TOLERANCE_IN_MILLIS);
@@ -133,7 +135,7 @@ public class TestJwtUtils {
   }
 
   @Test
-  public void testRolesCanBeExtractedFromTokenClaims() {
+  void testRolesCanBeExtractedFromTokenClaims() {
     when(claims.get(JwtUtils.CLAIM_KEY_ROLES)).thenReturn(ROLES);
     final List<GrantedAuthority> roles = jwtUtils.getRolesFromTokenClaims(claims);
     assertThat(roles.size()).isEqualTo(2);
@@ -142,15 +144,15 @@ public class TestJwtUtils {
     verify(claims, times(1)).get(JwtUtils.CLAIM_KEY_ROLES);
   }
 
-  @Test(expected = JwtAuthenticationException.class)
-  public void testExceptionThrownIfRolesCannotBeExtractedFromTokenClaims() {
+  @Test
+  void testExceptionThrownIfRolesCannotBeExtractedFromTokenClaims() {
     when(claims.get(JwtUtils.CLAIM_KEY_ROLES)).thenReturn(null);
-    jwtUtils.getRolesFromTokenClaims(claims);
+    assertThrows(JwtAuthenticationException.class, () -> jwtUtils.getRolesFromTokenClaims(claims));
     verify(claims, times(1)).get(JwtUtils.CLAIM_KEY_ROLES);
   }
 
   @Test
-  public void testLastPasswordResetDateCanBeExtractedFromTokenClaims() {
+  void testLastPasswordResetDateCanBeExtractedFromTokenClaims() {
     when(claims.get(JwtUtils.CLAIM_KEY_LAST_PASSWORD_CHANGE_DATE))
         .thenReturn(LAST_PASSWORD_RESET_DATE_YESTERDAY.getTime());
     assertThat(jwtUtils.getLastPasswordResetDateFromTokenClaims(claims))
@@ -158,10 +160,13 @@ public class TestJwtUtils {
     verify(claims, times(1)).get(JwtUtils.CLAIM_KEY_LAST_PASSWORD_CHANGE_DATE);
   }
 
-  @Test(expected = JwtAuthenticationException.class)
-  public void testExceptionThrownIfLastPasswordResetDateCannotBeExtractedFromTokenClaims() {
+  @Test
+  void testExceptionThrownIfLastPasswordResetDateCannotBeExtractedFromTokenClaims() {
     when(claims.get(JwtUtils.CLAIM_KEY_LAST_PASSWORD_CHANGE_DATE)).thenReturn(null);
-    jwtUtils.getLastPasswordResetDateFromTokenClaims(claims);
+    assertThrows(
+        JwtAuthenticationException.class,
+        () -> jwtUtils.getLastPasswordResetDateFromTokenClaims(claims));
+
     verify(claims, times(1)).get(JwtUtils.CLAIM_KEY_LAST_PASSWORD_CHANGE_DATE);
   }
 
@@ -170,24 +175,23 @@ public class TestJwtUtils {
   // ------------------------------------------------------------------------
 
   @Test
-  public void whenValidateTokenCalledWithNonExpiredTokenThenExpectSuccess() {
+  void whenValidateTokenCalledWithNonExpiredTokenThenExpectSuccess() {
     final String token = createTokenWithLastPasswordResetYesterday();
     assertThat(jwtUtils.validateTokenAndGetClaims(token)).isNotNull();
   }
 
-  @Test(expected = JwtAuthenticationException.class)
-  public void whenValidateTokenCalledWithExpiredTokenThenExpectFailure() {
+  @Test
+  void whenValidateTokenCalledWithExpiredTokenThenExpectFailure() {
     ReflectionTestUtils.setField(jwtUtils, "allowedClockSkewInSecs", 0L);
     ReflectionTestUtils.setField(jwtUtils, "expirationInSecs", 0L); // will expire fast!
     final String token = createTokenWithLastPasswordResetYesterday();
-    jwtUtils.validateTokenAndGetClaims(token);
+    assertThrows(JwtAuthenticationException.class, () -> jwtUtils.validateTokenAndGetClaims(token));
   }
 
-  @Test(expected = JwtAuthenticationException.class)
-  public void
-      whenValidateTokenCalledWithCreatedDateEarlierThanLastPasswordResetDateThenExpectFailure() {
+  @Test
+  void whenValidateTokenCalledWithCreatedDateEarlierThanLastPasswordResetDateThenExpectFailure() {
     final String token = createTokenWithInvalidCreationDate();
-    jwtUtils.validateTokenAndGetClaims(token);
+    assertThrows(JwtAuthenticationException.class, () -> jwtUtils.validateTokenAndGetClaims(token));
   }
 
   // ------------------------------------------------------------------------
@@ -195,7 +199,7 @@ public class TestJwtUtils {
   // ------------------------------------------------------------------------
 
   @Test
-  public void whenRefreshTokenCalledWithValidTokenThenExpectNewTokenToBeReturned() {
+  void whenRefreshTokenCalledWithValidTokenThenExpectNewTokenToBeReturned() {
     final String token = createTokenWithLastPasswordResetYesterday();
     final Claims tokenClaims = jwtUtils.validateTokenAndGetClaims(token);
 
@@ -206,7 +210,7 @@ public class TestJwtUtils {
   }
 
   @Test
-  public void whenCanTokenBeRefreshedCalledWithStaleTokenThenExpectReturnFalse() {
+  void whenCanTokenBeRefreshedCalledWithStaleTokenThenExpectReturnFalse() {
     final String token = createTokenWithLastPasswordResetYesterday();
     final Claims tokenClaims = jwtUtils.validateTokenAndGetClaims(token);
     final Date lastPasswordResetDate = new Date();
@@ -216,7 +220,7 @@ public class TestJwtUtils {
   }
 
   @Test
-  public void whenCanTokenBeRefreshedCalledWhenPasswordNotChangedYetThenExpectReturnTrue() {
+  void whenCanTokenBeRefreshedCalledWhenPasswordNotChangedYetThenExpectReturnTrue() {
     final String token = createTokenWithLastPasswordResetYesterday();
     final Claims tokenClaims = jwtUtils.validateTokenAndGetClaims(token);
 
@@ -225,7 +229,7 @@ public class TestJwtUtils {
   }
 
   @Test
-  public void whenCanTokenBeRefreshedCalledWithValidTokenThenExpectReturnFalse() {
+  void whenCanTokenBeRefreshedCalledWithValidTokenThenExpectReturnFalse() {
     final String token = createTokenWithLastPasswordResetYesterday();
     final Claims tokenClaims = jwtUtils.validateTokenAndGetClaims(token);
     await().atLeast(Duration.ofSeconds(1));

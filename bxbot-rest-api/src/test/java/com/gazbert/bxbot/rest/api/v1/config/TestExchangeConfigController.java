@@ -23,8 +23,8 @@
 
 package com.gazbert.bxbot.rest.api.v1.config;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -42,16 +42,16 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.actuate.logging.LogFileWebEndpoint;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.cloud.context.restart.RestartEndpoint;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
@@ -60,10 +60,10 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
  *
  * @author gazbert
  */
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest
 @WebAppConfiguration
-public class TestExchangeConfigController extends AbstractConfigControllerTest {
+class TestExchangeConfigController extends AbstractConfigControllerTest {
 
   private static final String EXCHANGE_CONFIG_ENDPOINT_URI = CONFIG_ENDPOINT_BASE_URI + "/exchange";
 
@@ -99,20 +99,19 @@ public class TestExchangeConfigController extends AbstractConfigControllerTest {
   @MockBean private LogFileWebEndpoint logFileWebEndpoint;
   @MockBean private AuthenticationManager authenticationManager;
 
-  @Before
-  public void setupBeforeEachTest() {
+  @BeforeEach
+  void setupBeforeEachTest() {
     mockMvc = MockMvcBuilders.webAppContextSetup(ctx).addFilter(springSecurityFilterChain).build();
   }
 
   @Test
-  public void testGetExchangeConfigWithValidToken() throws Exception {
+  void testGetExchangeConfigWithValidToken() throws Exception {
     given(exchangeConfigService.getExchangeConfig()).willReturn(someExchangeConfig());
 
     mockMvc
         .perform(
             get(EXCHANGE_CONFIG_ENDPOINT_URI)
-                .header(
-                    "Authorization", "Bearer " + getJwt(VALID_USER_NAME, VALID_USER_PASSWORD)))
+                .header("Authorization", "Bearer " + getJwt(VALID_USER_NAME, VALID_USER_PASSWORD)))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.name").value(EXCHANGE_NAME))
@@ -135,14 +134,14 @@ public class TestExchangeConfigController extends AbstractConfigControllerTest {
   }
 
   @Test
-  public void testGetExchangeConfigWhenUnauthorizedWithMissingToken() throws Exception {
+  void testGetExchangeConfigWhenUnauthorizedWithMissingToken() throws Exception {
     mockMvc
         .perform(get(EXCHANGE_CONFIG_ENDPOINT_URI).accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isUnauthorized());
   }
 
   @Test
-  public void testGetExchangeConfigWhenUnauthorizedWithInvalidToken() throws Exception {
+  void testGetExchangeConfigWhenUnauthorizedWithInvalidToken() throws Exception {
     mockMvc
         .perform(
             get(EXCHANGE_CONFIG_ENDPOINT_URI)
@@ -152,15 +151,14 @@ public class TestExchangeConfigController extends AbstractConfigControllerTest {
   }
 
   @Test
-  public void testUpdateExchangeConfigWithAdminTokenAuthorized() throws Exception {
+  void testUpdateExchangeConfigWithAdminTokenAuthorized() throws Exception {
     given(exchangeConfigService.getExchangeConfig()).willReturn(someExchangeConfig());
     given(exchangeConfigService.updateExchangeConfig(any())).willReturn(someExchangeConfig());
 
     mockMvc
         .perform(
             put(EXCHANGE_CONFIG_ENDPOINT_URI)
-                .header(
-                    "Authorization", "Bearer " + getJwt(VALID_ADMIN_NAME, VALID_ADMIN_PASSWORD))
+                .header("Authorization", "Bearer " + getJwt(VALID_ADMIN_NAME, VALID_ADMIN_PASSWORD))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonify(someExchangeConfig())))
         .andExpect(status().isOk())
@@ -185,15 +183,14 @@ public class TestExchangeConfigController extends AbstractConfigControllerTest {
   }
 
   @Test
-  public void testUpdateExchangeConfigWithUserTokenForbidden() throws Exception {
+  void testUpdateExchangeConfigWithUserTokenForbidden() throws Exception {
     given(exchangeConfigService.getExchangeConfig()).willReturn(someExchangeConfig());
     given(exchangeConfigService.updateExchangeConfig(any())).willReturn(someExchangeConfig());
 
     mockMvc
         .perform(
             put(EXCHANGE_CONFIG_ENDPOINT_URI)
-                .header(
-                    "Authorization", "Bearer " + getJwt(VALID_USER_NAME, VALID_USER_PASSWORD))
+                .header("Authorization", "Bearer " + getJwt(VALID_USER_NAME, VALID_USER_PASSWORD))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonify(someExchangeConfig())))
         .andExpect(status().isForbidden());
@@ -203,14 +200,14 @@ public class TestExchangeConfigController extends AbstractConfigControllerTest {
   }
 
   @Test
-  public void testUpdateExchangeConfigWhenUnauthorizedWithMissingToken() throws Exception {
+  void testUpdateExchangeConfigWhenUnauthorizedWithMissingToken() throws Exception {
     mockMvc
         .perform(put(EXCHANGE_CONFIG_ENDPOINT_URI).accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isUnauthorized());
   }
 
   @Test
-  public void testUpdateExchangeConfigWhenUnauthorizedWithInvalidToken() throws Exception {
+  void testUpdateExchangeConfigWhenUnauthorizedWithInvalidToken() throws Exception {
     mockMvc
         .perform(
             put(EXCHANGE_CONFIG_ENDPOINT_URI)

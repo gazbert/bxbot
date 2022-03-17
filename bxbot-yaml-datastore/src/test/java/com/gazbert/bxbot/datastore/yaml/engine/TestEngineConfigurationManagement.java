@@ -23,21 +23,22 @@
 
 package com.gazbert.bxbot.datastore.yaml.engine;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.gazbert.bxbot.datastore.yaml.ConfigurationManager;
 import com.gazbert.bxbot.domain.engine.EngineConfig;
 import java.math.BigDecimal;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests the Trading Engine configuration is loaded as expected.
  *
  * @author gazbert
  */
-public class TestEngineConfigurationManagement {
+class TestEngineConfigurationManagement {
 
   private static final String VALID_YAML_CONFIG_FILENAME =
       "src/test/config/engine/valid-engine.yaml";
@@ -57,7 +58,7 @@ public class TestEngineConfigurationManagement {
   private static final int TRADE_CYCLE_INTERVAL = 60;
 
   @Test
-  public void testLoadingValidYamlConfigFileIsSuccessful() {
+  void testLoadingValidYamlConfigFileIsSuccessful() {
     final EngineType engineType =
         ConfigurationManager.loadConfig(EngineType.class, VALID_YAML_CONFIG_FILENAME);
     assertEquals(BOT_ID, engineType.getEngine().getBotId());
@@ -68,18 +69,22 @@ public class TestEngineConfigurationManagement {
     assertEquals(TRADE_CYCLE_INTERVAL, engineType.getEngine().getTradeCycleInterval());
   }
 
-  @Test(expected = IllegalStateException.class)
-  public void testLoadingMissingYamlConfigThrowsException() {
-    ConfigurationManager.loadConfig(EngineType.class, MISSING_YAML_CONFIG_FILENAME);
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testLoadingInvalidYamlConfigThrowsException() {
-    ConfigurationManager.loadConfig(EngineType.class, INVALID_YAML_CONFIG_FILENAME);
+  @Test
+  void testLoadingMissingYamlConfigThrowsException() {
+    assertThrows(
+        IllegalStateException.class,
+        () -> ConfigurationManager.loadConfig(EngineType.class, MISSING_YAML_CONFIG_FILENAME));
   }
 
   @Test
-  public void testSavingConfigToYamlIsSuccessful() throws Exception {
+  void testLoadingInvalidYamlConfigThrowsException() {
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> ConfigurationManager.loadConfig(EngineType.class, INVALID_YAML_CONFIG_FILENAME));
+  }
+
+  @Test
+  void testSavingConfigToYamlIsSuccessful() throws Exception {
     final EngineConfig engineConfig = new EngineConfig();
     engineConfig.setBotId(BOT_ID);
     engineConfig.setBotName(BOT_NAME);
@@ -109,8 +114,8 @@ public class TestEngineConfigurationManagement {
     Files.delete(FileSystems.getDefault().getPath(YAML_CONFIG_TO_SAVE_FILENAME));
   }
 
-  @Test(expected = IllegalStateException.class)
-  public void testSavingConfigToInvalidYamlFileIsHandled() {
+  @Test
+  void testSavingConfigToInvalidYamlFileIsHandled() {
     final EngineConfig engineConfig = new EngineConfig();
     engineConfig.setBotId(BOT_ID);
     engineConfig.setBotName(BOT_NAME);
@@ -121,7 +126,10 @@ public class TestEngineConfigurationManagement {
     final EngineType engineType = new EngineType();
     engineType.setEngine(engineConfig);
 
-    ConfigurationManager.saveConfig(
-        EngineType.class, engineType, INVALID_YAML_CONFIG_TO_SAVE_FILENAME);
+    assertThrows(
+        IllegalStateException.class,
+        () ->
+            ConfigurationManager.saveConfig(
+                EngineType.class, engineType, INVALID_YAML_CONFIG_TO_SAVE_FILENAME));
   }
 }

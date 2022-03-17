@@ -72,7 +72,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
    * https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-2.0-Migration-Guide#authenticationmanager-bean
    *
    * @return the authentication manager bean.
-   * @throws Exception id anything unexpected happens.
+   * @throws Exception if anything unexpected happens.
    */
   @Override
   @Bean
@@ -87,26 +87,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
    * @param authenticationManagerBuilder the Authentication Manager.
    * @throws Exception if anything breaks building the Authentication Manager.
    */
-  @Autowired
-  public void configureAuthentication(AuthenticationManagerBuilder authenticationManagerBuilder)
+  @Override
+  public void configure(AuthenticationManagerBuilder authenticationManagerBuilder)
       throws Exception {
     authenticationManagerBuilder
-        .userDetailsService(this.userDetailsService)
+        .userDetailsService(userDetailsService)
         .passwordEncoder(bcryptPasswordEncoder());
-  }
-
-  /*
-   * Use bcrypt password encoding.
-   * https://docs.spring.io/spring-security/site/docs/5.0.5.RELEASE/reference/htmlsingle/#pe-bcpe
-   */
-  @Bean
-  public BCryptPasswordEncoder bcryptPasswordEncoder() {
-    return new BCryptPasswordEncoder(12); // tuned to 1 sec; default is 10 rounds.
-  }
-
-  @Bean
-  public JwtAuthenticationFilter authenticationTokenFilterBean() {
-    return new JwtAuthenticationFilter();
   }
 
   @Override
@@ -141,8 +127,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             HttpMethod.GET,
             "/api-docs",
             "/swagger-resources/**",
-            "/swagger-resources/**",
             "/swagger-ui.html**",
+            "/swagger-ui/**",
+            "/v3/api-docs/**",
+            "/api-docs/**",
             "/webjars/**",
             "/favicon.ico")
         .permitAll()
@@ -158,5 +146,18 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     // Disable page caching in the browser
     httpSecurity.headers().cacheControl().disable();
   }
-}
 
+  /*
+   * Use bcrypt password encoding.
+   * https://docs.spring.io/spring-security/site/docs/5.0.5.RELEASE/reference/htmlsingle/#pe-bcpe
+   */
+  @Bean
+  public BCryptPasswordEncoder bcryptPasswordEncoder() {
+    return new BCryptPasswordEncoder(12); // tuned to 1 sec; default is 10 rounds.
+  }
+
+  @Bean
+  public JwtAuthenticationFilter authenticationTokenFilterBean() {
+    return new JwtAuthenticationFilter();
+  }
+}

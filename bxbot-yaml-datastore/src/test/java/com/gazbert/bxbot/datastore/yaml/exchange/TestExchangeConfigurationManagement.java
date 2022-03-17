@@ -24,7 +24,8 @@
 package com.gazbert.bxbot.datastore.yaml.exchange;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gazbert.bxbot.datastore.yaml.ConfigurationManager;
 import com.gazbert.bxbot.domain.exchange.ExchangeConfig;
@@ -35,23 +36,27 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests the Exchange Adapter configuration is loaded as expected.
  *
  * @author gazbert
  */
-public class TestExchangeConfigurationManagement {
+class TestExchangeConfigurationManagement {
 
   private static final String VALID_YAML_CONFIG_FILENAME =
       "src/test/config/exchange/valid-exchange.yaml";
+
   private static final String INVALID_YAML_CONFIG_FILENAME =
       "src/test/config/exchange/invalid-exchange.yaml";
+
   private static final String MISSING_XML_CONFIG_FILENAME =
       "src/test/config/exchange-/missing-exchange.yaml";
+
   private static final String YAML_CONFIG_TO_SAVE_FILENAME =
       "src/test/config/exchange/saved-exchange.yaml";
+
   private static final String INVALID_YAML_CONFIG_TO_SAVE_FILENAME =
       "src/test/config/not-here/saved-exchange.yaml";
 
@@ -67,8 +72,10 @@ public class TestExchangeConfigurationManagement {
   private static final String SECRET_CONFIG_ITEM_VALUE = "your-secret-key";
 
   private static final Integer CONNECTION_TIMEOUT = 30;
+
   private static final List<Integer> NON_FATAL_ERROR_CODES =
       Arrays.asList(502, 503, 504, 520, 522, 525);
+
   private static final List<String> NON_FATAL_ERROR_MESSAGES =
       Arrays.asList(
           "Connection refused",
@@ -82,28 +89,32 @@ public class TestExchangeConfigurationManagement {
   private static final String SELL_FEE_CONFIG_ITEM_VALUE = "0.5";
 
   @Test
-  public void testLoadingValidYamlConfigFileIsSuccessful() {
+  void testLoadingValidYamlConfigFileIsSuccessful() {
     final ExchangeType exchangeType =
         ConfigurationManager.loadConfig(ExchangeType.class, VALID_YAML_CONFIG_FILENAME);
 
     assertThat(exchangeType.getExchange().getName()).isEqualTo(EXCHANGE_NAME);
     assertThat(exchangeType.getExchange().getAdapter()).isEqualTo(EXCHANGE_ADAPTER);
 
-    assertThat(exchangeType.getExchange().getAuthenticationConfig().get(CLIENT_ID_CONFIG_ITEM_KEY))
-        .isEqualTo(CLIENT_ID_CONFIG_ITEM_VALUE);
-    assertThat(exchangeType.getExchange().getAuthenticationConfig().get(API_KEY_CONFIG_ITEM_KEY))
-        .isEqualTo(API_KEY_CONFIG_ITEM_VALUE);
-    assertThat(exchangeType.getExchange().getAuthenticationConfig().get(SECRET_CONFIG_ITEM_KEY))
-        .isEqualTo(SECRET_CONFIG_ITEM_VALUE);
+    assertThat(exchangeType.getExchange().getAuthenticationConfig())
+        .containsEntry(CLIENT_ID_CONFIG_ITEM_KEY, CLIENT_ID_CONFIG_ITEM_VALUE);
+
+    assertThat(exchangeType.getExchange().getAuthenticationConfig())
+        .containsEntry(API_KEY_CONFIG_ITEM_KEY, API_KEY_CONFIG_ITEM_VALUE);
+
+    assertThat(exchangeType.getExchange().getAuthenticationConfig())
+        .containsEntry(SECRET_CONFIG_ITEM_KEY, SECRET_CONFIG_ITEM_VALUE);
 
     assertThat(exchangeType.getExchange().getNetworkConfig().getConnectionTimeout())
         .isEqualTo(CONNECTION_TIMEOUT);
+
     assertTrue(
         exchangeType
             .getExchange()
             .getNetworkConfig()
             .getNonFatalErrorCodes()
             .containsAll(NON_FATAL_ERROR_CODES));
+
     assertTrue(
         exchangeType
             .getExchange()
@@ -111,24 +122,29 @@ public class TestExchangeConfigurationManagement {
             .getNonFatalErrorMessages()
             .containsAll(NON_FATAL_ERROR_MESSAGES));
 
-    assertThat(exchangeType.getExchange().getOtherConfig().get(BUY_FEE_CONFIG_ITEM_KEY))
-        .isEqualTo(BUY_FEE_CONFIG_ITEM_VALUE);
-    assertThat(exchangeType.getExchange().getOtherConfig().get(SELL_FEE_CONFIG_ITEM_KEY))
-        .isEqualTo(SELL_FEE_CONFIG_ITEM_VALUE);
-  }
+    assertThat(exchangeType.getExchange().getOtherConfig())
+        .containsEntry(BUY_FEE_CONFIG_ITEM_KEY, BUY_FEE_CONFIG_ITEM_VALUE);
 
-  @Test(expected = IllegalStateException.class)
-  public void testLoadingMissingYamlConfigFileThrowsException() {
-    ConfigurationManager.loadConfig(ExchangeType.class, MISSING_XML_CONFIG_FILENAME);
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testLoadingInvalidYamlConfigFileThrowsException() {
-    ConfigurationManager.loadConfig(ExchangeType.class, INVALID_YAML_CONFIG_FILENAME);
+    assertThat(exchangeType.getExchange().getOtherConfig())
+        .containsEntry(SELL_FEE_CONFIG_ITEM_KEY, SELL_FEE_CONFIG_ITEM_VALUE);
   }
 
   @Test
-  public void testSavingConfigToYamlIsSuccessful() throws Exception {
+  void testLoadingMissingYamlConfigFileThrowsException() {
+    assertThrows(
+        IllegalStateException.class,
+        () -> ConfigurationManager.loadConfig(ExchangeType.class, MISSING_XML_CONFIG_FILENAME));
+  }
+
+  @Test
+  void testLoadingInvalidYamlConfigFileThrowsException() {
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> ConfigurationManager.loadConfig(ExchangeType.class, INVALID_YAML_CONFIG_FILENAME));
+  }
+
+  @Test
+  void testSavingConfigToYamlIsSuccessful() throws Exception {
     final Map<String, String> authenticationConfig = new HashMap<>();
     authenticationConfig.put(API_KEY_CONFIG_ITEM_KEY, API_KEY_CONFIG_ITEM_VALUE);
     authenticationConfig.put(SECRET_CONFIG_ITEM_KEY, SECRET_CONFIG_ITEM_VALUE);
@@ -162,20 +178,22 @@ public class TestExchangeConfigurationManagement {
     assertThat(exchangeReloaded.getExchange().getName()).isEqualTo(EXCHANGE_NAME);
     assertThat(exchangeReloaded.getExchange().getAdapter()).isEqualTo(EXCHANGE_ADAPTER);
 
-    assertThat(
-            exchangeReloaded.getExchange().getAuthenticationConfig().get(API_KEY_CONFIG_ITEM_KEY))
-        .isEqualTo(API_KEY_CONFIG_ITEM_VALUE);
-    assertThat(exchangeReloaded.getExchange().getAuthenticationConfig().get(SECRET_CONFIG_ITEM_KEY))
-        .isEqualTo(SECRET_CONFIG_ITEM_VALUE);
+    assertThat(exchangeReloaded.getExchange().getAuthenticationConfig())
+        .containsEntry(API_KEY_CONFIG_ITEM_KEY, API_KEY_CONFIG_ITEM_VALUE);
+
+    assertThat(exchangeReloaded.getExchange().getAuthenticationConfig())
+        .containsEntry(SECRET_CONFIG_ITEM_KEY, SECRET_CONFIG_ITEM_VALUE);
 
     assertThat(exchangeReloaded.getExchange().getNetworkConfig().getConnectionTimeout())
         .isEqualTo(CONNECTION_TIMEOUT);
+
     assertTrue(
         exchangeReloaded
             .getExchange()
             .getNetworkConfig()
             .getNonFatalErrorCodes()
             .containsAll(NON_FATAL_ERROR_CODES));
+
     assertTrue(
         exchangeReloaded
             .getExchange()
@@ -183,17 +201,18 @@ public class TestExchangeConfigurationManagement {
             .getNonFatalErrorMessages()
             .containsAll(NON_FATAL_ERROR_MESSAGES));
 
-    assertThat(exchangeReloaded.getExchange().getOtherConfig().get(BUY_FEE_CONFIG_ITEM_KEY))
-        .isEqualTo(BUY_FEE_CONFIG_ITEM_VALUE);
-    assertThat(exchangeReloaded.getExchange().getOtherConfig().get(SELL_FEE_CONFIG_ITEM_KEY))
-        .isEqualTo(SELL_FEE_CONFIG_ITEM_VALUE);
+    assertThat(exchangeReloaded.getExchange().getOtherConfig())
+        .containsEntry(BUY_FEE_CONFIG_ITEM_KEY, BUY_FEE_CONFIG_ITEM_VALUE);
+
+    assertThat(exchangeReloaded.getExchange().getOtherConfig())
+        .containsEntry(SELL_FEE_CONFIG_ITEM_KEY, SELL_FEE_CONFIG_ITEM_VALUE);
 
     // cleanup
     Files.delete(FileSystems.getDefault().getPath(YAML_CONFIG_TO_SAVE_FILENAME));
   }
 
-  @Test(expected = IllegalStateException.class)
-  public void testSavingConfigToInvalidYamlFileIsHandled() {
+  @Test
+  void testSavingConfigToInvalidYamlFileIsHandled() {
     final Map<String, String> authenticationConfig = new HashMap<>();
     authenticationConfig.put(API_KEY_CONFIG_ITEM_KEY, API_KEY_CONFIG_ITEM_VALUE);
     authenticationConfig.put(SECRET_CONFIG_ITEM_KEY, SECRET_CONFIG_ITEM_VALUE);
@@ -217,7 +236,10 @@ public class TestExchangeConfigurationManagement {
     final ExchangeType exchangeType = new ExchangeType();
     exchangeType.setExchange(exchangeConfig);
 
-    ConfigurationManager.saveConfig(
-        ExchangeType.class, exchangeType, INVALID_YAML_CONFIG_TO_SAVE_FILENAME);
+    assertThrows(
+        IllegalStateException.class,
+        () ->
+            ConfigurationManager.saveConfig(
+                ExchangeType.class, exchangeType, INVALID_YAML_CONFIG_TO_SAVE_FILENAME));
   }
 }

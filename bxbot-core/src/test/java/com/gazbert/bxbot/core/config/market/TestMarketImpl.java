@@ -23,18 +23,19 @@
 
 package com.gazbert.bxbot.core.config.market;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests Market impl behaves as expected.
  *
  * @author gazbert
  */
-public class TestMarketImpl {
+class TestMarketImpl {
 
   private static final String MARKET_NAME = "LTC_BTC";
   private static final String MARKET_ID = "3";
@@ -42,7 +43,7 @@ public class TestMarketImpl {
   private static final String COUNTER_CURRENCY = "BTC";
 
   @Test
-  public void testMarketIsInitialisedAsExpected() {
+  void testMarketIsInitialisedAsExpected() {
     final MarketImpl market =
         new MarketImpl(MARKET_NAME, MARKET_ID, BASE_CURRENCY, COUNTER_CURRENCY);
     assertEquals(MARKET_NAME, market.getName());
@@ -52,7 +53,7 @@ public class TestMarketImpl {
   }
 
   @Test
-  public void testSettersWorkAsExpected() {
+  void testSettersWorkAsExpected() {
     final MarketImpl market = new MarketImpl(null, null, null, null);
     assertNull(market.getName());
     assertNull(market.getId());
@@ -73,10 +74,18 @@ public class TestMarketImpl {
   }
 
   @Test
-  public void testEqualsWorksAsExpected() {
+  void testEqualsWorksAsExpected() {
     final MarketImpl market1 = new MarketImpl(null, "id-1", null, null);
     final MarketImpl market2 = new MarketImpl(null, "id-2", null, null);
     assertEquals(market1, market1);
     assertNotEquals(market1, market2);
+  }
+
+  @Test
+  void testToStringWorksAsExpected() {
+    final MarketImpl market =
+        new MarketImpl(MARKET_NAME, MARKET_ID, BASE_CURRENCY, COUNTER_CURRENCY);
+    market.setName(MARKET_NAME);
+    assertTrue(market.toString().contains(MARKET_NAME));
   }
 }

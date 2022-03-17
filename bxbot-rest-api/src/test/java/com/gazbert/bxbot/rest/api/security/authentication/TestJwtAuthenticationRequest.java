@@ -24,16 +24,15 @@
 package com.gazbert.bxbot.rest.api.security.authentication;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests a JWT Authentication Request behaves as expected.
  *
  * @author gazbert
  */
-public class TestJwtAuthenticationRequest {
+class TestJwtAuthenticationRequest {
 
   private static final String USERNAME = "bxbot-ui";
   private static final String PASSWORD = "InSearchOfLostTime";
@@ -41,14 +40,14 @@ public class TestJwtAuthenticationRequest {
   private static final String PASSWORD2 = "InSearchOfLostTime2";
 
   @Test
-  public void testEmptyConstructorWorksAsExpected() {
+  void testEmptyConstructorWorksAsExpected() {
     final JwtAuthenticationRequest jwtAuthenticationRequest = new JwtAuthenticationRequest();
     assertEquals("", jwtAuthenticationRequest.getUsername());
     assertEquals("", jwtAuthenticationRequest.getPassword());
   }
 
   @Test
-  public void testArgsConstructorWorksAsExpected() {
+  void testArgsConstructorWorksAsExpected() {
     final JwtAuthenticationRequest jwtAuthenticationRequest =
         new JwtAuthenticationRequest(USERNAME, PASSWORD);
     assertEquals(USERNAME, jwtAuthenticationRequest.getUsername());
@@ -56,7 +55,7 @@ public class TestJwtAuthenticationRequest {
   }
 
   @Test
-  public void testSettersWorkAsExpected() {
+  void testSettersWorkAsExpected() {
     final JwtAuthenticationRequest jwtAuthenticationRequest =
         new JwtAuthenticationRequest(USERNAME, PASSWORD);
     jwtAuthenticationRequest.setUsername(USERNAME2);

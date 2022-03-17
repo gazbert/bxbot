@@ -26,9 +26,17 @@ package com.gazbert.bxbot.rest.api.v1.config;
 import static com.gazbert.bxbot.rest.api.v1.EndpointLocations.CONFIG_ENDPOINT_BASE_URI;
 
 import com.gazbert.bxbot.domain.engine.EngineConfig;
+import com.gazbert.bxbot.rest.api.v1.RestController;
 import com.gazbert.bxbot.services.config.EngineConfigService;
-import io.swagger.annotations.Api;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.security.Principal;
+import javax.validation.Valid;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,8 +47,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import springfox.documentation.annotations.ApiIgnore;
 
 /**
  * Controller for directing Engine config requests.
@@ -52,10 +58,10 @@ import springfox.documentation.annotations.ApiIgnore;
  * @author gazbert
  * @since 1.0
  */
-@Api(tags = {"Engine Configuration"})
-@RestController
+@org.springframework.web.bind.annotation.RestController
 @RequestMapping(CONFIG_ENDPOINT_BASE_URI)
-public class EngineConfigController {
+@Tag(name = "Engine Configuration")
+public class EngineConfigController implements RestController {
 
   private static final Logger LOG = LogManager.getLogger();
   private static final String ENGINE_RESOURCE_PATH = "/engine";
@@ -74,7 +80,19 @@ public class EngineConfigController {
    */
   @PreAuthorize("hasRole('USER')")
   @GetMapping(value = ENGINE_RESOURCE_PATH)
-  public EngineConfig getEngine(@ApiIgnore Principal principal) {
+  @Operation(summary = "Fetches Engine config")
+  @ApiResponses(
+      value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "OK",
+            content = @Content(schema = @Schema(implementation = EngineConfig.class))),
+        @ApiResponse(
+            responseCode = "400",
+            description = "Bad Request",
+            content = @Content(schema = @Schema(implementation = String.class)))
+      })
+  public EngineConfig getEngine(@Parameter(hidden = true) Principal principal) {
 
     LOG.info(
         () -> "GET " + ENGINE_RESOURCE_PATH + " - getEngine() - caller: " + principal.getName());
@@ -94,8 +112,20 @@ public class EngineConfigController {
    */
   @PreAuthorize("hasRole('ADMIN')")
   @PutMapping(value = ENGINE_RESOURCE_PATH)
+  @Operation(summary = "Updates Engine config")
+  @ApiResponses(
+      value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "OK",
+            content = @Content(schema = @Schema(implementation = EngineConfig.class))),
+        @ApiResponse(
+            responseCode = "400",
+            description = "Bad Request",
+            content = @Content(schema = @Schema(implementation = String.class)))
+      })
   public ResponseEntity<EngineConfig> updateEngine(
-      @ApiIgnore Principal principal, @RequestBody EngineConfig config) {
+      @Parameter(hidden = true) Principal principal, @Valid @RequestBody EngineConfig config) {
 
     LOG.info(
         () -> "PUT " + ENGINE_RESOURCE_PATH + " - updateEngine() - caller: " + principal.getName());

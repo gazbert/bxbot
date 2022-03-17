@@ -40,7 +40,13 @@ public abstract class ConfigurableComponentFactory {
   private ConfigurableComponentFactory() {
   }
 
-  /** Loads and instantiates a given class and returns it. */
+  /**
+   * Loads and instantiates a given class and returns it.
+   *
+   * @param componentClassName the class to instantiate.
+   * @param <T> the type of the class to instantiate.
+   * @return the instantiated class.
+   */
   @SuppressWarnings("unchecked")
   public static <T> T createComponent(String componentClassName) {
     try {

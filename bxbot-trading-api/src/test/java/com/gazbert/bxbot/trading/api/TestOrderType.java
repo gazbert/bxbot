@@ -23,25 +23,25 @@
 
 package com.gazbert.bxbot.trading.api;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests OrderType is created as expected.
  *
  * @author gazbert
  */
-public class TestOrderType {
+class TestOrderType {
 
   @Test
-  public void testCreationOfBuyIsAsExpected() {
+  void testCreationOfBuyIsAsExpected() {
     final OrderType orderType = OrderType.BUY;
     assertEquals("Buy", orderType.getStringValue());
   }
 
   @Test
-  public void testCreationOfSellIsAsExpected() {
+  void testCreationOfSellIsAsExpected() {
     final OrderType orderType = OrderType.SELL;
     assertEquals("Sell", orderType.getStringValue());
   }

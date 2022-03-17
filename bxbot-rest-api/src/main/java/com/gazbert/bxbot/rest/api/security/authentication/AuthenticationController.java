@@ -26,8 +26,14 @@ package com.gazbert.bxbot.rest.api.security.authentication;
 
 import com.gazbert.bxbot.rest.api.security.jwt.JwtUser;
 import com.gazbert.bxbot.rest.api.security.jwt.JwtUtils;
+import com.gazbert.bxbot.rest.api.v1.RestController;
 import io.jsonwebtoken.Claims;
-import io.swagger.annotations.Api;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.Date;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,7 +48,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
 
 /**
  * REST Controller for handling initial authentication requests to obtain a JWT.
@@ -52,9 +57,9 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * @author gazbert
  */
-@Api(tags = {"Authentication"})
-@RestController
-public class AuthenticationController {
+@org.springframework.web.bind.annotation.RestController
+@Tag(name = "Authentication")
+public class AuthenticationController implements RestController {
 
   private final AuthenticationManager authenticationManager;
   private final UserDetailsService userDetailsService;
@@ -88,6 +93,18 @@ public class AuthenticationController {
    * @throws AuthenticationException if the the client was not authenticated successfully.
    */
   @PostMapping(value = "/api/token")
+  @Operation(summary = "Gets an API token")
+  @ApiResponses(
+      value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "OK",
+            content = @Content(schema = @Schema(implementation = JwtAuthenticationResponse.class))),
+        @ApiResponse(
+            responseCode = "400",
+            description = "Bad Request",
+            content = @Content(schema = @Schema(implementation = String.class)))
+      })
   public ResponseEntity<JwtAuthenticationResponse> getToken(
       @RequestBody JwtAuthenticationRequest authenticationRequest) {
 
@@ -114,6 +131,18 @@ public class AuthenticationController {
    *     otherwise.
    */
   @GetMapping(value = "/api/token/refresh")
+  @Operation(summary = "Refreshes an API token")
+  @ApiResponses(
+      value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "OK",
+            content = @Content(schema = @Schema(implementation = JwtAuthenticationResponse.class))),
+        @ApiResponse(
+            responseCode = "400",
+            description = "Bad Request",
+            content = @Content(schema = @Schema(implementation = String.class)))
+      })
   public ResponseEntity<JwtAuthenticationResponse> refreshToken(HttpServletRequest request) {
 
     final String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);

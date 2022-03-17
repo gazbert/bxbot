@@ -24,22 +24,36 @@
 package com.gazbert.bxbot.domain.emailalerts;
 
 import com.google.common.base.MoreObjects;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
  * Domain object representing the Email Alerts config.
  *
  * @author gazbert
  */
+@Schema
 public class EmailAlertsConfig {
 
+  @Schema(
+      required = true,
+      description =
+          "If set to true, the bot will send email alerts if it needs to shut down due to a "
+              + " critical error.")
   private boolean enabled;
+
+  @Schema(description = "The SMTP details. Only required if enabled is set to true.")
   private SmtpConfig smtpConfig;
 
   // Required by ConfigurableComponentFactory
   public EmailAlertsConfig() {
   }
 
-  /** Creates a new EmailAlertsConfig. */
+  /**
+   * Creates a new EmailAlertsConfig.
+   *
+   * @param enabled is enabled?
+   * @param smtpConfig the SMTP config.
+   */
   public EmailAlertsConfig(boolean enabled, SmtpConfig smtpConfig) {
     this.enabled = enabled;
     this.smtpConfig = smtpConfig;

@@ -24,8 +24,9 @@
 package com.gazbert.bxbot.datastore.yaml.strategy;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.gazbert.bxbot.datastore.yaml.ConfigurationManager;
 import com.gazbert.bxbot.domain.strategy.StrategyConfig;
@@ -33,14 +34,14 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests the Strategy configuration is loaded as expected.
  *
  * @author gazbert
  */
-public class TestStrategyConfigurationManagement {
+class TestStrategyConfigurationManagement {
 
   private static final String VALID_YAML_CONFIG_FILENAME =
       "src/test/config/strategies/valid-strategies.yaml";
@@ -70,7 +71,7 @@ public class TestStrategyConfigurationManagement {
   private static final String AMOUNT_TO_BUY_CONFIG_ITEM_VALUE = "0.5";
 
   @Test
-  public void testLoadingValidYamlConfigFileIsSuccessful() {
+  void testLoadingValidYamlConfigFileIsSuccessful() {
     final StrategiesType strategyConfig =
         ConfigurationManager.loadConfig(StrategiesType.class, VALID_YAML_CONFIG_FILENAME);
 
@@ -139,18 +140,22 @@ public class TestStrategyConfigurationManagement {
         strategyConfig.getStrategies().get(2).getConfigItems()); // optional element check
   }
 
-  @Test(expected = IllegalStateException.class)
-  public void testLoadingMissingYamlConfigFileThrowsException() {
-    ConfigurationManager.loadConfig(StrategiesType.class, MISSING_YAML_CONFIG_FILENAME);
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testLoadingInvalidYamlConfigFileThrowsException() {
-    ConfigurationManager.loadConfig(StrategiesType.class, INVALID_YAML_CONFIG_FILENAME);
+  @Test
+  void testLoadingMissingYamlConfigFileThrowsException() {
+    assertThrows(
+        IllegalStateException.class,
+        () -> ConfigurationManager.loadConfig(StrategiesType.class, MISSING_YAML_CONFIG_FILENAME));
   }
 
   @Test
-  public void testSavingConfigToYamlIsSuccessful() throws Exception {
+  void testLoadingInvalidYamlConfigFileThrowsException() {
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> ConfigurationManager.loadConfig(StrategiesType.class, INVALID_YAML_CONFIG_FILENAME));
+  }
+
+  @Test
+  void testSavingConfigToYamlIsSuccessful() throws Exception {
     // Strat 1
     final StrategyConfig strategy1 = new StrategyConfig();
     strategy1.setId(STRAT_ID_1);
@@ -238,8 +243,8 @@ public class TestStrategyConfigurationManagement {
     Files.delete(FileSystems.getDefault().getPath(YAML_CONFIG_TO_SAVE_FILENAME));
   }
 
-  @Test(expected = IllegalStateException.class)
-  public void testSavingConfigToInvalidYamlFileIsHandled() {
+  @Test
+  void testSavingConfigToInvalidYamlFileIsHandled() {
     // Strat 1
     final StrategyConfig strategy1 = new StrategyConfig();
     strategy1.setId(STRAT_ID_1);
@@ -268,7 +273,10 @@ public class TestStrategyConfigurationManagement {
     strategiesConfig.getStrategies().add(strategy1);
     strategiesConfig.getStrategies().add(strategy2);
 
-    ConfigurationManager.saveConfig(
-        StrategiesType.class, strategiesConfig, INVALID_YAML_CONFIG_TO_SAVE_FILENAME);
+    assertThrows(
+        IllegalStateException.class,
+        () ->
+            ConfigurationManager.saveConfig(
+                StrategiesType.class, strategiesConfig, INVALID_YAML_CONFIG_TO_SAVE_FILENAME));
   }
 }

@@ -23,16 +23,19 @@
 
 package com.gazbert.bxbot.core.config.exchange;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.Test;
+import java.util.HashMap;
+import java.util.Map;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests Other Config exchange API config object behaves as expected.
  *
  * @author gazbert
  */
-public class TestOtherConfigImpl {
+class TestOtherConfigImpl {
 
   private static final String BUY_FEE_CONFIG_ITEM_KEY = "buy-fee";
   private static final String BUY_FEE_CONFIG_ITEM_VALUE = "0.20";
@@ -41,13 +44,28 @@ public class TestOtherConfigImpl {
   private static final String SELL_FEE_CONFIG_ITEM_VALUE = "0.25";
 
   @Test
-  public void testAddingAndFetchingOtherConfigItems() {
+  void testAddingAndFetchingOtherConfigItems() {
+
+    final Map<String, String> items = new HashMap<>();
+    items.put(BUY_FEE_CONFIG_ITEM_KEY, BUY_FEE_CONFIG_ITEM_VALUE);
+    items.put(SELL_FEE_CONFIG_ITEM_KEY, SELL_FEE_CONFIG_ITEM_VALUE);
+
     final OtherConfigImpl otherConfig = new OtherConfigImpl();
-    otherConfig.getItems().put(BUY_FEE_CONFIG_ITEM_KEY, BUY_FEE_CONFIG_ITEM_VALUE);
-    otherConfig.getItems().put(SELL_FEE_CONFIG_ITEM_KEY, SELL_FEE_CONFIG_ITEM_VALUE);
+    otherConfig.setItems(items);
 
     assertEquals(2, otherConfig.getItems().size());
-    assertEquals(BUY_FEE_CONFIG_ITEM_VALUE, otherConfig.getItems().get(BUY_FEE_CONFIG_ITEM_KEY));
-    assertEquals(SELL_FEE_CONFIG_ITEM_VALUE, otherConfig.getItems().get(SELL_FEE_CONFIG_ITEM_KEY));
+    assertEquals(BUY_FEE_CONFIG_ITEM_VALUE, otherConfig.getItem(BUY_FEE_CONFIG_ITEM_KEY));
+    assertEquals(SELL_FEE_CONFIG_ITEM_VALUE, otherConfig.getItem(SELL_FEE_CONFIG_ITEM_KEY));
+  }
+
+  @Test
+  void testToStringWorksAsExpected() {
+    final Map<String, String> items = new HashMap<>();
+    items.put(BUY_FEE_CONFIG_ITEM_KEY, BUY_FEE_CONFIG_ITEM_VALUE);
+    items.put(SELL_FEE_CONFIG_ITEM_KEY, SELL_FEE_CONFIG_ITEM_VALUE);
+
+    final OtherConfigImpl otherConfig = new OtherConfigImpl();
+    otherConfig.setItems(items);
+    assertTrue(otherConfig.toString().contains(items.toString()));
   }
 }

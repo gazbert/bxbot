@@ -97,8 +97,8 @@
     Testing dependencies
     -->
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-test</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -114,6 +114,15 @@
     <dependency>
       <groupId>org.easymock</groupId>
       <artifactId>easymock</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <!--
+     JUnit4 still needed as Powermock doesn't play with JUnit5 in TestTradingEngine.java + TestEmailAlerter.java
+     See: https://github.com/powermock/powermock/issues/929
+    -->
+    <dependency>
+      <groupId>org.junit.vintage</groupId>
+      <artifactId>junit-vintage-engine</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -195,7 +204,7 @@
                     <limit>
                       <counter>LINE</counter>
                       <value>COVEREDRATIO</value>
-                      <minimum>0.7</minimum>
+                      <minimum>0.8</minimum>
                     </limit>
                   </limits>
                 </rule>
@@ -211,6 +220,10 @@
       <plugin>
         <groupId>com.github.spotbugs</groupId>
         <artifactId>spotbugs-maven-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
       </plugin>
     </plugins>
   </build>

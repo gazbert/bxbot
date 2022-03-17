@@ -30,21 +30,20 @@ import static org.easymock.EasyMock.verify;
 
 import com.gazbert.bxbot.domain.market.MarketConfig;
 import com.gazbert.bxbot.repository.MarketConfigRepository;
-import com.gazbert.bxbot.services.config.impl.MarketConfigServiceImpl;
 import java.util.ArrayList;
 import java.util.List;
 import org.easymock.EasyMock;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests Market configuration service behaves as expected.
  *
  * @author gazbert
  */
-public class TestMarketConfigService {
+class TestMarketConfigService {
 
   @Test
-  public void whenGetMarketConfigCalledThenExpectConfigToBeReturned() {
+  void whenGetMarketConfigCalledThenExpectConfigToBeReturned() {
     final MarketConfig marketConfig = new MarketConfig();
     marketConfig.setId("id-123");
     final MarketConfigRepository marketConfigRepository =
@@ -60,7 +59,7 @@ public class TestMarketConfigService {
   }
 
   @Test
-  public void whenGetAllMarketConfigCalledThenExpectConfigToBeReturned() {
+  void whenGetAllMarketConfigCalledThenExpectConfigToBeReturned() {
     final MarketConfig marketConfig = new MarketConfig();
     final List<MarketConfig> marketConfigs = new ArrayList<>();
     marketConfigs.add(marketConfig);
@@ -78,7 +77,7 @@ public class TestMarketConfigService {
   }
 
   @Test
-  public void whenUpdateMarketConfigCalledThenExpectUpdatedConfigToBeReturned() {
+  void whenUpdateMarketConfigCalledThenExpectUpdatedConfigToBeReturned() {
     final MarketConfig marketConfig = new MarketConfig();
     marketConfig.setId("id-123");
     final MarketConfigRepository marketConfigRepository =
@@ -94,7 +93,7 @@ public class TestMarketConfigService {
   }
 
   @Test
-  public void whenDeleteMarketConfigCalledThenExpectDeletedConfigToBeReturned() {
+  void whenDeleteMarketConfigCalledThenExpectDeletedConfigToBeReturned() {
     final MarketConfig marketConfig = new MarketConfig();
     marketConfig.setId("id-123");
     final MarketConfigRepository marketConfigRepository =

@@ -6,20 +6,20 @@ bootJar {
 
 dependencies {
 
-    compile project(':bxbot-trading-api')
-    compile project(':bxbot-strategy-api')
-    compile project(':bxbot-exchange-api')
-    compile project(':bxbot-strategies')
-    compile project(':bxbot-exchanges')
-    compile project(':bxbot-domain-objects')
-    compile project(':bxbot-yaml-datastore')
-    compile project(':bxbot-repository')
-    compile project(':bxbot-core')
-    compile project(':bxbot-rest-api')
+    implementation project(':bxbot-trading-api')
+    implementation project(':bxbot-strategy-api')
+    implementation project(':bxbot-exchange-api')
+    implementation project(':bxbot-strategies')
+    implementation project(':bxbot-exchanges')
+    implementation project(':bxbot-domain-objects')
+    implementation project(':bxbot-yaml-datastore')
+    implementation project(':bxbot-repository')
+    implementation project(':bxbot-core')
+    implementation project(':bxbot-rest-api')
 
     // Add your (optional) Trading Strategies here
-    // compile group: 'com.gazbert.bxbot', name: 'bxbot-strategies', version: '3.0-SNAPSHOT'
+    // implementation group: 'com.gazbert.bxbot', name: 'bxbot-strategies', version: '3.0-SNAPSHOT'
 
     // Add your (optional) Exchange Adapters here
-    // compile group: 'com.your.stuff', name: 'your-custom-exchanges', version: '1.0-SNAPSHOT'
+    // implementation group: 'com.your.stuff', name: 'your-custom-exchanges', version: '1.0-SNAPSHOT'
 }

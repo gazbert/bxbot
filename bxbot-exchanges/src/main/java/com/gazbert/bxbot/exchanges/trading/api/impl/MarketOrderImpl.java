@@ -40,7 +40,14 @@ public final class MarketOrderImpl implements MarketOrder {
   private BigDecimal quantity;
   private BigDecimal total;
 
-  /** Creates a new Market Order. */
+  /**
+   * Creates a new Market Order.
+   *
+   * @param type the order type.
+   * @param price the price.
+   * @param quantity the quantity.
+   * @param total the total cost.
+   */
   public MarketOrderImpl(OrderType type, BigDecimal price, BigDecimal quantity, BigDecimal total) {
     this.type = type;
     this.price = price;

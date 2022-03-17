@@ -23,8 +23,8 @@
 
 package com.gazbert.bxbot.rest.api.v1.config;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -38,16 +38,16 @@ import com.gazbert.bxbot.core.mail.EmailAlerter;
 import com.gazbert.bxbot.domain.engine.EngineConfig;
 import com.gazbert.bxbot.services.config.EngineConfigService;
 import java.math.BigDecimal;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.actuate.logging.LogFileWebEndpoint;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.cloud.context.restart.RestartEndpoint;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
@@ -56,10 +56,10 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
  *
  * @author gazbert
  */
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest
 @WebAppConfiguration
-public class TestEngineConfigController extends AbstractConfigControllerTest {
+class TestEngineConfigController extends AbstractConfigControllerTest {
 
   private static final String ENGINE_CONFIG_ENDPOINT_URI = CONFIG_ENDPOINT_BASE_URI + "/engine";
 
@@ -78,13 +78,13 @@ public class TestEngineConfigController extends AbstractConfigControllerTest {
   @MockBean private LogFileWebEndpoint logFileWebEndpoint;
   @MockBean private AuthenticationManager authenticationManager;
 
-  @Before
-  public void setupBeforeEachTest() {
+  @BeforeEach
+  void setupBeforeEachTest() {
     mockMvc = MockMvcBuilders.webAppContextSetup(ctx).addFilter(springSecurityFilterChain).build();
   }
 
   @Test
-  public void testGetEngineConfigWithValidToken() throws Exception {
+  void testGetEngineConfigWithValidToken() throws Exception {
     given(engineConfigService.getEngineConfig()).willReturn(someEngineConfig());
 
     mockMvc
@@ -105,14 +105,14 @@ public class TestEngineConfigController extends AbstractConfigControllerTest {
   }
 
   @Test
-  public void testGetEngineConfigWhenUnauthorizedWithMissingToken() throws Exception {
+  void testGetEngineConfigWhenUnauthorizedWithMissingToken() throws Exception {
     mockMvc
         .perform(get(ENGINE_CONFIG_ENDPOINT_URI).accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isUnauthorized());
   }
 
   @Test
-  public void testGetEngineConfigWhenUnauthorizedWithInvalidToken() throws Exception {
+  void testGetEngineConfigWhenUnauthorizedWithInvalidToken() throws Exception {
     mockMvc
         .perform(
             get(ENGINE_CONFIG_ENDPOINT_URI)
@@ -122,7 +122,7 @@ public class TestEngineConfigController extends AbstractConfigControllerTest {
   }
 
   @Test
-  public void testUpdateEngineConfigWithAdminTokenAuthorized() throws Exception {
+  void testUpdateEngineConfigWithAdminTokenAuthorized() throws Exception {
     given(engineConfigService.updateEngineConfig(any())).willReturn(someEngineConfig());
 
     mockMvc
@@ -145,7 +145,7 @@ public class TestEngineConfigController extends AbstractConfigControllerTest {
   }
 
   @Test
-  public void testUpdateEngineConfigWithUserTokenForbidden() throws Exception {
+  void testUpdateEngineConfigWithUserTokenForbidden() throws Exception {
     given(engineConfigService.updateEngineConfig(any())).willReturn(someEngineConfig());
 
     mockMvc
@@ -161,14 +161,14 @@ public class TestEngineConfigController extends AbstractConfigControllerTest {
   }
 
   @Test
-  public void testUpdateEngineConfigWhenUnauthorizedWithMissingToken() throws Exception {
+  void testUpdateEngineConfigWhenUnauthorizedWithMissingToken() throws Exception {
     mockMvc
         .perform(put(ENGINE_CONFIG_ENDPOINT_URI).accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isUnauthorized());
   }
 
   @Test
-  public void testUpdateEngineConfigWhenUnauthorizedWithInvalidToken() throws Exception {
+  void testUpdateEngineConfigWhenUnauthorizedWithInvalidToken() throws Exception {
     mockMvc
         .perform(
             put(ENGINE_CONFIG_ENDPOINT_URI)

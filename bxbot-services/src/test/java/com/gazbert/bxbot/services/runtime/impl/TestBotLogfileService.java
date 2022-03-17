@@ -32,7 +32,7 @@ import java.nio.charset.Charset;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import org.easymock.EasyMock;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.boot.actuate.logging.LogFileWebEndpoint;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
@@ -42,10 +42,10 @@ import org.springframework.core.io.Resource;
  *
  * @author gazbert
  */
-public class TestBotLogfileService {
+class TestBotLogfileService {
 
   @Test
-  public void whenGetLogfileCalledThenExpectLogfileContentToBeReturned() throws Exception {
+  void whenGetLogfileCalledThenExpectLogfileContentToBeReturned() throws Exception {
     final String logfilePath = "src/test/logfiles/logfile.log";
     final String expectedLogfileContent =
         "4981 [main] 2019-07-20 17:30:20,429 INFO  EngineConfigYamlRepository get() "
@@ -73,7 +73,7 @@ public class TestBotLogfileService {
   }
 
   @Test
-  public void whenLogfileCalledWith2ThenExpectOnlyLast2LinesToBeReturned() throws Exception {
+  void whenLogfileCalledWith2ThenExpectOnlyLast2LinesToBeReturned() throws Exception {
     final String logfilePath = "src/test/logfiles/logfile.log";
     final String expectedLogfileContent =
         "4982 [main] 2019-07-20 17:30:21,429 INFO  EngineConfigYamlRepository get() "
@@ -98,7 +98,7 @@ public class TestBotLogfileService {
   }
 
   @Test
-  public void whenLogfileTailCalledWith2ThenExpectOnlyLast2LinesToBeReturned() throws Exception {
+  void whenLogfileTailCalledWith2ThenExpectOnlyLast2LinesToBeReturned() throws Exception {
     final String logfilePath = "src/test/logfiles/logfile.log";
     final String expectedLogfileContent =
         "4982 [main] 2019-07-20 17:30:21,429 INFO  EngineConfigYamlRepository get() "
@@ -123,7 +123,7 @@ public class TestBotLogfileService {
   }
 
   @Test
-  public void whenLogfileTailCalledWith4ThenExpectOnly3LinesToBeReturned() throws Exception {
+  void whenLogfileTailCalledWith4ThenExpectOnly3LinesToBeReturned() throws Exception {
     final String logfilePath = "src/test/logfiles/logfile.log";
     final String expectedLogfileContent =
         "4981 [main] 2019-07-20 17:30:20,429 INFO  EngineConfigYamlRepository get() "
@@ -151,7 +151,7 @@ public class TestBotLogfileService {
   }
 
   @Test
-  public void whenLogfileHeadCalledWith2ThenExpectOnlyLast2LinesToBeReturned() throws Exception {
+  void whenLogfileHeadCalledWith2ThenExpectOnlyLast2LinesToBeReturned() throws Exception {
     final String logfilePath = "src/test/logfiles/logfile.log";
     final String expectedLogfileContent =
         "4981 [main] 2019-07-20 17:30:20,429 INFO  EngineConfigYamlRepository get() "
@@ -176,7 +176,7 @@ public class TestBotLogfileService {
   }
 
   @Test
-  public void whenLogfileHeadCalledWith4ThenExpectOnly3LinesToBeReturned() throws Exception {
+  void whenLogfileHeadCalledWith4ThenExpectOnly3LinesToBeReturned() throws Exception {
     final String logfilePath = "src/test/logfiles/logfile.log";
     final String expectedLogfileContent =
         "4981 [main] 2019-07-20 17:30:20,429 INFO  EngineConfigYamlRepository get() "
@@ -204,7 +204,7 @@ public class TestBotLogfileService {
   }
 
   @Test
-  public void whenGetLogfileAsResourceCalledThenExpectLogfileToBeReturned() throws Exception {
+  void whenGetLogfileAsResourceCalledThenExpectLogfileToBeReturned() throws Exception {
     final String logfilePath = "src/test/logfiles/logfile.log";
     final String expectedLogfileContent =
         "4981 [main] 2019-07-20 17:30:20,429 INFO  EngineConfigYamlRepository get() "
@@ -235,7 +235,7 @@ public class TestBotLogfileService {
   }
 
   @Test
-  public void whenGetLogfileAsResourceCalledAndMaxSizeExceededThenExpectLogfileToBeTruncated()
+  void whenGetLogfileAsResourceCalledAndMaxSizeExceededThenExpectLogfileToBeTruncated()
       throws Exception {
     final String logfilePath = "src/test/logfiles/logfile.log";
 

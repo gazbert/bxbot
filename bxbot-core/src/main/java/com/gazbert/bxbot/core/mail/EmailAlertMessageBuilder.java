@@ -41,7 +41,16 @@ public final class EmailAlertMessageBuilder {
   private EmailAlertMessageBuilder() {
   }
 
-  /** Builds critical message content. */
+  /**
+   * Builds critical message content.
+   *
+   * @param errorDetails the error details.
+   * @param exception the Exception.
+   * @param botId the bot ID.
+   * @param botName the bot name.
+   * @param adapterName the Exhange Adapter name.
+   * @return the error message.
+   */
   public static String buildCriticalMsgContent(
       String errorDetails, Throwable exception, String botId, String botName, String adapterName) {
 

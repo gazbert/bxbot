@@ -30,21 +30,20 @@ import static org.easymock.EasyMock.verify;
 
 import com.gazbert.bxbot.domain.strategy.StrategyConfig;
 import com.gazbert.bxbot.repository.StrategyConfigRepository;
-import com.gazbert.bxbot.services.config.impl.StrategyConfigServiceImpl;
 import java.util.ArrayList;
 import java.util.List;
 import org.easymock.EasyMock;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests Strategy configuration service behaves as expected.
  *
  * @author gazbert
  */
-public class TestStrategyConfigService {
+class TestStrategyConfigService {
 
   @Test
-  public void whenGetStrategyConfigCalledThenExpectConfigToBeReturned() {
+  void whenGetStrategyConfigCalledThenExpectConfigToBeReturned() {
     final StrategyConfig strategyConfig = new StrategyConfig();
     strategyConfig.setId("id-123");
     final StrategyConfigRepository strategyConfigRepository =
@@ -61,7 +60,7 @@ public class TestStrategyConfigService {
   }
 
   @Test
-  public void whenGetAllStrategyConfigCalledThenExpectConfigToBeReturned() {
+  void whenGetAllStrategyConfigCalledThenExpectConfigToBeReturned() {
     final StrategyConfig strategyConfig = new StrategyConfig();
     final List<StrategyConfig> strategyConfigs = new ArrayList<>();
     strategyConfigs.add(strategyConfig);
@@ -79,7 +78,7 @@ public class TestStrategyConfigService {
   }
 
   @Test
-  public void whenUpdateStrategyConfigCalledThenExpectUpdatedConfigToBeReturned() {
+  void whenUpdateStrategyConfigCalledThenExpectUpdatedConfigToBeReturned() {
     final StrategyConfig strategyConfig = new StrategyConfig();
     strategyConfig.setId("id-123");
     final StrategyConfigRepository strategyConfigRepository =
@@ -96,7 +95,7 @@ public class TestStrategyConfigService {
   }
 
   @Test
-  public void whenDeleteStrategyConfigCalledThenExpectDeletedConfigToBeReturned() {
+  void whenDeleteStrategyConfigCalledThenExpectDeletedConfigToBeReturned() {
     final StrategyConfig strategyConfig = new StrategyConfig();
     strategyConfig.setId("id-123");
     final StrategyConfigRepository strategyConfigRepository =

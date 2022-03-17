@@ -25,8 +25,7 @@ package com.gazbert.bxbot.domain.strategy;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -35,23 +34,42 @@ import java.util.Map;
  *
  * @author gazbert
  */
-@ApiModel
+@Schema
 public class StrategyConfig {
 
-  @ApiModelProperty(required = true, position = 1)
+  @Schema(
+      required = true,
+      description =
+          "A unique identifier for the Strategy. Value must be an alphanumeric string. "
+              + "Underscores and dashes are also permitted.")
   private String id;
 
+  @Schema(description = "An optional friendly name for the Strategy.")
   private String name;
+
+  @Schema(description = "An optional description of the Strategy.")
   private String description;
+
+  @Schema(required = true, description = "The fully qualified Strategy Class name, "
+      + "e.g. com.me.mybot.SuperStrat. Must be specified if beanName not set.")
   private String className;
+
+  @Schema(required = true, description = "The Strategy Spring Bean name. "
+      + "Must be specified if className not set.")
   private String beanName;
+
+  @Schema(description = "The optional Strategy config items.")
   private Map<String, String> configItems = new HashMap<>();
 
   // Required by ConfigurableComponentFactory
   public StrategyConfig() {
   }
 
-  /** Creates a StrategyConfig from an existing one. */
+  /**
+   * Creates a StrategyConfig from an existing one.
+   *
+   * @param other the Strategy Config to copy.
+   */
   public StrategyConfig(StrategyConfig other) {
     this.id = other.id;
     this.name = other.name;
@@ -61,7 +79,16 @@ public class StrategyConfig {
     this.configItems = other.configItems;
   }
 
-  /** Creates a new StrategyConfig. */
+  /**
+   * Creates a new StrategyConfig.
+   *
+   * @param id the strategy ID.
+   * @param name the strategy name.
+   * @param description the strategy description.
+   * @param className the strategy class name.
+   * @param beanName the strategy bean name.
+   * @param configItems the strategy config.
+   */
   public StrategyConfig(
       String id,
       String name,
