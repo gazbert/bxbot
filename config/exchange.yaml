@@ -16,7 +16,7 @@ exchange:
 
   # For the adapter value, you must specify the fully qualified name of your Exchange Adapter class so the Trading Engine
   # can load and execute it. The class must be on the runtime classpath.
-  adapter: com.gazbert.bxbot.exchanges.TestExchangeAdapter
+  adapter: com.gazbert.bxbot.exchanges.TryModeExchangeAdapter
 
   authenticationConfig:
     # Add your Bitstamp trading API credentials here. See https://www.bitstamp.net/api/ - API Authentication.
@@ -50,6 +50,18 @@ exchange:
   # Other config for adapter - it's not needed for Bitstamp and otherConfig could be omitted.
   # (Included here to show example usage).
   otherConfig:
-    configItem: some string value
-    anotherConfigItem: 0.5
+    # the counter currency which is simulated. This must fit to your used markets counter currency
+    simulatedCounterCurrency: USD
+
+    # the starting balance for the simulation. The simulation starts with this amount as counter currency
+    counterCurrencyStartingBalance: 100
+
+    # the base currency which is simulated. This must fit to your used markets base currency
+    simulatedBaseCurrency: BTC
+
+    # the starting balance for the simulation. The simulation starts with this amount as base currency
+    baseCurrencyStartingBalance: 2
+
+    # the adapter which should be used for public API calls. All special config values for this adapter must be given in this other config section as well
+    delegateAdapter: com.gazbert.bxbot.exchanges.BitstampExchangeAdapter
 
