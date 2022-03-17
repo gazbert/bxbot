@@ -3,7 +3,7 @@
 #
 # - All fields are mandatory unless stated otherwise.
 # - BX-bot only supports running 1 exchange per bot.
-# - Sample config below is using the TryModeExchangeAdapter - it delegates to the BitstampExchangeAdapter and only makes public API calls.
+# - Sample config below is using the dry-run/paper trading TryModeExchangeAdapter - it's configured to delegate to the BitstampExchangeAdapter.
 # - The indentation levels are significant in YAML: https://en.wikipedia.org/wiki/YAML
 #
 # See the README "How do I write my own Exchange Adapter?" section for more details.

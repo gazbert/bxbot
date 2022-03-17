@@ -45,7 +45,15 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * TODO: Docs updates to follow...
+ * This Exchange Adapter decorates a 'real' Exchange Adapter and delegates operations to it.
+ *
+ * <p>It's purpose is to provide a paper trading/dry run simulation capability against a configured
+ * exchange.
+ *
+ * <p>The Exchange Adapter to use is configured using the ./config/exchange.yaml otherConfig
+ * section.
+ *
+ * <p>It only executes 'real' public API calls - the order operations are stubbed out.
  *
  * @author MarcDahlem
  * @since 1.0
@@ -138,7 +146,8 @@ public class TryModeExchangeAdapter extends AbstractExchangeAdapter implements E
     if (!currentOpenOrder.getId().equals(orderId)) {
       throw new TradingApiException(
           "Tried to cancel a order, but the order id does not match the current open order."
-              + " Expected: " + currentOpenOrder.getId()
+              + " Expected: "
+              + currentOpenOrder.getId()
               + ", actual: "
               + orderId);
     }
@@ -172,7 +181,7 @@ public class TryModeExchangeAdapter extends AbstractExchangeAdapter implements E
     LOG.info(
         () ->
             "Delegate 'getPercentageOfBuyOrderTakenForExchangeFee'"
-              + "to the configured delegation exchange adapter.");
+                + "to the configured delegation exchange adapter.");
     return delegateExchange.getPercentageOfBuyOrderTakenForExchangeFee(marketId);
   }
 
@@ -182,7 +191,7 @@ public class TryModeExchangeAdapter extends AbstractExchangeAdapter implements E
     LOG.info(
         () ->
             "Delegate 'getPercentageOfSellOrderTakenForExchangeFee'"
-                    + "to the configured delegation exchange adapter.");
+                + "to the configured delegation exchange adapter.");
     return delegateExchange.getPercentageOfSellOrderTakenForExchangeFee(marketId);
   }
 
@@ -284,7 +293,7 @@ public class TryModeExchangeAdapter extends AbstractExchangeAdapter implements E
     if (currentBidPrice.compareTo(currentOpenOrder.getPrice()) >= 0) {
       LOG.info(
           "SELL: the market's bid price moved above the limit price "
-                  + "--> record sell order execution with the current bid price");
+              + "--> record sell order execution with the current bid price");
       BigDecimal orderPrice = currentOpenOrder.getOriginalQuantity().multiply(currentBidPrice);
       BigDecimal buyFees =
           getPercentageOfSellOrderTakenForExchangeFee(marketId).multiply(orderPrice);
@@ -301,7 +310,7 @@ public class TryModeExchangeAdapter extends AbstractExchangeAdapter implements E
     if (currentAskPrice.compareTo(currentOpenOrder.getPrice()) <= 0) {
       LOG.info(
           "BUY: the market's current ask price moved below the limit price "
-                  + "--> record buy order execution with the current ask price");
+              + "--> record buy order execution with the current ask price");
       BigDecimal orderPrice = currentOpenOrder.getOriginalQuantity().multiply(currentAskPrice);
       BigDecimal buyFees =
           getPercentageOfBuyOrderTakenForExchangeFee(marketId).multiply(orderPrice);
