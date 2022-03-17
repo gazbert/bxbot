@@ -1,3 +1,26 @@
+/*
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2022 Marc Dahlem, gazbert
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of
+ * this software and associated documentation files (the "Software"), to deal in
+ * the Software without restriction, including without limitation the rights to
+ * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+ * the Software, and to permit persons to whom the Software is furnished to do so,
+ * subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+ * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+ * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
 package com.gazbert.bxbot.exchanges;
 
 import com.gazbert.bxbot.exchange.api.ExchangeAdapter;
@@ -21,7 +44,14 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+/**
+ * TODO: Docs updates to follow...
+ *
+ * @author MarcDahlem
+ * @since 1.0
+ */
 public class TryModeExchangeAdapter extends AbstractExchangeAdapter implements ExchangeAdapter {
+
   private static final Logger LOG = LogManager.getLogger();
 
   private static final String SIMULATED_COUNTER_CURRENCY_PROPERTY_NAME = "simulatedCounterCurrency";
@@ -87,15 +117,15 @@ public class TryModeExchangeAdapter extends AbstractExchangeAdapter implements E
       throw new TradingApiException(
           "Can only record/execute one order at a time. Wait for the open order to fulfill");
     }
-    String newOrderID = "DUMMY_" + orderType + "_ORDER_ID_" + System.currentTimeMillis();
+    String newOrderId = "DUMMY_" + orderType + "_ORDER_ID_" + System.currentTimeMillis();
     Date creationDate = new Date();
     BigDecimal total = price.multiply(quantity);
     currentOpenOrder =
         new OpenOrderImpl(
-            newOrderID, creationDate, marketId, orderType, price, quantity, quantity, total);
+            newOrderId, creationDate, marketId, orderType, price, quantity, quantity, total);
     LOG.info(() -> "Created a new dummy order: " + currentOpenOrder);
     checkOpenOrderExecution(marketId);
-    return newOrderID;
+    return newOrderId;
   }
 
   @Override

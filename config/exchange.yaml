@@ -3,7 +3,7 @@
 #
 # - All fields are mandatory unless stated otherwise.
 # - BX-bot only supports running 1 exchange per bot.
-# - Sample config below is using the Test Exchange Adapter - it only makes public API calls to Bitstamp.
+# - Sample config below is using the TryModeExchangeAdapter - it delegates to the BitstampExchangeAdapter and only makes public API calls.
 # - The indentation levels are significant in YAML: https://en.wikipedia.org/wiki/YAML
 #
 # See the README "How do I write my own Exchange Adapter?" section for more details.
@@ -12,14 +12,15 @@
 exchange:
 
   # A friendly name for the Exchange. Value must be an alphanumeric string. Spaces are allowed.
-  name: Test Bitstamp Exchange
+  name: Try-Mode ExchangeAdapter
 
   # For the adapter value, you must specify the fully qualified name of your Exchange Adapter class so the Trading Engine
   # can load and execute it. The class must be on the runtime classpath.
   adapter: com.gazbert.bxbot.exchanges.TryModeExchangeAdapter
 
   authenticationConfig:
-    # Add your Bitstamp trading API credentials here. See https://www.bitstamp.net/api/ - API Authentication.
+    # Add your Exchange trading API credentials here.
+    # This example is for the TryModeExchangeAdapter delegating to Bitstamp. See https://www.bitstamp.net/api/ - API Authentication.
     client-id: your-client-id
     key: your-api-key
     secret: your-secret-key
@@ -47,21 +48,24 @@ exchange:
       - Remote host closed connection during handshake
       - Unexpected end of file from server
 
-  # Other config for adapter - it's not needed for Bitstamp and otherConfig could be omitted.
-  # (Included here to show example usage).
+  # Other config for adapter - it's not mandatory.
+  # It's included here to show example usage with the simulation TryModeExchangeAdapter (which has been configured to use Bitstamp).
   otherConfig:
-    # the counter currency which is simulated. This must fit to your used markets counter currency
+
+    # The counter currency which is being simulated. This must match your chosen market counter currency.
     simulatedCounterCurrency: USD
 
-    # the starting balance for the simulation. The simulation starts with this amount as counter currency
+    # The starting balance for the simulation. The simulation starts with this amount for counter currency.
     counterCurrencyStartingBalance: 100
 
-    # the base currency which is simulated. This must fit to your used markets base currency
+    # The base currency which is simulated. This must match your chosen market base currency.
     simulatedBaseCurrency: BTC
 
-    # the starting balance for the simulation. The simulation starts with this amount as base currency
+    # The starting balance for the simulation. The simulation starts with this amount for base currency.
     baseCurrencyStartingBalance: 2
 
-    # the adapter which should be used for public API calls. All special config values for this adapter must be given in this other config section as well
+    # The adapter which should be used for public API calls.
+    # All special config values for this adapter must be given in this other config section as well.
+    # In this case, the otherConfig is for the Bitstamp exchange.
     delegateAdapter: com.gazbert.bxbot.exchanges.BitstampExchangeAdapter
 
