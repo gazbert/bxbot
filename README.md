@@ -66,18 +66,6 @@ The instructions below are for Linux/macOS, but equivalent Windows scripts are i
 
 Download the latest [Release](https://github.com/gazbert/bxbot/releases) and unzip the bot.
 
-#### Gradle    
-1. If you plan on using your own Trading Strategies/Exchange Adapters packaged in separate jar files, you'll need to add
-   the dependency in the [bxbot-app/build.gradle](bxbot-app/build.gradle) - see the commented out dependency examples 
-   inside it.
-1. From the project root, run `./gradlew clean build` to build the bot.   
-1. Then run `./gradlew buildTarGzipDist` or `./gradlew buildZipDist` to build the distribution 
-   artifact: either `bxbot-app-<version>.tar.gz` or `bxbot-app-<version>.zip` respectively. 
-   It will be placed in the `./build/distributions` folder.
-1. Copy the artifact onto the machine you want to run the bot and unzip it someplace.
-1. Configure the bot as described in step 4 of the previous [Maven](#maven) section.
-1. Usage: `./bxbot.sh [start|stop|status]`
-
 #### Maven
 1. If you plan on using your own Trading Strategies/Exchange Adapters packaged in separate jar files, you'll need to add
    the dependency in the [bxbot-app/pom.xml](./bxbot-app/pom.xml) - see the commented out dependency examples inside it.
@@ -89,11 +77,26 @@ Download the latest [Release](https://github.com/gazbert/bxbot/releases) and unz
    The bot's default configuration uses the 
    [`ExampleScalpingStrategy`](./bxbot-strategies/src/main/java/com/gazbert/bxbot/strategies/ExampleScalpingStrategy.java), 
    but you'll probably want to [code your own](#how-do-i-write-my-own-trading-strategy)! The 
-   [`TestExchangeAdapter`](./bxbot-exchanges/src/main/java/com/gazbert/bxbot/exchanges/TestExchangeAdapter.java) is
-   configured by default - it makes public API calls to [Bitstamp](https://www.bitstamp.net), but stubs out the private
-   API (order management) calls; it's good for testing your initial setup without actually sending orders to the
-   exchange.   
+   [`TryModeExchangeAdapter`](./bxbot-exchanges/src/main/java/com/gazbert/bxbot/exchanges/TryModeExchangeAdapter.java) is
+   configured by default to delegate public API calls to [Bitstamp](https://www.bitstamp.net), but it simulates the private
+   API (order management) calls; it's good for testing your initial setup and 
+   [paper trading](https://www.investopedia.com/terms/p/papertrade.asp) without actually sending orders to the
+   exchange. You can change the [`exchange.yaml`](./config/exchange.yaml) so that the 
+   [`TryModeExchangeAdapter`](./bxbot-exchanges/src/main/java/com/gazbert/bxbot/exchanges/TryModeExchangeAdapter.java) 
+   uses other another Exchange Adapter if you wish.
 1. Usage: `./bxbot.sh [start|stop|status]`  
+
+#### Gradle    
+1. If you plan on using your own Trading Strategies/Exchange Adapters packaged in separate jar files, you'll need to add
+   the dependency in the [bxbot-app/build.gradle](bxbot-app/build.gradle) - see the commented out dependency examples 
+   inside it.
+1. From the project root, run `./gradlew clean build` to build the bot.   
+1. Then run `./gradlew buildTarGzipDist` or `./gradlew buildZipDist` to build the distribution 
+   artifact: either `bxbot-app-<version>.tar.gz` or `bxbot-app-<version>.zip` respectively. 
+   It will be placed in the `./build/distributions` folder.
+1. Copy the artifact onto the machine you want to run the bot and unzip it someplace.
+1. Configure the bot as described in step 4 of the previous [Maven](#maven) section.
+1. Usage: `./bxbot.sh [start|stop|status]`
 
 ### Docker
 If you want to just play around with the 
@@ -119,19 +122,19 @@ The instructions below are for Linux/macOS, but equivalent Windows scripts are i
 
 Clone the repo locally (master branch).
 
-### Gradle
-1. From the project root, run `./gradlew build`.
-   If you want to run the exchange integration tests, use `./gradlew integrationTests`.
-   To execute both unit and integration tests, use `./gradlew build integrationTests`.
-1. To generate the Javadoc, run `./gradlew javadoc` and look in the `./build/docs/javadoc` folders of the 
-   bxbot-trading-api, bxbot-strategy-api, and bxbot-exchange-api modules.
-   
 ### Maven
 1. From the project root, run `./mvnw clean install`.
    If you want to run the exchange integration tests, use `./mvnw clean install -Pint`. 
    To execute both unit and integration tests, use `./mvnw clean install -Pall`.
 1. Take a look at the Javadoc in the `./target/apidocs` folders of the bxbot-trading-api, bxbot-strategy-api, 
    and bxbot-exchange-api modules after the build completes.
+   
+### Gradle
+1. From the project root, run `./gradlew build`.
+   If you want to run the exchange integration tests, use `./gradlew integrationTests`.
+   To execute both unit and integration tests, use `./gradlew build integrationTests`.
+1. To generate the Javadoc, run `./gradlew javadoc` and look in the `./build/docs/javadoc` folders of the 
+   bxbot-trading-api, bxbot-strategy-api, and bxbot-exchange-api modules.
 
 ## Issue & Change Management
 

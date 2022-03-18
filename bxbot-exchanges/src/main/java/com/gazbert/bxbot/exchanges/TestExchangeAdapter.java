@@ -35,7 +35,10 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * Dummy Exchange adapter used to keep the bot up and running for engine and strategy testing.
+ * This test adapter is now deprecated. It has been superseded by the {@link
+ * TryModeExchangeAdapter}.
+ *
+ * <p>Dummy Exchange adapter used to keep the bot up and running for engine and strategy testing.
  *
  * <p>Makes public calls to the Bitstamp exchange. It does not trade. All private (authenticated)
  * requests are stubbed.
@@ -43,8 +46,9 @@ import java.util.UUID;
  * <p>Might be handy for 'dry testing' your algos.
  *
  * @author gazbert
- * @since 1.0
+ * @since 1.0 {@code @deprecated}
  */
+@Deprecated(since = "1.4.0")
 public final class TestExchangeAdapter extends BitstampExchangeAdapter {
 
   private static final String DUMMY_BALANCE = "100.00";
