@@ -49,7 +49,8 @@ exchange:
       - Unexpected end of file from server
 
   # Other config for adapter - it's not mandatory.
-  # It's included here to show example usage with the simulation TryModeExchangeAdapter (which has been configured to use Bitstamp).
+  # It's included here to show example usage with the dry-run/paper trading TryModeExchangeAdapter.
+  # The config values have been configured for Bitstamp.
   otherConfig:
 
     # The counter currency which is being simulated. This must match your chosen market counter currency.
@@ -65,7 +66,7 @@ exchange:
     baseCurrencyStartingBalance: 2
 
     # The adapter which should be used for public API calls.
-    # All special config values for this adapter must be given in this other config section as well.
+    # All special config values for this adapter must be given in this otherConfig section as well.
     # In this case, the otherConfig is for the Bitstamp exchange.
     delegateAdapter: com.gazbert.bxbot.exchanges.BitstampExchangeAdapter
 

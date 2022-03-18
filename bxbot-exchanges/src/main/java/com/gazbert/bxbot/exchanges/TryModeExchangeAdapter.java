@@ -53,7 +53,10 @@ import org.apache.logging.log4j.Logger;
  * <p>The Exchange Adapter to use is configured using the ./config/exchange.yaml otherConfig
  * section.
  *
- * <p>It only executes 'real' public API calls - the order operations are stubbed out.
+ * <p>It only executes public API calls. Authenticated API calls to create orders, cancel orders,
+ * and fetch open orders are simulated based on actual ticker data from the exchange.
+ *
+ * <p>Only 1 open order is simulated at any time.
  *
  * @author MarcDahlem
  * @since 1.0
