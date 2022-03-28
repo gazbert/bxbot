@@ -94,7 +94,7 @@ public class TryModeExchangeAdapter extends AbstractExchangeAdapter implements E
 
   @Override
   public String getImplName() {
-    return "Try-mode test adapter with public API delegation";
+    return "Try-Mode Test Adapter: configurable exchange public API delegation & simulated orders";
   }
 
   @Override
