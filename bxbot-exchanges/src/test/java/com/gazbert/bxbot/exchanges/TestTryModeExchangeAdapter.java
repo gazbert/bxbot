@@ -120,6 +120,12 @@ public class TestTryModeExchangeAdapter extends AbstractExchangeAdapter {
   private static final BigDecimal SELL_ORDER_QUANTITY = new BigDecimal("0.03");
   private static final String ORDER_ID_TO_CANCEL = "80894263";
 
+  private static final BigDecimal PERCENTAGE_OF_SELL_ORDER_TAKEN_FOR_EXCHANGE_FEE =
+      new BigDecimal("0.0025");
+  private static final String MOCKED_GET_PERCENTAGE_OF_SELL_ORDER_TAKEN_FOR_EXCHANGE_FEE =
+      "getPercentageOfSellOrderTakenForExchangeFee";
+  private static final String MOCKED_CREATE_DELEGATE_EXCHANGE_ADAPTER =
+      "createDelegateExchangeAdapter";
   private static final String MOCKED_CREATE_REQUEST_PARAM_MAP_METHOD = "createRequestParamMap";
   private static final String MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD =
       "sendAuthenticatedRequestToExchange";
@@ -154,12 +160,9 @@ public class TestTryModeExchangeAdapter extends AbstractExchangeAdapter {
     networkConfig = PowerMock.createMock(NetworkConfig.class);
     expect(networkConfig.getConnectionTimeout()).andReturn(30);
     expect(networkConfig.getNonFatalErrorCodes()).andReturn(nonFatalNetworkErrorCodes);
-
     expect(networkConfig.getNonFatalErrorMessages()).andReturn(nonFatalNetworkErrorMessages);
 
-    final OtherConfig otherConfig = PowerMock.createMock(OtherConfig.class);
-
-    // Try-Mode adapter sim config
+    OtherConfig otherConfig = PowerMock.createMock(OtherConfig.class);
     expect(otherConfig.getItem("simulatedBaseCurrency")).andReturn(BASE_CURRENCY).atLeastOnce();
     expect(otherConfig.getItem("baseCurrencyStartingBalance"))
         .andReturn(BASE_CURRENCY_STARTING_BALANCE)
@@ -173,10 +176,6 @@ public class TestTryModeExchangeAdapter extends AbstractExchangeAdapter {
         .atLeastOnce();
 
     expect(otherConfig.getItem("delegateAdapter")).andReturn(DELEGATE_ADAPTER).atLeastOnce();
-
-    //    // Bitstamp config
-    //    expect(otherConfig.getItem("buy-fee")).andReturn("0.25");
-    //    expect(otherConfig.getItem("sell-fee")).andReturn("0.25");
 
     authenticationConfig = PowerMock.createMock(AuthenticationConfig.class);
     expect(authenticationConfig.getItem("client-id")).andReturn(CLIENT_ID);
@@ -858,29 +857,33 @@ public class TestTryModeExchangeAdapter extends AbstractExchangeAdapter {
   //  Get Exchange Fees for Sell orders tests
   // --------------------------------------------------------------------------
 
-  @Ignore("TODO: Enable test")
   @Test
   public void testGettingExchangeSellingFeeSuccessfully() throws Exception {
-    final byte[] encoded = Files.readAllBytes(Paths.get(BALANCE_JSON_RESPONSE));
-    final ExchangeHttpResponse exchangeResponse =
-        new ExchangeHttpResponse(200, "OK", new String(encoded, StandardCharsets.UTF_8));
-
-    final BitstampExchangeAdapter exchangeAdapter =
+    final BitstampExchangeAdapter delegateExchangeAdapter =
         PowerMock.createPartialMockAndInvokeDefaultConstructor(
-            BitstampExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
+            BitstampExchangeAdapter.class,
+            MOCKED_GET_PERCENTAGE_OF_SELL_ORDER_TAKEN_FOR_EXCHANGE_FEE);
+
     PowerMock.expectPrivate(
-            exchangeAdapter,
-            MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD,
-            eq(BALANCE),
-            eq(null))
-        .andReturn(exchangeResponse);
+            delegateExchangeAdapter,
+            MOCKED_GET_PERCENTAGE_OF_SELL_ORDER_TAKEN_FOR_EXCHANGE_FEE,
+            eq(MARKET_ID))
+        .andReturn(PERCENTAGE_OF_SELL_ORDER_TAKEN_FOR_EXCHANGE_FEE);
+
+    final TryModeExchangeAdapter tryModeExchangeAdapter =
+        PowerMock.createPartialMockAndInvokeDefaultConstructor(
+            TryModeExchangeAdapter.class, MOCKED_CREATE_DELEGATE_EXCHANGE_ADAPTER);
+
+    PowerMock.expectPrivate(tryModeExchangeAdapter, MOCKED_CREATE_DELEGATE_EXCHANGE_ADAPTER)
+        .andReturn(delegateExchangeAdapter);
 
     PowerMock.replayAll();
-    exchangeAdapter.init(exchangeConfig);
+
+    tryModeExchangeAdapter.init(exchangeConfig);
 
     final BigDecimal sellPercentageFee =
-        exchangeAdapter.getPercentageOfSellOrderTakenForExchangeFee(MARKET_ID);
-    assertEquals(0, sellPercentageFee.compareTo(new BigDecimal("0.0025")));
+        tryModeExchangeAdapter.getPercentageOfSellOrderTakenForExchangeFee(MARKET_ID);
+    assertEquals(0, sellPercentageFee.compareTo(PERCENTAGE_OF_SELL_ORDER_TAKEN_FOR_EXCHANGE_FEE));
 
     PowerMock.verifyAll();
   }

@@ -78,7 +78,7 @@ public class TryModeExchangeAdapter extends AbstractExchangeAdapter implements E
   private BigDecimal counterCurrencyBalance;
   private String delegateExchangeClassName;
 
-  private ExchangeAdapter delegateExchange;
+  private ExchangeAdapter delegateExchangeAdapter;
 
   private OpenOrder currentOpenOrder;
   private BigDecimal baseCurrencyBalance;
@@ -102,7 +102,7 @@ public class TryModeExchangeAdapter extends AbstractExchangeAdapter implements E
       throws ExchangeNetworkException, TradingApiException {
     checkOpenOrderExecution(marketId);
     LOG.info(() -> "Delegate 'getMarketOrders' to the configured delegation exchange adapter.");
-    return delegateExchange.getMarketOrders(marketId);
+    return delegateExchangeAdapter.getMarketOrders(marketId);
   }
 
   @Override
@@ -165,7 +165,7 @@ public class TryModeExchangeAdapter extends AbstractExchangeAdapter implements E
     checkOpenOrderExecution(marketId);
     LOG.info(
         () -> "Delegate 'getLatestMarketPrice' to the configured delegation exchange adapter.");
-    return delegateExchange.getLatestMarketPrice(marketId);
+    return delegateExchangeAdapter.getLatestMarketPrice(marketId);
   }
 
   @Override
@@ -185,7 +185,7 @@ public class TryModeExchangeAdapter extends AbstractExchangeAdapter implements E
         () ->
             "Delegate 'getPercentageOfBuyOrderTakenForExchangeFee'"
                 + "to the configured delegation exchange adapter.");
-    return delegateExchange.getPercentageOfBuyOrderTakenForExchangeFee(marketId);
+    return delegateExchangeAdapter.getPercentageOfBuyOrderTakenForExchangeFee(marketId);
   }
 
   @Override
@@ -195,14 +195,14 @@ public class TryModeExchangeAdapter extends AbstractExchangeAdapter implements E
         () ->
             "Delegate 'getPercentageOfSellOrderTakenForExchangeFee'"
                 + "to the configured delegation exchange adapter.");
-    return delegateExchange.getPercentageOfSellOrderTakenForExchangeFee(marketId);
+    return delegateExchangeAdapter.getPercentageOfSellOrderTakenForExchangeFee(marketId);
   }
 
   @Override
   public Ticker getTicker(String marketId) throws TradingApiException, ExchangeNetworkException {
     checkOpenOrderExecution(marketId);
     LOG.info(() -> "Delegate 'getTicker' to the configured delegation exchange adapter.");
-    return delegateExchange.getTicker(marketId);
+    return delegateExchangeAdapter.getTicker(marketId);
   }
 
   private void setOtherConfig(ExchangeConfig exchangeConfig) {
@@ -244,6 +244,12 @@ public class TryModeExchangeAdapter extends AbstractExchangeAdapter implements E
   private void initializeAdapterDelegation(ExchangeConfig config) {
     LOG.info(
         () -> "Initializing the delegate exchange adapter '" + delegateExchangeClassName + "'...");
+    delegateExchangeAdapter = createDelegateExchangeAdapter();
+    delegateExchangeAdapter.init(config);
+  }
+
+  private ExchangeAdapter createDelegateExchangeAdapter() {
+    LOG.info(() -> "Creating the delegate exchange adapter '" + delegateExchangeClassName + "'...");
     try {
       final Class componentClass = Class.forName(delegateExchangeClassName);
       final Object rawComponentObject = componentClass.getDeclaredConstructor().newInstance();
@@ -251,15 +257,13 @@ public class TryModeExchangeAdapter extends AbstractExchangeAdapter implements E
           () ->
               "Successfully created the delegate exchange adapter class for: "
                   + delegateExchangeClassName);
-      ExchangeAdapter loadedExchange = (ExchangeAdapter) rawComponentObject;
-      loadedExchange.init(config);
-      this.delegateExchange = loadedExchange;
+      return (ExchangeAdapter) rawComponentObject;
     } catch (ClassNotFoundException
         | InstantiationException
         | IllegalAccessException
         | NoSuchMethodException
         | InvocationTargetException e) {
-      final String errorMsg = "Failed to load and initialise delegate exchange adapter.";
+      final String errorMsg = "Failed to load and create delegate exchange adapter.";
       LOG.error(errorMsg, e);
       throw new IllegalStateException(errorMsg, e);
     }
