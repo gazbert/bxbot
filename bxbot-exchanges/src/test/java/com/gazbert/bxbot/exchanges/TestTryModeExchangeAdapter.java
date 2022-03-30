@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2015 Gareth Jon Lynch
+ * Copyright (c) 2022 gazbert
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -122,8 +122,13 @@ public class TestTryModeExchangeAdapter extends AbstractExchangeAdapter {
 
   private static final BigDecimal PERCENTAGE_OF_SELL_ORDER_TAKEN_FOR_EXCHANGE_FEE =
       new BigDecimal("0.0025");
+  private static final BigDecimal PERCENTAGE_OF_BUY_ORDER_TAKEN_FOR_EXCHANGE_FEE =
+      new BigDecimal("0.0024");
+
   private static final String MOCKED_GET_PERCENTAGE_OF_SELL_ORDER_TAKEN_FOR_EXCHANGE_FEE =
       "getPercentageOfSellOrderTakenForExchangeFee";
+  private static final String MOCKED_GET_PERCENTAGE_OF_BUY_ORDER_TAKEN_FOR_EXCHANGE_FEE =
+      "getPercentageOfBuyOrderTakenForExchangeFee";
   private static final String MOCKED_CREATE_DELEGATE_EXCHANGE_ADAPTER =
       "createDelegateExchangeAdapter";
   private static final String MOCKED_CREATE_REQUEST_PARAM_MAP_METHOD = "createRequestParamMap";
@@ -783,73 +788,34 @@ public class TestTryModeExchangeAdapter extends AbstractExchangeAdapter {
   //  Get Exchange Fees for Buy orders tests
   // --------------------------------------------------------------------------
 
-  @Ignore("TODO: Enable test")
   @Test
   public void testGettingExchangeBuyingFeeSuccessfully() throws Exception {
-    final byte[] encoded = Files.readAllBytes(Paths.get(BALANCE_JSON_RESPONSE));
-    final ExchangeHttpResponse exchangeResponse =
-        new ExchangeHttpResponse(200, "OK", new String(encoded, StandardCharsets.UTF_8));
-
-    final BitstampExchangeAdapter exchangeAdapter =
+    final BitstampExchangeAdapter delegateExchangeAdapter =
         PowerMock.createPartialMockAndInvokeDefaultConstructor(
-            BitstampExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
+            BitstampExchangeAdapter.class,
+            MOCKED_GET_PERCENTAGE_OF_BUY_ORDER_TAKEN_FOR_EXCHANGE_FEE);
+
     PowerMock.expectPrivate(
-            exchangeAdapter,
-            MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD,
-            eq(BALANCE),
-            eq(null))
-        .andReturn(exchangeResponse);
+            delegateExchangeAdapter,
+            MOCKED_GET_PERCENTAGE_OF_BUY_ORDER_TAKEN_FOR_EXCHANGE_FEE,
+            eq(MARKET_ID))
+        .andReturn(PERCENTAGE_OF_BUY_ORDER_TAKEN_FOR_EXCHANGE_FEE);
+
+    final TryModeExchangeAdapter tryModeExchangeAdapter =
+        PowerMock.createPartialMockAndInvokeDefaultConstructor(
+            TryModeExchangeAdapter.class, MOCKED_CREATE_DELEGATE_EXCHANGE_ADAPTER);
+
+    PowerMock.expectPrivate(tryModeExchangeAdapter, MOCKED_CREATE_DELEGATE_EXCHANGE_ADAPTER)
+        .andReturn(delegateExchangeAdapter);
 
     PowerMock.replayAll();
-    exchangeAdapter.init(exchangeConfig);
+
+    tryModeExchangeAdapter.init(exchangeConfig);
 
     final BigDecimal buyPercentageFee =
-        exchangeAdapter.getPercentageOfBuyOrderTakenForExchangeFee(MARKET_ID);
-    assertEquals(0, buyPercentageFee.compareTo(new BigDecimal("0.0025")));
+        delegateExchangeAdapter.getPercentageOfBuyOrderTakenForExchangeFee(MARKET_ID);
+    assertEquals(0, buyPercentageFee.compareTo(PERCENTAGE_OF_BUY_ORDER_TAKEN_FOR_EXCHANGE_FEE));
 
-    PowerMock.verifyAll();
-  }
-
-  @Ignore("TODO: Enable test")
-  @Test(expected = ExchangeNetworkException.class)
-  public void testGettingExchangeBuyingFeeHandlesTimeoutException() throws Exception {
-    final BitstampExchangeAdapter exchangeAdapter =
-        PowerMock.createPartialMockAndInvokeDefaultConstructor(
-            BitstampExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
-    PowerMock.expectPrivate(
-            exchangeAdapter,
-            MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD,
-            eq(BALANCE),
-            eq(null))
-        .andThrow(
-            new ExchangeNetworkException(
-                " After 18 months in deep space, "
-                    + "it's nice to see that you've learned some humility."));
-
-    PowerMock.replayAll();
-    exchangeAdapter.init(exchangeConfig);
-
-    exchangeAdapter.getPercentageOfBuyOrderTakenForExchangeFee(MARKET_ID);
-    PowerMock.verifyAll();
-  }
-
-  @Ignore("TODO: Enable test")
-  @Test(expected = TradingApiException.class)
-  public void testGettingExchangeBuyingFeeHandlesUnexpectedException() throws Exception {
-    final BitstampExchangeAdapter exchangeAdapter =
-        PowerMock.createPartialMockAndInvokeDefaultConstructor(
-            BitstampExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
-    PowerMock.expectPrivate(
-            exchangeAdapter,
-            MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD,
-            eq(BALANCE),
-            eq(null))
-        .andThrow(new IllegalStateException(" V.I.N.CENT, were you programmed to bug me?"));
-
-    PowerMock.replayAll();
-    exchangeAdapter.init(exchangeConfig);
-
-    exchangeAdapter.getPercentageOfBuyOrderTakenForExchangeFee(MARKET_ID);
     PowerMock.verifyAll();
   }
 
@@ -884,54 +850,6 @@ public class TestTryModeExchangeAdapter extends AbstractExchangeAdapter {
     final BigDecimal sellPercentageFee =
         tryModeExchangeAdapter.getPercentageOfSellOrderTakenForExchangeFee(MARKET_ID);
     assertEquals(0, sellPercentageFee.compareTo(PERCENTAGE_OF_SELL_ORDER_TAKEN_FOR_EXCHANGE_FEE));
-
-    PowerMock.verifyAll();
-  }
-
-  @Ignore("TODO: Enable test")
-  @Test(expected = ExchangeNetworkException.class)
-  public void testGettingExchangeSellingFeeHandlesTimeoutException() throws Exception {
-    final BitstampExchangeAdapter exchangeAdapter =
-        PowerMock.createPartialMockAndInvokeDefaultConstructor(
-            BitstampExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
-    PowerMock.expectPrivate(
-            exchangeAdapter,
-            MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD,
-            eq(BALANCE),
-            eq(null))
-        .andThrow(
-            new ExchangeNetworkException(
-                "Yes. A most destructive force - "
-                    + "in the universe, Harry. Nothing can escape it, not even light."));
-
-    PowerMock.replayAll();
-    exchangeAdapter.init(exchangeConfig);
-
-    exchangeAdapter.getPercentageOfSellOrderTakenForExchangeFee(MARKET_ID);
-    PowerMock.verifyAll();
-  }
-
-  @Ignore("TODO: Enable test")
-  @Test(expected = TradingApiException.class)
-  public void testGettingExchangeSellingFeeHandlesUnexpectedException() throws Exception {
-    final BitstampExchangeAdapter exchangeAdapter =
-        PowerMock.createPartialMockAndInvokeDefaultConstructor(
-            BitstampExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
-    PowerMock.expectPrivate(
-            exchangeAdapter,
-            MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD,
-            eq(BALANCE),
-            eq(null))
-        .andThrow(
-            new IllegalStateException(
-                "There's an entirely different universe beyond that black hole. "
-                    + "A point where time and space as we know it no longer exists. "
-                    + "We will be the first to see it, to explore it, to experience it!"));
-
-    PowerMock.replayAll();
-
-    exchangeAdapter.init(exchangeConfig);
-    exchangeAdapter.getPercentageOfSellOrderTakenForExchangeFee(MARKET_ID);
 
     PowerMock.verifyAll();
   }
