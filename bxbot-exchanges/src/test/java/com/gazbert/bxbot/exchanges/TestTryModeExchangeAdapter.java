@@ -24,7 +24,6 @@
 package com.gazbert.bxbot.exchanges;
 
 import static org.easymock.EasyMock.anyObject;
-import static org.easymock.EasyMock.anyString;
 import static org.easymock.EasyMock.eq;
 import static org.easymock.EasyMock.expect;
 import static org.junit.Assert.assertEquals;
@@ -34,10 +33,10 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import com.gazbert.bxbot.exchange.api.AuthenticationConfig;
-import com.gazbert.bxbot.exchange.api.ExchangeAdapter;
 import com.gazbert.bxbot.exchange.api.ExchangeConfig;
 import com.gazbert.bxbot.exchange.api.NetworkConfig;
 import com.gazbert.bxbot.exchange.api.OtherConfig;
+import com.gazbert.bxbot.exchanges.trading.api.impl.TickerImpl;
 import com.gazbert.bxbot.trading.api.BalanceInfo;
 import com.gazbert.bxbot.trading.api.ExchangeNetworkException;
 import com.gazbert.bxbot.trading.api.MarketOrderBook;
@@ -47,14 +46,12 @@ import com.gazbert.bxbot.trading.api.Ticker;
 import com.gazbert.bxbot.trading.api.TradingApiException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.junit.Before;
@@ -125,10 +122,21 @@ public class TestTryModeExchangeAdapter extends AbstractExchangeAdapter {
   private static final BigDecimal PERCENTAGE_OF_BUY_ORDER_TAKEN_FOR_EXCHANGE_FEE =
       new BigDecimal("0.0024");
 
+  private static final BigDecimal LAST = new BigDecimal("18789.58");
+  private static final BigDecimal BID = new BigDecimal("18778.25");
+  private static final BigDecimal ASK = new BigDecimal("18783.33");
+  private static final BigDecimal LOW = new BigDecimal("17111.00");
+  private static final BigDecimal HIGH = new BigDecimal("18790.76");
+  private static final BigDecimal OPEN = new BigDecimal("17477.98");
+  private static final BigDecimal VOLUME = new BigDecimal("10231.12911572");
+  private static final BigDecimal VWAP = new BigDecimal("17756.56");
+  private static final Long TIMESTAMP = 1513439945L;
+
   private static final String MOCKED_GET_PERCENTAGE_OF_SELL_ORDER_TAKEN_FOR_EXCHANGE_FEE =
       "getPercentageOfSellOrderTakenForExchangeFee";
   private static final String MOCKED_GET_PERCENTAGE_OF_BUY_ORDER_TAKEN_FOR_EXCHANGE_FEE =
       "getPercentageOfBuyOrderTakenForExchangeFee";
+  private static final String MOCKED_GET_TICKER_METHOD = "getTicker";
   private static final String MOCKED_CREATE_DELEGATE_EXCHANGE_ADAPTER =
       "createDelegateExchangeAdapter";
   private static final String MOCKED_CREATE_REQUEST_PARAM_MAP_METHOD = "createRequestParamMap";
@@ -136,8 +144,6 @@ public class TestTryModeExchangeAdapter extends AbstractExchangeAdapter {
       "sendAuthenticatedRequestToExchange";
   private static final String MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD =
       "sendPublicRequestToExchange";
-  private static final String MOCKED_CREATE_REQUEST_HEADER_MAP_METHOD = "createHeaderParamMap";
-  private static final String MOCKED_MAKE_NETWORK_REQUEST_METHOD = "makeNetworkRequest";
 
   private static final String CLIENT_ID = "clientId123";
   private static final String KEY = "key123";
@@ -148,8 +154,6 @@ public class TestTryModeExchangeAdapter extends AbstractExchangeAdapter {
           "Connection refused",
           "Connection reset",
           "Remote host closed connection during handshake");
-
-  private static final String API_BASE_URL = "https://www.bitstamp.net/api/v2/";
 
   // Bitstamp exchange Date format: 2015-01-09 21:14:50
   private final SimpleDateFormat bitstampExchangeDateFormat = new SimpleDateFormat("y-M-d H:m:s");
@@ -858,45 +862,49 @@ public class TestTryModeExchangeAdapter extends AbstractExchangeAdapter {
   //  Get Ticker tests
   // --------------------------------------------------------------------------
 
-  @Ignore("TODO: Enable test")
   @Test
   public void testGettingTickerSuccessfully() throws Exception {
-    final byte[] encoded = Files.readAllBytes(Paths.get(TICKER_JSON_RESPONSE));
-    final ExchangeHttpResponse exchangeResponse =
-        new ExchangeHttpResponse(200, "OK", new String(encoded, StandardCharsets.UTF_8));
+    final Ticker tickerResponse =
+        new TickerImpl(LAST, BID, ASK, LOW, HIGH, OPEN, VOLUME, VWAP, TIMESTAMP);
 
-    final BitstampExchangeAdapter exchangeAdapter =
+    final BitstampExchangeAdapter delegateExchangeAdapter =
         PowerMock.createPartialMockAndInvokeDefaultConstructor(
-            BitstampExchangeAdapter.class, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD);
-    PowerMock.expectPrivate(
-            exchangeAdapter, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD, eq(TICKER + MARKET_ID))
-        .andReturn(exchangeResponse);
+            BitstampExchangeAdapter.class, MOCKED_GET_TICKER_METHOD);
+    PowerMock.expectPrivate(delegateExchangeAdapter, MOCKED_GET_TICKER_METHOD, eq(MARKET_ID))
+        .andReturn(tickerResponse);
+
+    final TryModeExchangeAdapter tryModeExchangeAdapter =
+        PowerMock.createPartialMockAndInvokeDefaultConstructor(
+            TryModeExchangeAdapter.class, MOCKED_CREATE_DELEGATE_EXCHANGE_ADAPTER);
+
+    PowerMock.expectPrivate(tryModeExchangeAdapter, MOCKED_CREATE_DELEGATE_EXCHANGE_ADAPTER)
+        .andReturn(delegateExchangeAdapter);
 
     PowerMock.replayAll();
-    exchangeAdapter.init(exchangeConfig);
 
-    final Ticker ticker = exchangeAdapter.getTicker(MARKET_ID);
-    assertEquals(0, ticker.getLast().compareTo(new BigDecimal("230.33")));
-    assertEquals(0, ticker.getAsk().compareTo(new BigDecimal("230.69")));
-    assertEquals(0, ticker.getBid().compareTo(new BigDecimal("230.34")));
-    assertEquals(0, ticker.getHigh().compareTo(new BigDecimal("231.38")));
-    assertEquals(0, ticker.getLow().compareTo(new BigDecimal("224.39")));
-    assertEquals(0, ticker.getOpen().compareTo(new BigDecimal("220.69")));
-    assertEquals(0, ticker.getVolume().compareTo(new BigDecimal("16666.06077534")));
-    assertEquals(0, ticker.getVwap().compareTo(new BigDecimal("228.28")));
-    assertEquals(1441040860L, (long) ticker.getTimestamp());
+    tryModeExchangeAdapter.init(exchangeConfig);
+    final Ticker ticker = tryModeExchangeAdapter.getTicker(MARKET_ID);
+
+    assertEquals(0, ticker.getLast().compareTo(LAST));
+    assertEquals(0, ticker.getAsk().compareTo(ASK));
+    assertEquals(0, ticker.getBid().compareTo(BID));
+    assertEquals(0, ticker.getHigh().compareTo(HIGH));
+    assertEquals(0, ticker.getLow().compareTo(LOW));
+    assertEquals(0, ticker.getOpen().compareTo(OPEN));
+    assertEquals(0, ticker.getVolume().compareTo(VOLUME));
+    assertEquals(0, ticker.getVwap().compareTo(VWAP));
+    assertEquals(1513439945L, (long) ticker.getTimestamp());
 
     PowerMock.verifyAll();
   }
 
-  @Ignore("TODO: Enable test")
   @Test(expected = ExchangeNetworkException.class)
   public void testGettingTickerHandlesExchangeNetworkException() throws Exception {
-    final BitstampExchangeAdapter exchangeAdapter =
+    final BitstampExchangeAdapter delegateExchangeAdapter =
         PowerMock.createPartialMockAndInvokeDefaultConstructor(
-            BitstampExchangeAdapter.class, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD);
-    PowerMock.expectPrivate(
-            exchangeAdapter, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD, eq(TICKER + MARKET_ID))
+            BitstampExchangeAdapter.class, MOCKED_GET_TICKER_METHOD);
+
+    PowerMock.expectPrivate(delegateExchangeAdapter, MOCKED_GET_TICKER_METHOD, eq(MARKET_ID))
         .andThrow(
             new ExchangeNetworkException(
                 "Dehydrated turkey, with dehydrated oyster "
@@ -904,27 +912,39 @@ public class TestTryModeExchangeAdapter extends AbstractExchangeAdapter {
                     + "dehydrated sweet potatoes in dehydrated orange sauce, dehydrated vegetable "
                     + "salad, dehydrated mince pie, dehydrated..."));
 
+    final TryModeExchangeAdapter tryModeExchangeAdapter =
+        PowerMock.createPartialMockAndInvokeDefaultConstructor(
+            TryModeExchangeAdapter.class, MOCKED_CREATE_DELEGATE_EXCHANGE_ADAPTER);
+
+    PowerMock.expectPrivate(tryModeExchangeAdapter, MOCKED_CREATE_DELEGATE_EXCHANGE_ADAPTER)
+        .andReturn(delegateExchangeAdapter);
+
     PowerMock.replayAll();
-    exchangeAdapter.init(exchangeConfig);
-    exchangeAdapter.getTicker(MARKET_ID);
+    tryModeExchangeAdapter.init(exchangeConfig);
+    tryModeExchangeAdapter.getTicker(MARKET_ID);
     PowerMock.verifyAll();
   }
 
-  @Ignore("TODO: Enable test")
   @Test(expected = TradingApiException.class)
   public void testGettingTickerHandlesUnexpectedException() throws Exception {
-    final BitstampExchangeAdapter exchangeAdapter =
+    final BitstampExchangeAdapter delegateExchangeAdapter =
         PowerMock.createPartialMockAndInvokeDefaultConstructor(
-            BitstampExchangeAdapter.class, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD);
-    PowerMock.expectPrivate(
-            exchangeAdapter, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD, eq(TICKER + MARKET_ID))
+            BitstampExchangeAdapter.class, MOCKED_GET_TICKER_METHOD);
+
+    PowerMock.expectPrivate(delegateExchangeAdapter, MOCKED_GET_TICKER_METHOD, eq(MARKET_ID))
         .andThrow(
-            new IllegalArgumentException(
-                "There is nothing in the desert and no man needs nothing."));
+            new TradingApiException("There is nothing in the desert and no man needs nothing."));
+
+    final TryModeExchangeAdapter tryModeExchangeAdapter =
+        PowerMock.createPartialMockAndInvokeDefaultConstructor(
+            TryModeExchangeAdapter.class, MOCKED_CREATE_DELEGATE_EXCHANGE_ADAPTER);
+
+    PowerMock.expectPrivate(tryModeExchangeAdapter, MOCKED_CREATE_DELEGATE_EXCHANGE_ADAPTER)
+        .andReturn(delegateExchangeAdapter);
 
     PowerMock.replayAll();
-    exchangeAdapter.init(exchangeConfig);
-    exchangeAdapter.getTicker(MARKET_ID);
+    tryModeExchangeAdapter.init(exchangeConfig);
+    tryModeExchangeAdapter.getTicker(MARKET_ID);
     PowerMock.verifyAll();
   }
 
@@ -1007,92 +1027,6 @@ public class TestTryModeExchangeAdapter extends AbstractExchangeAdapter {
 
     final TryModeExchangeAdapter exchangeAdapter = new TryModeExchangeAdapter();
     exchangeAdapter.init(exchangeConfig);
-
-    PowerMock.verifyAll();
-  }
-
-  // --------------------------------------------------------------------------
-  //  Request sending tests
-  // --------------------------------------------------------------------------
-
-  @Ignore("TODO: Enable test")
-  @Test
-  public void testSendingPublicRequestToExchangeSuccessfully() throws Exception {
-    final byte[] encoded = Files.readAllBytes(Paths.get(TICKER_JSON_RESPONSE));
-    final ExchangeHttpResponse exchangeResponse =
-        new ExchangeHttpResponse(200, "OK", new String(encoded, StandardCharsets.UTF_8));
-
-    final BitstampExchangeAdapter exchangeAdapter =
-        PowerMock.createPartialMockAndInvokeDefaultConstructor(
-            BitstampExchangeAdapter.class, MOCKED_MAKE_NETWORK_REQUEST_METHOD);
-
-    final URL url = new URL(API_BASE_URL + TICKER + MARKET_ID);
-    PowerMock.expectPrivate(
-            exchangeAdapter,
-            MOCKED_MAKE_NETWORK_REQUEST_METHOD,
-            eq(url),
-            eq("GET"),
-            eq(null),
-            eq(new HashMap<>()))
-        .andReturn(exchangeResponse);
-
-    PowerMock.replayAll();
-    exchangeAdapter.init(exchangeConfig);
-
-    final BigDecimal lastMarketPrice = exchangeAdapter.getLatestMarketPrice(MARKET_ID);
-    assertEquals(0, lastMarketPrice.compareTo(new BigDecimal("230.33")));
-
-    PowerMock.verifyAll();
-  }
-
-  @Ignore("TODO: Enable test")
-  @Test(expected = ExchangeNetworkException.class)
-  public void testSendingPublicRequestToExchangeHandlesExchangeNetworkException() throws Exception {
-    final BitstampExchangeAdapter exchangeAdapter =
-        PowerMock.createPartialMockAndInvokeDefaultConstructor(
-            BitstampExchangeAdapter.class, MOCKED_MAKE_NETWORK_REQUEST_METHOD);
-
-    final URL url = new URL(API_BASE_URL + TICKER + MARKET_ID);
-    PowerMock.expectPrivate(
-            exchangeAdapter,
-            MOCKED_MAKE_NETWORK_REQUEST_METHOD,
-            eq(url),
-            eq("GET"),
-            eq(null),
-            eq(new HashMap<>()))
-        .andThrow(
-            new ExchangeNetworkException(
-                "I don't mean to sound superior, but I hate the company of robots."));
-
-    PowerMock.replayAll();
-    exchangeAdapter.init(exchangeConfig);
-
-    exchangeAdapter.getLatestMarketPrice(MARKET_ID);
-
-    PowerMock.verifyAll();
-  }
-
-  @Ignore("TODO: Enable test")
-  @Test(expected = TradingApiException.class)
-  public void testSendingPublicRequestToExchangeHandlesTradingApiException() throws Exception {
-    final BitstampExchangeAdapter exchangeAdapter =
-        PowerMock.createPartialMockAndInvokeDefaultConstructor(
-            BitstampExchangeAdapter.class, MOCKED_MAKE_NETWORK_REQUEST_METHOD);
-
-    final URL url = new URL(API_BASE_URL + TICKER + MARKET_ID);
-    PowerMock.expectPrivate(
-            exchangeAdapter,
-            MOCKED_MAKE_NETWORK_REQUEST_METHOD,
-            eq(url),
-            eq("GET"),
-            eq(null),
-            eq(new HashMap<>()))
-        .andThrow(new TradingApiException("Increase power to maximum. We are going THROUGH!"));
-
-    PowerMock.replayAll();
-    exchangeAdapter.init(exchangeConfig);
-
-    exchangeAdapter.getLatestMarketPrice(MARKET_ID);
 
     PowerMock.verifyAll();
   }
