@@ -109,7 +109,7 @@ public class TryModeExchangeAdapter extends AbstractExchangeAdapter implements E
   public List<OpenOrder> getYourOpenOrders(String marketId)
       throws ExchangeNetworkException, TradingApiException {
     checkOpenOrderExecution(marketId);
-    LinkedList<OpenOrder> result = new LinkedList<>();
+    final List<OpenOrder> result = new LinkedList<>();
     if (currentOpenOrder != null) {
       result.add(currentOpenOrder);
       LOG.info(() -> "getYourOpenOrders: Found an open DUMMY order: " + currentOpenOrder);
@@ -128,9 +128,9 @@ public class TryModeExchangeAdapter extends AbstractExchangeAdapter implements E
       throw new TradingApiException(
           "Can only record/execute one order at a time. Wait for the open order to fulfill");
     }
-    String newOrderId = "DUMMY_" + orderType + "_ORDER_ID_" + System.currentTimeMillis();
-    Date creationDate = new Date();
-    BigDecimal total = price.multiply(quantity);
+    final String newOrderId = "DUMMY_" + orderType + "_ORDER_ID_" + System.currentTimeMillis();
+    final Date creationDate = new Date();
+    final BigDecimal total = price.multiply(quantity);
     currentOpenOrder =
         new OpenOrderImpl(
             newOrderId, creationDate, marketId, orderType, price, quantity, quantity, total);
@@ -169,11 +169,11 @@ public class TryModeExchangeAdapter extends AbstractExchangeAdapter implements E
   }
 
   @Override
-  public BalanceInfo getBalanceInfo() throws ExchangeNetworkException, TradingApiException {
-    HashMap<String, BigDecimal> availableBalances = new HashMap<>();
+  public BalanceInfo getBalanceInfo() {
+    final HashMap<String, BigDecimal> availableBalances = new HashMap<>();
     availableBalances.put(simulatedBaseCurrency, baseCurrencyBalance);
     availableBalances.put(simulatedCounterCurrency, counterCurrencyBalance);
-    BalanceInfoImpl currentBalance = new BalanceInfoImpl(availableBalances, new HashMap<>());
+    final BalanceInfo currentBalance = new BalanceInfoImpl(availableBalances, new HashMap<>());
     LOG.info(() -> "Return the following simulated balances: " + currentBalance);
     return currentBalance;
   }
@@ -296,15 +296,16 @@ public class TryModeExchangeAdapter extends AbstractExchangeAdapter implements E
 
   private void checkOpenSellOrderExecution(String marketId)
       throws TradingApiException, ExchangeNetworkException {
-    BigDecimal currentBidPrice = getTicker(marketId).getBid();
+    final BigDecimal currentBidPrice = getTicker(marketId).getBid();
     if (currentBidPrice.compareTo(currentOpenOrder.getPrice()) >= 0) {
       LOG.info(
           "SELL: the market's bid price moved above the limit price "
               + "--> record sell order execution with the current bid price");
-      BigDecimal orderPrice = currentOpenOrder.getOriginalQuantity().multiply(currentBidPrice);
-      BigDecimal buyFees =
+      final BigDecimal orderPrice =
+          currentOpenOrder.getOriginalQuantity().multiply(currentBidPrice);
+      final BigDecimal buyFees =
           getPercentageOfSellOrderTakenForExchangeFee(marketId).multiply(orderPrice);
-      BigDecimal netOrderPrice = orderPrice.subtract(buyFees);
+      final BigDecimal netOrderPrice = orderPrice.subtract(buyFees);
       counterCurrencyBalance = counterCurrencyBalance.add(netOrderPrice);
       baseCurrencyBalance = baseCurrencyBalance.subtract(currentOpenOrder.getOriginalQuantity());
       currentOpenOrder = null;
@@ -313,15 +314,16 @@ public class TryModeExchangeAdapter extends AbstractExchangeAdapter implements E
 
   private void checkOpenBuyOrderExecution(String marketId)
       throws TradingApiException, ExchangeNetworkException {
-    BigDecimal currentAskPrice = getTicker(marketId).getAsk();
+    final BigDecimal currentAskPrice = getTicker(marketId).getAsk();
     if (currentAskPrice.compareTo(currentOpenOrder.getPrice()) <= 0) {
       LOG.info(
           "BUY: the market's current ask price moved below the limit price "
               + "--> record buy order execution with the current ask price");
-      BigDecimal orderPrice = currentOpenOrder.getOriginalQuantity().multiply(currentAskPrice);
-      BigDecimal buyFees =
+      final BigDecimal orderPrice =
+          currentOpenOrder.getOriginalQuantity().multiply(currentAskPrice);
+      final BigDecimal buyFees =
           getPercentageOfBuyOrderTakenForExchangeFee(marketId).multiply(orderPrice);
-      BigDecimal netOrderPrice = orderPrice.add(buyFees);
+      final BigDecimal netOrderPrice = orderPrice.add(buyFees);
       counterCurrencyBalance = counterCurrencyBalance.subtract(netOrderPrice);
       baseCurrencyBalance = baseCurrencyBalance.add(currentOpenOrder.getOriginalQuantity());
       currentOpenOrder = null;

@@ -86,8 +86,6 @@ public class TestTryModeExchangeAdapter extends AbstractExchangeAdapter {
       "./src/test/exchange-data/bitstamp/order_book.json";
   private static final String OPEN_ORDERS_JSON_RESPONSE =
       "./src/test/exchange-data/bitstamp/open_orders.json";
-  private static final String BALANCE_JSON_RESPONSE =
-      "./src/test/exchange-data/bitstamp/balance.json";
   private static final String TICKER_JSON_RESPONSE =
       "./src/test/exchange-data/bitstamp/ticker.json";
   private static final String BUY_JSON_RESPONSE = "./src/test/exchange-data/bitstamp/buy.json";
@@ -97,18 +95,14 @@ public class TestTryModeExchangeAdapter extends AbstractExchangeAdapter {
 
   private static final String ORDER_BOOK = "order_book/";
   private static final String OPEN_ORDERS = "open_orders/";
-  private static final String BALANCE = "balance";
   private static final String TICKER = "ticker/";
   private static final String BUY = "buy/";
   private static final String SELL = "sell/";
   private static final String CANCEL_ORDER = "cancel_order";
 
-  private static final String BASE_CURRENCY = "BTC";
-  private static final String BASE_CURRENCY_STARTING_BALANCE = "1.0";
-  private static final String COUNTER_CURRENCY = "USD";
-  private static final String COUNTER_CURRENCY_STARTING_BALANCE = "100.0";
-  private static final String DELEGATE_ADAPTER =
-      "com.gazbert.bxbot.exchanges.BitstampExchangeAdapter";
+  // --------------------------------------------------------------------------
+  // Canned test data
+  // --------------------------------------------------------------------------
 
   private static final String MARKET_ID = "btcusd";
   private static final BigDecimal BUY_ORDER_PRICE = new BigDecimal("200.18");
@@ -132,11 +126,16 @@ public class TestTryModeExchangeAdapter extends AbstractExchangeAdapter {
   private static final BigDecimal VWAP = new BigDecimal("17756.56");
   private static final Long TIMESTAMP = 1513439945L;
 
+  // --------------------------------------------------------------------------
+  // Mocked API Ops
+  // --------------------------------------------------------------------------
+
   private static final String MOCKED_GET_PERCENTAGE_OF_SELL_ORDER_TAKEN_FOR_EXCHANGE_FEE =
       "getPercentageOfSellOrderTakenForExchangeFee";
   private static final String MOCKED_GET_PERCENTAGE_OF_BUY_ORDER_TAKEN_FOR_EXCHANGE_FEE =
       "getPercentageOfBuyOrderTakenForExchangeFee";
   private static final String MOCKED_GET_TICKER_METHOD = "getTicker";
+  private static final String MOCKED_GET_BALANCE_INFO = "getBalanceInfo";
   private static final String MOCKED_CREATE_DELEGATE_EXCHANGE_ADAPTER =
       "createDelegateExchangeAdapter";
   private static final String MOCKED_CREATE_REQUEST_PARAM_MAP_METHOD = "createRequestParamMap";
@@ -144,6 +143,18 @@ public class TestTryModeExchangeAdapter extends AbstractExchangeAdapter {
       "sendAuthenticatedRequestToExchange";
   private static final String MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD =
       "sendPublicRequestToExchange";
+
+  // --------------------------------------------------------------------------
+  // Delegate Exchange Adapter config
+  // --------------------------------------------------------------------------
+
+  private static final String DELEGATE_ADAPTER =
+      "com.gazbert.bxbot.exchanges.BitstampExchangeAdapter";
+
+  private static final String BASE_CURRENCY = "BTC";
+  private static final String BASE_CURRENCY_STARTING_BALANCE = "1.0";
+  private static final String COUNTER_CURRENCY = "USD";
+  private static final String COUNTER_CURRENCY_STARTING_BALANCE = "100.0";
 
   private static final String CLIENT_ID = "clientId123";
   private static final String KEY = "key123";
@@ -161,6 +172,7 @@ public class TestTryModeExchangeAdapter extends AbstractExchangeAdapter {
   private ExchangeConfig exchangeConfig;
   private AuthenticationConfig authenticationConfig;
   private NetworkConfig networkConfig;
+
 
   /** Create some exchange config - the TradingEngine would normally do this. */
   @Before
@@ -699,92 +711,38 @@ public class TestTryModeExchangeAdapter extends AbstractExchangeAdapter {
   //  Get Balance Info tests
   // --------------------------------------------------------------------------
 
-  @Ignore("TODO: Enable test")
   @Test
   public void testGettingBalanceInfoSuccessfully() throws Exception {
-    final byte[] encoded = Files.readAllBytes(Paths.get(BALANCE_JSON_RESPONSE));
-    final ExchangeHttpResponse exchangeResponse =
-        new ExchangeHttpResponse(200, "OK", new String(encoded, StandardCharsets.UTF_8));
 
-    final BitstampExchangeAdapter exchangeAdapter =
+    final BitstampExchangeAdapter delegateExchangeAdapter =
         PowerMock.createPartialMockAndInvokeDefaultConstructor(
-            BitstampExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
-    PowerMock.expectPrivate(
-            exchangeAdapter,
-            MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD,
-            eq(BALANCE),
-            eq(null))
-        .andReturn(exchangeResponse);
+            BitstampExchangeAdapter.class, MOCKED_GET_BALANCE_INFO);
+
+    final TryModeExchangeAdapter tryModeExchangeAdapter =
+        PowerMock.createPartialMockAndInvokeDefaultConstructor(
+            TryModeExchangeAdapter.class, MOCKED_CREATE_DELEGATE_EXCHANGE_ADAPTER);
+
+    PowerMock.expectPrivate(tryModeExchangeAdapter, MOCKED_CREATE_DELEGATE_EXCHANGE_ADAPTER)
+        .andReturn(delegateExchangeAdapter);
 
     PowerMock.replayAll();
-    exchangeAdapter.init(exchangeConfig);
 
-    final BalanceInfo balanceInfo = exchangeAdapter.getBalanceInfo();
-
-    assertEquals(
-        0, balanceInfo.getBalancesAvailable().get("BTC").compareTo(new BigDecimal("0.00760854")));
-    assertEquals(
-        0, balanceInfo.getBalancesAvailable().get("USD").compareTo(new BigDecimal("57.03")));
-    assertEquals(
-        0, balanceInfo.getBalancesAvailable().get("EUR").compareTo(new BigDecimal("16.01")));
-    assertEquals(
-        0, balanceInfo.getBalancesAvailable().get("LTC").compareTo(new BigDecimal("50.01")));
-    assertEquals(
-        0, balanceInfo.getBalancesAvailable().get("XRP").compareTo(new BigDecimal("10.01")));
+    tryModeExchangeAdapter.init(exchangeConfig);
+    final BalanceInfo balanceInfo = tryModeExchangeAdapter.getBalanceInfo();
 
     assertEquals(
-        0, balanceInfo.getBalancesOnHold().get("BTC").compareTo(new BigDecimal("0.01918917")));
-    assertEquals(0, balanceInfo.getBalancesOnHold().get("USD").compareTo(new BigDecimal("62.23")));
-    assertEquals(0, balanceInfo.getBalancesOnHold().get("EUR").compareTo(new BigDecimal("12.01")));
-    assertEquals(0, balanceInfo.getBalancesOnHold().get("LTC").compareTo(new BigDecimal("40.01")));
-    assertEquals(0, balanceInfo.getBalancesOnHold().get("XRP").compareTo(new BigDecimal("5.01")));
+        0,
+        balanceInfo
+            .getBalancesAvailable()
+            .get(BASE_CURRENCY)
+            .compareTo(new BigDecimal(BASE_CURRENCY_STARTING_BALANCE)));
+    assertEquals(
+        0,
+        balanceInfo
+            .getBalancesAvailable()
+            .get(COUNTER_CURRENCY)
+            .compareTo(new BigDecimal(COUNTER_CURRENCY_STARTING_BALANCE)));
 
-    PowerMock.verifyAll();
-  }
-
-  @Ignore("TODO: Enable test")
-  @Test(expected = ExchangeNetworkException.class)
-  public void testGettingBalanceInfoHandlesExchangeNetworkException() throws Exception {
-    final BitstampExchangeAdapter exchangeAdapter =
-        PowerMock.createPartialMockAndInvokeDefaultConstructor(
-            BitstampExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
-    PowerMock.expectPrivate(
-            exchangeAdapter,
-            MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD,
-            eq(BALANCE),
-            eq(null))
-        .andThrow(new ExchangeNetworkException("You mean we're going into the black hole?"));
-
-    PowerMock.replayAll();
-    exchangeAdapter.init(exchangeConfig);
-
-    exchangeAdapter.getBalanceInfo();
-    PowerMock.verifyAll();
-  }
-
-  @Ignore("TODO: Enable test")
-  @Test(expected = TradingApiException.class)
-  public void testGettingBalanceInfoHandlesUnexpectedException() throws Exception {
-    final BitstampExchangeAdapter exchangeAdapter =
-        PowerMock.createPartialMockAndInvokeDefaultConstructor(
-            BitstampExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
-    PowerMock.expectPrivate(
-            exchangeAdapter,
-            MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD,
-            eq(BALANCE),
-            eq(null))
-        .andThrow(
-            new IllegalStateException(
-                "2130; day 547. Unscheduled course correction"
-                    + " due at 2200. Pre-correction check: rotation axis plus three degrees."
-                    + " Nitrous oxide pressure: 4100 rising to 5,000. Quad jet C and D on "
-                    + "preselect. Rotor ignition sequence beginning in 3-0. Thruster line "
-                    + "reactors on standby."));
-
-    PowerMock.replayAll();
-    exchangeAdapter.init(exchangeConfig);
-
-    exchangeAdapter.getBalanceInfo();
     PowerMock.verifyAll();
   }
 
