@@ -36,9 +36,12 @@ import com.gazbert.bxbot.exchange.api.AuthenticationConfig;
 import com.gazbert.bxbot.exchange.api.ExchangeConfig;
 import com.gazbert.bxbot.exchange.api.NetworkConfig;
 import com.gazbert.bxbot.exchange.api.OtherConfig;
+import com.gazbert.bxbot.exchanges.trading.api.impl.MarketOrderBookImpl;
+import com.gazbert.bxbot.exchanges.trading.api.impl.MarketOrderImpl;
 import com.gazbert.bxbot.exchanges.trading.api.impl.TickerImpl;
 import com.gazbert.bxbot.trading.api.BalanceInfo;
 import com.gazbert.bxbot.trading.api.ExchangeNetworkException;
+import com.gazbert.bxbot.trading.api.MarketOrder;
 import com.gazbert.bxbot.trading.api.MarketOrderBook;
 import com.gazbert.bxbot.trading.api.OpenOrder;
 import com.gazbert.bxbot.trading.api.OrderType;
@@ -51,6 +54,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -82,8 +86,6 @@ import org.powermock.modules.junit4.PowerMockRunner;
 @PrepareForTest(TryModeExchangeAdapter.class)
 public class TestTryModeExchangeAdapter extends AbstractExchangeAdapter {
 
-  private static final String ORDER_BOOK_JSON_RESPONSE =
-      "./src/test/exchange-data/bitstamp/order_book.json";
   private static final String OPEN_ORDERS_JSON_RESPONSE =
       "./src/test/exchange-data/bitstamp/open_orders.json";
   private static final String TICKER_JSON_RESPONSE =
@@ -93,7 +95,6 @@ public class TestTryModeExchangeAdapter extends AbstractExchangeAdapter {
   private static final String CANCEL_ORDER_JSON_RESPONSE =
       "./src/test/exchange-data/bitstamp/cancel_order.json";
 
-  private static final String ORDER_BOOK = "order_book/";
   private static final String OPEN_ORDERS = "open_orders/";
   private static final String TICKER = "ticker/";
   private static final String BUY = "buy/";
@@ -126,9 +127,22 @@ public class TestTryModeExchangeAdapter extends AbstractExchangeAdapter {
   private static final BigDecimal VWAP = new BigDecimal("17756.56");
   private static final Long TIMESTAMP = 1513439945L;
 
+  private static final BigDecimal ORDER_1_PRICE = new BigDecimal("111.11");
+  private static final BigDecimal ORDER_1_QUANTITY = new BigDecimal("0.01614453");
+  private static final BigDecimal ORDER_1_TOTAL = ORDER_1_PRICE.multiply(ORDER_1_QUANTITY);
+  private static final BigDecimal ORDER_2_PRICE = new BigDecimal("222.22");
+  private static final BigDecimal ORDER_2_QUANTITY = new BigDecimal("0.02423424");
+  private static final BigDecimal ORDER_2_TOTAL = ORDER_2_PRICE.multiply(ORDER_2_QUANTITY);
+  private static final BigDecimal ORDER_3_PRICE = new BigDecimal("333.33");
+  private static final BigDecimal ORDER_3_QUANTITY = new BigDecimal("0.03435344");
+  private static final BigDecimal ORDER_3_TOTAL = ORDER_3_PRICE.multiply(ORDER_3_QUANTITY);
+
   // --------------------------------------------------------------------------
   // Mocked API Ops
   // --------------------------------------------------------------------------
+
+  private static final String MOCKED_CREATE_DELEGATE_EXCHANGE_ADAPTER =
+      "createDelegateExchangeAdapter";
 
   private static final String MOCKED_GET_PERCENTAGE_OF_SELL_ORDER_TAKEN_FOR_EXCHANGE_FEE =
       "getPercentageOfSellOrderTakenForExchangeFee";
@@ -136,8 +150,8 @@ public class TestTryModeExchangeAdapter extends AbstractExchangeAdapter {
       "getPercentageOfBuyOrderTakenForExchangeFee";
   private static final String MOCKED_GET_TICKER_METHOD = "getTicker";
   private static final String MOCKED_GET_BALANCE_INFO = "getBalanceInfo";
-  private static final String MOCKED_CREATE_DELEGATE_EXCHANGE_ADAPTER =
-      "createDelegateExchangeAdapter";
+  private static final String MOCKED_GET_MARKET_ORDERS = "getMarketOrders";
+
   private static final String MOCKED_CREATE_REQUEST_PARAM_MAP_METHOD = "createRequestParamMap";
   private static final String MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD =
       "sendAuthenticatedRequestToExchange";
@@ -172,7 +186,6 @@ public class TestTryModeExchangeAdapter extends AbstractExchangeAdapter {
   private ExchangeConfig exchangeConfig;
   private AuthenticationConfig authenticationConfig;
   private NetworkConfig networkConfig;
-
 
   /** Create some exchange config - the TradingEngine would normally do this. */
   @Before
@@ -456,93 +469,91 @@ public class TestTryModeExchangeAdapter extends AbstractExchangeAdapter {
   //  Get Market Orders tests
   // --------------------------------------------------------------------------
 
-  @Ignore("TODO: Enable test")
   @Test
   public void testGettingMarketOrdersSuccessfully() throws Exception {
-    final byte[] encoded = Files.readAllBytes(Paths.get(ORDER_BOOK_JSON_RESPONSE));
-    final ExchangeHttpResponse exchangeResponse =
-        new ExchangeHttpResponse(200, "OK", new String(encoded, StandardCharsets.UTF_8));
 
-    final BitstampExchangeAdapter exchangeAdapter =
+    final MarketOrder sellOrder1 =
+        new MarketOrderImpl(OrderType.SELL, ORDER_1_PRICE, ORDER_1_QUANTITY, ORDER_1_TOTAL);
+    final MarketOrder sellOrder2 =
+        new MarketOrderImpl(OrderType.SELL, ORDER_2_PRICE, ORDER_2_QUANTITY, ORDER_2_TOTAL);
+    final MarketOrder sellOrder3 =
+        new MarketOrderImpl(OrderType.SELL, ORDER_3_PRICE, ORDER_3_QUANTITY, ORDER_3_TOTAL);
+
+    final List<MarketOrder> sellOrders = new ArrayList<>();
+    sellOrders.add(sellOrder1);
+    sellOrders.add(sellOrder2);
+    sellOrders.add(sellOrder3);
+
+    final MarketOrder buyOrder1 =
+        new MarketOrderImpl(OrderType.BUY, ORDER_1_PRICE, ORDER_1_QUANTITY, ORDER_1_TOTAL);
+    final MarketOrder buyOrder2 =
+        new MarketOrderImpl(OrderType.BUY, ORDER_2_PRICE, ORDER_2_QUANTITY, ORDER_2_TOTAL);
+    final MarketOrder buyOrder3 =
+        new MarketOrderImpl(OrderType.BUY, ORDER_3_PRICE, ORDER_3_QUANTITY, ORDER_3_TOTAL);
+
+    final List<MarketOrder> buyOrders = new ArrayList<>();
+    buyOrders.add(buyOrder1);
+    buyOrders.add(buyOrder2);
+    buyOrders.add(buyOrder3);
+
+    final MarketOrderBookImpl mockedMarketOrderBook =
+        new MarketOrderBookImpl(MARKET_ID, sellOrders, buyOrders);
+
+    final BitstampExchangeAdapter delegateExchangeAdapter =
         PowerMock.createPartialMockAndInvokeDefaultConstructor(
-            BitstampExchangeAdapter.class, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD);
-    PowerMock.expectPrivate(
-            exchangeAdapter,
-            MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD,
-            eq(ORDER_BOOK + MARKET_ID))
-        .andReturn(exchangeResponse);
+            BitstampExchangeAdapter.class, MOCKED_GET_MARKET_ORDERS);
+
+    PowerMock.expectPrivate(delegateExchangeAdapter, MOCKED_GET_MARKET_ORDERS, eq(MARKET_ID))
+        .andReturn(mockedMarketOrderBook);
+
+    final TryModeExchangeAdapter tryModeExchangeAdapter =
+        PowerMock.createPartialMockAndInvokeDefaultConstructor(
+            TryModeExchangeAdapter.class, MOCKED_CREATE_DELEGATE_EXCHANGE_ADAPTER);
+
+    PowerMock.expectPrivate(tryModeExchangeAdapter, MOCKED_CREATE_DELEGATE_EXCHANGE_ADAPTER)
+        .andReturn(delegateExchangeAdapter);
 
     PowerMock.replayAll();
-    exchangeAdapter.init(exchangeConfig);
 
-    final MarketOrderBook marketOrderBook = exchangeAdapter.getMarketOrders(MARKET_ID);
+    tryModeExchangeAdapter.init(exchangeConfig);
+    final MarketOrderBook marketOrderBook = tryModeExchangeAdapter.getMarketOrders(MARKET_ID);
 
-    // assert some key stuff; we're not testing GSON here.
     assertEquals(MARKET_ID, marketOrderBook.getMarketId());
 
-    final BigDecimal buyPrice = new BigDecimal("230.34");
-    final BigDecimal buyQuantity = new BigDecimal("7.22860000");
-    final BigDecimal buyTotal = buyPrice.multiply(buyQuantity);
-
-    assertEquals(1268, marketOrderBook.getBuyOrders().size()); // stamp send them all back!
+    assertEquals(3, marketOrderBook.getBuyOrders().size());
     assertSame(OrderType.BUY, marketOrderBook.getBuyOrders().get(0).getType());
-    assertEquals(0, marketOrderBook.getBuyOrders().get(0).getPrice().compareTo(buyPrice));
-    assertEquals(0, marketOrderBook.getBuyOrders().get(0).getQuantity().compareTo(buyQuantity));
-    assertEquals(0, marketOrderBook.getBuyOrders().get(0).getTotal().compareTo(buyTotal));
+    assertEquals(0, marketOrderBook.getBuyOrders().get(0).getPrice().compareTo(ORDER_1_PRICE));
+    assertEquals(
+        0, marketOrderBook.getBuyOrders().get(0).getQuantity().compareTo(ORDER_1_QUANTITY));
+    assertEquals(0, marketOrderBook.getBuyOrders().get(0).getTotal().compareTo(ORDER_1_TOTAL));
+    assertSame(OrderType.BUY, marketOrderBook.getBuyOrders().get(1).getType());
+    assertEquals(0, marketOrderBook.getBuyOrders().get(1).getPrice().compareTo(ORDER_2_PRICE));
+    assertEquals(
+        0, marketOrderBook.getBuyOrders().get(1).getQuantity().compareTo(ORDER_2_QUANTITY));
+    assertEquals(0, marketOrderBook.getBuyOrders().get(1).getTotal().compareTo(ORDER_2_TOTAL));
+    assertSame(OrderType.BUY, marketOrderBook.getBuyOrders().get(2).getType());
+    assertEquals(0, marketOrderBook.getBuyOrders().get(2).getPrice().compareTo(ORDER_3_PRICE));
+    assertEquals(
+        0, marketOrderBook.getBuyOrders().get(2).getQuantity().compareTo(ORDER_3_QUANTITY));
+    assertEquals(0, marketOrderBook.getBuyOrders().get(2).getTotal().compareTo(ORDER_3_TOTAL));
 
-    final BigDecimal sellPrice = new BigDecimal("230.90");
-    final BigDecimal sellQuantity = new BigDecimal("0.62263188");
-    final BigDecimal sellTotal = sellPrice.multiply(sellQuantity);
-
-    assertEquals(1957, marketOrderBook.getSellOrders().size()); // stamp send them all back!
+    assertEquals(3, marketOrderBook.getSellOrders().size());
     assertSame(OrderType.SELL, marketOrderBook.getSellOrders().get(0).getType());
-    assertEquals(0, marketOrderBook.getSellOrders().get(0).getPrice().compareTo(sellPrice));
-    assertEquals(0, marketOrderBook.getSellOrders().get(0).getQuantity().compareTo(sellQuantity));
-    assertEquals(0, marketOrderBook.getSellOrders().get(0).getTotal().compareTo(sellTotal));
+    assertEquals(0, marketOrderBook.getSellOrders().get(0).getPrice().compareTo(ORDER_1_PRICE));
+    assertEquals(
+        0, marketOrderBook.getSellOrders().get(0).getQuantity().compareTo(ORDER_1_QUANTITY));
+    assertEquals(0, marketOrderBook.getSellOrders().get(0).getTotal().compareTo(ORDER_1_TOTAL));
+    assertSame(OrderType.SELL, marketOrderBook.getSellOrders().get(1).getType());
+    assertEquals(0, marketOrderBook.getSellOrders().get(1).getPrice().compareTo(ORDER_2_PRICE));
+    assertEquals(
+        0, marketOrderBook.getSellOrders().get(1).getQuantity().compareTo(ORDER_2_QUANTITY));
+    assertEquals(0, marketOrderBook.getSellOrders().get(1).getTotal().compareTo(ORDER_2_TOTAL));
+    assertSame(OrderType.SELL, marketOrderBook.getSellOrders().get(2).getType());
+    assertEquals(0, marketOrderBook.getSellOrders().get(2).getPrice().compareTo(ORDER_3_PRICE));
+    assertEquals(
+        0, marketOrderBook.getSellOrders().get(2).getQuantity().compareTo(ORDER_3_QUANTITY));
+    assertEquals(0, marketOrderBook.getSellOrders().get(2).getTotal().compareTo(ORDER_3_TOTAL));
 
-    PowerMock.verifyAll();
-  }
-
-  @Ignore("TODO: Enable test")
-  @Test(expected = ExchangeNetworkException.class)
-  public void testGettingMarketOrdersHandlesExchangeNetworkException() throws Exception {
-    final BitstampExchangeAdapter exchangeAdapter =
-        PowerMock.createPartialMockAndInvokeDefaultConstructor(
-            BitstampExchangeAdapter.class, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD);
-    PowerMock.expectPrivate(
-            exchangeAdapter,
-            MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD,
-            eq(ORDER_BOOK + MARKET_ID))
-        .andThrow(
-            new ExchangeNetworkException(
-                "To quote Cicero: rashness is the characteristic of youth, prudence "
-                    + "that of mellowed age, and discretion the better part of valor."));
-
-    PowerMock.replayAll();
-    exchangeAdapter.init(exchangeConfig);
-
-    exchangeAdapter.getMarketOrders(MARKET_ID);
-    PowerMock.verifyAll();
-  }
-
-  @Ignore("TODO: Enable test")
-  @Test(expected = TradingApiException.class)
-  public void testGettingMarketOrdersHandlesUnexpectedException() throws Exception {
-    final BitstampExchangeAdapter exchangeAdapter =
-        PowerMock.createPartialMockAndInvokeDefaultConstructor(
-            BitstampExchangeAdapter.class, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD);
-    PowerMock.expectPrivate(
-            exchangeAdapter,
-            MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD,
-            eq(ORDER_BOOK + MARKET_ID))
-        .andThrow(
-            new IllegalArgumentException(
-                "When one note is off, it eventually destroys the whole symphony, David."));
-
-    PowerMock.replayAll();
-    exchangeAdapter.init(exchangeConfig);
-
-    exchangeAdapter.getMarketOrders(MARKET_ID);
     PowerMock.verifyAll();
   }
 
