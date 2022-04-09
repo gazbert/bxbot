@@ -88,15 +88,12 @@ public class TestTryModeExchangeAdapter extends AbstractExchangeAdapter {
 
   private static final String OPEN_ORDERS_JSON_RESPONSE =
       "./src/test/exchange-data/bitstamp/open_orders.json";
-  private static final String TICKER_JSON_RESPONSE =
-      "./src/test/exchange-data/bitstamp/ticker.json";
   private static final String BUY_JSON_RESPONSE = "./src/test/exchange-data/bitstamp/buy.json";
   private static final String SELL_JSON_RESPONSE = "./src/test/exchange-data/bitstamp/sell.json";
   private static final String CANCEL_ORDER_JSON_RESPONSE =
       "./src/test/exchange-data/bitstamp/cancel_order.json";
 
   private static final String OPEN_ORDERS = "open_orders/";
-  private static final String TICKER = "ticker/";
   private static final String BUY = "buy/";
   private static final String SELL = "sell/";
   private static final String CANCEL_ORDER = "cancel_order";
@@ -137,6 +134,8 @@ public class TestTryModeExchangeAdapter extends AbstractExchangeAdapter {
   private static final BigDecimal ORDER_3_QUANTITY = new BigDecimal("0.03435344");
   private static final BigDecimal ORDER_3_TOTAL = ORDER_3_PRICE.multiply(ORDER_3_QUANTITY);
 
+  private static final BigDecimal LATEST_MARKET_PRICE = new BigDecimal("20789.58");
+
   // --------------------------------------------------------------------------
   // Mocked API Ops
   // --------------------------------------------------------------------------
@@ -151,12 +150,11 @@ public class TestTryModeExchangeAdapter extends AbstractExchangeAdapter {
   private static final String MOCKED_GET_TICKER_METHOD = "getTicker";
   private static final String MOCKED_GET_BALANCE_INFO = "getBalanceInfo";
   private static final String MOCKED_GET_MARKET_ORDERS = "getMarketOrders";
+  private static final String MOCKED_GET_LATEST_MARKET_PRICE = "getLatestMarketPrice";
 
   private static final String MOCKED_CREATE_REQUEST_PARAM_MAP_METHOD = "createRequestParamMap";
   private static final String MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD =
       "sendAuthenticatedRequestToExchange";
-  private static final String MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD =
-      "sendPublicRequestToExchange";
 
   // --------------------------------------------------------------------------
   // Delegate Exchange Adapter config
@@ -653,68 +651,30 @@ public class TestTryModeExchangeAdapter extends AbstractExchangeAdapter {
   //  Get Latest Market Price tests
   // --------------------------------------------------------------------------
 
-  @Ignore("TODO: Enable test")
   @Test
   public void testGettingLatestMarketPriceSuccessfully() throws Exception {
-    final byte[] encoded = Files.readAllBytes(Paths.get(TICKER_JSON_RESPONSE));
-    final ExchangeHttpResponse exchangeResponse =
-        new ExchangeHttpResponse(200, "OK", new String(encoded, StandardCharsets.UTF_8));
 
-    final BitstampExchangeAdapter exchangeAdapter =
+    final BitstampExchangeAdapter delegateExchangeAdapter =
         PowerMock.createPartialMockAndInvokeDefaultConstructor(
-            BitstampExchangeAdapter.class, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD);
-    PowerMock.expectPrivate(
-            exchangeAdapter, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD, eq(TICKER + MARKET_ID))
-        .andReturn(exchangeResponse);
+            BitstampExchangeAdapter.class, MOCKED_GET_LATEST_MARKET_PRICE);
+
+    PowerMock.expectPrivate(delegateExchangeAdapter, MOCKED_GET_LATEST_MARKET_PRICE, eq(MARKET_ID))
+        .andReturn(LATEST_MARKET_PRICE);
+
+    final TryModeExchangeAdapter tryModeExchangeAdapter =
+        PowerMock.createPartialMockAndInvokeDefaultConstructor(
+            TryModeExchangeAdapter.class, MOCKED_CREATE_DELEGATE_EXCHANGE_ADAPTER);
+
+    PowerMock.expectPrivate(tryModeExchangeAdapter, MOCKED_CREATE_DELEGATE_EXCHANGE_ADAPTER)
+        .andReturn(delegateExchangeAdapter);
 
     PowerMock.replayAll();
-    exchangeAdapter.init(exchangeConfig);
+    tryModeExchangeAdapter.init(exchangeConfig);
 
     final BigDecimal latestMarketPrice =
-        exchangeAdapter.getLatestMarketPrice(MARKET_ID).setScale(8, RoundingMode.HALF_UP);
-    assertEquals(0, latestMarketPrice.compareTo(new BigDecimal("230.33")));
+        tryModeExchangeAdapter.getLatestMarketPrice(MARKET_ID).setScale(8, RoundingMode.HALF_UP);
+    assertEquals(0, latestMarketPrice.compareTo(LATEST_MARKET_PRICE));
 
-    PowerMock.verifyAll();
-  }
-
-  @Ignore("TODO: Enable test")
-  @Test(expected = ExchangeNetworkException.class)
-  public void testGettingLatestMarketPriceHandlesExchangeNetworkException() throws Exception {
-    final BitstampExchangeAdapter exchangeAdapter =
-        PowerMock.createPartialMockAndInvokeDefaultConstructor(
-            BitstampExchangeAdapter.class, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD);
-    PowerMock.expectPrivate(
-            exchangeAdapter, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD, eq(TICKER + MARKET_ID))
-        .andThrow(
-            new ExchangeNetworkException(
-                "There are three basic types, Mr. Pizer: "
-                    + "the Wills, the Won'ts, and the Can'ts. The Wills accomplish everything, "
-                    + "the Won'ts oppose everything, and the Can'ts won't try anything."));
-
-    PowerMock.replayAll();
-    exchangeAdapter.init(exchangeConfig);
-
-    exchangeAdapter.getLatestMarketPrice(MARKET_ID);
-    PowerMock.verifyAll();
-  }
-
-  @Ignore("TODO: Enable test")
-  @Test(expected = TradingApiException.class)
-  public void testGettingLatestMarketPriceHandlesUnexpectedException() throws Exception {
-    final BitstampExchangeAdapter exchangeAdapter =
-        PowerMock.createPartialMockAndInvokeDefaultConstructor(
-            BitstampExchangeAdapter.class, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD);
-    PowerMock.expectPrivate(
-            exchangeAdapter, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD, eq(TICKER + MARKET_ID))
-        .andThrow(
-            new IllegalArgumentException(
-                "Every time I see one of those things I expect to spot some guy dressed "
-                    + "in red with horns and a pitchfork."));
-
-    PowerMock.replayAll();
-    exchangeAdapter.init(exchangeConfig);
-
-    exchangeAdapter.getLatestMarketPrice(MARKET_ID);
     PowerMock.verifyAll();
   }
 
