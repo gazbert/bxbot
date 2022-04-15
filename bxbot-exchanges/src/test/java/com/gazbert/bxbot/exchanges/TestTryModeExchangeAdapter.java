@@ -89,12 +89,8 @@ public class TestTryModeExchangeAdapter extends AbstractExchangeAdapter {
 
   private static final String BUY_JSON_RESPONSE = "./src/test/exchange-data/bitstamp/buy.json";
   private static final String SELL_JSON_RESPONSE = "./src/test/exchange-data/bitstamp/sell.json";
-  private static final String CANCEL_ORDER_JSON_RESPONSE =
-      "./src/test/exchange-data/bitstamp/cancel_order.json";
-
   private static final String BUY = "buy/";
   private static final String SELL = "sell/";
-  private static final String CANCEL_ORDER = "cancel_order";
 
   // --------------------------------------------------------------------------
   // Canned test data
@@ -105,7 +101,7 @@ public class TestTryModeExchangeAdapter extends AbstractExchangeAdapter {
   private static final BigDecimal BUY_ORDER_QUANTITY = new BigDecimal("0.03");
   private static final BigDecimal SELL_ORDER_PRICE = new BigDecimal("300.176");
   private static final BigDecimal SELL_ORDER_QUANTITY = new BigDecimal("0.03");
-  private static final String ORDER_ID_TO_CANCEL = "80894263";
+  private static final String UNRECOGNISED_ORDER_ID = "80894263";
 
   private static final BigDecimal PERCENTAGE_OF_SELL_ORDER_TAKEN_FOR_EXCHANGE_FEE =
       new BigDecimal("0.0025");
@@ -379,93 +375,100 @@ public class TestTryModeExchangeAdapter extends AbstractExchangeAdapter {
   //  Cancel Order tests
   // --------------------------------------------------------------------------
 
-  @Ignore("TODO: Enable test")
   @Test
-  @SuppressWarnings("unchecked")
   public void testCancelOrderIsSuccessful() throws Exception {
-    // Load the canned response from the exchange
-    final byte[] encoded = Files.readAllBytes(Paths.get(CANCEL_ORDER_JSON_RESPONSE));
-    final ExchangeHttpResponse exchangeResponse =
-        new ExchangeHttpResponse(200, "OK", new String(encoded, StandardCharsets.UTF_8));
 
-    // Mock out param map so we can assert the contents passed to the transport layer are what we
-    // expect.
-    final Map<String, String> requestParamMap = PowerMock.createMock(Map.class);
-    expect(requestParamMap.put("id", ORDER_ID_TO_CANCEL)).andStubReturn(null);
+    final OpenOrderImpl openOrder =
+        new OpenOrderImpl(
+            OPEN_ORDER_ID,
+            OPEN_ORDER_CREATION_DATE,
+            MARKET_ID,
+            OrderType.SELL,
+            OPEN_SELL_ORDER_PRICE,
+            OPEN_ORDER_QUANTITY,
+            OPEN_ORDER_ORIGINAL_QUANTITY,
+            OPEN_ORDER_TOTAL);
 
-    // Partial mock so we do not send stuff down the wire
-    final BitstampExchangeAdapter exchangeAdapter =
+    final BitstampExchangeAdapter delegateExchangeAdapter =
         PowerMock.createPartialMockAndInvokeDefaultConstructor(
-            BitstampExchangeAdapter.class,
-            MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD,
-            MOCKED_CREATE_REQUEST_PARAM_MAP_METHOD);
+            BitstampExchangeAdapter.class, MOCKED_GET_MARKET_ORDERS);
 
-    PowerMock.expectPrivate(exchangeAdapter, MOCKED_CREATE_REQUEST_PARAM_MAP_METHOD)
-        .andReturn(requestParamMap);
-    PowerMock.expectPrivate(
-            exchangeAdapter,
-            MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD,
-            eq(CANCEL_ORDER),
-            eq(requestParamMap))
-        .andReturn(exchangeResponse);
+    final TryModeExchangeAdapter tryModeExchangeAdapter =
+        PowerMock.createPartialMockAndInvokeDefaultConstructor(
+            TryModeExchangeAdapter.class, MOCKED_CREATE_DELEGATE_EXCHANGE_ADAPTER);
+
+    PowerMock.expectPrivate(tryModeExchangeAdapter, MOCKED_CREATE_DELEGATE_EXCHANGE_ADAPTER)
+        .andReturn(delegateExchangeAdapter);
+
+    // Ouch!
+    Whitebox.setInternalState(tryModeExchangeAdapter, "currentOpenOrder", openOrder);
 
     PowerMock.replayAll();
-    exchangeAdapter.init(exchangeConfig);
 
-    // marketId arg not needed for cancelling orders on this exchange.
-    final boolean success = exchangeAdapter.cancelOrder(ORDER_ID_TO_CANCEL, null);
-    assertTrue(success);
+    tryModeExchangeAdapter.init(exchangeConfig);
+
+    // Order ID will match the open order
+    assertTrue(tryModeExchangeAdapter.cancelOrder(OPEN_ORDER_ID, MARKET_ID));
 
     PowerMock.verifyAll();
   }
 
-  @Ignore("TODO: Enable test")
-  @Test(expected = ExchangeNetworkException.class)
-  public void testCancelOrderHandlesExchangeNetworkException() throws Exception {
-    final BitstampExchangeAdapter exchangeAdapter =
-        PowerMock.createPartialMockAndInvokeDefaultConstructor(
-            BitstampExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
-    PowerMock.expectPrivate(
-            exchangeAdapter,
-            MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD,
-            eq(CANCEL_ORDER),
-            anyObject(Map.class))
-        .andThrow(
-            new ExchangeNetworkException(
-                " Final report of the vessel Prometheus. The ship and her entire crew are gone."
-                    + " If you're receiving this transmission, make no attempt to come to its"
-                    + " point of origin. There is only death here now, and I'm leaving it "
-                    + "behind. It is New Year's Day, the year of our Lord, 2094. My name is "
-                    + "Elisabeth Shaw, last survivor of the Prometheus. And I am still searching"));
-
-    PowerMock.replayAll();
-    exchangeAdapter.init(exchangeConfig);
-
-    // marketId arg not needed for cancelling orders on this exchange.
-    exchangeAdapter.cancelOrder(ORDER_ID_TO_CANCEL, null);
-
-    PowerMock.verifyAll();
-  }
-
-  @Ignore("TODO: Enable test")
   @Test(expected = TradingApiException.class)
-  public void testCancelOrderHandlesUnexpectedException() throws Exception {
-    final BitstampExchangeAdapter exchangeAdapter =
+  public void testCancelOrderWhenNoneExist() throws Exception {
+
+    final BitstampExchangeAdapter delegateExchangeAdapter =
         PowerMock.createPartialMockAndInvokeDefaultConstructor(
-            BitstampExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
-    PowerMock.expectPrivate(
-            exchangeAdapter,
-            MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD,
-            eq(CANCEL_ORDER),
-            anyObject(Map.class))
-        .andThrow(
-            new IllegalStateException("The trick, William Potter, is not minding that it hurts"));
+            BitstampExchangeAdapter.class, MOCKED_GET_MARKET_ORDERS);
+
+    final TryModeExchangeAdapter tryModeExchangeAdapter =
+        PowerMock.createPartialMockAndInvokeDefaultConstructor(
+            TryModeExchangeAdapter.class, MOCKED_CREATE_DELEGATE_EXCHANGE_ADAPTER);
+
+    PowerMock.expectPrivate(tryModeExchangeAdapter, MOCKED_CREATE_DELEGATE_EXCHANGE_ADAPTER)
+        .andReturn(delegateExchangeAdapter);
 
     PowerMock.replayAll();
-    exchangeAdapter.init(exchangeConfig);
 
-    // marketId arg not needed for cancelling orders on this exchange.
-    exchangeAdapter.cancelOrder(ORDER_ID_TO_CANCEL, null);
+    tryModeExchangeAdapter.init(exchangeConfig);
+    tryModeExchangeAdapter.cancelOrder(OPEN_ORDER_ID, MARKET_ID);
+
+    PowerMock.verifyAll();
+  }
+
+  @Test(expected = TradingApiException.class)
+  public void testCancelOrderWhenOrderIdDoesNotMatch() throws Exception {
+
+    final OpenOrderImpl openOrder =
+        new OpenOrderImpl(
+            OPEN_ORDER_ID,
+            OPEN_ORDER_CREATION_DATE,
+            MARKET_ID,
+            OrderType.SELL,
+            OPEN_SELL_ORDER_PRICE,
+            OPEN_ORDER_QUANTITY,
+            OPEN_ORDER_ORIGINAL_QUANTITY,
+            OPEN_ORDER_TOTAL);
+
+    final BitstampExchangeAdapter delegateExchangeAdapter =
+        PowerMock.createPartialMockAndInvokeDefaultConstructor(
+            BitstampExchangeAdapter.class, MOCKED_GET_MARKET_ORDERS);
+
+    final TryModeExchangeAdapter tryModeExchangeAdapter =
+        PowerMock.createPartialMockAndInvokeDefaultConstructor(
+            TryModeExchangeAdapter.class, MOCKED_CREATE_DELEGATE_EXCHANGE_ADAPTER);
+
+    PowerMock.expectPrivate(tryModeExchangeAdapter, MOCKED_CREATE_DELEGATE_EXCHANGE_ADAPTER)
+        .andReturn(delegateExchangeAdapter);
+
+    // Ouch!
+    Whitebox.setInternalState(tryModeExchangeAdapter, "currentOpenOrder", openOrder);
+
+    PowerMock.replayAll();
+
+    tryModeExchangeAdapter.init(exchangeConfig);
+
+    // Order ID will not match the open order
+    tryModeExchangeAdapter.cancelOrder(UNRECOGNISED_ORDER_ID, MARKET_ID);
 
     PowerMock.verifyAll();
   }
