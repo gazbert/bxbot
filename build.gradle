@@ -7,7 +7,7 @@ buildscript {
 
     dependencies {
         classpath('io.spring.gradle:dependency-management-plugin:1.0.11.RELEASE')
-        classpath('org.springframework.boot:spring-boot-gradle-plugin:2.6.4')
+        classpath('org.springframework.boot:spring-boot-gradle-plugin:2.6.6')
     }
 }
 
@@ -23,11 +23,11 @@ buildScan {
 }
 
 ext.versions = [
-        springBootVersion        : '2.6.4',
+        springBootVersion        : '2.6.6',
         springCloudVersion       : '3.1.1',
 
         // Should be same as dependency used by springBootVersion
-        springCoreVersion        : '5.3.16',
+        springCoreVersion        : '5.3.18',
 
         springdocOpenapiVersion  : '1.6.6',
         hibernateVaildatorVersion: '7.0.1.Final',
