@@ -14,9 +14,8 @@ BX-bot (_Bex_) is a simple [Bitcoin](https://bitcoin.org) trading bot written in
 
 The project contains the basic infrastructure to trade on a [cryptocurrency](http://coinmarketcap.com/) exchange...
 except for the trading strategies - you'll need to write those yourself! A simple 
-[example](./bxbot-strategies/src/main/java/com/gazbert/bxbot/strategies/ExampleScalpingStrategy.java) of a 
-[scalping](http://www.investopedia.com/articles/trading/02/081902.asp) strategy is included to get you started with the
-Trading API - take a look [here](https://github.com/ta4j/ta4j) for more ideas.
+[`ExampleScalpingStrategy`](./bxbot-strategies/src/main/java/com/gazbert/bxbot/strategies/ExampleScalpingStrategy.java) 
+is included to get you started with the Trading API - take a look [here](https://github.com/ta4j/ta4j) for more ideas.
 
 Exchange Adapters for using [Bitstamp](https://www.bitstamp.net), [Bitfinex](https://www.bitfinex.com),
 [itBit](https://www.itbit.com/), [Kraken](https://www.kraken.com), [Gemini](https://gemini.com/),
@@ -83,8 +82,7 @@ Download the latest [Release](https://github.com/gazbert/bxbot/releases) and unz
    [`ExampleScalpingStrategy`](./bxbot-strategies/src/main/java/com/gazbert/bxbot/strategies/ExampleScalpingStrategy.java), 
    but you'll probably want to [code your own](#how-do-i-write-my-own-trading-strategy)! The 
    [`TryModeExchangeAdapter`](./bxbot-exchanges/src/main/java/com/gazbert/bxbot/exchanges/TryModeExchangeAdapter.java) is
-   configured out of the box to use [Bitstamp](https://www.bitstamp.net). 
-   You can change the [`exchange.yaml`](./config/exchange.yaml) to use another Exchange Adapter if you wish.
+   configured out of the box to simulate trading with [Bitstamp](https://www.bitstamp.net).
 1. Usage: `./bxbot.sh [start|stop|status]`  
 
 #### Gradle    
