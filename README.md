@@ -22,7 +22,7 @@ Exchange Adapters for using [Bitstamp](https://www.bitstamp.net), [Bitfinex](htt
 [itBit](https://www.itbit.com/), [Kraken](https://www.kraken.com), [Gemini](https://gemini.com/),
 and [Coinbase Pro](https://pro.coinbase.com/) are included. 
 Feel free to improve these or contribute new adapters to the project; that would be 
-[shiny!](https://en.wikipedia.org/wiki/Firefly_(TV_series)
+[shiny!](https://en.wikipedia.org/wiki/Firefly_(TV_series))
 
 A [`TryModeExchangeAdapter`](./bxbot-exchanges/src/main/java/com/gazbert/bxbot/exchanges/TryModeExchangeAdapter.java) is
 configured by default to delegate public API calls to [Bitstamp](https://www.bitstamp.net), but it simulates the private
