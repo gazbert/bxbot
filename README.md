@@ -20,9 +20,14 @@ Trading API - take a look [here](https://github.com/ta4j/ta4j) for more ideas.
 
 Exchange Adapters for using [Bitstamp](https://www.bitstamp.net), [Bitfinex](https://www.bitfinex.com),
 [itBit](https://www.itbit.com/), [Kraken](https://www.kraken.com), [Gemini](https://gemini.com/),
-and [Coinbase Pro](https://pro.coinbase.com/) are included.
+and [Coinbase Pro](https://pro.coinbase.com/) are included. 
 Feel free to improve these or contribute new adapters to the project; that would be 
-[shiny!](https://en.wikipedia.org/wiki/Firefly_(TV_series))
+[shiny!](https://en.wikipedia.org/wiki/Firefly_(TV_series)
+
+A [`TryModeExchangeAdapter`](./bxbot-exchanges/src/main/java/com/gazbert/bxbot/exchanges/TryModeExchangeAdapter.java) is
+configured by default to delegate public API calls to [Bitstamp](https://www.bitstamp.net), but it simulates the private
+API (order management) calls; it's good for testing your initial setup and 
+[paper trading](https://www.investopedia.com/terms/p/papertrade.asp) without actually sending orders to the exchange.
 
 The Trading API provides support for [limit orders](http://www.investopedia.com/terms/l/limitorder.asp)
 traded at the [spot price](http://www.investopedia.com/terms/s/spotprice.asp).
@@ -78,12 +83,8 @@ Download the latest [Release](https://github.com/gazbert/bxbot/releases) and unz
    [`ExampleScalpingStrategy`](./bxbot-strategies/src/main/java/com/gazbert/bxbot/strategies/ExampleScalpingStrategy.java), 
    but you'll probably want to [code your own](#how-do-i-write-my-own-trading-strategy)! The 
    [`TryModeExchangeAdapter`](./bxbot-exchanges/src/main/java/com/gazbert/bxbot/exchanges/TryModeExchangeAdapter.java) is
-   configured by default to delegate public API calls to [Bitstamp](https://www.bitstamp.net), but it simulates the private
-   API (order management) calls; it's good for testing your initial setup and 
-   [paper trading](https://www.investopedia.com/terms/p/papertrade.asp) without actually sending orders to the
-   exchange. You can change the [`exchange.yaml`](./config/exchange.yaml) so that the 
-   [`TryModeExchangeAdapter`](./bxbot-exchanges/src/main/java/com/gazbert/bxbot/exchanges/TryModeExchangeAdapter.java) 
-   uses other another Exchange Adapter if you wish.
+   configured out of the box to use [Bitstamp](https://www.bitstamp.net). 
+   You can change the [`exchange.yaml`](./config/exchange.yaml) to use another Exchange Adapter if you wish.
 1. Usage: `./bxbot.sh [start|stop|status]`  
 
 #### Gradle    
@@ -210,6 +211,14 @@ You specify the Exchange Adapter you want BX-bot to use in the
 
 BX-bot supports 1 exchange per bot. 
 This keeps things simple and helps minimise risk: problems on one exchange should not impact trading on another.
+
+The [`TryModeExchangeAdapter`](./bxbot-exchanges/src/main/java/com/gazbert/bxbot/exchanges/TryModeExchangeAdapter.java) is
+configured by default to delegate public API calls to [Bitstamp](https://www.bitstamp.net). 
+It simulates the private API (order management) calls; it's good for testing your initial setup and 
+[paper trading](https://www.investopedia.com/terms/p/papertrade.asp), but you'll eventually want to
+send live orders to the exchange!
+
+The configuration below shows how to live-trade with Bitstamp:
 
 ```yaml
 exchange:
