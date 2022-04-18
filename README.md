@@ -9,7 +9,7 @@
 
 <img src="./docs/bxbot-cropped.png" align="right" width="25%" />
 
-BX-bot (_Bex_) is a simple [Bitcoin](https://bitcoin.org) trading bot written in Java for trading on cryptocurrency 
+BX-bot (_Bex_) is a simple Bitcoin trading bot written in Java for trading on cryptocurrency 
 [exchanges](https://bitcoin.org/en/exchanges).
 
 The project contains the basic infrastructure to trade on a [cryptocurrency](http://coinmarketcap.com/) exchange...
@@ -84,7 +84,7 @@ Download the latest [Release](https://github.com/gazbert/bxbot/releases) and unz
    [`TryModeExchangeAdapter`](./bxbot-exchanges/src/main/java/com/gazbert/bxbot/exchanges/TryModeExchangeAdapter.java) is
    configured out of the box to simulate trading with [Bitstamp](https://www.bitstamp.net).
 1. Usage: `./bxbot.sh [start|stop|status]`  
-
+F
 #### Gradle    
 1. If you plan on using your own Trading Strategies/Exchange Adapters packaged in separate jar files, you'll need to add
    the dependency in the [bxbot-app/build.gradle](bxbot-app/build.gradle) - see the commented out dependency examples 
@@ -94,7 +94,7 @@ Download the latest [Release](https://github.com/gazbert/bxbot/releases) and unz
    artifact: either `bxbot-app-<version>.tar.gz` or `bxbot-app-<version>.zip` respectively. 
    It will be placed in the `./build/distributions` folder.
 1. Copy the artifact onto the machine you want to run the bot and unzip it someplace.
-1. Configure the bot as described in step 4 of the previous [Maven](#maven) section.
+1. Configure the bot as described in step 4 of the previous [Maven](#maven) section.F
 1. Usage: `./bxbot.sh [start|stop|status]`
 
 ### Docker
@@ -103,8 +103,8 @@ If you want to just play around with the
 and evaluate the bot, Docker is the way to go.
 
 1. Install [Docker](https://docs.docker.com/engine/installation/) on the machine you want to run the bot.
-1. Fetch the BX-bot image from [Docker Hub](https://hub.docker.com/r/gazbert/bxbot/): `docker pull gazbert/bxbot:1.3.0`
-1. Run the Docker container: `docker container run --publish=8080:8080 --name bxbot-1.3.0 -it gazbert/bxbot:1.3.0 bash`
+1. Fetch the BX-bot image from [Docker Hub](https://hub.docker.com/r/gazbert/bxbot/): `docker pull gazbert/bxbot:1.4.0`
+1. Run the Docker container: `docker container run --publish=8080:8080 --name bxbot-1.4.0 -it gazbert/bxbot:1.4.0 bash`
 1. Change into the bot's directory: `cd bxbot*`
 1. Configure the bot as described in step 4 of the previous [Maven](#maven) section.
 1. Usage: `./bxbot.sh [start|stop|status]`
