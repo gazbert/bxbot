@@ -211,10 +211,14 @@ BX-bot supports 1 exchange per bot.
 This keeps things simple and helps minimise risk: problems on one exchange should not impact trading on another.
 
 The [`TryModeExchangeAdapter`](./bxbot-exchanges/src/main/java/com/gazbert/bxbot/exchanges/TryModeExchangeAdapter.java) is
-configured by default to delegate public API calls to [Bitstamp](https://www.bitstamp.net). 
+configured by default to delegate public API calls to the 
+[`BitstampExchangeAdapter`](./bxbot-exchanges/src/main/java/com/gazbert/bxbot/exchanges/BitstampExchangeAdapter.java). 
 It simulates the private API (order management) calls; it's good for testing your initial setup and 
 [paper trading](https://www.investopedia.com/terms/p/papertrade.asp), but you'll eventually want to
-send live orders to the exchange!
+send live orders to the exchange! You'll still need to configure your API credentials for Bitstamp 
+because the adapter makes an authenticated API call to get the buy/sell fees from the 
+[/balance](https://www.bitstamp.net/api/#account-balance) endpoint.
+
 
 The configuration below shows how to live-trade with Bitstamp:
 
