@@ -84,7 +84,7 @@ Download the latest [Release](https://github.com/gazbert/bxbot/releases) and unz
    [`TryModeExchangeAdapter`](./bxbot-exchanges/src/main/java/com/gazbert/bxbot/exchanges/TryModeExchangeAdapter.java) is
    configured out of the box to simulate trading with [Bitstamp](https://www.bitstamp.net).
 1. Usage: `./bxbot.sh [start|stop|status]`  
-F
+
 #### Gradle    
 1. If you plan on using your own Trading Strategies/Exchange Adapters packaged in separate jar files, you'll need to add
    the dependency in the [bxbot-app/build.gradle](bxbot-app/build.gradle) - see the commented out dependency examples 
