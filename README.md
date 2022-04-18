@@ -94,7 +94,7 @@ F
    artifact: either `bxbot-app-<version>.tar.gz` or `bxbot-app-<version>.zip` respectively. 
    It will be placed in the `./build/distributions` folder.
 1. Copy the artifact onto the machine you want to run the bot and unzip it someplace.
-1. Configure the bot as described in step 4 of the previous [Maven](#maven) section.F
+1. Configure the bot as described in step 4 of the previous [Maven](#maven) section.
 1. Usage: `./bxbot.sh [start|stop|status]`
 
 ### Docker
