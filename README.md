@@ -82,7 +82,7 @@ Download the latest [Release](https://github.com/gazbert/bxbot/releases) and unz
    [`ExampleScalpingStrategy`](./bxbot-strategies/src/main/java/com/gazbert/bxbot/strategies/ExampleScalpingStrategy.java), 
    but you'll probably want to [code your own](#how-do-i-write-my-own-trading-strategy)! The 
    [`TryModeExchangeAdapter`](./bxbot-exchanges/src/main/java/com/gazbert/bxbot/exchanges/TryModeExchangeAdapter.java) is
-   configured out of the box to simulate trading with [Bitstamp](https://www.bitstamp.net).
+   configured out of the box to simulate trading with Bitstamp.
 1. Usage: `./bxbot.sh [start|stop|status]`  
 
 #### Gradle    
@@ -163,7 +163,7 @@ The bot provides a simple plugin framework for:
 * Markets to trade on.
 * Trading Strategies to execute.
 
-It uses [YAML](https://en.wikipedia.org/wiki/YAML) configuration files. These live in the [`config`](./config) folder.
+It uses [YAML](https://yaml.org/) configuration files. These live in the [`config`](./config) folder.
 Any config changes require a restart of the bot to take effect.
 
 Sample configurations for running on different exchanges can be found in the 
@@ -214,10 +214,9 @@ The [`TryModeExchangeAdapter`](./bxbot-exchanges/src/main/java/com/gazbert/bxbot
 configured by default to delegate public API calls to the 
 [`BitstampExchangeAdapter`](./bxbot-exchanges/src/main/java/com/gazbert/bxbot/exchanges/BitstampExchangeAdapter.java). 
 It simulates the private API (order management) calls; it's good for testing your initial setup and 
-[paper trading](https://www.investopedia.com/terms/p/papertrade.asp), but you'll eventually want to
-send live orders to the exchange! You'll still need to configure your API credentials for Bitstamp 
-because the adapter makes an authenticated API call to get the buy/sell fees from the 
-[/balance](https://www.bitstamp.net/api/#account-balance) endpoint.
+paper trading, but you'll eventually want to send live orders to the exchange! You'll still need to 
+configure your API credentials for Bitstamp because the adapter makes an authenticated API call to 
+get the buy/sell fees from the [/balance](https://www.bitstamp.net/api/#account-balance) endpoint.
 
 
 The configuration below shows how to live-trade with Bitstamp:
@@ -370,7 +369,7 @@ You configure the loading of your strategy using either a `className` _or_ a `be
   
 * For the `beanName` value, you must specify the Spring bean name of you Strategy component class for the Trading Engine
   to load and execute. You will also need to annotate your strategy class with `@Component("yourMacdStrategyBean")` - 
-  see the [example strategy](./bxbot-strategies/src/main/java/com/gazbert/bxbot/strategies/ExampleScalpingStrategy.java).
+  see the [`ExampleScalpingStrategy`](./bxbot-strategies/src/main/java/com/gazbert/bxbot/strategies/ExampleScalpingStrategy.java).
   This results in Spring injecting the bean.
   If you set this value to load your strategy, you cannot set the `className` value.        
 
@@ -410,7 +409,7 @@ _"I was seldom able to see an opportunity until it had ceased to be one."_ - Mar
 
 The best place to start is with the
 [`ExampleScalpingStrategy`](./bxbot-strategies/src/main/java/com/gazbert/bxbot/strategies/ExampleScalpingStrategy.java) -
-more ideas can be found in the excellent [ta4j](https://github.com/ta4j/ta4j) project.
+more ideas can be found in the excellent [Ta4j](https://github.com/ta4j/ta4j) project.
 There is also a Trading Strategy specific channel on [Gitter](https://gitter.im/BX-bot/trading-strategies).
   
 Your strategy must implement the 
