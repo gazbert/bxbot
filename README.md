@@ -15,7 +15,7 @@ BX-bot (_Bex_) is a simple Bitcoin trading bot written in Java for trading on cr
 The project contains the basic infrastructure to trade on a [cryptocurrency](http://coinmarketcap.com/) exchange...
 except for the trading strategies - you'll need to write those yourself! A simple 
 [`ExampleScalpingStrategy`](./bxbot-strategies/src/main/java/com/gazbert/bxbot/strategies/ExampleScalpingStrategy.java) 
-is included to get you started with the Trading API - take a look [here](https://github.com/ta4j/ta4j) for more ideas.
+is included to get you started with the Trading API - see [Ta4j](https://github.com/ta4j/ta4j) for more ideas.
 
 Exchange Adapters for using [Bitstamp](https://www.bitstamp.net), [Bitfinex](https://www.bitfinex.com),
 [itBit](https://www.itbit.com/), [Kraken](https://www.kraken.com), [Gemini](https://gemini.com/),
@@ -24,7 +24,7 @@ Feel free to improve these or contribute new adapters to the project; that would
 [shiny!](https://en.wikipedia.org/wiki/Firefly_(TV_series))
 
 A [`TryModeExchangeAdapter`](./bxbot-exchanges/src/main/java/com/gazbert/bxbot/exchanges/TryModeExchangeAdapter.java) is
-configured by default to delegate public API calls to [Bitstamp](https://www.bitstamp.net), but it simulates the private
+configured by default to delegate public API calls to Bitstamp, but it simulates the private
 API (order management) calls; it's good for testing your initial setup and 
 [paper trading](https://www.investopedia.com/terms/p/papertrade.asp) without actually sending orders to the exchange.
 
