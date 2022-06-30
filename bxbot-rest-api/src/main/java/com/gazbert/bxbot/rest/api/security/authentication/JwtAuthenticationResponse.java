@@ -29,6 +29,7 @@ import javax.validation.constraints.NotNull;
 
 /**
  * Encapsulates a JWT Authentication response. It wraps the JWT (Base64 encoded String).
+ * * 封装 JWT 身份验证响应。它包装了 JWT（Base64 编码字符串）。
  *
  * @author gazbert
  */

@@ -28,11 +28,15 @@ import java.util.Set;
 /**
  * <p>
  * Encapsulates any (optional) configuration for a Trading Strategy.
+ * 封装交易策略的任何（可选）配置。
+ *
  * Basically just a map of key-value pairs.
+ * * 基本上只是一个键值对的映射。
  * </p>
  *
  * <p>
  * Configuration comes from the strategies.yaml file.
+ * 配置来自于 strategy.yaml 文件。
  * </p>
  *
  * @author gazbert
@@ -42,23 +46,31 @@ public interface StrategyConfig {
 
   /**
    * Fetches a config item for a given key.
+   * 获取给定键的配置项。
    *
    * @param key the key of the item to fetch.
+   *            要获取的项目的键。
+   *
    * @return value of the item if found, null otherwise.
+   *      如果找到该项目，否则 null。
    */
   String getConfigItem(String key);
 
   /**
    * Returns the number of config items.
+   * 返回配置项的数量。
    *
    * @return the number of config items.
+   * @return 配置项的数量。
    */
   int getNumberOfConfigItems();
 
   /**
    * Returns all of the config item keys.
+   * 返回所有配置项键。
    *
    * @return all of the config item keys.
+   * @return 所有的配置项键。
    */
   Set<String> getConfigItemKeys();
 }

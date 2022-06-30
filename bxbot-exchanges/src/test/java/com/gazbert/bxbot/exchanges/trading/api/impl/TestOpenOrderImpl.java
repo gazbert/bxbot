@@ -35,6 +35,7 @@ import org.junit.jupiter.api.Test;
 
 /**
  * Tests the Open Order impl behaves as expected.
+ * 测试 Open Order impl 的行为是否符合预期。
  *
  * @author gazbert
  */

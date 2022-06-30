@@ -23,9 +23,11 @@
 
 package com.gazbert.bxbot.core.util.strategies;
 
-/*
+/**
  * An invalid (and useless) Trading Strategy for unit testing.
- * Invalid because it does not implement the TradingStrategy interface.
+ Invalid because it does not implement the TradingStrategy interface.
+ * 用于单元测试的无效（无用）交易策略。
+ 无效，因为它没有实现 TradingStrategy 接口。
  */
 public class InvalidTradingStrategy {
 

@@ -27,6 +27,7 @@ import com.gazbert.bxbot.domain.emailalerts.EmailAlertsConfig;
 
 /**
  * The Email Alerts configuration repository.
+ * 电子邮件警报配置存储库。
  *
  * @author gazbert
  */

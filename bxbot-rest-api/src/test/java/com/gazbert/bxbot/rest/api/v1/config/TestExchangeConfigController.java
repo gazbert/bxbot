@@ -57,6 +57,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 /**
  * Tests the Exchange config controller behaviour.
+ * * 测试 Exchange 配置控制器的行为。
  *
  * @author gazbert
  */
@@ -93,6 +94,7 @@ class TestExchangeConfigController extends AbstractConfigControllerTest {
   @MockBean private ExchangeConfigService exchangeConfigService;
 
   // Need these even though not used in the test directly because Spring loads it on startup...
+  // 需要这些，即使没有直接在测试中使用，因为 Spring 在启动时加载它...
   @MockBean private TradingEngine tradingEngine;
   @MockBean private EmailAlerter emailAlerter;
   @MockBean private RestartEndpoint restartEndpoint;
@@ -118,6 +120,7 @@ class TestExchangeConfigController extends AbstractConfigControllerTest {
         .andExpect(jsonPath("$.adapter").value(EXCHANGE_ADAPTER))
 
         // REST API does not expose AuthenticationConfig by design.
+            // REST API 不按设计公开 AuthenticationConfig。
         .andExpect(jsonPath("$.authenticationConfig").doesNotExist())
         .andExpect(jsonPath("$.networkConfig.connectionTimeout").value(CONNECTION_TIMEOUT))
         .andExpect(jsonPath("$.networkConfig.nonFatalErrorCodes[0]").value(HTTP_STATUS_502))
@@ -166,6 +169,7 @@ class TestExchangeConfigController extends AbstractConfigControllerTest {
         .andExpect(jsonPath("$.adapter").value(EXCHANGE_ADAPTER))
 
         // REST API does not expose AuthenticationConfig by design.
+            // REST API 不按设计公开 AuthenticationConfig。
         .andExpect(jsonPath("$.authenticationConfig").doesNotExist())
         .andExpect(jsonPath("$.networkConfig.connectionTimeout").value(CONNECTION_TIMEOUT))
         .andExpect(jsonPath("$.networkConfig.nonFatalErrorCodes[0]").value(HTTP_STATUS_502))
@@ -218,6 +222,7 @@ class TestExchangeConfigController extends AbstractConfigControllerTest {
 
   // --------------------------------------------------------------------------
   // Private utils
+  // 私有工具
   // --------------------------------------------------------------------------
 
   private static ExchangeConfig someExchangeConfig() {
@@ -236,6 +241,7 @@ class TestExchangeConfigController extends AbstractConfigControllerTest {
     exchangeConfig.setNetworkConfig(networkConfig);
     exchangeConfig.setOtherConfig(otherConfig);
     // Don't include any AuthenticationConfig
+    // 不要包含任何 AuthenticationConfig
 
     return exchangeConfig;
   }

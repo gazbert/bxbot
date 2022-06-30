@@ -29,12 +29,13 @@ import org.junit.jupiter.api.Test;
 
 /**
  * Tests Trading API Exception is created as expected.
+ * 测试交易 API 异常按预期创建。
  *
  * @author gazbert
  */
 class TestTradingApiExceptionCreation {
 
-  private static final String ERROR_MSG = "Exchange has fallen over";
+  private static final String ERROR_MSG = "Exchange has fallen over 交易所倒闭了";
   private static final RuntimeException CAUSE = new RuntimeException("The cause of the exception");
 
   @Test

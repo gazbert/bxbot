@@ -32,6 +32,7 @@ import org.junit.jupiter.api.Test;
 
 /**
  * Tests Trading Strategies are created as expected.
+ * 测试交易策略按预期创建。
  *
  * @author gazbert
  */

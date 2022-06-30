@@ -27,9 +27,11 @@ import com.gazbert.bxbot.trading.api.MarketOrderBook;
 import com.gazbert.bxbot.trading.api.OpenOrder;
 import java.util.List;
 
-/*
+/**
  * An invalid (and useless!) Exchange Adapter for unit testing.
- * Invalid because it does not implement the TradingApi interface.
+  Invalid because it does not implement the TradingApi interface.
+ 用于单元测试的无效（且无用！）交换适配器。
+ 无效，因为它没有实现 TradingApi 接口。
  */
 public class InvalidExchangeAdapterNotImplTradingApi {
 

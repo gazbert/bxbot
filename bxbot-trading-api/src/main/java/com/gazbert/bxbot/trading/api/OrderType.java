@@ -25,6 +25,7 @@ package com.gazbert.bxbot.trading.api;
 
 /**
  * Defines the different order types for sending to the exchange.
+ *  定义发送到交易所的不同订单类型。
  *
  * @author gazbert
  * @since 1.0
@@ -33,11 +34,13 @@ public enum OrderType {
 
   /**
    * Buy order.
+   *  买单。
    */
   BUY("Buy"),
 
   /**
    * Sell order.
+   *  卖出订单。
    */
   SELL("Sell");
 

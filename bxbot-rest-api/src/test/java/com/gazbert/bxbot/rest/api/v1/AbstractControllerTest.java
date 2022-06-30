@@ -52,6 +52,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 /**
  * Base class for all Controller test classes.
+ * * 所有控制器测试类的基类。
  *
  * @author gazbert
  */
@@ -62,18 +63,23 @@ public abstract class AbstractControllerTest {
   protected static final String API_ENDPOINT_BASE_URI = "/api/v1";
 
   // This must match a user's USERNAME in the user table in src/main/config/import.sql
+  // 这必须匹配 src/main/config/import.sql 中用户表中用户的 USERNAME
   protected static final String VALID_USER_NAME = "user";
 
   // This must match a user's PASSWORD in the user table in src/main/resources/import.sql
+  // 这必须匹配 src/main/resources/import.sql 中用户表中用户的密码
   protected static final String VALID_USER_PASSWORD = "user";
 
   // This must match a admin's USERNAME in the user table in src/main/resources/import.sql
+  // 这必须匹配 src/main/resources/import.sql 中用户表中管理员的 USERNAME
   protected static final String VALID_ADMIN_NAME = "admin";
 
   // This must match a admin's PASSWORD in the user table in src/main/resources/import.sql
+  // 这必须匹配 src/main/resources/import.sql 中用户表中管理员的密码
   protected static final String VALID_ADMIN_PASSWORD = "admin";
 
   // Used to convert Java objects into JSON
+  // 用于将 Java 对象转换为 JSON
   private HttpMessageConverter mappingJackson2HttpMessageConverter;
 
   @Autowired protected WebApplicationContext ctx;
@@ -96,6 +102,7 @@ public abstract class AbstractControllerTest {
 
   // --------------------------------------------------------------------------
   // Shared utils
+  // 共享工具
   // --------------------------------------------------------------------------
 
   protected String buildAuthorizationHeaderValue(String username, String password) {
@@ -105,10 +112,13 @@ public abstract class AbstractControllerTest {
             Charset.forName("UTF-8"));
   }
 
-  /*
+  /**
    * Builds a JWT response.
-   * Kudos to @royclarkson for his OAuth2 version:
-   * https://github.com/royclarkson/spring-rest-service-oauth
+    Kudos to @royclarkson for his OAuth2 version:
+    https://github.com/royclarkson/spring-rest-service-oauth
+   构建 JWT 响应。
+   感谢@royclarkson 的 OAuth2 版本：
+   https://github.com/royclarkson/spring-rest-service-oauth
    */
   protected String getJwt(String username, String password) throws Exception {
 
@@ -139,6 +149,7 @@ public abstract class AbstractControllerTest {
 
   // --------------------------------------------------------------------------
   // Private helpers
+  // 私人助手
   // --------------------------------------------------------------------------
 
   private static class UsernameAndPassword {
@@ -173,6 +184,7 @@ public abstract class AbstractControllerTest {
     private String token;
 
     // empty constructor needed by Jackson
+    // Jackson 需要的空构造函数
     public JwtResponse() {
     }
 

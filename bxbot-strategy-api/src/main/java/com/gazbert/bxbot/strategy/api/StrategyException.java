@@ -24,8 +24,8 @@
 package com.gazbert.bxbot.strategy.api;
 
 /**
- * Trading Strategy implementations should throw this exception if they want the Trading Engine to
- * shutdown the bot immediately.
+ * Trading Strategy implementations should throw this exception if they want the Trading Engine to shutdown the bot immediately.
+ * 如果交易策略实现希望交易引擎立即关闭机器人，则应抛出此异常。
  *
  * @author gazbert
  * @since 1.0
@@ -36,8 +36,10 @@ public final class StrategyException extends Exception {
 
   /**
    * Constructor builds exception with error message.
+   * 构造函数生成带有错误消息的异常。
    *
    * @param msg the error message.
+   *            错误信息。
    */
   public StrategyException(String msg) {
     super(msg);
@@ -45,8 +47,10 @@ public final class StrategyException extends Exception {
 
   /**
    * Constructor builds exception from original throwable.
+   * 构造函数从原始 throwable 构建异常。
    *
    * @param e the original exception.
+   *          原来的例外。
    */
   public StrategyException(Throwable e) {
     super(e);
@@ -54,9 +58,12 @@ public final class StrategyException extends Exception {
 
   /**
    * Constructor builds exception with error message and original throwable.
+   *  构造函数使用错误消息和原始 throwable 构建异常。
    *
    * @param msg the error message.
+   *            错误信息。
    * @param e the original exception.
+   *          原来的例外。
    */
   public StrategyException(String msg, Throwable e) {
     super(msg, e);

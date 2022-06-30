@@ -27,7 +27,7 @@ import com.gazbert.bxbot.domain.exchange.ExchangeConfig;
 
 /**
  * Wraps Exchange config for dumping to and loading from YAML.
- *
+ *包装用于转储到 YAML 和从 YAML 加载的 Exchange 配置。
  * @author gazbert
  */
 public class ExchangeType {

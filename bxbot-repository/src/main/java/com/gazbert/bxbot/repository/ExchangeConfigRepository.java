@@ -27,6 +27,7 @@ import com.gazbert.bxbot.domain.exchange.ExchangeConfig;
 
 /**
  * The Exchange configuration repository.
+ * Exchange 配置存储库。
  *
  * @author gazbert
  */

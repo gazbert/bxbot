@@ -7,6 +7,7 @@
   <artifactId>bxbot-core</artifactId>
   <packaging>jar</packaging>
   <name>BX-bot Core</name>
+<!--  机器人的核心-它包括主要的交易引擎-->
   <description>The core of the bot - it includes the main Trading Engine</description>
   <url>http://github.com/gazbert/bxbot</url>
   <parent>

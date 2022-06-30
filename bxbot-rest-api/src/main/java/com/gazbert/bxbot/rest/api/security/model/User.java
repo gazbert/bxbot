@@ -46,7 +46,7 @@ import org.springframework.util.Assert;
 /**
  * Represents a BX-bot User.
  *
- * @author gazbert
+ * 代表 BX-bot 用户。 * @author gazbert
  */
 @Entity
 @Table(name = "BXBOT_USER")
@@ -164,9 +164,9 @@ public class User {
   }
 
   /**
-   * Returns the last password reset date.
+   * Returns the last password reset date.  返回上次密码重置日期。
    *
-   * @return last password reset date.
+   * @return last password reset date. @return 上次密码重置日期。
    */
   public Date getLastPasswordResetDate() {
     if (lastPasswordResetDate != null) {
@@ -177,7 +177,7 @@ public class User {
   }
 
   public void setLastPasswordResetDate(Date lastPasswordResetDate) {
-    Assert.notNull(lastPasswordResetDate, "lastPasswordResetDate cannot be null!");
+    Assert.notNull(lastPasswordResetDate, "lastPasswordResetDate cannot be null! lastPasswordResetDate 不能为空！");
     this.lastPasswordResetDate = new Date(lastPasswordResetDate.getTime());
   }
 }

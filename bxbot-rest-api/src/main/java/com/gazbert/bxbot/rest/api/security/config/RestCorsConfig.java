@@ -35,9 +35,10 @@ import org.springframework.web.filter.CorsFilter;
 
 /**
  * CORS config for BX-bot's REST API.
+ * * BX-bot 的 REST API 的 CORS 配置。
  *
- * <p>Needed so that the browser will allow the REST API to be accessed on a different machine to
- * the one hosting the BX-bot UI app.
+ * <p>Needed so that the browser will allow the REST API to be accessed on a different machine to the one hosting the BX-bot UI app.
+ * * <p>需要这样浏览器才能在与托管 BX-bot UI 应用程序的机器不同的机器上访问 REST API。
  *
  * @author gazbert
  */
@@ -58,7 +59,7 @@ public class RestCorsConfig {
   @Bean
   public CorsFilter corsFilter() {
 
-    LOG.info(() -> String.format("CORS Allowed Origins: %s", allowedOrigin));
+    LOG.info(() -> String.format("CORS Allowed Origins: %s CORS 允许的来源：", allowedOrigin));
 
     final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
     final CorsConfiguration config = new CorsConfiguration();

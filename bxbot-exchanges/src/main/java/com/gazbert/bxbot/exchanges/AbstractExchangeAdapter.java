@@ -56,8 +56,10 @@ import org.apache.logging.log4j.Logger;
 
 /**
  * Base class for common Exchange Adapter functionality.
+ * 通用 Exchange 适配器功能的基类。
  *
  * <p>Exchange Adapters should extend this class.
+ * <p>Exchange 适配器应该扩展这个类。
  *
  * @author gazbert
  * @since 1.0
@@ -93,8 +95,8 @@ abstract class AbstractExchangeAdapter {
   private DecimalFormatSymbols decimalFormatSymbols;
 
   /**
-   * Constructor sets some sensible defaults for the network config and specifies decimal point
-   * symbol.
+   * Constructor sets some sensible defaults for the network config and specifies decimal point symbol.
+   * 构造函数为网络配置设置一些合理的默认值并指定小数点符号。
    */
   AbstractExchangeAdapter() {
     connectionTimeout = 30;
@@ -109,17 +111,34 @@ abstract class AbstractExchangeAdapter {
 
   /**
    * Makes a request to the Exchange.
+   * 向交易所提出请求。
    *
    * @param url the URL to invoke.
+   *            * @param url 要调用的 URL。
+   *
    * @param postData optional post data to send. This can be null.
+   *                 * @param postData 可选的发送数据。这可以为空。
+   *
    * @param httpMethod the HTTP method to use, e.g. GET, POST, DELETE
-   * @param requestHeaders optional request headers to set on the {@link URLConnection} used to
-   *     invoke the Exchange.
+   *                   * @param httpMethod 要使用的 HTTP 方法，例如 GET、POST、DELETE
+   *
+   * @param requestHeaders optional request headers to set on the {@link URLConnection} used to   invoke the Exchange.
+   *                       * @param requestHeaders 在用于调用 Exchange 的 {@link URLConnection} 上设置的可选请求标头。
+   *
    * @return the response from the Exchange.
+   * * @return 来自交易所的响应。
+   *
    * @throws ExchangeNetworkException if a network error occurred trying to connect to the exchange.
+   *  如果尝试连接到 Exchange 时发生网络错误，则发生 ExchangeNetworkException。
+   *
    *     This exception allows for recovery from temporary network issues.
+   *     此例外允许从临时网络问题中恢复。
+   *
    * @throws TradingApiException if the API call failed for any reason other than a network error.
+   * TradingApiException 如果 API 调用因网络错误以外的任何原因而失败。
+   *
    *     This means something really bad as happened.
+   *     * 这意味着发生了非常糟糕的事情。
    */
   ExchangeHttpResponse sendNetworkRequest(
       URL url, String httpMethod, String postData, Map<String, String> requestHeaders)
@@ -139,6 +158,7 @@ abstract class AbstractExchangeAdapter {
       setRequestHeaders(exchangeConnection, requestHeaders);
 
       // Add a timeout so we don't get blocked indefinitely; timeout on URLConnection is in millis.
+      //添加一个超时，这样我们就不会被无限期地阻塞； URLConnection 上的超时以毫秒为单位。
       final int timeoutInMillis = connectionTimeout * 1000;
       exchangeConnection.setConnectTimeout(timeoutInMillis);
       exchangeConnection.setReadTimeout(timeoutInMillis);
@@ -152,11 +172,13 @@ abstract class AbstractExchangeAdapter {
       }
 
       // Grab the response - we just block here as per Connection API
+      // 获取响应 - 我们只是按照连接 API 在这里阻塞
       try (final BufferedReader responseInputStream =
           new BufferedReader(
               new InputStreamReader(exchangeConnection.getInputStream(), StandardCharsets.UTF_8))) {
 
         // Read the JSON response lines into our response buffer
+        // 将 JSON 响应行读入我们的响应缓冲区
         String responseLine;
         while ((responseLine = responseInputStream.readLine()) != null) {
           exchangeResponse.append(responseLine);
@@ -179,9 +201,9 @@ abstract class AbstractExchangeAdapter {
       throw new ExchangeNetworkException(errorMsg, e);
 
     } catch (FileNotFoundException | UnknownHostException e) {
-      // Huobi started throwing FileNotFoundException as of 8 Nov 2015.
-      // EC2 started throwing UnknownHostException for BTC-e, GDAX, as of 14 July 2016 :-/
-      final String errorMsg = "Failed to connect to Exchange. It's dead Jim!";
+      // Huobi started throwing FileNotFoundException as of 8 Nov 2015. 火币从 2015 年 11 月 8 日开始抛出 FileNotFoundException。
+      // EC2 started throwing UnknownHostException for BTC-e, GDAX, as of 14 July 2016 :-/ // 自 2016 年 7 月 14 日起，EC2 开始为 BTC-e、GDAX 抛出 UnknownHostException :-/
+      final String errorMsg = "Failed to connect to Exchange. It's dead Jim! 无法连接到 Exchange。吉姆死了！";
       LOG.error(errorMsg, e);
       throw new ExchangeNetworkException(errorMsg, e);
 
@@ -189,7 +211,7 @@ abstract class AbstractExchangeAdapter {
       try {
         if (errorMessageIsRecoverableNetworkError(e)) {
           final String errorMsg =
-              "Failed to connect to Exchange. SSL Connection was refused or reset by the server.";
+              "Failed to connect to Exchange. SSL Connection was refused or reset by the server. 无法连接到 Exchange。 SSL 连接被服务器拒绝或重置。";
           LOG.error(errorMsg, e);
           throw new ExchangeNetworkException(errorMsg, e);
 
@@ -219,11 +241,14 @@ abstract class AbstractExchangeAdapter {
   }
 
   /**
-   * Sets the network config for the exchange adapter. This helper method expects the network config
-   * to be present.
+   * Sets the network config for the exchange adapter. This helper method expects the network config to be present.
+   * * 设置交换适配器的网络配置。此辅助方法需要存在网络配置。
    *
    * @param exchangeConfig the exchange config.
+   *                       交换配置。
+   *
    * @throws IllegalArgumentException if the network config is not set.
+   * @throws IllegalArgumentException 如果未设置网络配置。
    */
   void setNetworkConfig(ExchangeConfig exchangeConfig) {
     final NetworkConfig networkConfig = exchangeConfig.getNetworkConfig();
@@ -236,7 +261,7 @@ abstract class AbstractExchangeAdapter {
     connectionTimeout = networkConfig.getConnectionTimeout();
     if (connectionTimeout == 0) {
       final String errorMsg =
-          CONNECTION_TIMEOUT_PROPERTY_NAME + " cannot be 0 value." + exchangeConfig;
+          CONNECTION_TIMEOUT_PROPERTY_NAME + " cannot be 0 value. 不能为 0 值。" + exchangeConfig;
       LOG.error(errorMsg);
       throw new IllegalArgumentException(errorMsg);
     }
@@ -257,11 +282,16 @@ abstract class AbstractExchangeAdapter {
 
   /**
    * Fetches the authentication config for the exchange adapter.
+   * 获取交换适配器的身份验证配置。
    *
    * @param exchangeConfig the exchange adapter config.
+   *                       * @param exchangeConfig 交换适配器配置。
+   *
    * @return the authentication config for the adapter.
-   * @throws IllegalArgumentException if authentication config is not set in exchange adapter
-   *     config.
+   * * @return 适配器的身份验证配置。
+   *
+   * @throws IllegalArgumentException if authentication config is not set in exchange adapter   config.
+   * @throws IllegalArgumentException 如果身份验证配置未在交换适配器配置中设置。
    */
   AuthenticationConfig getAuthenticationConfig(ExchangeConfig exchangeConfig) {
     final AuthenticationConfig authenticationConfig = exchangeConfig.getAuthenticationConfig();
@@ -275,10 +305,16 @@ abstract class AbstractExchangeAdapter {
 
   /**
    * Fetches other config for the exchange adapter.
+   * 获取交换适配器的其他配置。
    *
    * @param exchangeConfig the exchange adapter config.
+   *                       * @param exchangeConfig 交换适配器配置。
+   *
    * @return the other config for the adapter.
+   * * @return 适配器的其他配置。
+   *
    * @throws IllegalArgumentException if optional config is not set.
+   * @throws IllegalArgumentException 如果未设置可选配置。
    */
   OtherConfig getOtherConfig(ExchangeConfig exchangeConfig) {
     final OtherConfig otherConfig = exchangeConfig.getOtherConfig();
@@ -292,11 +328,18 @@ abstract class AbstractExchangeAdapter {
 
   /**
    * Fetches an authentication item value from the adapter config.
+   * 从适配器配置中获取身份验证项值。
    *
    * @param authenticationConfig the authentication config for the adapter.
+   *                             适配器的身份验证配置。
+   *
    * @param itemName the config item name, e.g. key. secret, client-id
+   *                 * @param itemName 配置项名称，例如钥匙。秘密，客户 ID
    * @return the config item value.
+   *          * @return 配置项值。
+   *
    * @throws IllegalArgumentException if authentication item is not set.
+   *      @throws IllegalArgumentException 如果未设置身份验证项。
    */
   String getAuthenticationConfigItem(AuthenticationConfig authenticationConfig, String itemName) {
     final String itemValue = authenticationConfig.getItem(itemName);
@@ -305,11 +348,19 @@ abstract class AbstractExchangeAdapter {
 
   /**
    * Fetches an other config item value from the adapter config.
+   *  从适配器配置中获取其他配置项值。
    *
    * @param otherConfig other config for the adapter.
+   *                    * @param otherConfig 适配器的其他配置。
+   *
    * @param itemName the config item name, e.g. buy-fee, sell-fee
+   *                 * @param itemName 配置项名称，例如买入费，卖出费
+   *
    * @return the config item value.
+   *  * @return 配置项值。
+   *
    * @throws IllegalArgumentException if authentication item is not set.
+   *  * @throws IllegalArgumentException 如果未设置身份验证项。
    */
   String getOtherConfigItem(OtherConfig otherConfig, String itemName) {
     final String itemValue = otherConfig.getItem(itemName);
@@ -318,15 +369,17 @@ abstract class AbstractExchangeAdapter {
   }
 
   /**
-   * Sorts the request params alphabetically (uses natural ordering) and returns them as a query
-   * string.
+   * Sorts the request params alphabetically (uses natural ordering) and returns them as a query string.
+   *    按字母顺序对请求参数进行排序（使用自然排序）并将它们作为查询字符串返回。
    *
    * @param params the request params to sort.
+   *                * @param params 要排序的请求参数。
    * @return the query string containing the sorted request params.
+   *  @return 包含已排序请求参数的查询字符串。
    */
   String createAlphabeticallySortedQueryString(Map<String, String> params) {
     final List<String> keys = new ArrayList<>(params.keySet());
-    Collections.sort(keys); // use natural/alphabetical ordering of params
+    Collections.sort(keys); // use natural/alphabetical ordering of params   使用参数的自然/字母顺序
 
     final StringBuilder sortedQueryString = new StringBuilder();
     for (final String param : keys) {
@@ -341,16 +394,17 @@ abstract class AbstractExchangeAdapter {
   }
 
   /**
-   * Returns the decimal format symbols for using with BigDecimals with the exchanges. Specifically,
-   * the decimal point symbol is set to a '.'
+   * Returns the decimal format symbols for using with BigDecimals with the exchanges. Specifically, the decimal point symbol is set to a '.'
+   *  * 返回与 BigDecimals 一起使用的十进制格式符号。具体来说，小数点符号设置为“.”。
    *
    * @return the decimal format symbols.
+   * @return 十进制格式符号。
    */
   DecimalFormatSymbols getDecimalFormatSymbols() {
     return decimalFormatSymbols;
   }
 
-  /** Wrapper for holding Exchange HTTP response. */
+  /** Wrapper for holding Exchange HTTP response. 用于保存 Exchange HTTP 响应的包装器 */
   static class ExchangeHttpResponse {
 
     private final int statusCode;
@@ -386,13 +440,13 @@ abstract class AbstractExchangeAdapter {
   }
 
   // --------------------------------------------------------------------------
-  //  Util methods
+  //  Util methods  // 实用方法
   // --------------------------------------------------------------------------
 
   private void setRequestHeaders(
       HttpURLConnection exchangeConnection, Map<String, String> requestHeaders) {
-    // Er, perhaps, we need to be a bit more stealth here...
-    // This was needed for some exchanges back in the day!
+    // Er, perhaps, we need to be a bit more stealth here...  呃，也许，我们在这里需要更隐秘一点……
+    // This was needed for some exchanges back in the day!  这在当时的一些交流中是必需的！
     exchangeConnection.setRequestProperty(
         "User-Agent",
         "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) "
@@ -401,7 +455,7 @@ abstract class AbstractExchangeAdapter {
     if (requestHeaders != null) {
       for (final Map.Entry<String, String> requestHeader : requestHeaders.entrySet()) {
         exchangeConnection.setRequestProperty(requestHeader.getKey(), requestHeader.getValue());
-        LOG.debug(() -> "Setting following request header: " + requestHeader);
+        LOG.debug(() -> "Setting following request header:  设置以下请求标头：" + requestHeader);
       }
     }
   }
@@ -418,7 +472,7 @@ abstract class AbstractExchangeAdapter {
 
   private String extractIoErrorMessage(HttpURLConnection exchangeConnection) throws IOException {
     String errorMsg = UNEXPECTED_IO_ERROR_MSG;
-    // Check for any clue in the response...
+    // Check for any clue in the response...  检查响应中的任何线索...
     if (exchangeConnection != null) {
       final InputStream rawErrorStream = exchangeConnection.getErrorStream();
       if (rawErrorStream != null) {
@@ -430,7 +484,7 @@ abstract class AbstractExchangeAdapter {
           while ((errorLine = errorInputStream.readLine()) != null) {
             errorResponse.append(errorLine);
           }
-          errorMsg += " ErrorStream Response: " + errorResponse;
+          errorMsg += " ErrorStream Response: 错误流响应：" + errorResponse;
         }
       }
     }

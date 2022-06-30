@@ -48,6 +48,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 /**
  * Tests the JWT Authentication Filter behaves as expected.
+ * * 测试 JWT 身份验证过滤器的行为是否符合预期。
  *
  * @author gazbert
  */
@@ -66,6 +67,7 @@ class TestJwtAuthenticationFilter {
   @MockBean private Claims claims;
 
   // Need these even though not used in the test directly because Spring loads them on startup...
+  // 即使没有直接在测试中使用也需要这些，因为 Spring 在启动时加载它们...
   @MockBean private EmailAlerter emailAlerter;
   @MockBean private TradingEngine tradingEngine;
   @MockBean private RestartEndpoint restartEndpoint;
@@ -85,6 +87,7 @@ class TestJwtAuthenticationFilter {
       throws Exception {
 
     // Need to reset this in case previous test sets it
+    // 需要重置它以防之前的测试设置它
     SecurityContextHolder.getContext().setAuthentication(null);
 
     when(request.getHeader(AUTHORIZATION_HEADER)).thenReturn("dummy-token");

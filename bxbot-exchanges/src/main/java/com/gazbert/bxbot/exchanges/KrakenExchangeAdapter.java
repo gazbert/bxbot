@@ -82,50 +82,82 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * Exchange Adapter for integrating with the Kraken exchange. The Kraken API is documented <a
- * href="https://www.kraken.com/en-gb/help/api">here</a>.
+ * Exchange Adapter for integrating with the Kraken exchange. The Kraken API is documented <a href="https://www.kraken.com/en-gb/help/api">here</a>.
+ * * 用于与 Kraken 交换集成的交换适配器。 Kraken API 记录在<a href="https://www.kraken.com/en-gb/help/api">这里</a>。
  *
  * <p><strong> DISCLAIMER: This Exchange Adapter is provided as-is; it might have bugs in it and you
- * could lose money. Despite running live on Kraken, it has only been unit tested up until the point
- * of calling the {@link #sendPublicRequestToExchange(String, Map)} and {@link
- * #sendAuthenticatedRequestToExchange(String, Map)} methods. Use it at our own risk! </strong>
+  could lose money. Despite running live on Kraken, it has only been unit tested up until the point
+  of calling the {@link #sendPublicRequestToExchange(String, Map)} and {@link #sendAuthenticatedRequestToExchange(String, Map)} methods. Use it at our own risk! </strong>
+ <p><strong> 免责声明：此交换适配器按原样提供；它可能有错误，你
+ 可能会赔钱。尽管在 Kraken 上实时运行，但到目前为止它只进行了单元测试
+ 调用 {@link #sendPublicRequestToExchange(String, Map)} 和 {@link #sendAuthenticatedRequestToExchange(String, Map)} 方法。使用它需要我们自担风险！ </strong>
  *
  * <p>It only supports <a
- * href="https://support.kraken.com/hc/en-us/articles/203325783-Market-and-Limit-Orders">limit
- * orders</a> at the spot price; it does not support <a
- * href="https://support.kraken.com/hc/en-us/sections/200560633-Leverage-and-Margin">leverage and
- * margin</a> trading.
+  href="https://support.kraken.com/hc/en-us/articles/203325783-Market-and-Limit-Orders">limit
+  orders</a> at the spot price; it does not support <a
+  href="https://support.kraken.com/hc/en-us/sections/200560633-Leverage-and-Margin">leverage and
+  margin</a> trading.
+ <p>它只支持<a
+ href="https://support.kraken.com/hc/en-us/articles/203325783-Market-and-Limit-Orders">限制
+ 以现货价格下单</a>；它不支持 <a
+ href="https://support.kraken.com/hc/en-us/sections/200560633-Leverage-and-Margin">杠杆和
+ 保证金</a> 交易。
  *
  * <p>Exchange fees are loaded from the exchange.yaml file on startup; they are not fetched from the
- * exchange at runtime as the Kraken REST API does not support this. The fees are used across all
- * markets. Make sure you keep an eye on the <a href="https://www.kraken.com/help/fees">exchange
- * fees</a> and update the config accordingly.
+  exchange at runtime as the Kraken REST API does not support this. The fees are used across all
+  markets. Make sure you keep an eye on the <a href="https://www.kraken.com/help/fees">exchange
+  fees</a> and update the config accordingly.
+ <p>Exchange fees are loaded from the exchange.yaml file on startup; they are not fetched from the
+ exchange at runtime as the Kraken REST API does not support this. The fees are used across all
+ markets. Make sure you keep an eye on the <a href="https://www.kraken.com/help/fees">exchange
+ fees</a> and update the config accordingly.
  *
  * <p>The Kraken API has call rate limits - see <a
- * href="https://www.kraken.com/en-gb/help/api#api-call-rate-limit">API Call Rate Limit</a> for
- * details.
+  href="https://www.kraken.com/en-gb/help/api#api-call-rate-limit">API Call Rate Limit</a> for
+  details.
+ <p>Kraken API 有调用率限制 - 请参阅 <a
+ href="https://www.kraken.com/en-gb/help/api#api-call-rate-limit">API 调用速率限制</a>
+ 细节。
  *
  * <p>Kraken markets assets (e.g. currencies) can be referenced using their ISO4217-A3 names in the
- * case of ISO registered names, their 3 letter commonly used names in the case of unregistered
- * names, or their X-ISO4217-A3 code (see http://www.ifex-project.org/).
+  case of ISO registered names, their 3 letter commonly used names in the case of unregistered
+  names, or their X-ISO4217-A3 code (see http://www.ifex-project.org/).
+ <p>Kraken 市场资产（例如货币）可以使用其 ISO4217-A3 名称在
+ ISO注册名称的情况下，未注册的情况下它们的3个字母常用名称
+ 名称或它们的 X-ISO4217-A3 代码（参见 http://www.ifex-project.org/）。
  *
  * <p>This adapter expects the market id to use the 3 letter commonly used names, e.g. you access
- * the XBT/USD market using 'XBTUSD'. Note: the exchange always returns the market id back in the
- * X-ISO4217-A3 format, i.e. 'XXBTZUSD'. The reason for doing this is because the Open Order
- * response contains the asset pair in the 3 letter format ('XBTUSD'), and we need to be able to
- * filter only the orders for the given market id.
+  the XBT/USD market using 'XBTUSD'. Note: the exchange always returns the market id back in the
+  X-ISO4217-A3 format, i.e. 'XXBTZUSD'. The reason for doing this is because the Open Order
+  response contains the asset pair in the 3 letter format ('XBTUSD'), and we need to be able to
+  filter only the orders for the given market id.
+ <p>此适配器希望市场 id 使用 3 个字母的常用名称，例如你访问
+ 使用“XBTUSD”的 XBT/USD 市场。注意：交易所总是在
+ X-ISO4217-A3 格式，即“XXBTZUSD”。这样做的原因是因为未结订单
+ 响应包含 3 个字母格式的资产对 ('XBTUSD')，我们需要能够
+ 仅过滤给定市场 id 的订单。
  *
  * <p>The exchange regularly goes down for maintenance. If the keep-alive-during-maintenance
- * config-item is set to true in the exchange.yaml config file, the bot will stay alive and wait
- * until the next trade cycle.
+  config-item is set to true in the exchange.yaml config file, the bot will stay alive and wait
+  until the next trade cycle.
+ *<p>交易所定期停机进行维护。如果keep-alive-during-maintenance
+ *   config-item 在 exchange.yaml 配置文件中设置为 true，bot 将保持活动状态并等待
+ *   直到下一个交易周期。
+ *
  *
  * <p>The Exchange Adapter is <em>not</em> thread safe. It expects to be called using a single
- * thread in order to preserve trade execution order. The {@link URLConnection} achieves this by
- * blocking/waiting on the input stream (response) for each API call.
+  thread in order to preserve trade execution order. The {@link URLConnection} achieves this by
+  blocking/waiting on the input stream (response) for each API call.
+ <p>Exchange 适配器<em>不是</em>线程安全的。它期望使用单个调用
+ 线程以保留交易执行顺序。 {@link URLConnection} 通过
+ 阻塞/等待每个 API 调用的输入流（响应）。
  *
  * <p>The {@link TradingApi} calls will throw a {@link ExchangeNetworkException} if a network error
- * occurs trying to connect to the exchange. A {@link TradingApiException} is thrown for
- * <em>all</em> other failures.
+  occurs trying to connect to the exchange. A {@link TradingApiException} is thrown for
+  <em>all</em> other failures.
+ *<p>如果网络错误，{@link TradingApi} 调用将抛出 {@link ExchangeNetworkException}
+ *   尝试连接到交易所时发生。抛出 {@link TradingApiException}
+ *   <em>所有</em>其他故障。
  *
  * @author gazbert
  * @since 1.0
@@ -145,24 +177,24 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
       KRAKEN_BASE_URI + KRAKEN_API_VERSION + KRAKEN_PRIVATE_PATH;
 
   private static final String UNEXPECTED_ERROR_MSG =
-      "Unexpected error has occurred in Kraken Exchange Adapter. ";
+      "Unexpected error has occurred in Kraken Exchange Adapter. Kraken 交换适配器发生意外错误。";
   private static final String UNEXPECTED_IO_ERROR_MSG =
-      "Failed to connect to Exchange due to unexpected IO error.";
+      "Failed to connect to Exchange due to unexpected IO error. 由于意外 IO 错误，无法连接到 Exchange。";
 
   private static final String UNDER_MAINTENANCE_WARNING_MESSAGE =
-      "Exchange is undergoing maintenance - keep alive is" + " true.";
+      "Exchange is undergoing maintenance - keep alive is true. Exchange 正在进行维护 - 保持活力是真的。";
   private static final String FAILED_TO_GET_MARKET_ORDERS =
-      "Failed to get Market Order Book from exchange. Details: ";
+      "Failed to get Market Order Book from exchange. Details: 从交易所获取市价单失败。细节：";
   private static final String FAILED_TO_GET_BALANCE =
-      "Failed to get Balance from exchange. Details: ";
+      "Failed to get Balance from exchange. Details: 无法从交易所获得余额。细节：";
   private static final String FAILED_TO_GET_TICKER =
-      "Failed to get Ticker from exchange. Details: ";
+      "Failed to get Ticker from exchange. Details: 无法从交易所获取 Ticker。细节：";
 
   private static final String FAILED_TO_GET_OPEN_ORDERS =
-      "Failed to get Open Orders from exchange. Details: ";
-  private static final String FAILED_TO_ADD_ORDER = "Failed to Add Order on exchange. Details: ";
+      "Failed to get Open Orders from exchange. Details: 未能从交易所获取未结订单。细节：";
+  private static final String FAILED_TO_ADD_ORDER = "Failed to Add Order on exchange. Details: 在交易所添加订单失败。细节：";
   private static final String FAILED_TO_CANCEL_ORDER =
-      "Failed to Cancel Order on exchange. Details: ";
+      "Failed to Cancel Order on exchange. Details: 交易所取消订单失败。细节：";
 
   private static final String PRICE = "price";
 
@@ -195,7 +227,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
 
   @Override
   public void init(ExchangeConfig config) {
-    LOG.info(() -> "About to initialise Kraken ExchangeConfig: " + config);
+    LOG.info(() -> "About to initialise Kraken ExchangeConfig: 即将初始化 Kraken ExchangeConfig：" + config);
     initGson();
     setAuthenticationConfig(config);
     setNetworkConfig(config);
@@ -207,7 +239,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
   }
 
   // --------------------------------------------------------------------------
-  // Kraken API Calls adapted to the Trading API.
+  // Kraken API Calls adapted to the Trading API. 适用于交易 API 的 Kraken API 调用。
   // See https://www.kraken.com/en-gb/help/api
   // --------------------------------------------------------------------------
 
@@ -222,7 +254,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
       params.put("pair", marketId);
 
       response = sendPublicRequestToExchange("Depth", params);
-      LOG.debug(() -> "Market Orders response: " + response);
+      LOG.debug(() -> "Market Orders response: 市价单响应：" + response);
 
       if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
         final Type resultType =
@@ -267,7 +299,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
 
     try {
       response = sendAuthenticatedRequestToExchange("OpenOrders", null);
-      LOG.debug(() -> "Open Orders response: " + response);
+      LOG.debug(() -> "Open Orders response: 未结订单响应：" + response);
 
       if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
 
@@ -334,13 +366,13 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
       String pricePrecision = "#." + "#".repeat(pairPrecisionConfig.getPricePrecision(marketId));
       String volumePrecision = "#." + "#".repeat(pairPrecisionConfig.getVolumePrecision(marketId));
 
-      params.put("ordertype", "limit"); // this exchange adapter only supports limit orders
+      params.put("ordertype", "limit"); // this exchange adapter only supports limit orders // 此交易所适配器仅支持限价单
       params.put(PRICE, new DecimalFormat(pricePrecision, getDecimalFormatSymbols()).format(price));
       params.put(
           "volume", new DecimalFormat(volumePrecision, getDecimalFormatSymbols()).format(quantity));
 
       response = sendAuthenticatedRequestToExchange("AddOrder", params);
-      LOG.debug(() -> "Create Order response: " + response);
+      LOG.debug(() -> "Create Order response: 创建订单响应：" + response);
 
       if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
 
@@ -351,10 +383,12 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
         if (errors == null || errors.isEmpty()) {
 
           // Assume we'll always get something here if errors array is empty; else blow fast wih NPE
+          // 假设如果错误数组为空，我们总是会在这里得到一些东西；否则用 NPE 吹得很快
           final KrakenAddOrderResult krakenAddOrderResult =
               (KrakenAddOrderResult) krakenResponse.result;
 
           // Just return the first one. Why an array?
+          // 只返回第一个。为什么是数组？
           return krakenAddOrderResult.txid.get(0);
 
         } else {
@@ -393,7 +427,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
       params.put("txid", orderId);
 
       response = sendAuthenticatedRequestToExchange("CancelOrder", params);
-      LOG.debug(() -> "Cancel Order response: " + response);
+      LOG.debug(() -> "Cancel Order response: 取消订单响应：" + response);
 
       if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
 
@@ -442,7 +476,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
       params.put("pair", marketId);
 
       response = sendPublicRequestToExchange("Ticker", params);
-      LOG.debug(() -> "Latest Market Price response: " + response);
+      LOG.debug(() -> "Latest Market Price response: 最新市价回应：" + response);
 
       if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
 
@@ -453,10 +487,11 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
         if (errors == null || errors.isEmpty()) {
 
           // Assume we'll always get something here if errors array is empty; else blow fast wih NPE
+          // 假设如果错误数组为空，我们总是会在这里得到一些东西；否则用 NPE 吹得很快
           final KrakenTickerResult tickerResult = (KrakenTickerResult) krakenResponse.result;
 
-          // 'c' key into map is the last market price: last trade closed array(<price>, <lot
-          // volume>)
+          // 'c' key into map is the last market price: last trade closed array(<price>, <lot volume>)
+          // 映射中的 'c' 键是最后的市场价格：最后交易关闭数组（<price>, <lot volume>）
           return new BigDecimal(tickerResult.get("c"));
 
         } else {
@@ -492,7 +527,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
 
     try {
       response = sendAuthenticatedRequestToExchange("Balance", null);
-      LOG.debug(() -> "Balance Info response: " + response);
+      LOG.debug(() -> "Balance Info response: 余额信息回复：" + response);
 
       if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
         final Type resultType = new TypeToken<KrakenResponse<KrakenBalanceResult>>() {}.getType();
@@ -513,20 +548,26 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
     }
   }
 
-  /*
+  /**
    * Kraken does not provide API call for fetching % buy fee; it only provides the fee monetary
-   * value for a given order via the OpenOrders API call. We load the % fee statically from
-   * exchange.yaml file.
+    value for a given order via the OpenOrders API call. We load the % fee statically from
+    exchange.yaml file.
+   Kraken 不提供获取 % 购买费用的 API 调用；它只提供货币费用
+   通过 OpenOrders API 调用给定订单的价值。我们从静态加载 % 费用
+   exchange.yaml 文件。
    */
   @Override
   public BigDecimal getPercentageOfBuyOrderTakenForExchangeFee(String marketId) {
     return buyFeePercentage;
   }
 
-  /*
+  /**
    * Kraken does not provide API call for fetching % sell fee; it only provides the fee monetary
-   * value for a given order via the OpenOrders API call. We load the % fee statically from
-   * exchange.yaml file.
+    value for a given order via the OpenOrders API call. We load the % fee statically from
+    exchange.yaml file.
+   *Kraken 不提供获取 % 销售费用的 API 调用；它只提供货币费用
+   *     通过 OpenOrders API 调用给定订单的价值。我们从静态加载 % 费用
+   *     exchange.yaml 文件。
    */
   @Override
   public BigDecimal getPercentageOfSellOrderTakenForExchangeFee(String marketId) {
@@ -548,7 +589,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
       params.put("pair", marketId);
 
       response = sendPublicRequestToExchange("Ticker", params);
-      LOG.debug(() -> "Ticker response: " + response);
+      LOG.debug(() -> "Ticker response: 代码响应：" + response);
 
       if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
 
@@ -559,19 +600,21 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
         if (errors == null || errors.isEmpty()) {
 
           // Assume we'll always get something here if errors array is empty; else blow fast wih NPE
+          // 假设如果错误数组为空，我们总是会在这里得到一些东西；否则用 NPE 吹得很快
           final KrakenTickerResult tickerResult = (KrakenTickerResult) krakenResponse.result;
 
           // ouch!
+          // 哎哟！
           return new TickerImpl(
-              new BigDecimal(tickerResult.get("c")), // last trade
-              new BigDecimal(tickerResult.get("b")), // bid
-              new BigDecimal(tickerResult.get("a")), // ask
-              new BigDecimal(tickerResult.get("l")), // low 24h
-              new BigDecimal(tickerResult.get("h")), // high 24hr
-              new BigDecimal(tickerResult.get("o")), // open
-              new BigDecimal(tickerResult.get("v")), // volume 24hr
-              new BigDecimal(tickerResult.get("p")), // vwap 24hr
-              null); // timestamp not supplied by Kraken
+              new BigDecimal(tickerResult.get("c")), // last trade // 最后一笔交易
+              new BigDecimal(tickerResult.get("b")), // bid 投标
+              new BigDecimal(tickerResult.get("a")), // ask 问
+              new BigDecimal(tickerResult.get("l")), // low 24h 低24小时
+              new BigDecimal(tickerResult.get("h")), // high 24hr  高24小时
+              new BigDecimal(tickerResult.get("o")), // open 打开
+              new BigDecimal(tickerResult.get("v")), // volume 24hr 卷 24 小时
+              new BigDecimal(tickerResult.get("p")), // vwap 24hr vwap 24小时
+              null); // timestamp not supplied by Kraken  // Kraken 不提供时间戳
 
         } else {
           if (isExchangeUndergoingMaintenance(response) && keepAliveDuringMaintenance) {
@@ -600,27 +643,32 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
   }
 
   // --------------------------------------------------------------------------
-  //  GSON classes for JSON responses.
+  //  GSON classes for JSON responses. JSON 响应的 GSON 类。
   //  See https://www.kraken.com/en-gb/help/api
   // --------------------------------------------------------------------------
 
   /**
    * GSON base class for all Kraken responses.
+   * 所有 Kraken 响应的 GSON 基类。
    *
    * <p>All Kraken responses have the following format:
+   * * <p>所有 Kraken 响应都具有以下格式：
    *
    * <pre>
    *
    * error = array of error messages in the format of:
+   * * error = 错误消息数组，格式为：
    *
-   * {char-severity code}{string-error category}:{string-error type}[:{string-extra info}]
-   *    - severity code can be E for error or W for warning
+   * {char-severity code}{string-error category}:{string-error type}[:{string-extra info}] - severity code can be E for error or W for warning
+   * * {char-severity code}{string-error category}:{string-error type}[:{string-extra info}] - 严重性代码可以是 E 表示错误或 W 表示警告
    *
    * result = result of API call (may not be present if errors occur)
+   * * 结果 = API 调用的结果（如果发生错误，可能不存在）
    *
    * </pre>
    *
    * <p>The result Type is what varies with each API call.
+   * <p>结果类型因每个 API 调用而异。
    */
   private static class KrakenResponse<T> {
 
@@ -633,19 +681,27 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
     }
   }
 
-  /** GSON class that wraps Depth API call result - the Market Order Book. */
+  /** GSON class that wraps Depth API call result - the Market Order Book.
+   * 包装 Depth API 调用结果的 GSON 类 - 市场订单簿。
+   * */
   private static class KrakenMarketOrderBookResult extends HashMap<String, KrakenOrderBook> {
 
     private static final long serialVersionUID = -4913711010647027721L;
   }
 
-  /** GSON class that wraps a Balance API call result. */
+  /** GSON class that wraps a Balance API call result.
+   * ** 包装 Balance API 调用结果的 GSON 类。
+   *
+   * */
   private static class KrakenBalanceResult extends HashMap<String, BigDecimal> {
 
     private static final long serialVersionUID = -4919711010747027759L;
   }
 
-  /** GSON class that wraps a Ticker API call result. */
+  /** GSON class that wraps a Ticker API call result.
+   * ** 包装 Ticker API 调用结果的 GSON 类。
+   *
+   * */
   private static class KrakenTickerResult extends HashMap<String, String> {
 
     private static final long serialVersionUID = -4913711010647027759L;
@@ -679,7 +735,9 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
     }
   }
 
-  /** GSON class that wraps an Open Order API call result - your open orders. */
+  /** GSON class that wraps an Open Order API call result - your open orders.
+   * ** 封装 Open Order API 调用结果的 GSON 类 - 您的未结订单。
+   * */
   private static class KrakenOpenOrderResult {
 
     Map<String, KrakenOpenOrder> open;
@@ -690,7 +748,9 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
     }
   }
 
-  /** GSON class the represents a Kraken Open Order. */
+  /** GSON class the represents a Kraken Open Order.
+   * GSON 类代表 Kraken Open Order。
+   * */
   private static class KrakenOpenOrder {
 
     String refid;
@@ -732,7 +792,8 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
     }
   }
 
-  /** GSON class the represents a Kraken Open Order description. */
+  /** GSON class the represents a Kraken Open Order description.
+   * GSON 类表示 Kraken Open Order 描述。 */
   private static class KrakenOpenOrderDescription {
 
     String pair;
@@ -757,11 +818,12 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
     }
   }
 
-  /** GSON class representing an AddOrder result. */
+  /** GSON class representing an AddOrder result.
+   * 表示 AddOrder 结果的 GSON 类。 */
   private static class KrakenAddOrderResult {
 
     KrakenAddOrderResultDescription descr;
-    List<String> txid; // why is this a list/array?
+    List<String> txid; // why is this a list/array? 为什么这是一个列表/数组？
 
     @Override
     public String toString() {
@@ -769,7 +831,8 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
     }
   }
 
-  /** GSON class representing an AddOrder result description. */
+  /** GSON class representing an AddOrder result description.
+   * 表示 AddOrder 结果描述的 GSON 类。 */
   private static class KrakenAddOrderResultDescription {
 
     String order;
@@ -780,7 +843,9 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
     }
   }
 
-  /** GSON class representing a CancelOrder result. */
+  /** GSON class representing a CancelOrder result.
+   * 表示 CancelOrder 结果的 GSON 类。
+   * */
   private static class KrakenCancelOrderResult {
 
     int count;
@@ -791,7 +856,8 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
     }
   }
 
-  /** GSON class for a Market Order Book. */
+  /** GSON class for a Market Order Book.
+   * 市场订单簿的 GSON 类。 */
   private static class KrakenOrderBook {
 
     List<KrakenMarketOrder> bids;
@@ -804,8 +870,8 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
   }
 
   /**
-   * GSON class for holding Market Orders. First element in array is price, second element is
-   * amount, 3rd is UNIX time.
+   * GSON class for holding Market Orders. First element in array is price, second element is amount, 3rd is UNIX time.
+   * * 持有市价单的 GSON 类。数组中的第一个元素是价格，第二个元素是金额，第三个是 UNIX 时间。
    */
   private static class KrakenMarketOrder extends ArrayList<BigDecimal> {
 
@@ -814,9 +880,10 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
 
   /**
    * Custom GSON Deserializer for Ticker API call result.
+   * Ticker API 调用结果的自定义 GSON 反序列化器。
    *
-   * <p>Have to do this because last entry in the Ticker param map is a String, not an array like
-   * the rest of 'em!
+   * <p>Have to do this because last entry in the Ticker param map is a String, not an array like the rest of 'em!
+   * * <p>必须这样做，因为 Ticker 参数映射中的最后一个条目是字符串，而不是像其余部分那样的数组！
    */
   private static class KrakenTickerResultDeserializer
       implements JsonDeserializer<KrakenTickerResult> {
@@ -832,8 +899,8 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
 
         final JsonObject jsonObject = json.getAsJsonObject();
 
-        // assume 1 (KV) entry as per API spec - the K is the market id, the V is a Map of ticker
-        // params
+        // assume 1 (KV) entry as per API spec - the K is the market id, the V is a Map of ticker params
+        // 根据 API 规范假设 1 (KV) 条目 - K 是市场 id，V 是股票参数的 Map
         final JsonElement tickerParams = jsonObject.entrySet().iterator().next().getValue();
 
         final JsonObject tickerMap = tickerParams.getAsJsonObject();
@@ -890,7 +957,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
               break;
 
             default:
-              LOG.warn(() -> "Received unexpected Ticker param - ignoring: " + key);
+              LOG.warn(() -> "Received unexpected Ticker param - ignoring: 收到意外的 Ticker 参数 - 忽略：" + key);
           }
         }
       }
@@ -899,7 +966,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
   }
 
   // --------------------------------------------------------------------------
-  //  Transport layer methods
+  //  Transport layer methods // 传输层方法
   // --------------------------------------------------------------------------
 
   private ExchangeHttpResponse sendPublicRequestToExchange(
@@ -907,10 +974,10 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
       throws ExchangeNetworkException, TradingApiException {
 
     if (params == null) {
-      params = createRequestParamMap(); // no params, so empty query string
+      params = createRequestParamMap(); // no params, so empty query string 没有参数，所以查询字符串为空
     }
 
-    // Request headers required by Exchange
+    // Request headers required by Exchange  // Exchange 所需的请求标头
     final Map<String, String> requestHeaders = createHeaderParamMap();
 
     try {
@@ -939,29 +1006,33 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
     }
   }
 
-  /*
+  /**
    * Makes an authenticated API call to the Kraken exchange.
+   * 对 Kraken 交换进行经过身份验证的 API 调用。
    *
    * Kraken requires the following HTTP headers to bet set:
+   * * Kraken 需要设置以下 HTTP 标头：
    *
    * API-Key = API key
-   * API-Sign = Message signature using HMAC-SHA512 of (URI path + SHA256(nonce + POST data))
-   *            and base64 decoded secret API key
+   * API-Sign = Message signature using HMAC-SHA512 of (URI path + SHA256(nonce + POST data))  and base64 decoded secret API key
+   * * API-Sign = 使用 HMAC-SHA512 of (URI path + SHA256(nonce + POST data)) 和 base64 解码的秘密 API 密钥的消息签名
    *
    * The nonce must always increasing unsigned 64 bit integer.
+   * * 随机数必须始终增加无符号 64 位整数。
    *
-   * Note: Sometimes requests can arrive out of order or NTP can cause your clock to rewind,
-   * resulting in nonce issues. If you encounter this issue, you can change the nonce window in
-   * your account API settings page. The amount to set it to depends upon how you increment the
-   * nonce. Depending on your connectivity, a setting that would accommodate 3-15 seconds of
-   * network issues is suggested.
+   * Note: Sometimes requests can arrive out of order or NTP can cause your clock to rewind, resulting in nonce issues. If you encounter this issue, you can change the nonce window in
+   your account API settings page. The amount to set it to depends upon how you increment the nonce. Depending on your connectivity, a setting that would accommodate 3-15 seconds of
+   network issues is suggested.
+   注意：有时请求可能会无序到达，或者 NTP 可能会导致您的时钟倒带，从而导致 nonce 问题。如果遇到此问题，可以在中更改 nonce 窗口
+   您的帐户 API 设置页面。设置它的数量取决于你如何增加随机数。根据您的连接性，设置可以容纳 3-15 秒
+   建议网络问题。
    */
   private ExchangeHttpResponse sendAuthenticatedRequestToExchange(
       String apiMethod, Map<String, String> params)
       throws ExchangeNetworkException, TradingApiException {
 
     if (!initializedMacAuthentication) {
-      final String errorMsg = "MAC Message security layer has not been initialized.";
+      final String errorMsg = "MAC Message security layer has not been initialized. MAC 消息安全层尚未初始化。";
       LOG.error(errorMsg);
       throw new IllegalStateException(errorMsg);
     }
@@ -969,16 +1040,16 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
     try {
       if (params == null) {
         // create empty map for non param API calls, e.g. "trades"
+        // 为非参数 API 调用创建空映射，例如“交易”
         params = createRequestParamMap();
       }
 
-      // The nonce is required by Kraken in every request.
-      // It MUST be incremented each time and the nonce param MUST match the value used in
-      // signature.
+      // The nonce is required by Kraken in every request.   Kraken 在每个请求中都需要随机数。
+      // It MUST be incremented each time and the nonce param MUST match the value used in signature.  它必须每次递增，并且 nonce 参数必须与签名中使用的值匹配。
       nonce++;
       params.put("nonce", Long.toString(nonce));
 
-      // Build the URL with query param args in it - yuk!
+      // Build the URL with query param args in it - yuk!  // 使用其中的查询参数 args 构建 URL - yuk！
       final StringBuilder postData = new StringBuilder();
       for (final Map.Entry<String, String> param : params.entrySet()) {
         if (postData.length() > 0) {
@@ -989,26 +1060,26 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
         postData.append(URLEncoder.encode(param.getValue(), StandardCharsets.UTF_8));
       }
 
-      // And now the tricky part... ;-o
+      // And now the tricky part... ;-o  // 现在是棘手的部分... ;-o
       final byte[] pathInBytes =
           ("/" + KRAKEN_API_VERSION + KRAKEN_PRIVATE_PATH + apiMethod)
               .getBytes(StandardCharsets.UTF_8);
       final String noncePrependedToPostData = Long.toString(nonce) + postData;
 
-      // Create sha256 hash of nonce and post data:
+      // Create sha256 hash of nonce and post data:  创建随机数的 sha256 哈希并发布数据：
       final MessageDigest md = MessageDigest.getInstance("SHA-256");
       md.update(noncePrependedToPostData.getBytes(StandardCharsets.UTF_8));
       final byte[] messageHash = md.digest();
 
-      // Create hmac_sha512 digest of path and previous sha256 hash
+      // Create hmac_sha512 digest of path and previous sha256 hash  // 创建路径的 hmac_sha512 摘要和之前的 sha256 哈希
       mac.reset(); // force reset
       mac.update(pathInBytes);
       mac.update(messageHash);
 
-      // Signature in Base64
+      // Signature in Base64  // Base64 中的签名
       final String signature = Base64.getEncoder().encodeToString(mac.doFinal());
 
-      // Request headers required by Exchange
+      // Request headers required by Exchange  // Exchange 所需的请求标头
       final Map<String, String> requestHeaders = createHeaderParamMap();
       requestHeaders.put("Content-Type", "application/x-www-form-urlencoded");
       requestHeaders.put("API-Key", key);
@@ -1024,15 +1095,20 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
     }
   }
 
-  /*
+  /**
    * Initialises the secure messaging layer.
-   * Sets up the MAC to safeguard the data we send to the exchange.
-   * Used to encrypt the hash of the entire message with the private key to ensure message
-   * integrity. We fail hard n fast if any of this stuff blows.
+    Sets up the MAC to safeguard the data we send to the exchange.
+    Used to encrypt the hash of the entire message with the private key to ensure message
+    integrity. We fail hard n fast if any of this stuff blows.
+   初始化安全消息层。
+   设置 MAC 以保护我们发送到交易所的数据。
+   用于用私钥对整条消息的哈希进行加密，以保证消息
+   正直。如果这些东西中的任何一个发生爆炸，我们就会很快失败。
    */
   private void initSecureMessageLayer() {
     try {
       // Kraken secret key is in Base64, so we need to decode it first
+      // Kraken 密钥在 Base64 中，所以我们需要先对其进行解码
       final byte[] base64DecodedSecret = Base64.getDecoder().decode(secret);
 
       final SecretKeySpec keyspec = new SecretKeySpec(base64DecodedSecret, "HmacSHA512");
@@ -1040,18 +1116,18 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
       mac.init(keyspec);
       initializedMacAuthentication = true;
     } catch (NoSuchAlgorithmException e) {
-      final String errorMsg = "Failed to setup MAC security. HINT: Is HmacSHA512 installed?";
+      final String errorMsg = "Failed to setup MAC security. HINT: Is HmacSHA512 installed? 设置 MAC 安全性失败。提示：是否安装了 HmacSHA512？";
       LOG.error(errorMsg, e);
       throw new IllegalStateException(errorMsg, e);
     } catch (InvalidKeyException e) {
-      final String errorMsg = "Failed to setup MAC security. Secret key seems invalid!";
+      final String errorMsg = " Failed to setup MAC security. Secret key seems invalid! 设置 MAC 安全性失败。密钥似乎无效！";
       LOG.error(errorMsg, e);
       throw new IllegalArgumentException(errorMsg, e);
     }
   }
 
   // --------------------------------------------------------------------------
-  //  Config methods
+  //  Config methods  // 配置方法
   // --------------------------------------------------------------------------
 
   private void setAuthenticationConfig(ExchangeConfig exchangeConfig) {
@@ -1066,20 +1142,20 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
     final String buyFeeInConfig = getOtherConfigItem(otherConfig, BUY_FEE_PROPERTY_NAME);
     buyFeePercentage =
         new BigDecimal(buyFeeInConfig).divide(new BigDecimal("100"), 8, RoundingMode.HALF_UP);
-    LOG.info(() -> "Buy fee % in BigDecimal format: " + buyFeePercentage);
+    LOG.info(() -> "Buy fee % in BigDecimal format: BigDecimal 格式的购买费用百分比：" + buyFeePercentage);
 
     final String sellFeeInConfig = getOtherConfigItem(otherConfig, SELL_FEE_PROPERTY_NAME);
     sellFeePercentage =
         new BigDecimal(sellFeeInConfig).divide(new BigDecimal("100"), 8, RoundingMode.HALF_UP);
-    LOG.info(() -> "Sell fee % in BigDecimal format: " + sellFeePercentage);
+    LOG.info(() -> "Sell fee % in BigDecimal format: BigDecimal 格式的销售费用百分比：" + sellFeePercentage);
 
     final String keepAliveDuringMaintenanceConfig =
         getOtherConfigItem(otherConfig, KEEP_ALIVE_DURING_MAINTENANCE_PROPERTY_NAME);
     if (!keepAliveDuringMaintenanceConfig.isEmpty()) {
       keepAliveDuringMaintenance = Boolean.valueOf(keepAliveDuringMaintenanceConfig);
-      LOG.info(() -> "Keep Alive During Maintenance: " + keepAliveDuringMaintenance);
+      LOG.info(() -> "Keep Alive During Maintenance: 维护期间保持活力：" + keepAliveDuringMaintenance);
     } else {
-      LOG.info(() -> KEEP_ALIVE_DURING_MAINTENANCE_PROPERTY_NAME + " is not set in exchange.yaml");
+      LOG.info(() -> KEEP_ALIVE_DURING_MAINTENANCE_PROPERTY_NAME + " is not set in exchange.yaml 未在 exchange.yaml 中设置");
     }
   }
 
@@ -1096,20 +1172,20 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
 
         if (krakenResponse.error != null && !krakenResponse.error.isEmpty()) {
           LOG.error(
-              () -> String.format("Error when fetching pair precision: %s", krakenResponse.error));
+              () -> String.format("Error when fetching pair precision: %s 获取对精度时出错：%s", krakenResponse.error));
           return;
         }
 
         this.pairPrecisionConfig = krakenResponse.result.loadPrecisionConfig();
       }
     } catch (ExchangeNetworkException | TradingApiException e) {
-      final String errorMsg = "Failed to load price precision config";
+      final String errorMsg = "Failed to load price precision config 无法加载价格精度配置";
       LOG.error(errorMsg, e);
     }
   }
 
   // --------------------------------------------------------------------------
-  //  Util methods
+  //  Util methods  // 实用方法
   // --------------------------------------------------------------------------
 
   private List<OpenOrder> adaptKrakenOpenOrders(KrakenResponse krakenResponse, String marketId)
@@ -1117,6 +1193,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
     final List<OpenOrder> openOrders = new ArrayList<>();
 
     // Assume we'll always get something here if errors array is empty; else blow fast wih NPE
+    // 假设如果错误数组为空，我们总是会在这里得到一些东西；否则用 NPE 吹得很快
     final KrakenOpenOrderResult krakenOpenOrderResult =
         (KrakenOpenOrderResult) krakenResponse.result;
 
@@ -1141,22 +1218,23 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
             break;
           default:
             throw new TradingApiException(
-                "Unrecognised order type received in getYourOpenOrders(). Value: "
+                "Unrecognised order type received in getYourOpenOrders(). Value: 在 getYourOpenOrders() 中收到无法识别的订单类型。价值："
                     + openOrder.getValue().descr.ordertype);
         }
 
         final OpenOrder order =
             new OpenOrderImpl(
                 openOrder.getKey(),
-                new Date((long) krakenOpenOrder.opentm), // opentm == creationDate
+                new Date((long) krakenOpenOrder.opentm), // opentm == creationDate  opentm == 创建日期
                 marketId,
                 orderType,
                 krakenOpenOrderDescription.price,
                 // vol_exec == amount of order that has been executed
+                // vol_exec == 已执行的订单数量
                 (krakenOpenOrder.vol.subtract(krakenOpenOrder.volExec)),
-                krakenOpenOrder.vol, // vol == orig order amount
-                // krakenOpenOrder.cost, // cost == total value of order in API docs, but it's
-                // always 0 :-(
+                krakenOpenOrder.vol, // vol == orig order amount  // vol == 原始订单金额
+                // krakenOpenOrder.cost, // cost == total value of order in API docs, but it's always 0 :-(
+                // krakenOpenOrder.cost, // 成本 == API 文档中订单的总价值，但始终为 0 :-(
                 krakenOpenOrderDescription.price.multiply(krakenOpenOrder.vol));
 
         openOrders.add(order);
@@ -1169,6 +1247,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
       throws TradingApiException {
 
     // Assume we'll always get something here if errors array is empty; else blow fast wih NPE
+    // 假设如果错误数组为空，我们总是会在这里得到一些东西；否则用 NPE 吹得很快
     final KrakenMarketOrderBookResult krakenOrderBookResult =
         (KrakenMarketOrderBookResult) krakenResponse.result;
     final Optional<KrakenOrderBook> first = krakenOrderBookResult.values().stream().findFirst();
@@ -1206,6 +1285,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
 
   private boolean adaptKrakenCancelOrderResult(KrakenResponse krakenResponse) {
     // Assume we'll always get something here if errors array is empty; else blow fast wih NPE
+    // 假设如果错误数组为空，我们总是会在这里得到一些东西；否则用 NPE 吹得很快
     final KrakenCancelOrderResult krakenCancelOrderResult =
         (KrakenCancelOrderResult) krakenResponse.result;
     if (krakenCancelOrderResult != null) {
@@ -1230,6 +1310,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
       final List errors = krakenResponse.error;
       if (errors == null || errors.isEmpty()) {
         // Assume we'll always get something here if errors array is empty; else blow fast wih NPE
+        // 假设如果错误数组为空，我们总是会在这里得到一些东西；否则用 NPE 吹得很快
         final KrakenBalanceResult balanceResult = (KrakenBalanceResult) krakenResponse.result;
         final Map<String, BigDecimal> balancesAvailable = new HashMap<>();
         final Set<Map.Entry<String, BigDecimal>> entries = balanceResult.entrySet();
@@ -1237,8 +1318,8 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
           balancesAvailable.put(entry.getKey(), entry.getValue());
         }
 
-        // 2nd arg of BalanceInfo constructor for reserved/on-hold balances is not provided by
-        // exchange.
+        // 2nd arg of BalanceInfo constructor for reserved/on-hold balances is not provided by exchange.
+        // 交易所不提供用于保留/保留余额的 BalanceInfo 构造函数的第二个参数。
         return new BalanceInfoImpl(balancesAvailable, new HashMap<>());
 
       } else {
@@ -1272,22 +1353,25 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
     return false;
   }
 
-  /*
+  /**
    * Hack for unit-testing map params passed to transport layer.
+   * * Hack 用于传递给传输层的单元测试地图参数。
    */
   private Map<String, String> createRequestParamMap() {
     return new HashMap<>();
   }
 
-  /*
+  /**
    * Hack for unit-testing header params passed to transport layer.
+   * * 用于传递给传输层的单元测试标头参数的 Hack。
    */
   private Map<String, String> createHeaderParamMap() {
     return new HashMap<>();
   }
 
-  /*
+  /**
    * Hack for unit-testing transport layer.
+   * * 用于单元测试传输层的 Hack。
    */
   private ExchangeHttpResponse makeNetworkRequest(
       URL url, String httpMethod, String postData, Map<String, String> requestHeaders)

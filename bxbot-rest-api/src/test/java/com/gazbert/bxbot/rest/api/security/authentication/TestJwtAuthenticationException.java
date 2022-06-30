@@ -29,6 +29,7 @@ import org.junit.jupiter.api.Test;
 
 /**
  * Tests JWT Authentication Exception is created as expected.
+ * 测试 JWT 身份验证异常按预期创建。
  *
  * @author gazbert
  */

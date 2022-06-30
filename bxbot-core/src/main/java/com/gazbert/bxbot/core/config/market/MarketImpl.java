@@ -29,6 +29,7 @@ import com.google.common.base.Objects;
 
 /**
  * Holds information for an Exchange market.
+ * bxbot 应用程序
  *
  * @author gazbert
  */
@@ -41,11 +42,19 @@ public final class MarketImpl implements Market {
 
   /**
    * Creates a new MarketImpl.
+   * 创建一个新的 MarketImpl。
    *
    * @param name the name of the market.
+   *             市场的名称。
+   *
    * @param id the ID of the the market.
+   *           市场的 ID。
+   *
    * @param baseCurrency the market base currency.
+   *                     市场基础货币。
+   *
    * @param counterCurrency the market counter currency.
+   *                        市场柜台货币。
    */
   public MarketImpl(String name, String id, String baseCurrency, String counterCurrency) {
     this.id = id;

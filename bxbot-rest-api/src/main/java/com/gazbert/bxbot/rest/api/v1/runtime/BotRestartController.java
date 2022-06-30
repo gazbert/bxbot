@@ -46,6 +46,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
  * Controller for directing Bot restart requests.
+ * 用于指导 Bot 重启请求的操作。
  *
  * @author gazbert
  * @since 1.0
@@ -66,10 +67,13 @@ public class BotRestartController implements RestController {
 
   /**
    * Restarts the bot.
+   * 重新启动机器人。
    *
    * @param principal the authenticated user making the request.
-   * @return 200 OK on success with 'Restarting' response on success, some other HTTP status code
-   *     otherwise.
+   *                  * @param principal 发出请求的经过身份验证的用户。
+   *
+   * @return 200 OK on success with 'Restarting' response on success, some other HTTP status code  otherwise.
+   * @return 200 OK 成功，成功时“重新启动”响应，否则返回一些其他 HTTP 状态代码。
    */
   @PreAuthorize("hasRole('ADMIN')")
   @PostMapping(value = RESTART_RESOURCE_PATH)
@@ -88,11 +92,11 @@ public class BotRestartController implements RestController {
   public ResponseEntity<String> restart(@Parameter(hidden = true) Principal principal) {
 
     LOG.info(
-        () -> "POST " + RESTART_RESOURCE_PATH + " - restart() - caller: " + principal.getName());
+        () -> "POST " + RESTART_RESOURCE_PATH + " - restart() - caller: restart() - 调用者：" + principal.getName());
 
     final Object status = botRestartService.restart();
 
-    LOG.info(() -> "Response: " + status.toString());
+    LOG.info(() -> "Response: 响应：" + status.toString());
     return new ResponseEntity<>(status.toString(), null, HttpStatus.OK);
   }
 }

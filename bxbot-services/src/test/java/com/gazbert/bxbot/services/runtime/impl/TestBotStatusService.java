@@ -36,7 +36,7 @@ import org.springframework.boot.actuate.health.Status;
 
 /**
  * Tests Bot status service behaves as expected.
- *
+ *  测试机器人状态服务按预期运行。
  * @author gazbert
  */
 class TestBotStatusService {

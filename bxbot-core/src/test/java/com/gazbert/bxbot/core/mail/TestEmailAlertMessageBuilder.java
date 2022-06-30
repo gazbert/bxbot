@@ -29,6 +29,7 @@ import org.junit.jupiter.api.Test;
 
 /**
  * Tests the behaviour of the Email Alert Message Builder is as expected.
+ * 测试电子邮件警报消息生成器的行为是否符合预期。
  *
  * @author gazbert
  */
@@ -36,27 +37,29 @@ class TestEmailAlertMessageBuilder {
 
   private static final String NEWLINE = System.getProperty("line.separator");
 
-  /*
+  /**
    * Tough one to test with timestamp + stacktrace, so best (lazy!) effort here.
+   * * 很难用时间戳+堆栈跟踪进行测试，所以最好（懒惰！）在这里努力。
    */
   @Test
   void testBuildingCriticalMsgContent() {
 
     final String expectedStartOfMsg =
-        "A CRITICAL error event has occurred on BX-bot."
+        "A CRITICAL error event has occurred on BX-bot." +
+                "BX-bot 上发生了严重错误事件。"
             + NEWLINE
             + NEWLINE
             + "--------------------------------------------------"
             + NEWLINE
-            + "Bot Id / Name:"
+            + "Bot Id / Name: 机器人 ID/名称："
             + NEWLINE
             + NEWLINE
-            + "seti-alpha-3 / The Pioneer"
+            + "seti-alpha-3 / The Pioneer seti-alpha-3 / 先锋"
             + NEWLINE
             + NEWLINE
             + "--------------------------------------------------"
             + NEWLINE
-            + "Exchange Adapter:"
+            + "Exchange Adapter: 交换适配器："
             + NEWLINE
             + NEWLINE
             + "Bitstamp"
@@ -64,7 +67,7 @@ class TestEmailAlertMessageBuilder {
             + NEWLINE
             + "--------------------------------------------------"
             + NEWLINE
-            + "Event Time:"
+            + "Event Time: 活动时间："
             + NEWLINE
             + NEWLINE;
 
@@ -72,26 +75,27 @@ class TestEmailAlertMessageBuilder {
         NEWLINE
             + "--------------------------------------------------"
             + NEWLINE
-            + "Event Details:"
+            + "Event Details: 活动详情："
             + NEWLINE
             + NEWLINE
-            + "The trouble with Tribbles..."
-            + NEWLINE
-            + NEWLINE
-            + "--------------------------------------------------"
-            + NEWLINE
-            + "Action Taken:"
-            + NEWLINE
-            + NEWLINE
-            + "The bot will shut down NOW! Check the bot logs for more information."
+            + "The trouble with Tribbles... Tribbles 的麻烦..."
             + NEWLINE
             + NEWLINE
             + "--------------------------------------------------"
             + NEWLINE
-            + "Stacktrace:"
+            + "Action Taken: 采取的行动："
+            + NEWLINE
+            + NEWLINE
+            + "The bot will shut down NOW! Check the bot logs for more information. " +
+                "机器人现在将关闭！检查机器人日志以获取更多信息。"
+            + NEWLINE
+            + NEWLINE
+            + "--------------------------------------------------"
+            + NEWLINE
+            + "Stacktrace: 堆栈跟踪："
             + NEWLINE;
 
-    final String errorMsg = "The trouble with Tribbles...";
+    final String errorMsg = "The trouble with Tribbles... Tribbles 的麻烦...";
     final Exception exception = new RuntimeException(errorMsg);
     final String botId = "seti-alpha-3";
     final String botName = "The Pioneer";

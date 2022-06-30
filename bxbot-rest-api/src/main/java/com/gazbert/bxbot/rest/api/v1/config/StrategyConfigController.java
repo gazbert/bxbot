@@ -53,6 +53,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
  * Controller for directing Strategy config requests.
+ * 用于指导策略配置请求的控制器。
  *
  * @author gazbert
  * @since 1.0
@@ -73,9 +74,10 @@ public class StrategyConfigController implements RestController {
 
   /**
    * Returns all of the Strategy configuration for the bot.
+   * 返回机器人的所有策略配置。
    *
-   * @param principal the authenticated user.
-   * @return all the Strategy configurations.
+   * @param principal the authenticated user.  经过身份验证的用户。
+   * @return all the Strategy configurations.  所有策略配置。
    */
   @PreAuthorize("hasRole('USER')")
   @GetMapping(value = STRATEGIES_RESOURCE_PATH)
@@ -97,21 +99,22 @@ public class StrategyConfigController implements RestController {
         () ->
             "GET "
                 + STRATEGIES_RESOURCE_PATH
-                + " - getAllStrategies() - caller: "
+                + " - getAllStrategies() - caller: - getAllStrategies() - 调用者："
                 + principal.getName());
 
     final List<StrategyConfig> strategyConfigs = strategyConfigService.getAllStrategyConfig();
 
-    LOG.info(() -> "Response: " + strategyConfigs);
+    LOG.info(() -> "Response: 响应:" + strategyConfigs);
     return strategyConfigs;
   }
 
   /**
    * Returns the Strategy configuration for a given id.
+   * 返回给定 id 的策略配置。
    *
-   * @param principal the authenticated user.
-   * @param strategyId the id of the Strategy to fetch.
-   * @return the Strategy configuration.
+   * @param principal the authenticated user.  经过身份验证的用户。
+   * @param strategyId the id of the Strategy to fetch. 要获取的策略的 id。
+   * @return the Strategy configuration.  策略配置。
    */
   @PreAuthorize("hasRole('USER')")
   @GetMapping(value = STRATEGIES_RESOURCE_PATH + "/{strategyId}")
@@ -140,7 +143,7 @@ public class StrategyConfigController implements RestController {
                 + STRATEGIES_RESOURCE_PATH
                 + "/"
                 + strategyId
-                + " - getStrategy() - caller: "
+                + " - getStrategy() - caller: - getStrategy() - 调用者："
                 + principal.getName());
 
     final StrategyConfig strategyConfig = strategyConfigService.getStrategyConfig(strategyId);
@@ -151,12 +154,19 @@ public class StrategyConfigController implements RestController {
 
   /**
    * Updates a given Strategy configuration.
+   * 更新给定的策略配置。
    *
    * @param principal the authenticated user.
+   *                    经过身份验证的用户。
+   *
    * @param strategyId id of the Strategy config to update.
+   *                   要更新的策略配置的 ID。
+   *
    * @param config the updated Strategy config.
-   * @return 200 'OK' HTTP status code and updated Strategy config in the body if update successful,
-   *     404 'Not Found' HTTP status code if Strategy config not found.
+   *               更新的策略配置。
+   *
+   * @return 200 'OK' HTTP status code and updated Strategy config in the body if update successful, 404 'Not Found' HTTP status code if Strategy config not found.
+   * @return 200 'OK' HTTP 状态码和更新的策略配置如果更新成功，404 'Not Found' HTTP 状态码如果没有找到策略配置。
    */
   @PreAuthorize("hasRole('ADMIN')")
   @PutMapping(value = STRATEGIES_RESOURCE_PATH + "/{strategyId}")
@@ -187,10 +197,10 @@ public class StrategyConfigController implements RestController {
                 + STRATEGIES_RESOURCE_PATH
                 + "/"
                 + strategyId
-                + " - updateStrategy() - caller: "
+                + " - updateStrategy() - caller: - updateStrategy() - 调用者："
                 + principal.getName());
 
-    LOG.info(() -> "Request: " + config);
+    LOG.info(() -> "Request: 请求：" + config);
 
     if (config.getId() == null || !strategyId.equals(config.getId())) {
       return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -204,11 +214,16 @@ public class StrategyConfigController implements RestController {
 
   /**
    * Creates a new Strategy configuration.
+   * 创建一个新的策略配置。
    *
    * @param principal the authenticated user.
+   *                  经过身份验证的用户。
+   *
    * @param config the new Strategy config.
-   * @return 201 'Created' HTTP status code and created Strategy config in response body if create
-   *     successful, some other status code otherwise.
+   *               新的策略配置。
+   *
+   * @return 201 'Created' HTTP status code and created Strategy config in response body if create  successful, some other status code otherwise.
+   * @return 201 'Created' HTTP 状态码，如果创建成功，则在响应正文中创建策略配置，否则为其他状态码。
    */
   @PreAuthorize("hasRole('ADMIN')")
   @PostMapping(value = STRATEGIES_RESOURCE_PATH)
@@ -235,10 +250,10 @@ public class StrategyConfigController implements RestController {
         () ->
             "POST "
                 + STRATEGIES_RESOURCE_PATH
-                + " - createStrategy() - caller: "
+                + " - createStrategy() - caller: - createStrategy() - 调用者："
                 + principal.getName());
 
-    LOG.info(() -> "Request: " + config);
+    LOG.info(() -> "Request: 请求：" + config);
 
     final StrategyConfig createdConfig = strategyConfigService.createStrategyConfig(config);
     return createdConfig == null
@@ -248,11 +263,16 @@ public class StrategyConfigController implements RestController {
 
   /**
    * Deletes a Strategy configuration for a given id.
+   * 删除给定 id 的策略配置。
    *
    * @param principal the authenticated user.
+   *                  经过身份验证的用户。
+   *
    * @param strategyId the id of the Strategy configuration to delete.
-   * @return 204 'No Content' HTTP status code if delete successful, 404 'Not Found' HTTP status
-   *     code if Strategy config not found.
+   *                   要删除的策略配置的 id。
+   *
+   * @return 204 'No Content' HTTP status code if delete successful, 404 'Not Found' HTTP status code if Strategy config not found.
+   * @return 204 'No Content' HTTP 状态码，如果删除成功，404 'Not Found' HTTP 状态码，如果没有找到策略配置。
    */
   @PreAuthorize("hasRole('ADMIN')")
   @DeleteMapping(value = STRATEGIES_RESOURCE_PATH + "/{strategyId}")
@@ -281,7 +301,7 @@ public class StrategyConfigController implements RestController {
                 + STRATEGIES_RESOURCE_PATH
                 + "/"
                 + strategyId
-                + " - deleteStrategy() - caller: "
+                + " - deleteStrategy() - caller: - deleteStrategy() - 调用者："
                 + principal.getName());
 
     final StrategyConfig deletedConfig = strategyConfigService.deleteStrategyConfig(strategyId);
@@ -291,12 +311,12 @@ public class StrategyConfigController implements RestController {
   }
 
   // ------------------------------------------------------------------------
-  // Private utils
+  // Private utils  // 私有工具
   // ------------------------------------------------------------------------
 
   private ResponseEntity<StrategyConfig> buildResponseEntity(
       StrategyConfig entity, HttpStatus status) {
-    LOG.info(() -> "Response: " + entity);
+    LOG.info(() -> "Response: 响应：" + entity);
     return new ResponseEntity<>(entity, null, status);
   }
 }

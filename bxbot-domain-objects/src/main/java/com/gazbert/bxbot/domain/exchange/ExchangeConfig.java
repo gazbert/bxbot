@@ -29,6 +29,7 @@ import java.util.Map;
 
 /**
  * Domain object representing the overall Exchange config.
+ * 表示整个 Exchange 配置的域对象。
  *
  * @author gazbert
  */
@@ -38,33 +39,31 @@ public class ExchangeConfig {
   @Schema(
       required = true,
       description =
-          "The Exchange name. It is used in log statements to display the Exchange's name."
-              + " Value must be an alphanumeric string. Spaces are allowed.")
+          " The Exchange name. It is used in log statements to display the Exchange's name. 交易所名称。它在日志语句中用于显示 Exchange 的名称。"
+              + " Value must be an alphanumeric string. Spaces are allowed. 值必须是字母数字字符串。允许空格。")
   private String name;
 
   @Schema(
       required = true,
       description =
-          "The fully qualified name of the Exchange Adapter class for the Trading"
-              + " Engine to inject on startup, "
-              + "e.g. com.gazbert.bxbot.exchanges.TestExchangeAdapter. The class must be on the"
-              + " runtime classpath.")
+          "The fully qualified name of the Exchange Adapter class for the Trading Engine to inject on startup, e.g. com.gazbert.bxbot.exchanges.TestExchangeAdapter. The class must be on the runtime classpath."
+          +"交易引擎在启动时注入的交换适配器类的完全限定名称，例如com.gazbert.bxbot.exchanges.TestExchangeAdapter。该类必须在运行时类路径上。")
   private String adapter;
 
   @Schema(
       description =
-          "Optional, but required by the inbuilt Exchange Adapters to configure their exchange "
-              + "trading API credentials - see the sample exchange.yaml config files for details")
+          " Optional, but required by the inbuilt Exchange Adapters to configure their exchange trading API credentials - see the sample exchange.yaml config files for details "
+          +"可选，但内置交换适配器需要配置其交换交易 API 凭据 - 请参阅示例 exchange.yaml 配置文件了解详细信息")
   private Map<String, String> authenticationConfig;
 
   @Schema(
       description =
-          "Optional, but required by the inbuilt Exchange Adapters to set their network"
-              + " configuration.")
+          "Optional, but required by the inbuilt Exchange Adapters to set their network configuration." +
+                  " 可选，但内置 Exchange 适配器需要设置其网络配置。 ")
   private NetworkConfig networkConfig;
 
-  @Schema(description = "Optional, but required by the inbuilt Exchange Adapters to set "
-      + "any additional config, e.g. buy/sell fees.")
+  @Schema(description = "Optional, but required by the inbuilt Exchange Adapters to set any additional config, e.g. buy/sell fees." +
+          "可选，但内置 Exchange 适配器需要设置任何其他配置，例如买/卖费用。")
   private Map<String, String> otherConfig;
 
   public String getName() {
@@ -112,7 +111,7 @@ public class ExchangeConfig {
     return MoreObjects.toStringHelper(this)
         .add("name", name)
         .add("adapter", adapter)
-        // authenticationConfig is not included
+        // authenticationConfig is not included  // authenticationConfig 不包括在内
         .add("networkConfig", networkConfig)
         .add("otherConfig", otherConfig)
         .toString();

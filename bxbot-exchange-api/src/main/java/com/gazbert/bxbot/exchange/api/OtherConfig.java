@@ -25,6 +25,7 @@ package com.gazbert.bxbot.exchange.api;
 
 /**
  * Encapsulates other configuration for an Exchange Adapter.
+ * 封装 Exchange 适配器的其他配置。
  *
  * @author gazbert
  * @since 1.0
@@ -33,9 +34,12 @@ public interface OtherConfig {
 
   /**
    * Fetches a given config item by name.
+   * 按名称获取给定的配置项。
    *
    * @param name the name of the item to fetch.
+   *             * @param name 要获取的项目的名称。
    * @return the item value if found, null otherwise.
+   * @return 如果找到项目值，否则返回 null。
    */
   String getItem(String name);
 }

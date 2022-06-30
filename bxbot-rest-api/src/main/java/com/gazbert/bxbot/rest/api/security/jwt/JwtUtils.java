@@ -45,11 +45,15 @@ import org.springframework.stereotype.Component;
 
 /**
  * Util class for validating and accessing JSON Web Tokens.
+ * 用于验证和访问 JSON Web 令牌的实用程序类。
  *
  * <p>Properties are loaded from the config/application.properties file.
+ * * <p>属性从 config/application.properties 文件加载。
  *
  * <p>Code originated from the excellent JWT and Spring Boot example by Stephan Zerhusen:
  * https://github.com/szerhusenBC/jwt-spring-security-demo
+ * <p>代码源自 Stephan Zerhusen 的优秀 JWT 和 Spring Boot 示例：
+ *  * https://github.com/szerhusenBC/jwt-spring-security-demo
  *
  * @author gazbert
  */
@@ -92,12 +96,15 @@ public class JwtUtils {
 
   /**
    * For simple validation, it is sufficient to check the token integrity by just decrypting it with
-   * the signing key and making sure it has not expired. We don't have to call the database for an
-   * additional User lookup/check for every request.
+    the signing key and making sure it has not expired. We don't have to call the database for an
+    additional User lookup/check for every request.
+   对于简单的验证，只需使用解密它就足以检查令牌的完整性
+   签名密钥并确保它没有过期。我们不必调用数据库
+   额外的用户查找/检查每个请求。
    *
-   * @param token the JWT in String format.
-   * @return the token claims if the JWT was valid.
-   * @throws JwtAuthenticationException if the JWT was invalid.
+   * @param token the JWT in String format. 字符串格式的 JWT。
+   * @return the token claims if the JWT was valid.  令牌声明 JWT 是否有效。
+   * @throws JwtAuthenticationException if the JWT was invalid.  如果 JWT 无效，则出现 JwtAuthenticationException。
    */
   public Claims validateTokenAndGetClaims(String token) {
     try {
@@ -106,27 +113,27 @@ public class JwtUtils {
       final Date lastPasswordResetDate = getLastPasswordResetDateFromTokenClaims(claims);
       if (!isCreatedAfterLastPasswordReset(created, lastPasswordResetDate)) {
         final String errorMsg =
-            "Invalid token! Created date claim is before last password reset date."
-                + " Created date: "
+            "Invalid token! Created date claim is before last password reset date. 令牌无效！创建日期声明在上次密码重置日期之前。"
+                + " Created date: 创建日期："
                 + created
-                + " Password reset date: "
+                + " Password reset date: 密码重置日期："
                 + lastPasswordResetDate;
         LOG.error(errorMsg);
         throw new JwtAuthenticationException(errorMsg);
       }
       return claims;
     } catch (Exception e) {
-      final String errorMsg = "Invalid token! Details: " + e.getMessage();
+      final String errorMsg = "Invalid token! Details: 令牌无效！细节：" + e.getMessage();
       LOG.error(errorMsg, e);
       throw new JwtAuthenticationException(errorMsg, e);
     }
   }
 
   /**
-   * Creates a JWT in String format.
+   * Creates a JWT in String format.  以字符串格式创建 JWT。
    *
-   * @param userDetails the JWT User details.
-   * @return the JWT as a String.
+   * @param userDetails the JWT User details.* @param userDetails JWT 用户详细信息。
+   * @return the JWT as a String. @return JWT 作为字符串。
    */
   public String createToken(JwtUser userDetails) {
     final Map<String, Object> claims = new HashMap<>();
@@ -141,32 +148,41 @@ public class JwtUtils {
 
   /**
    * Checks if a JWT can be refreshed.
+   * 检查是否可以刷新 JWT。
    *
    * <p>The creation time of the current JWT must be AFTER than the last password reset date.
-   * Earlier tokens are deemed to be invalid and potentially compromised.
+    Earlier tokens are deemed to be invalid and potentially compromised.
+   <p>当前 JWT 的创建时间必须晚于上次密码重置日期。
+   较早的令牌被认为是无效的并且可能受到损害。
    *
-   * @param claims the JWT claims.
-   * @param lastPasswordReset the last password reset date.
-   * @return true if the token can be refreshed, false otherwise.
+   * @param claims the JWT claims.  索赔。
+   * @param lastPasswordReset the last password reset date. 上次密码重置日期。
+   * @return true if the token can be refreshed, false otherwise. 如果令牌可以刷新，则为 true，否则为 false。
    */
   public boolean canTokenBeRefreshed(Claims claims, Date lastPasswordReset) {
     final Date created = getIssuedAtDateFromTokenClaims(claims);
     boolean canBeRefreshed = isCreatedAfterLastPasswordReset(created, lastPasswordReset);
     if (!canBeRefreshed) {
       LOG.warn(
-          "Token cannot be refreshed for user: "
+          "Token cannot be refreshed for user: 无法为用户刷新令牌："
               + claims.get(CLAIM_KEY_USERNAME)
-              + " - token creation date is BEFORE last password reset date");
+              + " - token creation date is BEFORE last password reset date. - 令牌创建日期是上次密码重置日期之前.");
     }
     return canBeRefreshed;
   }
 
   /**
    * Refreshes a JWT.
+   * 刷新 JWT。
    *
    * @param token the token to refresh in String format.
+   *              以字符串格式刷新的令牌。
+   *
    * @return a new (refreshed) JWT token in String format.
+   * * @return 一个新的（刷新的）字符串格式的 JWT 令牌。
+   *
    * @throws JwtAuthenticationException if the token cannot be refreshed.
+   * @throws JwtAuthenticationException 如果无法刷新令牌。
    */
   public String refreshToken(String token) {
     try {
@@ -182,21 +198,22 @@ public class JwtUtils {
 
   /**
    * Extracts the username from the JWT claims.
+   * 从 JWT 声明中提取用户名。
    *
-   * @param claims the JWT claims.
-   * @return the username.
+   * @param claims the JWT claims. the JWT 声明.
+   * @return the username. 用户名。
    */
   public String getUsernameFromTokenClaims(Claims claims) {
     try {
       final String username = claims.getSubject();
       if (username == null) {
-        final String errorMsg = "Failed to extract username claim from token!";
+        final String errorMsg = "Failed to extract username claim from token! 无法从令牌中提取用户名声明！";
         LOG.error(errorMsg);
         throw new JwtAuthenticationException(errorMsg);
       }
       return username;
     } catch (Exception e) {
-      final String errorMsg = "Failed to extract username claim from token!";
+      final String errorMsg = "Failed to extract username claim from token! 无法从令牌中提取用户名声明！";
       LOG.error(errorMsg);
       throw new JwtAuthenticationException(errorMsg, e);
     }
@@ -204,10 +221,13 @@ public class JwtUtils {
 
   /**
    * Extracts the user's Roles from the JWT claims.
+   * 从 JWT 声明中提取用户的角色。
    *
    * @param claims the JWT claims.
-   * @return the user's Roles.
+   *               JWT 声称。
+   * @return the user's Roles. 用户的角色。
    * @throws JwtAuthenticationException if the user's roles cannot be extracted.
+   * @throws JwtAuthenticationException 如果无法提取用户的角色。
    */
   public List<GrantedAuthority> getRolesFromTokenClaims(Claims claims) {
     final List<GrantedAuthority> roles = new ArrayList<>();
@@ -219,7 +239,7 @@ public class JwtUtils {
       }
       return roles;
     } catch (Exception e) {
-      final String errorMsg = "Failed to extract roles claim from token!";
+      final String errorMsg = "Failed to extract roles claim from token! 无法从令牌中提取角色声明！";
       LOG.error(errorMsg, e);
       throw new JwtAuthenticationException(errorMsg, e);
     }
@@ -238,7 +258,7 @@ public class JwtUtils {
     try {
       lastPasswordResetDate = new Date((Long) claims.get(CLAIM_KEY_LAST_PASSWORD_CHANGE_DATE));
     } catch (Exception e) {
-      final String errorMsg = "Failed to extract lastPasswordResetDate claim from token!";
+      final String errorMsg = "Failed to extract lastPasswordResetDate claim from token! 无法从令牌中提取 lastPasswordResetDate 声明！";
       LOG.error(errorMsg, e);
       throw new JwtAuthenticationException(errorMsg, e);
     }
@@ -246,7 +266,7 @@ public class JwtUtils {
   }
 
   // ------------------------------------------------------------------------
-  // Private utils
+  // Private utils // 私有工具
   // ------------------------------------------------------------------------
 
   private String buildToken(Map<String, Object> claims) {
@@ -273,9 +293,9 @@ public class JwtUtils {
 
   private boolean isCreatedAfterLastPasswordReset(Date created, Date lastPasswordReset) {
     if (lastPasswordReset == null) {
-      return true; // password not changed yet, so this is valid.
+      return true; // password not changed yet, so this is valid.  密码尚未更改，因此这是有效的。
     } else {
-      return (created.after(lastPasswordReset)); // valid only if after last password change
+      return (created.after(lastPasswordReset)); // valid only if after last password change  // 只有在最后一次密码更改后才有效
     }
   }
 

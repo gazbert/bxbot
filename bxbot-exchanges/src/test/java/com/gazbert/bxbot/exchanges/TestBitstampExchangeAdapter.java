@@ -66,6 +66,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 /**
  * Tests the behaviour of the Bitstamp Exchange Adapter.
+ * 测试 Bitstamp 交换适配器的行为。
  *
  * @author gazbert
  */
@@ -125,18 +126,20 @@ public class TestBitstampExchangeAdapter extends AbstractExchangeAdapter {
       Arrays.asList(
           "Connection refused",
           "Connection reset",
-          "Remote host closed connection during handshake");
+          "Remote host closed connection during handshake 握手期间远程主机关闭连接");
 
   private static final String API_BASE_URL = "https://www.bitstamp.net/api/v2/";
 
   // Bitstamp exchange Date format: 2015-01-09 21:14:50
+  // Bitstamp 交换日期格式：2015-01-09 21:14:50
   private final SimpleDateFormat bitstampExchangeDateFormat = new SimpleDateFormat("y-M-d H:m:s");
 
   private ExchangeConfig exchangeConfig;
   private AuthenticationConfig authenticationConfig;
   private NetworkConfig networkConfig;
 
-  /** Create some exchange config - the TradingEngine would normally do this. */
+  /** Create some exchange config - the TradingEngine would normally do this.
+   * 创建一些交换配置 - TradingEngine 通常会这样做。 */
   @Before
   public void setupForEachTest() {
     authenticationConfig = PowerMock.createMock(AuthenticationConfig.class);
@@ -153,10 +156,12 @@ public class TestBitstampExchangeAdapter extends AbstractExchangeAdapter {
     expect(exchangeConfig.getAuthenticationConfig()).andReturn(authenticationConfig);
     expect(exchangeConfig.getNetworkConfig()).andReturn(networkConfig);
     // optional config not needed for this adapter
+    // 此适配器不需要可选配置
   }
 
   // --------------------------------------------------------------------------
   //  Cancel Order tests
+  // 取消订单测试
   // --------------------------------------------------------------------------
 
   @Test
@@ -168,12 +173,13 @@ public class TestBitstampExchangeAdapter extends AbstractExchangeAdapter {
         new AbstractExchangeAdapter.ExchangeHttpResponse(
             200, "OK", new String(encoded, StandardCharsets.UTF_8));
 
-    // Mock out param map so we can assert the contents passed to the transport layer are what we
-    // expect.
+    // Mock out param map so we can assert the contents passed to the transport layer are what we expect.
+    // 模拟出参数映射，因此我们可以断言传递给传输层的内容是我们所期望的。
     final Map<String, String> requestParamMap = PowerMock.createMock(Map.class);
     expect(requestParamMap.put("id", ORDER_ID_TO_CANCEL)).andStubReturn(null);
 
     // Partial mock so we do not send stuff down the wire
+    // 部分模拟，所以我们不会通过网络发送东西
     final BitstampExchangeAdapter exchangeAdapter =
         PowerMock.createPartialMockAndInvokeDefaultConstructor(
             BitstampExchangeAdapter.class,
@@ -211,15 +217,16 @@ public class TestBitstampExchangeAdapter extends AbstractExchangeAdapter {
             anyObject(Map.class))
         .andThrow(
             new ExchangeNetworkException(
-                "Traveling through hyperspace ain't like dusting crops, boy!"
-                    + " Without precise calculations we could fly right through a star, or bounce "
-                    + "too close to a supernova and that'd end your trip real quick, wouldn't "
-                    + "it?"));
+                "“穿越超空间不像给庄稼撒灰尘，男孩！”\n" +
+                        "                    +“如果没有精确的计算，我们可以直接飞过星星，或者弹跳”\n" +
+                        "                    +“离超新星太近了，你的旅行会很快结束，不会”\n" +
+                        "                    + “它？”"));
 
     PowerMock.replayAll();
     exchangeAdapter.init(exchangeConfig);
 
     // marketId arg not needed for cancelling orders on this exchange.
+    // 取消此交易所的订单不需要 marketId arg。
     exchangeAdapter.cancelOrder(ORDER_ID_TO_CANCEL, null);
 
     PowerMock.verifyAll();
@@ -235,12 +242,13 @@ public class TestBitstampExchangeAdapter extends AbstractExchangeAdapter {
             MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD,
             eq(CANCEL_ORDER),
             anyObject(Map.class))
-        .andThrow(new IllegalStateException("The Force is strong with this one."));
+        .andThrow(new IllegalStateException("The Force is strong with this one.原力在这个方面很强大。"));
 
     PowerMock.replayAll();
     exchangeAdapter.init(exchangeConfig);
 
     // marketId arg not needed for cancelling orders on this exchange.
+    // 取消此交易所的订单不需要 marketId arg。
     exchangeAdapter.cancelOrder(ORDER_ID_TO_CANCEL, null);
 
     PowerMock.verifyAll();
@@ -248,6 +256,7 @@ public class TestBitstampExchangeAdapter extends AbstractExchangeAdapter {
 
   // --------------------------------------------------------------------------
   //  Create Orders tests
+  // 创建订单测试
   // --------------------------------------------------------------------------
 
   @Test
@@ -376,8 +385,8 @@ public class TestBitstampExchangeAdapter extends AbstractExchangeAdapter {
             anyObject(Map.class))
         .andThrow(
             new IllegalArgumentException(
-                "That's 'cause droids don't pull people's arms out of their "
-                    + "sockets when they lose. Wookiees are known to do that."));
+                "那是因为机器人不会把人们的手臂从他们的“\n" +
+                        "                    + \"输掉时的套接字。众所周知，伍基人会这样做。"));
 
     PowerMock.replayAll();
     exchangeAdapter.init(exchangeConfig);
@@ -388,6 +397,7 @@ public class TestBitstampExchangeAdapter extends AbstractExchangeAdapter {
 
   // --------------------------------------------------------------------------
   //  Get Market Orders tests
+  // 获取市价单测试
   // --------------------------------------------------------------------------
 
   @Test
@@ -412,13 +422,14 @@ public class TestBitstampExchangeAdapter extends AbstractExchangeAdapter {
     final MarketOrderBook marketOrderBook = exchangeAdapter.getMarketOrders(MARKET_ID);
 
     // assert some key stuff; we're not testing GSON here.
+    // 断言一些关键的东西；我们不是在这里测试 GSON。
     assertEquals(MARKET_ID, marketOrderBook.getMarketId());
 
     final BigDecimal buyPrice = new BigDecimal("230.34");
     final BigDecimal buyQuantity = new BigDecimal("7.22860000");
     final BigDecimal buyTotal = buyPrice.multiply(buyQuantity);
 
-    assertEquals(1268, marketOrderBook.getBuyOrders().size()); // stamp send them all back!
+    assertEquals(1268, marketOrderBook.getBuyOrders().size()); // stamp send them all back! // 邮票把他们都寄回去！
     assertSame(OrderType.BUY, marketOrderBook.getBuyOrders().get(0).getType());
     assertEquals(0, marketOrderBook.getBuyOrders().get(0).getPrice().compareTo(buyPrice));
     assertEquals(0, marketOrderBook.getBuyOrders().get(0).getQuantity().compareTo(buyQuantity));
@@ -428,7 +439,7 @@ public class TestBitstampExchangeAdapter extends AbstractExchangeAdapter {
     final BigDecimal sellQuantity = new BigDecimal("0.62263188");
     final BigDecimal sellTotal = sellPrice.multiply(sellQuantity);
 
-    assertEquals(1957, marketOrderBook.getSellOrders().size()); // stamp send them all back!
+    assertEquals(1957, marketOrderBook.getSellOrders().size()); // stamp send them all back! // 邮票把他们都寄回去！
     assertSame(OrderType.SELL, marketOrderBook.getSellOrders().get(0).getType());
     assertEquals(0, marketOrderBook.getSellOrders().get(0).getPrice().compareTo(sellPrice));
     assertEquals(0, marketOrderBook.getSellOrders().get(0).getQuantity().compareTo(sellQuantity));
@@ -448,7 +459,8 @@ public class TestBitstampExchangeAdapter extends AbstractExchangeAdapter {
             eq(ORDER_BOOK + MARKET_ID))
         .andThrow(
             new ExchangeNetworkException(
-                "Traveling through hyperspace ain’t like dusting crops, farm boy."));
+                "Traveling through hyperspace ain’t like dusting crops, farm boy." +
+                        "穿越超空间并不像给庄稼除尘，农场男孩。"));
 
     PowerMock.replayAll();
     exchangeAdapter.init(exchangeConfig);
@@ -468,9 +480,9 @@ public class TestBitstampExchangeAdapter extends AbstractExchangeAdapter {
             eq(ORDER_BOOK + MARKET_ID))
         .andThrow(
             new IllegalArgumentException(
-                "Uh, we had a slight weapons malfunction, but uh... "
-                    + "everything's perfectly all right now. We're fine. We're all fine here now, "
-                    + "thank you. How are you?"));
+                "呃，我们有轻微的武器故障，但是呃……”\n" +
+                        "                    +“现在一切都很好。我们很好。我们现在都很好，”\n" +
+                        "                    +“谢谢。你好吗？"));
 
     PowerMock.replayAll();
     exchangeAdapter.init(exchangeConfig);
@@ -480,7 +492,7 @@ public class TestBitstampExchangeAdapter extends AbstractExchangeAdapter {
   }
 
   // --------------------------------------------------------------------------
-  //  Get Your Open Orders tests
+  //  Get Your Open Orders tests  // 获取您的未结订单测试
   // --------------------------------------------------------------------------
 
   @Test
@@ -506,6 +518,7 @@ public class TestBitstampExchangeAdapter extends AbstractExchangeAdapter {
     final List<OpenOrder> openOrders = exchangeAdapter.getYourOpenOrders(MARKET_ID);
 
     // assert some key stuff; we're not testing GSON here.
+    // 断言一些关键的东西；我们不是在这里测试 GSON。
     assertEquals(2, openOrders.size());
     assertEquals(MARKET_ID, openOrders.get(0).getMarketId());
     assertEquals("52603560", openOrders.get(0).getId());
@@ -523,6 +536,7 @@ public class TestBitstampExchangeAdapter extends AbstractExchangeAdapter {
             .compareTo(openOrders.get(0).getPrice().multiply(openOrders.get(0).getQuantity())));
 
     // the values below are not provided by Bitstamp
+    // 下面的值不是由 Bitstamp 提供的
     assertNull(openOrders.get(0).getOriginalQuantity());
 
     PowerMock.verifyAll();
@@ -538,7 +552,7 @@ public class TestBitstampExchangeAdapter extends AbstractExchangeAdapter {
             MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD,
             eq(OPEN_ORDERS + MARKET_ID),
             eq(null))
-        .andThrow(new ExchangeNetworkException("The board is green!"));
+        .andThrow(new ExchangeNetworkException("The board is green! 板子是绿色的！"));
 
     PowerMock.replayAll();
     exchangeAdapter.init(exchangeConfig);
@@ -559,8 +573,8 @@ public class TestBitstampExchangeAdapter extends AbstractExchangeAdapter {
             eq(null))
         .andThrow(
             new IllegalStateException(
-                "You may dispense with the pleasantries, Commander. "
-                    + "I am here to put you back on schedule."));
+                "指挥官，你可以不用客气了。 \"\n" +
+                        "                    + “我来这里是为了让你按计划行事。"));
 
     PowerMock.replayAll();
     exchangeAdapter.init(exchangeConfig);
@@ -571,6 +585,7 @@ public class TestBitstampExchangeAdapter extends AbstractExchangeAdapter {
 
   // --------------------------------------------------------------------------
   //  Get Latest Market Price tests
+  // 获取最新的市场价格测试
   // --------------------------------------------------------------------------
 
   @Test
@@ -604,7 +619,7 @@ public class TestBitstampExchangeAdapter extends AbstractExchangeAdapter {
             BitstampExchangeAdapter.class, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD);
     PowerMock.expectPrivate(
             exchangeAdapter, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD, eq(TICKER + MARKET_ID))
-        .andThrow(new ExchangeNetworkException("Jumping in 5... 4... 3... 2... 1... Jump!"));
+        .andThrow(new ExchangeNetworkException("Jumping in 5... 4... 3... 2... 1... Jump!跳跃 5... 4... 3... 2... 1... 跳跃！"));
 
     PowerMock.replayAll();
     exchangeAdapter.init(exchangeConfig);
@@ -622,8 +637,8 @@ public class TestBitstampExchangeAdapter extends AbstractExchangeAdapter {
             exchangeAdapter, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD, eq(TICKER + MARKET_ID))
         .andThrow(
             new IllegalArgumentException(
-                "Sir, the possibility of successfully navigating an asteroid field"
-                    + " is approximately 3,720 to 1."));
+                "先生，成功导航小行星带的可能性”\n" +
+                        "                    + \" 大约是 3,720 比 1。"));
 
     PowerMock.replayAll();
     exchangeAdapter.init(exchangeConfig);
@@ -691,9 +706,9 @@ public class TestBitstampExchangeAdapter extends AbstractExchangeAdapter {
             eq(null))
         .andThrow(
             new ExchangeNetworkException(
-                "I’ve been waiting for you, Obi-Wan. We meet again, at last. "
-                    + "The circle is now complete. When I left you, I was but the learner; "
-                    + "now I am the master."));
+                "我一直在等你，欧比旺。我们终于又见面了。 \"\n" +
+                        "                    +“现在这个圈子已经完成了。当我离开你的时候，我只是一个学习者；”\n" +
+                        "                    +“现在我是主人。"));
 
     PowerMock.replayAll();
     exchangeAdapter.init(exchangeConfig);
@@ -712,7 +727,7 @@ public class TestBitstampExchangeAdapter extends AbstractExchangeAdapter {
             MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD,
             eq(BALANCE),
             eq(null))
-        .andThrow(new IllegalStateException("Get me some more frakking birds in the air!"));
+        .andThrow(new IllegalStateException("Get me some more frakking birds in the air! 让我在空中再飞几只鸟儿！"));
 
     PowerMock.replayAll();
     exchangeAdapter.init(exchangeConfig);
@@ -723,6 +738,7 @@ public class TestBitstampExchangeAdapter extends AbstractExchangeAdapter {
 
   // --------------------------------------------------------------------------
   //  Get Exchange Fees for Buy orders tests
+  // 获取买单测试的交易所费用
   // --------------------------------------------------------------------------
 
   @Test
@@ -762,7 +778,7 @@ public class TestBitstampExchangeAdapter extends AbstractExchangeAdapter {
             MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD,
             eq(BALANCE),
             eq(null))
-        .andThrow(new ExchangeNetworkException("Aren't you a little short for a stormtrooper?"));
+        .andThrow(new ExchangeNetworkException("Aren't you a little short for a stormtrooper?你是不是有点不适合冲锋队？"));
 
     PowerMock.replayAll();
     exchangeAdapter.init(exchangeConfig);
@@ -783,9 +799,9 @@ public class TestBitstampExchangeAdapter extends AbstractExchangeAdapter {
             eq(null))
         .andThrow(
             new IllegalStateException(
-                "I felt a great disturbance in the Force, as if millions of voices"
-                    + " suddenly cried out in terror and were suddenly silenced. "
-                    + "I fear something terrible has happened."));
+                "我感到原力中的巨大骚动，仿佛有数百万的声音”\n" +
+                        "                    + ”突然惊恐地叫了起来，突然沉默了。”\n" +
+                        "                    +“我担心发生了可怕的事情。"));
 
     PowerMock.replayAll();
     exchangeAdapter.init(exchangeConfig);
@@ -796,6 +812,7 @@ public class TestBitstampExchangeAdapter extends AbstractExchangeAdapter {
 
   // --------------------------------------------------------------------------
   //  Get Exchange Fees for Sell orders tests
+  // 获取卖单测试的交易所费用
   // --------------------------------------------------------------------------
 
   @Test
@@ -835,7 +852,7 @@ public class TestBitstampExchangeAdapter extends AbstractExchangeAdapter {
             MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD,
             eq(BALANCE),
             eq(null))
-        .andThrow(new ExchangeNetworkException("That's no moon. It's a space station."));
+        .andThrow(new ExchangeNetworkException("That's no moon. It's a space station.那不是月亮。这是一个空间站。"));
 
     PowerMock.replayAll();
     exchangeAdapter.init(exchangeConfig);
@@ -856,9 +873,9 @@ public class TestBitstampExchangeAdapter extends AbstractExchangeAdapter {
             eq(null))
         .andThrow(
             new IllegalStateException(
-                "Don't be too proud of this technological terror you've constructed. "
-                    + "The ability to destroy a planet is insignificant next to the power of the "
-                    + "Force."));
+                "不要为你制造的这种技术恐怖而感到骄傲。 \"\n" +
+                        "                    +“摧毁行星的能力在力量面前微不足道”\n" +
+                        "                    + \"强制。"));
 
     PowerMock.replayAll();
 
@@ -870,6 +887,7 @@ public class TestBitstampExchangeAdapter extends AbstractExchangeAdapter {
 
   // --------------------------------------------------------------------------
   //  Get Ticker tests
+  // 获取 Ticker 测试
   // --------------------------------------------------------------------------
 
   @Test
@@ -910,7 +928,7 @@ public class TestBitstampExchangeAdapter extends AbstractExchangeAdapter {
             BitstampExchangeAdapter.class, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD);
     PowerMock.expectPrivate(
             exchangeAdapter, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD, eq(TICKER + MARKET_ID))
-        .andThrow(new ExchangeNetworkException("Indy, why does the floor move?"));
+        .andThrow(new ExchangeNetworkException("Indy, why does the floor move?印地，为什么地板会动？"));
 
     PowerMock.replayAll();
     exchangeAdapter.init(exchangeConfig);
@@ -927,9 +945,9 @@ public class TestBitstampExchangeAdapter extends AbstractExchangeAdapter {
             exchangeAdapter, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD, eq(TICKER + MARKET_ID))
         .andThrow(
             new IllegalArgumentException(
-                "Well, I mean that for nearly three thousand years man has "
-                    + "been searching for the lost ark. It's not something to be taken lightly. "
-                    + "No one knows its secrets. It's like nothing you've ever gone after before"));
+                "好吧，我的意思是近三千年来，人类已经“\n" +
+                        "                    + “一直在寻找失落的方舟。这件事不能掉以轻心。”\n" +
+                        "                    +“没有人知道它的秘密。就像你以前从未追求过的一样"));
 
     PowerMock.replayAll();
     exchangeAdapter.init(exchangeConfig);
@@ -939,6 +957,7 @@ public class TestBitstampExchangeAdapter extends AbstractExchangeAdapter {
 
   // --------------------------------------------------------------------------
   //  Non Exchange visiting tests
+  // 非交易所访问测试
   // --------------------------------------------------------------------------
 
   @Test
@@ -951,8 +970,8 @@ public class TestBitstampExchangeAdapter extends AbstractExchangeAdapter {
   }
 
   // --------------------------------------------------------------------------
-  //  Initialisation tests assume config property files are located under
-  //  src/test/resources
+  //  Initialisation tests assume config property files are located under  src/test/resources
+  // 初始化测试假定配置属性文件位于 src/test/resources 下
   // --------------------------------------------------------------------------
 
   @Test
@@ -1020,6 +1039,7 @@ public class TestBitstampExchangeAdapter extends AbstractExchangeAdapter {
 
   // --------------------------------------------------------------------------
   //  Request sending tests
+  // 请求发送测试
   // --------------------------------------------------------------------------
 
   @Test
@@ -1068,7 +1088,8 @@ public class TestBitstampExchangeAdapter extends AbstractExchangeAdapter {
             eq(new HashMap<>()))
         .andThrow(
             new ExchangeNetworkException(
-                "When 900 years old, you reach… Look as good, you will not."));
+                "When 900 years old, you reach… Look as good, you will not." +
+                        "当 900 岁时，你达到了……看起来一样好，你不会。"));
 
     PowerMock.replayAll();
     exchangeAdapter.init(exchangeConfig);
@@ -1092,7 +1113,7 @@ public class TestBitstampExchangeAdapter extends AbstractExchangeAdapter {
             eq("GET"),
             eq(null),
             eq(new HashMap<>()))
-        .andThrow(new TradingApiException("He’s holding a thermal detonator!"));
+        .andThrow(new TradingApiException("He’s holding a thermal detonator! 他拿着一个热雷管！"));
 
     PowerMock.replayAll();
     exchangeAdapter.init(exchangeConfig);
@@ -1188,7 +1209,7 @@ public class TestBitstampExchangeAdapter extends AbstractExchangeAdapter {
     final Map<String, String> requestHeaderMap = PowerMock.createPartialMock(HashMap.class, "put");
     expect(requestHeaderMap.put("Content-Type", "application/x-www-form-urlencoded"))
         .andStubReturn(null);
-    PowerMock.replay(requestHeaderMap); // map needs to be in play early
+    PowerMock.replay(requestHeaderMap); // map needs to be in play early // 地图需要尽早上线
 
     final BitstampExchangeAdapter exchangeAdapter =
         PowerMock.createPartialMockAndInvokeDefaultConstructor(
@@ -1209,7 +1230,7 @@ public class TestBitstampExchangeAdapter extends AbstractExchangeAdapter {
             eq("POST"),
             anyString(),
             eq(requestHeaderMap))
-        .andThrow(new ExchangeNetworkException("These aren’t the droids you’re looking for..."));
+        .andThrow(new ExchangeNetworkException("These aren’t the droids you’re looking for...这些不是您要寻找的机器人..."));
 
     PowerMock.replayAll();
     exchangeAdapter.init(exchangeConfig);
@@ -1243,7 +1264,7 @@ public class TestBitstampExchangeAdapter extends AbstractExchangeAdapter {
     final Map<String, String> requestHeaderMap = PowerMock.createPartialMock(HashMap.class, "put");
     expect(requestHeaderMap.put(eq("Content-Type"), eq("application/x-www-form-urlencoded")))
         .andStubReturn(null);
-    PowerMock.replay(requestHeaderMap); // map needs to be in play early
+    PowerMock.replay(requestHeaderMap); // map needs to be in play early // 地图需要尽早上线
 
     final BitstampExchangeAdapter exchangeAdapter =
         PowerMock.createPartialMockAndInvokeDefaultConstructor(
@@ -1265,7 +1286,7 @@ public class TestBitstampExchangeAdapter extends AbstractExchangeAdapter {
             anyString(),
             eq(requestHeaderMap))
         .andThrow(
-            new TradingApiException("Mmm. Lost a planet, Master Obi-Wan has. How embarrassing."));
+            new TradingApiException("Mmm. Lost a planet, Master Obi-Wan has. How embarrassing. 嗯。失去了一颗星球，欧比旺大师失去了。多么尴尬。"));
 
     PowerMock.replayAll();
     exchangeAdapter.init(exchangeConfig);

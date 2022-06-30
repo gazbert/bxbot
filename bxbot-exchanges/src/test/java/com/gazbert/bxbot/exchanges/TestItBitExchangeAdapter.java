@@ -146,7 +146,8 @@ public class TestItBitExchangeAdapter extends AbstractExchangeAdapterTest {
   private NetworkConfig networkConfig;
   private OtherConfig otherConfig;
 
-  /** Create some exchange config - the TradingEngine would normally do this. */
+  /** Create some exchange config - the TradingEngine would normally do this.
+   * 创建一些交换配置 - TradingEngine 通常会这样做*/
   @Before
   public void setupForEachTest() {
     authenticationConfig = PowerMock.createMock(AuthenticationConfig.class);
@@ -171,7 +172,7 @@ public class TestItBitExchangeAdapter extends AbstractExchangeAdapterTest {
   }
 
   // --------------------------------------------------------------------------
-  //  Create Orders tests
+  //  Create Orders tests 创建订单测试
   // --------------------------------------------------------------------------
 
   @Test
@@ -183,8 +184,8 @@ public class TestItBitExchangeAdapter extends AbstractExchangeAdapterTest {
         new AbstractExchangeAdapter.ExchangeHttpResponse(
             201, "Created", new String(encoded, StandardCharsets.UTF_8));
 
-    // Mock out param map so we can assert the contents passed to the transport layer are what we
-    // expect.
+    // Mock out param map so we can assert the contents passed to the transport layer are what we expect.
+    //模拟出参数映射，这样我们就可以断言传递给传输层的内容是我们所期望的。
     final Map<String, String> requestParamMap = PowerMock.createMock(Map.class);
     expect(requestParamMap.put("type", "limit")).andStubReturn(null);
     expect(
@@ -202,6 +203,7 @@ public class TestItBitExchangeAdapter extends AbstractExchangeAdapterTest {
     expect(requestParamMap.put("side", "buy")).andStubReturn(null);
 
     // Partial mock so we do not send stuff down the wire
+    // 部分模拟，所以我们不会通过网络发送东西
     final ItBitExchangeAdapter exchangeAdapter =
         PowerMock.createPartialMockAndInvokeDefaultConstructor(
             ItBitExchangeAdapter.class,
@@ -333,6 +335,7 @@ public class TestItBitExchangeAdapter extends AbstractExchangeAdapterTest {
 
   // --------------------------------------------------------------------------
   //  Cancel Order tests
+  // 取消订单测试
   // --------------------------------------------------------------------------
 
   @Test
@@ -359,6 +362,7 @@ public class TestItBitExchangeAdapter extends AbstractExchangeAdapterTest {
     exchangeAdapter.init(exchangeConfig);
 
     // marketId arg not needed for cancelling orders on this exchange.
+    //取消此交易所的订单不需要 marketId arg。
     final boolean success = exchangeAdapter.cancelOrder(ORDER_ID_TO_CANCEL, null);
     assertTrue(success);
     PowerMock.verifyAll();
@@ -383,6 +387,7 @@ public class TestItBitExchangeAdapter extends AbstractExchangeAdapterTest {
     exchangeAdapter.init(exchangeConfig);
 
     // marketId arg not needed for cancelling orders on this exchange.
+    //取消此交易所的订单不需要 marketId arg。
     exchangeAdapter.cancelOrder(ORDER_ID_TO_CANCEL, null);
     PowerMock.verifyAll();
   }
@@ -410,12 +415,14 @@ public class TestItBitExchangeAdapter extends AbstractExchangeAdapterTest {
     exchangeAdapter.init(exchangeConfig);
 
     // marketId arg not needed for cancelling orders on this exchange.
+    // 取消此交易所的订单不需要 marketId arg。
     exchangeAdapter.cancelOrder(ORDER_ID_TO_CANCEL, null);
     PowerMock.verifyAll();
   }
 
   // --------------------------------------------------------------------------
   //  Get Your Open Orders tests
+  // 获取您的未结订单测试
   // --------------------------------------------------------------------------
 
   @Test
@@ -454,6 +461,7 @@ public class TestItBitExchangeAdapter extends AbstractExchangeAdapterTest {
     final List<OpenOrder> openOrders = exchangeAdapter.getYourOpenOrders(MARKET_ID);
 
     // assert some key stuff; we're not testing GSON here.
+    //断言一些关键的东西；我们不是在这里测试 GSON。
     assertEquals(2, openOrders.size());
     assertEquals(MARKET_ID, openOrders.get(0).getMarketId());
     assertEquals("639ccf95-b87c-48ba-b27d-7bc09b841b81", openOrders.get(0).getId());
@@ -526,6 +534,7 @@ public class TestItBitExchangeAdapter extends AbstractExchangeAdapterTest {
 
   // --------------------------------------------------------------------------
   //  Get Market Orders tests
+  //// 获取市价单测试
   // --------------------------------------------------------------------------
 
   @Test
@@ -548,6 +557,7 @@ public class TestItBitExchangeAdapter extends AbstractExchangeAdapterTest {
     final MarketOrderBook marketOrderBook = exchangeAdapter.getMarketOrders(MARKET_ID);
 
     // assert some key stuff; we're not testing GSON here.
+    // 断言一些关键的东西；我们不是在这里测试 GSON。
     assertEquals(MARKET_ID, marketOrderBook.getMarketId());
 
     final BigDecimal buyPrice = new BigDecimal("236.73");
@@ -610,6 +620,7 @@ public class TestItBitExchangeAdapter extends AbstractExchangeAdapterTest {
 
   // --------------------------------------------------------------------------
   //  Get Latest Market Price tests
+  // 获取最新的市场价格测试
   // --------------------------------------------------------------------------
 
   @Test
@@ -671,6 +682,7 @@ public class TestItBitExchangeAdapter extends AbstractExchangeAdapterTest {
 
   // --------------------------------------------------------------------------
   //  Get Balance Info tests
+  // 获取余额信息测试
   // --------------------------------------------------------------------------
 
   @Test
@@ -706,12 +718,14 @@ public class TestItBitExchangeAdapter extends AbstractExchangeAdapterTest {
     final BalanceInfo balanceInfo = exchangeAdapter.getBalanceInfo();
 
     // assert some key stuff; we're not testing GSON here.
+    // 断言一些关键的东西；我们不是在这里测试 GSON。
     assertEquals(
         0, balanceInfo.getBalancesAvailable().get("XBT").compareTo(new BigDecimal("1.50000000")));
     assertEquals(
         0, balanceInfo.getBalancesAvailable().get("USD").compareTo(new BigDecimal("1000.9900000")));
 
     // itBot does not provide "balances on hold" info.
+    // itBot 不提供“暂停余额”信息。
     assertNull(balanceInfo.getBalancesOnHold().get("BTC"));
     assertNull(balanceInfo.getBalancesOnHold().get("USD"));
 
@@ -759,6 +773,7 @@ public class TestItBitExchangeAdapter extends AbstractExchangeAdapterTest {
 
   // --------------------------------------------------------------------------
   //  Get Ticker tests
+  // 获取 Ticker 测试
   // --------------------------------------------------------------------------
 
   @Test
@@ -826,6 +841,7 @@ public class TestItBitExchangeAdapter extends AbstractExchangeAdapterTest {
 
   // --------------------------------------------------------------------------
   //  Non Exchange visiting tests
+  // 非交易所访问测试
   // --------------------------------------------------------------------------
 
   @Test
@@ -869,6 +885,7 @@ public class TestItBitExchangeAdapter extends AbstractExchangeAdapterTest {
 
   // --------------------------------------------------------------------------
   //  Initialisation tests
+  // 初始化测试
   // --------------------------------------------------------------------------
 
   @Test
@@ -957,6 +974,7 @@ public class TestItBitExchangeAdapter extends AbstractExchangeAdapterTest {
 
   // --------------------------------------------------------------------------
   //  Request sending tests
+  // 请求发送测试
   // --------------------------------------------------------------------------
 
   @Test
@@ -1056,7 +1074,7 @@ public class TestItBitExchangeAdapter extends AbstractExchangeAdapterTest {
 
     final Map<String, String> requestParamMap = PowerMock.createPartialMock(HashMap.class, "put");
     expect(requestParamMap.put("userId", USERID))
-        .andStubReturn(null); // for precursor getBalanceInfo() call
+        .andStubReturn(null); // for precursor getBalanceInfo() call // 用于前驱 getBalanceInfo() 调用
     expect(requestParamMap.put("type", "limit")).andStubReturn(null);
     expect(
             requestParamMap.put(
@@ -1077,7 +1095,7 @@ public class TestItBitExchangeAdapter extends AbstractExchangeAdapterTest {
     expect(requestHeaderMap.put(eq("Authorization"), startsWith(KEY + ":"))).andStubReturn(null);
     expect(requestHeaderMap.put(eq("X-Auth-Timestamp"), anyString())).andStubReturn(null);
     expect(requestHeaderMap.put(eq("X-Auth-Nonce"), anyString())).andStubReturn(null);
-    PowerMock.replay(requestHeaderMap); // map needs to be in play early
+    PowerMock.replay(requestHeaderMap); // map needs to be in play early  // map需要尽早上线
 
     final ItBitExchangeAdapter exchangeAdapter =
         PowerMock.createPartialMockAndInvokeDefaultConstructor(
@@ -1092,6 +1110,7 @@ public class TestItBitExchangeAdapter extends AbstractExchangeAdapterTest {
         .andReturn(requestParamMap);
 
     // for precursor getBalanceInfo() call
+    // 用于前驱 getBalanceInfo() 调用
     final BalanceInfo balanceInfo = PowerMock.createMock(BalanceInfo.class);
     expect(exchangeAdapter.getBalanceInfo()).andStubReturn(balanceInfo);
     Whitebox.setInternalState(exchangeAdapter, MOCKED_WALLET_ID_FIELD_NAME, WALLET_ID);
@@ -1159,6 +1178,7 @@ public class TestItBitExchangeAdapter extends AbstractExchangeAdapterTest {
         .andReturn(requestParamMap);
 
     // for precursor getBalanceInfo() call
+    // 用于前驱 getBalanceInfo() 调用
     final BalanceInfo balanceInfo = PowerMock.createMock(BalanceInfo.class);
     expect(exchangeAdapter.getBalanceInfo()).andStubReturn(balanceInfo);
     Whitebox.setInternalState(exchangeAdapter, MOCKED_WALLET_ID_FIELD_NAME, WALLET_ID);
@@ -1190,7 +1210,7 @@ public class TestItBitExchangeAdapter extends AbstractExchangeAdapterTest {
 
     final Map<String, Object> requestParamMap = PowerMock.createPartialMock(HashMap.class, "put");
     expect(requestParamMap.put("userId", USERID))
-        .andStubReturn(null); // for precursor getBalanceInfo() call
+        .andStubReturn(null); // for precursor getBalanceInfo() call  // 用于前驱 getBalanceInfo() 调用
     expect(requestParamMap.put("type", "limit")).andStubReturn(null);
     expect(
             requestParamMap.put(
@@ -1211,7 +1231,7 @@ public class TestItBitExchangeAdapter extends AbstractExchangeAdapterTest {
     expect(requestHeaderMap.put(eq("Authorization"), startsWith(KEY + ":"))).andStubReturn(null);
     expect(requestHeaderMap.put(eq("X-Auth-Timestamp"), anyString())).andStubReturn(null);
     expect(requestHeaderMap.put(eq("X-Auth-Nonce"), anyString())).andStubReturn(null);
-    PowerMock.replay(requestHeaderMap); // map needs to be in play early
+    PowerMock.replay(requestHeaderMap); // map needs to be in play early // map需要尽早上线
 
     final ItBitExchangeAdapter exchangeAdapter =
         PowerMock.createPartialMockAndInvokeDefaultConstructor(

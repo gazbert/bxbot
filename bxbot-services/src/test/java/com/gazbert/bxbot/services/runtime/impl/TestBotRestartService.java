@@ -36,7 +36,7 @@ import org.springframework.cloud.context.restart.RestartEndpoint;
 
 /**
  * Tests Bot restart service behaves as expected.
- *
+ ** 测试 Bot 重启服务的行为是否符合预期。
  * @author gazbert
  */
 class TestBotRestartService {

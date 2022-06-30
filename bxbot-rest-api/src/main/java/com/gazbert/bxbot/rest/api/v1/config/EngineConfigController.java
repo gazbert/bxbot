@@ -50,10 +50,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
  * Controller for directing Engine config requests.
+ * 用于指导引擎配置请求的控制器。
  *
  * <p>Engine config can only be fetched and updated - it cannot be deleted or created.
+ * * <p>引擎配置只能被获取和更新 - 它不能被删除或创建。
  *
  * <p>There is only 1 Trading Engine per bot.
+ * <p>每个机器人只有 1 个交易引擎。
  *
  * @author gazbert
  * @since 1.0
@@ -74,9 +77,12 @@ public class EngineConfigController implements RestController {
 
   /**
    * Returns the Engine configuration for the bot.
+   * 返回机器人的引擎配置。
    *
    * @param principal the authenticated user making the request.
-   * @return the Engine configuration.
+   *                  发出请求的经过身份验证的用户。
+   *
+   * @return the Engine configuration. 引擎配置。
    */
   @PreAuthorize("hasRole('USER')")
   @GetMapping(value = ENGINE_RESOURCE_PATH)
@@ -95,20 +101,24 @@ public class EngineConfigController implements RestController {
   public EngineConfig getEngine(@Parameter(hidden = true) Principal principal) {
 
     LOG.info(
-        () -> "GET " + ENGINE_RESOURCE_PATH + " - getEngine() - caller: " + principal.getName());
+        () -> "GET " + ENGINE_RESOURCE_PATH + " - getEngine() - caller: getEngine() - 调用者：" + principal.getName());
 
     final EngineConfig engineConfig = engineConfigService.getEngineConfig();
-    LOG.info(() -> "Response: " + engineConfig);
+    LOG.info(() -> "Response: 响应：" + engineConfig);
     return engineConfig;
   }
 
   /**
    * Updates the Engine configuration for the bot.
+   * 更新机器人的引擎配置。
    *
    * @param principal the authenticated user making the request.
+   *                  发出请求的经过身份验证的用户。
+   *
    * @param config the Engine config to update.
-   * @return 200 'OK' HTTP status code and updated Engine config in the response body if update
-   *     successful, some other HTTP status code otherwise.
+   *               要更新的引擎配置。
+   * @return 200 'OK' HTTP status code and updated Engine config in the response body if update  successful, some other HTTP status code otherwise.
+   * @return 200 'OK' HTTP 状态代码，如果更新成功，则在响应正文中更新引擎配置，否则返回一些其他 HTTP 状态代码。
    */
   @PreAuthorize("hasRole('ADMIN')")
   @PutMapping(value = ENGINE_RESOURCE_PATH)
@@ -128,16 +138,16 @@ public class EngineConfigController implements RestController {
       @Parameter(hidden = true) Principal principal, @Valid @RequestBody EngineConfig config) {
 
     LOG.info(
-        () -> "PUT " + ENGINE_RESOURCE_PATH + " - updateEngine() - caller: " + principal.getName());
+        () -> "PUT " + ENGINE_RESOURCE_PATH + " - updateEngine() - caller: updateEngine() - 调用者：" + principal.getName());
 
-    LOG.info(() -> "Request: " + config);
+    LOG.info(() -> "Request: 请求： " + config);
 
     final EngineConfig updatedConfig = engineConfigService.updateEngineConfig(config);
     return buildResponseEntity(updatedConfig);
   }
 
   private ResponseEntity<EngineConfig> buildResponseEntity(EngineConfig entity) {
-    LOG.info(() -> "Response: " + entity);
+    LOG.info(() -> "Response: 响应：" + entity);
     return new ResponseEntity<>(entity, null, HttpStatus.OK);
   }
 }

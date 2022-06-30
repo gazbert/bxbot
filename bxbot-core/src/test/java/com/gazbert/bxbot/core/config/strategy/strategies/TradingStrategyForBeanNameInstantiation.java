@@ -32,6 +32,7 @@ import org.springframework.stereotype.Component;
 
 /**
  * Dummy strategy for bean name instantiation.
+ * bean 名称实例化的虚拟策略。
  *
  * @author gazbert
  */

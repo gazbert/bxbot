@@ -48,6 +48,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
  * Controller for directing Bot Status requests.
+ * 用于引导机器人状态请求的控制器。
  *
  * @author gazbert
  * @since 1.0
@@ -72,9 +73,13 @@ public class BotStatusController implements RestController {
 
   /**
    * Returns the process status for the bot.
+   * 返回机器人的进程状态。
    *
    * @param principal the authenticated user making the request.
+   *                  发出请求的经过身份验证的用户。
+   *
    * @return the process status.
+   * 进程状态。
    */
   @PreAuthorize("hasRole('USER')")
   @GetMapping(value = STATUS_RESOURCE_PATH)
@@ -93,7 +98,7 @@ public class BotStatusController implements RestController {
   public BotStatus getStatus(@Parameter(hidden = true) Principal principal) {
 
     LOG.info(
-        () -> "GET " + STATUS_RESOURCE_PATH + " - getStatus() - caller: " + principal.getName());
+        () -> "GET " + STATUS_RESOURCE_PATH + " - getStatus() - caller: - getStatus() - 调用者：" + principal.getName());
 
     final EngineConfig engineConfig = engineConfigService.getEngineConfig();
     final String status = botStatusService.getStatus();
@@ -104,7 +109,7 @@ public class BotStatusController implements RestController {
     botStatus.setStatus(status);
     botStatus.setDatetime(new Date());
 
-    LOG.info(() -> "Response: " + botStatus);
+    LOG.info(() -> "Response: 响应：" + botStatus);
     return botStatus;
   }
 }

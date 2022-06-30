@@ -51,9 +51,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 /**
  * REST Controller for handling initial authentication requests to obtain a JWT.
+ * 用于处理初始身份验证请求以获取 JWT 的 REST 控制器。
  *
  * <p>Code originated from the excellent JWT and Spring Boot example by Stephan Zerhusen:
- * https://github.com/szerhusenBC/jwt-spring-security-demo
+ https://github.com/szerhusenBC/jwt-spring-security-demo
+ <p>代码源自 Stephan Zerhusen 的优秀 JWT 和 Spring Boot 示例：
+ https://github.com/szerhusenBC/jwt-spring-security-demo
  *
  * @author gazbert
  */
@@ -67,10 +70,11 @@ public class AuthenticationController implements RestController {
 
   /**
    * Constructor for the controller.
+   * 控制器的构造函数。
    *
-   * @param authenticationManager the Spring Authentication Manager.
-   * @param userDetailsService the user details service for looking up users.
-   * @param jwtUtils JWT utility functions.
+   * @param authenticationManager the Spring Authentication Manager. Spring 身份验证管理器。
+   * @param userDetailsService the user details service for looking up users. 用于查找用户的用户详细信息服务。
+   * @param jwtUtils JWT utility functions.JWT 实用程序函数。
    */
   @Autowired
   public AuthenticationController(
@@ -85,12 +89,13 @@ public class AuthenticationController implements RestController {
 
   /**
    * Clients initially call this with their username/password in order to receive a JWT for use in
-   * future requests.
+    future requests.
+   客户最初使用他们的用户名/密码调用它，以便接收 JWT 以用于
+   未来的请求。
    *
-   * @param authenticationRequest the authentication request containing the client's
-   *     username/password.
-   * @return a JWT if the client was authenticated successfully.
-   * @throws AuthenticationException if the the client was not authenticated successfully.
+   * @param authenticationRequest the authentication request containing the client's  username/password. 包含客户端用户名/密码的身份验证请求。
+   * @return a JWT if the client was authenticated successfully. * @return 如果客户端成功验证，则返回 JWT。
+   * @throws AuthenticationException if the the client was not authenticated successfully.  @throws AuthenticationException 如果客户端没有成功认证。
    */
   @PostMapping(value = "/api/token")
   @Operation(summary = "Gets an API token")
@@ -115,7 +120,7 @@ public class AuthenticationController implements RestController {
 
     SecurityContextHolder.getContext().setAuthentication(authentication);
 
-    // Reload password post-security check, so we can generate the token...
+    // Reload password post-security check, so we can generate the token...  // 在安全检查后重新加载密码，这样我们就可以生成令牌...
     final JwtUser userDetails =
         (JwtUser) userDetailsService.loadUserByUsername(authenticationRequest.getUsername());
     final String token = jwtUtils.createToken(userDetails);
@@ -124,11 +129,11 @@ public class AuthenticationController implements RestController {
   }
 
   /**
-   * Clients should call this in order to refresh a JWT.
+   * Clients should call this in order to refresh a JWT. 客户端应该调用它来刷新 JWT。
    *
-   * @param request the request from the client.
-   * @return the JWT with an extended expiry time if the client was authenticated, a 400 Bad Request
-   *     otherwise.
+   * @param request the request from the client.  来自客户端的请求。
+   * @return the JWT with an extended expiry time if the client was authenticated, a 400 Bad Request  otherwise.
+   * * @return 如果客户端通过了身份验证，则返回具有延长到期时间的 JWT，否则返回 400 错误请求。
    */
   @GetMapping(value = "/api/token/refresh")
   @Operation(summary = "Refreshes an API token")

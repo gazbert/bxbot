@@ -33,6 +33,7 @@ import org.junit.jupiter.api.Test;
 
 /**
  * Tests NetworkConfig domain object behaves as expected.
+ * 测试 NetworkConfig 域对象的行为是否符合预期。
  *
  * @author gazbert
  */
@@ -44,7 +45,7 @@ class TestNetworkConfig {
       Arrays.asList(
           "Connection refused",
           "Connection reset",
-          "Remote host closed connection during handshake");
+          "Remote host closed connection during handshake 握手期间远程主机关闭连接");
 
   @Test
   void testInitialisationWorksAsExpected() {

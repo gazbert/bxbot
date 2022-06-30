@@ -25,6 +25,7 @@ package com.gazbert.bxbot.datastore.yaml;
 
 /**
  * Locations of YAML files for the entities.
+ * 实体的 YAML 文件的位置。
  *
  * @author gazbert
  */

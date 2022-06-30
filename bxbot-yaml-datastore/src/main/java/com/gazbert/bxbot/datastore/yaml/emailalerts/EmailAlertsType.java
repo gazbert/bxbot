@@ -27,6 +27,7 @@ import com.gazbert.bxbot.domain.emailalerts.EmailAlertsConfig;
 
 /**
  * Wraps Email Alerts config for dumping to and loading from YAML.
+ * 包装电子邮件警报配置以转储到 YAML 和从 YAML 加载。
  *
  * @author gazbert
  */

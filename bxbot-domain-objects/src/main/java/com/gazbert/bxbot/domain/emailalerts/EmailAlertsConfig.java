@@ -28,31 +28,38 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
  * Domain object representing the Email Alerts config.
+ * 表示电子邮件警报配置的域对象。
  *
  * @author gazbert
  */
 @Schema
 public class EmailAlertsConfig {
-
+//  描述 =
+//          “如果设置为 true，如果机器人因以下原因需要关闭，它将发送电子邮件警报”
+//          +“严重错误。”）
   @Schema(
       required = true,
       description =
-          "If set to true, the bot will send email alerts if it needs to shut down due to a "
-              + " critical error.")
+          "If set to true, the bot will send email alerts if it needs to shut down due to a  critical error. 如果设置为 true，如果机器人因严重错误而需要关闭，它将发送电子邮件警报。")
+
   private boolean enabled;
 
-  @Schema(description = "The SMTP details. Only required if enabled is set to true.")
+  @Schema(description = "The SMTP details. Only required if enabled is set to true. SMTP 详细信息。仅当启用设置为 true 时才需要。") //@Schema(description = "SMTP 详细信息。仅当启用设置为 true 时才需要。")
   private SmtpConfig smtpConfig;
 
-  // Required by ConfigurableComponentFactory
+  // Required by ConfigurableComponentFactory  // ConfigurableComponentFactory 需要
   public EmailAlertsConfig() {
   }
 
   /**
    * Creates a new EmailAlertsConfig.
+   * 创建一个新的 EmailAlertsConfig。
    *
    * @param enabled is enabled?
+   *                是否启用？
+   *
    * @param smtpConfig the SMTP config.
+   *                   SMTP 配置。
    */
   public EmailAlertsConfig(boolean enabled, SmtpConfig smtpConfig) {
     this.enabled = enabled;

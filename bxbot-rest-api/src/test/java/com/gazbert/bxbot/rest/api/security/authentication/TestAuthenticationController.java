@@ -65,9 +65,11 @@ import org.springframework.web.context.WebApplicationContext;
 
 /**
  * Tests the Authentication Controller behaves as expected.
- *
+ * * 测试身份验证控制器的行为是否符合预期。
  * <p>Code originated from the excellent JWT and Spring Boot example by Stephan Zerhusen:
- * https://github.com/szerhusenBC/jwt-spring-security-demo
+  https://github.com/szerhusenBC/jwt-spring-security-demo
+ <p>代码源自 Stephan Zerhusen 的优秀 JWT 和 Spring Boot 示例：
+ https://github.com/szerhusenBC/jwt-spring-security-demo
  *
  * @author gazbert
  */
@@ -83,6 +85,7 @@ class TestAuthenticationController {
   private MockMvc mockMvc;
 
   // Need these even though not used in the test directly because Spring loads it on startup...
+  // 即使没有直接在测试中使用也需要这些，因为 Spring 在启动时加载它......
   @MockBean private TradingEngine tradingEngine;
   @MockBean private EmailAlerter emailAlerter;
   @MockBean private RestartEndpoint restartEndpoint;

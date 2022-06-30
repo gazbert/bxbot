@@ -27,6 +27,7 @@ import com.gazbert.bxbot.domain.engine.EngineConfig;
 
 /**
  * Wraps Engine config for dumping to and loading from YAML.
+ * 包装引擎配置以转储到 YAML 和从 YAML 加载。
  *
  * @author gazbert
  */

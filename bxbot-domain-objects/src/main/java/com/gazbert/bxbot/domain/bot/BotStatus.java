@@ -29,6 +29,7 @@ import java.util.Date;
 
 /**
  * Domain object representing the Bot's status.
+ * 表示 Bot 状态的域对象。
  *
  * @author gazbert
  */
@@ -53,11 +54,19 @@ public class BotStatus {
 
   /**
    * Creates a new BotStatus.
+   * 创建一个新的 BotStatus。
    *
    * @param botId the bot Id.
+   *              机器人 ID。
+   *
    * @param displayName the bot display name.
+   *                    机器人显示名称
+   *
    * @param status the bot's status.
+   *               机器人的状态
+   *
    * @param datetime the current datetime.
+   *                 当前日期时间。
    */
   public BotStatus(String botId, String displayName, String status, Date datetime) {
     this.botId = botId;

@@ -27,6 +27,7 @@ import com.gazbert.bxbot.domain.engine.EngineConfig;
 
 /**
  * The Engine configuration repository.
+ * 引擎配置存储库。
  *
  * @author gazbert
  */

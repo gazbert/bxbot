@@ -40,7 +40,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-/**
+/**：加载并初始化要执行的交易策略的Util类。
  * Util class that loads and initialises the Trading Strategies to execute.
  *
  * @author gazbert
@@ -58,11 +58,18 @@ public class TradingStrategiesBuilder {
 
   /**
    * Builds the Trading Strategy execution list.
+   * 建立交易策略执行列表。
    *
    * @param strategies the strategies.
+   *                   策略。
+   *
    * @param markets the markets.
+   *                市场。
+   *
    * @param exchangeAdapter the Exchange Adapter.
+   *                        交换适配器。
    * @return the Trading Strategy list.
+   * @return 交易策略列表。
    */
   public List<TradingStrategy> buildStrategies(
       List<StrategyConfig> strategies,
@@ -71,22 +78,22 @@ public class TradingStrategiesBuilder {
 
     final List<TradingStrategy> tradingStrategiesToExecute = new ArrayList<>();
 
-    // Register the strategies
+    // Register the strategies  // 注册策略
     final Map<String, StrategyConfig> tradingStrategyConfigs = new HashMap<>();
     for (final StrategyConfig strategy : strategies) {
       tradingStrategyConfigs.put(strategy.getId(), strategy);
-      LOG.info(() -> "Registered Trading Strategy with Trading Engine: Id=" + strategy.getId());
+      LOG.info(() -> "Registered Trading Strategy with Trading Engine: Id=使用交易引擎注册的交易策略：Id=" + strategy.getId());
     }
 
-    // Set logic only as crude mechanism for checking for duplicate Markets.
+    // Set logic only as crude mechanism for checking for duplicate Markets.  仅将逻辑设置为检查重复市场的粗略机制。
     final Set<Market> loadedMarkets = new HashSet<>();
 
-    // Load em up and create the Strategies
+    // Load em up and create the Strategies   // 加载它们并创建策略
     for (final MarketConfig market : markets) {
       final String marketName = market.getName();
       if (!market.isEnabled()) {
         LOG.info(
-            () -> marketName + " market is NOT enabled for trading - skipping to next market...");
+            () -> marketName + " market is NOT enabled for trading - skipping to next market...市场未启用交易 - 跳至下一个市场...\"");
         continue;
       }
 
@@ -95,21 +102,21 @@ public class TradingStrategiesBuilder {
               marketName, market.getId(), market.getBaseCurrency(), market.getCounterCurrency());
       final boolean wasAdded = loadedMarkets.add(tradingMarket);
       if (!wasAdded) {
-        final String errorMsg = "Found duplicate Market! Market details: " + market;
+        final String errorMsg = "Found duplicate Market! Market details: 发现重复的市场！市场详情：" + market;
         LOG.fatal(() -> errorMsg);
         throw new IllegalArgumentException(errorMsg);
       } else {
         LOG.info(
             () ->
-                "Registered Market with Trading Engine: Id="
+                "Registered Market with Trading Engine: Id=“带有交易引擎的注册市场：Id=”"
                     + market.getId()
                     + ", Name="
                     + marketName);
       }
 
-      // Get the strategy to use for this Market
+      // Get the strategy to use for this Market      // 获取用于该市场的策略
       final String strategyToUse = market.getTradingStrategyId();
-      LOG.info(() -> "Market Trading Strategy Id to use: " + strategyToUse);
+      LOG.info(() -> "Market Trading Strategy Id to use: 要使用的市场交易策略 ID：" + strategyToUse);
 
       if (tradingStrategyConfigs.containsKey(strategyToUse)) {
         final StrategyConfig tradingStrategy = tradingStrategyConfigs.get(strategyToUse);
@@ -120,14 +127,14 @@ public class TradingStrategiesBuilder {
         } else {
           LOG.info(
               () ->
-                  "No (optional) configuration has been set for Trading Strategy: "
+                  "No (optional) configuration has been set for Trading Strategy: 没有为交易策略设置（可选）配置："
                       + strategyToUse);
         }
         LOG.info(() -> "StrategyConfigImpl (optional): " + tradingStrategyConfig);
 
-        /*
-         * Load the Trading Strategy impl, instantiate it, set its config, and store in the
-         * Trading Strategy execution list.
+        /**
+         * Load the Trading Strategy impl, instantiate it, set its config, and store in the Trading Strategy execution list.
+         * 加载 Trading Strategy impl，实例化它，设置它的配置，并存储在 Trading Strategy 执行列表中。
          */
         final TradingStrategy strategyImpl =
             tradingStrategyFactory.createTradingStrategy(tradingStrategy);
@@ -135,7 +142,7 @@ public class TradingStrategiesBuilder {
 
         LOG.info(
             () ->
-                "Initialized trading strategy successfully. Name: ["
+                "Initialized trading strategy successfully. Name: [ 成功初始化交易策略。姓名： ["
                     + tradingStrategy.getName()
                     + "] Class: "
                     + tradingStrategy.getClassName());
@@ -143,15 +150,15 @@ public class TradingStrategiesBuilder {
         tradingStrategiesToExecute.add(strategyImpl);
       } else {
 
-        // Game over. Config integrity blown - we can't find strat.
+        // Game over. Config integrity blown - we can't find strat.  // 游戏结束。配置完整性被破坏 - 我们找不到策略。
         final String errorMsg =
-            "Failed to find matching Strategy for Market "
+            "Failed to find matching Strategy for Market  “未能找到市场匹配策略”"
                 + market
-                + " - The Strategy "
+                + " - The Strategy “ - 战略”"
                 + "["
                 + strategyToUse
-                + "] cannot be found in the "
-                + " Strategy Descriptions map: "
+                + "] cannot be found in the 无法在 "
+                + " Strategy Descriptions map: 策略说明图："
                 + tradingStrategyConfigs;
         LOG.error(() -> errorMsg);
         throw new IllegalArgumentException(errorMsg);

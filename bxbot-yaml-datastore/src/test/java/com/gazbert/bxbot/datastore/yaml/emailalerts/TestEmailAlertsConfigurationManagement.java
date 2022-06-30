@@ -38,6 +38,7 @@ import org.junit.jupiter.api.Test;
 
 /**
  * Tests the Email Alerts configuration is loaded as expected.
+ * 测试电子邮件警报配置是否按预期加载。
  *
  * @author gazbert
  */
@@ -122,6 +123,7 @@ class TestEmailAlertsConfigurationManagement {
         EmailAlertsType.class, emailAlertsType, YAML_CONFIG_TO_SAVE_FILENAME);
 
     // Read it back in
+    // 读回
     final EmailAlertsType emailAlertsReloaded =
         ConfigurationManager.loadConfig(EmailAlertsType.class, YAML_CONFIG_TO_SAVE_FILENAME);
     assertTrue(emailAlertsReloaded.getEmailAlerts().isEnabled());
@@ -138,6 +140,7 @@ class TestEmailAlertsConfigurationManagement {
         .isEqualTo(TO_ADDRESS);
 
     // cleanup
+    // 清理
     Files.delete(FileSystems.getDefault().getPath(YAML_CONFIG_TO_SAVE_FILENAME));
   }
 

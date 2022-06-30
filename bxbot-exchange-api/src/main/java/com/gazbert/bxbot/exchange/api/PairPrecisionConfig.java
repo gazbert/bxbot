@@ -25,9 +25,10 @@ package com.gazbert.bxbot.exchange.api;
 
 /**
  * <p>Some Exchange Adapters will need custom precision configs when placing orders.</p>
+ * 一些 Exchange 适配器在下订单时需要自定义精度配置。
  *
- * <p>This interface allows us to have a uniform way to fetch this precision for the
- * various Exchange houses.</p>
+ * <p>This interface allows us to have a uniform way to fetch this precision for thevarious Exchange houses.</p>
+ * 这个接口允许我们有一个统一的方法来为不同的交易所获取这个精度。
  *
  * @author maiph
  * @since 1.2
@@ -36,19 +37,29 @@ public interface PairPrecisionConfig {
 
   /**
    * Gets the number of decimal places for price precision. The default value id no pair is found
-   * will be -1.
+   will be -1.
+   获取价格调整的小数位数。默认值 id 没有找到对
+   将为-1。
    *
    * @param pair the coin pair.
+   *             * @param 硬币对。
+   *
    * @return the number of decimal places for the price.
+   * @return 价格的小数位数。
    */
   int getPricePrecision(String pair);
 
   /**
    * Gets the number of decimal places for volume precision. The default value id no pair is found
-   * will be -1.
-   *
+   will be -1.
+   获取体积精度的小数位数。默认值 id 没有找到对
+   将为-1。
+
    * @param pair the coin pair.
+   *             硬币对。
+   *
    * @return the number of decimal places for volume.
+   * 体积的小数位数。
    */
   int getVolumePrecision(String pair);
 

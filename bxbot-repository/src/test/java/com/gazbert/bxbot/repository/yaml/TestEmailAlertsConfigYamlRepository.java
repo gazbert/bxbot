@@ -44,6 +44,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 /**
  * Tests YAML backed Email Alerts configuration repository behaves as expected.
+ * * 测试 YAML 支持的电子邮件警报配置存储库的行为是否符合预期。
  *
  * @author gazbert
  */
@@ -136,6 +137,7 @@ public class TestEmailAlertsConfigYamlRepository {
 
   // --------------------------------------------------------------------------
   // Private utils
+  //私有工具
   // --------------------------------------------------------------------------
 
   private static EmailAlertsType someEmailAlertsConfig() {

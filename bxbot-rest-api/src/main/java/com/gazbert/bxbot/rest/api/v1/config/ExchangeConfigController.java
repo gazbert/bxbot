@@ -48,10 +48,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
  * Controller for directing Exchange config requests.
+ * 用于指导 Exchange 配置请求的控制器。
  *
  * <p>Exchange config can only be fetched and updated - it cannot be deleted or created.
+ * * <p>Exchange 配置只能被获取和更新 - 它不能被删除或创建。
  *
  * <p>There is only 1 Exchange Adapter per bot.
+ * <p>每个机器人只有 1 个交换适配器。
  *
  * @author gazbert
  * @since 1.0
@@ -71,12 +74,18 @@ public class ExchangeConfigController implements RestController {
 
   /**
    * Returns the Exchange configuration for the bot.
+   * 返回机器人的 Exchange 配置。
    *
    * <p>The AuthenticationConfig is stripped out and not exposed for remote consumption. The API
-   * keys/credentials should not leave the bot's local machine via the REST API.
+    keys/credentials should not leave the bot's local machine via the REST API.
+   <p>AuthenticationConfig 已被剥离，不会公开以供远程使用。 API
+   密钥/凭据不应通过 REST API 离开机器人的本地计算机。
    *
    * @param principal the authenticated user making the request.
+   *                  发出请求的经过身份验证的用户。
+   *
    * @return the Exchange configuration.
+   *              交换配置。
    */
   @PreAuthorize("hasRole('USER')")
   @GetMapping(value = EXCHANGE_RESOURCE_PATH)
@@ -96,24 +105,29 @@ public class ExchangeConfigController implements RestController {
 
     LOG.info(
         () ->
-            "GET " + EXCHANGE_RESOURCE_PATH + " - getExchange() - caller: " + principal.getName());
+            "GET " + EXCHANGE_RESOURCE_PATH + " - getExchange() - caller: getExchange() - 调用者：" + principal.getName());
 
     final ExchangeConfig exchangeConfig = exchangeConfigService.getExchangeConfig();
     exchangeConfig.setAuthenticationConfig(null);
-    LOG.info(() -> "Response: " + exchangeConfig);
+    LOG.info(() -> "Response: 响应： " + exchangeConfig);
     return exchangeConfig;
   }
 
   /**
    * Updates the Exchange configuration for the bot.
+   * 更新机器人的 Exchange 配置。
    *
-   * <p>Any AuthenticationConfig is stripped out and not updated. The API keys/credentials should
-   * not enter the bot's local machine via the REST API.
+   * <p>Any AuthenticationConfig is stripped out and not updated. The API keys/credentials should not enter the bot's local machine via the REST API.
+   *  * <p>任何 AuthenticationConfig 都会被删除并且不会更新。 API 密钥/凭据不应通过 REST API 进入机器人的本地计算机。
    *
    * @param principal the authenticated user making the request.
+   *                  发出请求的经过身份验证的用户。
+   *
    * @param config the Exchange config to update.
-   * @return 200 'OK' HTTP status code with updated Exchange config in the body if update
-   *     successful, some other HTTP status code otherwise.
+   *               要更新的 Exchange 配置。
+   *
+   * @return 200 'OK' HTTP status code with updated Exchange config in the body if update  successful, some other HTTP status code otherwise.
+   *      @return 200 'OK' HTTP 状态代码，如果更新成功，则在正文中更新 Exchange 配置，否则返回一些其他 HTTP 状态代码。
    */
   @PreAuthorize("hasRole('ADMIN')")
   @PutMapping(value = EXCHANGE_RESOURCE_PATH)
@@ -136,10 +150,10 @@ public class ExchangeConfigController implements RestController {
         () ->
             "PUT "
                 + EXCHANGE_RESOURCE_PATH
-                + " - updateExchange() - caller: "
+                + " - updateExchange() - caller: - updateExchange() - 调用者："
                 + principal.getName());
 
-    LOG.info(() -> "Request: " + config);
+    LOG.info(() -> "Request: 请求： " + config);
 
     final ExchangeConfig updatedConfig =
         exchangeConfigService.updateExchangeConfig(mergeWithLocalAuthenticationConfig(config));
@@ -147,7 +161,7 @@ public class ExchangeConfigController implements RestController {
   }
 
   // ------------------------------------------------------------------------
-  // Private utils
+  // Private utils  // 私有工具
   // ------------------------------------------------------------------------
 
   private ExchangeConfig mergeWithLocalAuthenticationConfig(ExchangeConfig remoteConfig) {
@@ -157,7 +171,7 @@ public class ExchangeConfigController implements RestController {
   }
 
   private ResponseEntity<ExchangeConfig> buildResponseEntity(ExchangeConfig entity) {
-    LOG.info(() -> "Response: " + entity);
+    LOG.info(() -> "Response: 响应：" + entity);
     return new ResponseEntity<>(entity, null, HttpStatus.OK);
   }
 }

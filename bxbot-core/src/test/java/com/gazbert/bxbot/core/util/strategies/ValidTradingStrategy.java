@@ -28,8 +28,9 @@ import com.gazbert.bxbot.strategy.api.TradingStrategy;
 import com.gazbert.bxbot.trading.api.Market;
 import com.gazbert.bxbot.trading.api.TradingApi;
 
-/*
+/**
  * A valid (but useless) Trading Strategy for unit testing.
+ * 用于单元测试的有效（但无用）交易策略。
  */
 public class ValidTradingStrategy implements TradingStrategy {
   @Override

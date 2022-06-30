@@ -30,7 +30,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-/**
+/**封装(可选)策略配置项
  * Encapsulates (optional) Strategy Config Items.
  *
  * @author gazbert

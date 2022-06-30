@@ -40,6 +40,7 @@ import javax.validation.constraints.NotNull;
 
 /**
  * Represents a Role for a BX-bot User.
+ * * 代表 BX-bot 用户的角色。
  *
  * @author gazbert
  */

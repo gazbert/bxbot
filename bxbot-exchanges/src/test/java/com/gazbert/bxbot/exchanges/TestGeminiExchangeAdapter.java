@@ -64,6 +64,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 /**
  * Tests the behaviour of the Gemini Exchange Adapter.
+ * 测试 Gemini 交换适配器的行为。
  *
  * @author gazbert
  */
@@ -134,7 +135,8 @@ public class TestGeminiExchangeAdapter extends AbstractExchangeAdapterTest {
   private AuthenticationConfig authenticationConfig;
   private NetworkConfig networkConfig;
 
-  /** Create some exchange config - the TradingEngine would normally do this. */
+  /** Create some exchange config - the TradingEngine would normally do this.
+   * 创建一些交换配置 - TradingEngine 通常会这样做。*/
   @Before
   public void setupForEachTest() {
     authenticationConfig = PowerMock.createMock(AuthenticationConfig.class);
@@ -158,6 +160,7 @@ public class TestGeminiExchangeAdapter extends AbstractExchangeAdapterTest {
 
   // --------------------------------------------------------------------------
   //  Get Market Orders tests
+  // 获取市价单测试
   // --------------------------------------------------------------------------
 
   @Test
@@ -220,9 +223,9 @@ public class TestGeminiExchangeAdapter extends AbstractExchangeAdapterTest {
             BOOK + "/" + ETH_BTC_MARKET_ID)
         .andThrow(
             new ExchangeNetworkException(
-                "This famous linguist once said that of all the phrases in the"
-                    + " English language, of all the endless combinations of words in all of "
-                    + "history, that \"cellar door\" is the most beautiful."));
+                "这位著名的语言学家曾经说过“\n" +
+                        "                    +“ 英语，所有单词中所有无尽的组合”\n" +
+                        "                    + “历史，那个“地窖门”是最美的。"));
 
     PowerMock.replayAll();
     exchangeAdapter.init(exchangeConfig);
@@ -400,6 +403,7 @@ public class TestGeminiExchangeAdapter extends AbstractExchangeAdapterTest {
 
   // --------------------------------------------------------------------------
   //  Cancel Order tests
+  // 取消订单测试
   // --------------------------------------------------------------------------
 
   @Test
@@ -432,6 +436,7 @@ public class TestGeminiExchangeAdapter extends AbstractExchangeAdapterTest {
     exchangeAdapter.init(exchangeConfig);
 
     // marketId arg not needed for cancelling orders on this exchange.
+    //marketId arg not needed for cancelling orders on this exchange.
     final boolean success = exchangeAdapter.cancelOrder(ORDER_ID_TO_CANCEL, null);
     assertTrue(success);
 
@@ -458,6 +463,7 @@ public class TestGeminiExchangeAdapter extends AbstractExchangeAdapterTest {
     exchangeAdapter.init(exchangeConfig);
 
     // marketId arg not needed for cancelling orders on this exchange.
+    // 取消此交易所的订单不需要 marketId arg。
     exchangeAdapter.cancelOrder(ORDER_ID_TO_CANCEL, null);
 
     PowerMock.verifyAll();
@@ -473,12 +479,13 @@ public class TestGeminiExchangeAdapter extends AbstractExchangeAdapterTest {
             MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD,
             eq(ORDER_CANCEL),
             anyObject(Map.class))
-        .andThrow(new IllegalStateException("Try not. Do... or do not. There is no try."));
+        .andThrow(new IllegalStateException("Try not. Do... or do not. There is no try.尽量不要。做……或者不做。没有尝试。"));
 
     PowerMock.replayAll();
     exchangeAdapter.init(exchangeConfig);
 
     // marketId arg not needed for cancelling orders on this exchange.
+    // 取消此交易所的订单不需要 marketId arg。
     exchangeAdapter.cancelOrder(ORDER_ID_TO_CANCEL, null);
 
     PowerMock.verifyAll();
@@ -486,6 +493,7 @@ public class TestGeminiExchangeAdapter extends AbstractExchangeAdapterTest {
 
   // --------------------------------------------------------------------------
   //  Get Balance Info tests
+  // 获取余额信息测试
   // --------------------------------------------------------------------------
 
   @Test
@@ -511,6 +519,7 @@ public class TestGeminiExchangeAdapter extends AbstractExchangeAdapterTest {
     final BalanceInfo balanceInfo = exchangeAdapter.getBalanceInfo();
 
     // assert some key stuff; we're not testing GSON here.
+    // 断言一些关键的东西；我们不是在这里测试 GSON。
     assertEquals(
         0, balanceInfo.getBalancesAvailable().get("BTC").compareTo(new BigDecimal("7.2682949")));
     assertEquals(
@@ -567,6 +576,7 @@ public class TestGeminiExchangeAdapter extends AbstractExchangeAdapterTest {
 
   // --------------------------------------------------------------------------
   //  Get Latest Market Price tests
+  // 获取最新的市场价格测试
   // --------------------------------------------------------------------------
 
   @Test
@@ -641,6 +651,7 @@ public class TestGeminiExchangeAdapter extends AbstractExchangeAdapterTest {
 
   // --------------------------------------------------------------------------
   //  Get Your Open Orders tests
+  // 获取您的未结订单测试
   // --------------------------------------------------------------------------
 
   @Test
@@ -666,6 +677,7 @@ public class TestGeminiExchangeAdapter extends AbstractExchangeAdapterTest {
     final List<OpenOrder> openOrders = exchangeAdapter.getYourOpenOrders(ETH_BTC_MARKET_ID);
 
     // assert some key stuff; we're not testing GSON here.
+    //断言一些关键的东西；我们不是在这里测试 GSON。
     assertEquals(2, openOrders.size());
     assertEquals(ETH_BTC_MARKET_ID, openOrders.get(0).getMarketId());
     assertEquals("196267999", openOrders.get(0).getId());
@@ -729,6 +741,7 @@ public class TestGeminiExchangeAdapter extends AbstractExchangeAdapterTest {
 
   // --------------------------------------------------------------------------
   //  Non Exchange visiting tests
+  // 非交易所访问测试
   // --------------------------------------------------------------------------
 
   @Test
@@ -766,6 +779,7 @@ public class TestGeminiExchangeAdapter extends AbstractExchangeAdapterTest {
 
   // --------------------------------------------------------------------------
   //  Initialisation tests
+  // 初始化测试
   // --------------------------------------------------------------------------
 
   @Test
@@ -811,6 +825,7 @@ public class TestGeminiExchangeAdapter extends AbstractExchangeAdapterTest {
 
   // --------------------------------------------------------------------------
   //  Request sending tests
+  // 请求发送测试
   // --------------------------------------------------------------------------
 
   @Test
@@ -907,7 +922,7 @@ public class TestGeminiExchangeAdapter extends AbstractExchangeAdapterTest {
             eq("GET"),
             eq(null),
             eq(new HashMap<>()))
-        .andThrow(new TradingApiException("How about a magic trick?"));
+        .andThrow(new TradingApiException("How about a magic trick?魔术表演怎么样？"));
 
     PowerMock.replayAll();
     exchangeAdapter.init(exchangeConfig);
@@ -1013,7 +1028,7 @@ public class TestGeminiExchangeAdapter extends AbstractExchangeAdapterTest {
     expect(requestHeaderMap.put(eq("X-GEMINI-APIKEY"), eq(KEY))).andStubReturn(null);
     expect(requestHeaderMap.put(eq("X-GEMINI-PAYLOAD"), anyString())).andStubReturn(null);
     expect(requestHeaderMap.put(eq("X-GEMINI-SIGNATURE"), anyString())).andStubReturn(null);
-    PowerMock.replay(requestHeaderMap); // map needs to be in play early
+    PowerMock.replay(requestHeaderMap); // map needs to be in play early // MAP需要尽早上线
 
     final GeminiExchangeAdapter exchangeAdapter =
         PowerMock.createPartialMockAndInvokeDefaultConstructor(
@@ -1077,7 +1092,7 @@ public class TestGeminiExchangeAdapter extends AbstractExchangeAdapterTest {
     expect(requestHeaderMap.put(eq("X-GEMINI-APIKEY"), eq(KEY))).andStubReturn(null);
     expect(requestHeaderMap.put(eq("X-GEMINI-PAYLOAD"), anyString())).andStubReturn(null);
     expect(requestHeaderMap.put(eq("X-GEMINI-SIGNATURE"), anyString())).andStubReturn(null);
-    PowerMock.replay(requestHeaderMap); // map needs to be in play early
+    PowerMock.replay(requestHeaderMap); // map needs to be in play early // MAP需要尽早上线
 
     final GeminiExchangeAdapter exchangeAdapter =
         PowerMock.createPartialMockAndInvokeDefaultConstructor(

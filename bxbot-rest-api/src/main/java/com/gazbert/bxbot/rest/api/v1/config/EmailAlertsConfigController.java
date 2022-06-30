@@ -50,10 +50,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
  * Controller for directing Email Alerts config requests.
+ * 用于指导电子邮件警报配置请求的控制器。
  *
  * <p>Email Alerts config can only be fetched and updated - it cannot be deleted or created.
+ ** <p>电子邮件警报配置只能被获取和更新 - 它不能被删除或创建。
  *
  * <p>There is only 1 Email Alerter per bot.
+ * <p>每个机器人只有 1 个电子邮件警报器。
  *
  * @author gazbert
  * @since 1.0
@@ -74,9 +77,10 @@ public class EmailAlertsConfigController implements RestController {
 
   /**
    * Returns the Email Alerts configuration for the bot.
+   * 返回机器人的电子邮件警报配置。
    *
-   * @param principal the authenticated user making the request.
-   * @return the Email Alerts configuration.
+   * @param principal the authenticated user making the request.  发出请求的经过身份验证的用户。
+   * @return the Email Alerts configuration.  电子邮件警报配置。
    */
   @PreAuthorize("hasRole('USER')")
   @GetMapping(value = EMAIL_ALERTS_RESOURCE_PATH)
@@ -98,21 +102,21 @@ public class EmailAlertsConfigController implements RestController {
         () ->
             "GET "
                 + EMAIL_ALERTS_RESOURCE_PATH
-                + " - getEmailAlerts() - caller: "
+                + " - getEmailAlerts() - caller: - getEmailAlerts() - 来电者："
                 + principal.getName());
 
     final EmailAlertsConfig emailAlertsConfig = emailAlertsConfigService.getEmailAlertsConfig();
-    LOG.info(() -> "Response: " + emailAlertsConfig);
+    LOG.info(() -> "Response: 响应： " + emailAlertsConfig);
     return emailAlertsConfig;
   }
 
   /**
-   * Updates the Email Alerts configuration for the bot.
+   * Updates the Email Alerts configuration for the bot.  更新机器人的电子邮件警报配置。
    *
-   * @param principal the authenticated user making the request.
-   * @param config the Email Alerts config to update.
-   * @return 200 'OK' HTTP status code and Email Alerts config in response body if update
-   *     successful, some other HTTP status code otherwise.
+   * @param principal the authenticated user making the request.  发出请求的经过身份验证的用户。
+   * @param config the Email Alerts config to update.  要更新的电子邮件警报配置。
+   * @return 200 'OK' HTTP status code and Email Alerts config in response body if update  successful, some other HTTP status code otherwise.
+   * @return 200 'OK' HTTP 状态代码和电子邮件警报配置在响应正文中如果更新成功，否则一些其他 HTTP 状态代码。
    */
   @PreAuthorize("hasRole('ADMIN')")
   @PutMapping(value = EMAIL_ALERTS_RESOURCE_PATH)
@@ -135,10 +139,10 @@ public class EmailAlertsConfigController implements RestController {
         () ->
             "PUT "
                 + EMAIL_ALERTS_RESOURCE_PATH
-                + " - updateEmailAlerts() - caller: "
+                + " - updateEmailAlerts() - caller: - updateEmailAlerts() - 来电者："
                 + principal.getName());
 
-    LOG.info(() -> "Request: " + config);
+    LOG.info(() -> "Request: 请求： " + config);
 
     final EmailAlertsConfig updatedConfig =
         emailAlertsConfigService.updateEmailAlertsConfig(config);
@@ -146,7 +150,7 @@ public class EmailAlertsConfigController implements RestController {
   }
 
   private ResponseEntity<EmailAlertsConfig> buildResponseEntity(EmailAlertsConfig entity) {
-    LOG.info(() -> "Response: " + entity);
+    LOG.info(() -> "Response: 响应：" + entity);
     return new ResponseEntity<>(entity, null, HttpStatus.OK);
   }
 }

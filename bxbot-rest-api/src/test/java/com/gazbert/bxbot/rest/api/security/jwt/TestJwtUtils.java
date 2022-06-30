@@ -55,10 +55,12 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 /**
  * Tests the JWT utils.
+ * * 测试 JWT 工具。
  *
  * <p>Code originated from the excellent JWT and Spring Boot example by Stephan Zerhusen:
- * https://github.com/szerhusenBC/jwt-spring-security-demo
- *
+  https://github.com/szerhusenBC/jwt-spring-security-demo
+ *<p>代码源自 Stephan Zerhusen 的优秀 JWT 和 Spring Boot 示例：
+ *   https://github.com/szerhusenBC/jwt-spring-security-demo
  * @author gazbert
  */
 @ExtendWith(SpringExtension.class)
@@ -88,7 +90,8 @@ class TestJwtUtils {
   @InjectMocks private JwtUtils jwtUtils;
   @MockBean private Claims claims;
 
-  /** Setup for all tests. */
+  /** Setup for all tests.
+   * 设置所有测试。 */
   @BeforeEach
   void init() {
     MockitoAnnotations.initMocks(this);
@@ -101,6 +104,7 @@ class TestJwtUtils {
 
   // ------------------------------------------------------------------------
   // JWT Claims tests
+  // JWT 声明测试
   // ------------------------------------------------------------------------
 
   @Test
@@ -172,6 +176,7 @@ class TestJwtUtils {
 
   // ------------------------------------------------------------------------
   // JWT Validation tests
+  // JWT 验证测试
   // ------------------------------------------------------------------------
 
   @Test
@@ -183,7 +188,7 @@ class TestJwtUtils {
   @Test
   void whenValidateTokenCalledWithExpiredTokenThenExpectFailure() {
     ReflectionTestUtils.setField(jwtUtils, "allowedClockSkewInSecs", 0L);
-    ReflectionTestUtils.setField(jwtUtils, "expirationInSecs", 0L); // will expire fast!
+    ReflectionTestUtils.setField(jwtUtils, "expirationInSecs", 0L); // will expire fast!  // 将过渡！
     final String token = createTokenWithLastPasswordResetYesterday();
     assertThrows(JwtAuthenticationException.class, () -> jwtUtils.validateTokenAndGetClaims(token));
   }
@@ -196,6 +201,7 @@ class TestJwtUtils {
 
   // ------------------------------------------------------------------------
   // JWT Refresh tests
+  // JWT 刷新测试
   // ------------------------------------------------------------------------
 
   @Test
@@ -216,6 +222,7 @@ class TestJwtUtils {
     final Date lastPasswordResetDate = new Date();
 
     // Invalid as password changed after token was created.
+    // 无效，因为创建令牌后更改了密码。
     assertThat(jwtUtils.canTokenBeRefreshed(tokenClaims, lastPasswordResetDate)).isFalse();
   }
 
@@ -225,6 +232,7 @@ class TestJwtUtils {
     final Claims tokenClaims = jwtUtils.validateTokenAndGetClaims(token);
 
     // Valid as password has not been changed yet
+    // 有效，因为密码尚未更改
     assertThat(jwtUtils.canTokenBeRefreshed(tokenClaims, null)).isTrue();
   }
 
@@ -235,12 +243,14 @@ class TestJwtUtils {
     await().atLeast(Duration.ofSeconds(1));
 
     // Valid as token created after password last changed
+    // 与上次更改密码后创建的令牌一样有效
     final boolean canBeRefreshed = jwtUtils.canTokenBeRefreshed(tokenClaims, DateUtil.yesterday());
     assertThat(canBeRefreshed).isEqualTo(true);
   }
 
   // ------------------------------------------------------------------------
   // Util methods
+  // 实用方法
   // ------------------------------------------------------------------------
 
   private String createTokenWithLastPasswordResetYesterday() {

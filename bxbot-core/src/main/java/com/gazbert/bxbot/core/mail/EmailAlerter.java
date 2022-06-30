@@ -42,6 +42,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Component;
 
 /**
+ * //使用SMTP和TLS的简单邮件发件人。它只发送纯文本电子邮件。
  * A simple mail sender using SMTP and TLS. It sends plain/text email only.
  *
  * @author gazbert
@@ -66,9 +67,13 @@ public class EmailAlerter {
 
   /**
    * Sends an email message.
+   * 发送电子邮件。
    *
    * @param subject the email subject.
+   *                电子邮件主题。
+   *
    * @param msgContent the email content.
+   *                   电子邮件内容。
    */
   public void sendMessage(String subject, String msgContent) {
     if (sendEmailAlertsEnabled) {
@@ -91,24 +96,24 @@ public class EmailAlerter {
         message.setSubject(subject);
         message.setText(msgContent);
 
-        LOG.info(() -> "About to send following Email Alert with message content: " + msgContent);
+        LOG.info(() -> "About to send following Email Alert with message content: 即将发送以下带有消息内容的电子邮件警报：" + msgContent);
         Transport.send(message);
 
       } catch (MessagingException e) {
-        LOG.error(() -> "Failed to send Email Alert. Details: " + e.getMessage(), e);
+        LOG.error(() -> "Failed to send Email Alert. Details: 未能发送电子邮件警报。细节：" + e.getMessage(), e);
       }
     } else {
       LOG.warn(
           () ->
-              "Email Alerts are disabled. Not sending the following message: Subject: "
+              "Email Alerts are disabled. Not sending the following message: Subject: 电子邮件警报被禁用。未发送以下消息：主题："
                   + subject
-                  + " Content: "
+                  + " Content: 内容："
                   + msgContent);
     }
   }
 
   // ------------------------------------------------------------------------
-  // Private utils
+  // Private utils  // 私有工具
   // ------------------------------------------------------------------------
 
   private void initialise() {
@@ -117,22 +122,22 @@ public class EmailAlerter {
       sendEmailAlertsEnabled = emailAlertsConfig.isEnabled();
 
       if (sendEmailAlertsEnabled) {
-        LOG.info(() -> "Email Alert for emergency bot shutdown is enabled. Loading SMTP config...");
+        LOG.info(() -> "Email Alert for emergency bot shutdown is enabled. Loading SMTP config... 已启用紧急机器人关闭的电子邮件警报。正在加载 SMTP 配置...");
         smtpConfig = emailAlertsConfig.getSmtpConfig();
 
         if (smtpConfig == null) {
           final String errorMsg =
-              "Failed to initialise Email Alerter. "
-                  + "Alerts are enabled but no SMTP Config has been supplied in config.";
+              "Failed to initialise Email Alerter. 无法初始化电子邮件警报。"
+                  + "Alerts are enabled but no SMTP Config has been supplied in config. 警报已启用，但配置中未提供 SMTP 配置。";
           throw new IllegalStateException(errorMsg);
         }
 
-        LOG.info(() -> "SMTP host: " + smtpConfig.getHost());
-        LOG.info(() -> "SMTP TLS Port: " + smtpConfig.getTlsPort());
-        LOG.info(() -> "Account username: " + smtpConfig.getAccountUsername());
-        // Account password not logged intentionally
-        LOG.info(() -> "From address: " + smtpConfig.getFromAddress());
-        LOG.info(() -> "To address: " + smtpConfig.getToAddress());
+        LOG.info(() -> "SMTP host:  MTP主机：" + smtpConfig.getHost());
+        LOG.info(() -> "SMTP TLS Port: SMTP TLS 端口：" + smtpConfig.getTlsPort());
+        LOG.info(() -> "Account username: 账户用户名：" + smtpConfig.getAccountUsername());
+        // Account password not logged intentionally  // 没有刻意记录账户密码
+        LOG.info(() -> "From address: 从地址：" + smtpConfig.getFromAddress());
+        LOG.info(() -> "To address: 到地址：" + smtpConfig.getToAddress());
 
         smtpProps = new Properties();
         smtpProps.put("mail.smtp.auth", "true");
@@ -141,7 +146,7 @@ public class EmailAlerter {
         smtpProps.put("mail.smtp.port", smtpConfig.getTlsPort());
 
       } else {
-        LOG.warn(() -> "Email Alerts are disabled. Are you sure you want to configure this?");
+        LOG.warn(() -> "Email Alerts are disabled. Are you sure you want to configure this?电子邮件警报被禁用。您确定要配置这个吗？ ");
       }
     }
   }

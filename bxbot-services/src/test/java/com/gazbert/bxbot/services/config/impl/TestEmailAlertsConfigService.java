@@ -35,6 +35,7 @@ import org.junit.jupiter.api.Test;
 
 /**
  * Tests Email Alerts configuration service behaves as expected.
+ * * 测试电子邮件警报配置服务的行为是否符合预期。
  *
  * @author gazbert
  */

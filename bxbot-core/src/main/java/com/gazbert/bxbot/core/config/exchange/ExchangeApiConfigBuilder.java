@@ -31,6 +31,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
+ *Util类，用于构建Exchange API配置。
  * Util class for building the Exchange API config.
  *
  * @author gazbert
@@ -43,9 +44,10 @@ public final class ExchangeApiConfigBuilder {
   }
 
   /**
+   * 构建Exchange API配置。
    * Builds Exchange API config.
    *
-   * @param exchangeConfig the raw Exchange config.
+   * @param exchangeConfig the raw Exchange config. 原始Exchange配置。
    * @return the API Exchange config.
    */
   public static ExchangeConfigImpl buildConfig(ExchangeConfig exchangeConfig) {
@@ -65,8 +67,7 @@ public final class ExchangeApiConfigBuilder {
       } else {
         LOG.info(
             () ->
-                "No (optional) NetworkConfiguration NonFatalErrorCodes have been set for "
-                    + "Exchange Adapter: "
+                "No (optional) NetworkConfiguration NonFatalErrorCodes have been set for Exchange Adapter: “没有（可选）NetworkConfiguration NonFatalErrorCodes 已为 Exchange 适配器设置：”"
                     + exchangeConfig.getAdapter());
       }
 
@@ -76,18 +77,17 @@ public final class ExchangeApiConfigBuilder {
       } else {
         LOG.info(
             () ->
-                "No (optional) NetworkConfiguration NonFatalErrorMessages have been set for "
-                    + "Exchange Adapter: "
+                "No (optional) NetworkConfiguration NonFatalErrorMessages have been set for Exchange Adapter: “没有（可选）NetworkConfiguration NonFatalErrorMessages 已为 Exchange 适配器设置：”"
                     + exchangeConfig.getAdapter());
       }
 
       exchangeApiConfig.setNetworkConfig(exchangeApiNetworkConfig);
-      LOG.info(() -> "NetworkConfiguration has been set: " + exchangeApiNetworkConfig);
+      LOG.info(() -> "NetworkConfiguration has been set: NetworkConfiguration 已设置： " + exchangeApiNetworkConfig);
 
     } else {
       LOG.info(
           () ->
-              "No (optional) NetworkConfiguration has been set for Exchange Adapter: "
+              "No (optional) NetworkConfiguration has been set for Exchange Adapter: “没有（可选）为 Exchange 适配器设置网络配置：”"
                   + exchangeConfig.getAdapter());
     }
 
@@ -98,13 +98,13 @@ public final class ExchangeApiConfigBuilder {
       exchangeApiAuthenticationConfig.setItems(authenticationConfig);
       exchangeApiConfig.setAuthenticationConfig(exchangeApiAuthenticationConfig);
 
-      // We don't log the creds!
-      LOG.info(() -> "AuthenticationConfiguration has been set successfully.");
+      // We don't log the creds! 我们不记录信用！
+      LOG.info(() -> "AuthenticationConfiguration has been set successfully.AuthenticationConfiguration 已成功设置。");
 
     } else {
       LOG.info(
           () ->
-              "No (optional) AuthenticationConfiguration has been set for Exchange Adapter: "
+              "No (optional) AuthenticationConfiguration has been set for Exchange Adapter: “没有（可选）为 Exchange 适配器设置 AuthenticationConfiguration：”"
                   + exchangeConfig.getAdapter());
     }
 
@@ -113,11 +113,11 @@ public final class ExchangeApiConfigBuilder {
       final OtherConfigImpl exchangeApiOtherConfig = new OtherConfigImpl();
       exchangeApiOtherConfig.setItems(otherConfig);
       exchangeApiConfig.setOtherConfig(exchangeApiOtherConfig);
-      LOG.info(() -> "Other Exchange Adapter config has been set: " + exchangeApiOtherConfig);
+      LOG.info(() -> "Other Exchange Adapter config has been set: 其他 Exchange 适配器配置已设置：" + exchangeApiOtherConfig);
     } else {
       LOG.info(
           () ->
-              "No Other config has been set for Exchange Adapter: " + exchangeConfig.getAdapter());
+              "No Other config has been set for Exchange Adapter:没有为 Exchange 适配器设置其他配置： " + exchangeConfig.getAdapter());
     }
 
     return exchangeApiConfig;

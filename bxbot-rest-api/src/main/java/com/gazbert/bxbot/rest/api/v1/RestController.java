@@ -31,6 +31,7 @@ import org.springframework.context.annotation.PropertySource;
 
 /**
  * Controller for all REST config and runtime operations.
+ * 所有 REST 配置和运行时操作的控制器。
  *
  * @author gazbert
  * @since 1.0

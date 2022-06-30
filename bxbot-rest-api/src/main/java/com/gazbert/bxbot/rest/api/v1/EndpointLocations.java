@@ -26,17 +26,21 @@ package com.gazbert.bxbot.rest.api.v1;
 /**
  * Base paths for BX-bot v1 REST endpoints.
  *
+ * * BX-bot v1 REST 端点的基本路径。
  * @author gazbert
  */
 public final class EndpointLocations {
 
-  /** Base path for entire REST API. */
+  /** Base path for entire REST API.
+   * 整个 REST API 的基本路径。 */
   private static final String API_ENDPOINT_BASE_URI = "/api/v1";
 
-  /** Base path for configuration REST endpoints. */
+  /** Base path for configuration REST endpoints.
+   * 配置 REST 端点的基本路径。 */
   public static final String CONFIG_ENDPOINT_BASE_URI = API_ENDPOINT_BASE_URI + "/config";
 
-  /** Base path for runtime REST endpoints. */
+  /** Base path for runtime REST endpoints.
+   * 运行时 REST 端点的基本路径。 */
   public static final String RUNTIME_ENDPOINT_BASE_URI = API_ENDPOINT_BASE_URI + "/runtime";
 
   private EndpointLocations() {

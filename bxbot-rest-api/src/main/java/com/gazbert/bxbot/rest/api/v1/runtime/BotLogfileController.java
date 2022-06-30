@@ -53,6 +53,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  * Controller for directing Bot Logfile requests.
+ * 用于引导 Bot 日志文件请求的控制器。
  *
  * @author gazbert
  * @since 1.0
@@ -77,13 +78,16 @@ public class BotLogfileController implements RestController {
 
   /**
    * Returns the logfile as a download.
+   * 将日志文件作为下载返回。
    *
-   * <p>If the file is larger than {@link RestApiConfig#getLogfileDownloadSize()}, the end of the
-   * logfile will be truncated.
+   * <p>If the file is larger than {@link RestApiConfig#getLogfileDownloadSize()}, the end of the logfile will be truncated.
+   * * <p>如果文件大于 {@link RestApiConfig#getLogfileDownloadSize()}，日志文件的末尾将被截断。
    *
    * @param principal the authenticated user making the request.
-   * @param request the request.
-   * @return the logfile as a download.
+   *                  发出请求的经过身份验证的用户。
+   *
+   * @param request the request.  the request.
+   * @return the logfile as a download.  * @return 日志文件作为下载文件。
    */
   @PreAuthorize("hasRole('USER')")
   @GetMapping(value = LOGFILE_DOWNLOAD_RESOURCE_PATH)
@@ -106,7 +110,7 @@ public class BotLogfileController implements RestController {
         () ->
             "GET "
                 + LOGFILE_RESOURCE_PATH
-                + " - downloadLogfile() - caller: "
+                + " - downloadLogfile() - caller: - 下载日志文件（） - 调用者："
                 + principal.getName());
 
     Resource logfile;
@@ -120,9 +124,10 @@ public class BotLogfileController implements RestController {
     try {
       contentType = request.getServletContext().getMimeType(logfile.getFile().getAbsolutePath());
     } catch (IOException ex) {
-      LOG.info(() -> "Could not determine file type.");
+      LOG.info(() -> "Could not determine file type. 无法确定文件类型。");
     }
     // Fallback to the default content type if type could not be determined
+    // 如果无法确定类型，则回退到默认内容类型
     if (contentType == null) {
       contentType = "application/octet-stream";
     }
@@ -136,22 +141,31 @@ public class BotLogfileController implements RestController {
   }
 
   /**
-   * Returns logfile content for the bot.
+   * Returns logfile content for the bot.  返回机器人的日志文件内容。
    *
    * <p>If the file has more lines than {@link RestApiConfig#getMaxLogfileLines()}, the content will
-   * be truncated accordingly:
+    be truncated accordingly:
+   <p>如果文件的行数多于 {@link RestApiConfig#getMaxLogfileLines()}，则内容将
+   相应地被截断：
    *
    * <ul>
    *   <li>For a head request, the end of the file will be truncated.
+   *   <li>对于头部请求，文件末尾将被截断。
+   *
    *   <li>For a tail request, the start of the file will be truncated.
+   *   <li>对于尾部请求，文件的开头将被截断。
+   *
    *   <li>If head or tail param is not specified, the start of the file will be truncated.
+   *   <li>如果没有指定 head 或 tail 参数，文件的开头将被截断。
+   *
    *   <li>If both a head and tail param is present (just why?!!), a tail request will be actioned.
+   *   <li>如果同时存在 head 和 tail 参数（为什么？！！），则会执行尾部请求。
    * </ul>
    *
-   * @param principal the authenticated user making the request.
-   * @param head the number of lines to fetch from head of file.
-   * @param tail the number of lines to fetch from tail of file.
-   * @return the logfile.
+   * @param principal the authenticated user making the request.  发出请求的经过身份验证的用户。
+   * @param head the number of lines to fetch from head of file.  从文件头获取的行数。
+   * @param tail the number of lines to fetch from tail of file.  从文件尾部获取的行数。
+   * @return the logfile.  日志文件。
    */
   @PreAuthorize("hasRole('USER')")
   @GetMapping(value = LOGFILE_RESOURCE_PATH)
@@ -169,10 +183,10 @@ public class BotLogfileController implements RestController {
       })
   public ResponseEntity<String> getLogfile(
       @Parameter(hidden = true) Principal principal,
-      @Parameter(description = "Number of lines to fetch from head of file.", example = "100")
+      @Parameter(description = "Number of lines to fetch from head of file. 从文件头获取的行数。", example = "100")
           @RequestParam(required = false)
           Integer head,
-      @Parameter(description = "Number of lines to fetch from tail of file.", example = "100")
+      @Parameter(description = "Number of lines to fetch from tail of file. 从文件尾部获取的行数。", example = "100")
           @RequestParam(required = false)
           Integer tail) {
 
@@ -180,11 +194,11 @@ public class BotLogfileController implements RestController {
         () ->
             "GET "
                 + LOGFILE_RESOURCE_PATH
-                + " - getLogfile() - caller: "
+                + " - getLogfile() - caller: - getLogfile() - 调用者："
                 + principal.getName()
-                + ", head="
+                + ", head= 头="
                 + head
-                + ", tail="
+                + ", tail= 尾巴="
                 + tail);
 
     String logfile;
@@ -195,7 +209,7 @@ public class BotLogfileController implements RestController {
         if (head > maxLogfileLineCount) {
           LOG.warn(
               () ->
-                  "Requested head line count exceeds max line count. Using max line count: "
+                  "Requested head line count exceeds max line count. Using max line count: 请求的标题行数超过最大行数。使用最大行数："
                       + maxLogfileLineCount);
           logfile = botLogfileService.getLogfileHead(maxLogfileLineCount);
         } else {
@@ -206,7 +220,7 @@ public class BotLogfileController implements RestController {
         if (tail > maxLogfileLineCount) {
           LOG.warn(
               () ->
-                  "Requested tail line count exceeds max line count. Using max line count: "
+                  "Requested tail line count exceeds max line count. Using max line count: 请求的尾行数超过最大行数。使用最大行数："
                       + maxLogfileLineCount);
           logfile = botLogfileService.getLogfileTail(maxLogfileLineCount);
         } else {

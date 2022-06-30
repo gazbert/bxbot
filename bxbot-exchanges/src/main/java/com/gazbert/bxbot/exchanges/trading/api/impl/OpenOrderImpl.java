@@ -32,6 +32,7 @@ import java.util.Date;
 
 /**
  * A OpenOrder implementation that can be used by Exchange Adapters.
+ * 可由 Exchange 适配器使用的 OpenOrder 实现。
  *
  * @author gazbert
  */
@@ -48,15 +49,31 @@ public final class OpenOrderImpl implements OpenOrder {
 
   /**
    * Creates a new Open Order.
+   * 创建一个新的未结订单。
    *
    * @param id the order ID.
+   *           订单 ID。
+   *
    * @param creationDate the creation date.
+   *                     创建日期。
+   *
    * @param marketId the market ID.
+   *                 市场编号。
+   *
    * @param type the order type.
+   *             订单类型。
+   *
    * @param price the price.
+   *              价格。
+   *
    * @param quantity the quantity remaining.
+   *                 剩余的数量。
+   *
    * @param originalQuantity the original quantity.
+   *                         原始数量。
+   *
    * @param total the total cost.
+   *              总成本。
    */
   public OpenOrderImpl(
       String id,
@@ -88,7 +105,7 @@ public final class OpenOrderImpl implements OpenOrder {
     this.id = id;
   }
 
-  /** Returns the Order creation date. */
+  /** Returns the Order creation date. 返回订单创建日期。 */
   public Date getCreationDate() {
     if (creationDate != null) {
       return new Date(creationDate.getTime());

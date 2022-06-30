@@ -53,7 +53,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 /**
  * Tests the Bot Logfile controller behaviour.
- *
+ ** 测试 Bot Logfile 控制器行为。
  * @author gazbert
  */
 @ExtendWith(SpringExtension.class)
@@ -65,9 +65,11 @@ class TestBotLogfileController extends AbstractRuntimeControllerTest {
   private static final String LOGFILE_DOWNLOAD_URI = LOGFILE_ENDPOINT_URI + "/download";
 
   // This value must be the same as maxLogfileLines in test/resources/application.properties
+  // 此值必须与 test/resources/application.properties 中的 maxLogfileLines 相同
   private static final int MAX_LOGFILE_LINES = 2;
 
   // This value must be the same as maxLogfileDownloadSize in test/resources/application.properties
+  // 此值必须与 test/resources/application.properties 中的 maxLogfileDownloadSize 相同
   private static final int MAX_LOGFILE_DOWNLOAD_SIZE = 100;
 
   private static final String LOGFILE_LINE_1 = "4981 [main] 2019-07-20 17:30:20,429 INFO  Line 1";
@@ -78,6 +80,7 @@ class TestBotLogfileController extends AbstractRuntimeControllerTest {
   @MockBean private BotLogfileService botLogfileService;
 
   // Need these even though not used in the test directly because Spring loads it on startup...
+  // 需要这些，即使没有直接在测试中使用，因为 Spring 在启动时加载它...
   @MockBean private TradingEngine tradingEngine;
   @MockBean private EmailAlerter emailAlerter;
   @MockBean private RestartEndpoint restartEndpoint;

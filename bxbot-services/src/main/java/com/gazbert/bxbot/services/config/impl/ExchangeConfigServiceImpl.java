@@ -60,7 +60,7 @@ public class ExchangeConfigServiceImpl implements ExchangeConfigService {
 
   @Override
   public ExchangeConfig updateExchangeConfig(ExchangeConfig config) {
-    LOG.info(() -> "About to update Exchange config: " + config);
+    LOG.info(() -> "About to update Exchange config: 即将更新 Exchange 配置：" + config);
     return exchangeConfigRepository.save(config);
   }
 }

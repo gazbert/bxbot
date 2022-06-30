@@ -70,6 +70,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 /**
  * Tests the behaviour of the Kraken Exchange Adapter.
+ * 测试 Kraken 交换适配器的行为。
  *
  * @author gazbert
  */
@@ -121,6 +122,7 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
   private static final String CANCEL_ORDER = "CancelOrder";
 
   // Market id must be the same as the Asset Pair id. See:
+  // 市场 id 必须与资产对 id 相同。看：
   // https://www.kraken.com/help/api#get-tradable-pairs
   private static final String MARKET_ID = "XBTUSD";
   private static final BigDecimal BUY_ORDER_PRICE = new BigDecimal("456.41");
@@ -161,6 +163,7 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
 
   /**
    * Create some exchange config - the TradingEngine would normally do this.
+   * * 创建一些交换配置 - TradingEngine 通常会这样做。
    */
   @Before
   public void setupForEachTest() {
@@ -186,6 +189,7 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
 
   // --------------------------------------------------------------------------
   //  Get Market Orders tests
+  // 获取市价单测试
   // --------------------------------------------------------------------------
 
   @Test
@@ -197,12 +201,13 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
         new AbstractExchangeAdapter.ExchangeHttpResponse(
             200, "OK", new String(encoded, StandardCharsets.UTF_8));
 
-    // Mock out param map so we can assert the contents passed to the transport layer are what we
-    // expect.
+    // Mock out param map so we can assert the contents passed to the transport layer are what we expect.
+    // 模拟出参数映射，因此我们可以断言传递给传输层的内容是我们所期望的。
     final Map<String, String> requestParamMap = PowerMock.createMock(Map.class);
     expect(requestParamMap.put("pair", MARKET_ID)).andStubReturn(null);
 
     // Partial mock so we do not send stuff down the wire
+    // 部分模拟，所以我们不会通过网络发送东西
     final KrakenExchangeAdapter exchangeAdapter =
         PowerMock.createPartialMockAndInvokeDefaultConstructor(
             KrakenExchangeAdapter.class,
@@ -225,6 +230,7 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
     final MarketOrderBook marketOrderBook = exchangeAdapter.getMarketOrders(MARKET_ID);
 
     // assert some key stuff; we're not testing GSON here.
+    // 断言一些关键的东西；我们不是在这里测试 GSON。
     // assertTrue(marketOrderBook.getMarketId().equals(MARKET_ID));
 
     final BigDecimal buyPrice = new BigDecimal("662.55000");
@@ -332,6 +338,7 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
 
   // --------------------------------------------------------------------------
   //  Get Your Open Orders tests
+  // 获取您的未结订单测试
   // --------------------------------------------------------------------------
 
   @Test
@@ -360,6 +367,7 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
     final List<OpenOrder> openOrders = exchangeAdapter.getYourOpenOrders(MARKET_ID);
 
     // assert some key stuff; we're not testing GSON here.
+    // 断言一些关键的东西；我们不是在这里测试 GSON。
     assertEquals(2, openOrders.size());
     assertEquals(MARKET_ID, openOrders.get(0).getMarketId());
     assertEquals("OZUVVF-XEJUB-BOWOFO", openOrders.get(0).getId());
@@ -447,6 +455,7 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
 
   // --------------------------------------------------------------------------
   //  Create Orders tests
+  // 创建订单测试
   // --------------------------------------------------------------------------
 
   @Test
@@ -626,6 +635,7 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
 
   // --------------------------------------------------------------------------
   //  Cancel Order tests
+  // 取消订单测试
   // --------------------------------------------------------------------------
 
   @Test
@@ -732,6 +742,7 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
 
   // --------------------------------------------------------------------------
   //  Get Balance Info tests
+  // 获取余额信息测试
   // --------------------------------------------------------------------------
 
   @Test
@@ -758,6 +769,7 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
     final BalanceInfo balanceInfo = exchangeAdapter.getBalanceInfo();
 
     // assert some key stuff; we're not testing GSON here.
+    // 断言一些关键的东西；我们不是在这里测试 GSON。
     assertEquals(
         0,
         balanceInfo.getBalancesAvailable().get("XXBT").compareTo(new BigDecimal("1.1000000000")));
@@ -779,6 +791,7 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
             200, "OK", new String(encoded, StandardCharsets.UTF_8));
 
     // Partial mock so we do not send stuff down the wire
+    // 部分模拟，所以我们不会通过网络发送东西
     final KrakenExchangeAdapter exchangeAdapter =
         PowerMock.createPartialMockAndInvokeDefaultConstructor(
             KrakenExchangeAdapter.class, MOCKED_SEND_AUTHENTICATED_REQUEST_TO_EXCHANGE_METHOD);
@@ -838,6 +851,7 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
 
   // --------------------------------------------------------------------------
   //  Get Latest Market Price tests
+  // 获取最新的市场价格测试
   // --------------------------------------------------------------------------
 
   @Test
@@ -953,6 +967,7 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
 
   // --------------------------------------------------------------------------
   //  Get Latest Market Price tests
+  // 获取最新的市场价格测试
   // --------------------------------------------------------------------------
 
   @Test
@@ -994,7 +1009,7 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
     assertEquals(0, ticker.getOpen().compareTo(new BigDecimal("651.73600")));
     assertEquals(0, ticker.getVolume().compareTo(new BigDecimal("1152.99666422")));
     assertEquals(0, ticker.getVwap().compareTo(new BigDecimal("652.64807")));
-    assertNull(ticker.getTimestamp()); // timestamp not supplied by Kraken
+    assertNull(ticker.getTimestamp()); // timestamp not supplied by Kraken  // Kraken 不提供时间戳
 
     PowerMock.verifyAll();
   }
@@ -1066,6 +1081,7 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
 
   // --------------------------------------------------------------------------
   //  Non Exchange visiting tests
+  // 非交易所访问测试
   // --------------------------------------------------------------------------
 
   @Test
@@ -1107,6 +1123,7 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
 
   // --------------------------------------------------------------------------
   //  Initialisation tests
+  // 初始化测试
   // --------------------------------------------------------------------------
 
   @Test
@@ -1152,6 +1169,7 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
 
   // --------------------------------------------------------------------------
   //  Request sending tests
+  // 请求发送测试
   // --------------------------------------------------------------------------
 
   @Test
@@ -1300,7 +1318,7 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
         .andStubReturn(null);
     expect(requestHeaderMap.put(eq("API-Key"), eq(KEY))).andStubReturn(null);
     expect(requestHeaderMap.put(eq("API-Sign"), anyString())).andStubReturn(null);
-    PowerMock.replay(requestHeaderMap); // map needs to be in play early
+    PowerMock.replay(requestHeaderMap); // map needs to be in play early  // map需要尽早上线
 
     final KrakenExchangeAdapter exchangeAdapter =
         PowerMock.createPartialMockAndInvokeDefaultConstructor(
@@ -1425,7 +1443,7 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
         .andStubReturn(null);
     expect(requestHeaderMap.put(eq("API-Key"), eq(KEY))).andStubReturn(null);
     expect(requestHeaderMap.put(eq("API-Sign"), anyString())).andStubReturn(null);
-    PowerMock.replay(requestHeaderMap); // map needs to be in play early
+    PowerMock.replay(requestHeaderMap); // map needs to be in play early  map需要尽早上场
 
     final KrakenExchangeAdapter exchangeAdapter =
         PowerMock.createPartialMockAndInvokeDefaultConstructor(

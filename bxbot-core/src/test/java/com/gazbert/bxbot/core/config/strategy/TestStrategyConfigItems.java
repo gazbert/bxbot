@@ -32,6 +32,7 @@ import org.junit.jupiter.api.Test;
 
 /**
  * Test the StrategyConfigItems behaves as expected.
+ * 测试 StrategyConfigItems 的行为是否符合预期。
  *
  * @author gazbert
  */

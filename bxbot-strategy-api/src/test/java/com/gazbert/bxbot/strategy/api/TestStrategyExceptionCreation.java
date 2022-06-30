@@ -29,14 +29,15 @@ import org.junit.jupiter.api.Test;
 
 /**
  * Tests Strategy Exception is created as expected.
+ * 测试策略异常按预期创建。
  *
  * @author gazbert
  */
 class TestStrategyExceptionCreation {
 
   private static final String ERROR_MSG =
-      "Received unknown order id in current active orders API call";
-  private static final RuntimeException CAUSE = new RuntimeException("The cause of the exception");
+      "Received unknown order id in current active orders API call 在当前活动订单 API 调用中收到未知订单 ID";
+  private static final RuntimeException CAUSE = new RuntimeException("The cause of the exception 异常的原因");
 
   @Test
   void testCreationOfExceptionIsAsExpected() {

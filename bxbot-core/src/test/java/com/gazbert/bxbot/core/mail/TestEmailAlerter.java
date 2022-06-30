@@ -42,6 +42,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 /**
  * Test the Email Alerter behaves as expected.
+ * 测试电子邮件警报器的行为是否符合预期。
  *
  * @author gazbert
  */
@@ -122,10 +123,13 @@ public class TestEmailAlerter {
     PowerMock.verifyAll();
   }
 
-  /*
+  /**
    * Can safely run this test without 'real' credentials.
-   * Crude use of mocks to test behaviour.
-   * It does not send anything down the wire.
+    Crude use of mocks to test behaviour.
+    It does not send anything down the wire.
+   无需“真实”凭据即可安全运行此测试。
+   粗略地使用模拟来测试行为。
+   它不会发送任何东西。
    */
   @Test
   public void testEmailAlerterSendsMailSuccessfullyUsingMockTransport() throws Exception {
@@ -145,15 +149,25 @@ public class TestEmailAlerter {
 
   /**
    * Requires real credentials to run test. Will actually send email out. Good for testing that
-   * you're all setup before deployment.
+    you're all setup before deployment.
+   需要真实凭据才能运行测试。实际上会发送电子邮件。适合测试
+   你在部署之前都已经设置好了。
    *
    * <ol>
    *   <li>Uncomment @Test.
+   *   <li>取消注释@Test。
+   *
    *   <li>Change the [project-root]/config/email-alerts.yaml to use your account SMTP settings.
+   *   <li>更改 [project-root]/config/email-alerts.yaml 以使用您的帐户 SMTP 设置。
+   *
    *   <li>Comment out @RunWith(PowerMockRunner.class) and @PrepareForTest(Transport.class) at top
-   *       of class - they mess with the SSLContext and the test will fail - no time to debug why
-   *       but related to: https://code.google.com/p/powermock/issues/detail?id=288
-   *   <li>Run this test on its own.
+          of class - they mess with the SSLContext and the test will fail - no time to debug why
+          but related to: https://code.google.com/p/powermock/issues/detail?id=288
+      <li>Run this test on its own.
+   <li>注释掉顶部的@RunWith(PowerMockRunner.class) 和@PrepareForTest(Transport.class)
+   类的-他们弄乱了 SSLContext 并且测试将失败-没有时间调试原因
+   但相关：https://code.google.com/p/powermock/issues/detail?id=288
+   <li>自行运行此测试。
    * </ol>
    */
   // @Test
@@ -162,6 +176,7 @@ public class TestEmailAlerter {
     emailAlerter.sendMessage(EMAIL_SUBJECT, EMAIL_MSG);
 
     // expect to send message - check your inbox!
+    // 期望发送消息 - 检查您的收件箱！
   }
 
   // ------------------------------------------------------------------------

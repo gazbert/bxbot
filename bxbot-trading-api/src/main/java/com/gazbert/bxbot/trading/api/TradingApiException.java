@@ -25,14 +25,22 @@ package com.gazbert.bxbot.trading.api;
 
 /**
  * This exception is thrown from Exchange Adapter implementations when there is a problem making an
- * API call to the exchange.
+  API call to the exchange.
+ * 当生成一个问题时，Exchange 适配器实现会抛出此异常
+ 对交易所的 API 调用。
  *
  * <p>If your Trading Strategy receives this exception, this means something bad as happened; you
- * would probably want to wrap this exception in a StrategyException and let the Trading Engine
- * shutdown the bot immediately to prevent unexpected losses.
+  would probably want to wrap this exception in a StrategyException and let the Trading Engine
+  shutdown the bot immediately to prevent unexpected losses.
+ <p>如果您的交易策略收到此异常，这意味着发生了不好的事情；你
+ 可能希望将此异常包装在 StrategyException 中并让交易引擎
+ 立即关闭机器人以防止意外损失。
+
  *
  * <p>If the Trading Engine receives one of these exceptions from directly calling an Exchange
- * Adapter method, it shuts down the bot immediately.
+  Adapter method, it shuts down the bot immediately.
+ <p>如果交易引擎从直接调用交易所收到这些异常之一
+ 适配器方法，它立即关闭机器人。
  *
  * @author gazbert
  * @since 1.0
@@ -43,8 +51,10 @@ public class TradingApiException extends Exception {
 
   /**
    * Constructor builds exception with error message.
+   * 构造函数生成带有错误消息的异常。
    *
    * @param msg the error message.
+   *            错误信息。
    */
   public TradingApiException(String msg) {
     super(msg);
@@ -52,9 +62,13 @@ public class TradingApiException extends Exception {
 
   /**
    * Constructor builds exception with error message and original throwable.
+   * 构造函数使用错误消息和原始 throwable 构建异常。
    *
    * @param msg the error message.
+   *            错误信息。
+   *
    * @param e the original exception.
+   *          原来的例外。
    */
   public TradingApiException(String msg, Throwable e) {
     super(msg, e);

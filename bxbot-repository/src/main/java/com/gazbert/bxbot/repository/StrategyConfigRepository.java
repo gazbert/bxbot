@@ -28,6 +28,7 @@ import java.util.List;
 
 /**
  * The Strategy configuration repository.
+ * 策略配置存储库。
  *
  * @author gazbert
  */

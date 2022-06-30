@@ -30,46 +30,59 @@ import javax.validation.constraints.Positive;
 
 /**
  * Domain object representing the SMTP config used for Email Alerts.
+ * 表示用于电子邮件警报的 SMTP 配置的域对象。
  *
  * @author gazbert
  */
 @Schema(required = true)
 public class SmtpConfig {
 
-  @Schema(required = true, description = "The SMTP hostname.")
+  @Schema(required = true, description = "The SMTP hostname. SMTP 主机名。")
   private String host;
 
-  @Schema(required = true, description = "The SMTP TLS port.")
-  @Positive(message = "Port must be positive integer")
+  @Schema(required = true, description = "The SMTP TLS port. SMTP TLS 端口。")
+  @Positive(message = "Port must be positive integer 端口必须是正整数") //@Positive(message = "端口必须是正整数")
   private int tlsPort;
 
-  @Schema(required = true, description = "The sender email account name.")
+  @Schema(required = true, description = "发件人的电子邮件帐户名称。")
   private String accountUsername;
 
-  @Schema(required = true, description = "The sender email account password.")
+  @Schema(required = true, description = "The sender email account password. 发件人电子邮件帐户密码。")  //@Schema(required = true, description = "发件人电子邮件帐户密码。")
   private String accountPassword;
 
-  @Schema(required = true, description = "The email From address.")
-  @Email(message = "From Address must be a valid email address")
+  @Schema(required = true, description = "The email From address. 电子邮件发件人地址。")
+  @Email(message = " From Address must be a valid email address 发件人地址必须是有效的电子邮件地址")
   private String fromAddress;
 
-  @Schema(required = true, description = "The email To address.")
-  @Email(message = "To Address must be a valid email address")
+  @Schema(required = true, description = "The email To address. 电子邮件地址。")
+  @Email(message = "To Address must be a valid email address 收件人地址必须是有效的电子邮件地址")
   private String toAddress;
 
-  // required for jackson
+  // required for jackson  //jackson需要
   public SmtpConfig() {
   }
 
   /**
    * Creates a new SmtpConfig.
+   * 创建一个新的 SmtpConfig。
    *
    * @param host the SMTP host.
+   *             SMTP 主机。
+   *
    * @param tlsPort the TLS port to use.
+   *                要使用的 TLS 端口。
+   *
    * @param accountUsername the SMTP account name.
+   *                        accountUsername SMTP 帐户名称。
+   *
    * @param accountPassword the SMTP account password.
+   *                        SMTP 帐户密码。
+   *
    * @param fromAddress the email From address.
+   *                    电子邮件发件人地址。
+   *
    * @param toAddress the email To address.
+   *                  电子邮件地址。
    */
   public SmtpConfig(
       String host,

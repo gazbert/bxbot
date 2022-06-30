@@ -36,14 +36,20 @@ import java.util.UUID;
 
 /**
  * This test adapter is now deprecated. It has been superseded by the {@link
- * TryModeExchangeAdapter}.
+  TryModeExchangeAdapter}.
+ 此测试适配器现已弃用。它已被 {@link
+TryModeExchangeAdapter}。
  *
  * <p>Dummy Exchange adapter used to keep the bot up and running for engine and strategy testing.
+ * <p>虚拟交换适配器用于保持机器人正常运行以进行引擎和策略测试。
  *
  * <p>Makes public calls to the Bitstamp exchange. It does not trade. All private (authenticated)
- * requests are stubbed.
+  requests are stubbed.
+ <p>向 Bitstamp 交易所进行公开调用。它不交易。所有私有（经过身份验证）
+ 请求被存根。
  *
  * <p>Might be handy for 'dry testing' your algos.
+ * <p>对于“干式测试”您的算法可能会很方便。
  *
  * @author gazbert
  * @since 1.0 {@code @deprecated}

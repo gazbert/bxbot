@@ -35,6 +35,7 @@ import org.junit.jupiter.api.Test;
 
 /**
  * Tests Exchange configuration service behaves as expected.
+ * * 测试 Exchange 配置服务的行为是否符合预期。
  *
  * @author gazbert
  */

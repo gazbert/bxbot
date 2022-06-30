@@ -29,7 +29,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 /**
- * JPA repository for looking up User details.
+ * JPA repository for looking up User details.  用于查找用户详细信息的 JPA 存储库。
  *
  * @author gazbert
  */

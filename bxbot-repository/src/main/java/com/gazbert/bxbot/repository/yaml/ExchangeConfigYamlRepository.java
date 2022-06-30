@@ -36,6 +36,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 /**
  * An Exchange config repo that uses a YAML backed datastore.
+ * 使用 YAML 支持的数据存储的 Exchange 配置存储库。
  *
  * @author gazbert
  */
@@ -47,14 +48,14 @@ public class ExchangeConfigYamlRepository implements ExchangeConfigRepository {
 
   @Override
   public ExchangeConfig get() {
-    LOG.info(() -> "Fetching ExchangeConfig...");
+    LOG.info(() -> "Fetching ExchangeConfig... 正在获取 Exchange 配置...");
     return ConfigurationManager.loadConfig(ExchangeType.class, EXCHANGE_CONFIG_YAML_FILENAME)
         .getExchange();
   }
 
   @Override
   public ExchangeConfig save(ExchangeConfig config) {
-    LOG.info(() -> "About to save ExchangeConfig: " + config);
+    LOG.info(() -> "About to save ExchangeConfig: 即将保存 Exchange 配置：" + config);
 
     final ExchangeType exchangeType = new ExchangeType();
     exchangeType.setExchange(config);

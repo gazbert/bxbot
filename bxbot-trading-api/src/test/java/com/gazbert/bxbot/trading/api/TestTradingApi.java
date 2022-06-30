@@ -33,6 +33,7 @@ import org.junit.jupiter.api.Test;
 
 /**
  * Tests default impl methods of TradingApi interface.
+ * * 测试 TradingApi 接口的默认 impl 方法。
  *
  * @author gazbert
  */
@@ -61,7 +62,8 @@ class TestTradingApi {
     assertNull(ticker.getTimestamp());
   }
 
-  /** Test class. */
+  /** Test class.
+   * 测试类 */
   class MyApiImpl implements TradingApi {
 
     @Override

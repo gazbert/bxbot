@@ -61,25 +61,25 @@ public class MarketConfigServiceImpl implements MarketConfigService {
 
   @Override
   public MarketConfig getMarketConfig(String id) {
-    LOG.info(() -> "Fetching Market config for id: " + id);
+    LOG.info(() -> "Fetching Market config for id: 获取 id 的市场配置：" + id);
     return marketConfigRepository.findById(id);
   }
 
   @Override
   public MarketConfig updateMarketConfig(MarketConfig config) {
-    LOG.info(() -> "About to update Market config: " + config);
+    LOG.info(() -> "About to update Market config: 即将更新市场配置：" + config);
     return marketConfigRepository.save(config);
   }
 
   @Override
   public MarketConfig createMarketConfig(MarketConfig config) {
-    LOG.info(() -> "About to create Market config: " + config);
+    LOG.info(() -> "About to create Market config: 关于创建市场配置：" + config);
     return marketConfigRepository.save(config);
   }
 
   @Override
   public MarketConfig deleteMarketConfig(String id) {
-    LOG.info(() -> "About to delete Market config for id: " + id);
+    LOG.info(() -> "About to delete Market config for id: 即将删除 id 的市场配置：" + id);
     return marketConfigRepository.delete(id);
   }
 }

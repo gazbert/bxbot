@@ -31,6 +31,7 @@ import com.google.common.base.MoreObjects;
 
 /**
  * Exchange API Exchange config.
+ * 交换 API 交换配置。
  *
  * @author gazbert
  */

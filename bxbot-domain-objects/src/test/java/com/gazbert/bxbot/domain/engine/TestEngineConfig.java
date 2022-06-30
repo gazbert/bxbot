@@ -32,6 +32,7 @@ import org.junit.jupiter.api.Test;
 
 /**
  * Tests a EngineConfig domain object behaves as expected.
+ * 测试 EngineConfig 域对象的行为是否符合预期。
  *
  * @author gazbert
  */

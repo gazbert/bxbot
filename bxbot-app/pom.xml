@@ -7,6 +7,7 @@
   <artifactId>bxbot-app</artifactId>
   <packaging>jar</packaging>
   <name>BX-bot App</name>
+<!--  构建可分发的BX-bot应用程序-->
   <description>Builds the distributable BX-bot app</description>
   <url>http://github.com/gazbert/bxbot</url>
   <parent>

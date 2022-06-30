@@ -31,6 +31,7 @@ import java.util.List;
 
 /**
  * Exchange API Network config.
+ * Exchange API 网络配置。
  *
  * @author gazbert
  */

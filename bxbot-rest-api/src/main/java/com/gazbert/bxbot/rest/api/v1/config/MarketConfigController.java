@@ -53,6 +53,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
  * Controller for directing Market config requests.
+ * 用于指导市场配置请求的控制器。
  *
  * @author gazbert
  * @since 1.0
@@ -73,9 +74,10 @@ public class MarketConfigController implements RestController {
 
   /**
    * Returns all of the Market configuration for the bot.
+   * 返回机器人的所有市场配置。
    *
-   * @param principal the authenticated user.
-   * @return all the Market configurations.
+   * @param principal the authenticated user.  经过身份验证的用户。
+   * @return all the Market configurations.  所有市场配置。
    */
   @PreAuthorize("hasRole('USER')")
   @GetMapping(value = MARKETS_RESOURCE_PATH)
@@ -95,20 +97,26 @@ public class MarketConfigController implements RestController {
 
     LOG.info(
         () ->
-            "GET " + MARKETS_RESOURCE_PATH + " - getAllMarkets() - caller: " + principal.getName());
+            "GET " + MARKETS_RESOURCE_PATH + " - getAllMarkets() - caller: getAllMarkets() - 调用者：" + principal.getName());
 
     final List<MarketConfig> marketConfigs = marketConfigService.getAllMarketConfig();
-    LOG.info(() -> "Response: " + marketConfigs);
+    LOG.info(() -> "Response: 响应： " + marketConfigs);
 
     return marketConfigs;
   }
 
   /**
    * Returns the Market configuration for a given id.
+   * 返回给定 id 的市场配置。
    *
    * @param principal the authenticated user.
+   *                  经过身份验证的用户。
+   *
    * @param marketId the id of the Market to fetch.
+   *                 要获取的市场的 id。
+   *
    * @return the Market configuration.
+   *              市场配置。
    */
   @PreAuthorize("hasRole('USER')")
   @GetMapping(value = MARKETS_RESOURCE_PATH + "/{marketId}")
@@ -137,7 +145,7 @@ public class MarketConfigController implements RestController {
                 + MARKETS_RESOURCE_PATH
                 + "/"
                 + marketId
-                + " - getMarket() - caller: "
+                + " - getMarket() - caller: getMarket() - 调用者："
                 + principal.getName());
 
     final MarketConfig marketConfig = marketConfigService.getMarketConfig(marketId);
@@ -148,12 +156,17 @@ public class MarketConfigController implements RestController {
 
   /**
    * Updates a given Market configuration.
+   * 更新给定的市场配置。
    *
    * @param principal the authenticated user.
+   *                    经过身份验证的用户。
    * @param marketId id of the Market config to update.
+   *                  要更新的市场配置的 ID。
    * @param config the updated Market config.
-   * @return 200 'OK' HTTP status code if update successful, 404 'Not Found' HTTP status code if
-   *     Market config not found.
+   *               更新的市场配置。
+   *
+   * @return 200 'OK' HTTP status code if update successful, 404 'Not Found' HTTP status code if   Market config not found.
+   *      @return 200 'OK' HTTP 状态码，如果更新成功，404 'Not Found' HTTP 状态码，如果没有找到市场配置。
    */
   @PreAuthorize("hasRole('ADMIN')")
   @PutMapping(value = MARKETS_RESOURCE_PATH + "/{marketId}")
@@ -184,10 +197,10 @@ public class MarketConfigController implements RestController {
                 + MARKETS_RESOURCE_PATH
                 + "/"
                 + marketId
-                + " - updateMarket() - caller: "
+                + " - updateMarket() - caller: - updateMarket() - 调用者："
                 + principal.getName());
 
-    LOG.info(() -> "Request: " + config);
+    LOG.info(() -> "Request: 请求：" + config);
 
     if (config.getId() == null || !marketId.equals(config.getId())) {
       return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -201,11 +214,12 @@ public class MarketConfigController implements RestController {
 
   /**
    * Creates a new Market configuration.
+   * 创建一个新的市场配置。
    *
-   * @param principal the authenticated user.
-   * @param config the new Market config.
-   * @return 201 'Created' HTTP status code and created Market config in response body if create
-   *     successful, some other HTTP status code otherwise.
+   * @param principal the authenticated user.  经过身份验证的用户。
+   * @param config the new Market config.  新的市场配置。
+   * @return 201 'Created' HTTP status code and created Market config in response body if create successful, some other HTTP status code otherwise.
+   * @return 201 'Created' HTTP 状态码，如果创建成功，则在响应正文中创建市场配置，否则为其他一些 HTTP 状态码。
    */
   @PreAuthorize("hasRole('ADMIN')")
   @PostMapping(value = MARKETS_RESOURCE_PATH)
@@ -226,9 +240,9 @@ public class MarketConfigController implements RestController {
 
     LOG.info(
         () ->
-            "POST " + MARKETS_RESOURCE_PATH + " - createMarket() - caller: " + principal.getName());
+            "POST " + MARKETS_RESOURCE_PATH + " - createMarket() - caller: createMarket() - 调用者： " + principal.getName());
 
-    LOG.info(() -> "Request: " + config);
+    LOG.info(() -> "Request: 请求：" + config);
 
     final MarketConfig createdConfig = marketConfigService.createMarketConfig(config);
     return createdConfig == null
@@ -238,11 +252,14 @@ public class MarketConfigController implements RestController {
 
   /**
    * Deletes a Market configuration for a given id.
+   * 删除给定 id 的市场配置。
    *
    * @param principal the authenticated user.
+   *                  经过身份验证的用户。
    * @param marketId the id of the Market configuration to delete.
-   * @return 204 'No Content' HTTP status code if delete successful, 404 'Not Found' HTTP status
-   *     code if Market config not found.
+   *                 要删除的市场配置的 id。
+   * @return 204 'No Content' HTTP status code if delete successful, 404 'Not Found' HTTP status  code if Market config not found.
+   * @return 204 'No Content' HTTP 状态码，如果删除成功，404 'Not Found' HTTP 状态码，如果没有找到市场配置。
    */
   @PreAuthorize("hasRole('ADMIN')")
   @DeleteMapping(value = MARKETS_RESOURCE_PATH + "/{marketId}")
@@ -271,7 +288,7 @@ public class MarketConfigController implements RestController {
                 + MARKETS_RESOURCE_PATH
                 + "/"
                 + marketId
-                + " - deleteMarket() - caller: "
+                + " - deleteMarket() - caller: - deleteMarket() - 调用者："
                 + principal.getName());
 
     final MarketConfig deletedConfig = marketConfigService.deleteMarketConfig(marketId);
@@ -281,11 +298,11 @@ public class MarketConfigController implements RestController {
   }
 
   // ------------------------------------------------------------------------
-  // Private utils
+  // Private utils 私有工具
   // ------------------------------------------------------------------------
 
   private ResponseEntity<MarketConfig> buildResponseEntity(MarketConfig entity, HttpStatus status) {
-    LOG.info(() -> "Response: " + entity);
+    LOG.info(() -> "Response: 响应：" + entity);
     return new ResponseEntity<>(entity, null, status);
   }
 }

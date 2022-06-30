@@ -38,6 +38,7 @@ import org.junit.jupiter.api.Test;
 
 /**
  * Tests the Strategy configuration is loaded as expected.
+ * * 测试策略配置是否按预期加载。
  *
  * @author gazbert
  */
@@ -87,7 +88,9 @@ class TestStrategyConfigurationManagement {
             + " that buys at the current BID price, holds until current market "
             + "price has reached a configurable minimum percentage gain, and then sells at current"
             + " ASK price, thereby taking profit from the spread. Don't forget to factor in the "
-            + "exchange fees!");
+            + "exchange fees!" +
+                "一个简单的趋势跟随黄牛，以当前 BID 价格买入，一直保持到当前市场价格达到可配置的最小百分比收益，" +
+                "然后以当前 ASK 价格卖出，从而从价差中获利。不要忘记考虑兑换费用！");
     assertEquals(
         "com.gazbert.bxbot.strategies.ExampleScalpingStrategy",
         strategyConfig.getStrategies().get(0).getClassName());
@@ -104,8 +107,9 @@ class TestStrategyConfigurationManagement {
     assertEquals(
         "1", strategyConfig.getStrategies().get(0).getConfigItems().get("minimum-percentage-gain"));
 
-    /*
+    /**
      * Strat 2
+     * * 战略 2
      */
     assertEquals("ema-shorting-strategy", strategyConfig.getStrategies().get(1).getId());
     assertEquals("EMA Based Shorting Strat", strategyConfig.getStrategies().get(1).getName());
@@ -125,8 +129,8 @@ class TestStrategyConfigurationManagement {
     assertEquals(
         "20", strategyConfig.getStrategies().get(1).getConfigItems().get("longEmaInterval"));
 
-    /*
-     * Strat 3
+    /**
+     * Strat 3 * 战略 3
      */
     assertEquals("macd-strategy", strategyConfig.getStrategies().get(2).getId());
     assertEquals("MACD Based Strat", strategyConfig.getStrategies().get(2).getName());
@@ -156,7 +160,7 @@ class TestStrategyConfigurationManagement {
 
   @Test
   void testSavingConfigToYamlIsSuccessful() throws Exception {
-    // Strat 1
+    // Strat 1 第 1 层
     final StrategyConfig strategy1 = new StrategyConfig();
     strategy1.setId(STRAT_ID_1);
     strategy1.setName(STRAT_NAME_1);
@@ -168,7 +172,7 @@ class TestStrategyConfigurationManagement {
     strat1ConfigItems.put(AMOUNT_TO_BUY_CONFIG_ITEM_KEY, AMOUNT_TO_BUY_CONFIG_ITEM_VALUE);
     strategy1.setConfigItems(strat1ConfigItems);
 
-    // Strat 2
+    // Strat 2 第 2
     final StrategyConfig strategy2 = new StrategyConfig();
     strategy2.setId(STRAT_ID_2);
     strategy2.setName(STRAT_NAME_2);
@@ -187,11 +191,11 @@ class TestStrategyConfigurationManagement {
     ConfigurationManager.saveConfig(
         StrategiesType.class, strategiesConfig, YAML_CONFIG_TO_SAVE_FILENAME);
 
-    // Read it back in
+    // Read it back in 读回来
     final StrategiesType strategiesReloaded =
         ConfigurationManager.loadConfig(StrategiesType.class, YAML_CONFIG_TO_SAVE_FILENAME);
 
-    // Strat 1
+    // Strat 1 // 层 1
     assertThat(strategiesReloaded.getStrategies().get(0).getId()).isEqualTo(STRAT_ID_1);
     assertThat(strategiesReloaded.getStrategies().get(0).getName()).isEqualTo(STRAT_NAME_1);
     assertThat(strategiesReloaded.getStrategies().get(0).getDescription())
@@ -215,7 +219,7 @@ class TestStrategyConfigurationManagement {
                 .get(AMOUNT_TO_BUY_CONFIG_ITEM_KEY))
         .isEqualTo(AMOUNT_TO_BUY_CONFIG_ITEM_VALUE);
 
-    // Strat 2
+    // Strat 2 // 策略 2
     assertThat(strategiesReloaded.getStrategies().get(1).getId()).isEqualTo(STRAT_ID_2);
     assertThat(strategiesReloaded.getStrategies().get(1).getName()).isEqualTo(STRAT_NAME_2);
     assertThat(strategiesReloaded.getStrategies().get(1).getDescription())

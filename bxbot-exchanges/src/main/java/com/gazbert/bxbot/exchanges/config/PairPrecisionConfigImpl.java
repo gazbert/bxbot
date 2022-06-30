@@ -28,6 +28,7 @@ import java.util.Map;
 
 /**
  * Default implementation of {@link PairPrecisionConfig} backed by {@link Map}s.
+ * * {@link Map} 支持的 {@link PairPrecisionConfig} 的默认实现。
  *
  * @author maiph
  */

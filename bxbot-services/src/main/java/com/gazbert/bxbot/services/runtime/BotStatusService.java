@@ -25,6 +25,7 @@ package com.gazbert.bxbot.services.runtime;
 
 /**
  * The Bot status service.
+ * Bot 状态服务。
  *
  * @author gazbert
  */
@@ -32,8 +33,10 @@ public interface BotStatusService {
 
   /**
    * Returns the status of the Bot.
+   * 返回 Bot 的状态。
    *
    * @return UP if the bot is running, DOWN if the bot is not running.
+   * @return 如果机器人正在运行，则返回 UP，如果机器人未运行，则返回 DOWN。
    */
   String getStatus();
 }
