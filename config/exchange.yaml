@@ -1,72 +1,69 @@
 ############################################################################################
 # Exchange Adapter YAML config.
 #
+# - Sample config below currently set to run against Bitfinex.
 # - All fields are mandatory unless stated otherwise.
 # - BX-bot only supports running 1 exchange per bot.
-# - Sample config below is using the dry-run/paper trading TryModeExchangeAdapter - it's configured to delegate to the BitstampExchangeAdapter.
 # - The indentation levels are significant in YAML: https://en.wikipedia.org/wiki/YAML
 #
 # See the README "How do I write my own Exchange Adapter?" section for more details.
+# 交换适配器 YAML 配置。
+#
+# - 下面的示例配置当前设置为针对 Bitfinex 运行。
+# - 除非另有说明，否则所有字段均为必填项。
+# - BX-bot 仅支持每个机器人运行 1 个交换。
+# - 缩进级别在 YAML 中很重要：https://en.wikipedia.org/wiki/YAML
+#
+# 请参阅自述文件“我如何编写自己的 Exchange 适配器？” 部分了解更多详情。
 ############################################################################################
 ---
 exchange:
 
   # A friendly name for the Exchange. Value must be an alphanumeric string. Spaces are allowed.
-  name: Try-Mode ExchangeAdapter
+  # Exchange 的友好名称。 值必须是字母数字字符串。 允许空格。
+  name: Bitfinex
 
   # For the adapter value, you must specify the fully qualified name of your Exchange Adapter class so the Trading Engine
   # can load and execute it. The class must be on the runtime classpath.
-  adapter: com.gazbert.bxbot.exchanges.TryModeExchangeAdapter
+  # 对于适配器值，您必须指定 Exchange 适配器类的完全限定名称，以便交易引擎
+  # 可以加载并执行它。 该类必须在运行时类路径上。
+  adapter: com.gazbert.bxbot.exchanges.BitfinexExchangeAdapter
 
   authenticationConfig:
-    # Add your Exchange trading API credentials here.
-    # This example is for the TryModeExchangeAdapter delegating to Bitstamp. See https://www.bitstamp.net/api/ - API Authentication.
-    client-id: your-client-id
-    key: your-api-key
-    secret: your-secret-key
+    # See "Authentication" section: https://www.bitfinex.com/account/apis to get your Bitfinex Trading API credentials.
+    # 请参阅“身份验证”部分：https://www.bitfinex.com/account/apis 以获取您的 Bitfinex 交易 API 凭证。
+    key: 1ObRGaVgwfcaYwebE0ave1ACiFzQs51evimKHCjEBj3
+    secret: WLYzLXkgbmr3RnKx2OxHqVUVWyyKM9kK6IlrEDflEh8
 
   networkConfig:
     # This value is in SECONDS. It is the timeout value that the exchange adapter will wait on socket connect/socket read
     # when communicating with the exchange. Once this threshold has been breached, the exchange adapter will give up and
     # throw a Trading API TimeoutException.
+    # 这个值以秒为单位。 这是交换适配器将等待套接字连接/套接字读取的超时值
+    # 与交易所通信时。 一旦超过此阈值，交换适配器将放弃并
+    # 抛出一个交易 API TimeoutException。
     #
     # The exchange adapter is single threaded: if one request gets blocked, it will block all subsequent requests from
     # getting to the exchange. This timeout prevents an indefinite block.
+    # 交换适配器是单线程的：如果一个请求被阻塞，它将阻塞所有后续请求
+    # 到达交易所。 此超时可防止无限期阻塞。
     #
     # You'll need to experiment with values here.
+    # 你需要在这里试验值。
     connectionTimeout: 30
 
     # Optional HTTP status codes that will trigger the adapter to throw a non-fatal ExchangeNetworkException
     # if the exchange returns any of the below in an API call response:
+    # 将触发适配器抛出非致命 ExchangeNetworkException 的可选 HTTP 状态代码
+    # 如果交易所在 API 调用响应中返回以下任何内容：
     nonFatalErrorCodes: [502, 503, 504, 520, 522, 525]
 
     # Optional java.io exception messages that will trigger the adapter to throw a non-fatal ExchangeNetworkException
     # if the exchange returns any of the below in an API call response:
+    # 可选的 java.io 异常消息，将触发适配器抛出非致命的 ExchangeNetworkException
+    # 如果交易所在 API 调用响应中返回以下任何内容：
     nonFatalErrorMessages:
       - Connection reset
       - Connection refused
       - Remote host closed connection during handshake
       - Unexpected end of file from server
-
-  # Other config for adapter - it's not mandatory.
-  # It's included here to show example usage with the dry-run/paper trading TryModeExchangeAdapter.
-  # The config values have been configured for Bitstamp.
-  otherConfig:
-
-    # The counter currency which is being simulated. This must match your chosen market counter currency.
-    simulatedCounterCurrency: USD
-
-    # The starting balance for the simulation. The simulation starts with this amount for counter currency.
-    counterCurrencyStartingBalance: 100
-
-    # The base currency which is simulated. This must match your chosen market base currency.
-    simulatedBaseCurrency: BTC
-
-    # The starting balance for the simulation. The simulation starts with this amount for base currency.
-    baseCurrencyStartingBalance: 2
-
-    # The adapter which should be used for public API calls.
-    # All special config values for this adapter must be given in this otherConfig section as well.
-    # In this case, the otherConfig is for the Bitstamp exchange.
-    delegateAdapter: com.gazbert.bxbot.exchanges.BitstampExchangeAdapter
-

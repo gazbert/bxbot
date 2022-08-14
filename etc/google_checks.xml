@@ -6,13 +6,18 @@
 <!--
     Checkstyle configuration that checks the Google coding conventions from Google Java Style
     that can be found at https://google.github.io/styleguide/javaguide.html
+    从 Google Java Style 检查 Google 编码约定的 Checkstyle 配置
+     可以在 https://google.github.io/styleguide/javaguide.html 找到
 
     Checkstyle is very configurable. Be sure to read the documentation at
     http://checkstyle.sf.net (or in your downloaded distribution).
+    Checkstyle 是非常可配置的。 请务必阅读文档
+     http://checkstyle.sf.net（或在您下载的发行版中）。
 
     To completely disable a check, just comment it out or delete it from the file.
-
+    要完全禁用检查，只需将其注释掉或从文件中删除。
     Authors: Max Vetrenko, Ruslan Diachenko, Roman Ivanov.
+    出局者：马赫·维特连科、鲁斯兰·迪亚琴科、罗曼·伊万诺夫。
  -->
 
 <module name = "Checker">
@@ -21,12 +26,12 @@
   <property name="severity" value="warning"/>
 
   <property name="fileExtensions" value="java, properties, xml"/>
-  <!-- Excludes all 'module-info.java' files              -->
+  <!-- Excludes all 'module-info.java' files   排除所有“module-info.java”文件            -->
   <!-- See https://checkstyle.org/config_filefilters.html -->
   <module name="BeforeExecutionExclusionFileFilter">
     <property name="fileNamePattern" value="module\-info\.java$"/>
   </module>
-  <!-- Checks for whitespace                               -->
+  <!-- Checks for whitespace     检查空格                          -->
   <!-- See http://checkstyle.sf.net/config_whitespace.html -->
   <module name="FileTabCharacter">
     <property name="eachLine" value="true"/>
@@ -105,13 +110,13 @@
       <property name="option" value="EOL"/>
     </module>
     <module name="SeparatorWrap">
-      <!-- ELLIPSIS is EOL until https://github.com/google/styleguide/issues/258 -->
+      <!-- ELLIPSIS is EOL until 省略号是 EOL，直到 https://github.com/google/styleguide/issues/258 -->
       <property name="id" value="SeparatorWrapEllipsis"/>
       <property name="tokens" value="ELLIPSIS"/>
       <property name="option" value="EOL"/>
     </module>
     <module name="SeparatorWrap">
-      <!-- ARRAY_DECLARATOR is EOL until https://github.com/google/styleguide/issues/259 -->
+      <!-- ARRAY_DECLARATOR is EOL until ARRAY_DECLARATOR 为 EOL，直到 https://github.com/google/styleguide/issues/259 -->
       <property name="id" value="SeparatorWrapArrayDeclarator"/>
       <property name="tokens" value="ARRAY_DECLARATOR"/>
       <property name="option" value="EOL"/>

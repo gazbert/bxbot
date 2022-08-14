@@ -415,15 +415,35 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter
        * The adapter only fetches the 'exchange' account balance details - this is the Bitfinex 'exchange' account, i.e. the limit order trading account balance.
        * * 适配器仅获取“交易所”账户余额详情——这是 Bitfinex 的“交易所”账户，即限价单交易账户余额。
        */
+      /*TODO 此处为真逻辑*/
+//      if (allAccountBalances != null) {
+//        allAccountBalances.stream()
+//            .filter(accountBalance -> accountBalance.type.equalsIgnoreCase(EXCHANGE))
+//            .forEach(
+//                accountBalance -> {
+//                  if (accountBalance.currency.equalsIgnoreCase("usd")) {
+//                    balancesAvailable.put("USD", accountBalance.available);
+//                  } else if (accountBalance.currency.equalsIgnoreCase("btc")) {
+//                    balancesAvailable.put("BTC", accountBalance.available);
+//                  }
+//                });
+//      }
+      /*TODO 此处为模拟账号测试逻辑*/
       if (allAccountBalances != null) {
         allAccountBalances.stream()
             .filter(accountBalance -> accountBalance.type.equalsIgnoreCase(EXCHANGE))
             .forEach(
                 accountBalance -> {
-                  if (accountBalance.currency.equalsIgnoreCase("usd")) {
-                    balancesAvailable.put("USD", accountBalance.available);
-                  } else if (accountBalance.currency.equalsIgnoreCase("btc")) {
-                    balancesAvailable.put("BTC", accountBalance.available);
+                  if (accountBalance.currency.equalsIgnoreCase("AAA")) {
+                    balancesAvailable.put("TESTAAA", accountBalance.available);
+                  } else if (accountBalance.currency.equalsIgnoreCase("BBB")) {
+                    balancesAvailable.put("TESTBBB", accountBalance.available);
+                  } else if (accountBalance.currency.equalsIgnoreCase("TESTBTC")) {
+                    balancesAvailable.put("TESTBTC", accountBalance.available);
+                  }else if (accountBalance.currency.equalsIgnoreCase("TESTUSD")) {
+                    balancesAvailable.put("TESTUSD", accountBalance.available);
+                  }else if (accountBalance.currency.equalsIgnoreCase("TESTUSDT")) {
+                    balancesAvailable.put("TESTUSDT", accountBalance.available);
                   }
                 });
       }

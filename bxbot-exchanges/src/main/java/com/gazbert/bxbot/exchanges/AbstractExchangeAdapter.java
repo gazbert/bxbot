@@ -70,19 +70,19 @@ abstract class AbstractExchangeAdapter {
   private static final String EXCHANGE_CONFIG_FILE = "config/exchange.yaml";
 
   private static final String UNEXPECTED_IO_ERROR_MSG =
-      "Failed to connect to Exchange due to unexpected IO error.";
+      "Failed to connect to Exchange due to unexpected IO error. 由于意外 IO 错误，无法连接到 Exchange。";
   private static final String IO_SOCKET_TIMEOUT_ERROR_MSG =
-      "Failed to connect to Exchange due to socket timeout.";
+      "Failed to connect to Exchange due to socket timeout. 由于套接字超时，无法连接到 Exchange。";
   private static final String IO_5XX_TIMEOUT_ERROR_MSG =
-      "Failed to connect to Exchange due to 5xx timeout.";
+      "Failed to connect to Exchange due to 5xx timeout. 由于 5xx 超时，无法连接到 Exchange。";
   private static final String AUTHENTICATION_CONFIG_MISSING =
-      "authenticationConfig is missing in exchange.yaml file.";
+      "authenticationConfig is missing in exchange.yaml file. exchange.yaml 文件中缺少 authenticationConfig。";
   private static final String NETWORK_CONFIG_MISSING =
-      "networkConfig is missing in exchange.yaml file.";
+      "networkConfig is missing in exchange.yaml file. exchange.yaml 文件中缺少 networkConfig。";
   private static final String OTHER_CONFIG_MISSING =
-      "otherConfig is missing in exchange.yaml file.";
+      "otherConfig is missing in exchange.yaml file. exchange.yaml 文件中缺少 otherConfig。";
   private static final String CONFIG_IS_NULL_OR_ZERO_LENGTH =
-      " cannot be null or zero length! " + "HINT: is the value set in the ";
+      " cannot be null or zero length! HINT: is the value set in the  不能为空或零长度！提示：是在";
 
   private static final String CONNECTION_TIMEOUT_PROPERTY_NAME = "connection-timeout";
   private static final String NON_FATAL_ERROR_CODES_PROPERTY_NAME = "non-fatal-error-codes";
@@ -148,12 +148,13 @@ abstract class AbstractExchangeAdapter {
     final StringBuilder exchangeResponse = new StringBuilder();
 
     try {
-      LOG.debug(() -> "Using following URL for API call: " + url);
+      LOG.debug(() -> "Using following URL for API call (使用下面的URL进行API调用): " + url);
 
       exchangeConnection = (HttpURLConnection) url.openConnection();
       exchangeConnection.setUseCaches(false);
       exchangeConnection.setDoOutput(true);
       exchangeConnection.setRequestMethod(httpMethod); // GET|POST|DELETE
+      exchangeConnection.setDoInput(true);
 
       setRequestHeaders(exchangeConnection, requestHeaders);
 
@@ -163,8 +164,32 @@ abstract class AbstractExchangeAdapter {
       exchangeConnection.setConnectTimeout(timeoutInMillis);
       exchangeConnection.setReadTimeout(timeoutInMillis);
 
+
       if (httpMethod.equalsIgnoreCase("POST") && postData != null) {
         LOG.debug(() -> "Doing POST with request body: " + postData);
+        //TODO 手动设置安全策略
+//        System.setSecurityManager(new SecurityManager(){
+//          public void checkConnect (String host, int port) {}
+//          public void checkConnect (String host, int port, Object context) {}
+//        });
+        // TODO 请求代理接口  仅在本地测试开启
+        System.setProperty("proxyType", "4");
+        System.setProperty("proxyPort", Integer.toString(10809));
+        System.setProperty("proxyHost", "127.0.0.1");
+        System.setProperty("proxySet", "true");
+//
+//        URL url2 = new URL("https://www.baidu.com/");
+//        URL url2 = new URL("https://www.google.com/");
+//        HttpURLConnection exchangeConnection2 = (HttpURLConnection) url2.openConnection();
+//        exchangeConnection2.setRequestMethod("GET");
+//        exchangeConnection2.setRequestProperty("User-Agent","Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36");
+//        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(exchangeConnection2.getInputStream(), "UTF-8"));
+//        String msg;
+//        while ((msg=bufferedReader.readLine()) != null ){
+//          System.out.println("==============="+msg);
+//        }
+//        if (true) return null;
+
         try (final OutputStreamWriter outputPostStream =
             new OutputStreamWriter(exchangeConnection.getOutputStream(), StandardCharsets.UTF_8)) {
           outputPostStream.write(postData);
@@ -200,6 +225,7 @@ abstract class AbstractExchangeAdapter {
       LOG.error(errorMsg, e);
       throw new ExchangeNetworkException(errorMsg, e);
 
+//    } catch (FileNotFoundException | UnknownHostException e) {
     } catch (FileNotFoundException | UnknownHostException e) {
       // Huobi started throwing FileNotFoundException as of 8 Nov 2015. 火币从 2015 年 11 月 8 日开始抛出 FileNotFoundException。
       // EC2 started throwing UnknownHostException for BTC-e, GDAX, as of 14 July 2016 :-/ // 自 2016 年 7 月 14 日起，EC2 开始为 BTC-e、GDAX 抛出 UnknownHostException :-/

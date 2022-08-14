@@ -100,7 +100,7 @@ public class EmergencyStopChecker {
 
     boolean isEmergencyStopLimitBreached = true;
 
-    LOG.info(() -> "Performing Emergency Stop check...");
+    LOG.info(() -> "Performing Emergency Stop check...执行紧急停止检查...");
 
     BalanceInfo balanceInfo;
     try {
