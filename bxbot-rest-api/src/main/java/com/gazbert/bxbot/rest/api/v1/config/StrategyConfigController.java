@@ -60,7 +60,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @org.springframework.web.bind.annotation.RestController
 @RequestMapping(CONFIG_ENDPOINT_BASE_URI)
 @Tag(name = "Strategy Configuration")
-public class StrategyConfigController implements RestController {
+public class StrategyConfigController extends RestController {
 
   private static final Logger LOG = LogManager.getLogger();
   private static final String STRATEGIES_RESOURCE_PATH = "/strategies";

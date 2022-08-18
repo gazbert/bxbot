@@ -8,7 +8,6 @@ dependencies {
     implementation libraries.hibernate_validator
     implementation libraries.hibernate_validator_annotation_processor
     implementation libraries.springdoc_openapi_ui
-    implementation libraries.swagger_annotations
 
     testImplementation libraries.spring_boot_starter_test
 }

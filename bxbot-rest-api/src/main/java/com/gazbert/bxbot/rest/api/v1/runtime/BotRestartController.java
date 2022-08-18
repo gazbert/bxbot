@@ -53,7 +53,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @org.springframework.web.bind.annotation.RestController
 @RequestMapping(RUNTIME_ENDPOINT_BASE_URI)
 @Tag(name = "Bot Restart")
-public class BotRestartController implements RestController {
+public class BotRestartController extends RestController {
 
   private static final Logger LOG = LogManager.getLogger();
   private static final String RESTART_RESOURCE_PATH = "/restart";

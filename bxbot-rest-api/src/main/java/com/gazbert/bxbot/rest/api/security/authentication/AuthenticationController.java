@@ -59,7 +59,7 @@ import org.springframework.web.bind.annotation.RequestBody;
  */
 @org.springframework.web.bind.annotation.RestController
 @Tag(name = "Authentication")
-public class AuthenticationController implements RestController {
+public class AuthenticationController extends RestController {
 
   private final AuthenticationManager authenticationManager;
   private final UserDetailsService userDetailsService;

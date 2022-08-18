@@ -61,7 +61,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @org.springframework.web.bind.annotation.RestController
 @RequestMapping(CONFIG_ENDPOINT_BASE_URI)
 @Tag(name = "Engine Configuration")
-public class EngineConfigController implements RestController {
+public class EngineConfigController extends RestController {
 
   private static final Logger LOG = LogManager.getLogger();
   private static final String ENGINE_RESOURCE_PATH = "/engine";

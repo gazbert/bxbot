@@ -60,7 +60,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @org.springframework.web.bind.annotation.RestController
 @RequestMapping(RUNTIME_ENDPOINT_BASE_URI)
 @Tag(name = "Bot Logfile")
-public class BotLogfileController implements RestController {
+public class BotLogfileController extends RestController {
 
   private static final Logger LOG = LogManager.getLogger();
   private static final String LOGFILE_RESOURCE_PATH = "/logfile";

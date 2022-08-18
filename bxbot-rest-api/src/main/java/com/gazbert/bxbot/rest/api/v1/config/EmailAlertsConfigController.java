@@ -61,7 +61,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @org.springframework.web.bind.annotation.RestController
 @RequestMapping(CONFIG_ENDPOINT_BASE_URI)
 @Tag(name = "Email Alerts Configuration")
-public class EmailAlertsConfigController implements RestController {
+public class EmailAlertsConfigController extends RestController {
 
   private static final Logger LOG = LogManager.getLogger();
   private static final String EMAIL_ALERTS_RESOURCE_PATH = "/email-alerts";

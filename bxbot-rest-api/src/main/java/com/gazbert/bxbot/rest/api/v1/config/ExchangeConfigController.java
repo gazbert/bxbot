@@ -59,7 +59,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @org.springframework.web.bind.annotation.RestController
 @RequestMapping(CONFIG_ENDPOINT_BASE_URI)
 @Tag(name = "Exchange Configuration")
-public class ExchangeConfigController implements RestController {
+public class ExchangeConfigController extends RestController {
 
   private static final Logger LOG = LogManager.getLogger();
   private static final String EXCHANGE_RESOURCE_PATH = "/exchange";

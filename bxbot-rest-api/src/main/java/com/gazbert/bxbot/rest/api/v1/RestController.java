@@ -35,7 +35,7 @@ import org.springframework.context.annotation.PropertySource;
  * @author gazbert
  * @since 1.0
  */
-@PropertySource({"classpath:swagger.properties"})
+@PropertySource({"classpath:swagger.properties", "classpath:application.properties"})
 @OpenAPIDefinition(
     info =
         @Info(
@@ -48,5 +48,5 @@ import org.springframework.context.annotation.PropertySource;
                     url = "https://github.com/gazbert/bxbot/blob/master/LICENSE"),
             termsOfService = "https://github.com/gazbert/bxbot"))
 @SecurityRequirement(name = "Authorization")
-public interface RestController {
+public abstract class RestController {
 }

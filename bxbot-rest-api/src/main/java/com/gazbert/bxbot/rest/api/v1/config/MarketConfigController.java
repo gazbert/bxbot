@@ -60,7 +60,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @org.springframework.web.bind.annotation.RestController
 @RequestMapping(CONFIG_ENDPOINT_BASE_URI)
 @Tag(name = "Market Configuration")
-public class MarketConfigController implements RestController {
+public class MarketConfigController extends RestController {
 
   private static final Logger LOG = LogManager.getLogger();
   private static final String MARKETS_RESOURCE_PATH = "/markets";

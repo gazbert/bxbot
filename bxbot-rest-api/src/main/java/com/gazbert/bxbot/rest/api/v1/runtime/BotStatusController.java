@@ -55,7 +55,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @org.springframework.web.bind.annotation.RestController
 @RequestMapping(RUNTIME_ENDPOINT_BASE_URI)
 @Tag(name = "Bot Status")
-public class BotStatusController implements RestController {
+public class BotStatusController extends RestController {
 
   private static final Logger LOG = LogManager.getLogger();
   private static final String STATUS_RESOURCE_PATH = "/status";
