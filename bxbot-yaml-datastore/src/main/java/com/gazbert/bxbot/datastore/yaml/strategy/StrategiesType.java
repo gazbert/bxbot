@@ -29,6 +29,7 @@ import java.util.List;
 
 /**
  * Wraps a list of Strategy configs for dumping to and loading from YAML.
+ * 包装用于转储到 YAML 和从 YAML 加载的策略配置列表。
  *
  * @author gazbert
  */
@@ -38,8 +39,10 @@ public class StrategiesType {
 
   /**
    * Returns the Strategy configs.
+   * 返回策略配置。
    *
    * @return a list of Strategy configs.
+   * @return 策略配置列表。
    */
   public List<StrategyConfig> getStrategies() {
     if (strategies == null) {

@@ -53,6 +53,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 /**
  * Tests the Engine config controller behaviour.
+ * * 测试引擎配置控制器的行为。
  *
  * @author gazbert
  */
@@ -72,6 +73,7 @@ class TestEngineConfigController extends AbstractConfigControllerTest {
   @MockBean private EngineConfigService engineConfigService;
 
   // Need these even though not used in the test directly because Spring loads it on startup...
+  // 需要这些，即使没有直接在测试中使用，因为 Spring 在启动时加载它...
   @MockBean private TradingEngine tradingEngine;
   @MockBean private EmailAlerter emailAlerter;
   @MockBean private RestartEndpoint restartEndpoint;
@@ -179,6 +181,7 @@ class TestEngineConfigController extends AbstractConfigControllerTest {
 
   // --------------------------------------------------------------------------
   // Private utils
+  // 私有工具
   // --------------------------------------------------------------------------
 
   private static EngineConfig someEngineConfig() {

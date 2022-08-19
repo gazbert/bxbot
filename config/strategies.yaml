@@ -7,29 +7,47 @@
 # - The indentation levels are significant in YAML: https://en.wikipedia.org/wiki/YAML
 #
 # See the README "How do I write my own Trading Strategy?" section for full details.
+
+# 交易策略 YAML 配置。
+#
+# - 您可以使用 className 或 beanName 字段配置策略的加载。
+# - 除非另有说明，否则所有字段均为必填项。
+# - 可以列出多个策略块。
+# - 缩进级别在 YAML 中很重要：https://en.wikipedia.org/wiki/YAML
+#
+# 请参阅自述文件“我如何编写自己的交易策略？” 部分了解完整详情。
 ############################################################################################
 ---
 strategies:
 
   # A unique identifier for the strategy. The markets.yaml tradingStrategyId entries reference this.
-  # Value must be an alphanumeric string. Underscores and dashes are also permitted. E.g. scalping-strategy
+  # Value must be an alphanumeric string. Underscores and dashes are also permitted. E.g. my-macd-strat-1
+  # 策略的唯一标识符。 market.yaml tradingStrategyId 条目引用了这个。
+  # 值必须是字母数字字符串。 也允许使用下划线和破折号。 例如。 我的 macd-strat-1
   - id: scalping-strategy
 
-    # A friendly name for the strategy. Value must be an alphanumeric string. Spaces are allowed. E.g. My Super Strat
+    # A friendly name for the strategy.
+    # Value must be an alphanumeric string. Spaces are allowed. E.g. My Super MACD Strat
+    # 策略的友好名称。
+    # 值必须是字母数字字符串。 允许空格。 例如。 我的超级 MACD 策略
     name: Basic Scalping Strat
 
     # The description value is optional.
+    # 描述值是可选的。
     description: >
-      A simple trend following scalper that buys at the current BID price,
-      holds until current market price has reached a configurable minimum percentage gain,
-      and then sells at current ASK price, thereby taking profit from the spread.
-      Don't forget to factor in the exchange fees!
+      A simple trend following scalper that buys at the current BID price, holds until current market price has reached
+      a configurable minimum percentage gain, and then sells at current ASK price, thereby taking profit from the spread.
+      Don't forget to factor in the exchange fees
+      (以当前 BID 价格购买的黄牛跟随的简单趋势一直保持到当前市场价格达到可配置的最小百分比收益，然后以当前 ASK 价格出售，从而从点差中获利。不要忘记考虑兑换费用！)!
 
-    # For the className value, you must specify the fully qualified name of your Strategy class for the Trading Engine
-    # to load and execute. This class must be on the runtime classpath.
+    # For the className value, you must specify the fully qualified name of your Strategy class for the
+    # Trading Engine to load and execute. This class must be on the runtime classpath.
     # If you set this value to load your strategy, you cannot set the beanName value.
-    #
-    #className: com.gazbert.bxbot.strategies.ExampleScalpingStrategy
+      # 对于 className 值，您必须指定 Strategy 类的完全限定名称
+    # 交易引擎加载和执行。 此类必须在运行时类路径上。
+    # 如果设置此值来加载策略，则无法设置 beanName 值。
+
+    className: com.gazbert.bxbot.strategies.ExampleScalpingStrategy
 
     # For the beanName value, you must specify the Spring bean name of you Strategy component class
     # for the Trading Engine to load and execute.
@@ -37,10 +55,19 @@ strategies:
     # take a look at ExampleScalpingStrategy.java. This results in Spring injecting the bean.
     # (see https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/stereotype/Component.html)
     # If you set this value to load your strategy, you cannot set the className value.
-    beanName: exampleScalpingStrategy
+    #beanName: exampleScalpingStrategy
+      # 对于beanName值，你必须指定你的Strategy组件类的Spring bean名称
+      # 让交易引擎加载和执行。
+      # 您还需要使用 `@Component("exampleScalpingStrategy")` 注释您的策略类 -
+      # 看看 ExampleScalpingStrategy.java。 这导致 Spring 注入 bean。
+      #（见 https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/stereotype/Component.html）
+    # 如果你设置这个值来加载你的策略，你不能设置className值。
+    #beanName：exampleScalpingStrategy
 
     # The configItems section is optional and allows you to set custom key/value pair config items. This config
     # is passed to your Trading Strategy when the bot starts up.
+    # configItems 部分是可选的，允许您设置自定义键/值对配置项。 这个配置
+    # 在机器人启动时传递给您的交易策略。
     configItems:
-      counter-currency-buy-order-amount: 20
+      counter-currency-buy-order-amount: 10
       minimum-percentage-gain: 2

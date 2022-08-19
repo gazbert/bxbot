@@ -4,30 +4,47 @@
 # - All fields are mandatory unless stated otherwise.
 # - Multiple market blocks can be listed.
 # - The indentation levels are significant in YAML: https://en.wikipedia.org/wiki/YAML
+# 市场 YAML 配置。
+#
+# - 除非另有说明，否则所有字段均为必填项。
+# - 可以列出多个市场块。
+# - 缩进级别在 YAML 中很重要：https://en.wikipedia.org/wiki/YAML
 ############################################################################################
 ---
 markets:
 
   # The id value is the market id as defined on the exchange, e.g. 'btcusd'.
+  # id 值是交易所定义的市场 id，例如 “比特币”。
   - id: btcusd
 
     # A friendly name for the market.
     # Value must be an alphanumeric string. Spaces are allowed. E.g. BTC/USD
+    # 市场的友好名称。
+    # 值必须是字母数字字符串。 允许空格。 例如。 比特币/美元
     name: BTC/USD
 
     # The baseCurrency value is the currency short code for the base currency in the currency pair. When you buy or sell a
     # currency pair, you are performing that action on the base currency. The base currency is the commodity you are buying or
     # selling. E.g. in a BTC/USD market, the first currency (BTC) is the base currency and the second currency (USD) is the
     # counter currency.
+      # baseCurrency 值是货币对中基础货币的货币短代码。 当您购买或出售
+      #货币对，您正在对基础货币执行该操作。 基础货币是您购买的商品或
+    #卖。 例如。 在 BTC/USD 市场中，第一种货币 (BTC) 是基础货币，第二种货币 (USD) 是
+    #柜台货币。
     baseCurrency: BTC
 
     # The counterCurrency value is the currency short code for the counter currency in the currency pair. This is also known
     # as the quote currency.
+    # counterCurrency 值是货币对中柜台货币的货币短代码。 这也是众所周知的
+    # 作为报价货币。
     counterCurrency: USD
 
     # The enabled value allows you toggle trading on the market - config changes are only applied on startup.
+    # 启用值允许您在市场上切换交易 - 配置更改仅在启动时应用。
     enabled: true
 
     # The tradingStrategyId value must match a strategy id defined in your strategies.yaml config.
     # Currently, BX-bot only supports 1 strategy per market.
+    # tradingStrategyId 值必须与您的 strategy.yaml 配置中定义的策略 id 匹配。
+    # 目前，BX-bot 每个市场仅支持 1 种策略。
     tradingStrategyId: scalping-strategy

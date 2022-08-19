@@ -29,6 +29,7 @@ import org.junit.jupiter.api.Test;
 
 /**
  * Tests Authentication Config exchange API config object behaves as expected.
+ * 测试身份验证配置交换 API 配置对象的行为符合预期。
  *
  * @author gazbert
  */

@@ -27,6 +27,7 @@ import java.util.List;
 
 /**
  * Encapsulates any (optional) Network configuration for an Exchange Adapter.
+ * 封装 Exchange 适配器的任何（可选）网络配置。
  *
  * @author gazbert
  * @since 1.0
@@ -35,22 +36,28 @@ public interface NetworkConfig {
 
   /**
    * Fetches (optional) list of non-fatal error codes.
+   * * 获取（可选）非致命错误代码列表。
    *
    * @return a list of non-fatal error codes if present, an empty list otherwise.
+   * @return 非致命错误代码列表（如果存在），否则返回空列表。
    */
   List<Integer> getNonFatalErrorCodes();
 
   /**
    * Fetches (optional) list of non-fatal error messages.
+   * * 获取（可选）非致命错误消息列表。
    *
    * @return list of non-fatal error messages if present, an empty list otherwise.
+   * @return 非致命错误消息列表（如果存在），否则返回空列表。
    */
   List<String> getNonFatalErrorMessages();
 
   /**
    * Fetches (optional) connection timeout value.
+   * 获取（可选）连接超时值。
    *
    * @return the connection timeout value if present, null otherwise.
+   * @return 连接超时值（如果存在），否则返回 null。
    */
   Integer getConnectionTimeout();
 }

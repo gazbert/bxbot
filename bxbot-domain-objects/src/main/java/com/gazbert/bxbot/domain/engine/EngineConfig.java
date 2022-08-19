@@ -32,6 +32,7 @@ import javax.validation.constraints.Min;
 
 /**
  * Domain object representing the Engine config.
+ * 表示引擎配置的域对象。
  *
  * @author gazbert
  */
@@ -45,48 +46,51 @@ public class EngineConfig {
               + " Underscores and dashes are also permitted.")
   private String botId;
 
-  @Schema(description = "A friendly name for the bot. Value must be an alphanumeric string. "
-      + "Spaces are allowed.")
+  @Schema(description = "A friendly name for the bot. Value must be an alphanumeric string. 机器人的友好名称。值必须是字母数字字符串。"
+      + "Spaces are allowed. 允许有空格。”")
   private String botName;
 
   @Schema(
       required = true,
       description =
-          "This is normally the currency you intend to hold a long position in. It should be set "
-              + "to the currency short code for the wallet, e.g. BTC, LTC, USD.")
+          "This is normally the currency you intend to hold a long position in. It should be set to the currency short code for the wallet, e.g. BTC, LTC, USD. 这通常是您打算持有多头头寸的货币。它应该设置为钱包的货币短代码，例如比特币、莱特币、美元。")
   private String emergencyStopCurrency;
 
   @Schema(
       required = true,
       description =
-          "The Trading Engine checks this value at the start of every trade cycle: if "
-              + "your emergencyStopCurrency wallet balance on the exchange drops below this "
-              + "value, the Trading Engine will log it, send an Email Alert (if configured)"
-              + " and then shut down. If you set this value to 0, the bot will bypass the check"
-              + " - be careful.")
-  @DecimalMin(message = "Emergency Stop Balance must be 0 or more", value = "0")
+          "The Trading Engine checks this value at the start of every trade cycle: 交易引擎在每个交易周期开始时检查此值："
+              + " if your emergencyStopCurrency wallet balance on the exchange drops below this value, the Trading Engine will log it, send an Email Alert (if configured) and then shut down. "
+                  +"如果您在交易所的 EmergencyStopCurrency 钱包余额低于此值，交易引擎将记录它，发送电子邮件警报（如果已配置），然后关闭。"
+                  +"If you set this value to 0, the bot will bypass the check - be careful. 如果将此值设置为 0，机器人将绕过检查 - 请小心。")
+  @DecimalMin(message = "Emergency Stop Balance must be 0 or more 紧急停止余额必须为 0 或更大", value = "0")
   private BigDecimal emergencyStopBalance;
 
   @Schema(
       required = true,
       description =
-          "The interval in (secs) that the Trading Engine will wait/sleep before executing"
-              + " each trade cycle. The minimum value is 1 second.")
-  @Min(value = 1, message = "Trace Cycle Interval must be more than 1 second")
+          "The interval in (secs) that the Trading Engine will wait/sleep before executing each trade cycle. The minimum value is 1 second. 交易引擎在执行每个交易周期之前等待/休眠的时间间隔（秒）。最小值为 1 秒。")
+  @Min(value = 1, message = "Trace Cycle Interval must be more than 1 second . Trace Cycle Interval 必须大于 1 秒")
   private int tradeCycleInterval;
 
-  // Required by ConfigurableComponentFactory
+  // Required by ConfigurableComponentFactory  // ConfigurableComponentFactory 需要
   public EngineConfig() {
   }
 
   /**
    * Creates an EngineConfig.
+   * 创建引擎配置。
    *
    * @param botId the bot ID.
    * @param botName the bot name.
    * @param emergencyStopCurrency  the emergency stop currency.
+   *                               紧急停止货币。
+   *
    * @param emergencyStopBalance the emergency stop balance.
+   *                             紧急停止账户余额
+   *
    * @param tradeCycleInterval the trade cycle interval (in secs).
+   *                           交易周期间隔（以秒为单位）。
    */
   public EngineConfig(
       String botId,

@@ -43,6 +43,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 /**
  * Tests the JWT User Details service behaves as expected.
+ * * 测试 JWT 用户详细信息服务的行为是否符合预期。
  *
  * @author gazbert
  */
@@ -62,7 +63,9 @@ public class TestJwtUserDetailsService {
 
   /**
    * Stuck on JUnit4 as Powermock doesn't play with JUnit5. See:
-   * https://github.com/powermock/powermock/issues/929
+    https://github.com/powermock/powermock/issues/929
+   * 卡在 JUnit4 上，因为 Powermock 不能与 JUnit5 一起使用。看：
+   https://github.com/powermock/powermock/issues/929
    */
   @Test
   public void whenLoadByUsernameCalledWithKnownUsernameThenExpectUserDetailsToBeReturned() {

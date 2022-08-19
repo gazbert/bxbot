@@ -29,7 +29,7 @@ import java.util.List;
 
 /**
  * Wraps a list of Market configs for dumping to and loading from YAML.
- *
+ *包装用于转储到 YAML 和从 YAML 加载的市场配置列表。
  * @author gazbert
  */
 public class MarketsType {
@@ -38,8 +38,9 @@ public class MarketsType {
 
   /**
    * Returns the Market configs.
-   *
+   *  返回市场配置。
    * @return a list of Market configs.
+   * 市场配置列表。
    */
   public List<MarketConfig> getMarkets() {
     if (markets == null) {

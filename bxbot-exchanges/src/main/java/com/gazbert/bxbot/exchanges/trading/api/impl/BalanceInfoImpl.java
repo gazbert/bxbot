@@ -30,6 +30,7 @@ import java.util.Map;
 
 /**
  * A BalanceInfo implementation that can be used by Exchange Adapters.
+ * Exchange 适配器可以使用的余额信息实现。
  *
  * @author gazbert
  */

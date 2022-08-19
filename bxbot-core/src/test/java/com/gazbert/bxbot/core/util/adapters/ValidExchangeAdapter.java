@@ -33,8 +33,9 @@ import com.gazbert.bxbot.trading.api.TradingApi;
 import java.math.BigDecimal;
 import java.util.List;
 
-/*
+/**
  * A valid (but useless!) Exchange Adapter for unit testing.
+ * 用于单元测试的有效（但无用！）交换适配器。
  */
 public class ValidExchangeAdapter implements TradingApi, ExchangeAdapter {
 

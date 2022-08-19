@@ -40,6 +40,7 @@ import org.junit.jupiter.api.Test;
 
 /**
  * Tests the Exchange Adapter configuration is loaded as expected.
+ * * 测试 Exchange 适配器配置是否按预期加载。
  *
  * @author gazbert
  */
@@ -78,10 +79,10 @@ class TestExchangeConfigurationManagement {
 
   private static final List<String> NON_FATAL_ERROR_MESSAGES =
       Arrays.asList(
-          "Connection refused",
-          "Connection reset",
-          "Remote host closed connection during handshake",
-          "Unexpected end of file from server");
+          "Connection refused 连接被拒绝",
+          "Connection reset 连接重置",
+          "Remote host closed connection during handshake 握手期间远程主机关闭连接",
+          "Unexpected end of file from server 来自服务器的文件意外结束");
 
   private static final String BUY_FEE_CONFIG_ITEM_KEY = "buy-fee";
   private static final String BUY_FEE_CONFIG_ITEM_VALUE = "0.5";
@@ -168,10 +169,10 @@ class TestExchangeConfigurationManagement {
     final ExchangeType exchangeType = new ExchangeType();
     exchangeType.setExchange(exchangeConfig);
 
-    // Save it
+    // Save it // 保存
     ConfigurationManager.saveConfig(ExchangeType.class, exchangeType, YAML_CONFIG_TO_SAVE_FILENAME);
 
-    // Read it back in
+    // Read it back in 读回
     final ExchangeType exchangeReloaded =
         ConfigurationManager.loadConfig(ExchangeType.class, YAML_CONFIG_TO_SAVE_FILENAME);
 

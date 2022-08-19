@@ -61,9 +61,9 @@ public class BitfinexIT {
   private static final List<Integer> nonFatalNetworkErrorCodes = Arrays.asList(502, 503, 504);
   private static final List<String> nonFatalNetworkErrorMessages =
       Arrays.asList(
-          "Connection refused",
-          "Connection reset",
-          "Remote host closed connection during handshake");
+          "Connection refused 连接被拒绝",
+          " Connection reset 连接重置 ",
+          "Remote host closed connection during handshake 握手期间表示主机关闭连接");
 
   private ExchangeConfig exchangeConfig;
   private AuthenticationConfig authenticationConfig;
@@ -71,6 +71,7 @@ public class BitfinexIT {
 
   /**
    * Create some exchange config - the TradingEngine would normally do this.
+   * * 创建一些交换配置 - TradingEngine 通常会这样做。
    */
   @Before
   public void setupForEachTest() {
@@ -87,7 +88,7 @@ public class BitfinexIT {
     expect(exchangeConfig.getAuthenticationConfig()).andReturn(authenticationConfig);
     expect(exchangeConfig.getNetworkConfig()).andReturn(networkConfig);
 
-    // no other config for this adapter
+    // no other config for this adapter  // 此适配器没有其他配置
   }
 
   @Test
@@ -110,16 +111,17 @@ public class BitfinexIT {
     assertNotNull(ticker.getBid());
     assertNotNull(ticker.getHigh());
     assertNotNull(ticker.getLow());
-    assertNull(ticker.getOpen()); // vwap not supplied by finex
+    assertNull(ticker.getOpen()); // vwap not supplied by finex  // vwap 不是由finex 提供的
     assertNotNull(ticker.getVolume());
-    assertNull(ticker.getVwap()); // vwap not supplied by finex
+    assertNull(ticker.getVwap()); // vwap not supplied by finex  Finex 不提供 vwap
     assertNotNull(ticker.getTimestamp());
 
     verify(authenticationConfig, networkConfig, exchangeConfig);
   }
 
-  /*
+  /**
    * You'll need to change the KEY, SECRET, constants to real-world values.
+   * * 您需要将 KEY、SECRET、常量更改为实际值。
    */
   @Ignore("Disabled. Integration testing authenticated API calls requires your secret credentials!")
   @Test
@@ -135,7 +137,7 @@ public class BitfinexIT {
     final BalanceInfo balanceInfo = exchangeAdapter.getBalanceInfo();
     assertNotNull(balanceInfo.getBalancesAvailable().get("BTC"));
 
-    // Careful here: make sure the SELL_ORDER_PRICE is sensible!
+    // Careful here: make sure the SELL_ORDER_PRICE is sensible!  这里要小心：确保 SELL_ORDER_PRICE 是合理的！
     // final String orderId = exchangeAdapter.createOrder(MARKET_ID, OrderType.SELL,
     // SELL_ORDER_QUANTITY, SELL_ORDER_PRICE);
     // final List<OpenOrder> openOrders = exchangeAdapter.getYourOpenOrders(MARKET_ID);

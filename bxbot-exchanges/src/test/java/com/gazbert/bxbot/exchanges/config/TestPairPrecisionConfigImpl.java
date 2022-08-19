@@ -32,6 +32,7 @@ import org.junit.jupiter.api.Test;
 
 /**
  * Test the PairPrecisionConfigImpl behaves as expected.
+ * 测试 PairPrecisionConfigImpl 的行为是否符合预期。
  *
  * @author gazbert
  */

@@ -27,6 +27,7 @@ import org.springframework.security.core.AuthenticationException;
 
 /**
  * This runtime exception is thrown if JWT authentication fails.
+ * 如果 JWT 身份验证失败，则会引发此运行时异常。
  *
  * @author glynch
  */

@@ -35,6 +35,7 @@ import org.junit.jupiter.api.Test;
 
 /**
  * Tests the behaviour of the Exchange API Config Builder is as expected.
+ * 测试 Exchange API 配置生成器的行为是否符合预期。
  *
  * @author gazbert
  */
@@ -51,7 +52,7 @@ class TestExchangeApiConfigBuilder {
   private static final Integer CONNECTION_TIMEOUT = 30;
   private static final List<Integer> NON_FATAL_ERROR_CODES = Arrays.asList(502, 503);
   private static final List<String> NON_FATAL_ERROR_MESSAGES =
-      Arrays.asList("Connection refused", "Remote host closed connection during handshake");
+      Arrays.asList("Connection refused", "Remote host closed connection during handshake 握手期间远程主机关闭连接");
 
   private static final String BUY_FEE_CONFIG_ITEM_KEY = "buy-fee";
   private static final String BUY_FEE_CONFIG_ITEM_VALUE = "0.20";

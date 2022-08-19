@@ -68,9 +68,9 @@ public class BotLogfileServiceImpl implements BotLogfileService {
       } else {
         LOG.warn(
             () ->
-                "Logfile exceeds MaxFileSize. Truncating end of file. MaxFileSize: "
+                "Logfile exceeds MaxFileSize. Truncating end of file. MaxFileSize: 日志文件超过 MaxFileSize。截断文件结尾。最大文件大小："
                     + maxFileSize
-                    + " LogfileSize: "
+                    + " LogfileSize: 日志文件大小："
                     + logfileLength);
         final InputStream inputStream = logfile.getInputStream();
         final byte[] truncatedLogfile = new byte[maxFileSize];
@@ -78,7 +78,7 @@ public class BotLogfileServiceImpl implements BotLogfileService {
         return new ByteArrayResource(truncatedLogfile);
       }
     } catch (IOException e) {
-      final String errorMsg = "Failed to load logfile. Details: " + e.getMessage();
+      final String errorMsg = "Failed to load logfile. Details: 无法加载日志文件。细节：" + e.getMessage();
       LOG.error(() -> errorMsg);
       throw e;
     }
@@ -125,7 +125,8 @@ public class BotLogfileServiceImpl implements BotLogfileService {
     }
   }
 
-  /** Util class for reading lines of a logfile. */
+  /** Util class for reading lines of a logfile.
+   * 用于读取日志文件行的实用程序类。 */
   private static final class FileBuffer {
     private int offset = 0;
     private final int maxLines;
@@ -148,6 +149,7 @@ public class BotLogfileServiceImpl implements BotLogfileService {
 
     List<String> getTailLines() {
       // Truncates the file head if file line count > maxLines
+      // 如果文件行数 > maxLines，则截断文件头
       return IntStream.range(offset < maxLines ? 0 : offset - maxLines, offset)
           .mapToObj(idx -> lines[idx % maxLines])
           .collect(Collectors.toList());
@@ -155,6 +157,7 @@ public class BotLogfileServiceImpl implements BotLogfileService {
 
     List<String> getHeadLines() {
       // Truncates the file tail if file line count > maxLines
+      // 如果文件行数 > maxLines，则截断文件尾部
       return IntStream.range(0, maxLines > offset ? offset : maxLines)
           .mapToObj(idx -> lines[idx % maxLines])
           .collect(Collectors.toList());

@@ -28,6 +28,7 @@ import java.util.Date;
 
 /**
  * Represents an Open Order (active order) on the exchange.
+ *  代表交易所的未结订单（活动订单）。
  *
  * @author gazbert
  * @since 1.0
@@ -36,61 +37,77 @@ public interface OpenOrder {
 
   /**
    * Returns the ID for this order.
+   *  返回此订单的 ID。
    *
    * @return the ID of the order.
+   *  @return 订单ID。
    */
   String getId();
 
   /**
    * Returns the exchange date/time the order was created.
+   *  * 返回创建订单的交换日期/时间。
    *
    * @return The exchange date/time.
+   *  * @return 交换日期/时间。
    */
   Date getCreationDate();
 
   /**
    * Returns the id of the market this order was placed on.
+   *  返回此订单所在市场的 ID。
    *
    * @return the id of the market.
+   *  @return 市场的 id。
    */
   String getMarketId();
 
   /**
    * Returns the type of order. Value will be {@link OrderType#BUY} or {@link OrderType#SELL}.
+   *  * 返回订单的类型。值为 {@link OrderType#BUY} 或 {@link OrderType#SELL}。
    *
    * @return the type of order.
+   *  @return 订单类型。
    */
   OrderType getType();
 
   /**
    * Returns the price per unit for this order. This is usually in BTC or USD.
+   *  * 返回此订单的每单位价格。这通常是比特币或美元。
    *
    * @return the price per unit for this order.
+   *  @return 此订单的单位价格。
    */
   BigDecimal getPrice();
 
   /**
-   * Returns the Quantity remaining for this order. This is usually the amount of the other currency
-   * you want to trade for BTC/USD.
+   * Returns the Quantity remaining for this order. This is usually the amount of the other currency you want to trade for BTC/USD.
+   *    * 返回此订单的剩余数量。这通常是您想要交易 BTC/USD 的其他货币的金额。
    *
    * @return the Quantity remaining for this order.
+   *  @return 此订单的剩余数量。
    */
   BigDecimal getQuantity();
 
   /**
    * Returns the Original total order quantity. If the Exchange does not provide this information,
-   * the value will be null. This is usually the amount of the other currency you want to trade for
-   * BTC/USD.
+    the value will be null. This is usually the amount of the other currency you want to trade for
+    BTC/USD.
+   * 返回原始总订单数量。如果联交所不提供此信息，
+   该值将为空。这通常是您想要交易的其他货币的金额
+   比特币/美元。
    *
-   * @return the Original total order quantity if the Exchange provides this information, null
-   *     otherwise.
+   * @return the Original total order quantity if the Exchange provides this information, null  otherwise.
+   * @return 如果交易所提供此信息，则返回原始总订单数量，否则返回 null。
    */
   BigDecimal getOriginalQuantity();
 
   /**
    * Returns the Total value of order (price * quantity). This is usually in BTC or USD.
+   *  * 返回订单的总价值（价格 * 数量）。这通常是比特币或美元。
    *
    * @return the Total value of order (price * quantity).
+   *  @return 订单总价值（价格 * 数量）。
    */
   BigDecimal getTotal();
 }

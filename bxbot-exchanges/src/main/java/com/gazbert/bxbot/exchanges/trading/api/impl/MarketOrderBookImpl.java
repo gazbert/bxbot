@@ -30,6 +30,7 @@ import java.util.List;
 
 /**
  * A MarketOrderBook implementation that can be used by Exchange Adapters.
+ * Exchange 适配器可以使用的市场订单簿实现。
  *
  * @author gazbert
  */
@@ -41,10 +42,15 @@ public final class MarketOrderBookImpl implements MarketOrderBook {
 
   /**
    * Creates a new Market Order Book.
+   * 创建一个新的市场订单簿。
    *
    * @param marketId the market ID.
+   *                 市场编号。
+   *
    * @param sellOrders the list of sell orders.
+   *                   卖单列表。
    * @param buyOrders the list of buy orders.
+   *                  @param buyOrders 买单列表。
    */
   public MarketOrderBookImpl(
       String marketId, List<MarketOrder> sellOrders, List<MarketOrder> buyOrders) {

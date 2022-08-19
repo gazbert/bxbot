@@ -48,6 +48,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 /**
  * Tests YAML backed Exchange configuration repository behaves as expected.
+ * * 测试 YAML 支持的 Exchange 配置存储库的行为是否符合预期。
  *
  * @author gazbert
  */
@@ -164,6 +165,7 @@ public class TestExchangeConfigYamlRepository {
 
   // --------------------------------------------------------------------------
   // Private utils
+  // 私有工具
   // --------------------------------------------------------------------------
 
   private static ExchangeType someInternalExchangeConfig() {

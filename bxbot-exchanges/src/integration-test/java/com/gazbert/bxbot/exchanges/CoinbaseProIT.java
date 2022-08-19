@@ -48,7 +48,7 @@ import org.junit.Test;
 
 /**
  * Basic integration testing with Coinbase Pro exchange.
- *
+ ** 与 Coinbase Pro 交换的基本集成测试。
  * @author gazbert
  */
 public class CoinbaseProIT {
@@ -63,16 +63,18 @@ public class CoinbaseProIT {
   private static final List<Integer> nonFatalNetworkErrorCodes = Arrays.asList(502, 503, 504);
   private static final List<String> nonFatalNetworkErrorMessages =
       Arrays.asList(
-          "Connection refused",
-          "Connection reset",
-          "Remote host closed connection during handshake");
+          "Connection refused 连接被拒绝",
+          "Connection reset 连接重置",
+          "Remote host closed connection during handshake 握手期间远程主机关闭连接");
 
   private ExchangeConfig exchangeConfig;
   private AuthenticationConfig authenticationConfig;
   private NetworkConfig networkConfig;
   private OtherConfig otherConfig;
 
-  /** Create some exchange config - the TradingEngine would normally do this. */
+  /** Create some exchange config - the TradingEngine would normally do this.
+   * ** 创建一些交换配置 - TradingEngine 通常会这样做。
+   * */
   @Before
   public void setupForEachTest() {
     authenticationConfig = createMock(AuthenticationConfig.class);
@@ -117,14 +119,15 @@ public class CoinbaseProIT {
     assertNotNull(ticker.getLow());
     assertNotNull(ticker.getOpen());
     assertNotNull(ticker.getVolume());
-    assertNull(ticker.getVwap()); // not provided by Coinbase Pro
+    assertNull(ticker.getVwap()); // not provided by Coinbase Pro // Coinbase Pro 不提供
     assertNotNull(ticker.getTimestamp());
 
     verify(authenticationConfig, networkConfig, otherConfig, exchangeConfig);
   }
 
-  /*
+  /**
    * You'll need to change the PASSPHRASE, KEY, SECRET, constants to real-world values.
+   * * 您需要将 PASSPHRASE、KEY、SECRET、常量更改为实际值。
    */
   @Ignore("Disabled. Integration testing authenticated API calls requires your secret credentials!")
   @Test
@@ -137,7 +140,7 @@ public class CoinbaseProIT {
     final BalanceInfo balanceInfo = exchangeAdapter.getBalanceInfo();
     assertNotNull(balanceInfo.getBalancesAvailable().get("BTC"));
 
-    // Careful here: make sure the SELL_ORDER_PRICE is sensible!
+    // Careful here: make sure the SELL_ORDER_PRICE is sensible! 这里要小心：确保 SELL_ORDER_PRICE 是合理的！
     // final String orderId = exchangeAdapter.createOrder(MARKET_ID, OrderType.BUY,
     // BUY_ORDER_QUANTITY, BUY_ORDER_PRICE);
     // final List<OpenOrder> openOrders = exchangeAdapter.getYourOpenOrders(MARKET_ID);

@@ -4,31 +4,51 @@
 # - All fields are mandatory unless stated otherwise.
 # - Only 1 engine block can be specified.
 # - The indentation levels are significant in YAML: https://en.wikipedia.org/wiki/YAML
+# 交易引擎 YAML 配置。
+#
+# - 除非另有说明，否则所有字段均为必填项。
+# - 只能指定 1 个发动机缸体。
+# - 缩进级别在 YAML 中很重要：https://en.wikipedia.org/wiki/YAML
 ############################################################################################
 ---
 engine:
 
   # A unique identifier for the bot. Value must be an alphanumeric string.
   # Underscores and dashes are also permitted. E.g. my-bitfinex-bot_1
+  # 机器人的唯一标识符。 值必须是字母数字字符串。
+  # 也允许使用下划线和破折号。 例如。 我的-bitfinex-bot_1
   botId: my-bitfinex-bot_1
 
   # A friendly name for the bot. Value must be an alphanumeric string. Spaces are allowed. E.g. Bitfinex Bot
+  # 机器人的友好名称。 值必须是字母数字字符串。 允许空格。 例如。 Bitfinex 机器人
   botName: Bitfinex Bot
 
   # This must be set to prevent catastrophic loss on the exchange.
   # This is normally the currency you intend to hold a long position in. It should be set to the currency short code for the
   # wallet, e.g. BTC, LTC, USD. This value can be case sensitive for some exchanges - check the Exchange Adapter documentation.
+    # 必须设置此项以防止交易所发生灾难性损失。
+  # 这通常是您打算持有多头头寸的货币。它应该设置为货币短代码
+  # 钱包，例如 比特币、莱特币、美元。 对于某些交换，此值可能区分大小写 - 请查看 Exchange 适配器文档。
   emergencyStopCurrency: USD
 
   # This must be set to prevent a catastrophic loss on the exchange.
   # The Trading Engine checks this value at the start of every trade cycle: if your emergencyStopCurrency balance on
   # the trading drops below this value, the Trading Engine will stop trading on all markets and shutdown.
   # Manual intervention is then required to restart the bot. You can set this value to 0 to override this check.
-  emergencyStopBalance: 50
+    # 必须设置此项以防止交易所发生灾难性损失。
+    # 交易引擎在每个交易周期开始时检查此值：如果您的紧急停止货币余额
+  # 交易低于此值，交易引擎将停止所有市场的交易并关闭。
+  # 然后需要手动干预来重新启动机器人。 您可以将此值设置为 0 以覆盖此检查。
+  emergencyStopBalance: 10
 
   # The is the interval in seconds that the Trading Engine will wait/sleep before executing
   # the next trade cycle. The minimum value is 1 second. Some exchanges allow you to hit them harder than others. However,
   # while their API documentation might say one thing, the reality is you might get socket timeouts and 5XX responses if you
   # hit it too hard - you cannot perform ultra low latency trading over the public internet ;-)
   # You'll need to experiment with the trade cycle interval for different exchanges.
+    # 这是交易引擎在执行前等待/休眠的时间间隔（以秒为单位）
+    # 下一个交易周期。 最小值为 1 秒。 有些交流让你比其他交流更努力地打击他们。 然而，
+    # 虽然他们的 API 文档可能会说一件事，但现实情况是，如果您这样做，您可能会收到套接字超时和 5XX 响应
+  # 太过分了——你不能在公共互联网上进行超低延迟交易 ;-)
+  # 您需要尝试不同交易所的交易周期间隔。
   tradeCycleInterval: 60

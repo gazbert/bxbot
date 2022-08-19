@@ -58,6 +58,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 /**
  * Tests the Strategies config controller behaviour.
+ * * 测试策略配置控制器的行为。
  *
  * @author gazbert
  */
@@ -92,6 +93,7 @@ class TestStrategyConfigController extends AbstractConfigControllerTest {
   @MockBean private StrategyConfigService strategyConfigService;
 
   // Need these even though not used in the test directly because Spring loads it on startup...
+  // 需要这些，即使没有直接在测试中使用，因为 Spring 在启动时加载它...
   @MockBean private TradingEngine tradingEngine;
   @MockBean private EmailAlerter emailAlerter;
   @MockBean private RestartEndpoint restartEndpoint;
@@ -423,6 +425,7 @@ class TestStrategyConfigController extends AbstractConfigControllerTest {
 
   // --------------------------------------------------------------------------
   // Private utils
+  // 私有工具
   // --------------------------------------------------------------------------
 
   private static List<StrategyConfig> allTheStrategiesConfig() {

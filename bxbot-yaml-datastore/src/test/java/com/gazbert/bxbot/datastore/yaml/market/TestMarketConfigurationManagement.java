@@ -37,6 +37,7 @@ import org.junit.jupiter.api.Test;
 
 /**
  * Tests the Market configuration is loaded as expected.
+ * * 测试市场配置是否按预期加载。
  *
  * @author gazbert
  */

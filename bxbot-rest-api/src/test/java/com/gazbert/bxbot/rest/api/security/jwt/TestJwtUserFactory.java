@@ -38,6 +38,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 /**
  * Tests the behaviour of the JwtUserFactory is as expected.
+ * * 测试 JwtUserFactory 的行为是否符合预期。
  *
  * @author gazbert
  */
@@ -94,6 +95,7 @@ class TestJwtUserFactory {
 
   // ------------------------------------------------------------------------
   // Private utils
+  // 私有工具
   // ------------------------------------------------------------------------
 
   private List<Role> createRoles(User user) {

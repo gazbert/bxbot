@@ -25,6 +25,7 @@ package com.gazbert.bxbot.exchange.api;
 
 /**
  * Encapsulates configuration for an Exchange Adapter.
+ * 封装 Exchange 适配器的配置。
  *
  * @author gazbert
  * @since 1.0
@@ -33,36 +34,46 @@ public interface ExchangeConfig {
 
   /**
    * Returns the name of the exchange.
+   * 返回交易所的名称。
    *
    * @return the exchange name.
+   * @return 交换名称。
    */
   String getExchangeName();
 
   /**
    * Returns the fully qualified class name of the Exchange Adapter.
+   *返回 Exchange 适配器的完全限定类名。
    *
    * @return the full class name (includes packages) of the Exchange Adapter.
+   * @return 交换适配器的完整类名（包括包）。
    */
   String getExchangeAdapter();
 
   /**
    * Returns the authentication config.
+   * 返回身份验证配置。
    *
    * @return authentication config if present, null otherwise.
+   * @return 身份验证配置（如果存在），否则为 null。
    */
   AuthenticationConfig getAuthenticationConfig();
 
   /**
    * Returns the network config.
+   * 返回网络配置。
    *
    * @return network config if present, null otherwise.
+   * @return 网络配置（如果存在），否则为 null。
    */
   NetworkConfig getNetworkConfig();
 
   /**
    * Returns the other config.
+   * 返回其他配置。
    *
    * @return other config if present, null otherwise.
+   * @return 其他配置（如果存在），否则为 null。
    */
   OtherConfig getOtherConfig();
 }

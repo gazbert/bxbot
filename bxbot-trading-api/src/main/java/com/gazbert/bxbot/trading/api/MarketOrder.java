@@ -27,8 +27,10 @@ import java.math.BigDecimal;
 
 /**
  * Represents a Market Order on the exchange.
+ *  代表交易所的市价单。
  *
  * <p>The type of order (buy/sell) is determined by the {@link OrderType}.
+ *  订单类型（买入/卖出）由 {@link OrderType} 确定。
  *
  * @author gazbert
  * @since 1.0
@@ -37,30 +39,37 @@ public interface MarketOrder {
 
   /**
    * Returns the type of order. Value will be {@link OrderType#BUY} or {@link OrderType#SELL}.
+   *  * 返回订单的类型。值为 {@link OrderType#BUY} 或 {@link OrderType#SELL}。
    *
    * @return the type of order.
+   *        订单的类型。
    */
   OrderType getType();
 
   /**
    * Returns the price of the order. This is usually in BTC or USD.
+   *  * 返回订单的价格。这通常是比特币或美元。
    *
    * @return Price of the order.
+   *  订单的价格。
    */
   BigDecimal getPrice();
 
   /**
-   * Returns the quantity of the order. This is usually the amount of the other currency you want to
-   * trade for BTC/USD.
+   * Returns the quantity of the order. This is usually the amount of the other currency you want to trade for BTC/USD.
+   *  * 返回订单的数量。这通常是您想要交易 BTC/USD 的其他货币的金额。
    *
    * @return Quantity of the order.
+   * @return 订单数量。
    */
   BigDecimal getQuantity();
 
   /**
    * Returns the total value of order (price * quantity). This is usually in BTC or USD.
+   *  * 返回订单的总价值（价格 * 数量）。这通常是比特币或美元。
    *
    * @return Total value of order (price * quantity).
+   *    @return 订单总价值（价格 * 数量）。
    */
   BigDecimal getTotal();
 }

@@ -33,6 +33,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 /**
  * Creates a JWT User that has been authenticated successfully.
+ * 创建一个已成功认证的 JWT 用户。
  *
  * @author gazbert
  */
@@ -43,9 +44,11 @@ public final class JwtUserFactory {
 
   /**
    * Creates a JWT User.
+   * 创建一个 JWT 用户。
    *
    * @param user the user details from the database.
-   * @return a JWT User.
+   *             数据库中的用户详细信息。
+   * @return a JWT User.  智威汤逊用户。
    */
   public static JwtUser create(User user) {
     return new JwtUser(

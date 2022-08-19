@@ -31,6 +31,7 @@ import com.gazbert.bxbot.trading.api.TradingApi;
 
 /**
  * Dummy strategy for class name instantiation.
+ * 类名实例化的虚拟策略。
  *
  * @author gazbert
  */

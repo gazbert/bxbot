@@ -70,6 +70,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 /**
  * Tests the behaviour of the COINBASE PRO Exchange Adapter.
+ * 测试 COINBASE PRO 交换适配器的行为。
  *
  * @author davidhuertas
  */
@@ -104,7 +105,7 @@ public class TestCoinbaseProExchangeAdapter extends AbstractExchangeAdapterTest 
 
   private static final String MARKET_ID = "BTC-GBP";
   private static final String ORDER_BOOK_DEPTH_LEVEL =
-      "2"; //  "2" = Top 50 bids and asks (aggregated)
+      "2"; //  "2" = Top 50 bids and asks (aggregated) "2" = 前 50 名出价和要价（汇总）
   private static final BigDecimal BUY_ORDER_PRICE = new BigDecimal("200.18");
   private static final BigDecimal BUY_ORDER_QUANTITY = new BigDecimal("0.01");
   private static final BigDecimal SELL_ORDER_PRICE = new BigDecimal("300.176");
@@ -145,7 +146,8 @@ public class TestCoinbaseProExchangeAdapter extends AbstractExchangeAdapterTest 
   private NetworkConfig networkConfig;
   private OtherConfig otherConfig;
 
-  /** Create some exchange config - the TradingEngine would normally do this. */
+  /** Create some exchange config - the TradingEngine would normally do this.
+   * 创建一些交换配置 - TradingEngine 通常会这样做。*/
   @Before
   public void setupForEachTest() {
     authenticationConfig = PowerMock.createMock(AuthenticationConfig.class);
@@ -177,13 +179,14 @@ public class TestCoinbaseProExchangeAdapter extends AbstractExchangeAdapterTest 
   @SuppressWarnings("unchecked")
   public void testCreateOrderToBuyIsSuccessful() throws Exception {
     // Load the canned response from the exchange
+    // 从交易所加载预设响应
     final byte[] encoded = Files.readAllBytes(Paths.get(NEW_BUY_ORDER_JSON_RESPONSE));
     final AbstractExchangeAdapter.ExchangeHttpResponse exchangeResponse =
         new AbstractExchangeAdapter.ExchangeHttpResponse(
             200, "OK", new String(encoded, StandardCharsets.UTF_8));
 
-    // Mock out param map so we can assert the contents passed to the transport layer are what we
-    // expect.
+    // Mock out param map so we can assert the contents passed to the transport layer are what we expect.
+    // 模拟出参数映射，因此我们可以断言传递给传输层的内容是我们所期望的。
     final Map<String, String> requestParamMap = PowerMock.createMock(Map.class);
     expect(
             requestParamMap.put(
@@ -200,6 +203,7 @@ public class TestCoinbaseProExchangeAdapter extends AbstractExchangeAdapterTest 
     expect(requestParamMap.put("product_id", MARKET_ID)).andStubReturn(null);
 
     // Partial mock so we do not send stuff down the wire
+    // 部分模拟，所以我们不会通过网络发送东西
     final CoinbaseProExchangeAdapter exchangeAdapter =
         PowerMock.createPartialMockAndInvokeDefaultConstructor(
             CoinbaseProExchangeAdapter.class,
@@ -312,8 +316,8 @@ public class TestCoinbaseProExchangeAdapter extends AbstractExchangeAdapterTest 
             anyObject(Map.class))
         .andThrow(
             new IllegalArgumentException(
-                " We all see what we want to see. Coffey looks and he sees Russians. He sees hate "
-                    + "and fear. You have to look with better eyes than that"));
+                " 我们都看到了我们想看到的。科菲看了看，他看到了俄罗斯人。他看到了仇恨”\n" +
+                        "                    +“和恐惧。你必须用比那更好的眼睛看"));
 
     PowerMock.replayAll();
     exchangeAdapter.init(exchangeConfig);
@@ -324,6 +328,7 @@ public class TestCoinbaseProExchangeAdapter extends AbstractExchangeAdapterTest 
 
   // --------------------------------------------------------------------------
   //  Cancel Order tests
+  // 取消订单测试
   // --------------------------------------------------------------------------
 
   @Test
@@ -349,6 +354,7 @@ public class TestCoinbaseProExchangeAdapter extends AbstractExchangeAdapterTest 
     exchangeAdapter.init(exchangeConfig);
 
     // marketId arg not needed for cancelling orders on this exchange.
+    // 取消此交易所的订单不需要 marketId arg。
     final boolean success = exchangeAdapter.cancelOrder(ORDER_ID_TO_CANCEL, null);
     assertTrue(success);
     PowerMock.verifyAll();
@@ -368,13 +374,14 @@ public class TestCoinbaseProExchangeAdapter extends AbstractExchangeAdapterTest 
             eq(null))
         .andThrow(
             new ExchangeNetworkException(
-                "We don't need them. We can't trust them. We may have to take steps."
-                    + " We're gonna have to take steps."));
+                "我们不需要它们。我们不能相信他们。我们可能不得不采取措施。”\n" +
+                        "                    + \" 我们将不得不采取措施。"));
 
     PowerMock.replayAll();
     exchangeAdapter.init(exchangeConfig);
 
     // marketId arg not needed for cancelling orders on this exchange.
+    // 取消此交易所的订单不需要 marketId arg。
     exchangeAdapter.cancelOrder(ORDER_ID_TO_CANCEL, null);
     PowerMock.verifyAll();
   }
@@ -393,18 +400,20 @@ public class TestCoinbaseProExchangeAdapter extends AbstractExchangeAdapterTest 
             eq(null))
         .andThrow(
             new IllegalStateException(
-                "Fluid breathing system, we just got it. You use it when you go really deep."));
+                "Fluid breathing system, we just got it. You use it when you go really deep.流体呼吸系统，我们刚刚得到它。当你真正深入时使用它。"));
 
     PowerMock.replayAll();
     exchangeAdapter.init(exchangeConfig);
 
     // marketId arg not needed for cancelling orders on this exchange.
+    // 取消此交易所的订单不需要 marketId arg。
     exchangeAdapter.cancelOrder(ORDER_ID_TO_CANCEL, null);
     PowerMock.verifyAll();
   }
 
   // --------------------------------------------------------------------------
   //  Get Your Open Orders tests
+  // 获取您的未结订单测试
   // --------------------------------------------------------------------------
 
   @Test
@@ -486,7 +495,7 @@ public class TestCoinbaseProExchangeAdapter extends AbstractExchangeAdapterTest 
             eq(null))
         .andThrow(
             new IllegalStateException(
-                "All those moments will be lost in time... like tears in rain."));
+                "All those moments will be lost in time... like tears in rain. 所有这些瞬间都会消失在时间里……就像雨中的泪水。"));
 
     PowerMock.replayAll();
     exchangeAdapter.init(exchangeConfig);
@@ -497,6 +506,7 @@ public class TestCoinbaseProExchangeAdapter extends AbstractExchangeAdapterTest 
 
   // --------------------------------------------------------------------------
   //  Get Market Orders tests
+  // 获取市价单测试
   // --------------------------------------------------------------------------
 
   @Test
@@ -531,6 +541,7 @@ public class TestCoinbaseProExchangeAdapter extends AbstractExchangeAdapterTest 
     final MarketOrderBook marketOrderBook = exchangeAdapter.getMarketOrders(MARKET_ID);
 
     // assert some key stuff; we're not testing GSON here.
+    // 断言一些关键的东西；我们不是在这里测试 GSON。
     assertEquals(MARKET_ID, marketOrderBook.getMarketId());
 
     final BigDecimal buyPrice = new BigDecimal("165.87");
@@ -589,10 +600,10 @@ public class TestCoinbaseProExchangeAdapter extends AbstractExchangeAdapterTest 
             anyObject(Map.class))
         .andThrow(
             new IllegalArgumentException(
-                "Mr. Ambassador, you have nearly a hundred naval vessels operating in the "
-                    + "North Atlantic right now. Your aircraft has dropped enough sonar buoys "
-                    + "so that a man could walk from Greenland to Iceland to Scotland without "
-                    + "getting his feet wet. Now, shall we dispense with the bull?"));
+                "大使先生，您有近百艘军舰在“\n" +
+                        "                    + “现在是北大西洋。你的飞机已经掉落了足够多的声纳浮标”\n" +
+                        "                    + “这样一个人就可以从格陵兰步行到冰岛再到苏格兰，而无需”\n" +
+                        "                    +“弄湿他的脚。现在，我们应该放弃公牛吗？"));
 
     PowerMock.replayAll();
     exchangeAdapter.init(exchangeConfig);
@@ -603,6 +614,7 @@ public class TestCoinbaseProExchangeAdapter extends AbstractExchangeAdapterTest 
 
   // --------------------------------------------------------------------------
   //  Get Latest Market Price tests
+  // 获取最新的市场价格测试
   // --------------------------------------------------------------------------
 
   @Test
@@ -638,7 +650,7 @@ public class TestCoinbaseProExchangeAdapter extends AbstractExchangeAdapterTest 
     PowerMock.expectPrivate(
             exchangeAdapter, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD, eq(TICKER), eq(null))
         .andThrow(
-            new ExchangeNetworkException("I need your clothes, your boots and your motorcycle."));
+            new ExchangeNetworkException("I need your clothes, your boots and your motorcycle. 我需要你的衣服、靴子和摩托车。"));
 
     PowerMock.replayAll();
     exchangeAdapter.init(exchangeConfig);
@@ -654,7 +666,7 @@ public class TestCoinbaseProExchangeAdapter extends AbstractExchangeAdapterTest 
             CoinbaseProExchangeAdapter.class, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD);
     PowerMock.expectPrivate(
             exchangeAdapter, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD, eq(TICKER), eq(null))
-        .andThrow(new IllegalArgumentException("Come with me if you want to live."));
+        .andThrow(new IllegalArgumentException("Come with me if you want to live. 如果你想活下去，跟我来。"));
 
     PowerMock.replayAll();
     exchangeAdapter.init(exchangeConfig);
@@ -665,6 +677,7 @@ public class TestCoinbaseProExchangeAdapter extends AbstractExchangeAdapterTest 
 
   // --------------------------------------------------------------------------
   //  Get Balance Info tests
+  // 获取余额信息测试
   // --------------------------------------------------------------------------
 
   @Test
@@ -691,6 +704,7 @@ public class TestCoinbaseProExchangeAdapter extends AbstractExchangeAdapterTest 
     final BalanceInfo balanceInfo = exchangeAdapter.getBalanceInfo();
 
     // assert some key stuff; we're not testing GSON here.
+    // 断言一些关键的东西；我们不是在这里测试 GSON。
     assertEquals(
         0,
         balanceInfo
@@ -735,7 +749,7 @@ public class TestCoinbaseProExchangeAdapter extends AbstractExchangeAdapterTest 
             eq(null))
         .andThrow(
             new ExchangeNetworkException(
-                "Three o'clock is always too late or too early for anything you want to do."));
+                "对于你想做的任何事情来说，三点钟总是太晚或太早。"));
 
     PowerMock.replayAll();
     exchangeAdapter.init(exchangeConfig);
@@ -757,7 +771,7 @@ public class TestCoinbaseProExchangeAdapter extends AbstractExchangeAdapterTest 
             eq(null))
         .andThrow(
             new IllegalStateException(
-                "There is a time for many words, and there is also a time for sleep."));
+                "话多有时间，睡觉也有时间。"));
 
     PowerMock.replayAll();
     exchangeAdapter.init(exchangeConfig);
@@ -768,6 +782,7 @@ public class TestCoinbaseProExchangeAdapter extends AbstractExchangeAdapterTest 
 
   // --------------------------------------------------------------------------
   //  Get Ticker tests
+  // 获取 Ticker 测试
   // --------------------------------------------------------------------------
 
   @Test
@@ -820,8 +835,8 @@ public class TestCoinbaseProExchangeAdapter extends AbstractExchangeAdapterTest 
             exchangeAdapter, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD, eq(TICKER), eq(null))
         .andThrow(
             new ExchangeNetworkException(
-                "Listen, Herr Mac, I don't know what kind of people you're used to dealing with, "
-                    + "but nobody tells me what to do in my place."));
+                "听着，麦克先生，我不知道你习惯与什么样的人打交道，”\n" +
+                        "                    +“但是没有人告诉我该做什么。"));
 
     PowerMock.replayAll();
     exchangeAdapter.init(exchangeConfig);
@@ -839,9 +854,9 @@ public class TestCoinbaseProExchangeAdapter extends AbstractExchangeAdapterTest 
             exchangeAdapter, MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD, eq(TICKER), eq(null))
         .andThrow(
             new IllegalArgumentException(
-                "Indiana Jones. I always knew some day you'd come "
-                    + "walking back through my door. I never doubted that. Something made it "
-                    + "inevitable. So, what are you doing here in Nepal?"));
+                "印第安纳琼斯。我一直都知道有一天你会来”\n" +
+                        "                    +“从我的门走回来。我从不怀疑这一点。有些东西成功了”\n" +
+                        "                    +“不可避免。那么，你在尼泊尔做什么？"));
 
     PowerMock.replayAll();
     exchangeAdapter.init(exchangeConfig);
@@ -852,6 +867,7 @@ public class TestCoinbaseProExchangeAdapter extends AbstractExchangeAdapterTest 
 
   // --------------------------------------------------------------------------
   //  Non Exchange visiting tests
+  // 非交易所访问测试
   // --------------------------------------------------------------------------
 
   @Test
@@ -985,11 +1001,16 @@ public class TestCoinbaseProExchangeAdapter extends AbstractExchangeAdapterTest 
 
   // --------------------------------------------------------------------------
   //  Request sending tests
-  //
-  //  "The rabbit-hole went straight on like a tunnel for some way, and then dipped suddenly down,
-  //   so suddenly that Alice had not a moment to think about stopping herself before she found
-  //   herself falling down what seemed to be a very deep well..."
-  // --------------------------------------------------------------------------
+  // 请求发送测试
+  /**
+    "The rabbit-hole went straight on like a tunnel for some way, and then dipped suddenly down,
+    so suddenly that Alice had not a moment to think about stopping herself before she found
+     herself falling down what seemed to be a very deep well...
+   “兔子洞像隧道一样笔直向前走了一段，然后突然下降，
+   来得太突然，爱丽丝来不及想停下来就发现
+   自己掉进了似乎很深的井里……"
+   */
+//  --------------------------------------------------------------------------
 
   @Test
   public void testSendingPublicRequestToExchangeSuccessfully() throws Exception {
@@ -1036,7 +1057,7 @@ public class TestCoinbaseProExchangeAdapter extends AbstractExchangeAdapterTest 
             eq(null),
             eq(new HashMap<>()))
         .andThrow(
-            new ExchangeNetworkException("One wrong note eventually ruins the entire symphony."));
+            new ExchangeNetworkException("One wrong note eventually ruins the entire symphony.一个错误的音符最终会毁掉整部交响曲。"));
 
     PowerMock.replayAll();
     exchangeAdapter.init(exchangeConfig);
@@ -1060,7 +1081,7 @@ public class TestCoinbaseProExchangeAdapter extends AbstractExchangeAdapterTest 
             eq("GET"),
             eq(null),
             eq(new HashMap<>()))
-        .andThrow(new TradingApiException("Look on my works, ye Mighty, and despair."));
+        .andThrow(new TradingApiException("Look on my works, ye Mighty, and despair.看看我的作品，你这强大的，绝望的。"));
 
     PowerMock.replayAll();
     exchangeAdapter.init(exchangeConfig);
@@ -1212,7 +1233,7 @@ public class TestCoinbaseProExchangeAdapter extends AbstractExchangeAdapterTest 
             eq("POST"),
             eq(new GsonBuilder().create().toJson(requestParamMap)),
             eq(requestHeaderMap))
-        .andThrow(new TradingApiException("When you close your eyes do you dream of me?"));
+        .andThrow(new TradingApiException("When you close your eyes do you dream of me?当你闭上眼睛时，你会梦见我吗？"));
 
     PowerMock.replayAll();
     exchangeAdapter.init(exchangeConfig);

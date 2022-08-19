@@ -34,6 +34,7 @@ import org.junit.jupiter.api.Test;
 
 /**
  * Tests User model behaves as expected.
+ * * 测试用户模型的行为符合预期。
  *
  * @author gazbert
  */
@@ -100,6 +101,7 @@ class TestUser {
 
   // ------------------------------------------------------------------------
   // Private utils
+  // 私有工具
   // ------------------------------------------------------------------------
 
   private List<Role> createRoles(User user) {

@@ -29,6 +29,7 @@ import org.junit.jupiter.api.Test;
 
 /**
  * Tests OrderType is created as expected.
+ * * 测试 OrderType 按预期创建。
  *
  * @author gazbert
  */

@@ -29,12 +29,13 @@ import org.junit.jupiter.api.Test;
 
 /**
  * Tests Exchange Network Exception is created as expected.
+ * * 按预期创建测试 Exchange 网络异常。
  *
  * @author gazbert
  */
 class TestExchangeNetworkExceptionCreation {
 
-  private static final String ERROR_MSG = "Network timeout connecting to exchange";
+  private static final String ERROR_MSG = "Network timeout connecting to exchange 连接交换的网络超时";
   private static final RuntimeException CAUSE = new RuntimeException("The cause of the exception");
 
   @Test

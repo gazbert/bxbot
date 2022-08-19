@@ -32,6 +32,7 @@ import org.junit.jupiter.api.Test;
 
 /**
  * Tests a BotStatus domain object behaves as expected.
+ * 测试 BotStatus 域对象的行为是否符合预期。
  *
  * @author gazbert
  */

@@ -37,6 +37,7 @@ import org.junit.jupiter.api.Test;
 
 /**
  * Tests the Market Order Book impl behaves as expected.
+ * 测试 Market Order Book impl 的行为是否符合预期。
  *
  * @author gazbert
  */
@@ -67,7 +68,8 @@ class TestMarketOrderBookImpl {
   private MarketOrder buyOrder2;
   private MarketOrder buyOrder3;
 
-  /** Sets up some MarketOrders for the tests. */
+  /** Sets up some MarketOrders for the tests.
+   * 为测试设置一些 MarketOrders。 */
   @BeforeEach
   void setupOrdersBeforeEachTest() {
     sellOrder1 =

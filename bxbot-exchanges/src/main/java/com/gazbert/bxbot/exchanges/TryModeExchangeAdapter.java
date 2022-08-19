@@ -46,19 +46,22 @@ import org.apache.logging.log4j.Logger;
 
 /**
  * This Exchange Adapter decorates a 'real' Exchange Adapter and delegates operations to it.
+ * 这个交换适配器装饰了一个“真正的”交换适配器并将操作委托给它。
  *
- * <p>It's purpose is to provide a paper trading/dry run simulation capability against a configured
- * exchange.
+ * <p>It's purpose is to provide a paper trading/dry run simulation capability against a configured exchange.
+ * * <p>其目的是针对已配置的交易所提供纸面交易/试运行模拟功能。
  *
- * <p>The Exchange Adapter to use is configured using the ./config/exchange.yaml otherConfig
- * section.
+ * <p>The Exchange Adapter to use is configured using the ./config/exchange.yaml otherConfig section.
+ * * <p>要使用的 Exchange 适配器是使用 ./config/exchange.yaml otherConfig 部分配置的。
  *
  * <p>Public API calls are delegated to the configured Exchange Adapter.
+ * <p>公共 API 调用被委派给配置的 Exchange 适配器。
  *
- * <p>Authenticated API calls to create orders, cancel orders, and fetch open orders are simulated
- * based on actual ticker data from the exchange.
+ * <p>Authenticated API calls to create orders, cancel orders, and fetch open orders are simulated based on actual ticker data from the exchange.
+ * <p>用于创建订单、取消订单和获取未结订单的经过验证的 API 调用是根据来自交易所的实际代码数据进行模拟的。
  *
  * <p>Only 1 open order is simulated at any time.
+ * <p>任何时候都只模拟 1 个未结订单。
  *
  * @author MarcDahlem
  * @since 1.0
@@ -89,21 +92,21 @@ public class TryModeExchangeAdapter extends AbstractExchangeAdapter implements E
   @Override
   public void init(ExchangeConfig config) {
     LOG.info(
-        () -> "About to initialise try-mode adapter with the following exchange config: " + config);
+        () -> "About to initialise try-mode adapter with the following exchange config: 即将使用以下交换配置初始化 try-mode 适配器：" + config);
     setOtherConfig(config);
     initializeAdapterDelegation(config);
   }
 
   @Override
   public String getImplName() {
-    return "Try-Mode Test Adapter: configurable exchange public API delegation & simulated orders";
+    return "Try-Mode Test Adapter: configurable exchange public API delegation & simulated orders. Try-Mode 测试适配器：可配置的交换公共 API 委托和模拟订单.";
   }
 
   @Override
   public MarketOrderBook getMarketOrders(String marketId)
       throws ExchangeNetworkException, TradingApiException {
     checkOpenOrderExecution(marketId);
-    LOG.info(() -> "Delegate 'getMarketOrders' to the configured delegation exchange adapter.");
+    LOG.info(() -> "Delegate 'getMarketOrders' to the configured delegation exchange adapter. 将“getMarketOrders”委托给配置的委托交换适配器。");
     return delegateExchangeAdapter.getMarketOrders(marketId);
   }
 
@@ -114,9 +117,9 @@ public class TryModeExchangeAdapter extends AbstractExchangeAdapter implements E
     final List<OpenOrder> result = new LinkedList<>();
     if (currentOpenOrder != null) {
       result.add(currentOpenOrder);
-      LOG.info(() -> "getYourOpenOrders: Found an open DUMMY order: " + currentOpenOrder);
+      LOG.info(() -> "getYourOpenOrders: Found an open DUMMY order: getYourOpenOrders: 找到一个打开的 DUMMY 订单：" + currentOpenOrder);
     } else {
-      LOG.info(() -> "getYourOpenOrders: no open order found. Return empty order list");
+      LOG.info(() -> "getYourOpenOrders: no open order found. Return empty order list. getYourOpenOrders：未找到未结订单。返回空订单列表.");
     }
     return result;
   }
@@ -128,7 +131,7 @@ public class TryModeExchangeAdapter extends AbstractExchangeAdapter implements E
     checkOpenOrderExecution(marketId);
     if (currentOpenOrder != null) {
       throw new TradingApiException(
-          "Can only record/execute one order at a time. Wait for the open order to fulfill");
+          "Can only record/execute one order at a time. Wait for the open order to fulfill. 一次只能记录/执行一个订单。等待未结订单完成。");
     }
     final String newOrderId = "DUMMY_" + orderType + "_ORDER_ID_" + System.currentTimeMillis();
     final Date creationDate = new Date();
@@ -136,7 +139,7 @@ public class TryModeExchangeAdapter extends AbstractExchangeAdapter implements E
     currentOpenOrder =
         new OpenOrderImpl(
             newOrderId, creationDate, marketId, orderType, price, quantity, quantity, total);
-    LOG.info(() -> "Created a new dummy order: " + currentOpenOrder);
+    LOG.info(() -> "Created a new dummy order: 创建了一个新的虚拟订单：" + currentOpenOrder);
     checkOpenOrderExecution(marketId);
     return newOrderId;
   }
@@ -146,17 +149,17 @@ public class TryModeExchangeAdapter extends AbstractExchangeAdapter implements E
       throws ExchangeNetworkException, TradingApiException {
     checkOpenOrderExecution(marketId);
     if (currentOpenOrder == null) {
-      throw new TradingApiException("Tried to cancel a order, but no open order found");
+      throw new TradingApiException("Tried to cancel a order, but no open order found. 尝试取消订单，但未找到未结订单");
     }
     if (!currentOpenOrder.getId().equals(orderId)) {
       throw new TradingApiException(
-          "Tried to cancel a order, but the order id does not match the current open order."
-              + " Expected: "
+          "Tried to cancel a order, but the order id does not match the current open order. 尝试取消订单，但订单 ID 与当前未结订单不匹配。"
+              + " Expected: 预期的："
               + currentOpenOrder.getId()
-              + ", actual: "
+              + ", actual: 实际的："
               + orderId);
     }
-    LOG.info(() -> "The following order is canceled: " + currentOpenOrder);
+    LOG.info(() -> "The following order is canceled: 以下订单被取消：" + currentOpenOrder);
     currentOpenOrder = null;
     return true;
   }
@@ -166,7 +169,7 @@ public class TryModeExchangeAdapter extends AbstractExchangeAdapter implements E
       throws ExchangeNetworkException, TradingApiException {
     checkOpenOrderExecution(marketId);
     LOG.info(
-        () -> "Delegate 'getLatestMarketPrice' to the configured delegation exchange adapter.");
+        () -> "Delegate 'getLatestMarketPrice' to the configured delegation exchange adapter. 将“getLatestMarketPrice”委托给配置的委托交换适配器。");
     return delegateExchangeAdapter.getLatestMarketPrice(marketId);
   }
 
@@ -176,7 +179,7 @@ public class TryModeExchangeAdapter extends AbstractExchangeAdapter implements E
     availableBalances.put(simulatedBaseCurrency, baseCurrencyBalance);
     availableBalances.put(simulatedCounterCurrency, counterCurrencyBalance);
     final BalanceInfo currentBalance = new BalanceInfoImpl(availableBalances, new HashMap<>());
-    LOG.info(() -> "Return the following simulated balances: " + currentBalance);
+    LOG.info(() -> "Return the following simulated balances: 返回以下模拟余额：" + currentBalance);
     return currentBalance;
   }
 
@@ -185,8 +188,8 @@ public class TryModeExchangeAdapter extends AbstractExchangeAdapter implements E
       throws TradingApiException, ExchangeNetworkException {
     LOG.info(
         () ->
-            "Delegate 'getPercentageOfBuyOrderTakenForExchangeFee'"
-                + "to the configured delegation exchange adapter.");
+            "Delegate 'getPercentageOfBuyOrderTakenForExchangeFee'to the configured delegation exchange adapter. " +
+                    "将“getPercentageOfBuyOrderTakenForExchangeFee”委托给配置的委托交换适配器。");
     return delegateExchangeAdapter.getPercentageOfBuyOrderTakenForExchangeFee(marketId);
   }
 
@@ -195,69 +198,69 @@ public class TryModeExchangeAdapter extends AbstractExchangeAdapter implements E
       throws TradingApiException, ExchangeNetworkException {
     LOG.info(
         () ->
-            "Delegate 'getPercentageOfSellOrderTakenForExchangeFee'"
-                + "to the configured delegation exchange adapter.");
+            "Delegate 'getPercentageOfSellOrderTakenForExchangeFee' to the configured delegation exchange adapter." +
+                    "将“getPercentageOfSellOrderTakenForExchangeFee”委托给配置的委托交换适配器。");
     return delegateExchangeAdapter.getPercentageOfSellOrderTakenForExchangeFee(marketId);
   }
 
   @Override
   public Ticker getTicker(String marketId) throws TradingApiException, ExchangeNetworkException {
     checkOpenOrderExecution(marketId);
-    LOG.info(() -> "Delegate 'getTicker' to the configured delegation exchange adapter.");
+    LOG.info(() -> "Delegate 'getTicker' to the configured delegation exchange adapter. 将“getTicker”委托给配置的委托交换适配器。");
     return delegateExchangeAdapter.getTicker(marketId);
   }
 
   private void setOtherConfig(ExchangeConfig exchangeConfig) {
-    LOG.info(() -> "Load try-mode adapter config...");
+    LOG.info(() -> "Load try-mode adapter config... 加载尝试模式适配器配置...");
     final OtherConfig otherConfig = getOtherConfig(exchangeConfig);
 
     simulatedBaseCurrency = getOtherConfigItem(otherConfig, SIMULATED_BASE_CURRENCY_PROPERTY_NAME);
-    LOG.info(() -> "Base currency to be simulated:" + simulatedBaseCurrency);
+    LOG.info(() -> "Base currency to be simulated: 要模拟的基础货币：" + simulatedBaseCurrency);
 
     final String startingBaseBalanceInConfig =
         getOtherConfigItem(otherConfig, BASE_CURRENCY_START_BALANCE_PROPERTY_NAME);
     baseCurrencyBalance = new BigDecimal(startingBaseBalanceInConfig);
     LOG.info(
         () ->
-            "Base currency balance at simulation start in BigDecimal format: "
+            "Base currency balance at simulation start in BigDecimal format: BigDecimal 格式的模拟开始时的基础货币余额："
                 + baseCurrencyBalance);
 
     simulatedCounterCurrency =
         getOtherConfigItem(otherConfig, SIMULATED_COUNTER_CURRENCY_PROPERTY_NAME);
-    LOG.info(() -> "Counter currency to be simulated:" + simulatedCounterCurrency);
+    LOG.info(() -> "Counter currency to be simulated: 要模拟的柜台货币：" + simulatedCounterCurrency);
 
     final String startingBalanceInConfig =
         getOtherConfigItem(otherConfig, COUNTER_CURRENCY_START_BALANCE_PROPERTY_NAME);
     counterCurrencyBalance = new BigDecimal(startingBalanceInConfig);
     LOG.info(
         () ->
-            "Counter currency balance at simulation start in BigDecimal format: "
+            "Counter currency balance at simulation start in BigDecimal format: BigDecimal 格式的模拟开始时的计数器货币余额："
                 + counterCurrencyBalance);
 
     delegateExchangeClassName =
         getOtherConfigItem(otherConfig, DELEGATE_ADAPTER_CLASS_PROPERTY_NAME);
     LOG.info(
         () ->
-            "Delegate exchange adapter to be used for public API calls:"
+            "Delegate exchange adapter to be used for public API calls: 用于公共 API 调用的委托交换适配器："
                 + delegateExchangeClassName);
-    LOG.info(() -> "Try-mode adapter config successfully loaded.");
+    LOG.info(() -> "Try-mode adapter config successfully loaded. Try-mode 适配器配置已成功加载。");
   }
 
   private void initializeAdapterDelegation(ExchangeConfig config) {
     LOG.info(
-        () -> "Initializing the delegate exchange adapter '" + delegateExchangeClassName + "'...");
+        () -> "Initializing the delegate exchange adapter 初始化委托交换适配器 '" + delegateExchangeClassName + "'...");
     delegateExchangeAdapter = createDelegateExchangeAdapter();
     delegateExchangeAdapter.init(config);
   }
 
   private ExchangeAdapter createDelegateExchangeAdapter() {
-    LOG.info(() -> "Creating the delegate exchange adapter '" + delegateExchangeClassName + "'...");
+    LOG.info(() -> "Creating the delegate exchange adapter 创建委托交换适配器 '" + delegateExchangeClassName + "'...");
     try {
       final Class componentClass = Class.forName(delegateExchangeClassName);
       final Object rawComponentObject = componentClass.getDeclaredConstructor().newInstance();
       LOG.info(
           () ->
-              "Successfully created the delegate exchange adapter class for: "
+              "Successfully created the delegate exchange adapter class for: 成功地为以下对象创建了委托交换适配器类："
                   + delegateExchangeClassName);
       return (ExchangeAdapter) rawComponentObject;
     } catch (ClassNotFoundException
@@ -265,7 +268,7 @@ public class TryModeExchangeAdapter extends AbstractExchangeAdapter implements E
         | IllegalAccessException
         | NoSuchMethodException
         | InvocationTargetException e) {
-      final String errorMsg = "Failed to load and create delegate exchange adapter.";
+      final String errorMsg = "Failed to load and create delegate exchange adapter. 未能加载和创建委托交换适配器。";
       LOG.error(errorMsg, e);
       throw new IllegalStateException(errorMsg, e);
     }
@@ -288,7 +291,7 @@ public class TryModeExchangeAdapter extends AbstractExchangeAdapter implements E
             break;
           default:
             throw new TradingApiException(
-                "Order type not recognized: " + currentOpenOrder.getType());
+                "Order type not recognized: 订单类型无法识别：" + currentOpenOrder.getType());
         }
       }
     } finally {
@@ -301,8 +304,8 @@ public class TryModeExchangeAdapter extends AbstractExchangeAdapter implements E
     final BigDecimal currentBidPrice = getTicker(marketId).getBid();
     if (currentBidPrice.compareTo(currentOpenOrder.getPrice()) >= 0) {
       LOG.info(
-          "SELL: the market's bid price moved above the limit price "
-              + "--> record sell order execution with the current bid price");
+          "SELL: the market's bid price moved above the limit price --> record sell order execution with the current bid price。 " +
+                  "SELL: 市场买入价高于限价 --> 以当前买入价记录卖出订单执行。");
       final BigDecimal orderPrice =
           currentOpenOrder.getOriginalQuantity().multiply(currentBidPrice);
       final BigDecimal buyFees =
@@ -319,8 +322,8 @@ public class TryModeExchangeAdapter extends AbstractExchangeAdapter implements E
     final BigDecimal currentAskPrice = getTicker(marketId).getAsk();
     if (currentAskPrice.compareTo(currentOpenOrder.getPrice()) <= 0) {
       LOG.info(
-          "BUY: the market's current ask price moved below the limit price "
-              + "--> record buy order execution with the current ask price");
+          "BUY: the market's current ask price moved below the limit price --> record buy order execution with the current ask price。 " +
+                  "BUY: 市场当前的卖价低于限价--> 以当前卖价记录买单执行。");
       final BigDecimal orderPrice =
           currentOpenOrder.getOriginalQuantity().multiply(currentAskPrice);
       final BigDecimal buyFees =

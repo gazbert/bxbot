@@ -74,31 +74,49 @@ import org.apache.logging.log4j.Logger;
 
 /**
  * Exchange Adapter for integrating with the Bitstamp exchange. It uses v2 of the Bitstamp API; it
- * is documented <a href="https://www.bitstamp.net/api/">here</a>.
+      is documented <a href="https://www.bitstamp.net/api/">here</a>.
+ 用于与 Bitstamp 交换集成的交换适配器。它使用了 Bitstamp API v2；它
+ <a href="https://www.bitstamp.net/api/">此处</a>记录在案。
  *
  * <p><strong> DISCLAIMER: This Exchange Adapter is provided as-is; it might have bugs in it and you
- * could lose money. Despite running live on Bitstamp, it has only been unit tested up until the
- * point of calling the {@link #sendPublicRequestToExchange(String)} and {@link
- * #sendAuthenticatedRequestToExchange(String, Map)} methods. Use it at our own risk! </strong>
+  could lose money. Despite running live on Bitstamp, it has only been unit tested up until the
+   point of calling the {@link #sendPublicRequestToExchange(String)} and {@link
+   #sendAuthenticatedRequestToExchange(String, Map)} methods. Use it at our own risk! </strong>
+ <p><strong> 免责声明：此交换适配器按原样提供；它可能有错误，你
+ 可能会赔钱。尽管在 Bitstamp 上实时运行，但它只进行了单元测试，直到
+ 调用 {@link #sendPublicRequestToExchange(String)} 和 {@link
+#sendAuthenticatedRequestToExchange(String, Map)} 方法。使用它需要我们自担风险！ </strong>
+
  *
  * <p>Note: the Bitstamp API returns 200 OK response even for errors. The response payload will be
- * different though, e.g.
+  different though, e.g.
+ <p>注意：即使出现错误，Bitstamp API 也会返回 200 OK 响应。响应负载将是
+ 虽然不同，例如
  *
  * <pre>
  *     {"error": "Order not found"}
  * </pre>
  *
  * <p>This Exchange Adapter is <em>not</em> thread safe. It expects to be called using a single
- * thread in order to preserve trade execution order. The {@link URLConnection} achieves this by
- * blocking/waiting on the input stream (response) for each API call.
+  thread in order to preserve trade execution order. The {@link URLConnection} achieves this by
+  blocking/waiting on the input stream (response) for each API call.
+ <p>此交换适配器<em>不是</em>线程安全的。它期望使用单个调用
+ 线程以保留交易执行顺序。 {@link URLConnection} 通过
+ 阻塞/等待每个 API 调用的输入流（响应）。
  *
  * <p>The {@link TradingApi} calls will throw a {@link ExchangeNetworkException} if a network error
- * occurs trying to connect to the exchange. A {@link TradingApiException} is thrown for
- * <em>all</em> other failures.
+  occurs trying to connect to the exchange. A {@link TradingApiException} is thrown for
+  <em>all</em> other failures.
+ <p>如果网络错误，{@link TradingApi} 调用将抛出 {@link ExchangeNetworkException}
+ 尝试连接到交易所时发生。抛出 {@link TradingApiException}
+ <em>所有</em>其他故障。
  *
  * <p>NOTE: Bitstamp requires all price values to be limited to 2 decimal places when creating
- * orders. This adapter truncates any prices with more than 2 decimal places and rounds using {@link
- * java.math.RoundingMode#HALF_EVEN}, E.g. 250.176 would be sent to the exchange as 250.18.
+  orders. This adapter truncates any prices with more than 2 decimal places and rounds using {@link
+  java.math.RoundingMode#HALF_EVEN}, E.g. 250.176 would be sent to the exchange as 250.18.
+ <p>注意：Bitstamp 在创建时要求所有价格值限制为 2 位小数
+ 订单。此适配器使用 {@link 截断任何超过 2 位小数和四舍五入的价格
+爪哇。 math.RoundingMode#HALF_EVEN}，例如250.176 将作为 250.18 发送到交易所。
  *
  * @author gazbert
  * @since 1.0
@@ -110,9 +128,9 @@ public class BitstampExchangeAdapter extends AbstractExchangeAdapter implements 
   private static final String API_BASE_URL = "https://www.bitstamp.net/api/v2/";
 
   private static final String UNEXPECTED_ERROR_MSG =
-      "Unexpected error has occurred in Bitstamp Exchange Adapter. ";
+      "Unexpected error has occurred in Bitstamp Exchange Adapter. Bitstamp 交换适配器发生意外错误。";
   private static final String UNEXPECTED_IO_ERROR_MSG =
-      "Failed to connect to Exchange due to unexpected IO error.";
+      "Failed to connect to Exchange due to unexpected IO error. 由于意外的 IO 错误，无法连接到 Exchange。";
 
   private static final String AMOUNT = "amount";
   private static final String BALANCE = "balance";
@@ -134,7 +152,7 @@ public class BitstampExchangeAdapter extends AbstractExchangeAdapter implements 
 
   @Override
   public void init(ExchangeConfig config) {
-    LOG.info(() -> "About to initialise Bitstamp ExchangeConfig: " + config);
+    LOG.info(() -> "About to initialise Bitstamp ExchangeConfig: 即将初始化 Bitstamp ExchangeConfig： " + config);
     setAuthenticationConfig(config);
     setNetworkConfig(config);
 
@@ -145,6 +163,8 @@ public class BitstampExchangeAdapter extends AbstractExchangeAdapter implements 
 
   // --------------------------------------------------------------------------
   // Bitstamp API Calls adapted to the Trading API.
+  // 适用于交易 API 的 Bitstamp API 调用。
+
   // See https://www.bitstamp.net/api/
   // --------------------------------------------------------------------------
 
@@ -153,7 +173,7 @@ public class BitstampExchangeAdapter extends AbstractExchangeAdapter implements 
       throws TradingApiException, ExchangeNetworkException {
     try {
       final ExchangeHttpResponse response = sendPublicRequestToExchange("order_book/" + marketId);
-      LOG.debug(() -> "Market Orders response: " + response);
+      LOG.debug(() -> "Market Orders response: 市价单响应：" + response);
 
       final BitstampOrderBook bitstampOrderBook =
           gson.fromJson(response.getPayload(), BitstampOrderBook.class);
@@ -164,8 +184,8 @@ public class BitstampExchangeAdapter extends AbstractExchangeAdapter implements 
         final MarketOrder buyOrder =
             new MarketOrderImpl(
                 OrderType.BUY,
-                order.get(0), // price
-                order.get(1), // quantity
+                order.get(0), // price  价格
+                order.get(1), // quantity 数量
                 order.get(0).multiply(order.get(1)));
         buyOrders.add(buyOrder);
       }
@@ -176,8 +196,8 @@ public class BitstampExchangeAdapter extends AbstractExchangeAdapter implements 
         final MarketOrder sellOrder =
             new MarketOrderImpl(
                 OrderType.SELL,
-                order.get(0), // price
-                order.get(1), // quantity
+                order.get(0), // price 价格
+                order.get(1), // quantity  数量
                 order.get(0).multiply(order.get(1)));
         sellOrders.add(sellOrder);
       }
@@ -199,12 +219,13 @@ public class BitstampExchangeAdapter extends AbstractExchangeAdapter implements 
     try {
       final ExchangeHttpResponse response =
           sendAuthenticatedRequestToExchange("open_orders/" + marketId, null);
-      LOG.debug(() -> "Open Orders response: " + response);
+      LOG.debug(() -> "Open Orders response:  未结订单响应：" + response);
 
       final BitstampOrderResponse[] myOpenOrders =
           gson.fromJson(response.getPayload(), BitstampOrderResponse[].class);
 
       // No need to filter on marketId; exchange does this for us.
+      //无需过滤marketId；交换为我们做这件事。
       final List<OpenOrder> ordersToReturn = new ArrayList<>();
       for (final BitstampOrderResponse openOrder : myOpenOrders) {
         OrderType orderType;
@@ -214,7 +235,7 @@ public class BitstampExchangeAdapter extends AbstractExchangeAdapter implements 
           orderType = OrderType.SELL;
         } else {
           throw new TradingApiException(
-              "Unrecognised order type received in getYourOpenOrders(). Value: " + openOrder.type);
+              "Unrecognised order type received in getYourOpenOrders(). Value: 在 getYourOpenOrders() 中收到无法识别的订单类型。价值：" + openOrder.type);
         }
 
         final OpenOrder order =
@@ -225,8 +246,8 @@ public class BitstampExchangeAdapter extends AbstractExchangeAdapter implements 
                 orderType,
                 openOrder.price,
                 openOrder.amount,
-                null, // orig_quantity - not provided by stamp :-(
-                openOrder.price.multiply(openOrder.amount) // total - not provided by stamp :-(
+                null, // orig_quantity - not provided by stamp :-(  orig_quantity - 不提供邮票 :-(
+                openOrder.price.multiply(openOrder.amount) // total - not provided by stamp :-( 总计 - 邮票未提供 :-(
                 );
         ordersToReturn.add(order);
       }
@@ -249,9 +270,11 @@ public class BitstampExchangeAdapter extends AbstractExchangeAdapter implements 
       final Map<String, String> params = createRequestParamMap();
 
       // note we need to limit price to 2 decimal places else exchange will barf
+      // 请注意，我们需要将价格限制为小数点后 2 位，否则交易所将失败
       params.put(PRICE, new DecimalFormat("#.##", getDecimalFormatSymbols()).format(price));
 
       // note we need to limit amount to 8 decimal places else exchange will barf
+      // 请注意，我们需要将金额限制为 8 位小数，否则交换将失败
       params.put(
           AMOUNT, new DecimalFormat("#.########", getDecimalFormatSymbols()).format(quantity));
 
@@ -264,9 +287,9 @@ public class BitstampExchangeAdapter extends AbstractExchangeAdapter implements 
         response = sendAuthenticatedRequestToExchange("sell/" + marketId, params);
       } else {
         final String errorMsg =
-            "Invalid order type: "
+            "Invalid order type: 无效的订单类型："
                 + orderType
-                + " - Can only be "
+                + " - Can only be - 只能是"
                 + OrderType.BUY.getStringValue()
                 + " or "
                 + OrderType.SELL.getStringValue();
@@ -274,13 +297,13 @@ public class BitstampExchangeAdapter extends AbstractExchangeAdapter implements 
         throw new IllegalArgumentException(errorMsg);
       }
 
-      LOG.debug(() -> "Create Order response: " + response);
+      LOG.debug(() -> "Create Order response: 创建订单响应：" + response);
 
       final BitstampOrderResponse createOrderResponse =
           gson.fromJson(response.getPayload(), BitstampOrderResponse.class);
       final long id = createOrderResponse.id;
       if (id == 0) {
-        final String errorMsg = "Failed to place order on exchange. Error response: " + response;
+        final String errorMsg = "Failed to place order on exchange. Error response: 未能在交易所下订单。错误响应：" + response;
         LOG.error(errorMsg);
         throw new TradingApiException(errorMsg);
       } else {
@@ -296,8 +319,9 @@ public class BitstampExchangeAdapter extends AbstractExchangeAdapter implements 
     }
   }
 
-  /*
+  /**
    * marketId is not needed for cancelling orders on this exchange.
+   * 取消此交易所的订单不需要市场 ID。
    */
   @Override
   public boolean cancelOrder(String orderId, String marketIdNotNeeded)
@@ -308,12 +332,12 @@ public class BitstampExchangeAdapter extends AbstractExchangeAdapter implements 
 
       final ExchangeHttpResponse response =
           sendAuthenticatedRequestToExchange("cancel_order", params);
-      LOG.debug(() -> "Cancel Order response: " + response);
+      LOG.debug(() -> "Cancel Order response: 取消订单响应：" + response);
 
       final BitstampCancelOrderResponse cancelOrderResponse =
           gson.fromJson(response.getPayload(), BitstampCancelOrderResponse.class);
       if (!orderId.equals(String.valueOf(cancelOrderResponse.id))) {
-        final String errorMsg = "Failed to cancel order on exchange. Error response: " + response;
+        final String errorMsg = "Failed to cancel order on exchange. Error response: 交易所取消订单失败。错误响应：" + response;
         LOG.error(errorMsg);
         return false;
       } else {
@@ -334,7 +358,7 @@ public class BitstampExchangeAdapter extends AbstractExchangeAdapter implements 
       throws TradingApiException, ExchangeNetworkException {
     try {
       final ExchangeHttpResponse response = sendPublicRequestToExchange("ticker/" + marketId);
-      LOG.debug(() -> "Latest Market Price response: " + response);
+      LOG.debug(() -> "Latest Market Price response: 最新市价回应：" + response);
 
       final BitstampTicker bitstampTicker =
           gson.fromJson(response.getPayload(), BitstampTicker.class);
@@ -353,7 +377,7 @@ public class BitstampExchangeAdapter extends AbstractExchangeAdapter implements 
   public BalanceInfo getBalanceInfo() throws TradingApiException, ExchangeNetworkException {
     try {
       final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange(BALANCE, null);
-      LOG.debug(() -> "Balance Info response: " + response);
+      LOG.debug(() -> "Balance Info response: 余额信息回复：" + response);
 
       final BitstampBalance balances = gson.fromJson(response.getPayload(), BitstampBalance.class);
 
@@ -387,26 +411,26 @@ public class BitstampExchangeAdapter extends AbstractExchangeAdapter implements 
       throws TradingApiException, ExchangeNetworkException {
     try {
       final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange(BALANCE, null);
-      LOG.debug(() -> "Buy Fee response: " + response);
+      LOG.debug(() -> "Buy Fee response: 购买费用回复：" + response);
 
       final BitstampBalance balances = gson.fromJson(response.getPayload(), BitstampBalance.class);
 
-      // Ouch!
+      // Ouch! 哎哟!
       final Class<?> clazz = balances.getClass();
       final Field[] fields = clazz.getDeclaredFields();
       for (final Field field : fields) {
         if (field.getName().startsWith(marketId)) {
           final BigDecimal fee = (BigDecimal) field.get(balances);
-          // adapt the % into BigDecimal format
+          // adapt the % into BigDecimal format  // 将 % 调整为 BigDecimal 格式
           return fee.divide(new BigDecimal("100"), 8, RoundingMode.HALF_UP);
         }
       }
 
       final String errorMsg =
-          "Unable to map marketId to currency balances returned from the Exchange. "
-              + "MarketId: "
+          "Unable to map marketId to currency balances returned from the Exchange. 无法将 marketId 映射到从 Exchange 返回的货币余额。"
+              + "MarketId: 市场编号："
               + marketId
-              + " BitstampBalances: "
+              + " BitstampBalances: Bitstamp 余额："
               + balances;
       LOG.error(errorMsg);
       throw new IllegalArgumentException(errorMsg);
@@ -425,7 +449,7 @@ public class BitstampExchangeAdapter extends AbstractExchangeAdapter implements 
       throws TradingApiException, ExchangeNetworkException {
     try {
       final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange(BALANCE, null);
-      LOG.debug(() -> "Sell Fee response: " + response);
+      LOG.debug(() -> "Sell Fee response: 销售费用回应：" + response);
 
       final BitstampBalance balances = gson.fromJson(response.getPayload(), BitstampBalance.class);
 
@@ -441,10 +465,10 @@ public class BitstampExchangeAdapter extends AbstractExchangeAdapter implements 
       }
 
       final String errorMsg =
-          "Unable to map marketId to currency balances returned from the Exchange. "
-              + "MarketId: "
+          "Unable to map marketId to currency balances returned from the Exchange. 无法将 marketId 映射到从 Exchange 返回的货币余额。"
+              + "MarketId: 市场编号："
               + marketId
-              + " BitstampBalances: "
+              + " BitstampBalances: BitstampBalances：Bitstamp 余额："
               + balances;
       LOG.error(errorMsg);
       throw new IllegalArgumentException(errorMsg);
@@ -468,7 +492,7 @@ public class BitstampExchangeAdapter extends AbstractExchangeAdapter implements 
 
     try {
       final ExchangeHttpResponse response = sendPublicRequestToExchange("ticker/" + marketId);
-      LOG.debug(() -> "Ticker response: " + response);
+      LOG.debug(() -> "Ticker response: 代码响应：" + response);
 
       final BitstampTicker bitstampTicker =
           gson.fromJson(response.getPayload(), BitstampTicker.class);
@@ -494,13 +518,18 @@ public class BitstampExchangeAdapter extends AbstractExchangeAdapter implements 
 
   // --------------------------------------------------------------------------
   //  GSON classes for JSON responses.
+  //  JSON 响应的 GSON 类。
+
   //  See https://www.bitstamp.net/api/
   // --------------------------------------------------------------------------
 
   /**
    * GSON class for holding Bitstamp Balance response from balance API call. Updated for v2 API -
-   * markets correct as of 25 June 2017. Well this is fun - why not return a map of reserved, map of
-   * available, etc... ;-(
+    markets correct as of 25 June 2017. Well this is fun - why not return a map of reserved, map of
+    available, etc... ;-(
+   用于保存来自 balance API 调用的 Bitstamp Balance 响应的 GSON 类。更新 v2 API -
+   截至 2017 年 6 月 25 日市场正确。这很有趣 - 为什么不返回保留地图，地图
+   可用等... ;-(
    */
   private static class BitstampBalance {
 
@@ -609,8 +638,10 @@ public class BitstampExchangeAdapter extends AbstractExchangeAdapter implements 
 
   /**
    * GSON class for holding Bitstamp Order Book response from order_book API call.
+   *  用于保存来自 order_book API 调用的 Bitstamp Order Book 响应的 GSON 类。
    *
    * <p>JSON looks like:
+   *  * <p>JSON 看起来像：
    *
    * <pre>
    * {
@@ -621,6 +652,7 @@ public class BitstampExchangeAdapter extends AbstractExchangeAdapter implements 
    * </pre>
    *
    * <p>Each is a list of open orders and each order is represented as a list of price and amount.
+   *  <p>每个都是未结订单的列表，每个订单都表示为价格和数量的列表。
    */
   private static class BitstampOrderBook {
 
@@ -638,7 +670,8 @@ public class BitstampExchangeAdapter extends AbstractExchangeAdapter implements 
     }
   }
 
-  /** GSON class for a Bitstamp ticker response. */
+  /** GSON class for a Bitstamp ticker response.
+   * Bitstamp 代码响应的 GSON 类。 */
   private static class BitstampTicker {
 
     BigDecimal high;
@@ -667,7 +700,8 @@ public class BitstampExchangeAdapter extends AbstractExchangeAdapter implements 
     }
   }
 
-  /** GSON class for Bitstamp create order response. */
+  /** GSON class for Bitstamp create order response.
+   * Bitstamp 的 GSON 类创建订单响应。 */
   private static class BitstampOrderResponse {
 
     long id;
@@ -688,7 +722,8 @@ public class BitstampExchangeAdapter extends AbstractExchangeAdapter implements 
     }
   }
 
-  /** GSON class for Bitstamp cancel order response. */
+  /** GSON class for Bitstamp cancel order response.
+   * Bitstamp 取消订单响应的 GSON 类。 */
   private static class BitstampCancelOrderResponse {
 
     long id;
@@ -709,7 +744,9 @@ public class BitstampExchangeAdapter extends AbstractExchangeAdapter implements 
 
   /**
    * Deserializer needed because stamp Date format is different in open_order response and causes
-   * default GSON parsing to barf.
+    default GSON parsing to barf.
+   需要反序列化器，因为 open_order 响应和原因中的戳日期格式不同
+   默认 GSON 解析为 barf。
    *
    * <pre>
    * [main] 2014-05-25 20:51:31,074 ERROR BitstampExchangeAdapter  - Failed to parse a Bitstamp date
@@ -745,7 +782,7 @@ public class BitstampExchangeAdapter extends AbstractExchangeAdapter implements 
   }
 
   // --------------------------------------------------------------------------
-  //  Transport layer methods
+  //  Transport layer methods // 传输层方法
   // --------------------------------------------------------------------------
 
   private ExchangeHttpResponse sendPublicRequestToExchange(String apiMethod)
@@ -773,6 +810,7 @@ public class BitstampExchangeAdapter extends AbstractExchangeAdapter implements 
 
     try {
       // Setup common params for the API call
+      // 设置 API 调用的常用参数
       if (params == null) {
         params = createRequestParamMap();
       }
@@ -781,27 +819,33 @@ public class BitstampExchangeAdapter extends AbstractExchangeAdapter implements 
       params.put("nonce", Long.toString(nonce));
 
       // Create MAC message for signature
+      // 创建用于签名的 MAC 消息
       // message = nonce + client_id + api_key
-      mac.reset(); // force reset
+      mac.reset(); // force reset 强制重置
       mac.update(String.valueOf(nonce).getBytes(StandardCharsets.UTF_8));
       mac.update(clientId.getBytes(StandardCharsets.UTF_8));
       mac.update(key.getBytes(StandardCharsets.UTF_8));
 
-      /*
+      /**
        * Signature is a HMAC-SHA256 encoded message containing: nonce, client ID and API key.
-       * The HMAC-SHA256 code must be generated using a secret key that was generated with your
-       * API key.
+        The HMAC-SHA256 code must be generated using a secret key that was generated with your
+        API key.
+       签名是 HMAC-SHA256 编码的消息，包含：nonce、客户端 ID 和 API 密钥。
+       HMAC-SHA256 代码必须使用由您生成的密钥生成
+       API 密钥。
+
        * This code must be converted to it's hexadecimal representation (64 uppercase characters).
+       * 此代码必须转换为十六进制表示（64 个大写字符）。
        *
        * signature = hmac.new(API_SECRET, msg=message, digestmod=hashlib.sha256).hexdigest().upper()
        */
       final String signature = toHex(mac.doFinal()).toUpperCase();
       params.put("signature", signature);
 
-      // increment ready for next call...
+      // increment ready for next call... 增量准备下一次调用...
       nonce++;
 
-      // Build the URL with query param args in it
+      // Build the URL with query param args in it  // 构建带有查询参数 args 的 URL
       final StringBuilder postData = new StringBuilder();
       for (final Map.Entry<String, String> param : params.entrySet()) {
         if (postData.length() > 0) {
@@ -813,10 +857,12 @@ public class BitstampExchangeAdapter extends AbstractExchangeAdapter implements 
       }
 
       // Request headers required by Exchange
+      // Exchange 所需的请求标头
       final Map<String, String> requestHeaders = createHeaderParamMap();
       requestHeaders.put("Content-Type", "application/x-www-form-urlencoded");
 
       // MUST have the trailing slash else exchange barfs...
+      // 必须有尾部斜线否则交换barfs ...
       final URL url = new URL(API_BASE_URL + apiMethod + "/");
       return makeNetworkRequest(url, "POST", postData.toString(), requestHeaders);
 
@@ -835,11 +881,15 @@ public class BitstampExchangeAdapter extends AbstractExchangeAdapter implements 
     return hexString.toString();
   }
 
-  /*
+  /**
    * Initialises the secure messaging layer.
-   * Sets up the MAC to safeguard the data we send to the exchange.
-   * Used to encrypt the hash of the entire message with the private key to ensure message
-   * integrity. We fail hard n fast if any of this stuff blows.
+   Sets up the MAC to safeguard the data we send to the exchange.
+    Used to encrypt the hash of the entire message with the private key to ensure message
+   integrity. We fail hard n fast if any of this stuff blows.
+   初始化安全消息层。
+   设置 MAC 以保护我们发送到交易所的数据。
+   用于用私钥对整条消息的哈希进行加密，以保证消息
+   正直。如果这些东西中的任何一个发生爆炸，我们就会很快失败。
    */
   private void initSecureMessageLayer() {
     try {
@@ -849,18 +899,18 @@ public class BitstampExchangeAdapter extends AbstractExchangeAdapter implements 
       mac.init(keyspec);
       initializedMacAuthentication = true;
     } catch (NoSuchAlgorithmException e) {
-      final String errorMsg = "Failed to setup MAC security. HINT: Is HMAC-SHA256 installed?";
+      final String errorMsg = "Failed to setup MAC security. HINT: Is HMAC-SHA256 installed? 设置 MAC 安全性失败。提示：是否安装了 HMAC-SHA256？";
       LOG.error(errorMsg, e);
       throw new IllegalStateException(errorMsg, e);
     } catch (InvalidKeyException e) {
-      final String errorMsg = "Failed to setup MAC security. Secret key seems invalid!";
+      final String errorMsg = "Failed to setup MAC security. Secret key seems invalid! 设置 MAC 安全性失败。密钥似乎无效！";
       LOG.error(errorMsg, e);
       throw new IllegalArgumentException(errorMsg, e);
     }
   }
 
   // --------------------------------------------------------------------------
-  //  Config methods
+  //  Config methods // 配置方法
   // --------------------------------------------------------------------------
 
   private void setAuthenticationConfig(ExchangeConfig exchangeConfig) {
@@ -871,7 +921,7 @@ public class BitstampExchangeAdapter extends AbstractExchangeAdapter implements 
   }
 
   // --------------------------------------------------------------------------
-  //  Util methods
+  //  Util methods // 实用方法
   // --------------------------------------------------------------------------
 
   private void initGson() {
@@ -880,22 +930,25 @@ public class BitstampExchangeAdapter extends AbstractExchangeAdapter implements 
     gson = gsonBuilder.create();
   }
 
-  /*
+  /**
    * Hack for unit-testing map params passed to transport layer.
+   * * Hack 用于传递给传输层的单元测试map参数。
    */
   private Map<String, String> createRequestParamMap() {
     return new HashMap<>();
   }
 
-  /*
+  /**
    * Hack for unit-testing header params passed to transport layer.
+   * * 用于传递给传输层的单元测试标头参数的 Hack。
    */
   private Map<String, String> createHeaderParamMap() {
     return new HashMap<>();
   }
 
-  /*
+  /**
    * Hack for unit-testing transport layer.
+   *  用于单元测试传输层的 Hack。
    */
   private ExchangeHttpResponse makeNetworkRequest(
       URL url, String httpMethod, String postData, Map<String, String> requestHeaders)

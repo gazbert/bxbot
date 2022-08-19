@@ -50,6 +50,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 /**
  * Tests the Bot restart controller behaviour.
+ * * 测试 Bot 重启控制器行为。
  *
  * @author gazbert
  */
@@ -64,6 +65,7 @@ class TestBotRestartController extends AbstractRuntimeControllerTest {
   @MockBean private BotRestartService botRestartService;
 
   // Need these even though not used in the test directly because Spring loads it on startup...
+  // 需要这些，即使没有直接在测试中使用，因为 Spring 在启动时加载它...
   @MockBean private TradingEngine tradingEngine;
   @MockBean private EmailAlerter emailAlerter;
   @MockBean private RestartEndpoint restartEndpoint;

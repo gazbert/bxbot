@@ -7,6 +7,7 @@
   <artifactId>bxbot-core</artifactId>
   <packaging>jar</packaging>
   <name>BX-bot Core</name>
+<!--  机器人的核心-它包括主要的交易引擎-->
   <description>The core of the bot - it includes the main Trading Engine</description>
   <url>http://github.com/gazbert/bxbot</url>
   <parent>
@@ -50,7 +51,7 @@
     </dependency>
 
     <!--
-    3rd party dependencies
+    3rd party dependencies 第三方依赖关系
     -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
@@ -90,7 +91,7 @@
     </dependency>
 
     <!--
-    Testing dependencies
+    Testing dependencies 测试依赖关系
     -->
     <dependency>
       <groupId>org.powermock</groupId>

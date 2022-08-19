@@ -41,13 +41,18 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 /**
  * The JWT Authentication Filter extracts the JWT from the Authorization header and validates it.
+ * JWT 身份验证过滤器从 Authorization 标头中提取 JWT 并对其进行验证。
  *
  * <p>If no JWT is present, the next filter in the Spring Security filter chain is invoked.
+ * <p>如果不存在 JWT，则调用 Spring Security 过滤器链中的下一个过滤器。
  *
  * <p>The filter is invoked once for every request to validate the JWT - we don't use sessions.
+ * * <p>每个请求都会调用一次过滤器来验证 JWT - 我们不使用会话。
  *
  * <p>Code originated from the excellent JWT and Spring Boot example by Stephan Zerhusen:
  * https://github.com/szerhusenBC/jwt-spring-security-demo
+ * <p>代码源自 Stephan Zerhusen 的优秀 JWT 和 Spring Boot 示例：
+ *  * https://github.com/szerhusenBC/jwt-spring-security-demo
  *
  * @author gazbert
  */
@@ -67,12 +72,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     try {
       // Extract token after Bearer prefix if present
+      // 如果存在，则在 Bearer 前缀之后提取令牌
       String authorizationHeader = request.getHeader(AUTHORIZATION_HEADER);
       if (authorizationHeader != null && authorizationHeader.startsWith(BEARER_PREFIX)) {
         authorizationHeader = authorizationHeader.substring(BEARER_PREFIX_LENGTH);
       }
 
       // Might be null if client does not have a token yet.
+      // 如果客户端还没有令牌，则可能为 null。
       if (authorizationHeader != null) {
         final Claims claims = jwtUtils.validateTokenAndGetClaims(authorizationHeader);
         LOG.info(() -> "JWT is valid");
@@ -81,6 +88,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         if (SecurityContextHolder.getContext().getAuthentication() == null) {
           // First time in - store user details in Spring's Security context
+          // 第一次 - 在 Spring 的安全上下文中存储用户详细信息
           final UsernamePasswordAuthenticationToken authentication =
               new UsernamePasswordAuthenticationToken(
                   username, null, jwtUtils.getRolesFromTokenClaims(claims));
@@ -89,7 +97,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
           SecurityContextHolder.getContext().setAuthentication(authentication);
 
           LOG.info(
-              () -> "Authenticated User: " + username + " has been set in Spring SecurityContext.");
+              () -> "Authenticated User: 认证用户：" + username + " has been set in Spring SecurityContext. 已在 Spring SecurityContext 中设置。");
         }
       }
 
@@ -97,7 +105,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     } catch (Exception e) {
       LOG.error(
-          MessageFormat.format("JWT Authentication failure! Details: {0}", e.getMessage()), e);
+          MessageFormat.format("JWT Authentication failure! Details:JWT 认证失败！细节： {0}", e.getMessage()), e);
       response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
     }
   }

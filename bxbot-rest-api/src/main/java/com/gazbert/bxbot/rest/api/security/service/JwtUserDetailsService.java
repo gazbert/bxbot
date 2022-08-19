@@ -35,6 +35,7 @@ import org.springframework.stereotype.Service;
 
 /**
  * User Details service for loading user details from the repository.
+ * 用于从存储库加载用户详细信息的用户详细信息服务。
  *
  * @author gazbert
  */
@@ -53,7 +54,7 @@ public class JwtUserDetailsService implements UserDetailsService {
     final User user = userRepository.findByUsername(username);
     if (user == null) {
       throw new UsernameNotFoundException(
-          String.format("No user found with username '%s'.", username));
+          String.format("No user found with username 未找到具有用户名的用户'%s'.", username));
     } else {
       return JwtUserFactory.create(user);
     }

@@ -45,6 +45,7 @@ import org.yaml.snakeyaml.representer.Representer;
 
 /**
  * The generic configuration manager loads config from a given YAML config file.
+ * 通用配置管理器从给定的 YAML 配置文件加载配置。
  *
  * @author gazbert
  */
@@ -58,32 +59,40 @@ public final class ConfigurationManager {
 
   /**
    * Loads the config from the YAML file.
+   * 从 YAML 文件加载配置。
    *
    * @param configClass the config class.
+   *                    配置类。
+   *
    * @param yamlConfigFile the YAML config filename.
+   *                       YAML 配置文件名。
+   *
    * @param <T> the type of config.
+   *           配置类型。
+   *
    * @return the loaded config.
+   * |@return 加载的配置。
    */
   public static synchronized <T> T loadConfig(final Class<T> configClass, String yamlConfigFile) {
 
     LOG.info(
-        () -> "Loading configuration for [" + configClass + "] from: " + yamlConfigFile + " ...");
+        () -> "Loading configuration for [ 为 [ 加载配置" + configClass + "] from: " + yamlConfigFile + " ...");
 
     try (final FileInputStream fileInputStream = new FileInputStream(yamlConfigFile)) {
       final Yaml yaml = new Yaml(new Constructor(configClass));
       final T requestedConfig = yaml.load(fileInputStream);
 
-      LOG.info(() -> "Loaded and set configuration for [" + configClass + "] successfully!");
+      LOG.info(() -> "Loaded and set configuration for [ 为 [ 加载并设置配置" + configClass + "] successfully! 成功地!");
       return requestedConfig;
 
     } catch (IOException e) {
-      final String errorMsg = "Failed to find or read [" + yamlConfigFile + "] config";
+      final String errorMsg = "Failed to find or read [ 未能找到或读取 [" + yamlConfigFile + "] config 配置";
       LOG.error(errorMsg, e);
       throw new IllegalStateException(errorMsg, e);
 
     } catch (Exception e) {
       final String errorMsg =
-          "Failed to load [" + yamlConfigFile + "] file. Details: " + e.getMessage();
+          "Failed to load [ 加载失败 [" + yamlConfigFile + "] file. Details: ] 文件.细节：" + e.getMessage();
       LOG.error(errorMsg, e);
       throw new IllegalArgumentException(errorMsg, e);
     }
@@ -91,16 +100,24 @@ public final class ConfigurationManager {
 
   /**
    * Saves the config to the YAML file.
+   * 将配置保存到 YAML 文件。
    *
    * @param configClass the config Class.
+   *                    配置类。
+   *
    * @param config the config object to save.
+   *               要保存的配置对象。
+   *
    * @param yamlConfigFile the YAML config filename.
+   *                       YAML 配置文件名。
+   *
    * @param <T> the type of config.
+   *           配置类型。
    */
   public static synchronized <T> void saveConfig(
       Class<T> configClass, T config, String yamlConfigFile) {
 
-    LOG.info(() -> "Saving configuration for [" + configClass + "] to: " + yamlConfigFile + " ...");
+    LOG.info(() -> "Saving configuration for [ 为 [ 保存配置" + configClass + "] to: " + yamlConfigFile + " ...");
 
     try (final FileOutputStream fileOutputStream = new FileOutputStream(yamlConfigFile);
         final PrintWriter writer =
@@ -114,23 +131,24 @@ public final class ConfigurationManager {
       final StringBuilder sb = new StringBuilder(YAML_HEADER);
       sb.append(yaml.dumpAs(config, Tag.MAP, DumperOptions.FlowStyle.BLOCK));
 
-      LOG.debug(() -> "YAML file content:\n" + sb);
+      LOG.debug(() -> "YAML file content:YAML 文件内容：\n" + sb);
       writer.print(sb);
 
     } catch (IOException e) {
-      final String errorMsg = "Failed to find or read [" + yamlConfigFile + "] config";
+      final String errorMsg = "Failed to find or read [ 未能找到或读取 [" + yamlConfigFile + "] config 配置";
       LOG.error(errorMsg, e);
       throw new IllegalStateException(errorMsg, e);
 
     } catch (Exception e) {
       final String errorMsg =
-          "Failed to save config to [" + yamlConfigFile + "] file. Details: " + e.getMessage();
+          "Failed to save config to [ 未能将配置保存到 [" + yamlConfigFile + "] file. Details:  ] 文件。细节：" + e.getMessage();
       LOG.error(errorMsg, e);
       throw new IllegalArgumentException(errorMsg, e);
     }
   }
 
-  /** Stops null fields from getting written out to YAML. */
+  /** Stops null fields from getting written out to YAML.
+   * 停止将空字段写入 YAML。 */
   private static class SkipNullFieldRepresenter extends Representer {
     @Override
     protected NodeTuple representJavaBeanProperty(
@@ -143,7 +161,8 @@ public final class ConfigurationManager {
     }
   }
 
-  /** Orders properties before dumping out YAML. */
+  /** Orders properties before dumping out YAML.
+   * 在转储 YAML 之前订购属性。 */
   private static class ReversedPropertyUtils extends PropertyUtils {
     @Override
     protected Set<Property> createPropertySet(Class<?> type, BeanAccess beanAccess) {

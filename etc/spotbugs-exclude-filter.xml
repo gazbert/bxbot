@@ -2,63 +2,65 @@
 
 <!--
   Bug codes can be found here: http://findbugs.sourceforge.net/bugDescriptions.html
+  错误代码可以在这里找到：http://findbugs.sourceforge.net/bugDescriptions.html
  -->
 <FindBugsFilter>
 
-    <!-- Don't bother with unused fields in Exchange Adapter GSON classes. -->
+    <!-- Don't bother with unused fields in Exchange Adapter GSON classes.
+     不要打扰 Exchange 适配器 GSON 类中未使用的字段。-->
     <Match>
         <Bug code="UwF,NP"/>
     </Match>
 
-    <!-- False positive - this NPE check is required. -->
+    <!-- False positive - this NPE check is required. 误报 - 此 NPE 检查是必需的。 -->
     <Match>
         <Class name="com.gazbert.bxbot.exchanges.ItBitExchangeAdapter"/>
         <Bug code="RCN"/>
     </Match>
 
-    <!-- False positive - this NPE check is required. -->
+    <!-- False positive - this NPE check is required. 误报 - 此 NPE 检查是必需的。 -->
     <Match>
         <Class name="com.gazbert.bxbot.datastore.xml.ConfigurationManager"/>
         <Bug code="OBL"/>
     </Match>
 
-    <!-- Ignore default interface method warning -->
+    <!-- Ignore default interface method warning  忽略默认接口方法警告-->
     <Match>
         <Class name="com.gazbert.bxbot.trading.api.TradingApi"/>
         <Bug pattern="SIC_INNER_SHOULD_BE_STATIC_ANON"/>
     </Match>
 
-    <!-- Ignore static inner warnings for Kraken adapter -->
+    <!-- Ignore static inner warnings for Kraken adapter 忽略 Kraken 适配器的静态内部警告-->
     <Match>
         <Class name="com.gazbert.bxbot.exchanges.KrakenExchangeAdapter"/>
         <Bug pattern="SIC_INNER_SHOULD_BE_STATIC_ANON"/>
     </Match>
 
-    <!-- Ignore Exception not thrown for catch warnings in Kraken adapter -->
+    <!-- Ignore Exception not thrown for catch warnings in Kraken adapter Kraken适配器中的catch警告未引发忽略异常 -->
     <Match>
         <Class name="com.gazbert.bxbot.exchanges.KrakenExchangeAdapter"/>
         <Bug pattern="REC_CATCH_EXCEPTION"/>
     </Match>
 
-    <!-- Ignore Exception not thrown for catch warnings in Gemini adapter -->
+    <!-- Ignore Exception not thrown for catch warnings in Gemini adapter Gemini 适配器中的捕获警告未引发忽略异常 -->
     <Match>
         <Class name="com.gazbert.bxbot.exchanges.GeminiExchangeAdapter"/>
         <Bug pattern="REC_CATCH_EXCEPTION"/>
     </Match>
 
-    <!-- Ignore Exception not thrown for catch warnings in ItBit adapter -->
+    <!-- Ignore Exception not thrown for catch warnings in ItBit adapter  ItBit 适配器中的捕获警告未引发忽略异常-->
     <Match>
         <Class name="com.gazbert.bxbot.exchanges.ItBitExchangeAdapter"/>
         <Bug pattern="REC_CATCH_EXCEPTION"/>
     </Match>
 
-    <!-- Ignore Exception not thrown for catch warnings in Bitfinex adapter -->
+    <!-- Ignore Exception not thrown for catch warnings in Bitfinex adapter ItBit 适配器中的捕获警告未引发忽略异常-->
     <Match>
         <Class name="com.gazbert.bxbot.exchanges.BitfinexExchangeAdapter"/>
         <Bug pattern="REC_CATCH_EXCEPTION"/>
     </Match>
 
-    <!-- Ignore Exception not thrown for catch warnings in Coinbase Pro adapter -->
+    <!-- Ignore Exception not thrown for catch warnings in Coinbase Pro adapter Coinbase Pro 适配器中的捕获警告未引发忽略异常 -->
     <Match>
         <Class name="com.gazbert.bxbot.exchanges.CoinbaseProExchangeAdapter"/>
         <Bug pattern="REC_CATCH_EXCEPTION"/>
@@ -66,6 +68,8 @@
 
     <!-- Ignore toLowerCase/toUpperCase warnings without locale in Bitfinex adapter
          Exchange uses US English.
+         在 Bitfinex 适配器中忽略没有区域设置的 toLowerCase/toUpperCase 警告
+          Exchange 使用美国英语。
     -->
     <Match>
         <Class name="com.gazbert.bxbot.exchanges.BitfinexExchangeAdapter"/>
@@ -74,6 +78,8 @@
 
     <!-- Ignore toLowerCase/toUpperCase warnings without locale in Bitstamp adapter
          Exchange uses US English.
+         在 Bitstamp 适配器中忽略没有区域设置的 toLowerCase/toUpperCase 警告
+          Exchange 使用美国英语。
     -->
     <Match>
         <Class name="com.gazbert.bxbot.exchanges.BitstampExchangeAdapter"/>
@@ -82,6 +88,8 @@
 
     <!-- Ignore toLowerCase/toUpperCase warnings without locale in Gemini adapter
          Exchange uses US English.
+         在 Gemini 适配器中忽略没有区域设置的 toLowerCase/toUpperCase 警告
+          Exchange 使用美国英语。
     -->
     <Match>
         <Class name="com.gazbert.bxbot.exchanges.GeminiExchangeAdapter"/>
@@ -90,6 +98,8 @@
 
     <!-- Ignore toLowerCase/toUpperCase warnings without locale in Coinbase Pro adapter
          Exchange uses US English.
+         在 Coinbase Pro 适配器中忽略没有区域设置的 toLowerCase/toUpperCase 警告
+          Exchange 使用美国英语。
     -->
     <Match>
         <Class name="com.gazbert.bxbot.exchanges.CoinbaseProExchangeAdapter"/>
@@ -106,13 +116,23 @@
          BotLogfileServiceImpl.java:[line 110] RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE
 
          See: https://github.com/spotbugs/spotbugs/issues/756
+         BotLogfileServiceImpl 中产生的误报：
+
+          [错误] 在第 108 行对先前取消引用的值的流进行 Nullcheck
+          com.gazbert.bxbot.services.runtime.impl.BotLogfileServiceImpl.tailFile(Path, int)
+          [com.gazbert.bxbot.services.runtime.impl.BotLogfileServiceImpl，
+          com.gazbert.bxbot.services.runtime.impl.BotLogfileServiceImpl] 在
+          BotLogfileServiceImpl.java:[line 108]Redundant null check at
+          BotLogfileServiceImpl.java：[第 110 行] RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE
+
+          见：https://github.com/spotbugs/spotbugs/issues/756
     -->
     <Match>
         <Class name="com.gazbert.bxbot.services.runtime.impl.BotLogfileServiceImpl"/>
         <Bug pattern="RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE"/>
     </Match>
 
-    <!-- Ignore bxbot-domain-objects warnings -->
+    <!-- Ignore bxbot-domain-objects warnings  忽略 bxbot-domain-objects 警告-->
     <Match>
         <Class name="com.gazbert.bxbot.domain.emailalerts.EmailAlertsConfig"/>
         <Bug pattern="EI_EXPOSE_REP"/>
@@ -153,7 +173,7 @@
         <Bug pattern="EI_EXPOSE_REP2"/>
     </Match>
 
-    <!-- Ignore bxbot-exchanges warnings -->
+    <!-- Ignore bxbot-exchanges warnings 忽略 bxbot-exchanges 警告-->
     <Match>
         <Class name="com.gazbert.bxbot.exchanges.trading.api.impl.BalanceInfoImpl"/>
         <Bug pattern="EI_EXPOSE_REP"/>
@@ -179,7 +199,7 @@
         <Bug pattern="EI_EXPOSE_REP2"/>
     </Match>
 
-    <!-- Ignore bxbot-strategies warnings -->
+    <!-- Ignore bxbot-strategies warnings 忽略 bxbot-strategies 警告-->
     <Match>
         <Class name="com.gazbert.bxbot.strategies.ExampleScalpingStrategy"/>
         <Bug pattern="EI_EXPOSE_REP2"/>

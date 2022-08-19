@@ -25,6 +25,7 @@ package com.gazbert.bxbot.trading.api;
 
 /**
  * Holds information for an Exchange market.
+ * 保存交易所市场的信息。
  *
  * @author gazbert
  * @since 1.0
@@ -33,42 +34,56 @@ public interface Market {
 
   /**
    * Returns the market name, e.g. LTC_BTC, USD_BTC.
+   * * 返回市场名称 ,e.g. LTC_BTC, USD_BTC.
    *
-   * @return the market name.
+   * @return the market name. 市场名称。
    */
   String getName();
 
   /**
    * Sets the market id, e.g. 3, btc_usd
+   * 设置市场 id，例如3、btc_usd
    *
    * @param id the ID of the Market.
+   *           @param id 市场的 ID。
    */
   void setId(String id);
 
   /**
    * Returns the market id, e.g. 3, btc_usd
+   * * 返回市场 id，例如3、btc_usd
    *
    * @return the market id.
+   * 市场编号。
    */
   String getId();
 
   /**
    * Returns the base currency for the market currency pair.
+   * 返回市场货币对的基础货币。
    *
    * <p>When you buy or sell a currency pair, you are performing that action on the base currency.
-   * E.g. in a LTC/BTC market, the first currency (LTC) is the base currency and the second currency
-   * (BTC) is the counter currency.
+    E.g. in a LTC/BTC market, the first currency (LTC) is the base currency and the second currency
+    (BTC) is the counter currency.
+   <p>当您买入或卖出货币对时，您是在对基础货币执行该操作。
+   例如。在 LTC/BTC 市场中，第一货币 (LTC) 是基础货币，第二货币
+   (BTC) 是相对货币。
    *
    * @return the base currency short code, e.g. LTC
+   *  基础货币短代码 e.g. LTC
    */
   String getBaseCurrency();
 
   /**
    * Returns the counter currency for the market currency pair. Also known as the quote currency.
-   * E.g. in a LTC/BTC market, the first currency (LTC) is the base currency and the second currency
-   * (BTC) is the counter currency.
+    E.g. in a LTC/BTC market, the first currency (LTC) is the base currency and the second currency
+    (BTC) is the counter currency.
+   返回市场货币对的对应货币。也称为报价货币。
+   例如。在 LTC/BTC 市场中，第一货币 (LTC) 是基础货币，第二货币
+   (BTC) 是相对货币。
    *
    * @return the counter currency short code, e.g. LTC
+   *  柜台货币短代码 e.g. LTC
    */
   String getCounterCurrency();
 }

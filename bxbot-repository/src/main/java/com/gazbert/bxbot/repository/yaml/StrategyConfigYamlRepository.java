@@ -40,6 +40,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 /**
  * A Strategy config repo that uses a YAML backed datastore.
+ * 使用 YAML 支持的数据存储的策略配置存储库。
  *
  * @author gazbert
  */
@@ -51,14 +52,14 @@ public class StrategyConfigYamlRepository implements StrategyConfigRepository {
 
   @Override
   public List<StrategyConfig> findAll() {
-    LOG.info(() -> "Fetching all Strategy configs...");
+    LOG.info(() -> "Fetching all Strategy configs... 正在获取所有策略配置...");
     return ConfigurationManager.loadConfig(StrategiesType.class, STRATEGIES_CONFIG_YAML_FILENAME)
         .getStrategies();
   }
 
   @Override
   public StrategyConfig findById(String id) {
-    LOG.info(() -> "Fetching config for Strategy id: " + id);
+    LOG.info(() -> "Fetching config for Strategy id: 获取策略 id 的配置：" + id);
 
     final StrategiesType strategiesType =
         ConfigurationManager.loadConfig(StrategiesType.class, STRATEGIES_CONFIG_YAML_FILENAME);
@@ -82,7 +83,7 @@ public class StrategyConfigYamlRepository implements StrategyConfigRepository {
             .collect(Collectors.toList());
 
     if (config.getId() == null || config.getId().isEmpty()) {
-      LOG.info(() -> "About to create StrategyConfig: " + config);
+      LOG.info(() -> "About to create StrategyConfig: 关于创建 StrategyConfig：" + config);
       if (strategyConfigs.isEmpty()) {
 
         final StrategyConfig newStrategyConfig = new StrategyConfig(config);
@@ -102,19 +103,19 @@ public class StrategyConfigYamlRepository implements StrategyConfigRepository {
                 .collect(Collectors.toList()));
       } else {
         throw new IllegalStateException(
-            "Trying to create new StrategyConfig but null/empty id already exists. "
+            "Trying to create new StrategyConfig but null/empty id already exists. 试图创建一个新的 StrategyConfig 但空/空 id 已经存在。"
                 + "StrategyConfig: "
                 + config
-                + " Existing StrategyConfigs: "
+                + " Existing StrategyConfigs: 现有的策略配置："
                 + strategiesType.getStrategies());
       }
     } else {
-      LOG.info(() -> "About to update StrategyConfig: " + config);
+      LOG.info(() -> "About to update StrategyConfig: 即将更新 StrategyConfig：" + config);
 
       if (!strategyConfigs.isEmpty()) {
         strategiesType
             .getStrategies()
-            .remove(strategyConfigs.get(0)); // will only be 1 unique strat
+            .remove(strategyConfigs.get(0)); // will only be 1 unique strat。 // 将只有 1 个独特的层
         strategiesType.getStrategies().add(config);
         ConfigurationManager.saveConfig(
             StrategiesType.class, strategiesType, STRATEGIES_CONFIG_YAML_FILENAME);
@@ -130,9 +131,9 @@ public class StrategyConfigYamlRepository implements StrategyConfigRepository {
       } else {
         LOG.warn(
             () ->
-            "Trying to update StrategyConfig but id does not exist StrategyConfig: "
+            "Trying to update StrategyConfig but id does not exist StrategyConfig: 尝试更新 StrategyConfig 但 id 不存在 StrategyConfig："
                 + config
-                + " Existing StrategyConfig: "
+                + " Existing StrategyConfig: 现有的策略配置："
                 + strategiesType.getStrategies());
         return null;
       }
@@ -141,7 +142,7 @@ public class StrategyConfigYamlRepository implements StrategyConfigRepository {
 
   @Override
   public StrategyConfig delete(String id) {
-    LOG.info(() -> "Deleting Strategy config for id: " + id);
+    LOG.info(() -> "Deleting Strategy config for id: 删除 id 的策略配置：" + id);
 
     final StrategiesType strategiesType =
         ConfigurationManager.loadConfig(StrategiesType.class, STRATEGIES_CONFIG_YAML_FILENAME);
@@ -153,7 +154,7 @@ public class StrategyConfigYamlRepository implements StrategyConfigRepository {
             .collect(Collectors.toList());
 
     if (!strategyConfigs.isEmpty()) {
-      final StrategyConfig strategyToRemove = strategyConfigs.get(0); // will only be 1 unique strat
+      final StrategyConfig strategyToRemove = strategyConfigs.get(0); // will only be 1 unique strat  将只有 1 个独特的层
       strategiesType.getStrategies().remove(strategyToRemove);
       ConfigurationManager.saveConfig(
           StrategiesType.class, strategiesType, STRATEGIES_CONFIG_YAML_FILENAME);
@@ -161,9 +162,9 @@ public class StrategyConfigYamlRepository implements StrategyConfigRepository {
     } else {
       LOG.warn(
           () ->
-          "Trying to delete StrategyConfig but id does not exist. StrategyConfig id: "
+          "Trying to delete StrategyConfig but id does not exist. StrategyConfig id:  试图删除 StrategyConfig 但 id 不存在。策略配置 ID："
               + id
-              + " Existing StrategyConfig: "
+              + " Existing StrategyConfig: 现有的策略配置："
               + strategiesType.getStrategies());
       return null;
     }
@@ -176,14 +177,14 @@ public class StrategyConfigYamlRepository implements StrategyConfigRepository {
   private static StrategyConfig adaptInternalToExternalConfig(
       List<StrategyConfig> internalStrategyConfigItems) {
     if (!internalStrategyConfigItems.isEmpty()) {
-      // Should only ever be 1 unique Strategy id
+      // Should only ever be 1 unique Strategy id  // 只能是 1 个唯一的策略 id
       return internalStrategyConfigItems.get(0);
     }
     return null;
   }
 
   // --------------------------------------------------------------------------
-  // Util methods
+  // Util methods 实用方法
   // --------------------------------------------------------------------------
 
   private String generateUuid() {

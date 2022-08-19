@@ -29,23 +29,24 @@ import javax.validation.constraints.NotNull;
 
 /**
  * Encapsulates a JWT Authentication Request containing username/password sent from the client.
+ * * 封装包含客户端发送的用户名/密码的 JWT 身份验证请求。
  *
- * <p>When a client first connects, it will need to pass credentials in order to be authenticated
- * and issued a JWT for use in subsequent requests.
+ * <p>When a client first connects, it will need to pass credentials in order to be authenticated and issued a JWT for use in subsequent requests.
+ * <p>当客户端首次连接时，它需要传递凭据才能进行身份验证并发出 JWT 以供后续请求使用。
  *
  * @author gazbert
  */
 public class JwtAuthenticationRequest {
 
   @Schema(required = true, description = "The username.")
-  @NotNull(message = "Username cannot be null")
+  @NotNull(message = "Username cannot be null 用户名不能为空")
   private String username;
 
   @Schema(required = true, description = "The password.")
-  @NotNull(message = "Password cannot be null")
+  @NotNull(message = "Password cannot be null 密码不能为空")
   private String password;
 
-  // For Jackson
+  // For Jackson // 对于杰克逊
   public JwtAuthenticationRequest() {
     username = "";
     password = "";

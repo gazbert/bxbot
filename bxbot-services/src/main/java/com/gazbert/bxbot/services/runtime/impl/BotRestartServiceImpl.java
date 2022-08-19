@@ -49,10 +49,10 @@ public class BotRestartServiceImpl implements BotRestartService {
 
   @Override
   public String restart() {
-    // Spring endpoint returns a map: Collections.singletonMap("message", "Restarting");
+    // Spring endpoint returns a map:Spring端点返回一个map： Collections.singletonMap("message", "Restarting");
     final var result = (Map) restartEndpoint.restart();
     final String status = (String) result.get("message");
-    LOG.info(() -> "Restart result: " + status);
+    LOG.info(() -> "Restart result:重启结果： " + status);
     return status;
   }
 }

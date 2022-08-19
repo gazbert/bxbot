@@ -60,7 +60,7 @@ public class EngineConfigServiceImpl implements EngineConfigService {
 
   @Override
   public EngineConfig updateEngineConfig(EngineConfig config) {
-    LOG.info(() -> "About to update Engine config: " + config);
+    LOG.info(() -> "About to update Engine config: 即将更新引擎配置：" + config);
     return engineConfigRepository.save(config);
   }
 }

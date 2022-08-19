@@ -37,6 +37,7 @@ import org.junit.jupiter.api.Test;
 
 /**
  * Tests Strategy configuration service behaves as expected.
+ * * 测试策略配置服务按预期运行。
  *
  * @author gazbert
  */

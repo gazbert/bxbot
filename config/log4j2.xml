@@ -7,8 +7,15 @@ and will compress each archive using gzip.
 Once a file reaches 100 MB or a new day is started, it is archived, and a new log file is created.
 Only the last 90 archives are kept.
 The logging level is set to 'info'.
+日志文件被写入 `logs/bxbot.log` 并使用滚动策略。
+它将在同一天（1-7）创建多达 7 个存档，这些存档存储在基于当前年份和月份的目录中，
+并将使用 gzip 压缩每个存档。
+一旦文件达到 100 MB 或开始新的一天，它就会被存档，并创建一个新的日志文件。
+仅保留最后 90 个档案。
+日志记录级别设置为“信息”。
 
 See log4j2 guide for more options: http://logging.apache.org/log4j/2.x/manual/appenders.html#RollingRandomAccessFileAppender
+有关更多选项，请参阅 log4j2 指南：http://logging.apache.org/log4j/2.x/manual/appenders.html#RollingRandomAccessFileAppender
 -->
 <Configuration status="warn" name="BX-bot" packages="">
     <Appenders>
@@ -33,8 +40,10 @@ See log4j2 guide for more options: http://logging.apache.org/log4j/2.x/manual/ap
         <!--
         I recommend running BX-bot at 'info'. 'debug' logging will produce a *lot* of output for the Exchange Adapters;
         very handy for debugging, but not so good for your disk space!
+        我建议在“信息”处运行 BX-bot。 'debug' 日志记录将为 Exchange 适配器生成 *lot* 的输出；
+         调试非常方便，但对您的磁盘空间不太好！
         -->
-        <Root level="info">
+        <Root level="debug">
             <AppenderRef ref="BXBot_RollingFile"/>
             <AppenderRef ref="STDOUT"/>
         </Root>

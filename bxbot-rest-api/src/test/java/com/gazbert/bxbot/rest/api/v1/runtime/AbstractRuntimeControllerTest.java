@@ -27,6 +27,7 @@ import com.gazbert.bxbot.rest.api.v1.AbstractControllerTest;
 
 /**
  * Base class for runtime Controller test classes.
+ * 运行时控制器测试类的基类。
  *
  * @author gazbert
  */

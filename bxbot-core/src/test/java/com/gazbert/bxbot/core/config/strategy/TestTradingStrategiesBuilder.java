@@ -39,6 +39,7 @@ import org.junit.jupiter.api.Test;
 
 /**
  * Tests the Trading Strategies Builder works as expected.
+ * 测试交易策略生成器是否按预期工作。
  *
  * @author gazbert
  */
@@ -142,7 +143,7 @@ class TestTradingStrategiesBuilder {
             STRATEGY_2_DESCRIPTION,
             STRATEGY_2_CLASSNAME,
             STRATEGY_2_BEAN,
-            new HashMap<>()); // no optional config for this strat
+            new HashMap<>()); // no optional config for this strat // 此策略没有可选配置
 
     final List<StrategyConfig> allStrategies = new ArrayList<>();
     allStrategies.add(strategyConfig1);

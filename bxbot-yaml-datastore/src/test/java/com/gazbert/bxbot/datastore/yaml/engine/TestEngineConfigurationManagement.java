@@ -35,6 +35,7 @@ import org.junit.jupiter.api.Test;
 
 /**
  * Tests the Trading Engine configuration is loaded as expected.
+ * * 测试交易引擎配置是否按预期加载。
  *
  * @author gazbert
  */
@@ -98,6 +99,7 @@ class TestEngineConfigurationManagement {
     ConfigurationManager.saveConfig(EngineType.class, engineType, YAML_CONFIG_TO_SAVE_FILENAME);
 
     // Read it back in
+    // 读回
     final EngineType engineTypeReloaded =
         ConfigurationManager.loadConfig(EngineType.class, YAML_CONFIG_TO_SAVE_FILENAME);
 
@@ -111,6 +113,7 @@ class TestEngineConfigurationManagement {
     assertEquals(TRADE_CYCLE_INTERVAL, engineTypeReloaded.getEngine().getTradeCycleInterval());
 
     // cleanup
+    // 清理
     Files.delete(FileSystems.getDefault().getPath(YAML_CONFIG_TO_SAVE_FILENAME));
   }
 

@@ -63,8 +63,10 @@ import org.powermock.reflect.Whitebox;
 
 /**
  * Tests the behaviour of the Try-Mode Exchange Adapter.
+ * * 测试 Try-Mode Exchange Adapter 的行为。
  *
  * <p>It has been configured to use Bitstamp for the public API calls.
+ * * <p>它已被配置为使用 Bitstamp 进行公共 API 调用。
  *
  * @author gazbert
  */
@@ -82,6 +84,7 @@ public class TestTryModeExchangeAdapter extends AbstractExchangeAdapter {
 
   // --------------------------------------------------------------------------
   // Canned test data
+  // 罐头测试数据
   // --------------------------------------------------------------------------
 
   private static final String MARKET_ID = "btcusd";
@@ -134,6 +137,7 @@ public class TestTryModeExchangeAdapter extends AbstractExchangeAdapter {
 
   // --------------------------------------------------------------------------
   // Mocked API Ops
+  // 模拟 API 操作
   // --------------------------------------------------------------------------
 
   private static final String MOCKED_CREATE_DELEGATE_EXCHANGE_ADAPTER =
@@ -150,6 +154,7 @@ public class TestTryModeExchangeAdapter extends AbstractExchangeAdapter {
 
   // --------------------------------------------------------------------------
   // Delegate Exchange Adapter config
+  // 委托交换适配器配置
   // --------------------------------------------------------------------------
 
   private static final String DELEGATE_ADAPTER =
@@ -174,7 +179,8 @@ public class TestTryModeExchangeAdapter extends AbstractExchangeAdapter {
   private AuthenticationConfig authenticationConfig;
   private NetworkConfig networkConfig;
 
-  /** Create some exchange config - the TradingEngine would normally do this. */
+  /** Create some exchange config - the TradingEngine would normally do this.
+   * 创建一些交换配置 - TradingEngine 通常会这样做。 */
   @Before
   public void setupForEachTest() {
 
@@ -211,6 +217,7 @@ public class TestTryModeExchangeAdapter extends AbstractExchangeAdapter {
 
   // --------------------------------------------------------------------------
   //  Create Orders tests
+  // 创建订单测试
   // --------------------------------------------------------------------------
 
   @Test(expected = TradingApiException.class)
@@ -244,7 +251,7 @@ public class TestTryModeExchangeAdapter extends AbstractExchangeAdapter {
     PowerMock.expectPrivate(tryModeExchangeAdapter, MOCKED_CREATE_DELEGATE_EXCHANGE_ADAPTER)
         .andReturn(delegateExchangeAdapter);
 
-    // Ouch!
+    // Ouch! // 哎哟！
     Whitebox.setInternalState(tryModeExchangeAdapter, "currentOpenOrder", openOrder);
 
     PowerMock.replayAll();
@@ -402,6 +409,7 @@ public class TestTryModeExchangeAdapter extends AbstractExchangeAdapter {
 
   // --------------------------------------------------------------------------
   //  Cancel Order tests
+  // 取消订单测试
   // --------------------------------------------------------------------------
 
   @Test
@@ -430,6 +438,7 @@ public class TestTryModeExchangeAdapter extends AbstractExchangeAdapter {
         .andReturn(delegateExchangeAdapter);
 
     // Ouch!
+    // 哎哟！
     Whitebox.setInternalState(tryModeExchangeAdapter, "currentOpenOrder", openOrder);
 
     PowerMock.replayAll();
@@ -437,6 +446,7 @@ public class TestTryModeExchangeAdapter extends AbstractExchangeAdapter {
     tryModeExchangeAdapter.init(exchangeConfig);
 
     // Order ID will match the open order
+    // 订单 ID 将匹配未结订单
     assertTrue(tryModeExchangeAdapter.cancelOrder(OPEN_ORDER_ID, MARKET_ID));
 
     PowerMock.verifyAll();
@@ -490,6 +500,7 @@ public class TestTryModeExchangeAdapter extends AbstractExchangeAdapter {
         .andReturn(delegateExchangeAdapter);
 
     // Ouch!
+    // 哎哟！
     Whitebox.setInternalState(tryModeExchangeAdapter, "currentOpenOrder", openOrder);
 
     PowerMock.replayAll();
@@ -497,6 +508,7 @@ public class TestTryModeExchangeAdapter extends AbstractExchangeAdapter {
     tryModeExchangeAdapter.init(exchangeConfig);
 
     // Order ID will not match the open order
+    // 订单ID将与未结订单不匹配
     tryModeExchangeAdapter.cancelOrder(UNRECOGNISED_ORDER_ID, MARKET_ID);
 
     PowerMock.verifyAll();
@@ -504,6 +516,7 @@ public class TestTryModeExchangeAdapter extends AbstractExchangeAdapter {
 
   // --------------------------------------------------------------------------
   //  Get Your Open Orders tests
+  // 获取您的未结订单测试
   // --------------------------------------------------------------------------
 
   @Test
@@ -562,6 +575,7 @@ public class TestTryModeExchangeAdapter extends AbstractExchangeAdapter {
         .andReturn(delegateExchangeAdapter);
 
     // Ouch!
+    // 哎哟！
     Whitebox.setInternalState(tryModeExchangeAdapter, "currentOpenOrder", openOrder);
 
     PowerMock.replayAll();
@@ -594,7 +608,7 @@ public class TestTryModeExchangeAdapter extends AbstractExchangeAdapter {
             OPEN_ORDER_CREATION_DATE,
             MARKET_ID,
             OrderType.SELL,
-            CLOSED_SELL_ORDER_PRICE, // this will result in an empty open order list
+            CLOSED_SELL_ORDER_PRICE, // this will result in an empty open order list  // 这将导致一个空的未结订单列表
             OPEN_ORDER_QUANTITY,
             OPEN_ORDER_ORIGINAL_QUANTITY,
             OPEN_ORDER_TOTAL);
@@ -622,7 +636,7 @@ public class TestTryModeExchangeAdapter extends AbstractExchangeAdapter {
     PowerMock.expectPrivate(tryModeExchangeAdapter, MOCKED_CREATE_DELEGATE_EXCHANGE_ADAPTER)
         .andReturn(delegateExchangeAdapter);
 
-    // Ouch!
+    // Ouch! 哎哟!
     Whitebox.setInternalState(tryModeExchangeAdapter, "currentOpenOrder", openOrder);
 
     PowerMock.replayAll();
@@ -666,7 +680,7 @@ public class TestTryModeExchangeAdapter extends AbstractExchangeAdapter {
     PowerMock.expectPrivate(tryModeExchangeAdapter, MOCKED_CREATE_DELEGATE_EXCHANGE_ADAPTER)
         .andReturn(delegateExchangeAdapter);
 
-    // Ouch!
+    // Ouch! 哎哟!
     Whitebox.setInternalState(tryModeExchangeAdapter, "currentOpenOrder", openOrder);
 
     PowerMock.replayAll();
@@ -699,7 +713,7 @@ public class TestTryModeExchangeAdapter extends AbstractExchangeAdapter {
             OPEN_ORDER_CREATION_DATE,
             MARKET_ID,
             OrderType.BUY,
-            CLOSED_BUY_ORDER_PRICE, // this will result in an empty open order list
+            CLOSED_BUY_ORDER_PRICE, // this will result in an empty open order list 这将导致一个空的未结订单列表
             OPEN_ORDER_QUANTITY,
             OPEN_ORDER_ORIGINAL_QUANTITY,
             OPEN_ORDER_TOTAL);
@@ -742,6 +756,7 @@ public class TestTryModeExchangeAdapter extends AbstractExchangeAdapter {
 
   // --------------------------------------------------------------------------
   //  Get Market Orders tests
+  // 获取市价单测试
   // --------------------------------------------------------------------------
 
   @Test
@@ -834,6 +849,7 @@ public class TestTryModeExchangeAdapter extends AbstractExchangeAdapter {
 
   // --------------------------------------------------------------------------
   //  Get Latest Market Price tests
+  // 获取最新的市场价格测试
   // --------------------------------------------------------------------------
 
   @Test
@@ -865,6 +881,7 @@ public class TestTryModeExchangeAdapter extends AbstractExchangeAdapter {
 
   // --------------------------------------------------------------------------
   //  Get Balance Info tests
+  // 获取余额信息测试
   // --------------------------------------------------------------------------
 
   @Test
@@ -904,6 +921,7 @@ public class TestTryModeExchangeAdapter extends AbstractExchangeAdapter {
 
   // --------------------------------------------------------------------------
   //  Get Exchange Fees for Buy orders tests
+  // 获取买单测试的交易所费用
   // --------------------------------------------------------------------------
 
   @Test
@@ -939,6 +957,7 @@ public class TestTryModeExchangeAdapter extends AbstractExchangeAdapter {
 
   // --------------------------------------------------------------------------
   //  Get Exchange Fees for Sell orders tests
+  // 获取卖单测试的交易所费用
   // --------------------------------------------------------------------------
 
   @Test
@@ -974,6 +993,7 @@ public class TestTryModeExchangeAdapter extends AbstractExchangeAdapter {
 
   // --------------------------------------------------------------------------
   //  Get Ticker tests
+  // 获取 Ticker 测试
   // --------------------------------------------------------------------------
 
   @Test
@@ -1064,6 +1084,7 @@ public class TestTryModeExchangeAdapter extends AbstractExchangeAdapter {
 
   // --------------------------------------------------------------------------
   //  Non Exchange visiting tests
+  // 非交易所访问测试
   // --------------------------------------------------------------------------
 
   @Test
@@ -1078,8 +1099,8 @@ public class TestTryModeExchangeAdapter extends AbstractExchangeAdapter {
   }
 
   // --------------------------------------------------------------------------
-  //  Initialisation tests assume config property files are located under
-  //  src/test/resources
+  //  Initialisation tests assume config property files are located under  src/test/resources
+  // 初始化测试假定配置属性文件位于 src/test/resources 下
   // --------------------------------------------------------------------------
 
   @Test

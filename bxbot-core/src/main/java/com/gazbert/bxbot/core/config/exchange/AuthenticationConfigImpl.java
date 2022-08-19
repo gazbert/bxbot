@@ -27,7 +27,7 @@ import com.gazbert.bxbot.exchange.api.AuthenticationConfig;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
+/** Exchange API认证配置。
  * Exchange API Authentication config.
  *
  * @author gazbert

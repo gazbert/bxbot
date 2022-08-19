@@ -33,6 +33,7 @@ import org.junit.jupiter.api.Test;
 
 /**
  * Tests Exchange Adapters are created as expected.
+ * 测试交换适配器按预期创建。
  *
  * @author gazbert
  */

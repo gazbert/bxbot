@@ -48,12 +48,14 @@ import org.junit.Test;
 
 /**
  * Basic integration testing with Kraken exchange.
+ * 与 Kraken 交换的基本集成测试。
  *
  * @author gazbert
  */
 public class KrakenIT {
 
   // Market id must be the same as the Asset Pair id. See:
+  // 市场 id 必须与资产对 id 相同。看：
   // https://www.kraken.com/help/api#get-tradable-pairs
   private static final String MARKET_ID = "XBTUSD";
   private static final BigDecimal SELL_ORDER_PRICE = new BigDecimal("10000.176");
@@ -64,9 +66,9 @@ public class KrakenIT {
   private static final List<Integer> nonFatalNetworkErrorCodes = Arrays.asList(502, 503, 504);
   private static final List<String> nonFatalNetworkErrorMessages =
       Arrays.asList(
-          "Connection refused",
-          "Connection reset",
-          "Remote host closed connection during handshake");
+          "Connection refused 连接被拒绝",
+          "Connection reset 连接重置",
+          "Remote host closed connection during handshake 握手期间远程主机关闭连接");
 
   private ExchangeConfig exchangeConfig;
   private AuthenticationConfig authenticationConfig;
@@ -75,6 +77,7 @@ public class KrakenIT {
 
   /**
    * Create some exchange config - the TradingEngine would normally do this.
+   * * 创建一些交换配置 - TradingEngine 通常会这样做。
    */
   @Before
   public void setupForEachTest() {
@@ -120,13 +123,14 @@ public class KrakenIT {
     assertNotNull(ticker.getOpen());
     assertNotNull(ticker.getVolume());
     assertNotNull(ticker.getVwap());
-    assertNull(ticker.getTimestamp()); // timestamp not supplied by Kraken
+    assertNull(ticker.getTimestamp()); // timestamp not supplied by Kraken  // Kraken 不提供时间戳
 
     verify(authenticationConfig, networkConfig, otherConfig, exchangeConfig);
   }
 
-  /*
+  /**
    * You'll need to change the KEY, SECRET, constants to real-world values.
+   * * 您需要将 KEY、SECRET、常量更改为实际值。
    */
   @Ignore("Disabled. Integration testing authenticated API calls requires your secret credentials!")
   @Test
@@ -139,7 +143,7 @@ public class KrakenIT {
     final BalanceInfo balanceInfo = exchangeAdapter.getBalanceInfo();
     assertNotNull(balanceInfo.getBalancesAvailable().get("XXBT"));
 
-    // Careful here: make sure the SELL_ORDER_PRICE is sensible!
+    // Careful here: make sure the SELL_ORDER_PRICE is sensible!  // 注意这里：确保 SELL_ORDER_PRICE 是合理的！
     // final String orderId = exchangeAdapter.createOrder(MARKET_ID, OrderType.SELL,
     // SELL_ORDER_QUANTITY, SELL_ORDER_PRICE);
     // final List<OpenOrder> openOrders = exchangeAdapter.getYourOpenOrders(MARKET_ID);

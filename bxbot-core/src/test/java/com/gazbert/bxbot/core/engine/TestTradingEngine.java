@@ -72,14 +72,18 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 /**
  * Tests the behaviour of the Trading Engine is as expected.
+ * 测试交易引擎的行为是否符合预期。
  *
- * <p>The Exchange Adapter and Configuration subsystem are mocked out; they have their own unit
- * tests.
+ * <p>The Exchange Adapter and Configuration subsystem are mocked out; they have their own unit tests.
+ * <p>Exchange 适配器和配置子系统被模拟出来；他们有自己的单元测试。
  *
  * <p>TradingEngine.class is prepared so we can mock constructors for Market + StrategyConfigItems
- * object creation.
+  object creation.
+ <p>TradingEngine.class 已准备好，因此我们可以模拟 Market + StrategyConfigItems 的构造函数
+ 对象创建。
  *
  * <p>There's a lot of time dependent stuff going on here; I hate these sorts of tests!
+ * <p>这里有很多时间相关的东西；我讨厌这样的测试！
  *
  * @author gazbert
  */
@@ -100,7 +104,7 @@ public class TestTradingEngine {
     SHUTDOWN
   }
 
-  private static final String CRITICAL_EMAIL_ALERT_SUBJECT = "CRITICAL Alert message from BX-bot";
+  private static final String CRITICAL_EMAIL_ALERT_SUBJECT = "CRITICAL Alert message from BX-bot 来自 BX-bot 的 CRITICAL Alert 消息";
 
   private static final String EXCHANGE_ADAPTER_IMPL_CLASS =
       "com.my.adapters.DummyBitstampExchangeAdapter";
@@ -150,9 +154,13 @@ public class TestTradingEngine {
 
   /**
    * Mock out Config subsystem; we're not testing it here - has its own unit tests.
+   * * 模拟配置子系统；我们没有在这里测试它 - 有它自己的单元测试。
    *
    * <p>Test scenarios use 1 market with 1 strategy with 1 config item to keep tests manageable.
+   * <p>测试场景使用 1 个市场和 1 个策略和 1 个配置项来保持测试的可管理性。
+   *
    * Loading multiple markets/strategies is tested in the Configuration subsystem unit tests.
+   * * 加载多个市场/策略在配置子系统单元测试中进行测试。
    */
   @Before
   public void setupForEachTest() {
@@ -196,20 +204,25 @@ public class TestTradingEngine {
     final Map<String, BigDecimal> balancesAvailable = new HashMap<>();
     final BigDecimal btcBalance = new BigDecimal("0.49999999");
     // balance limit has been breached for BTC
+    // BTC 的余额已被突破
     balancesAvailable.put(ENGINE_EMERGENCY_STOP_CURRENCY, btcBalance);
 
     // expect BalanceInfo to be fetched using Trading API
+    // 期望使用交易 API 获取 BalanceInfo
     final BalanceInfo balanceInfo = PowerMock.createMock(BalanceInfo.class);
     expect(exchangeAdapter.getBalanceInfo()).andReturn(balanceInfo);
     expect(balanceInfo.getBalancesAvailable()).andReturn(balancesAvailable);
 
     // expect Email Alert to be sent
+    // 期望发送电子邮件警报
     emailAlerter.sendMessage(
         eq(CRITICAL_EMAIL_ALERT_SUBJECT),
         contains(
-                "EMERGENCY STOP triggered! - Current Emergency Stop Currency [BTC] wallet balance ["
+                "EMERGENCY STOP triggered! - Current Emergency Stop Currency [BTC] wallet balance [" +
+                        "紧急停止触发！ - 当前紧急停止货币 [BTC] 钱包余额 ["
                     + new DecimalFormat("#.########").format(btcBalance))
-            + "] on exchange is lower than configured Emergency Stop balance ["
+            + "] on exchange is lower than configured Emergency Stop balance [" +
+                "] 交换时低于配置的紧急停止余额 ["
             + new DecimalFormat("#.########").format(ENGINE_EMERGENCY_STOP_BALANCE)
             + "] BTC");
 
@@ -237,6 +250,7 @@ public class TestTradingEngine {
     setupConfigLoadingExpectationsForNoEmergencyStopCheck();
 
     // expect Trading Strategy to be invoked at least once
+    // 期望交易策略至少被调用一次
     tradingStrategy.execute();
     expectLastCall().atLeastOnce();
 
@@ -265,9 +279,12 @@ public class TestTradingEngine {
     PowerMock.verifyAll();
   }
 
-  /*
+  /**
    * Tests the engine starts up and executes trade cycles successfully.
+   * 测试引擎启动并成功执行交易周期。
+   *
    * Scenario is at least one successful trade cycle and then we shut it down.
+   * 情景至少是一个成功的交易周期，然后我们将其关闭。
    */
   @Test
   public void testEngineExecutesTradeCyclesAndCanBeShutdownSuccessfully() throws Exception {
@@ -275,14 +292,17 @@ public class TestTradingEngine {
 
     final Map<String, BigDecimal> balancesAvailable = new HashMap<>();
     // balance limit NOT breached for BTC
+    // 未违反 BTC 的余额限制
     balancesAvailable.put(ENGINE_EMERGENCY_STOP_CURRENCY, new BigDecimal("0.5"));
 
     // expect BalanceInfo to be fetched using Trading API
+    // 期望使用交易 API 获取 BalanceInfo
     final BalanceInfo balanceInfo = PowerMock.createMock(BalanceInfo.class);
     expect(exchangeAdapter.getBalanceInfo()).andReturn(balanceInfo).atLeastOnce();
     expect(balanceInfo.getBalancesAvailable()).andReturn(balancesAvailable).atLeastOnce();
 
     // expect Trading Strategy to be invoked
+    // 期望交易策略被调用
     tradingStrategy.execute();
     expectLastCall().atLeastOnce();
 
@@ -311,36 +331,42 @@ public class TestTradingEngine {
     PowerMock.verifyAll();
   }
 
-  /*
+  /**
    * Tests the engine starts up, executes 1 trade cycle successfully, but then receives
-   * StrategyException from Trading Strategy - we expect the engine to shutdown.
+   StrategyException from Trading Strategy - we expect the engine to shutdown.
+   * 测试引擎启动，成功执行 1 个交易周期，但随后收到
+   来自 Trading Strategy 的 StrategyException - 我们预计引擎会关闭。
    */
   @Test
   public void testEngineShutsDownWhenItReceivesStrategyExceptionFromTradingStrategy()
       throws Exception {
     setupConfigLoadingExpectations();
 
-    final String exceptionErrorMsg = "Eeek! My strat just broke. Please shutdown!";
+    final String exceptionErrorMsg = "Eeek! My strat just broke. Please shutdown! 哎呀！我的策略刚刚坏了。请关机！";
     final Map<String, BigDecimal> balancesAvailable = new HashMap<>();
     // balance limit NOT breached for BTC
+    // 未违反 BTC 的余额限制
     balancesAvailable.put(ENGINE_EMERGENCY_STOP_CURRENCY, new BigDecimal("0.5"));
     final BalanceInfo balanceInfo = PowerMock.createMock(BalanceInfo.class);
 
     // expect 1st trade cycle to be successful
+    // 期望第一个交易周期成功
     expect(exchangeAdapter.getBalanceInfo()).andReturn(balanceInfo);
     expect(balanceInfo.getBalancesAvailable()).andReturn(balancesAvailable);
     tradingStrategy.execute();
 
     // expect StrategyException in 2nd trade cycle
+    // 期望在第二个交易周期出现 StrategyException
     expect(exchangeAdapter.getBalanceInfo()).andReturn(balanceInfo);
     expect(balanceInfo.getBalancesAvailable()).andReturn(balancesAvailable);
     tradingStrategy.execute();
     expectLastCall().andThrow(new StrategyException(exceptionErrorMsg));
 
     // expect Email Alert to be sent
+    // 期望发送电子邮件警报
     emailAlerter.sendMessage(
         eq(CRITICAL_EMAIL_ALERT_SUBJECT),
-        contains("A FATAL error has occurred in Trading Strategy! Details: " + exceptionErrorMsg));
+        contains("A FATAL error has occurred in Trading Strategy! Details: 交易策略出现致命错误！细节：" + exceptionErrorMsg));
     PowerMock.replayAll();
 
     final TradingEngine tradingEngine =
@@ -360,38 +386,45 @@ public class TestTradingEngine {
     PowerMock.verifyAll();
   }
 
-  /*
+  /**
    * Tests the engine starts up, executes 1 trade cycle successfully, but then receives unexpected
-   * Exception from Trading Strategy - we expect the engine to shutdown.
+   Exception from Trading Strategy - we expect the engine to shutdown.
+   * 测试引擎启动，成功执行 1 个交易周期，但随后收到意外
+   交易策略的例外 - 我们预计引擎会关闭。
    */
   @Test
   public void testEngineShutsDownWhenItReceivesUnexpectedExceptionFromTradingStrategy()
       throws Exception {
     setupConfigLoadingExpectations();
 
-    final String exceptionErrorMsg = "Ah, curse your sudden but inevitable betrayal!";
+    final String exceptionErrorMsg = "Ah, curse your sudden but inevitable betrayal!" +
+            "啊，诅咒你突然但不可避免的背叛！";
     final Map<String, BigDecimal> balancesAvailable = new HashMap<>();
     // balance limit NOT breached for BTC
     balancesAvailable.put(ENGINE_EMERGENCY_STOP_CURRENCY, new BigDecimal("0.5"));
     final BalanceInfo balanceInfo = PowerMock.createMock(BalanceInfo.class);
 
     // expect 1st trade cycle to be successful
+    // 期望第一个交易周期成功
     expect(exchangeAdapter.getBalanceInfo()).andReturn(balanceInfo);
     expect(balanceInfo.getBalancesAvailable()).andReturn(balancesAvailable);
     tradingStrategy.execute();
 
     // expect unexpected Exception in 2nd trade cycle
+    // 预计第二个交易周期出现意外异常
     expect(exchangeAdapter.getBalanceInfo()).andReturn(balanceInfo);
     expect(balanceInfo.getBalancesAvailable()).andReturn(balancesAvailable);
     tradingStrategy.execute();
     expectLastCall().andThrow(new IllegalArgumentException(exceptionErrorMsg));
 
     // expect Email Alert to be sent
+    // 期望发送电子邮件警报
     emailAlerter.sendMessage(
         eq(CRITICAL_EMAIL_ALERT_SUBJECT),
         contains(
-            "An unexpected FATAL error has occurred in Exchange Adapter or Trading Strategy! "
-                + "Details: "
+            "An unexpected FATAL error has occurred in Exchange Adapter or Trading Strategy! " +
+                    "Exchange 适配器或交易策略中出现意外的致命错误！"
+                + "Details: 细节："
                 + exceptionErrorMsg));
 
     PowerMock.replayAll();
@@ -413,9 +446,11 @@ public class TestTradingEngine {
     PowerMock.verifyAll();
   }
 
-  /*
+  /**
    * Tests the engine starts up, executes 1 trade cycle successfully, but then receives unexpected
-   * Exception from Exchange Adapter on the 2nd cycle. We expect the engine to shutdown.
+    Exception from Exchange Adapter on the 2nd cycle. We expect the engine to shutdown.
+   测试引擎启动，成功执行 1 个交易周期，但随后收到意外消息
+   第 2 个周期的 Exchange 适配器异常。我们预计引擎会关闭。
    */
   @Test
   public void testEngineShutsDownWhenItReceivesUnexpectedExceptionFromExchangeAdapter()
@@ -424,27 +459,33 @@ public class TestTradingEngine {
     setupConfigLoadingExpectations();
 
     final String exceptionErrorMsg =
-        "I had to rewire the grav thrust because somebody won't replace that crappy "
-            + "compression coil.";
+        "I had to rewire the grav thrust because somebody won't replace that crappy " +
+                " 我不得不重新连接重力推力，因为有人不会取代那个蹩脚的东西"
+            + "compression coil. 压缩线圈。";
     final Map<String, BigDecimal> balancesAvailable = new HashMap<>();
     // balance limit NOT breached for BTC
+    // 未违反 BTC 的余额限制
     balancesAvailable.put(ENGINE_EMERGENCY_STOP_CURRENCY, new BigDecimal("0.5"));
     final BalanceInfo balanceInfo = PowerMock.createMock(BalanceInfo.class);
 
     // expect 1st trade cycle to be successful
+    // 期望第一个交易周期成功
     expect(exchangeAdapter.getBalanceInfo()).andReturn(balanceInfo);
     expect(balanceInfo.getBalancesAvailable()).andReturn(balancesAvailable);
     tradingStrategy.execute();
 
     // expect unexpected Exception in 2nd trade cycle
+    // 预计第二个交易周期出现意外异常
     expect(exchangeAdapter.getBalanceInfo()).andThrow(new IllegalStateException(exceptionErrorMsg));
 
     // expect Email Alert to be sent
+    // 期望发送电子邮件警报
     emailAlerter.sendMessage(
         eq(CRITICAL_EMAIL_ALERT_SUBJECT),
         contains(
-            "An unexpected FATAL error has occurred in Exchange Adapter or Trading Strategy!"
-                + " Details: "
+            "An unexpected FATAL error has occurred in Exchange Adapter or Trading Strategy! " +
+                    " Exchange 适配器或交易策略中出现意外的致命错误！"
+                + " Details:  细节："
                 + exceptionErrorMsg));
 
     PowerMock.replayAll();
@@ -466,9 +507,11 @@ public class TestTradingEngine {
     PowerMock.verifyAll();
   }
 
-  /*
+  /**
    * Tests the engine starts up, executes 1 trade cycle successfully, but then receives
-   * TradingApiException from Exchange Adapter on the 2nd cycle. We expect the engine to shutdown.
+    TradingApiException from Exchange Adapter on the 2nd cycle. We expect the engine to shutdown.
+   * 测试引擎启动，成功执行 1 个交易周期，但随后收到
+   第 2 个周期来自 Exchange 适配器的 TradingApiException。我们预计引擎会关闭。
    */
   @Test
   public void testEngineShutsDownWhenItReceivesTradingApiExceptionFromExchangeAdapter()
@@ -476,26 +519,30 @@ public class TestTradingEngine {
     setupConfigLoadingExpectations();
 
     final String exceptionErrorMsg =
-        "Ten percent of nothin' is ... let me do the math here ... nothin' into nothin'"
-            + " ... carry the nothin' ...";
+        "Ten percent of nothin' is ... let me do the math here ... nothin' into nothin' " +
+                "百分之十是……让我在这里算一算……什么都没有 "
+            + " ... carry the nothin' ... ...随身携带什么...";
     final Map<String, BigDecimal> balancesAvailable = new HashMap<>();
     // balance limit NOT breached for BTC
+    // 未违反 BTC 的余额限制
     balancesAvailable.put(ENGINE_EMERGENCY_STOP_CURRENCY, new BigDecimal("0.5"));
     final BalanceInfo balanceInfo = PowerMock.createMock(BalanceInfo.class);
 
     // expect 1st trade cycle to be successful
+    // 期望第一个交易周期成功
     expect(exchangeAdapter.getBalanceInfo()).andReturn(balanceInfo);
     expect(balanceInfo.getBalancesAvailable()).andReturn(balancesAvailable);
     tradingStrategy.execute();
 
     // expect TradingApiException in 2nd trade cycle
+    // 期望在第二个交易周期出现 TradingApiException
     expect(exchangeAdapter.getBalanceInfo()).andThrow(new TradingApiException(exceptionErrorMsg));
 
     // expect Email Alert to be sent
     emailAlerter.sendMessage(
         eq(CRITICAL_EMAIL_ALERT_SUBJECT),
         contains(
-            "A FATAL error has occurred in Exchange" + " Adapter! Details: " + exceptionErrorMsg));
+            "A FATAL error has occurred in Exchange Adapter! Details: Exchange 适配器中出现致命错误！细节：" + exceptionErrorMsg));
 
     PowerMock.replayAll();
 
@@ -516,11 +563,15 @@ public class TestTradingEngine {
     PowerMock.verifyAll();
   }
 
-  /*
+  /**
    * Tests the engine continues to execute next trade cycle if it receives a
-   * ExchangeNetworkException. Scenario is 1 successful trade cycle, 2nd cycle Exchange Adapter
-   * throws ExchangeNetworkException, engine stays alive and Emergency Stop Check MUST run at start
-   * of every trade cycle.successfully executes subsequent trade cycles.
+    ExchangeNetworkException. Scenario is 1 successful trade cycle, 2nd cycle Exchange Adapter
+    throws ExchangeNetworkException, engine stays alive and Emergency Stop Check MUST run at start
+    of every trade cycle.successfully executes subsequent trade cycles.
+   测试引擎是否继续执行下一个交易周期，如果它收到一个
+   交换网络异常。场景是 1 个成功的交易周期，第 2 个周期交换适配器
+   抛出 ExchangeNetworkException，引擎保持活动状态并且紧急停止检查必须在启动时运行
+   每个交易周期。成功执行后续交易周期。
    */
   @Test
   public void testEngineExecutesNextTradeCyclesAfterReceivingExchangeNetworkException()
@@ -528,23 +579,28 @@ public class TestTradingEngine {
     setupConfigLoadingExpectations();
 
     final String exceptionErrorMsg =
-        "Man walks down the street in a hat like that, you know he's not afraid of anything...";
+        "Man walks down the street in a hat like that, you know he's not afraid of anything..." +
+                "男人戴着那样的帽子走在街上，你知道他什么都不怕……";
 
     final Map<String, BigDecimal> balancesAvailable = new HashMap<>();
     // balance limit NOT breached for BTC
+    // 未违反 BTC 的余额限制
     balancesAvailable.put(ENGINE_EMERGENCY_STOP_CURRENCY, new BigDecimal("0.5"));
     final BalanceInfo balanceInfo = PowerMock.createMock(BalanceInfo.class);
 
     // expect 1st trade cycle to be successful
+    // 期望第一个交易周期成功
     expect(exchangeAdapter.getBalanceInfo()).andReturn(balanceInfo);
     expect(balanceInfo.getBalancesAvailable()).andReturn(balancesAvailable);
     tradingStrategy.execute();
 
     // expect recoverable ExchangeNetworkException in 2nd trade cycle
+    // 在第二个交易周期中期望可恢复的 ExchangeNetworkException
     expect(exchangeAdapter.getBalanceInfo())
         .andThrow(new ExchangeNetworkException(exceptionErrorMsg));
 
     // expect bot recover and continue 3rd cycle + any subsequent ones...
+    // 期望机器人恢复并继续第 3 个周期 + 任何后续周期...
     expect(exchangeAdapter.getBalanceInfo()).andReturn(balanceInfo).atLeastOnce();
     expect(balanceInfo.getBalancesAvailable()).andReturn(balancesAvailable).atLeastOnce();
     tradingStrategy.execute();
@@ -568,6 +624,7 @@ public class TestTradingEngine {
     assertTrue(tradingEngine.isRunning());
 
     // wait for a few trade cycles, then shutdown the bot.
+    // 等待几个交易周期，然后关闭机器人。
     try {
       Thread.sleep(3 * (ENGINE_TRADE_CYCLE_INTERVAL * 1000));
     } catch (InterruptedException e) {
@@ -583,6 +640,7 @@ public class TestTradingEngine {
 
   /*
    * Tests the engine cannot be started more than once.
+   * 测试发动机不能多次启动。
    */
   @Test(expected = IllegalStateException.class)
   public void testEngineCannotBeStartedMoreThanOnce() throws Exception {
@@ -590,14 +648,17 @@ public class TestTradingEngine {
 
     final Map<String, BigDecimal> balancesAvailable = new HashMap<>();
     // balance limit NOT breached for BTC
+    // 未违反 BTC 的余额限制
     balancesAvailable.put(ENGINE_EMERGENCY_STOP_CURRENCY, new BigDecimal("0.5"));
 
     // expect BalanceInfo to be fetched using Trading API
+    // 期望使用交易 API 获取 BalanceInfo
     final BalanceInfo balanceInfo = PowerMock.createMock(BalanceInfo.class);
     expect(exchangeAdapter.getBalanceInfo()).andReturn(balanceInfo).atLeastOnce();
     expect(balanceInfo.getBalancesAvailable()).andReturn(balancesAvailable).atLeastOnce();
 
     // expect Trading Strategy to be invoked 1 time
+    // 期望交易策略被调用 1 次
     tradingStrategy.execute();
     expectLastCall().atLeastOnce();
 
@@ -618,6 +679,7 @@ public class TestTradingEngine {
     assertTrue(tradingEngine.isRunning());
 
     // try start the engine again
+    // 尝试再次启动引擎
     tradingEngine.start();
 
     PowerMock.verifyAll();
@@ -628,21 +690,24 @@ public class TestTradingEngine {
     setupConfigLoadingExpectations();
 
     // empty balances from exchange
+    // 清空交易所的余额
     final Map<String, BigDecimal> balancesAvailable = new HashMap<>();
 
     // expect BalanceInfo to be fetched using Trading API
+    // 期望使用交易 API 获取 BalanceInfo
     final BalanceInfo balanceInfo = PowerMock.createMock(BalanceInfo.class);
     expect(exchangeAdapter.getBalanceInfo()).andReturn(balanceInfo);
     expect(balanceInfo.getBalancesAvailable()).andReturn(balancesAvailable);
 
     // expect Email Alert to be sent
+    // 期望发送电子邮件警报
     emailAlerter.sendMessage(
         eq(CRITICAL_EMAIL_ALERT_SUBJECT),
         contains(
-            "Emergency stop check: Failed to get current Emergency Stop Currency balance as '"
+            "Emergency stop check: Failed to get current Emergency Stop Currency balance as 紧急停止检查：无法获取当前紧急停止货币余额为'"
                 + ENGINE_EMERGENCY_STOP_CURRENCY
-                + "' key into Balances map "
-                + "returned null. Balances returned: "
+                + "' key into Balances map 进入余额地图"
+                + "returned null. Balances returned: 返回空值。退回余额："
                 + balancesAvailable));
     PowerMock.replayAll();
 
@@ -670,14 +735,17 @@ public class TestTradingEngine {
 
     final Map<String, BigDecimal> balancesAvailable = new HashMap<>();
     // balance limit NOT breached for BTC
+    // 未违反 BTC 的余额限制
     balancesAvailable.put(ENGINE_EMERGENCY_STOP_CURRENCY, new BigDecimal("0.5"));
 
     // expect BalanceInfo to be fetched using Trading API
+    // 期望使用交易 API 获取 BalanceInfo
     final BalanceInfo balanceInfo = PowerMock.createMock(BalanceInfo.class);
     expect(exchangeAdapter.getBalanceInfo()).andReturn(balanceInfo).atLeastOnce();
     expect(balanceInfo.getBalancesAvailable()).andReturn(balancesAvailable).atLeastOnce();
 
     // expect Trading Strategy to be invoked
+    // 期望交易策略被调用
     tradingStrategy.execute();
     expectLastCall().atLeastOnce();
 
@@ -707,7 +775,7 @@ public class TestTradingEngine {
   }
 
   // --------------------------------------------------------------------------
-  //  private utils
+  //  private utils 私有工具
   // --------------------------------------------------------------------------
 
   private void setupExchangeAdapterConfigExpectations() {
@@ -823,7 +891,7 @@ public class TestTradingEngine {
   private static EngineConfig someEngineConfigForNoEmergencyStopCheck() {
     final EngineConfig engineConfig = new EngineConfig();
     engineConfig.setEmergencyStopCurrency(ENGINE_EMERGENCY_STOP_CURRENCY);
-    engineConfig.setEmergencyStopBalance(BigDecimal.ZERO); // ZERO bypasses the check
+    engineConfig.setEmergencyStopBalance(BigDecimal.ZERO); // ZERO bypasses the check // ZERO 绕过检查
     engineConfig.setTradeCycleInterval(ENGINE_TRADE_CYCLE_INTERVAL);
     return engineConfig;
   }
@@ -865,11 +933,13 @@ public class TestTradingEngine {
       boolean stateChanged = false;
 
       // Startup requested and has started
+      // 请求启动并已启动
       if (engineState == EngineState.RUNNING && engine.isRunning()) {
         stateChanged = true;
       }
 
       // Shutdown requested and has shutdown
+      // 请求关机并已关机
       if (engineState == EngineState.SHUTDOWN && !engine.isRunning()) {
         stateChanged = true;
       }

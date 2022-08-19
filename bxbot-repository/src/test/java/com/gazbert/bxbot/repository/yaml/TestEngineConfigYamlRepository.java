@@ -44,6 +44,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 /**
  * Tests YAML backed Engine configuration repository behaves as expected.
+ * 测试 YAML 支持的引擎配置存储库的行为是否符合预期。
  *
  * @author gazbert
  */
@@ -110,6 +111,7 @@ public class TestEngineConfigYamlRepository {
 
   // --------------------------------------------------------------------------
   // Private utils
+  // 私有工具
   // --------------------------------------------------------------------------
 
   private static EngineType someInternalEngineConfig() {

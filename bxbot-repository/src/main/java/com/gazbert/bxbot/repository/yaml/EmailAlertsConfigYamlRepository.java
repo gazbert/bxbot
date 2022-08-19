@@ -36,6 +36,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 /**
  * An Email Alerts config repo that uses a YAML backed datastore.
+ * 使用 YAML 支持的数据存储的电子邮件警报配置存储库。
  *
  * @author gazbert
  */
@@ -47,14 +48,14 @@ public class EmailAlertsConfigYamlRepository implements EmailAlertsConfigReposit
 
   @Override
   public EmailAlertsConfig get() {
-    LOG.info(() -> "Fetching EmailAlertsConfig...");
+    LOG.info(() -> "Fetching EmailAlertsConfig... 正在获取电子邮件警报配置...");
     return ConfigurationManager.loadConfig(EmailAlertsType.class, EMAIL_ALERTS_CONFIG_YAML_FILENAME)
         .getEmailAlerts();
   }
 
   @Override
   public EmailAlertsConfig save(EmailAlertsConfig config) {
-    LOG.info(() -> "About to save EmailAlertsConfig: " + config);
+    LOG.info(() -> "About to save EmailAlertsConfig: 关于保存电子邮件警报配置：" + config);
 
     final EmailAlertsType emailAlertsType = new EmailAlertsType();
     emailAlertsType.setEmailAlerts(config);

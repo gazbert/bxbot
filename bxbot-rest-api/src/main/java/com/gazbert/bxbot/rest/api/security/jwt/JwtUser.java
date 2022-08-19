@@ -34,6 +34,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 /**
  * Encapsulates the User details stored in the JWT.
+ * 封装存储在 JWT 中的用户详细信息。
  *
  * @author gazbert
  */
@@ -53,18 +54,18 @@ public class JwtUser implements UserDetails {
   private final List<String> roles;
 
   /**
-   * Creates a JWT User.
+   * Creates a JWT User.  创建一个 JWT 用户。
    *
-   * @param id the user's id.
-   * @param username the user's name.
-   * @param firstname the user's first name.
-   * @param lastname the user's last name.
-   * @param password the use's password.
-   * @param email the user's email.
-   * @param enabled is the user enabled or disabled?
-   * @param lastPasswordResetDate the date the user's password was reset.
-   * @param authorities the user's authorities.
-   * @param roles the user's roles.
+   * @param id the user's id. 用户的 ID。
+   * @param username the user's name. 用户名。
+   * @param firstname the user's first name.  用户的名字。
+   * @param lastname the user's last name.  用户的姓氏。
+   * @param password the use's password. 用户的密码。
+   * @param email the user's email. 用户的电子邮件。
+   * @param enabled is the user enabled or disabled?  用户是启用还是禁用？
+   * @param lastPasswordResetDate the date the user's password was reset.  重置用户密码的日期。
+   * @param authorities the user's authorities. 用户的权限。
+   * @param roles the user's roles.  用户的角色。
    */
   public JwtUser(
       Long id,

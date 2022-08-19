@@ -53,6 +53,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 /**
  * Tests the Email Alerts config controller behaviour.
+ * * 测试电子邮件警报配置控制器的行为。
  *
  * @author gazbert
  */
@@ -75,6 +76,7 @@ class TestEmailAlertsConfigController extends AbstractConfigControllerTest {
   @MockBean private EmailAlertsConfigService emailAlertsConfigService;
 
   // Need these even though not used in the test directly because Spring loads it on startup...
+  // 需要这些，即使没有直接在测试中使用，因为 Spring 在启动时加载它...
   @MockBean private TradingEngine tradingEngine;
   @MockBean private RestartEndpoint restartEndpoint;
   @MockBean private LogFileWebEndpoint logFileWebEndpoint;
@@ -182,6 +184,7 @@ class TestEmailAlertsConfigController extends AbstractConfigControllerTest {
 
   // --------------------------------------------------------------------------
   // Private utils
+  // 私有工具
   // --------------------------------------------------------------------------
 
   private static EmailAlertsConfig someEmailAlertsConfig() {

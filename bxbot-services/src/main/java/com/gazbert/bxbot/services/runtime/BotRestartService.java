@@ -25,6 +25,7 @@ package com.gazbert.bxbot.services.runtime;
 
 /**
  * The Bot restart service.
+ * Bot 重新启动服务。
  *
  * @author gazbert
  */
@@ -32,8 +33,10 @@ public interface BotRestartService {
 
   /**
    * Restarts the bot.
+   * 重新启动机器人。
    *
    * @return 'Restarting' if the bot could be restarted.
+   * |@return 'Restarting' 如果机器人可以重新启动。
    */
   String restart();
 }

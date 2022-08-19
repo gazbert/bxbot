@@ -34,6 +34,7 @@ import org.junit.jupiter.api.Test;
 
 /**
  * Tests Exchange Config exchange API config object behaves as expected.
+ * 测试 Exchange Config 交换 API 配置对象的行为是否符合预期。
  *
  * @author gazbert
  */

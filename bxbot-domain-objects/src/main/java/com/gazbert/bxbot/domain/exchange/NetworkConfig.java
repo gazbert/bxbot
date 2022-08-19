@@ -31,6 +31,7 @@ import javax.validation.constraints.Min;
 
 /**
  * Domain object representing the Exchange Network config.
+ * 表示 Exchange 网络配置的域对象。
  *
  * @author gazbert
  */
@@ -39,23 +40,21 @@ public class NetworkConfig {
 
   @Schema(
       description =
-          "Optional connection timeout (secs) to wait for exchange response. Must be more than 1s."
-              + " Defaults to 30s.")
-  @Min(message = "Connection timeout must be more than 1 second", value = 1)
+          "Optional connection timeout (secs) to wait for exchange response. Must be more than 1s.等待交换响应的可选连接超时（秒）。必须大于 1s。 "
+              + " Defaults to 30s. 默认为 30 秒。")
+  @Min(message = " Connection timeout must be more than 1 second 连接超时必须大于 1 秒 ", value = 1)
   private Integer connectionTimeout;
 
   @Schema(
       description =
-          "Optional list of HTTP status codes that will trigger the adapter to throw a non-fatal"
-              + " ExchangeNetworkException. This allows the bot to recover from temporary network"
-              + " issues.")
+          "Optional list of HTTP status codes that will trigger the adapter to throw a non-fatal  ExchangeNetworkException. 将触发适配器抛出非致命 ExchangeNetworkException 的 HTTP 状态代码的可选列表。"
+                  +"This allows the bot to recover from temporary network issues. 这允许机器人从临时网络问题中恢复。")
   private List<Integer> nonFatalErrorCodes;
 
   @Schema(
       description =
-          "An optional list of `java.io` Exception message content that will trigger the adapter"
-              + " to throw a non-fatal ExchangeNetworkException. This allows the bot to recover "
-              + "from temporary network issues.")
+          "An optional list of `java.io` Exception message content that will trigger the adapter to throw a non-fatal ExchangeNetworkException. `java.io` 异常消息内容的可选列表，将触发适配器抛出非致命的 ExchangeNetworkException。"
+                  +"This allows the bot to recover from temporary network issues. 这允许机器人从临时网络问题中恢复。")
   private List<String> nonFatalErrorMessages;
 
   public NetworkConfig() {

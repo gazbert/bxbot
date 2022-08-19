@@ -60,7 +60,7 @@ public class EmailAlertsConfigServiceImpl implements EmailAlertsConfigService {
 
   @Override
   public EmailAlertsConfig updateEmailAlertsConfig(EmailAlertsConfig config) {
-    LOG.info(() -> "About to update Email Alerts config: " + config);
+    LOG.info(() -> "About to update Email Alerts config: 即将更新电子邮件警报配置：" + config);
     return emailAlertsConfigRepository.save(config);
   }
 }

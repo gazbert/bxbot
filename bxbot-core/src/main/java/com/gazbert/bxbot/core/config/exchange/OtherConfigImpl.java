@@ -31,6 +31,7 @@ import java.util.Map;
 
 /**
  * Exchange API Other config.
+ * Exchange API 其他配置。
  *
  * @author gazbert
  */

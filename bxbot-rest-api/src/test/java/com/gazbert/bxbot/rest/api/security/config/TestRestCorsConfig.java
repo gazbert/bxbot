@@ -30,6 +30,7 @@ import org.springframework.web.filter.CorsFilter;
 
 /**
  * Tests the REST CORS config filter is created as expected.
+ * 测试 REST CORS 配置过滤器是否按预期创建。
  *
  * @author gazbert
  */

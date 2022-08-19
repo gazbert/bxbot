@@ -27,6 +27,7 @@ import com.gazbert.bxbot.rest.api.v1.AbstractControllerTest;
 
 /**
  * Base class for config Controller test classes.
+ * * 配置控制器测试类的基类。
  *
  * @author gazbert
  */

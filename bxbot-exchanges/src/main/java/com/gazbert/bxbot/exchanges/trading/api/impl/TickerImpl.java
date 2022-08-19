@@ -29,6 +29,7 @@ import java.math.BigDecimal;
 
 /**
  * A Ticker implementation that can be used by Exchange Adapters.
+ * Exchange 适配器可以使用的 Ticker 实现。
  *
  * @author gazbert
  */
@@ -46,16 +47,34 @@ public final class TickerImpl implements Ticker {
 
   /**
    * Creates a new TicketImpl.
+   * 创建一个新的 Ticket Impl。
    *
    * @param last the last trade price.
+   *             * @param last 最后的交易价格。
+   *
    * @param bid the current bid.
+   *            * @param bid 当前出价。
+   *
    * @param ask the current ask.
+   *            * @param 当前询问/期望。
+   *
    * @param low the current low.
+   *                目前的低点
+   *
    * @param high the current high.
+   *             * @param high 当前高点。
+   *
    * @param open the current open.
+   *             * @param 当前打开。
+   *
    * @param volume the current volume.
+   *               * @param volume 当前总量?。
+   *
    * @param vwap the current vwap.
+   *             当前的 vwap。
+   *
    * @param timestamp the timestamp for the tick.
+   *                  tick的时间戳
    */
   public TickerImpl(
       BigDecimal last,

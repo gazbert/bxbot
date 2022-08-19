@@ -39,6 +39,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 /**
  * Tests JWT User is created and behaves as expected.
+ * 测试 JWT 用户已创建并按预期运行。
  *
  * @author gazbert
  */
@@ -97,6 +98,7 @@ class TestJwtUser {
 
   // ------------------------------------------------------------------------
   // Private utils
+  // 私有工具
   // ------------------------------------------------------------------------
 
   private List<Role> createRoles(User user) {

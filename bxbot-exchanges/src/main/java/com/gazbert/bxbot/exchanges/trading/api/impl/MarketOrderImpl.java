@@ -30,6 +30,7 @@ import java.math.BigDecimal;
 
 /**
  * A MarketOrder implementation that can be used by Exchange Adapters.
+ * Exchange 适配器可以使用的市价单实现。
  *
  * @author gazbert
  */
@@ -42,11 +43,17 @@ public final class MarketOrderImpl implements MarketOrder {
 
   /**
    * Creates a new Market Order.
+   * 创建一个新的市价单。
    *
    * @param type the order type.
+   *             订单类型。
    * @param price the price.
+   *              价格。
+   *
    * @param quantity the quantity.
+   *                 数量。
    * @param total the total cost.
+   *              总成本。
    */
   public MarketOrderImpl(OrderType type, BigDecimal price, BigDecimal quantity, BigDecimal total) {
     this.type = type;

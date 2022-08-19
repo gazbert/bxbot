@@ -7,14 +7,24 @@
 # - The indentation levels are significant in YAML: https://en.wikipedia.org/wiki/YAML
 #
 # Sample config for using a Gmail account to send the email is shown below.
+# 电子邮件警报 YAML 配置。
+#
+# - 除非另有说明，否则所有字段均为必填项。
+# - 只能指定 1 个 emailAlerts 块。
+# - 使用 TLS 发送电子邮件。
+# - 缩进级别在 YAML 中很重要：https://en.wikipedia.org/wiki/YAML
+#
+# 使用 Gmail 帐户发送电子邮件的示例配置如下所示。
 ############################################################################################
 ---
 emailAlerts:
 
   # If set to true, the bot will load the smtpConfig, and enable email alerts.
+  # 如果设置为 true，bot 将加载 smtpConfig，并启用电子邮件警报。
   enabled: false
 
   # Set your SMTP details here.
+  # 在此处设置您的 SMTP 详细信息。
   smtpConfig:
     host: smtp.gmail.com
     tlsPort: 587

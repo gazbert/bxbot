@@ -28,6 +28,7 @@ import java.util.List;
 
 /**
  * The Market configuration repository.
+ * 市场配置存储库。
  *
  * @author gazbert
  */

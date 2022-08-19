@@ -29,6 +29,7 @@ import org.junit.jupiter.api.Test;
 
 /**
  * Tests the REST API configuration can be set and loaded as expected.
+ * * 测试可以按预期设置和加载 REST API 配置。
  *
  * @author gazbert
  */

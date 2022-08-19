@@ -37,6 +37,7 @@ import org.junit.jupiter.api.Test;
 
 /**
  * Tests Market configuration service behaves as expected.
+ * * 测试市场配置服务按预期运行。
  *
  * @author gazbert
  */

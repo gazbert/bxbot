@@ -34,6 +34,7 @@ import org.junit.jupiter.api.Test;
 
 /**
  * Tests Role model behaves as expected.
+ * 测试角色模型的行为符合预期。
  *
  * @author gazbert
  */

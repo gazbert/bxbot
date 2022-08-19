@@ -29,6 +29,7 @@ import org.junit.jupiter.api.Test;
 
 /**
  * Tests a JWT Authentication Request behaves as expected.
+ * 测试 JWT 身份验证请求的行为是否符合预期。
  *
  * @author gazbert
  */

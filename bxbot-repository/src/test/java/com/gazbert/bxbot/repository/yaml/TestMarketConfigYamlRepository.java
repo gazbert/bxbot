@@ -44,6 +44,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 /**
  * Tests YAML backed Market configuration repository behaves as expected.
+ * * 测试 YAML 支持的市场配置存储库的行为是否符合预期。
  *
  * @author gazbert
  */
@@ -265,6 +266,7 @@ public class TestMarketConfigYamlRepository {
 
   // --------------------------------------------------------------------------
   // Private utils
+  // 私有工具
   // --------------------------------------------------------------------------
 
   private static MarketsType allTheInternalMarketsConfig() {

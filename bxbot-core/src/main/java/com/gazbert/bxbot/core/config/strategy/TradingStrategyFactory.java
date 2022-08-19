@@ -32,7 +32,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
-/**
+/**用于实例化交易策略类的工厂类。
  * Factory class for instantiating a Trading Strategy class.
  *
  * @author gazbert
@@ -48,27 +48,28 @@ public class TradingStrategyFactory {
     this.springContext = springContext;
   }
 
-  /** Creates the Trading Strategy instance. */
+  /** Creates the Trading Strategy instance.
+   * 创建交易策略实例 */
   TradingStrategy createTradingStrategy(StrategyConfig tradingStrategy) {
     final String tradingStrategyClassname = tradingStrategy.getClassName();
     final String tradingStrategyBeanName = tradingStrategy.getBeanName();
 
     TradingStrategy strategyImpl = null;
     if (tradingStrategyBeanName != null) {
-      // if beanName is configured, try get the bean first
+      // if beanName is configured, try get the bean first  // 如果配置了beanName，先尝试获取bean
       try {
         strategyImpl = (TradingStrategy) springContext.getBean(tradingStrategyBeanName);
 
       } catch (NullPointerException e) {
         final String errorMsg =
-            "Failed to obtain bean [" + tradingStrategyBeanName + "] from spring context";
+            "Failed to obtain bean [ 获取bean失败[" + tradingStrategyBeanName + "] from spring context ] 来自spring的背景";
         LOG.error(() -> errorMsg);
         throw new IllegalArgumentException(errorMsg);
       }
     }
 
     if (strategyImpl == null) {
-      // if beanName not configured use className
+      // if beanName not configured use className  // 如果没有配置 beanName 使用 className
       strategyImpl = ConfigurableComponentFactory.createComponent(tradingStrategyClassname);
     }
     return strategyImpl;

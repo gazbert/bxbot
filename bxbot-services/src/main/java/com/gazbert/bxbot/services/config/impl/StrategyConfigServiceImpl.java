@@ -61,25 +61,25 @@ public class StrategyConfigServiceImpl implements StrategyConfigService {
 
   @Override
   public StrategyConfig getStrategyConfig(String id) {
-    LOG.info(() -> "Fetching Strategy config for id: " + id);
+    LOG.info(() -> "Fetching Strategy config for id: 获取 id 的策略配置：" + id);
     return strategyConfigRepository.findById(id);
   }
 
   @Override
   public StrategyConfig updateStrategyConfig(StrategyConfig config) {
-    LOG.info(() -> "About to update Strategy config: " + config);
+    LOG.info(() -> "About to update Strategy config: 即将更新策略配置：" + config);
     return strategyConfigRepository.save(config);
   }
 
   @Override
   public StrategyConfig createStrategyConfig(StrategyConfig config) {
-    LOG.info(() -> "About to create Strategy config: " + config);
+    LOG.info(() -> "About to create Strategy config: 关于创建策略配置：" + config);
     return strategyConfigRepository.save(config);
   }
 
   @Override
   public StrategyConfig deleteStrategyConfig(String id) {
-    LOG.info(() -> "About to delete Strategy config for id: " + id);
+    LOG.info(() -> "About to delete Strategy config for id: 即将删除 id 的策略配置：" + id);
     return strategyConfigRepository.delete(id);
   }
 }

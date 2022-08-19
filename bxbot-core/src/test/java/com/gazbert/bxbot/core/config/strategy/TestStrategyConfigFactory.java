@@ -36,6 +36,7 @@ import org.springframework.context.ApplicationContext;
 
 /**
  * Tests the Trading Strategy Factory behaves as expected.
+ * 测试交易策略工厂的行为是否符合预期。
  *
  * @author gazbert
  */
@@ -96,7 +97,7 @@ class TestStrategyConfigFactory {
 
     final ApplicationContext applicationContext = EasyMock.createMock(ApplicationContext.class);
     expect(applicationContext.getBean(INVALID_STRATEGY_BEAN_NAME))
-        .andThrow(new NullPointerException("No such bean error!"));
+        .andThrow(new NullPointerException("No such bean error! 没有这样的bean错误！"));
     final TradingStrategyFactory tradingStrategyFactory = new TradingStrategyFactory();
     tradingStrategyFactory.setSpringContext(applicationContext);
     EasyMock.replay(applicationContext);

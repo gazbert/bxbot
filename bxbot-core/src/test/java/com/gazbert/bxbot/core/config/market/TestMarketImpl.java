@@ -32,6 +32,7 @@ import org.junit.jupiter.api.Test;
 
 /**
  * Tests Market impl behaves as expected.
+ * 测试市场 impl 的行为符合预期。
  *
  * @author gazbert
  */

@@ -52,7 +52,7 @@ public class BotStatusServiceImpl implements BotStatusService {
   public String getStatus() {
     final HealthComponent health = healthEndpoint.health();
     final Status status = health.getStatus();
-    LOG.info(() -> "Health Status: " + status);
+    LOG.info(() -> "Health Status: 健康状况：" + status);
     return status.getCode();
   }
 }

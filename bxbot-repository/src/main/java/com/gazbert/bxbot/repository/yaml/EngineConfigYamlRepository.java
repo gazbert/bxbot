@@ -36,6 +36,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 /**
  * An Engine config repo that uses a YAML backed datastore.
+ * 使用 YAML 支持的数据存储的引擎配置存储库。
  *
  * @author gazbert
  */
@@ -47,14 +48,14 @@ public class EngineConfigYamlRepository implements EngineConfigRepository {
 
   @Override
   public EngineConfig get() {
-    LOG.info(() -> "Fetching EngineConfig...");
+    LOG.info(() -> "Fetching EngineConfig... 正在获取引擎配置...");
     return ConfigurationManager.loadConfig(EngineType.class, ENGINE_CONFIG_YAML_FILENAME)
         .getEngine();
   }
 
   @Override
   public EngineConfig save(EngineConfig config) {
-    LOG.info(() -> "About to save EngineConfig: " + config);
+    LOG.info(() -> "About to save EngineConfig: 关于保存 EngineConfig：" + config);
 
     final EngineType engineType = new EngineType();
     engineType.setEngine(config);

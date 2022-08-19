@@ -35,6 +35,7 @@ import org.junit.jupiter.api.Test;
 
 /**
  * Test the Balance Info impl behaves as expected.
+ * 测试 Balance Info impl 的行为是否符合预期。
  *
  * @author gazbert
  */
@@ -48,19 +49,24 @@ class TestBalanceInfoImpl {
   private static final BigDecimal USD_BALANCE_AVAILABLE = new BigDecimal("2000.57573495");
   private static final BigDecimal USD_BALANCE_ON_HOLD = new BigDecimal("200.45834593");
 
-  /*
+  /**
    * Map of wallet balances available to trade.
-   * Key is currency id, e.g. BTC, USD
+    Key is currency id, e.g. BTC, USD
+   可用于交易的钱包余额地图。
+   键是货币 ID，例如比特币、美元
    */
   private Map<String, BigDecimal> balancesAvailable;
 
-  /*
+  /**
    * Map of wallet balances currently on-hold for open orders.
-   * Key is currency id, e.g. BTC, USD
+    Key is currency id, e.g. BTC, USD
+   当前保留未结订单的钱包余额地图。
+   键是货币 ID，例如比特币、美元
    */
   private Map<String, BigDecimal> balancesOnHold;
 
-  /** Sets up some test balances. */
+  /** Sets up some test balances.
+   * 设置一些测试天平。 */
   @BeforeEach
   void setupBalancesBeforeEachTest() {
     balancesAvailable = new HashMap<>();

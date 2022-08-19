@@ -46,7 +46,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 /**
  * Tests YAML backed Strategy configuration repository behaves as expected.
- *
+ ** 测试 YAML 支持的策略配置存储库的行为是否符合预期。
  * @author gazbert
  */
 @RunWith(PowerMockRunner.class)
@@ -331,7 +331,7 @@ public class TestStrategyConfigYamlRepository {
   }
 
   // --------------------------------------------------------------------------
-  // Private utils
+  // Private utils  // 私有工具
   // --------------------------------------------------------------------------
 
   private static StrategiesType allTheInternalStrategiesConfig() {
