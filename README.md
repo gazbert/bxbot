@@ -649,4 +649,4 @@ server.ssl.key-store-type=PKCS12
 
 A UI built with [React](https://reactjs.org/) - it will consume the REST API. 
 
-See the [Project Board](https://github.com/gazbert/bxbot/projects/2) for timescales and progress.
+See the [Project Board](https://github.com/gazbert/bxbot/projects/1) for timescales and progress.
