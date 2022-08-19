@@ -24,6 +24,7 @@
 package com.gazbert.bxbot.exchanges.config;
 
 import com.gazbert.bxbot.exchange.api.PairPrecisionConfig;
+import java.math.BigDecimal;
 import java.util.Map;
 
 /**
@@ -35,10 +36,18 @@ public class PairPrecisionConfigImpl implements PairPrecisionConfig {
 
   private final Map<String, Integer> prices;
   private final Map<String, Integer> volumes;
+  private final Map<String, BigDecimal> orderMins;
 
-  public PairPrecisionConfigImpl(Map<String, Integer> prices, Map<String, Integer> volumes) {
+  /**
+   * Default implementation of {@link PairPrecisionConfig} backed by {@link Map}s.
+   */
+  public PairPrecisionConfigImpl(
+      Map<String, Integer> prices,
+      Map<String, Integer> volumes,
+      Map<String, BigDecimal> orderMins) {
     this.prices = prices;
     this.volumes = volumes;
+    this.orderMins = orderMins;
   }
 
   @Override
@@ -49,5 +58,10 @@ public class PairPrecisionConfigImpl implements PairPrecisionConfig {
   @Override
   public int getVolumePrecision(String pair) {
     return volumes.getOrDefault(pair, -1);
+  }
+
+  @Override
+  public BigDecimal getMinimalOrderVolume(String pair) {
+    return orderMins.getOrDefault(pair, null);
   }
 }

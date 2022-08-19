@@ -1105,6 +1105,32 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
     PowerMock.verifyAll();
   }
 
+  @Test
+  public void testGettingMinOrderVolumeIfAvailable() throws Exception {
+    PowerMock.replayAll();
+
+    final ExchangeAdapter exchangeAdapter = new KrakenExchangeAdapter();
+    exchangeAdapter.init(exchangeConfig);
+
+    final BigDecimal minimumOrderVolume = exchangeAdapter.getMinimumOrderVolume("XBTUSD");
+    assertEquals(0, minimumOrderVolume.compareTo(new BigDecimal("0.0001")));
+
+    PowerMock.verifyAll();
+  }
+
+  @Test
+  public void testGettingMinOrderVolumeIfNotAvailable() throws Exception {
+    PowerMock.replayAll();
+
+    final ExchangeAdapter exchangeAdapter = new KrakenExchangeAdapter();
+    exchangeAdapter.init(exchangeConfig);
+
+    final BigDecimal minimumOrderVolume = exchangeAdapter.getMinimumOrderVolume("XBTGBP.d");
+    assertNull(minimumOrderVolume);
+
+    PowerMock.verifyAll();
+  }
+
   // --------------------------------------------------------------------------
   //  Initialisation tests
   // --------------------------------------------------------------------------

@@ -534,6 +534,11 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
   }
 
   @Override
+  public BigDecimal getMinimumOrderVolume(String marketId) {
+    return pairPrecisionConfig.getMinimalOrderVolume(marketId);
+  }
+
+  @Override
   public String getImplName() {
     return "Kraken API v1";
   }
@@ -662,6 +667,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
       Gson gson = new Gson();
       Map<String, Integer> prices = new HashMap<>();
       Map<String, Integer> volumes = new HashMap<>();
+      Map<String, BigDecimal> orderMins = new HashMap<>();
 
       for (Entry<String, Object> entry : this.entrySet()) {
         JsonElement jsonElement = gson.toJsonTree(entry);
@@ -670,12 +676,17 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
         String name = jsonObject.get("altname").getAsString();
         int price = jsonObject.get("pair_decimals").getAsInt();
         int volume = jsonObject.get("lot_decimals").getAsInt();
+        if (jsonObject.has("ordermin")) {
+          BigDecimal orderMin = jsonObject.get("ordermin").getAsBigDecimal();
+          orderMins.put(name, orderMin);
+        }
+
 
         prices.put(name, price);
         volumes.put(name, volume);
       }
 
-      return new PairPrecisionConfigImpl(prices, volumes);
+      return new PairPrecisionConfigImpl(prices, volumes, orderMins);
     }
   }
 

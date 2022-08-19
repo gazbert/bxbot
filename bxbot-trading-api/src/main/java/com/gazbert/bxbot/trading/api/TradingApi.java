@@ -51,7 +51,7 @@ public interface TradingApi {
    * @since 1.0
    */
   default String getVersion() {
-    return "1.1";
+    return "1.2";
   }
 
   /**
@@ -214,6 +214,36 @@ public interface TradingApi {
    */
   BigDecimal getPercentageOfSellOrderTakenForExchangeFee(String marketId)
       throws TradingApiException, ExchangeNetworkException;
+
+  /**
+   * Returns the minimum order volume for a given market id. The returned value is the order volume
+   * that a SELL or BUY order must at least have as amount of the base currency for the given
+   * currency pair.
+   *
+   * <p>Not all exchanges provide this information or not fully provide it (only for some
+   *  currency pairs)- you'll need to check the relevant Exchange Adapter code/Javadoc and online
+   *  Exchange API documentation.
+   *
+   * <p>If the exchange does not provide the information at all or for the current market id,
+   * a null value is returned.
+   *
+   * @param marketId the id of the market.
+   * @return the minimum order volume in base currency that is needed to place a Order as a {@link
+   *     BigDecimal}.
+   * @throws ExchangeNetworkException if a network error occurred trying to connect to the exchange.
+   *     This is implementation specific for each Exchange Adapter - see the documentation for the
+   *     adapter you are using. You could retry the API call, or exit from your Trading Strategy and
+   *     let the Trading Engine execute your Trading Strategy at the next trade cycle.
+   * @throws TradingApiException if the API call failed for any reason other than a network error.
+   *     This means something bad as happened; you would probably want to wrap this exception in a
+   *     StrategyException and let the Trading Engine shutdown the bot immediately to prevent
+   *     unexpected losses.
+   * @since 1.2
+   */
+  default BigDecimal getMinimumOrderVolume(String marketId)
+          throws TradingApiException, ExchangeNetworkException {
+    return null;
+  }
 
   /**
    * Returns the exchange Ticker a given market id.
