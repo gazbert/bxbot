@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2022 gazbert
+ * Copyright (c) 2022 maiph gazbert
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -25,6 +25,7 @@ package com.gazbert.bxbot.exchanges.config;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,6 +34,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Test the PairPrecisionConfigImpl behaves as expected.
  *
+ * @author maiph
  * @author gazbert
  */
 class TestPairPrecisionConfigImpl {
@@ -40,13 +42,16 @@ class TestPairPrecisionConfigImpl {
   private static final String BTC_USD_PAIR_ID = "BTC/USD";
   private static final Integer BTC_USD_PRICE = Integer.valueOf("1000");
   private static final Integer BTC_USD_VOLUME = Integer.valueOf("34234234");
+  private static final BigDecimal BTC_USD_ORDER_MIN = new BigDecimal("0.01");
 
   private static final String ETH_USD_PAIR_ID = "ETC/USD";
   private static final Integer ETH_USD_PRICE = Integer.valueOf("4545345");
   private static final Integer ETH_USD_VOLUME = Integer.valueOf("77777");
+  private static final BigDecimal ETC_USD_ORDER_MIN = new BigDecimal("0.00123");
 
   private Map<String, Integer> prices;
   private Map<String, Integer> volumes;
+  private Map<String, BigDecimal> minOrderSizes;
 
   @BeforeEach
   void setup() {
@@ -57,12 +62,16 @@ class TestPairPrecisionConfigImpl {
     volumes = new HashMap<>();
     volumes.put(BTC_USD_PAIR_ID, BTC_USD_VOLUME);
     volumes.put(ETH_USD_PAIR_ID, ETH_USD_VOLUME);
+
+    minOrderSizes = new HashMap<>();
+    minOrderSizes.put(BTC_USD_PAIR_ID, BTC_USD_ORDER_MIN);
+    minOrderSizes.put(ETH_USD_PAIR_ID, ETC_USD_ORDER_MIN);
   }
 
   @Test
   void getPricePrecision() {
     final PairPrecisionConfigImpl pairPrecisionConfig =
-        new PairPrecisionConfigImpl(prices, volumes);
+        new PairPrecisionConfigImpl(prices, volumes, minOrderSizes);
     assertEquals(BTC_USD_PRICE, pairPrecisionConfig.getPricePrecision(BTC_USD_PAIR_ID));
     assertEquals(ETH_USD_PRICE, pairPrecisionConfig.getPricePrecision(ETH_USD_PAIR_ID));
   }
@@ -70,8 +79,16 @@ class TestPairPrecisionConfigImpl {
   @Test
   void getVolumePrecision() {
     final PairPrecisionConfigImpl pairPrecisionConfig =
-        new PairPrecisionConfigImpl(prices, volumes);
+        new PairPrecisionConfigImpl(prices, volumes, minOrderSizes);
     assertEquals(BTC_USD_VOLUME, pairPrecisionConfig.getVolumePrecision(BTC_USD_PAIR_ID));
     assertEquals(ETH_USD_VOLUME, pairPrecisionConfig.getVolumePrecision(ETH_USD_PAIR_ID));
+  }
+
+  @Test
+  void getMinOrderSize() {
+    final PairPrecisionConfigImpl pairPrecisionConfig =
+        new PairPrecisionConfigImpl(prices, volumes, minOrderSizes);
+    assertEquals(BTC_USD_ORDER_MIN, pairPrecisionConfig.getMinimalOrderVolume(BTC_USD_PAIR_ID));
+    assertEquals(ETC_USD_ORDER_MIN, pairPrecisionConfig.getMinimalOrderVolume(ETH_USD_PAIR_ID));
   }
 }
