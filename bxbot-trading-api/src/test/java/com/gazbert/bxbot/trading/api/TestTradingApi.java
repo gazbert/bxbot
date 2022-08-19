@@ -41,7 +41,7 @@ class TestTradingApi {
   @Test
   void testGetVersion() {
     final MyApiImpl myApi = new MyApiImpl();
-    assertEquals("1.1", myApi.getVersion());
+    assertEquals("1.2", myApi.getVersion());
   }
 
   @Test
@@ -59,6 +59,13 @@ class TestTradingApi {
     assertNull(ticker.getVolume());
     assertNull(ticker.getVwap());
     assertNull(ticker.getTimestamp());
+  }
+
+  @Test
+  public void testGetMinOrder() throws Exception {
+    final MyApiImpl myApi = new MyApiImpl();
+    final BigDecimal minimumOrderVolume = myApi.getMinimumOrderVolume("market-123");
+    assertNull(minimumOrderVolume);
   }
 
   /** Test class. */
