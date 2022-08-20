@@ -68,22 +68,32 @@ public class TryModeExchangeAdapter extends AbstractExchangeAdapter implements E
   private static final Logger LOG = LogManager.getLogger();
 
   private static final String SIMULATED_COUNTER_CURRENCY_PROPERTY_NAME = "simulatedCounterCurrency";
-  private static final String COUNTER_CURRENCY_START_BALANCE_PROPERTY_NAME =
-      "counterCurrencyStartingBalance";
+  private static final String SIMULATED_COUNTER_CURRENCY_START_BALANCE_PROPERTY_NAME =
+      "simulatedCounterCurrencyStartingBalance";
+
   private static final String SIMULATED_BASE_CURRENCY_PROPERTY_NAME = "simulatedBaseCurrency";
-  private static final String BASE_CURRENCY_START_BALANCE_PROPERTY_NAME =
-      "baseCurrencyStartingBalance";
+  private static final String SIMULATED_BASE_CURRENCY_START_BALANCE_PROPERTY_NAME =
+      "simulatedBaseCurrencyStartingBalance";
+
+  private static final String SIMULATED_SELL_FEE_PROPERTY_NAME = "simulatedSellFee";
+  private static final String SIMULATED_BUY_FEE_PROPERTY_NAME = "simulatedBuyFee";
+
   private static final String DELEGATE_ADAPTER_CLASS_PROPERTY_NAME = "delegateAdapter";
 
   private String simulatedBaseCurrency;
+  private BigDecimal simulatedBaseCurrencyBalance;
+
   private String simulatedCounterCurrency;
-  private BigDecimal counterCurrencyBalance;
+  private BigDecimal simulatedCounterCurrencyBalance;
+
+  private BigDecimal simulatedSellFee;
+  private BigDecimal simulatedBuyFee;
+
   private String delegateExchangeClassName;
 
   private ExchangeAdapter delegateExchangeAdapter;
 
   private OpenOrder currentOpenOrder;
-  private BigDecimal baseCurrencyBalance;
   private boolean isOpenOrderCheckReentering;
 
   @Override
@@ -173,31 +183,21 @@ public class TryModeExchangeAdapter extends AbstractExchangeAdapter implements E
   @Override
   public BalanceInfo getBalanceInfo() {
     final HashMap<String, BigDecimal> availableBalances = new HashMap<>();
-    availableBalances.put(simulatedBaseCurrency, baseCurrencyBalance);
-    availableBalances.put(simulatedCounterCurrency, counterCurrencyBalance);
+    availableBalances.put(simulatedBaseCurrency, simulatedBaseCurrencyBalance);
+    availableBalances.put(simulatedCounterCurrency, simulatedCounterCurrencyBalance);
     final BalanceInfo currentBalance = new BalanceInfoImpl(availableBalances, new HashMap<>());
     LOG.info(() -> "Return the following simulated balances: " + currentBalance);
     return currentBalance;
   }
 
   @Override
-  public BigDecimal getPercentageOfBuyOrderTakenForExchangeFee(String marketId)
-      throws TradingApiException, ExchangeNetworkException {
-    LOG.info(
-        () ->
-            "Delegate 'getPercentageOfBuyOrderTakenForExchangeFee'"
-                + "to the configured delegation exchange adapter.");
-    return delegateExchangeAdapter.getPercentageOfBuyOrderTakenForExchangeFee(marketId);
+  public BigDecimal getPercentageOfBuyOrderTakenForExchangeFee(String marketId) {
+    return simulatedBuyFee;
   }
 
   @Override
-  public BigDecimal getPercentageOfSellOrderTakenForExchangeFee(String marketId)
-      throws TradingApiException, ExchangeNetworkException {
-    LOG.info(
-        () ->
-            "Delegate 'getPercentageOfSellOrderTakenForExchangeFee'"
-                + "to the configured delegation exchange adapter.");
-    return delegateExchangeAdapter.getPercentageOfSellOrderTakenForExchangeFee(marketId);
+  public BigDecimal getPercentageOfSellOrderTakenForExchangeFee(String marketId) {
+    return simulatedSellFee;
   }
 
   @Override
@@ -215,24 +215,33 @@ public class TryModeExchangeAdapter extends AbstractExchangeAdapter implements E
     LOG.info(() -> "Base currency to be simulated:" + simulatedBaseCurrency);
 
     final String startingBaseBalanceInConfig =
-        getOtherConfigItem(otherConfig, BASE_CURRENCY_START_BALANCE_PROPERTY_NAME);
-    baseCurrencyBalance = new BigDecimal(startingBaseBalanceInConfig);
+        getOtherConfigItem(otherConfig, SIMULATED_BASE_CURRENCY_START_BALANCE_PROPERTY_NAME);
+    simulatedBaseCurrencyBalance = new BigDecimal(startingBaseBalanceInConfig);
     LOG.info(
         () ->
             "Base currency balance at simulation start in BigDecimal format: "
-                + baseCurrencyBalance);
+                + simulatedBaseCurrencyBalance);
 
     simulatedCounterCurrency =
         getOtherConfigItem(otherConfig, SIMULATED_COUNTER_CURRENCY_PROPERTY_NAME);
     LOG.info(() -> "Counter currency to be simulated:" + simulatedCounterCurrency);
 
     final String startingBalanceInConfig =
-        getOtherConfigItem(otherConfig, COUNTER_CURRENCY_START_BALANCE_PROPERTY_NAME);
-    counterCurrencyBalance = new BigDecimal(startingBalanceInConfig);
+        getOtherConfigItem(otherConfig, SIMULATED_COUNTER_CURRENCY_START_BALANCE_PROPERTY_NAME);
+    simulatedCounterCurrencyBalance = new BigDecimal(startingBalanceInConfig);
     LOG.info(
         () ->
             "Counter currency balance at simulation start in BigDecimal format: "
-                + counterCurrencyBalance);
+                + simulatedCounterCurrencyBalance);
+
+    final String sellFeeInConfig =
+        getOtherConfigItem(otherConfig, SIMULATED_SELL_FEE_PROPERTY_NAME);
+    simulatedSellFee = new BigDecimal(sellFeeInConfig);
+    LOG.info(() -> "Sell Fee at simulation start in BigDecimal format: " + simulatedSellFee);
+
+    final String buyFeeInConfig = getOtherConfigItem(otherConfig, SIMULATED_BUY_FEE_PROPERTY_NAME);
+    simulatedBuyFee = new BigDecimal(buyFeeInConfig);
+    LOG.info(() -> "Buy Fee at simulation start in BigDecimal format: " + simulatedBuyFee);
 
     delegateExchangeClassName =
         getOtherConfigItem(otherConfig, DELEGATE_ADAPTER_CLASS_PROPERTY_NAME);
@@ -250,6 +259,7 @@ public class TryModeExchangeAdapter extends AbstractExchangeAdapter implements E
     delegateExchangeAdapter.init(config);
   }
 
+  @SuppressWarnings("unchecked")
   private ExchangeAdapter createDelegateExchangeAdapter() {
     LOG.info(() -> "Creating the delegate exchange adapter '" + delegateExchangeClassName + "'...");
     try {
@@ -308,8 +318,9 @@ public class TryModeExchangeAdapter extends AbstractExchangeAdapter implements E
       final BigDecimal buyFees =
           getPercentageOfSellOrderTakenForExchangeFee(marketId).multiply(orderPrice);
       final BigDecimal netOrderPrice = orderPrice.subtract(buyFees);
-      counterCurrencyBalance = counterCurrencyBalance.add(netOrderPrice);
-      baseCurrencyBalance = baseCurrencyBalance.subtract(currentOpenOrder.getOriginalQuantity());
+      simulatedCounterCurrencyBalance = simulatedCounterCurrencyBalance.add(netOrderPrice);
+      simulatedBaseCurrencyBalance =
+          simulatedBaseCurrencyBalance.subtract(currentOpenOrder.getOriginalQuantity());
       currentOpenOrder = null;
     }
   }
@@ -326,8 +337,9 @@ public class TryModeExchangeAdapter extends AbstractExchangeAdapter implements E
       final BigDecimal buyFees =
           getPercentageOfBuyOrderTakenForExchangeFee(marketId).multiply(orderPrice);
       final BigDecimal netOrderPrice = orderPrice.add(buyFees);
-      counterCurrencyBalance = counterCurrencyBalance.subtract(netOrderPrice);
-      baseCurrencyBalance = baseCurrencyBalance.add(currentOpenOrder.getOriginalQuantity());
+      simulatedCounterCurrencyBalance = simulatedCounterCurrencyBalance.subtract(netOrderPrice);
+      simulatedBaseCurrencyBalance =
+          simulatedBaseCurrencyBalance.add(currentOpenOrder.getOriginalQuantity());
       currentOpenOrder = null;
     }
   }

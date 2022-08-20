@@ -57,13 +57,19 @@ exchange:
     simulatedCounterCurrency: USD
 
     # The starting balance for the simulation. The simulation starts with this amount for counter currency.
-    counterCurrencyStartingBalance: 100
+    simulatedCounterCurrencyStartingBalance: 100
 
     # The base currency which is simulated. This must match your chosen market base currency.
     simulatedBaseCurrency: BTC
 
     # The starting balance for the simulation. The simulation starts with this amount for base currency.
-    baseCurrencyStartingBalance: 2
+    simulatedBaseCurrencyStartingBalance: 2
+
+    # The exchange sell fee percentage for the simulation.
+    simulatedSellFee: 0.1
+
+    # The exchange buy fee percentage for the simulation.
+    simulatedBuyFee: 0.1
 
     # The adapter which should be used for public API calls.
     # All special config values for this adapter must be given in this otherConfig section as well.
