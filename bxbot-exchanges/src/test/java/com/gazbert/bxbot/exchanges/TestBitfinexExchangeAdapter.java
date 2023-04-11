@@ -69,7 +69,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
  *
  * @author gazbert
  */
-@Ignore("#154 - needs fixing")
+@Ignore("FIXME #154 - needs fixing")
 @RunWith(PowerMockRunner.class)
 @PowerMockIgnore({
     "javax.crypto.*",

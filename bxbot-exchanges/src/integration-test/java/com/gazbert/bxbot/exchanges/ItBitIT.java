@@ -50,7 +50,7 @@ import org.junit.Test;
  *
  * @author gazbert
  */
-@Ignore("#154 - needs fixing")
+@Ignore("FIXME #154 - needs fixing")
 public class ItBitIT {
 
   private static final String MARKET_ID = "XBTUSD";
