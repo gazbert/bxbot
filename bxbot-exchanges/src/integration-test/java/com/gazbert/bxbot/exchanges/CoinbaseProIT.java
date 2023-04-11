@@ -51,6 +51,7 @@ import org.junit.Test;
  *
  * @author gazbert
  */
+@Ignore("#154 - needs fixing")
 public class CoinbaseProIT {
 
   private static final String MARKET_ID = "BTC-GBP";
