@@ -5,7 +5,7 @@ REM Bare bones script for starting BX-bot on Windows systems.
 REM
 REM Could be made better, but will do for now...
 REM
-REM You need the Java 11 JDK installed.
+REM You need a Java 17 JDK/JRE installed.
 REM
 REM This script expects all the jar files to live in the lib_dir.
 REM

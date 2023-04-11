@@ -1,5 +1,7 @@
 # 3rd Party Licenses
 
+*This file is updated manually on a best effort basis!*
+
 ## Product
 
 * GSON                     - https://github.com/google/gson/blob/master/LICENSE
