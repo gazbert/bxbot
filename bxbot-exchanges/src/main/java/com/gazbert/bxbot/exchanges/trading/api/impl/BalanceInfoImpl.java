@@ -38,24 +38,42 @@ public final class BalanceInfoImpl implements BalanceInfo {
   private Map<String, BigDecimal> balancesAvailable;
   private Map<String, BigDecimal> balancesOnHold;
 
+  /**
+   * Creates a Balance Info.
+   *
+   * @param balancesAvailable the balances available.
+   * @param balancesOnHold the balances on hold.
+   */
   public BalanceInfoImpl(
       Map<String, BigDecimal> balancesAvailable, Map<String, BigDecimal> balancesOnHold) {
     this.balancesAvailable = balancesAvailable;
     this.balancesOnHold = balancesOnHold;
   }
 
+  @Override
   public Map<String, BigDecimal> getBalancesAvailable() {
     return balancesAvailable;
   }
 
+  /**
+   * Sets the balances available.
+   *
+   * @param balancesAvailable the balances available.
+   */
   public void setBalancesAvailable(Map<String, BigDecimal> balancesAvailable) {
     this.balancesAvailable = balancesAvailable;
   }
 
+  @Override
   public Map<String, BigDecimal> getBalancesOnHold() {
     return balancesOnHold;
   }
 
+  /**
+   * Sets the balances on hold.
+   *
+   * @param balancesOnHold the balances on hold.
+   */
   public void setBalancesOnHold(Map<String, BigDecimal> balancesOnHold) {
     this.balancesOnHold = balancesOnHold;
   }

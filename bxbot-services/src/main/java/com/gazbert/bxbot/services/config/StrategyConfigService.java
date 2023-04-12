@@ -33,13 +33,42 @@ import java.util.List;
  */
 public interface StrategyConfigService {
 
+  /**
+   * Fetches all strategy config.
+   *
+   * @return all strategy config.
+   */
   List<StrategyConfig> getAllStrategyConfig();
 
+  /**
+   * Fetches a strategy config.
+   *
+   * @param id the id of the strategy config.
+   * @return the strategy config.
+   */
   StrategyConfig getStrategyConfig(String id);
 
+  /**
+   * Creates a strategy config.
+   *
+   * @param config the strategy config.
+   * @return the created strategy config.
+   */
   StrategyConfig updateStrategyConfig(StrategyConfig config);
 
+  /**
+   * Updates a strategy config.
+   *
+   * @param config the strategy config.
+   * @return the updated strategy config.
+   */
   StrategyConfig createStrategyConfig(StrategyConfig config);
 
+  /**
+   * Deletes a strategy config.
+   *
+   * @param id the id of the strategy config.
+   * @return the deleted strategy config.
+   */
   StrategyConfig deleteStrategyConfig(String id);
 }

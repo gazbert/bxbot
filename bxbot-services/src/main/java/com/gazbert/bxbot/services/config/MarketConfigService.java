@@ -33,13 +33,42 @@ import java.util.List;
  */
 public interface MarketConfigService {
 
+  /**
+   * Fetches all market config.
+   *
+   * @return all market config.
+   */
   List<MarketConfig> getAllMarketConfig();
 
+  /**
+   * Fetches a market config.
+   *
+   * @param id the id of the market config.
+   * @return the market config.
+   */
   MarketConfig getMarketConfig(String id);
 
+  /**
+   * Creates a market config.
+   *
+   * @param config the market config.
+   * @return the created market config.
+   */
   MarketConfig createMarketConfig(MarketConfig config);
 
+  /**
+   * Updates a market config.
+   *
+   * @param config the market config.
+   * @return the updated market config.
+   */
   MarketConfig updateMarketConfig(MarketConfig config);
 
+  /**
+   * Deletes a market config.
+   *
+   * @param id the id of the market config.
+   * @return the deleted market config.
+   */
   MarketConfig deleteMarketConfig(String id);
 }

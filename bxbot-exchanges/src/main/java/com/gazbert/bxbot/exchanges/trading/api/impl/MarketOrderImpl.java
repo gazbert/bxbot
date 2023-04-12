@@ -55,34 +55,58 @@ public final class MarketOrderImpl implements MarketOrder {
     this.total = total;
   }
 
+  @Override
   public OrderType getType() {
     return type;
   }
 
+  /**
+   * Sets the order type.
+   *
+   * @param type the order type.
+   */
   public void setType(OrderType type) {
     this.type = type;
   }
 
+  @Override
   public BigDecimal getPrice() {
     return price;
   }
 
+  /**
+   * Sets the price.
+   *
+   * @param price the price.
+   */
   public void setPrice(BigDecimal price) {
     this.price = price;
   }
 
+  @Override
   public BigDecimal getQuantity() {
     return quantity;
   }
 
+  /**
+   * Sets the quantity.
+   *
+   * @param quantity the quantity.
+   */
   public void setQuantity(BigDecimal quantity) {
     this.quantity = quantity;
   }
 
+  @Override
   public BigDecimal getTotal() {
     return total;
   }
 
+  /**
+   * Sets the total.
+   *
+   * @param total the total.
+   */
   public void setTotal(BigDecimal total) {
     this.total = total;
   }

@@ -57,9 +57,8 @@ public class MarketConfig {
   @Schema(required = true, description = "The Strategy ID to use for the Market.")
   private String tradingStrategyId;
 
-  // Required by ConfigurableComponentFactory
-  public MarketConfig() {
-  }
+  /** Creates a MarketConfig. Required by ConfigurableComponentFactory */
+  public MarketConfig() {}
 
   /**
    * Creates a MarketConfig from an existing one.
@@ -101,50 +100,110 @@ public class MarketConfig {
     this.tradingStrategyId = tradingStrategyId;
   }
 
+  /**
+   * Returns the id.
+   *
+   * @return the id.
+   */
   public String getId() {
     return id;
   }
 
+  /**
+   * Sets the id.
+   *
+   * @param id the id.
+   */
   public void setId(String id) {
     this.id = id;
   }
 
+  /**
+   * Returns the name.
+   *
+   * @return the name.
+   */
   public String getName() {
     return name;
   }
 
+  /**
+   * Sets the name.
+   *
+   * @param name the name.
+   */
   public void setName(String name) {
     this.name = name;
   }
 
+  /**
+   * Returns the base currency.
+   *
+   * @return the base currency.
+   */
   public String getBaseCurrency() {
     return baseCurrency;
   }
 
+  /**
+   * Sets the base currency.
+   *
+   * @param baseCurrency the base currency.
+   */
   public void setBaseCurrency(String baseCurrency) {
     this.baseCurrency = baseCurrency;
   }
 
+  /**
+   * Returns the counter currency.
+   *
+   * @return the counter currency.
+   */
   public String getCounterCurrency() {
     return counterCurrency;
   }
 
+  /**
+   * Sets the counter currency.
+   *
+   * @param counterCurrency the counter currency.
+   */
   public void setCounterCurrency(String counterCurrency) {
     this.counterCurrency = counterCurrency;
   }
 
+  /**
+   * Returns is market enabled.
+   *
+   * @return is market enabled.
+   */
   public boolean isEnabled() {
     return enabled;
   }
 
+  /**
+   * Sets market enabled.
+   *
+   * @param enabled market enabled.
+   */
   public void setEnabled(boolean enabled) {
     this.enabled = enabled;
   }
 
+  /**
+   * Returns trading strategy id.
+   *
+   * @return trading strategy id.
+   */
   public String getTradingStrategyId() {
     return tradingStrategyId;
   }
 
+  /**
+   * Sets trading strategy id.
+   *
+   * @param tradingStrategyId trading strategy id.
+   */
   public void setTradingStrategyId(String tradingStrategyId) {
     this.tradingStrategyId = tradingStrategyId;
   }

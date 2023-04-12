@@ -45,8 +45,10 @@ public class EngineConfig {
               + " Underscores and dashes are also permitted.")
   private String botId;
 
-  @Schema(description = "A friendly name for the bot. Value must be an alphanumeric string. "
-      + "Spaces are allowed.")
+  @Schema(
+      description =
+          "A friendly name for the bot. Value must be an alphanumeric string. "
+              + "Spaces are allowed.")
   private String botName;
 
   @Schema(
@@ -75,16 +77,15 @@ public class EngineConfig {
   @Min(value = 1, message = "Trace Cycle Interval must be more than 1 second")
   private int tradeCycleInterval;
 
-  // Required by ConfigurableComponentFactory
-  public EngineConfig() {
-  }
+  /** Creates an EngineConfig. Required by ConfigurableComponentFactory */
+  public EngineConfig() {}
 
   /**
    * Creates an EngineConfig.
    *
    * @param botId the bot ID.
    * @param botName the bot name.
-   * @param emergencyStopCurrency  the emergency stop currency.
+   * @param emergencyStopCurrency the emergency stop currency.
    * @param emergencyStopBalance the emergency stop balance.
    * @param tradeCycleInterval the trade cycle interval (in secs).
    */
@@ -102,42 +103,92 @@ public class EngineConfig {
     this.tradeCycleInterval = tradeCycleInterval;
   }
 
+  /**
+   * Returns the bot id.
+   *
+   * @return the bot id.
+   */
   public String getBotId() {
     return botId;
   }
 
+  /**
+   * Sets the bot id.
+   *
+   * @param botId the bot id.
+   */
   public void setBotId(String botId) {
     this.botId = botId;
   }
 
+  /**
+   * Returns the bot name.
+   *
+   * @return the bot name.
+   */
   public String getBotName() {
     return botName;
   }
 
+  /**
+   * Sets the bot name.
+   *
+   * @param botName the bot name.
+   */
   public void setBotName(String botName) {
     this.botName = botName;
   }
 
+  /**
+   * Returns the emergency stop currency.
+   *
+   * @return the emergency stop currency.
+   */
   public String getEmergencyStopCurrency() {
     return emergencyStopCurrency;
   }
 
+  /**
+   * Sets the emergency stop currency.
+   *
+   * @param emergencyStopCurrency the emergency stop currency.
+   */
   public void setEmergencyStopCurrency(String emergencyStopCurrency) {
     this.emergencyStopCurrency = emergencyStopCurrency;
   }
 
+  /**
+   * Returns the emergency stop balance.
+   *
+   * @return the emergency stop balance.
+   */
   public BigDecimal getEmergencyStopBalance() {
     return emergencyStopBalance;
   }
 
+  /**
+   * Sets the emergency stop balance.
+   *
+   * @param emergencyStopBalance the emergency stop balance.
+   */
   public void setEmergencyStopBalance(BigDecimal emergencyStopBalance) {
     this.emergencyStopBalance = emergencyStopBalance;
   }
 
+  /**
+   * Returns the trade cycle interval.
+   *
+   * @return the trade cycle interval.
+   */
   public int getTradeCycleInterval() {
     return tradeCycleInterval;
   }
 
+  /**
+   * Sets the trade cycle interval.
+   *
+   * @param tradeCycleInterval the trade cycle interval.
+   */
   public void setTradeCycleInterval(int tradeCycleInterval) {
     this.tradeCycleInterval = tradeCycleInterval;
   }

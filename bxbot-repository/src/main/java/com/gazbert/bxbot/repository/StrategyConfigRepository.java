@@ -33,11 +33,34 @@ import java.util.List;
  */
 public interface StrategyConfigRepository {
 
+  /**
+   * Fetches all strategy config.
+   *
+   * @return all strategy config.
+   */
   List<StrategyConfig> findAll();
 
+  /**
+   * Fetches a strategy config by id.
+   *
+   * @param id the id of the strategy config.
+   * @return the strategy config.
+   */
   StrategyConfig findById(String id);
 
+  /**
+   * Saves the strategy config.
+   *
+   * @param config the strategy config.
+   * @return the saved strategy config.
+   */
   StrategyConfig save(StrategyConfig config);
 
+  /**
+   * Deletes a strategy config.
+   *
+   * @param id the id of strategy config.
+   * @return the deleted strategy config.
+   */
   StrategyConfig delete(String id);
 }

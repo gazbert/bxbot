@@ -32,7 +32,18 @@ import com.gazbert.bxbot.domain.engine.EngineConfig;
  */
 public interface EngineConfigRepository {
 
+  /**
+   * Fetches the engine config.
+   *
+   * @return the engine config.
+   */
   EngineConfig get();
 
+  /**
+   * Saves the engine config.
+   *
+   * @param config the engine config.
+   * @return the saved the engine config.
+   */
   EngineConfig save(EngineConfig config);
 }

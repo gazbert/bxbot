@@ -32,7 +32,18 @@ import com.gazbert.bxbot.domain.emailalerts.EmailAlertsConfig;
  */
 public interface EmailAlertsConfigRepository {
 
+  /**
+   * Fetches the email alerts config.
+   *
+   * @return the email alerts config.
+   */
   EmailAlertsConfig get();
 
+  /**
+   * Saves the email alerts config.
+   *
+   * @param config the email alerts config.
+   * @return the saved email alerts config.
+   */
   EmailAlertsConfig save(EmailAlertsConfig config);
 }

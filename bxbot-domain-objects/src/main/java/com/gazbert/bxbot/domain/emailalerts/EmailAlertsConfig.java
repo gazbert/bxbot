@@ -44,9 +44,8 @@ public class EmailAlertsConfig {
   @Schema(description = "The SMTP details. Only required if enabled is set to true.")
   private SmtpConfig smtpConfig;
 
-  // Required by ConfigurableComponentFactory
-  public EmailAlertsConfig() {
-  }
+  /** Creates a new EmailAlertsConfig. Required by ConfigurableComponentFactory. */
+  public EmailAlertsConfig() {}
 
   /**
    * Creates a new EmailAlertsConfig.
@@ -59,18 +58,38 @@ public class EmailAlertsConfig {
     this.smtpConfig = smtpConfig;
   }
 
+  /**
+   * Returns alerts enabled.
+   *
+   * @return alerts enabled.
+   */
   public boolean isEnabled() {
     return enabled;
   }
 
+  /**
+   * Sets alerts enabled.
+   *
+   * @param enabled alerts enabled.
+   */
   public void setEnabled(boolean enabled) {
     this.enabled = enabled;
   }
 
+  /**
+   * Returns the SMTP config.
+   *
+   * @return the SMTP config.
+   */
   public SmtpConfig getSmtpConfig() {
     return smtpConfig;
   }
 
+  /**
+   * Sets the SMTP config.
+   *
+   * @param smtpConfig the SMTP config.
+   */
   public void setSmtpConfig(SmtpConfig smtpConfig) {
     this.smtpConfig = smtpConfig;
   }

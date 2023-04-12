@@ -50,20 +50,23 @@ public class StrategyConfig {
   @Schema(description = "An optional description of the Strategy.")
   private String description;
 
-  @Schema(required = true, description = "The fully qualified Strategy Class name, "
-      + "e.g. com.me.mybot.SuperStrat. Must be specified if beanName not set.")
+  @Schema(
+      required = true,
+      description =
+          "The fully qualified Strategy Class name, "
+              + "e.g. com.me.mybot.SuperStrat. Must be specified if beanName not set.")
   private String className;
 
-  @Schema(required = true, description = "The Strategy Spring Bean name. "
-      + "Must be specified if className not set.")
+  @Schema(
+      required = true,
+      description = "The Strategy Spring Bean name. " + "Must be specified if className not set.")
   private String beanName;
 
   @Schema(description = "The optional Strategy config items.")
   private Map<String, String> configItems = new HashMap<>();
 
-  // Required by ConfigurableComponentFactory
-  public StrategyConfig() {
-  }
+  /** Creates a new StrategyConfig. Required by ConfigurableComponentFactory */
+  public StrategyConfig() {}
 
   /**
    * Creates a StrategyConfig from an existing one.
@@ -105,50 +108,110 @@ public class StrategyConfig {
     this.configItems = configItems;
   }
 
+  /**
+   * Returns the id.
+   *
+   * @return the id.
+   */
   public String getId() {
     return id;
   }
 
+  /**
+   * Sets the id.
+   *
+   * @param id the id.
+   */
   public void setId(String id) {
     this.id = id;
   }
 
+  /**
+   * Returns the name.
+   *
+   * @return the name.
+   */
   public String getName() {
     return name;
   }
 
+  /**
+   * Sets the name.
+   *
+   * @param name the name.
+   */
   public void setName(String name) {
     this.name = name;
   }
 
+  /**
+   * Returns the description.
+   *
+   * @return the description.
+   */
   public String getDescription() {
     return description;
   }
 
+  /**
+   * Sets the description.
+   *
+   * @param description the description.
+   */
   public void setDescription(String description) {
     this.description = description;
   }
 
+  /**
+   * Returns the classname.
+   *
+   * @return the classname.
+   */
   public String getClassName() {
     return className;
   }
 
+  /**
+   * Sets the classname.
+   *
+   * @param className the classname.
+   */
   public void setClassName(String className) {
     this.className = className;
   }
 
+  /**
+   * Returns the bean name.
+   *
+   * @return the bean name.
+   */
   public String getBeanName() {
     return beanName;
   }
 
+  /**
+   * Sets the bean name.
+   *
+   * @param beanName the bean name.
+   */
   public void setBeanName(String beanName) {
     this.beanName = beanName;
   }
 
+  /**
+   * Returns the config items.
+   *
+   * @return the config items.
+   */
   public Map<String, String> getConfigItems() {
     return configItems;
   }
 
+  /**
+   * Sets the config items.
+   *
+   * @param configItems the config items.
+   */
   public void setConfigItems(Map<String, String> configItems) {
     this.configItems = configItems;
   }

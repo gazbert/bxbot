@@ -32,7 +32,18 @@ import com.gazbert.bxbot.domain.engine.EngineConfig;
  */
 public interface EngineConfigService {
 
+  /**
+   * Fetches the engine config.
+   *
+   * @return the engine config.
+   */
   EngineConfig getEngineConfig();
 
+  /**
+   * Updates the engine config.
+   *
+   * @param config the engine config.
+   * @return the updated engine config.
+   */
   EngineConfig updateEngineConfig(EngineConfig config);
 }

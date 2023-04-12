@@ -58,31 +58,62 @@ public class NetworkConfig {
               + "from temporary network issues.")
   private List<String> nonFatalErrorMessages;
 
+  /** Creates the network config. */
   public NetworkConfig() {
     nonFatalErrorCodes = new ArrayList<>();
     nonFatalErrorMessages = new ArrayList<>();
   }
 
+  /**
+   * Returns the connection timeout.
+   *
+   * @return the connection timeout.
+   */
   public Integer getConnectionTimeout() {
     return connectionTimeout;
   }
 
+  /**
+   * Sets the connection timeout.
+   *
+   * @param connectionTimeout the connection timeout.
+   */
   public void setConnectionTimeout(Integer connectionTimeout) {
     this.connectionTimeout = connectionTimeout;
   }
 
+  /**
+   * Returns the non fatal error codes.
+   *
+   * @return the non fatal error codes.
+   */
   public List<Integer> getNonFatalErrorCodes() {
     return nonFatalErrorCodes;
   }
 
+  /**
+   * * Sets the non fatal error codes.
+   *
+   * @param nonFatalErrorCodes the non fatal error codes.
+   */
   public void setNonFatalErrorCodes(List<Integer> nonFatalErrorCodes) {
     this.nonFatalErrorCodes = nonFatalErrorCodes;
   }
 
+  /**
+   * Returns the non fatal error messages.
+   *
+   * @return the non fatal error messages.
+   */
   public List<String> getNonFatalErrorMessages() {
     return nonFatalErrorMessages;
   }
 
+  /**
+   * Sets the non fatal error messages.
+   *
+   * @param nonFatalErrorMessages the non fatal error messages.
+   */
   public void setNonFatalErrorMessages(List<String> nonFatalErrorMessages) {
     this.nonFatalErrorMessages = nonFatalErrorMessages;
   }

@@ -57,9 +57,8 @@ public class SmtpConfig {
   @Email(message = "To Address must be a valid email address")
   private String toAddress;
 
-  // required for jackson
-  public SmtpConfig() {
-  }
+  /** Creates a new SmtpConfig. Required for jackson. */
+  public SmtpConfig() {}
 
   /**
    * Creates a new SmtpConfig.
@@ -87,50 +86,110 @@ public class SmtpConfig {
     this.toAddress = toAddress;
   }
 
+  /**
+   * Returns the host.
+   *
+   * @return the host.
+   */
   public String getHost() {
     return host;
   }
 
+  /**
+   * Sets the host.
+   *
+   * @param host the host.
+   */
   public void setHost(String host) {
     this.host = host;
   }
 
+  /**
+   * Returns the TLS port.
+   *
+   * @return the TLS port.
+   */
   public int getTlsPort() {
     return tlsPort;
   }
 
+  /**
+   * Sets the TLS port.
+   *
+   * @param tlsPort the TLS port.
+   */
   public void setTlsPort(int tlsPort) {
     this.tlsPort = tlsPort;
   }
 
+  /**
+   * Returns the account username.
+   *
+   * @return the account username.
+   */
   public String getAccountUsername() {
     return accountUsername;
   }
 
+  /**
+   * Sets the account username.
+   *
+   * @param accountUsername the account username.
+   */
   public void setAccountUsername(String accountUsername) {
     this.accountUsername = accountUsername;
   }
 
+  /**
+   * Returns the account password.
+   *
+   * @return the account password.
+   */
   public String getAccountPassword() {
     return accountPassword;
   }
 
+  /**
+   * Sets the account password.
+   *
+   * @param accountPassword the account password.
+   */
   public void setAccountPassword(String accountPassword) {
     this.accountPassword = accountPassword;
   }
 
+  /**
+   * Returns the from address.
+   *
+   * @return the from address.
+   */
   public String getFromAddress() {
     return fromAddress;
   }
 
+  /**
+   * Sets the from address.
+   *
+   * @param fromAddress the from address.
+   */
   public void setFromAddress(String fromAddress) {
     this.fromAddress = fromAddress;
   }
 
+  /**
+   * Returns the to address.
+   *
+   * @return the to address.
+   */
   public String getToAddress() {
     return toAddress;
   }
 
+  /**
+   * Sets the to address.
+   *
+   * @param toAddress the to address.
+   */
   public void setToAddress(String toAddress) {
     this.toAddress = toAddress;
   }

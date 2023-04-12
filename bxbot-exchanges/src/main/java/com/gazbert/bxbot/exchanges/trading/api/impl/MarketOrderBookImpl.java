@@ -53,26 +53,44 @@ public final class MarketOrderBookImpl implements MarketOrderBook {
     this.buyOrders = buyOrders;
   }
 
+  @Override
   public String getMarketId() {
     return marketId;
   }
 
+  /**
+   * Sets the market id.
+   *
+   * @param marketId the market id.
+   */
   public void setMarketId(String marketId) {
     this.marketId = marketId;
   }
 
+  @Override
   public List<MarketOrder> getSellOrders() {
     return sellOrders;
   }
 
+  /**
+   * Sets the sell orders.
+   *
+   * @param sellOrders the sell orders.
+   */
   public void setSellOrders(List<MarketOrder> sellOrders) {
     this.sellOrders = sellOrders;
   }
 
+  @Override
   public List<MarketOrder> getBuyOrders() {
     return buyOrders;
   }
 
+  /**
+   * Sets the buy orders.
+   *
+   * @param buyOrders the buy orders.
+   */
   public void setBuyOrders(List<MarketOrder> buyOrders) {
     this.buyOrders = buyOrders;
   }

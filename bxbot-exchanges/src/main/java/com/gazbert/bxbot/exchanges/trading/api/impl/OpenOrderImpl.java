@@ -80,15 +80,21 @@ public final class OpenOrderImpl implements OpenOrder {
     this.total = total;
   }
 
+  @Override
   public String getId() {
     return id;
   }
 
+  /**
+   * Sets the id.
+   *
+   * @param id the id.
+   */
   public void setId(String id) {
     this.id = id;
   }
 
-  /** Returns the Order creation date. */
+  @Override
   public Date getCreationDate() {
     if (creationDate != null) {
       return new Date(creationDate.getTime());
@@ -96,56 +102,97 @@ public final class OpenOrderImpl implements OpenOrder {
     return null;
   }
 
+  /**
+   * Sets the order creation date.
+   *
+   * @param creationDate the order creation date.
+   */
   void setCreationDate(Date creationDate) {
     if (creationDate != null) {
       this.creationDate = new Date(creationDate.getTime());
     }
   }
 
+  @Override
   public String getMarketId() {
     return marketId;
   }
 
+  /**
+   * Sets the market id.
+   *
+   * @param marketId the market id.
+   */
   public void setMarketId(String marketId) {
     this.marketId = marketId;
   }
 
+  @Override
   public OrderType getType() {
     return type;
   }
 
+  /**
+   * Sets the type.
+   *
+   * @param type the type.
+   */
   public void setType(OrderType type) {
     this.type = type;
   }
 
+  @Override
   public BigDecimal getPrice() {
     return price;
   }
 
+  /**
+   * Sets the price.
+   *
+   * @param price the price.
+   */
   public void setPrice(BigDecimal price) {
     this.price = price;
   }
 
+  @Override
   public BigDecimal getQuantity() {
     return quantity;
   }
 
+  /**
+   * Sets the quantity.
+   *
+   * @param quantity the quantity.
+   */
   public void setQuantity(BigDecimal quantity) {
     this.quantity = quantity;
   }
 
+  @Override
   public BigDecimal getOriginalQuantity() {
     return originalQuantity;
   }
 
+  /**
+   * Sets the original quantity.
+   *
+   * @param originalQuantity the original quantity.
+   */
   void setOriginalQuantity(BigDecimal originalQuantity) {
     this.originalQuantity = originalQuantity;
   }
 
+  @Override
   public BigDecimal getTotal() {
     return total;
   }
 
+  /**
+   * Sets the total.
+   *
+   * @param total the total.
+   */
   public void setTotal(BigDecimal total) {
     this.total = total;
   }
