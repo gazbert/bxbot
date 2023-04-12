@@ -45,5 +45,6 @@ public final class FileLocations {
   /** Location of strategies YML file. */
   public static final String STRATEGIES_CONFIG_YAML_FILENAME = "config/strategies.yaml";
 
-  private FileLocations() {}
+  private FileLocations() {
+  }
 }
