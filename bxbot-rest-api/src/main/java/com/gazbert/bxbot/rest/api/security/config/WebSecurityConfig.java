@@ -159,12 +159,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
    * https://docs.spring.io/spring-security/site/docs/5.0.5.RELEASE/reference/htmlsingle/#pe-bcpe
    */
   @Bean
-  public BCryptPasswordEncoder bcryptPasswordEncoder() {
+  BCryptPasswordEncoder bcryptPasswordEncoder() {
     return new BCryptPasswordEncoder(12); // tuned to 1 sec; default is 10 rounds.
   }
 
   @Bean
-  public JwtAuthenticationFilter authenticationTokenFilterBean() {
+  JwtAuthenticationFilter authenticationTokenFilterBean() {
     return new JwtAuthenticationFilter();
   }
 }

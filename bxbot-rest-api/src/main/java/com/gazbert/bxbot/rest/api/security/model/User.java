@@ -256,6 +256,11 @@ public class User {
     }
   }
 
+  /**
+   * Sets last password reset date.
+   *
+   * @param lastPasswordResetDate last password reset date.
+   */
   public void setLastPasswordResetDate(Date lastPasswordResetDate) {
     Assert.notNull(lastPasswordResetDate, "lastPasswordResetDate cannot be null!");
     this.lastPasswordResetDate = new Date(lastPasswordResetDate.getTime());

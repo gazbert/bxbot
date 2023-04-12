@@ -35,6 +35,10 @@ package com.gazbert.bxbot.rest.api.security.model;
  * @author gazbert
  */
 public enum RoleName {
+
+  /** User role. */
   ROLE_USER,
+
+  /** Admin role. */
   ROLE_ADMIN
 }
