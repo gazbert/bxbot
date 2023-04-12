@@ -289,7 +289,7 @@
       <dependency>
         <groupId>org.easymock</groupId>
         <artifactId>easymock</artifactId>
-        <version>4.3</version>
+        <version>5.1.0</version>
         <scope>test</scope>
       </dependency>
       <dependency>
@@ -306,7 +306,7 @@
       <dependency>
         <groupId>org.junit.vintage</groupId>
         <artifactId>junit-vintage-engine</artifactId>
-        <version>5.9.0</version>
+        <version>5.9.2</version>
       </dependency>
 
       <dependency>
