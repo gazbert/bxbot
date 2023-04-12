@@ -48,9 +48,14 @@ public class MarketConfigServiceImpl implements MarketConfigService {
   private static final Logger LOG = LogManager.getLogger();
   private final MarketConfigRepository marketConfigRepository;
 
+  /**
+   * Creates the MarketConfigService.
+   *
+   * @param marketConfigRepository the market config repo.
+   */
   @Autowired
-  public MarketConfigServiceImpl(@Qualifier("marketConfigYamlRepository")
-      MarketConfigRepository marketConfigRepository) {
+  public MarketConfigServiceImpl(
+      @Qualifier("marketConfigYamlRepository") MarketConfigRepository marketConfigRepository) {
     this.marketConfigRepository = marketConfigRepository;
   }
 

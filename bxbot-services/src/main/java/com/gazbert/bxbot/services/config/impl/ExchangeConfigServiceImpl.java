@@ -47,9 +47,15 @@ public class ExchangeConfigServiceImpl implements ExchangeConfigService {
   private static final Logger LOG = LogManager.getLogger();
   private final ExchangeConfigRepository exchangeConfigRepository;
 
+  /**
+   * Creates the ExchangeConfigService.
+   *
+   * @param exchangeConfigRepository the exchange config repo.
+   */
   @Autowired
-  public ExchangeConfigServiceImpl(@Qualifier("exchangeConfigYamlRepository")
-      ExchangeConfigRepository exchangeConfigRepository) {
+  public ExchangeConfigServiceImpl(
+      @Qualifier("exchangeConfigYamlRepository")
+          ExchangeConfigRepository exchangeConfigRepository) {
     this.exchangeConfigRepository = exchangeConfigRepository;
   }
 

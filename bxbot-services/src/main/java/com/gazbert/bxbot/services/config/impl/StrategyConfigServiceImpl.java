@@ -48,9 +48,15 @@ public class StrategyConfigServiceImpl implements StrategyConfigService {
   private static final Logger LOG = LogManager.getLogger();
   private final StrategyConfigRepository strategyConfigRepository;
 
+  /**
+   * Creates the StrategyConfigService.
+   *
+   * @param strategyConfigRepository the strategy config repo.
+   */
   @Autowired
-  public StrategyConfigServiceImpl(@Qualifier("strategyConfigYamlRepository")
-                                         StrategyConfigRepository strategyConfigRepository) {
+  public StrategyConfigServiceImpl(
+      @Qualifier("strategyConfigYamlRepository")
+          StrategyConfigRepository strategyConfigRepository) {
     this.strategyConfigRepository = strategyConfigRepository;
   }
 

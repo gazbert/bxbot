@@ -47,9 +47,14 @@ public class EngineConfigServiceImpl implements EngineConfigService {
   private static final Logger LOG = LogManager.getLogger();
   private final EngineConfigRepository engineConfigRepository;
 
+  /**
+   * Creates the EngineConfigService.
+   *
+   * @param engineConfigRepository the engine config repo.
+   */
   @Autowired
-  public EngineConfigServiceImpl(@Qualifier("engineConfigYamlRepository")
-                                       EngineConfigRepository engineConfigRepository) {
+  public EngineConfigServiceImpl(
+      @Qualifier("engineConfigYamlRepository") EngineConfigRepository engineConfigRepository) {
     this.engineConfigRepository = engineConfigRepository;
   }
 
