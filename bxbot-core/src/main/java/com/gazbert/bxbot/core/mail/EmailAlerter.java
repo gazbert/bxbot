@@ -58,6 +58,11 @@ public class EmailAlerter {
 
   private final EmailAlertsConfigService emailAlertsConfigService;
 
+  /**
+   * Creates the Email Alerter.
+   *
+   * @param emailAlertsConfigService the email alerts config service.
+   */
   @Autowired
   public EmailAlerter(EmailAlertsConfigService emailAlertsConfigService) {
     this.emailAlertsConfigService = emailAlertsConfigService;

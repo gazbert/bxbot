@@ -43,15 +43,25 @@ public class TradingStrategyFactory {
   private static final Logger LOG = LogManager.getLogger();
   private ApplicationContext springContext;
 
+  /**
+   * Sets the Application Context.
+   *
+   * @param springContext the Application Context.
+   */
   @Autowired
   public void setSpringContext(ApplicationContext springContext) {
     this.springContext = springContext;
   }
 
-  /** Creates the Trading Strategy instance. */
-  TradingStrategy createTradingStrategy(StrategyConfig tradingStrategy) {
-    final String tradingStrategyClassname = tradingStrategy.getClassName();
-    final String tradingStrategyBeanName = tradingStrategy.getBeanName();
+  /**
+   * Creates the Trading Strategy instance.
+   *
+   * @param strategyConfig the strategy config.
+   * @return the trading strategy.
+   */
+  TradingStrategy createTradingStrategy(StrategyConfig strategyConfig) {
+    final String tradingStrategyClassname = strategyConfig.getClassName();
+    final String tradingStrategyBeanName = strategyConfig.getBeanName();
 
     TradingStrategy strategyImpl = null;
     if (tradingStrategyBeanName != null) {

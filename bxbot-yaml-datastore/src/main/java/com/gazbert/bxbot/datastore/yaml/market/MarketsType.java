@@ -37,9 +37,9 @@ public class MarketsType {
   private List<MarketConfig> markets;
 
   /**
-   * Returns the Market configs.
+   * Returns the market configs.
    *
-   * @return a list of Market configs.
+   * @return a list of market configs.
    */
   public List<MarketConfig> getMarkets() {
     if (markets == null) {
@@ -48,6 +48,11 @@ public class MarketsType {
     return markets;
   }
 
+  /**
+   * Sets the markets config.
+   *
+   * @param markets the markets config.
+   */
   public void setMarkets(List<MarketConfig> markets) {
     this.markets = markets;
   }

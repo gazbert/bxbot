@@ -25,7 +25,6 @@ package com.gazbert.bxbot.core.config.exchange;
 
 import com.gazbert.bxbot.exchange.api.OtherConfig;
 import com.google.common.base.MoreObjects;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -38,6 +37,7 @@ public class OtherConfigImpl implements OtherConfig {
 
   private Map<String, String> items;
 
+  /** Creates the other config. */
   public OtherConfigImpl() {
     items = new HashMap<>();
   }
@@ -47,18 +47,26 @@ public class OtherConfigImpl implements OtherConfig {
     return items.get(name);
   }
 
+  /**
+   * Returns the config items.
+   *
+   * @return the config items.
+   */
   Map<String, String> getItems() {
     return items;
   }
 
+  /**
+   * Sets the config items.
+   *
+   * @param items the config items.
+   */
   public void setItems(Map<String, String> items) {
     this.items = items;
   }
 
   @Override
   public String toString() {
-    return MoreObjects.toStringHelper(this)
-               .add("items", items)
-               .toString();
+    return MoreObjects.toStringHelper(this).add("items", items).toString();
   }
 }

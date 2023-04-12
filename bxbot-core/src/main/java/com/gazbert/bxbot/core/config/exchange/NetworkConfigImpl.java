@@ -25,7 +25,6 @@ package com.gazbert.bxbot.core.config.exchange;
 
 import com.gazbert.bxbot.exchange.api.NetworkConfig;
 import com.google.common.base.MoreObjects;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,6 +39,7 @@ public class NetworkConfigImpl implements NetworkConfig {
   private List<Integer> nonFatalErrorCodes;
   private List<String> nonFatalErrorMessages;
 
+  /** Creates the Network config. */
   public NetworkConfigImpl() {
     nonFatalErrorCodes = new ArrayList<>();
     nonFatalErrorMessages = new ArrayList<>();
@@ -50,6 +50,11 @@ public class NetworkConfigImpl implements NetworkConfig {
     return connectionTimeout;
   }
 
+  /**
+   * Sets the connection timeout.
+   *
+   * @param connectionTimeout the connection timeout.
+   */
   public void setConnectionTimeout(Integer connectionTimeout) {
     this.connectionTimeout = connectionTimeout;
   }
@@ -59,6 +64,11 @@ public class NetworkConfigImpl implements NetworkConfig {
     return nonFatalErrorCodes;
   }
 
+  /**
+   * Sets the non fatal error codes.
+   *
+   * @param nonFatalErrorCodes the non fatal error codes.
+   */
   public void setNonFatalErrorCodes(List<Integer> nonFatalErrorCodes) {
     this.nonFatalErrorCodes = nonFatalErrorCodes;
   }
@@ -68,6 +78,11 @@ public class NetworkConfigImpl implements NetworkConfig {
     return nonFatalErrorMessages;
   }
 
+  /**
+   * Sets the non fatal error messages.
+   *
+   * @param nonFatalErrorMessages the non fatal error messages.
+   */
   public void setNonFatalErrorMessages(List<String> nonFatalErrorMessages) {
     this.nonFatalErrorMessages = nonFatalErrorMessages;
   }
@@ -75,9 +90,9 @@ public class NetworkConfigImpl implements NetworkConfig {
   @Override
   public String toString() {
     return MoreObjects.toStringHelper(this)
-               .add("connectionTimeout", connectionTimeout)
-               .add("nonFatalErrorCodes", nonFatalErrorCodes)
-               .add("nonFatalErrorMessages", nonFatalErrorMessages)
-               .toString();
+        .add("connectionTimeout", connectionTimeout)
+        .add("nonFatalErrorCodes", nonFatalErrorCodes)
+        .add("nonFatalErrorMessages", nonFatalErrorMessages)
+        .toString();
   }
 }

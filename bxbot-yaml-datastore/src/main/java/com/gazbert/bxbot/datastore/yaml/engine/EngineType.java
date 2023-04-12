@@ -34,10 +34,20 @@ public class EngineType {
 
   private EngineConfig engine;
 
+  /**
+   * Returns the engine config.
+   *
+   * @return the engine config.
+   */
   public EngineConfig getEngine() {
     return engine;
   }
 
+  /**
+   * Sets the engine config.
+   *
+   * @param engine the engine config.
+   */
   public void setEngine(EngineConfig engine) {
     this.engine = engine;
   }

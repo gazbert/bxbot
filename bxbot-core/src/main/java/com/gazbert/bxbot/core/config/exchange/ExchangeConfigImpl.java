@@ -47,6 +47,11 @@ public class ExchangeConfigImpl implements ExchangeConfig {
     return exchangeName;
   }
 
+  /**
+   * Sets the exchange name.
+   *
+   * @param exchangeName the exchange name.
+   */
   void setExchangeName(String exchangeName) {
     this.exchangeName = exchangeName;
   }
@@ -56,6 +61,11 @@ public class ExchangeConfigImpl implements ExchangeConfig {
     return exchangeAdapter;
   }
 
+  /**
+   * Sets the exchange adapter.
+   *
+   * @param exchangeAdapter the exchange adapter.
+   */
   void setExchangeAdapter(String exchangeAdapter) {
     this.exchangeAdapter = exchangeAdapter;
   }
@@ -65,10 +75,20 @@ public class ExchangeConfigImpl implements ExchangeConfig {
     return authenticationConfig;
   }
 
+  /**
+   * Sets the authentication config.
+   *
+   * @param authenticationConfig authentication config.
+   */
   public void setAuthenticationConfig(AuthenticationConfig authenticationConfig) {
     this.authenticationConfig = authenticationConfig;
   }
 
+  /**
+   * Sets the network config.
+   *
+   * @param networkConfig the network config.
+   */
   public void setNetworkConfig(NetworkConfig networkConfig) {
     this.networkConfig = networkConfig;
   }
@@ -78,10 +98,16 @@ public class ExchangeConfigImpl implements ExchangeConfig {
     return networkConfig;
   }
 
+  @Override
   public OtherConfig getOtherConfig() {
     return otherConfig;
   }
 
+  /**
+   * Sets the other config.
+   *
+   * @param otherConfig the other config.
+   */
   public void setOtherConfig(OtherConfig otherConfig) {
     this.otherConfig = otherConfig;
   }
@@ -89,11 +115,11 @@ public class ExchangeConfigImpl implements ExchangeConfig {
   @Override
   public String toString() {
     return MoreObjects.toStringHelper(this)
-               .add("exchangeName", exchangeName)
-               .add("exchangeAdapter", exchangeAdapter)
-               .add("authenticationConfig", "NOT SHOWN BY DESIGN")
-               .add("networkConfig", networkConfig)
-               .add("otherConfig", otherConfig)
-               .toString();
+        .add("exchangeName", exchangeName)
+        .add("exchangeAdapter", exchangeAdapter)
+        .add("authenticationConfig", "NOT SHOWN BY DESIGN")
+        .add("networkConfig", networkConfig)
+        .add("otherConfig", otherConfig)
+        .toString();
   }
 }

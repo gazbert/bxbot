@@ -36,6 +36,7 @@ public class AuthenticationConfigImpl implements AuthenticationConfig {
 
   private Map<String, String> items;
 
+  /** Creates the authentication config. */
   public AuthenticationConfigImpl() {
     items = new HashMap<>();
   }
@@ -45,10 +46,20 @@ public class AuthenticationConfigImpl implements AuthenticationConfig {
     return items.get(name);
   }
 
+  /**
+   * Returns the config items.
+   *
+   * @return the config items.
+   */
   Map<String, String> getItems() {
     return items;
   }
 
+  /**
+   * Sets the config items.
+   *
+   * @param items the config items.
+   */
   public void setItems(Map<String, String> items) {
     this.items = items;
   }

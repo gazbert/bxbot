@@ -30,12 +30,20 @@ package com.gazbert.bxbot.datastore.yaml;
  */
 public final class FileLocations {
 
+  /** Location of email alerts YML file. */
   public static final String EMAIL_ALERTS_CONFIG_YAML_FILENAME = "config/email-alerts.yaml";
+
+  /** Location of engine YML file. */
   public static final String ENGINE_CONFIG_YAML_FILENAME = "config/engine.yaml";
+
+  /** Location of exchange YML file. */
   public static final String EXCHANGE_CONFIG_YAML_FILENAME = "config/exchange.yaml";
+
+  /** Location of markets YML file. */
   public static final String MARKETS_CONFIG_YAML_FILENAME = "config/markets.yaml";
+
+  /** Location of strategies YML file. */
   public static final String STRATEGIES_CONFIG_YAML_FILENAME = "config/strategies.yaml";
 
-  private FileLocations() {
-  }
+  private FileLocations() {}
 }

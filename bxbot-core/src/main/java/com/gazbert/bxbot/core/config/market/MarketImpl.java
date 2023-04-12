@@ -54,34 +54,54 @@ public final class MarketImpl implements Market {
     this.counterCurrency = counterCurrency;
   }
 
+  /**
+   * Sets the name.
+   *
+   * @param name the name.
+   */
   public void setName(String name) {
     this.name = name;
   }
 
+  @Override
   public String getName() {
     return name;
   }
 
+  @Override
   public void setId(String id) {
     this.id = id;
   }
 
+  @Override
   public String getId() {
     return id;
   }
 
+  /**
+   * Sets the base currency.
+   *
+   * @param baseCurrency the base currency.
+   */
   void setBaseCurrency(String baseCurrency) {
     this.baseCurrency = baseCurrency;
   }
 
+  @Override
   public String getBaseCurrency() {
     return baseCurrency;
   }
 
+  /**
+   * Sets the counter currency.
+   *
+   * @param counterCurrency the counter currency.
+   */
   void setCounterCurrency(String counterCurrency) {
     this.counterCurrency = counterCurrency;
   }
 
+  @Override
   public String getCounterCurrency() {
     return counterCurrency;
   }

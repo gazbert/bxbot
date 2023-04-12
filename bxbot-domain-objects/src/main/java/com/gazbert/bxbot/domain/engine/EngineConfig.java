@@ -78,7 +78,8 @@ public class EngineConfig {
   private int tradeCycleInterval;
 
   /** Creates an EngineConfig. Required by ConfigurableComponentFactory */
-  public EngineConfig() {}
+  public EngineConfig() {
+  }
 
   /**
    * Creates an EngineConfig.

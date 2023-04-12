@@ -58,7 +58,8 @@ public class SmtpConfig {
   private String toAddress;
 
   /** Creates a new SmtpConfig. Required for jackson. */
-  public SmtpConfig() {}
+  public SmtpConfig() {
+  }
 
   /**
    * Creates a new SmtpConfig.

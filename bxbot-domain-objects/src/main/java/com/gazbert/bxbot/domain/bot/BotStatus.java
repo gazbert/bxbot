@@ -48,7 +48,8 @@ public class BotStatus {
   private Date datetime;
 
   /** Creates a new BotStatus. Required by ConfigurableComponentFactory. */
-  public BotStatus() {}
+  public BotStatus() {
+  }
 
   /**
    * Creates a new BotStatus.

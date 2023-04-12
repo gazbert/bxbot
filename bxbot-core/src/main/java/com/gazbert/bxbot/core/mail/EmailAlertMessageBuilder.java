@@ -48,7 +48,7 @@ public final class EmailAlertMessageBuilder {
    * @param exception the Exception.
    * @param botId the bot ID.
    * @param botName the bot name.
-   * @param adapterName the Exhange Adapter name.
+   * @param adapterName the Exchange Adapter name.
    * @return the error message.
    */
   public static String buildCriticalMsgContent(
