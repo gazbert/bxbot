@@ -66,7 +66,7 @@ public class AuthenticationController extends RestController {
   private final JwtUtils jwtUtils;
 
   /**
-   * Constructor for the controller.
+   * Creates the AuthenticationController.
    *
    * @param authenticationManager the Spring Authentication Manager.
    * @param userDetailsService the user details service for looking up users.

@@ -58,6 +58,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
   private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
   private final UserDetailsService userDetailsService;
 
+  /**
+   * Creates the WebSecurityConfig.
+   *
+   * @param corsFilter the CORS filter.
+   * @param jwtAuthenticationEntryPoint the JWT authentication entry point.
+   * @param userDetailsService the user details service.
+   */
   @Autowired
   public WebSecurityConfig(
       CorsFilter corsFilter,
@@ -102,8 +109,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         // We need to override this behaviour for our stateless (no cookies used!) REST endpoints.
         // https://security.stackexchange.com/questions/166724/should-i-use-csrf-protection-on-rest-api-endpoints
         // https://stackoverflow.com/questions/27390407/post-request-to-spring-server-returns-403-forbidden
-        .csrf().disable()
-
+        .csrf()
+        .disable()
         .exceptionHandling()
         .authenticationEntryPoint(jwtAuthenticationEntryPoint)
 

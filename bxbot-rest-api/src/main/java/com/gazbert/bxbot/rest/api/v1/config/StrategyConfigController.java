@@ -66,6 +66,11 @@ public class StrategyConfigController extends RestController {
   private static final String STRATEGIES_RESOURCE_PATH = "/strategies";
   private final StrategyConfigService strategyConfigService;
 
+  /**
+   * Creates the StrategyConfigController.
+   *
+   * @param strategyConfigService the strategy config service.
+   */
   @Autowired
   public StrategyConfigController(StrategyConfigService strategyConfigService) {
     this.strategyConfigService = strategyConfigService;

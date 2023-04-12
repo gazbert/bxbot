@@ -65,6 +65,11 @@ public class ExchangeConfigController extends RestController {
   private static final String EXCHANGE_RESOURCE_PATH = "/exchange";
   private final ExchangeConfigService exchangeConfigService;
 
+  /**
+   * Creates the ExchangeConfigController.
+   *
+   * @param exchangeConfigService the exchange config service.
+   */
   public ExchangeConfigController(ExchangeConfigService exchangeConfigService) {
     this.exchangeConfigService = exchangeConfigService;
   }

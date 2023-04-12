@@ -121,14 +121,29 @@ public class JwtUser implements UserDetails {
     return true;
   }
 
+  /**
+   * Returns the firstname.
+   *
+   * @return the firstname.
+   */
   public String getFirstname() {
     return firstname;
   }
 
+  /**
+   * Returns the lastname.
+   *
+   * @return the lastname.
+   */
   public String getLastname() {
     return lastname;
   }
 
+  /**
+   * Returns the email.
+   *
+   * @return the email.
+   */
   public String getEmail() {
     return email;
   }
@@ -149,10 +164,20 @@ public class JwtUser implements UserDetails {
     return enabled;
   }
 
+  /**
+   * Returns the last password reset date.
+   *
+   * @return the last password reset date.
+   */
   public long getLastPasswordResetDate() {
     return lastPasswordResetDate;
   }
 
+  /**
+   * Returns the roles.
+   *
+   * @return the roles.
+   */
   public List<String> getRoles() {
     return roles;
   }

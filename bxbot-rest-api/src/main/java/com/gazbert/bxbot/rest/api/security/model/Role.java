@@ -61,26 +61,56 @@ public class Role {
   @ManyToMany(mappedBy = "roles", fetch = FetchType.LAZY)
   private List<User> users;
 
+  /**
+   * Returns the id.
+   *
+   * @return the id.
+   */
   public Long getId() {
     return id;
   }
 
+  /**
+   * Sets the id.
+   *
+   * @param id the id.
+   */
   public void setId(Long id) {
     this.id = id;
   }
 
+  /**
+   * Returns the name.
+   *
+   * @return the name.
+   */
   public RoleName getName() {
     return name;
   }
 
+  /**
+   * Sets the name.
+   *
+   * @param name the name.
+   */
   public void setName(RoleName name) {
     this.name = name;
   }
 
+  /**
+   * Returns the users.
+   *
+   * @return the users.
+   */
   public List<User> getUsers() {
     return users;
   }
 
+  /**
+   * Sets the users.
+   *
+   * @param users the users.
+   */
   public void setUsers(List<User> users) {
     this.users = users;
   }

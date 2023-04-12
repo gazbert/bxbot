@@ -59,6 +59,11 @@ public class BotRestartController extends RestController {
   private static final String RESTART_RESOURCE_PATH = "/restart";
   private final BotRestartService botRestartService;
 
+  /**
+   * Creates the BotRestartController.
+   *
+   * @param botRestartService the restart service.
+   */
   @Autowired
   public BotRestartController(BotRestartService botRestartService) {
     this.botRestartService = botRestartService;

@@ -69,6 +69,12 @@ public class BotLogfileController extends RestController {
   private final RestApiConfig restApiConfig;
   private final BotLogfileService botLogfileService;
 
+  /**
+   * Creates the BotLogfileController.
+   *
+   * @param restApiConfig the REST API config.
+   * @param botLogfileService the log file service.
+   */
   @Autowired
   public BotLogfileController(RestApiConfig restApiConfig, BotLogfileService botLogfileService) {
     this.restApiConfig = restApiConfig;

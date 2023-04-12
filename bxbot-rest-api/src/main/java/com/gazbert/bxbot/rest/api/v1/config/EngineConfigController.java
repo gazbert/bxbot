@@ -67,6 +67,11 @@ public class EngineConfigController extends RestController {
   private static final String ENGINE_RESOURCE_PATH = "/engine";
   private final EngineConfigService engineConfigService;
 
+  /**
+   * Creates the EngineConfigController.
+   *
+   * @param engineConfigService the engine config service.
+   */
   @Autowired
   public EngineConfigController(EngineConfigService engineConfigService) {
     this.engineConfigService = engineConfigService;

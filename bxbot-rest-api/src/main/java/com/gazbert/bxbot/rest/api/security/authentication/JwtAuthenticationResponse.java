@@ -38,19 +38,34 @@ public class JwtAuthenticationResponse {
   @NotNull(message = "Token cannot be null")
   private String token;
 
-  // For Jackson
+  /** Creates the JwtAuthenticationResponse. Required for Jackson. */
   public JwtAuthenticationResponse() {
     token = "";
   }
 
+  /**
+   * Creates the JwtAuthenticationResponse.
+   *
+   * @param token the JWT.
+   */
   public JwtAuthenticationResponse(String token) {
     this.token = token;
   }
 
+  /**
+   * Returns the JWT.
+   *
+   * @return the JWT.
+   */
   public String getToken() {
     return this.token;
   }
 
+  /**
+   * Sets the JWT.
+   *
+   * @param token the JWT.
+   */
   public void setToken(String token) {
     this.token = token;
   }

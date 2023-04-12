@@ -45,29 +45,55 @@ public class JwtAuthenticationRequest {
   @NotNull(message = "Password cannot be null")
   private String password;
 
-  // For Jackson
+  /** Creates the JwtAuthenticationRequest. Required for Jackson. */
   public JwtAuthenticationRequest() {
     username = "";
     password = "";
   }
 
+  /**
+   * Creates the JwtAuthenticationRequest.
+   *
+   * @param username the username.
+   * @param password the password.
+   */
   public JwtAuthenticationRequest(String username, String password) {
     this.username = username;
     this.password = password;
   }
 
+  /**
+   * Returns the username.
+   *
+   * @return the username.
+   */
   public String getUsername() {
     return this.username;
   }
 
+  /**
+   * Sets the username.
+   *
+   * @param username the username.
+   */
   public void setUsername(String username) {
     this.username = username;
   }
 
+  /**
+   * Returns the password.
+   *
+   * @return the password.
+   */
   public String getPassword() {
     return this.password;
   }
 
+  /**
+   * Sets the password.
+   *
+   * @param password the password.
+   */
   public void setPassword(String password) {
     this.password = password;
   }

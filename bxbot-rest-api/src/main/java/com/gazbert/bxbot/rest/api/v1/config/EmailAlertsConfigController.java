@@ -67,6 +67,11 @@ public class EmailAlertsConfigController extends RestController {
   private static final String EMAIL_ALERTS_RESOURCE_PATH = "/email-alerts";
   private final EmailAlertsConfigService emailAlertsConfigService;
 
+  /**
+   * Creates the EmailAlertsConfigController.
+   *
+   * @param emailAlertsConfigService the email alerts config service.
+   */
   @Autowired
   public EmailAlertsConfigController(EmailAlertsConfigService emailAlertsConfigService) {
     this.emailAlertsConfigService = emailAlertsConfigService;

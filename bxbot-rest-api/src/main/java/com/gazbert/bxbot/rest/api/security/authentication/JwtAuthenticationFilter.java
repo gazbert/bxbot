@@ -102,6 +102,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
   }
 
+  /**
+   * Sets the JWT utils.
+   *
+   * @param jwtUtils the JWT utils.
+   */
   @Autowired
   public void setJwtUtils(JwtUtils jwtUtils) {
     this.jwtUtils = jwtUtils;
