@@ -51,8 +51,8 @@
     <spring-boot-starter.version>2.7.2</spring-boot-starter.version>
     <springdoc-openapi.version>1.6.10</springdoc-openapi.version>
     <jaxb-api.version>2.3.1</jaxb-api.version>
-    <checkstlye.version>3.1.2</checkstlye.version>
-    <spotbugs.version>4.7.1.1</spotbugs.version>
+    <checkstlye.version>3.2.1</checkstlye.version>
+    <spotbugs.version>4.7.3.4</spotbugs.version>
     <hibernate-vaildator.version>7.0.5.Final</hibernate-vaildator.version>
     <javax-mail.version>1.6.2</javax-mail.version>
     <sonar.coverage.jacoco.xmlReportPaths>target/jacoco-report/jacoco.xml
@@ -331,7 +331,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
-          <version>2.22.2</version>
+          <version>3.0.0</version>
           <configuration>
             <skipTests>${skip.unit.tests}</skipTests>
             <excludes>
@@ -345,7 +345,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-failsafe-plugin</artifactId>
-          <version>2.22.2</version>
+          <version>3.0.0</version>
           <configuration>
             <skipTests>${skip.integration.tests}</skipTests>
           </configuration>
@@ -360,7 +360,7 @@
         </plugin>
         <plugin>
           <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.10.1</version>
+          <version>3.11.0</version>
           <configuration>
             <source>17</source>
             <target>17</target>
@@ -390,12 +390,12 @@
         </plugin>
         <plugin>
           <artifactId>maven-assembly-plugin</artifactId>
-          <version>3.4.2</version>
+          <version>3.5.0</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-javadoc-plugin</artifactId>
-          <version>3.4.1</version>
+          <version>3.5.0</version>
           <executions>
             <execution>
               <id>attach-javadocs</id>
@@ -421,7 +421,7 @@
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>flatten-maven-plugin</artifactId>
-          <version>1.2.7</version>
+          <version>1.4.1</version>
           <configuration>
             <updatePomFile>true</updatePomFile>
           </configuration>
@@ -445,7 +445,7 @@
         <plugin>
           <groupId>org.jacoco</groupId>
           <artifactId>jacoco-maven-plugin</artifactId>
-          <version>0.8.8</version>
+          <version>0.8.9</version>
           <executions>
             <execution>
               <goals>
@@ -498,13 +498,12 @@
             <dependency>
               <groupId>com.puppycrawl.tools</groupId>
               <artifactId>checkstyle</artifactId>
-              <version>10.3.2</version>
+              <version>10.9.3</version>
             </dependency>
           </dependencies>
           <configuration>
             <configLocation>google_checks.xml</configLocation>
             <includeTestSourceDirectory>true</includeTestSourceDirectory>
-            <encoding>UTF-8</encoding>
             <consoleOutput>true</consoleOutput>
             <failsOnError>true</failsOnError>
             <linkXRef>false</linkXRef>
@@ -540,7 +539,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-enforcer-plugin</artifactId>
-          <version>3.1.0</version>
+          <version>3.3.0</version>
           <executions>
             <execution>
               <id>enforce-maven</id>
