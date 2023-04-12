@@ -41,15 +41,34 @@ public class JwtUser implements UserDetails {
 
   private static final long serialVersionUID = -7857515944595149222L;
 
+  /** User id. */
   private final Long id;
+
+  /** Username. */
   private final String username;
+
+  /** Firstname. */
   private final String firstname;
+
+  /** Lastname. */
   private final String lastname;
+
+  /** Password. */
   private final String password;
+
+  /** Email. */
   private final String email;
+
+  /** Granted authorities. */
   private final Collection<? extends GrantedAuthority> authorities;
+
+  /** Is enabled. */
   private final boolean enabled;
+
+  /** Last password reset date. */
   private final long lastPasswordResetDate;
+
+  /** The user's roles. */
   private final List<String> roles;
 
   /**
