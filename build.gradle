@@ -64,8 +64,10 @@ ext.libraries = [
         google_guava                            : dependencies.create("com.google.guava:guava:31.1-jre"),
         google_gson                             : dependencies.create("com.google.code.gson:gson:2.9.1"),
         h2                                      : dependencies.create("com.h2database:h2:2.1.214"),
-        javax_mail_api                          : dependencies.create("javax.mail:javax.mail-api:" + ext.versions.javaxMailVersion),
-        javax_mail_sun                          : dependencies.create("com.sun.mail:javax.mail:" + ext.versions.javaxMailVersion),
+
+        jakarta_mail_api                          : dependencies.create("jakarta.mail:jakarta.mail-api:2.1.1"),
+        jakarta_mail_sun                          : dependencies.create("com.sun.mail:jakarta.mail:2.0.1"),
+
         javax_xml_api                           : dependencies.create("javax.xml.bind:jaxb-api:" + ext.versions.jaxbVersion),
         javax_xml_impl                          : dependencies.create("com.sun.xml.bind:jaxb-impl:" + ext.versions.jaxbVersion),
         snake_yaml                              : dependencies.create("org.yaml:snakeyaml:1.30"),
