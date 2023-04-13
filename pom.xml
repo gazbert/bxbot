@@ -49,12 +49,10 @@
 
     <powermock.version>2.0.9</powermock.version>
     <spring-boot-starter.version>2.7.2</spring-boot-starter.version>
-    <springdoc-openapi.version>1.6.10</springdoc-openapi.version>
-    <jaxb-api.version>2.3.1</jaxb-api.version>
+    <springdoc-openapi.version>1.7.0</springdoc-openapi.version>
     <checkstlye.version>3.2.1</checkstlye.version>
     <spotbugs.version>4.7.3.4</spotbugs.version>
-    <hibernate-vaildator.version>7.0.5.Final</hibernate-vaildator.version>
-    <javax-mail.version>1.6.2</javax-mail.version>
+    <hibernate-vaildator.version>8.0.0.Final</hibernate-vaildator.version>
     <sonar.coverage.jacoco.xmlReportPaths>target/jacoco-report/jacoco.xml
     </sonar.coverage.jacoco.xmlReportPaths>
     <sonar.host.url>https://sonarcloud.io</sonar.host.url>
@@ -205,8 +203,7 @@
       <dependency>
         <groupId>com.google.code.gson</groupId>
         <artifactId>gson</artifactId>
-        <version>2.9.1</version>
-        <scope>compile</scope>
+        <version>2.10.1</version>
       </dependency>
       <dependency>
         <groupId>com.google.guava</groupId>
@@ -219,31 +216,29 @@
         <version>2.1.214</version>
       </dependency>
       <dependency>
-        <groupId>javax.mail</groupId>
-        <artifactId>javax.mail-api</artifactId>
-        <version>${javax-mail.version}</version>
-        <scope>compile</scope>
+        <groupId>jakarta.mail</groupId>
+        <artifactId>jakarta.mail-api</artifactId>
+        <version>2.1.1</version>
       </dependency>
       <dependency>
         <groupId>com.sun.mail</groupId>
-        <artifactId>javax.mail</artifactId>
-        <version>${javax-mail.version}</version>
-        <scope>compile</scope>
+        <artifactId>jakarta.mail</artifactId>
+        <version>2.0.1</version>
       </dependency>
       <dependency>
         <groupId>javax.xml.bind</groupId>
         <artifactId>jaxb-api</artifactId>
-        <version>${jaxb-api.version}</version>
+        <version>2.4.0-b180830.0359</version>
       </dependency>
       <dependency>
         <groupId>com.sun.xml.bind</groupId>
         <artifactId>jaxb-impl</artifactId>
-        <version>${jaxb-api.version}</version>
+        <version>4.0.2</version>
       </dependency>
       <dependency>
         <groupId>org.yaml</groupId>
         <artifactId>snakeyaml</artifactId>
-        <version>1.30</version>
+        <version>1.33</version>
       </dependency>
       <dependency>
         <groupId>org.springdoc</groupId>
@@ -256,9 +251,9 @@
         <version>${springdoc-openapi.version}</version>
       </dependency>
       <dependency>
-        <groupId>javax.validation</groupId>
-        <artifactId>validation-api</artifactId>
-        <version>2.0.1.Final</version>
+        <groupId>jakarta.validation</groupId>
+        <artifactId>jakarta.validation-api</artifactId>
+        <version>3.0.2</version>
       </dependency>
       <dependency>
         <groupId>org.hibernate.validator</groupId>
