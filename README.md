@@ -572,7 +572,7 @@ public network - see the _[TLS](#tls)_ section below.
 
 You _must_ also change the `bxbot.restapi.jwt.secret` value in the 
 [./config/application.properties](./config/application.properties) before using the REST API over a public network.
-This is the key that is used to sign your web tokens - the JWTs are signed using the HS512 algorithm.
+This value should be a long random alphanumeric string (100+ chars). It is used to sign your web tokens using the HS512 algorithm.
   
 Other interesting configuration in the [./config/application.properties](./config/application.properties) includes:
 

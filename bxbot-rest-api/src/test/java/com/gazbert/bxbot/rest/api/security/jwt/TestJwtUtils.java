@@ -66,11 +66,15 @@ class TestJwtUtils {
 
   private static final long GRADLE_FRIENDLY_TIME_TOLERANCE_IN_MILLIS = 10000L;
 
-  private static final String SECRET_KEY = "mkultra";
+  private static final String SECRET_KEY =
+      "ChangeMeUMExOBvrw40wQFPiEYs87V7MCZuseaxYFpXZHRIdWCWwyPLvM2lT9GtJD2geMwxQ"
+          + "9Naff8oquvg2VC5F3uqlE98UGLLQFcO6fwra7";
   private static final long EXPIRATION_PERIOD = 3600L;
   private static final long ALLOWED_CLOCK_SKEW_IN_SECS = 5 * 60 + 1000; // 5 mins
   private static final String ISSUER = "Rey";
   private static final String AUDIENCE = "R2-D2";
+
+
   private static final Date ISSUED_AT_DATE = new Date();
   private static final Date EXPIRATION_DATE =
       new Date(ISSUED_AT_DATE.getTime() + (EXPIRATION_PERIOD * 1000));

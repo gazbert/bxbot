@@ -131,7 +131,7 @@ public class JwtUtils {
   public String createToken(JwtUser userDetails) {
     final Map<String, Object> claims = new HashMap<>();
     claims.put(CLAIM_KEY_ISSUER, issuer);
-    claims.put(CLAIM_KEY_ISSUED_AT, new Date());
+    claims.put(CLAIM_KEY_ISSUED_AT, new Date().getTime());
     claims.put(CLAIM_KEY_AUDIENCE, audience);
     claims.put(CLAIM_KEY_USERNAME, userDetails.getUsername());
     claims.put(CLAIM_KEY_ROLES, mapRolesFromGrantedAuthorities(userDetails.getAuthorities()));
@@ -171,7 +171,7 @@ public class JwtUtils {
   public String refreshToken(String token) {
     try {
       final Claims claims = getClaimsFromToken(token);
-      claims.put(CLAIM_KEY_ISSUED_AT, new Date());
+      claims.put(CLAIM_KEY_ISSUED_AT, new Date().getTime());
       return buildToken(claims);
     } catch (Exception e) {
       final String errorMsg = "Failed to refresh token!";
@@ -250,7 +250,7 @@ public class JwtUtils {
   // ------------------------------------------------------------------------
 
   private String buildToken(Map<String, Object> claims) {
-    final Date issuedAtDate = (Date) claims.get(CLAIM_KEY_ISSUED_AT);
+    final Date issuedAtDate = new Date((Long) claims.get(CLAIM_KEY_ISSUED_AT));
     final Date expirationDate = new Date(issuedAtDate.getTime() + (expirationInSecs * 1000));
 
     return Jwts.builder()
