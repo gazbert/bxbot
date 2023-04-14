@@ -25,8 +25,8 @@ package com.gazbert.bxbot.domain.emailalerts;
 
 import com.google.common.base.MoreObjects;
 import io.swagger.v3.oas.annotations.media.Schema;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.Positive;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Positive;
 
 /**
  * Domain object representing the SMTP config used for Email Alerts.

@@ -73,8 +73,6 @@ class TestJwtUtils {
   private static final long ALLOWED_CLOCK_SKEW_IN_SECS = 5 * 60 + 1000; // 5 mins
   private static final String ISSUER = "Rey";
   private static final String AUDIENCE = "R2-D2";
-
-
   private static final Date ISSUED_AT_DATE = new Date();
   private static final Date EXPIRATION_DATE =
       new Date(ISSUED_AT_DATE.getTime() + (EXPIRATION_PERIOD * 1000));

@@ -25,9 +25,9 @@ package com.gazbert.bxbot.domain.exchange;
 
 import com.google.common.base.MoreObjects;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Min;
 import java.util.ArrayList;
 import java.util.List;
-import javax.validation.constraints.Min;
 
 /**
  * Domain object representing the Exchange Network config.

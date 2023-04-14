@@ -32,13 +32,14 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.filter.CorsFilter;
 
@@ -48,12 +49,14 @@ import org.springframework.web.filter.CorsFilter;
  * <p>Code originated from the excellent JWT and Spring Boot example by Stephan Zerhusen:
  * https://github.com/szerhusenBC/jwt-spring-security-demo
  *
+ * <p>It has had significant rework for Spring Security 6.
+ *
  * @author gazbert
  */
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
-public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+public class WebSecurityConfig {
 
   private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
   private final UserDetailsService userDetailsService;
@@ -75,35 +78,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
   }
 
   /**
-   * Must be done to work with Spring Boot 2.0.
-   * https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-2.0-Migration-Guide#authenticationmanager-bean
+   * Creates the security filter chain for the app.
    *
-   * @return the authentication manager bean.
+   * @param httpSecurity the HTTP security builder.
+   * @return the HTTP security chain.
    * @throws Exception if anything unexpected happens.
    */
-  @Override
   @Bean
-  public AuthenticationManager authenticationManagerBean() throws Exception {
-    return super.authenticationManagerBean();
-  }
+  public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
 
-  /**
-   * Creates an Authentication Manager implementation for authenticating users using Bcrypt
-   * passwords.
-   *
-   * @param authenticationManagerBuilder the Authentication Manager.
-   * @throws Exception if anything breaks building the Authentication Manager.
-   */
-  @Override
-  public void configure(AuthenticationManagerBuilder authenticationManagerBuilder)
-      throws Exception {
-    authenticationManagerBuilder
-        .userDetailsService(userDetailsService)
-        .passwordEncoder(bcryptPasswordEncoder());
-  }
-
-  @Override
-  protected void configure(HttpSecurity httpSecurity) throws Exception {
     httpSecurity
         // Default behaviour is to enable CSRF protection.
         // We need to override this behaviour for our stateless (no cookies used!) REST endpoints.
@@ -119,52 +102,88 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         .sessionManagement()
         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 
-        // Allow anyone to try and authenticate to get a token
+        // Allow anyone to try and authenticate to get a toke
         .and()
-        .authorizeRequests()
-        .antMatchers("/api/token")
-        .permitAll()
+        .authorizeHttpRequests(
+            auth ->
+                auth
 
-        // Allow CORS pre-flighting for everything
-        .antMatchers(HttpMethod.OPTIONS, "/**")
-        .permitAll() // allow CORS pre-flighting
+                    // Allow anyone to try and authenticate
+                    .requestMatchers("/api/token")
+                    .permitAll()
 
-        // Allow anyone access to Swagger docs
-        .antMatchers(
-            HttpMethod.GET,
-            "/api-docs",
-            "/swagger-resources/**",
-            "/swagger-ui.html**",
-            "/swagger-ui/**",
-            "/v3/api-docs/**",
-            "/api-docs/**",
-            "/webjars/**",
-            "/favicon.ico")
-        .permitAll()
+                    // Allow CORS pre-flighting
+                    .requestMatchers(HttpMethod.OPTIONS, "/**")
+                    .permitAll()
 
-        // Lock down everything else
-        .anyRequest()
-        .authenticated();
+                    // Allow anyone access to Swagger docs
+                    .requestMatchers(
+                        HttpMethod.GET,
+                        "/api-docs",
+                        "/swagger-resources/**",
+                        "/swagger-ui.html**",
+                        "/swagger-ui/**",
+                        "/v3/api-docs/**",
+                        "/api-docs/**",
+                        "/webjars/**",
+                        "/favicon.ico")
+                    .permitAll()
+
+                    // All other requests must be authenticated
+                    .anyRequest()
+                    .authenticated());
 
     // Add our custom JWT security filter before Spring Security's Username/Password filter
     httpSecurity.addFilterBefore(
-        authenticationTokenFilterBean(), UsernamePasswordAuthenticationFilter.class);
+        authenticationTokenFilter(), UsernamePasswordAuthenticationFilter.class);
 
     // Disable page caching in the browser
     httpSecurity.headers().cacheControl().disable();
+
+    return httpSecurity.build();
   }
 
-  /*
+  /**
+   * Returns the default Authentication Manager.
+   *
+   * @return the authentication manager bean.
+   * @throws Exception if anything unexpected happens.
+   */
+  @Bean
+  AuthenticationManager authenticationManager(
+      AuthenticationConfiguration authenticationConfiguration) throws Exception {
+    return authenticationConfiguration.getAuthenticationManager();
+  }
+
+  /**
+   * Creates an Authentication Manager implementation for authenticating users using Bcrypt
+   * passwords.
+   *
+   * @param authenticationManagerBuilder the Authentication Manager builder.
+   * @throws Exception if anything breaks building the Authentication Manager.
+   */
+  @Autowired
+  void configure(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
+    authenticationManagerBuilder
+        .userDetailsService(userDetailsService)
+        .passwordEncoder(new BCryptPasswordEncoder());
+  }
+
+  /**
    * Use bcrypt password encoding.
    * https://docs.spring.io/spring-security/site/docs/5.0.5.RELEASE/reference/htmlsingle/#pe-bcpe
    */
   @Bean
-  BCryptPasswordEncoder bcryptPasswordEncoder() {
+  public BCryptPasswordEncoder bcryptPasswordEncoder() {
     return new BCryptPasswordEncoder(12); // tuned to 1 sec; default is 10 rounds.
   }
 
+  /**
+   * Creates our legacy custom JWT auth filter. At some point this should be replaced with the JWT
+   * filter that now comes bundled with Spring Security.
+   */
   @Bean
-  JwtAuthenticationFilter authenticationTokenFilterBean() {
+  public JwtAuthenticationFilter authenticationTokenFilter() {
     return new JwtAuthenticationFilter();
   }
 }

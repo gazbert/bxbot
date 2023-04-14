@@ -25,7 +25,7 @@
 package com.gazbert.bxbot.rest.api.security.authentication;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 /**
  * Encapsulates a JWT Authentication response. It wraps the JWT (Base64 encoded String).
