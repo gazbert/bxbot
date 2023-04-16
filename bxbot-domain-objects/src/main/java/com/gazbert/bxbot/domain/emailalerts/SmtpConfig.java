@@ -33,27 +33,31 @@ import jakarta.validation.constraints.Positive;
  *
  * @author gazbert
  */
-@Schema(required = true)
+@Schema(requiredMode = Schema.RequiredMode.REQUIRED)
 public class SmtpConfig {
 
-  @Schema(required = true, description = "The SMTP hostname.")
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The SMTP hostname.")
   private String host;
 
-  @Schema(required = true, description = "The SMTP TLS port.")
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The SMTP TLS port.")
   @Positive(message = "Port must be positive integer")
   private int tlsPort;
 
-  @Schema(required = true, description = "The sender email account name.")
+  @Schema(
+      requiredMode = Schema.RequiredMode.REQUIRED,
+      description = "The sender email account name.")
   private String accountUsername;
 
-  @Schema(required = true, description = "The sender email account password.")
+  @Schema(
+      requiredMode = Schema.RequiredMode.REQUIRED,
+      description = "The sender email account password.")
   private String accountPassword;
 
-  @Schema(required = true, description = "The email From address.")
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The email From address.")
   @Email(message = "From Address must be a valid email address")
   private String fromAddress;
 
-  @Schema(required = true, description = "The email To address.")
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The email To address.")
   @Email(message = "To Address must be a valid email address")
   private String toAddress;
 

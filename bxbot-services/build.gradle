@@ -12,6 +12,8 @@ dependencies {
     implementation libraries.spring_cloud_starter
     implementation libraries.google_guava
 
+    implementation libraries.springdoc_openapi_ui
+
     testImplementation libraries.spring_boot_starter_test
     testImplementation libraries.junit_vintage_engine
     testImplementation libraries.easymock

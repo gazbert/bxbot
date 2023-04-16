@@ -34,7 +34,7 @@ import jakarta.validation.constraints.NotNull;
  */
 public class JwtAuthenticationResponse {
 
-  @Schema(required = true, description = "The JWT.")
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The JWT.")
   @NotNull(message = "Token cannot be null")
   private String token;
 

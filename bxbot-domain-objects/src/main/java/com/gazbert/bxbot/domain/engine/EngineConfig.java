@@ -39,7 +39,7 @@ import java.math.BigDecimal;
 public class EngineConfig {
 
   @Schema(
-      required = true,
+      requiredMode = Schema.RequiredMode.REQUIRED,
       description =
           "A unique identifier for the bot. Value must be an alphanumeric string."
               + " Underscores and dashes are also permitted.")
@@ -52,14 +52,14 @@ public class EngineConfig {
   private String botName;
 
   @Schema(
-      required = true,
+      requiredMode = Schema.RequiredMode.REQUIRED,
       description =
           "This is normally the currency you intend to hold a long position in. It should be set "
               + "to the currency short code for the wallet, e.g. BTC, LTC, USD.")
   private String emergencyStopCurrency;
 
   @Schema(
-      required = true,
+      requiredMode = Schema.RequiredMode.REQUIRED,
       description =
           "The Trading Engine checks this value at the start of every trade cycle: if "
               + "your emergencyStopCurrency wallet balance on the exchange drops below this "
@@ -70,7 +70,7 @@ public class EngineConfig {
   private BigDecimal emergencyStopBalance;
 
   @Schema(
-      required = true,
+      requiredMode = Schema.RequiredMode.REQUIRED,
       description =
           "The interval in (secs) that the Trading Engine will wait/sleep before executing"
               + " each trade cycle. The minimum value is 1 second.")

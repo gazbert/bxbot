@@ -10,6 +10,8 @@ dependencies {
     implementation libraries.spring_boot_starter_log4j2
     implementation libraries.google_guava
 
+    implementation libraries.springdoc_openapi_ui
+
     testImplementation libraries.powermock_junit
     testImplementation libraries.powermock_api_easymock
     testImplementation libraries.easymock

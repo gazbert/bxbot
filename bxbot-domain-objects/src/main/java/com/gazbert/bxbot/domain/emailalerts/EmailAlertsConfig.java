@@ -35,7 +35,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 public class EmailAlertsConfig {
 
   @Schema(
-      required = true,
+      requiredMode = Schema.RequiredMode.REQUIRED,
       description =
           "If set to true, the bot will send email alerts if it needs to shut down due to a "
               + " critical error.")

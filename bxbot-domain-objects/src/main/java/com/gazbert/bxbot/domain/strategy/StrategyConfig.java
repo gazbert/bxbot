@@ -38,7 +38,7 @@ import java.util.Map;
 public class StrategyConfig {
 
   @Schema(
-      required = true,
+      requiredMode = Schema.RequiredMode.REQUIRED,
       description =
           "A unique identifier for the Strategy. Value must be an alphanumeric string. "
               + "Underscores and dashes are also permitted.")
@@ -51,14 +51,14 @@ public class StrategyConfig {
   private String description;
 
   @Schema(
-      required = true,
+      requiredMode = Schema.RequiredMode.REQUIRED,
       description =
           "The fully qualified Strategy Class name, "
               + "e.g. com.me.mybot.SuperStrat. Must be specified if beanName not set.")
   private String className;
 
   @Schema(
-      required = true,
+      requiredMode = Schema.RequiredMode.REQUIRED,
       description = "The Strategy Spring Bean name. " + "Must be specified if className not set.")
   private String beanName;
 

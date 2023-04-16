@@ -37,11 +37,11 @@ import jakarta.validation.constraints.NotNull;
  */
 public class JwtAuthenticationRequest {
 
-  @Schema(required = true, description = "The username.")
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The username.")
   @NotNull(message = "Username cannot be null")
   private String username;
 
-  @Schema(required = true, description = "The password.")
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The password.")
   @NotNull(message = "Password cannot be null")
   private String password;
 

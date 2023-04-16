@@ -35,7 +35,7 @@ import java.util.Date;
 @Schema
 public class BotStatus {
 
-  @Schema(required = true, description = "The Bot ID.")
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The Bot ID.")
   private String botId;
 
   @Schema(description = "The friendly name for the Bot.")

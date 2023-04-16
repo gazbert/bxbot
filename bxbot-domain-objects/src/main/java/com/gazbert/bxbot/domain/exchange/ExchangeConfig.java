@@ -36,14 +36,14 @@ import java.util.Map;
 public class ExchangeConfig {
 
   @Schema(
-      required = true,
+          requiredMode = Schema.RequiredMode.REQUIRED,
       description =
           "The Exchange name. It is used in log statements to display the Exchange's name."
               + " Value must be an alphanumeric string. Spaces are allowed.")
   private String name;
 
   @Schema(
-      required = true,
+      requiredMode = Schema.RequiredMode.REQUIRED,
       description =
           "The fully qualified name of the Exchange Adapter class for the Trading"
               + " Engine to inject on startup, "

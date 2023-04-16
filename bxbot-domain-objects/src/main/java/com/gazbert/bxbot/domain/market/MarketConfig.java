@@ -36,7 +36,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 public class MarketConfig {
 
   @Schema(
-      required = true,
+      requiredMode = Schema.RequiredMode.REQUIRED,
       description =
           "A unique identifier for the Market. Value must be an alphanumeric string. "
               + "Underscores and dashes are also permitted.")
@@ -45,16 +45,20 @@ public class MarketConfig {
   @Schema(description = "An optional friendly name for the Market.")
   private String name;
 
-  @Schema(required = true, description = "The Market Base Currency.")
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The Market Base Currency.")
   private String baseCurrency;
 
-  @Schema(required = true, description = "The Market Counter Currency.")
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The Market Counter Currency.")
   private String counterCurrency;
 
-  @Schema(required = true, description = "Enable trading on this Market?")
+  @Schema(
+      requiredMode = Schema.RequiredMode.REQUIRED,
+      description = "Enable trading on this Market?")
   private boolean enabled;
 
-  @Schema(required = true, description = "The Strategy ID to use for the Market.")
+  @Schema(
+      requiredMode = Schema.RequiredMode.REQUIRED,
+      description = "The Strategy ID to use for the Market.")
   private String tradingStrategyId;
 
   /** Creates a MarketConfig. Required by ConfigurableComponentFactory */
