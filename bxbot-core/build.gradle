@@ -13,6 +13,7 @@ dependencies {
     implementation libraries.spring_boot_starter
     implementation libraries.spring_boot_starter_log4j2
     implementation libraries.google_guava
+
     implementation libraries.jakarta_mail_api
     implementation libraries.jakarta_mail_sun
 
