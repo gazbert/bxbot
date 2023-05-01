@@ -375,6 +375,22 @@
           <version>3.0.0</version>
           <configuration>
             <skipTests>${skip.integration.tests}</skipTests>
+            <!-- See: https://stackoverflow.com/questions/69896191/powermock-compatibility-with-jdk-17 -->
+            <argLine>
+              --add-opens java.base/java.util=ALL-UNNAMED
+              --add-opens java.base/java.util.stream=ALL-UNNAMED
+              --add-opens java.base/java.lang=ALL-UNNAMED
+              --add-opens java.base/java.lang.reflect=ALL-UNNAMED
+              --add-opens java.base/java.text=ALL-UNNAMED
+              --add-opens java.base/java.io=ALL-UNNAMED
+              --add-opens java.base/java.nio.file=ALL-UNNAMED
+              --add-opens java.base/java.math=ALL-UNNAMED
+              --add-opens java.base/java.time=ALL-UNNAMED
+              --add-opens java.base/java.security=ALL-UNNAMED
+              --add-opens java.base/java.net=ALL-UNNAMED
+              --add-opens java.base/sun.net.www.protocol.https=ALL-UNNAMED
+              --add-exports java.base/sun.net.www.protocol.https=ALL-UNNAMED
+            </argLine>
           </configuration>
           <executions>
             <execution>

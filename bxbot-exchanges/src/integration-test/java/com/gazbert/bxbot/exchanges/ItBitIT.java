@@ -50,6 +50,7 @@ import org.junit.Test;
  *
  * @author gazbert
  */
+@Ignore("FIXME: Exchange returning 503 response - re-enable once fixed")
 public class ItBitIT {
 
   private static final String MARKET_ID = "XBTUSD";
