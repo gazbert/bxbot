@@ -59,7 +59,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.api.easymock.PowerMock;
@@ -73,7 +72,6 @@ import org.powermock.reflect.Whitebox;
  *
  * @author gazbert
  */
-@Ignore("FIXME #154 - needs fixing")
 @RunWith(PowerMockRunner.class)
 @PowerMockIgnore({
     "javax.crypto.*",
