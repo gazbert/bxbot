@@ -35,7 +35,6 @@ import com.gazbert.bxbot.domain.engine.EngineConfig;
 import com.gazbert.bxbot.repository.EngineConfigRepository;
 import java.math.BigDecimal;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.api.easymock.PowerMock;
@@ -48,11 +47,16 @@ import org.powermock.modules.junit4.PowerMockRunner;
  *
  * @author gazbert
  */
-@Ignore("FIXME #154 - needs fixing")
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ConfigurationManager.class})
-@PowerMockIgnore({"javax.crypto.*", "javax.management.*",
-    "com.sun.org.apache.xerces.*", "javax.xml.parsers.*", "org.xml.sax.*", "org.w3c.dom.*"})
+@PowerMockIgnore({
+    "javax.crypto.*",
+    "javax.management.*",
+    "com.sun.org.apache.xerces.*",
+    "javax.xml.parsers.*",
+    "org.xml.sax.*",
+    "org.w3c.dom.*"
+})
 public class TestEngineConfigYamlRepository {
 
   private static final String BOT_ID = "avro-707_1";
@@ -68,9 +72,7 @@ public class TestEngineConfigYamlRepository {
 
   @Test
   public void whenGetCalledThenExpectEngineConfigToBeReturned() {
-    expect(ConfigurationManager.loadConfig(
-        eq(EngineType.class),
-        eq(ENGINE_CONFIG_YAML_FILENAME)))
+    expect(ConfigurationManager.loadConfig(eq(EngineType.class), eq(ENGINE_CONFIG_YAML_FILENAME)))
         .andReturn(someInternalEngineConfig());
 
     PowerMock.replayAll();
@@ -88,12 +90,10 @@ public class TestEngineConfigYamlRepository {
 
   @Test
   public void whenSaveCalledThenExpectRepositoryToSaveItAndReturnSavedEngineConfig() {
-    ConfigurationManager.saveConfig(eq(EngineType.class), anyObject(EngineType.class),
-        eq(ENGINE_CONFIG_YAML_FILENAME));
+    ConfigurationManager.saveConfig(
+        eq(EngineType.class), anyObject(EngineType.class), eq(ENGINE_CONFIG_YAML_FILENAME));
 
-    expect(ConfigurationManager.loadConfig(
-        eq(EngineType.class),
-        eq(ENGINE_CONFIG_YAML_FILENAME)))
+    expect(ConfigurationManager.loadConfig(eq(EngineType.class), eq(ENGINE_CONFIG_YAML_FILENAME)))
         .andReturn(someInternalEngineConfig());
 
     PowerMock.replayAll();

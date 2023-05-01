@@ -351,6 +351,8 @@
             <includes>
               <include>**/Test*.java</include>
             </includes>
+            <!-- See: https://stackoverflow.com/questions/69896191/powermock-compatibility-with-jdk-17 -->
+            <argLine>--add-opens java.base/java.util.stream=ALL-UNNAMED --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.io=ALL-UNNAMED --add-opens java.base/java.util=ALL-UNNAMED --add-opens java.base/java.base=ALL-UNNAMED</argLine>
           </configuration>
         </plugin>
         <plugin>

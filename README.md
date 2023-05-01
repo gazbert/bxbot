@@ -214,7 +214,7 @@ The [`TryModeExchangeAdapter`](./bxbot-exchanges/src/main/java/com/gazbert/bxbot
 configured by default to delegate public API calls to the 
 [`BitstampExchangeAdapter`](./bxbot-exchanges/src/main/java/com/gazbert/bxbot/exchanges/BitstampExchangeAdapter.java). 
 It simulates the private API (order management) calls; it's good for testing your initial setup and 
-``paper trading, but you'll eventually want to send live orders to the exchange!
+paper trading, but you'll eventually want to send live orders to the exchange!
 
 The configuration below shows how to live-trade with Bitstamp:
 

@@ -172,6 +172,8 @@ public class WebSecurityConfig {
   /**
    * Use bcrypt password encoding.
    * https://docs.spring.io/spring-security/site/docs/5.0.5.RELEASE/reference/htmlsingle/#pe-bcpe
+   *
+   * @return The BCrypt password encoder.
    */
   @Bean
   public BCryptPasswordEncoder bcryptPasswordEncoder() {
@@ -181,6 +183,8 @@ public class WebSecurityConfig {
   /**
    * Creates our legacy custom JWT auth filter. At some point this should be replaced with the JWT
    * filter that now comes bundled with Spring Security.
+   *
+   * @return the JWT Auth Filter.
    */
   @Bean
   public JwtAuthenticationFilter authenticationTokenFilter() {
