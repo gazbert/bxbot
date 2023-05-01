@@ -84,7 +84,6 @@ import org.powermock.modules.junit4.PowerMockRunner;
  *
  * @author gazbert
  */
-@Ignore("FIXME #154 - needs fixing")
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ConfigurableComponentFactory.class})
 @PowerMockIgnore({

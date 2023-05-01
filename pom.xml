@@ -237,8 +237,8 @@
         <version>2.1.1</version>
       </dependency>
       <dependency>
-        <groupId>com.sun.mail</groupId>
-        <artifactId>jakarta.mail</artifactId>
+        <groupId>org.eclipse.angus</groupId>
+        <artifactId>angus-mail</artifactId>
         <version>2.0.1</version>
       </dependency>
       <dependency>
@@ -355,6 +355,7 @@
             <argLine>
               --add-opens java.base/java.util=ALL-UNNAMED
               --add-opens java.base/java.util.stream=ALL-UNNAMED
+              --add-opens java.base/java.util.concurrent=ALL-UNNAMED
               --add-opens java.base/java.lang=ALL-UNNAMED
               --add-opens java.base/java.lang.reflect=ALL-UNNAMED
               --add-opens java.base/java.text=ALL-UNNAMED
@@ -378,18 +379,18 @@
             <!-- See: https://stackoverflow.com/questions/69896191/powermock-compatibility-with-jdk-17 -->
             <argLine>
               --add-opens java.base/java.util=ALL-UNNAMED
-              --add-opens java.base/java.util.stream=ALL-UNNAMED
-              --add-opens java.base/java.lang=ALL-UNNAMED
-              --add-opens java.base/java.lang.reflect=ALL-UNNAMED
-              --add-opens java.base/java.text=ALL-UNNAMED
-              --add-opens java.base/java.io=ALL-UNNAMED
-              --add-opens java.base/java.nio.file=ALL-UNNAMED
-              --add-opens java.base/java.math=ALL-UNNAMED
-              --add-opens java.base/java.time=ALL-UNNAMED
-              --add-opens java.base/java.security=ALL-UNNAMED
-              --add-opens java.base/java.net=ALL-UNNAMED
-              --add-opens java.base/sun.net.www.protocol.https=ALL-UNNAMED
-              --add-exports java.base/sun.net.www.protocol.https=ALL-UNNAMED
+<!--              &#45;&#45;add-opens java.base/java.util.stream=ALL-UNNAMED-->
+<!--              &#45;&#45;add-opens java.base/java.lang=ALL-UNNAMED-->
+<!--              &#45;&#45;add-opens java.base/java.lang.reflect=ALL-UNNAMED-->
+<!--              &#45;&#45;add-opens java.base/java.text=ALL-UNNAMED-->
+<!--              &#45;&#45;add-opens java.base/java.io=ALL-UNNAMED-->
+<!--              &#45;&#45;add-opens java.base/java.nio.file=ALL-UNNAMED-->
+<!--              &#45;&#45;add-opens java.base/java.math=ALL-UNNAMED-->
+<!--              &#45;&#45;add-opens java.base/java.time=ALL-UNNAMED-->
+<!--              &#45;&#45;add-opens java.base/java.security=ALL-UNNAMED-->
+<!--              &#45;&#45;add-opens java.base/java.net=ALL-UNNAMED-->
+<!--              &#45;&#45;add-opens java.base/sun.net.www.protocol.https=ALL-UNNAMED-->
+<!--              &#45;&#45;add-exports java.base/sun.net.www.protocol.https=ALL-UNNAMED-->
             </argLine>
           </configuration>
           <executions>

@@ -47,7 +47,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
  *
  * @author gazbert
  */
-@Ignore("FIXME #154 - needs fixing")
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({JwtUserFactory.class})
 public class TestJwtUserDetailsService {

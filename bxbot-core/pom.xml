@@ -73,12 +73,10 @@
     <dependency>
       <groupId>jakarta.mail</groupId>
       <artifactId>jakarta.mail-api</artifactId>
-      <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>com.sun.mail</groupId>
-      <artifactId>jakarta.mail</artifactId>
-      <scope>compile</scope>
+      <groupId>org.eclipse.angus</groupId>
+      <artifactId>angus-mail</artifactId>
     </dependency>
     <dependency>
       <groupId>org.springdoc</groupId>
@@ -143,10 +141,6 @@
           <excludes>
             <exclude>**/EmailAlerter*class</exclude> <!-- Powermock tests -->
             <exclude>**/BxBot.class</exclude>        <!-- Nothing to test -->
-
-            <!-- FIXME #154 - need fixing -->
-            <exclude>**/EmergencyStopChecker.class</exclude>
-            <exclude>**/TradingEngine.class</exclude>
           </excludes>
         </configuration>
         <executions>
