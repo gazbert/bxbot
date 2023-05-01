@@ -51,7 +51,6 @@ import org.junit.Test;
  *
  * @author gazbert
  */
-@Ignore("FIXME #154 - needs fixing")
 public class KrakenIT {
 
   // Market id must be the same as the Asset Pair id. See:

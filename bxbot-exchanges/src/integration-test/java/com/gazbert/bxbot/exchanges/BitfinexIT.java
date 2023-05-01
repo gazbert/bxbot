@@ -50,7 +50,6 @@ import org.junit.Test;
  *
  * @author gazbert
  */
-@Ignore("FIXME: #154 - needs fixing")
 public class BitfinexIT {
 
   private static final String MARKET_ID = "btcusd";
