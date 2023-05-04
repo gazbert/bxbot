@@ -16,6 +16,7 @@ dependencies {
     testImplementation libraries.powermock_api_easymock
     testImplementation libraries.easymock
     testImplementation libraries.spring_boot_starter_test
+    testImplementation libraries.snake_yaml
 }
 
 jacocoTestCoverageVerification {

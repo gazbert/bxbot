@@ -69,7 +69,7 @@ ext.libraries = [
         h2                                      : dependencies.create("com.h2database:h2:2.1.214"),
 
         jakarta_mail_api                        : dependencies.create("jakarta.mail:jakarta.mail-api:2.1.1"),
-        jakarta_mail_sun                        : dependencies.create("com.sun.mail:jakarta.mail:2.0.1"),
+        jakarta_mail_sun                        : dependencies.create("org.eclipse.angus:angus-mail:2.0.1"),
 
         jakarta_xml_api                         : dependencies.create("javax.xml.bind:jaxb-api:2.4.0-b180830.0359"),
 
@@ -136,7 +136,8 @@ subprojects {
     }
 
     checkstyle {
-        toolVersion '8.23' // https://stackoverflow.com/questions/47715303/how-to-find-which-checkstyle-version-gradle-is-using
+        toolVersion '8.23'
+        // https://stackoverflow.com/questions/47715303/how-to-find-which-checkstyle-version-gradle-is-using
         configFile = file("${rootDir}/etc/google_checks.xml")
         ignoreFailures = false
         showViolations = true
@@ -149,6 +150,23 @@ subprojects {
     checkstyleTest {
         source = 'src/test/java'
     }
+
+    // See: https://stackoverflow.com/questions/69896191/powermock-compatibility-with-jdk-17
+    test.jvmArgs "--add-opens", "java.base/java.lang=ALL-UNNAMED"
+    test.jvmArgs "--add-opens", "java.base/java.util=ALL-UNNAMED"
+    test.jvmArgs "--add-opens", "java.base/java.util.stream=ALL-UNNAMED"
+    test.jvmArgs "--add-opens", "java.base/java.util.concurrent=ALL-UNNAMED"
+    test.jvmArgs "--add-opens", "java.base/java.lang=ALL-UNNAMED"
+    test.jvmArgs "--add-opens", "java.base/java.lang.reflect=ALL-UNNAMED"
+    test.jvmArgs "--add-opens", "java.base/java.text=ALL-UNNAMED"
+    test.jvmArgs "--add-opens", "java.base/java.io=ALL-UNNAMED"
+    test.jvmArgs "--add-opens", "java.base/java.nio.file=ALL-UNNAMED"
+    test.jvmArgs "--add-opens", "java.base/java.math=ALL-UNNAMED"
+    test.jvmArgs "--add-opens", "java.base/java.time=ALL-UNNAMED"
+    test.jvmArgs "--add-opens", "java.base/java.security=ALL-UNNAMED"
+    test.jvmArgs "--add-opens", "java.base/java.net=ALL-UNNAMED"
+    test.jvmArgs "--add-opens", "java.base/sun.net.www.protocol.https=ALL-UNNAMED"
+    test.jvmArgs "--add-exports", "java.base/sun.net.www.protocol.https=ALL-UNNAMED"
 
     jacoco {
         toolVersion = "0.8.8" // https://docs.gradle.org/current/userguide/jacoco_plugin.html
