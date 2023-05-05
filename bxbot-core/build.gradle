@@ -36,15 +36,13 @@ jacocoTestCoverageVerification {
             // "... right now there is NO WAY TO USE PowerMock with JaCoCo On-the-fly instrumentation."
             // See https://github.com/powermock/powermock/wiki/Code-coverage-with-JaCoCo
             excludes = [
-                    'com.gazbert.bxbot.core.mail.EmailAlerter*',                // Powermock tests
-                    'com.gazbert.bxbot.core.util.ConfigurableComponentFactory', // Powermock tests
-                    'com.gazbert.bxbot.core.engine.TradingEngine',              // Powermock tests
-                    'com.gazbert.bxbot.BxBot'                                   // Nothing to test
+                    'com.gazbert.bxbot.BxBot',                  // Nothing to test
+                    'com.gazbert.bxbot.core.mail.EmailAlerter*' // Powermock tests
             ]
             limit {
                 counter = 'LINE'
                 value = 'COVEREDRATIO'
-                minimum = 0.0
+                minimum = 0.7
             }
         }
     }
