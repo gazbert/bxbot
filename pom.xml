@@ -45,11 +45,11 @@
     <revision>1.7.1-SNAPSHOT</revision>
 
     <!-- Should be same as dependency used by spring-boot-starter.version -->
-    <spring-core.version>6.0.7</spring-core.version>
+    <spring-core.version>6.0.8</spring-core.version>
 
     <jjwt.version>0.11.5</jjwt.version>
     <powermock.version>2.0.9</powermock.version>
-    <spring-boot-starter.version>3.0.5</spring-boot-starter.version>
+    <spring-boot-starter.version>3.0.6</spring-boot-starter.version>
     <springdoc-openapi.version>1.7.0</springdoc-openapi.version>
     <checkstlye.version>3.2.1</checkstlye.version>
     <spotbugs.version>4.7.3.4</spotbugs.version>
@@ -62,7 +62,7 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>3.0.5</version>
+    <version>3.0.6</version>
   </parent>
   <profiles>
     <profile>

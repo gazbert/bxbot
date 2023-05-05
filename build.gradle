@@ -7,7 +7,7 @@ buildscript {
 
     dependencies {
         classpath('io.spring.gradle:dependency-management-plugin:1.1.0')
-        classpath('org.springframework.boot:spring-boot-gradle-plugin:3.0.5')
+        classpath('org.springframework.boot:spring-boot-gradle-plugin:3.0.6')
     }
 }
 
@@ -23,11 +23,11 @@ buildScan {
 }
 
 ext.versions = [
-        springBootVersion        : '3.0.5',
+        springBootVersion        : '3.0.6',
         springCloudVersion       : '4.0.2',
 
         // Should be same as dependency used by springBootVersion
-        springCoreVersion        : '6.0.7',
+        springCoreVersion        : '6.0.8',
 
         springdocOpenapiVersion  : '1.7.0',
         hibernateVaildatorVersion: '8.0.0.Final',
@@ -158,6 +158,7 @@ subprojects {
     test.jvmArgs "--add-opens", "java.base/java.util.concurrent=ALL-UNNAMED"
     test.jvmArgs "--add-opens", "java.base/java.lang=ALL-UNNAMED"
     test.jvmArgs "--add-opens", "java.base/java.lang.reflect=ALL-UNNAMED"
+    test.jvmArgs "--add-opens", "java.base/java.text=ALL-UNNAMED"
     test.jvmArgs "--add-opens", "java.base/java.text=ALL-UNNAMED"
     test.jvmArgs "--add-opens", "java.base/java.io=ALL-UNNAMED"
     test.jvmArgs "--add-opens", "java.base/java.nio.file=ALL-UNNAMED"
