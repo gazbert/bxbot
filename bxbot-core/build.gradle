@@ -39,10 +39,7 @@ jacocoTestCoverageVerification {
                     'com.gazbert.bxbot.core.mail.EmailAlerter*',                // Powermock tests
                     'com.gazbert.bxbot.core.util.ConfigurableComponentFactory', // Powermock tests
                     'com.gazbert.bxbot.core.engine.TradingEngine',              // Powermock tests
-                    'com.gazbert.bxbot.BxBot',                                  // Nothing to test
-
-                    // FIXME #154 - needs fixing
-                    'com.gazbert.bxbot.core.util.EmergencyStopChecker*'
+                    'com.gazbert.bxbot.BxBot'                                   // Nothing to test
             ]
             limit {
                 counter = 'LINE'

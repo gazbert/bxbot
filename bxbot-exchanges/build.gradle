@@ -42,7 +42,7 @@ integrationTests {
     }
 
     // See: https://stackoverflow.com/questions/69896191/powermock-compatibility-with-jdk-17
-    jvmArgs "--add-opens", "java.base/java.lang=ALL-UNNAMED"
+    jvmArgs "--add-opens", "java.base/java.util=ALL-UNNAMED"
 }
 
 configurations {
