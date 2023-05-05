@@ -43,21 +43,6 @@ integrationTests {
 
     // See: https://stackoverflow.com/questions/69896191/powermock-compatibility-with-jdk-17
     jvmArgs "--add-opens", "java.base/java.lang=ALL-UNNAMED"
-    jvmArgs "--add-opens", "java.base/java.util=ALL-UNNAMED"
-    jvmArgs "--add-opens", "java.base/java.util.stream=ALL-UNNAMED"
-    jvmArgs "--add-opens", "java.base/java.util.concurrent=ALL-UNNAMED"
-    jvmArgs "--add-opens", "java.base/java.lang=ALL-UNNAMED"
-    jvmArgs "--add-opens", "java.base/java.lang.reflect=ALL-UNNAMED"
-    jvmArgs "--add-opens", "java.base/java.text=ALL-UNNAMED"
-    jvmArgs "--add-opens", "java.base/java.io=ALL-UNNAMED"
-    jvmArgs "--add-opens", "java.base/java.nio.file=ALL-UNNAMED"
-    jvmArgs "--add-opens", "java.base/java.math=ALL-UNNAMED"
-    jvmArgs "--add-opens", "java.base/java.time=ALL-UNNAMED"
-    jvmArgs "--add-opens", "java.base/java.security=ALL-UNNAMED"
-    jvmArgs "--add-opens", "java.base/java.net=ALL-UNNAMED"
-    jvmArgs "--add-opens", "java.base/sun.net.www.protocol.https=ALL-UNNAMED"
-    jvmArgs "--add-exports", "java.base/sun.net.www.protocol.https=ALL-UNNAMED"
-
 }
 
 configurations {
