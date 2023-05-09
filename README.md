@@ -17,9 +17,8 @@ except for the trading strategies - you'll need to write those yourself! A simpl
 [`ExampleScalpingStrategy`](./bxbot-strategies/src/main/java/com/gazbert/bxbot/strategies/ExampleScalpingStrategy.java) 
 is included to get you started with the Trading API - see [Ta4j](https://github.com/ta4j/ta4j) for more ideas.
 
-Exchange Adapters for using [Bitstamp](https://www.bitstamp.net), [Bitfinex](https://www.bitfinex.com),
-[itBit](https://www.itbit.com/), [Kraken](https://www.kraken.com), [Gemini](https://gemini.com/),
-and [Coinbase Pro](https://pro.coinbase.com/) are included. 
+Exchange Adapters for using [Bitstamp](https://www.bitstamp.net), [Bitfinex](https://www.bitfinex.com), 
+[Kraken](https://www.kraken.com), [Gemini](https://gemini.com/), and [Coinbase Pro](https://pro.coinbase.com/) are included. 
 Feel free to improve these or contribute new adapters to the project; that would be 
 [shiny!](https://en.wikipedia.org/wiki/Firefly_(TV_series))
 
