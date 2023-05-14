@@ -18,7 +18,6 @@ dependencies {
     implementation libraries.jakarta_mail_sun
 
     implementation libraries.springdoc_openapi_ui
-    implementation libraries.springdoc_openapi_security
 
     testImplementation libraries.powermock_junit
     testImplementation libraries.powermock_api_easymock

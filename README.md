@@ -1,5 +1,7 @@
 # BX-bot
 
+**JDK 17 / Spring Boot 3 Alpha Release Candidate**
+
 [![Gradle CI](https://github.com/gazbert/bxbot/actions/workflows/gradle.yml/badge.svg?branch=master)](https://github.com/gazbert/bxbot/actions/workflows/gradle.yml)
 [![Maven CI](https://github.com/gazbert/bxbot/actions/workflows/maven.yml/badge.svg?branch=master)](https://github.com/gazbert/bxbot/actions/workflows/maven.yml)
 [![Sonarcloud Status](https://sonarcloud.io/api/project_badges/measure?project=gazbert_bxbot&metric=alert_status)](https://sonarcloud.io/dashboard?id=gazbert_bxbot)

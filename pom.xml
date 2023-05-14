@@ -50,7 +50,6 @@
     <jjwt.version>0.11.5</jjwt.version>
     <powermock.version>2.0.9</powermock.version>
     <spring-boot-starter.version>3.0.6</spring-boot-starter.version>
-    <springdoc-openapi.version>1.7.0</springdoc-openapi.version>
     <checkstlye.version>3.2.1</checkstlye.version>
     <spotbugs.version>4.7.3.4</spotbugs.version>
     <hibernate-vaildator.version>8.0.0.Final</hibernate-vaildator.version>
@@ -258,13 +257,8 @@
       </dependency>
       <dependency>
         <groupId>org.springdoc</groupId>
-        <artifactId>springdoc-openapi-ui</artifactId>
-        <version>${springdoc-openapi.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.springdoc</groupId>
-        <artifactId>springdoc-openapi-security</artifactId>
-        <version>${springdoc-openapi.version}</version>
+        <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+        <version>2.1.0</version>
       </dependency>
       <dependency>
         <groupId>jakarta.validation</groupId>

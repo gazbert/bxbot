@@ -26,7 +26,6 @@ dependencies {
     implementation libraries.h2
 
     implementation libraries.springdoc_openapi_ui
-    implementation libraries.springdoc_openapi_security
 
     testImplementation libraries.spring_boot_starter_test
     testImplementation libraries.spring_security_test

@@ -29,7 +29,6 @@ ext.versions = [
         // Should be same as dependency used by springBootVersion
         springCoreVersion        : '6.0.8',
 
-        springdocOpenapiVersion  : '1.7.0',
         hibernateVaildatorVersion: '8.0.0.Final',
         spotbugsToolVersion      : '4.7.3', // https://plugins.gradle.org/plugin/com.github.spotbugs
         jjwtVersion              : '0.11.5'
@@ -75,8 +74,7 @@ ext.libraries = [
 
         snake_yaml                              : dependencies.create("org.yaml:snakeyaml:1.33"),
 
-        springdoc_openapi_ui                    : dependencies.create("org.springdoc:springdoc-openapi-ui:" + ext.versions.springdocOpenapiVersion),
-        springdoc_openapi_security              : dependencies.create("org.springdoc:springdoc-openapi-security:" + ext.versions.springdocOpenapiVersion),
+        springdoc_openapi_ui                    : dependencies.create("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0"),
 
         validation_api                          : dependencies.create("jakarta.validation:jakarta.validation-api:3.0.2"),
         hibernate_validator                     : dependencies.create("org.hibernate.validator:hibernate-validator:" + ext.versions.hibernateVaildatorVersion),
