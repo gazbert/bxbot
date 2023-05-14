@@ -42,6 +42,11 @@ public class BotRestartServiceImpl implements BotRestartService {
   private static final Logger LOG = LogManager.getLogger();
   private RestartEndpoint restartEndpoint;
 
+  /**
+   * Constructs the BotRestartService.
+   *
+   * @param restartEndpoint the Restart Endpoint
+   */
   @Autowired
   public BotRestartServiceImpl(RestartEndpoint restartEndpoint) {
     this.restartEndpoint = restartEndpoint;
@@ -50,7 +55,7 @@ public class BotRestartServiceImpl implements BotRestartService {
   @Override
   public String restart() {
     // Spring endpoint returns a map: Collections.singletonMap("message", "Restarting");
-    final var result = (Map) restartEndpoint.restart();
+    final Map result = (Map) restartEndpoint.restart();
     final String status = (String) result.get("message");
     LOG.info(() -> "Restart result: " + status);
     return status;

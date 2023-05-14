@@ -9,6 +9,8 @@ dependencies {
     implementation libraries.google_guava
     implementation libraries.snake_yaml
 
+    implementation libraries.springdoc_openapi_ui
+
     testImplementation libraries.spring_boot_starter_test
 }
 

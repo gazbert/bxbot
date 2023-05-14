@@ -26,15 +26,15 @@ package com.gazbert.bxbot.core.mail;
 import com.gazbert.bxbot.domain.emailalerts.EmailAlertsConfig;
 import com.gazbert.bxbot.domain.emailalerts.SmtpConfig;
 import com.gazbert.bxbot.services.config.EmailAlertsConfigService;
+import jakarta.mail.Authenticator;
+import jakarta.mail.Message;
+import jakarta.mail.MessagingException;
+import jakarta.mail.PasswordAuthentication;
+import jakarta.mail.Session;
+import jakarta.mail.Transport;
+import jakarta.mail.internet.InternetAddress;
+import jakarta.mail.internet.MimeMessage;
 import java.util.Properties;
-import javax.mail.Authenticator;
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.PasswordAuthentication;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,6 +58,11 @@ public class EmailAlerter {
 
   private final EmailAlertsConfigService emailAlertsConfigService;
 
+  /**
+   * Creates the Email Alerter.
+   *
+   * @param emailAlertsConfigService the email alerts config service.
+   */
   @Autowired
   public EmailAlerter(EmailAlertsConfigService emailAlertsConfigService) {
     this.emailAlertsConfigService = emailAlertsConfigService;

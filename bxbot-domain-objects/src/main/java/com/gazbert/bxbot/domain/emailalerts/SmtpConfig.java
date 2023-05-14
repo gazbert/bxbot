@@ -25,39 +25,43 @@ package com.gazbert.bxbot.domain.emailalerts;
 
 import com.google.common.base.MoreObjects;
 import io.swagger.v3.oas.annotations.media.Schema;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.Positive;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Positive;
 
 /**
  * Domain object representing the SMTP config used for Email Alerts.
  *
  * @author gazbert
  */
-@Schema(required = true)
+@Schema(requiredMode = Schema.RequiredMode.REQUIRED)
 public class SmtpConfig {
 
-  @Schema(required = true, description = "The SMTP hostname.")
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The SMTP hostname.")
   private String host;
 
-  @Schema(required = true, description = "The SMTP TLS port.")
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The SMTP TLS port.")
   @Positive(message = "Port must be positive integer")
   private int tlsPort;
 
-  @Schema(required = true, description = "The sender email account name.")
+  @Schema(
+      requiredMode = Schema.RequiredMode.REQUIRED,
+      description = "The sender email account name.")
   private String accountUsername;
 
-  @Schema(required = true, description = "The sender email account password.")
+  @Schema(
+      requiredMode = Schema.RequiredMode.REQUIRED,
+      description = "The sender email account password.")
   private String accountPassword;
 
-  @Schema(required = true, description = "The email From address.")
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The email From address.")
   @Email(message = "From Address must be a valid email address")
   private String fromAddress;
 
-  @Schema(required = true, description = "The email To address.")
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The email To address.")
   @Email(message = "To Address must be a valid email address")
   private String toAddress;
 
-  // required for jackson
+  /** Creates a new SmtpConfig. Required for jackson. */
   public SmtpConfig() {
   }
 
@@ -87,50 +91,110 @@ public class SmtpConfig {
     this.toAddress = toAddress;
   }
 
+  /**
+   * Returns the host.
+   *
+   * @return the host.
+   */
   public String getHost() {
     return host;
   }
 
+  /**
+   * Sets the host.
+   *
+   * @param host the host.
+   */
   public void setHost(String host) {
     this.host = host;
   }
 
+  /**
+   * Returns the TLS port.
+   *
+   * @return the TLS port.
+   */
   public int getTlsPort() {
     return tlsPort;
   }
 
+  /**
+   * Sets the TLS port.
+   *
+   * @param tlsPort the TLS port.
+   */
   public void setTlsPort(int tlsPort) {
     this.tlsPort = tlsPort;
   }
 
+  /**
+   * Returns the account username.
+   *
+   * @return the account username.
+   */
   public String getAccountUsername() {
     return accountUsername;
   }
 
+  /**
+   * Sets the account username.
+   *
+   * @param accountUsername the account username.
+   */
   public void setAccountUsername(String accountUsername) {
     this.accountUsername = accountUsername;
   }
 
+  /**
+   * Returns the account password.
+   *
+   * @return the account password.
+   */
   public String getAccountPassword() {
     return accountPassword;
   }
 
+  /**
+   * Sets the account password.
+   *
+   * @param accountPassword the account password.
+   */
   public void setAccountPassword(String accountPassword) {
     this.accountPassword = accountPassword;
   }
 
+  /**
+   * Returns the from address.
+   *
+   * @return the from address.
+   */
   public String getFromAddress() {
     return fromAddress;
   }
 
+  /**
+   * Sets the from address.
+   *
+   * @param fromAddress the from address.
+   */
   public void setFromAddress(String fromAddress) {
     this.fromAddress = fromAddress;
   }
 
+  /**
+   * Returns the to address.
+   *
+   * @return the to address.
+   */
   public String getToAddress() {
     return toAddress;
   }
 
+  /**
+   * Sets the to address.
+   *
+   * @param toAddress the to address.
+   */
   public void setToAddress(String toAddress) {
     this.toAddress = toAddress;
   }

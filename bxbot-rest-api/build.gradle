@@ -14,12 +14,18 @@ dependencies {
     implementation libraries.spring_boot_starter_data_rest
     implementation libraries.spring_boot_starter_log4j2
     implementation libraries.spring_boot_starter_actuator
-    implementation libraries.jjwt
+
+    implementation libraries.jjwt_api
+    implementation libraries.jjwt_impl
+
+    implementation libraries.validation_api
+    implementation libraries.jjwt_impl
+    implementation libraries.jjwt_jackson
+
     implementation libraries.google_guava
     implementation libraries.h2
 
     implementation libraries.springdoc_openapi_ui
-    implementation libraries.springdoc_openapi_security
 
     testImplementation libraries.spring_boot_starter_test
     testImplementation libraries.spring_security_test
@@ -28,8 +34,6 @@ dependencies {
     testImplementation libraries.powermock_api_easymock
     testImplementation libraries.awaitility
     testImplementation libraries.junit_vintage_engine
-
-
 }
 
 // FIXME: Broken with Gradle 7.3.3 :-(

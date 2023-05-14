@@ -51,6 +51,11 @@ public class TradingStrategiesBuilder {
   private static final Logger LOG = LogManager.getLogger();
   private TradingStrategyFactory tradingStrategyFactory;
 
+  /**
+   * Sets the trading strategy factory.
+   *
+   * @param tradingStrategyFactory the trading strategy factory.
+   */
   @Autowired
   public void setTradingStrategyFactory(TradingStrategyFactory tradingStrategyFactory) {
     this.tradingStrategyFactory = tradingStrategyFactory;

@@ -49,8 +49,14 @@ import org.powermock.modules.junit4.PowerMockRunner;
  */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ConfigurationManager.class})
-@PowerMockIgnore({"javax.crypto.*", "javax.management.*",
-    "com.sun.org.apache.xerces.*", "javax.xml.parsers.*", "org.xml.sax.*", "org.w3c.dom.*"})
+@PowerMockIgnore({
+    "javax.crypto.*",
+    "javax.management.*",
+    "com.sun.org.apache.xerces.*",
+    "javax.xml.parsers.*",
+    "org.xml.sax.*",
+    "org.w3c.dom.*"
+})
 public class TestEngineConfigYamlRepository {
 
   private static final String BOT_ID = "avro-707_1";
@@ -66,9 +72,7 @@ public class TestEngineConfigYamlRepository {
 
   @Test
   public void whenGetCalledThenExpectEngineConfigToBeReturned() {
-    expect(ConfigurationManager.loadConfig(
-        eq(EngineType.class),
-        eq(ENGINE_CONFIG_YAML_FILENAME)))
+    expect(ConfigurationManager.loadConfig(eq(EngineType.class), eq(ENGINE_CONFIG_YAML_FILENAME)))
         .andReturn(someInternalEngineConfig());
 
     PowerMock.replayAll();
@@ -86,12 +90,10 @@ public class TestEngineConfigYamlRepository {
 
   @Test
   public void whenSaveCalledThenExpectRepositoryToSaveItAndReturnSavedEngineConfig() {
-    ConfigurationManager.saveConfig(eq(EngineType.class), anyObject(EngineType.class),
-        eq(ENGINE_CONFIG_YAML_FILENAME));
+    ConfigurationManager.saveConfig(
+        eq(EngineType.class), anyObject(EngineType.class), eq(ENGINE_CONFIG_YAML_FILENAME));
 
-    expect(ConfigurationManager.loadConfig(
-        eq(EngineType.class),
-        eq(ENGINE_CONFIG_YAML_FILENAME)))
+    expect(ConfigurationManager.loadConfig(eq(EngineType.class), eq(ENGINE_CONFIG_YAML_FILENAME)))
         .andReturn(someInternalEngineConfig());
 
     PowerMock.replayAll();

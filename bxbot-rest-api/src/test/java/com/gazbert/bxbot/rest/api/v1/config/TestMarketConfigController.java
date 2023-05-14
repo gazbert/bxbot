@@ -64,7 +64,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 @WebAppConfiguration
 class TestMarketConfigController extends AbstractConfigControllerTest {
 
-  private static final String MARKETS_CONFIG_ENDPOINT_URI = CONFIG_ENDPOINT_BASE_URI + "/markets/";
+  private static final String MARKETS_CONFIG_ENDPOINT_URI = CONFIG_ENDPOINT_BASE_URI + "/markets";
 
   private static final String UNKNOWN_MARKET_ID = "unknown-id";
 
@@ -145,7 +145,7 @@ class TestMarketConfigController extends AbstractConfigControllerTest {
 
     mockMvc
         .perform(
-            get(MARKETS_CONFIG_ENDPOINT_URI + MARKET_1_ID)
+            get(MARKETS_CONFIG_ENDPOINT_URI + "/" + MARKET_1_ID)
                 .header("Authorization", "Bearer " + getJwt(VALID_USER_NAME, VALID_USER_PASSWORD)))
         .andDo(print())
         .andExpect(status().isOk())
@@ -195,7 +195,7 @@ class TestMarketConfigController extends AbstractConfigControllerTest {
 
     mockMvc
         .perform(
-            put(MARKETS_CONFIG_ENDPOINT_URI + MARKET_1_ID)
+            put(MARKETS_CONFIG_ENDPOINT_URI + "/" + MARKET_1_ID)
                 .header("Authorization", "Bearer " + getJwt(VALID_ADMIN_NAME, VALID_ADMIN_PASSWORD))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonify(someMarketConfig())))
@@ -218,7 +218,7 @@ class TestMarketConfigController extends AbstractConfigControllerTest {
 
     mockMvc
         .perform(
-            put(MARKETS_CONFIG_ENDPOINT_URI + MARKET_1_ID)
+            put(MARKETS_CONFIG_ENDPOINT_URI + "/" + MARKET_1_ID)
                 .header("Authorization", "Bearer " + getJwt(VALID_USER_NAME, VALID_USER_PASSWORD))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonify(someMarketConfig())))
@@ -268,7 +268,7 @@ class TestMarketConfigController extends AbstractConfigControllerTest {
   void testUpdateMarketConfigWhenIdIsMissing() throws Exception {
     mockMvc
         .perform(
-            put(MARKETS_CONFIG_ENDPOINT_URI + MARKET_1_ID)
+            put(MARKETS_CONFIG_ENDPOINT_URI + "/" + MARKET_1_ID)
                 .header("Authorization", "Bearer " + getJwt(VALID_ADMIN_NAME, VALID_ADMIN_PASSWORD))
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -282,7 +282,7 @@ class TestMarketConfigController extends AbstractConfigControllerTest {
 
     mockMvc
         .perform(
-            delete(MARKETS_CONFIG_ENDPOINT_URI + MARKET_1_ID)
+            delete(MARKETS_CONFIG_ENDPOINT_URI + "/" + MARKET_1_ID)
                 .header("Authorization", "Bearer " + getJwt(VALID_ADMIN_NAME, VALID_USER_PASSWORD)))
         .andExpect(status().isNoContent());
 
@@ -295,7 +295,7 @@ class TestMarketConfigController extends AbstractConfigControllerTest {
 
     mockMvc
         .perform(
-            delete(MARKETS_CONFIG_ENDPOINT_URI + MARKET_1_ID)
+            delete(MARKETS_CONFIG_ENDPOINT_URI + "/" + MARKET_1_ID)
                 .header(
                     "Authorization", "Bearer " + getJwt(VALID_ADMIN_NAME, VALID_ADMIN_PASSWORD)))
         .andExpect(status().isNoContent());
@@ -307,7 +307,8 @@ class TestMarketConfigController extends AbstractConfigControllerTest {
   void testDeleteMarketConfigWhenUnauthorizedWithMissingToken() throws Exception {
     mockMvc
         .perform(
-            delete(MARKETS_CONFIG_ENDPOINT_URI + MARKET_1_ID).accept(MediaType.APPLICATION_JSON))
+            delete(MARKETS_CONFIG_ENDPOINT_URI + "/" + MARKET_1_ID)
+                .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isUnauthorized());
   }
 
@@ -315,7 +316,7 @@ class TestMarketConfigController extends AbstractConfigControllerTest {
   void testDeleteMarketConfigWhenUnauthorizedWithInvalidToken() throws Exception {
     mockMvc
         .perform(
-            delete(MARKETS_CONFIG_ENDPOINT_URI + MARKET_1_ID)
+            delete(MARKETS_CONFIG_ENDPOINT_URI + "/" + MARKET_1_ID)
                 .header("Authorization", "Bearer junk.web.token")
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isUnauthorized());
@@ -327,7 +328,7 @@ class TestMarketConfigController extends AbstractConfigControllerTest {
 
     mockMvc
         .perform(
-            delete(MARKETS_CONFIG_ENDPOINT_URI + UNKNOWN_MARKET_ID)
+            delete(MARKETS_CONFIG_ENDPOINT_URI + "/" + UNKNOWN_MARKET_ID)
                 .header("Authorization", "Bearer " + getJwt(VALID_ADMIN_NAME, VALID_ADMIN_PASSWORD))
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isNotFound());

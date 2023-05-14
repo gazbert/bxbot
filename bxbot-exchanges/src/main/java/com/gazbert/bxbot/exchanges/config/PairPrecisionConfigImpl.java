@@ -40,6 +40,10 @@ public class PairPrecisionConfigImpl implements PairPrecisionConfig {
 
   /**
    * Default implementation of {@link PairPrecisionConfig} backed by {@link Map}s.
+   *
+   * @param prices the pair prices.
+   * @param volumes the pair volumes.
+   * @param orderMins the pair order minimums.
    */
   public PairPrecisionConfigImpl(
       Map<String, Integer> prices,

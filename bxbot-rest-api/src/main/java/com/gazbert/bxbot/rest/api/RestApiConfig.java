@@ -23,8 +23,8 @@
 
 package com.gazbert.bxbot.rest.api;
 
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -43,8 +43,8 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix = "bxbot.restapi")
 public class RestApiConfig {
 
-  public static final int DEFAULT_MAX_LINES = 1000;
-  public static final int DEFAULT_MAX_DOWNLOAD_SIZE = 1024 * 1024;
+  static final int DEFAULT_MAX_LINES = 1000;
+  static final int DEFAULT_MAX_DOWNLOAD_SIZE = 1024 * 1024;
   private static final Logger LOG = LogManager.getLogger();
 
   @NotNull
@@ -75,7 +75,12 @@ public class RestApiConfig {
     return maxLogfileLines;
   }
 
-  public void setMaxLogfileLines(int maxLogfileLines) {
+  /**
+   * Sets max log file lines.
+   *
+   * @param maxLogfileLines the max log file lines.
+   */
+  void setMaxLogfileLines(int maxLogfileLines) {
     this.maxLogfileLines = maxLogfileLines;
   }
 
@@ -99,7 +104,12 @@ public class RestApiConfig {
     return maxLogfileDownloadSize;
   }
 
-  public void setMaxLogfileDownloadSize(int maxLogfileDownloadSize) {
+  /**
+   * Sets max log file download size.
+   *
+   * @param maxLogfileDownloadSize max size in bytes.
+   */
+  void setMaxLogfileDownloadSize(int maxLogfileDownloadSize) {
     this.maxLogfileDownloadSize = maxLogfileDownloadSize;
   }
 }

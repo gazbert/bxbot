@@ -5,7 +5,7 @@ REM Bare bones script for starting BX-bot on Windows systems.
 REM
 REM Could be made better, but will do for now...
 REM
-REM You need the Java 11 JDK installed.
+REM You need a Java 17 JDK/JRE installed.
 REM
 REM This script expects all the jar files to live in the lib_dir.
 REM
@@ -35,7 +35,7 @@ IF NOT "%1"=="status" GOTO:invalidArgs
 REM TODO: Check if bot is already running before trying to start it!
 SET START_TIME=%time%
 ECHO Starting BX-bot...
-START "BX-bot - %START_TIME%" java -Xmx64m -Xss256k -Dlog4j.configurationFile=%log4j2_config% --illegal-access=deny -jar %lib_dir%\%bxbot_jar%
+START "BX-bot - %START_TIME%" java -Xmx64m -Xss256k -Dlog4j.configurationFile=%log4j2_config% -jar %lib_dir%\%bxbot_jar%
 FOR /F "tokens=2" %%i in ('TASKLIST /NH /FI "WINDOWTITLE eq BX-bot - %START_TIME%"' ) DO (SET PID=%%i)
 ECHO %PID% > %pid_file%
 ECHO BX-bot started with PID: %PID%

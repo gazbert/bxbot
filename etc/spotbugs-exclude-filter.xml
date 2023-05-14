@@ -12,12 +12,6 @@
 
     <!-- False positive - this NPE check is required. -->
     <Match>
-        <Class name="com.gazbert.bxbot.exchanges.ItBitExchangeAdapter"/>
-        <Bug code="RCN"/>
-    </Match>
-
-    <!-- False positive - this NPE check is required. -->
-    <Match>
         <Class name="com.gazbert.bxbot.datastore.xml.ConfigurationManager"/>
         <Bug code="OBL"/>
     </Match>
@@ -43,12 +37,6 @@
     <!-- Ignore Exception not thrown for catch warnings in Gemini adapter -->
     <Match>
         <Class name="com.gazbert.bxbot.exchanges.GeminiExchangeAdapter"/>
-        <Bug pattern="REC_CATCH_EXCEPTION"/>
-    </Match>
-
-    <!-- Ignore Exception not thrown for catch warnings in ItBit adapter -->
-    <Match>
-        <Class name="com.gazbert.bxbot.exchanges.ItBitExchangeAdapter"/>
         <Bug pattern="REC_CATCH_EXCEPTION"/>
     </Match>
 

@@ -43,6 +43,11 @@ public class BotStatusServiceImpl implements BotStatusService {
   private static final Logger LOG = LogManager.getLogger();
   private HealthEndpoint healthEndpoint;
 
+  /**
+   * Constructs the BotStatusService.
+   *
+   * @param healthEndpoint the Health Endpoint.
+   */
   @Autowired
   public BotStatusServiceImpl(HealthEndpoint healthEndpoint) {
     this.healthEndpoint = healthEndpoint;

@@ -25,7 +25,7 @@
 package com.gazbert.bxbot.rest.api.security.authentication;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 /**
  * Encapsulates a JWT Authentication response. It wraps the JWT (Base64 encoded String).
@@ -34,23 +34,38 @@ import javax.validation.constraints.NotNull;
  */
 public class JwtAuthenticationResponse {
 
-  @Schema(required = true, description = "The JWT.")
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The JWT.")
   @NotNull(message = "Token cannot be null")
   private String token;
 
-  // For Jackson
+  /** Creates the JwtAuthenticationResponse. Required for Jackson. */
   public JwtAuthenticationResponse() {
     token = "";
   }
 
+  /**
+   * Creates the JwtAuthenticationResponse.
+   *
+   * @param token the JWT.
+   */
   public JwtAuthenticationResponse(String token) {
     this.token = token;
   }
 
+  /**
+   * Returns the JWT.
+   *
+   * @return the JWT.
+   */
   public String getToken() {
     return this.token;
   }
 
+  /**
+   * Sets the JWT.
+   *
+   * @param token the JWT.
+   */
   public void setToken(String token) {
     this.token = token;
   }

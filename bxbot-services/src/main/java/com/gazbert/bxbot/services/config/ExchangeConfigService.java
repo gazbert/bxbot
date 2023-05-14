@@ -32,7 +32,18 @@ import com.gazbert.bxbot.domain.exchange.ExchangeConfig;
  */
 public interface ExchangeConfigService {
 
+  /**
+   * Fetches the exchange config.
+   *
+   * @return the exchange config.
+   */
   ExchangeConfig getExchangeConfig();
 
+  /**
+   * Updates the exchange config.
+   *
+   * @param config the exchange config.
+   * @return the updated exchange config.
+   */
   ExchangeConfig updateExchangeConfig(ExchangeConfig config);
 }

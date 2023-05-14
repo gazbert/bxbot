@@ -9,8 +9,8 @@ dependencies {
     implementation libraries.spring_boot_starter_log4j2
     implementation libraries.google_gson
     implementation libraries.google_guava
-    implementation libraries.javax_xml_api
-    implementation libraries.javax_xml_impl
+
+    implementation libraries.jakarta_xml_api
 
     testImplementation libraries.powermock_junit
     testImplementation libraries.powermock_api_easymock
@@ -19,7 +19,7 @@ dependencies {
     testImplementation libraries.spring_boot_starter_test
 }
 
-sourceSets{
+sourceSets {
     integrationTests {
         compileClasspath += sourceSets.main.output
         runtimeClasspath += sourceSets.main.output
@@ -38,8 +38,11 @@ task integrationTests(type: Test) {
 
 integrationTests {
     testLogging {
-        events "passed","skipped", "failed"
+        events "passed", "skipped", "failed"
     }
+
+    // See: https://stackoverflow.com/questions/69896191/powermock-compatibility-with-jdk-17
+    jvmArgs "--add-opens", "java.base/java.util=ALL-UNNAMED"
 }
 
 configurations {

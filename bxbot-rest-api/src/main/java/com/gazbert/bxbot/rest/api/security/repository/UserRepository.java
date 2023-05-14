@@ -35,5 +35,12 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
  */
 @RepositoryRestResource(exported = false)
 public interface UserRepository extends JpaRepository<User, Long> {
+
+  /**
+   * Fetches a user by username.
+   *
+   * @param username the username.
+   * @return the user.
+   */
   User findByUsername(String username);
 }

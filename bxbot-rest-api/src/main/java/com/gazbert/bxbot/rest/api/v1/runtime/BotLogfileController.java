@@ -35,9 +35,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.security.Principal;
-import javax.servlet.http.HttpServletRequest;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,6 +69,12 @@ public class BotLogfileController extends RestController {
   private final RestApiConfig restApiConfig;
   private final BotLogfileService botLogfileService;
 
+  /**
+   * Creates the BotLogfileController.
+   *
+   * @param restApiConfig the REST API config.
+   * @param botLogfileService the log file service.
+   */
   @Autowired
   public BotLogfileController(RestApiConfig restApiConfig, BotLogfileService botLogfileService) {
     this.restApiConfig = restApiConfig;

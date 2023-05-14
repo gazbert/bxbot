@@ -35,8 +35,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import java.security.Principal;
-import javax.validation.Valid;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,6 +67,11 @@ public class EngineConfigController extends RestController {
   private static final String ENGINE_RESOURCE_PATH = "/engine";
   private final EngineConfigService engineConfigService;
 
+  /**
+   * Creates the EngineConfigController.
+   *
+   * @param engineConfigService the engine config service.
+   */
   @Autowired
   public EngineConfigController(EngineConfigService engineConfigService) {
     this.engineConfigService = engineConfigService;

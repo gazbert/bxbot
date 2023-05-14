@@ -84,6 +84,11 @@ public final class TickerImpl implements Ticker {
     return last;
   }
 
+  /**
+   * Set last price.
+   *
+   * @param last the last price.
+   */
   public void setLast(BigDecimal last) {
     this.last = last;
   }
@@ -93,6 +98,11 @@ public final class TickerImpl implements Ticker {
     return bid;
   }
 
+  /**
+   * Set bid price.
+   *
+   * @param bid the bid price.
+   */
   public void setBid(BigDecimal bid) {
     this.bid = bid;
   }
@@ -102,6 +112,11 @@ public final class TickerImpl implements Ticker {
     return ask;
   }
 
+  /**
+   * Set ask price.
+   *
+   * @param ask the ask price.
+   */
   public void setAsk(BigDecimal ask) {
     this.ask = ask;
   }
@@ -111,6 +126,11 @@ public final class TickerImpl implements Ticker {
     return low;
   }
 
+  /**
+   * Set low price.
+   *
+   * @param low the low price.
+   */
   public void setLow(BigDecimal low) {
     this.low = low;
   }
@@ -120,6 +140,11 @@ public final class TickerImpl implements Ticker {
     return high;
   }
 
+  /**
+   * Set high price.
+   *
+   * @param high the high price.
+   */
   public void setHigh(BigDecimal high) {
     this.high = high;
   }
@@ -129,6 +154,11 @@ public final class TickerImpl implements Ticker {
     return open;
   }
 
+  /**
+   * Set open price.
+   *
+   * @param open the open price.
+   */
   public void setOpen(BigDecimal open) {
     this.open = open;
   }
@@ -138,6 +168,11 @@ public final class TickerImpl implements Ticker {
     return volume;
   }
 
+  /**
+   * Set volume.
+   *
+   * @param volume the volume.
+   */
   public void setVolume(BigDecimal volume) {
     this.volume = volume;
   }
@@ -147,6 +182,11 @@ public final class TickerImpl implements Ticker {
     return vwap;
   }
 
+  /**
+   * Set vwap.
+   *
+   * @param vwap the vwap.
+   */
   public void setVwap(BigDecimal vwap) {
     this.vwap = vwap;
   }
@@ -156,6 +196,11 @@ public final class TickerImpl implements Ticker {
     return timestamp;
   }
 
+  /**
+   * Set timestamp.
+   *
+   * @param timestamp the timestamp.
+   */
   public void setTimestamp(Long timestamp) {
     this.timestamp = timestamp;
   }

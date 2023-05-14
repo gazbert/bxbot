@@ -47,11 +47,21 @@ public class BxBot implements CommandLineRunner {
 
   private final TradingEngine tradingEngine;
 
+  /**
+   * Sets the trading engine.
+   *
+   * @param tradingEngine the trading engine.
+   */
   @Autowired
   public BxBot(TradingEngine tradingEngine) {
     this.tradingEngine = tradingEngine;
   }
 
+  /**
+   * Starts the app.
+   *
+   * @param args main args.
+   */
   public static void main(String[] args) {
     SpringApplication.run(BxBot.class);
   }

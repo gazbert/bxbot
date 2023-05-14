@@ -26,11 +26,11 @@ package com.gazbert.bxbot.rest.api.security.authentication;
 
 import com.gazbert.bxbot.rest.api.security.jwt.JwtUtils;
 import io.jsonwebtoken.Claims;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.text.MessageFormat;
-import javax.servlet.FilterChain;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -102,6 +102,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
   }
 
+  /**
+   * Sets the JWT utils.
+   *
+   * @param jwtUtils the JWT utils.
+   */
   @Autowired
   public void setJwtUtils(JwtUtils jwtUtils) {
     this.jwtUtils = jwtUtils;

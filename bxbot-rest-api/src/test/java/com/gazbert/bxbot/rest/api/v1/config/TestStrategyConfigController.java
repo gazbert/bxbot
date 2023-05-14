@@ -67,7 +67,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 class TestStrategyConfigController extends AbstractConfigControllerTest {
 
   private static final String STRATEGIES_CONFIG_ENDPOINT_URI =
-      CONFIG_ENDPOINT_BASE_URI + "/strategies/";
+      CONFIG_ENDPOINT_BASE_URI + "/strategies";
 
   private static final String UNKNOWN_STRAT_ID = "unknown-id";
 
@@ -152,7 +152,7 @@ class TestStrategyConfigController extends AbstractConfigControllerTest {
 
     mockMvc
         .perform(
-            get(STRATEGIES_CONFIG_ENDPOINT_URI + STRAT_1_ID)
+            get(STRATEGIES_CONFIG_ENDPOINT_URI + "/" + STRAT_1_ID)
                 .header("Authorization", "Bearer " + getJwt(VALID_USER_NAME, VALID_USER_PASSWORD)))
         .andDo(print())
         .andExpect(status().isOk())
@@ -203,7 +203,7 @@ class TestStrategyConfigController extends AbstractConfigControllerTest {
 
     mockMvc
         .perform(
-            put(STRATEGIES_CONFIG_ENDPOINT_URI + STRAT_1_ID)
+            put(STRATEGIES_CONFIG_ENDPOINT_URI + "/" + STRAT_1_ID)
                 .header("Authorization", "Bearer " + getJwt(VALID_ADMIN_NAME, VALID_ADMIN_PASSWORD))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonify(someStrategyConfig())))
@@ -226,7 +226,7 @@ class TestStrategyConfigController extends AbstractConfigControllerTest {
 
     mockMvc
         .perform(
-            put(STRATEGIES_CONFIG_ENDPOINT_URI + STRAT_1_ID)
+            put(STRATEGIES_CONFIG_ENDPOINT_URI + "/" + STRAT_1_ID)
                 .header("Authorization", "Bearer " + getJwt(VALID_USER_NAME, VALID_USER_PASSWORD))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonify(someStrategyConfig())))
@@ -277,7 +277,7 @@ class TestStrategyConfigController extends AbstractConfigControllerTest {
   void testUpdateStrategyConfigWhenIdIsMissing() throws Exception {
     mockMvc
         .perform(
-            put(STRATEGIES_CONFIG_ENDPOINT_URI + STRAT_1_ID)
+            put(STRATEGIES_CONFIG_ENDPOINT_URI + "/" + STRAT_1_ID)
                 .header("Authorization", "Bearer " + getJwt(VALID_ADMIN_NAME, VALID_ADMIN_PASSWORD))
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -291,7 +291,7 @@ class TestStrategyConfigController extends AbstractConfigControllerTest {
 
     mockMvc
         .perform(
-            delete(STRATEGIES_CONFIG_ENDPOINT_URI + STRAT_1_ID)
+            delete(STRATEGIES_CONFIG_ENDPOINT_URI + "/" + STRAT_1_ID)
                 .header(
                     "Authorization", "Bearer " + getJwt(VALID_ADMIN_NAME, VALID_ADMIN_PASSWORD)))
         .andExpect(status().isNoContent());
@@ -305,7 +305,7 @@ class TestStrategyConfigController extends AbstractConfigControllerTest {
 
     mockMvc
         .perform(
-            delete(STRATEGIES_CONFIG_ENDPOINT_URI + STRAT_1_ID)
+            delete(STRATEGIES_CONFIG_ENDPOINT_URI + "/" + STRAT_1_ID)
                 .header("Authorization", "Bearer " + getJwt(VALID_USER_NAME, VALID_USER_PASSWORD)))
         .andExpect(status().isForbidden());
 

@@ -43,6 +43,11 @@ public class JwtUserDetailsService implements UserDetailsService {
 
   private final UserRepository userRepository;
 
+  /**
+   * Creates the JwtUserDetailsService.
+   *
+   * @param userRepository the user repo.
+   */
   @Autowired
   public JwtUserDetailsService(UserRepository userRepository) {
     this.userRepository = userRepository;

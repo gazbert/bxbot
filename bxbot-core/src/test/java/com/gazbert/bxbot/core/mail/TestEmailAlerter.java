@@ -29,10 +29,12 @@ import static org.easymock.EasyMock.expect;
 import com.gazbert.bxbot.domain.emailalerts.EmailAlertsConfig;
 import com.gazbert.bxbot.domain.emailalerts.SmtpConfig;
 import com.gazbert.bxbot.services.config.EmailAlertsConfigService;
-import javax.mail.Message;
-import javax.mail.Transport;
+
+import jakarta.mail.Message;
+import jakarta.mail.Transport;
 import org.easymock.EasyMock;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.api.easymock.PowerMock;

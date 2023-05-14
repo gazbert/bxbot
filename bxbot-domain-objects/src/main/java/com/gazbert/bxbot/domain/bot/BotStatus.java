@@ -35,7 +35,7 @@ import java.util.Date;
 @Schema
 public class BotStatus {
 
-  @Schema(required = true, description = "The Bot ID.")
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The Bot ID.")
   private String botId;
 
   @Schema(description = "The friendly name for the Bot.")
@@ -47,7 +47,7 @@ public class BotStatus {
   @Schema(description = "The current datetime.")
   private Date datetime;
 
-  // Required by ConfigurableComponentFactory
+  /** Creates a new BotStatus. Required by ConfigurableComponentFactory. */
   public BotStatus() {
   }
 
@@ -66,34 +66,74 @@ public class BotStatus {
     setDatetime(datetime);
   }
 
+  /**
+   * Returns the bot id.
+   *
+   * @return the bot id.
+   */
   public String getBotId() {
     return botId;
   }
 
+  /**
+   * Sets the bot id.
+   *
+   * @param botId the bot id.
+   */
   public void setBotId(String botId) {
     this.botId = botId;
   }
 
+  /**
+   * Returns the display name.
+   *
+   * @return the display name.
+   */
   public String getDisplayName() {
     return displayName;
   }
 
+  /**
+   * Sets the display name.
+   *
+   * @param displayName the display name.
+   */
   public void setDisplayName(String displayName) {
     this.displayName = displayName;
   }
 
+  /**
+   * Returns the status.
+   *
+   * @return the status.
+   */
   public String getStatus() {
     return status;
   }
 
+  /**
+   * Sets the status.
+   *
+   * @param status the status.
+   */
   public void setStatus(String status) {
     this.status = status;
   }
 
+  /**
+   * Returns the datetime.
+   *
+   * @return the datetime.
+   */
   public Date getDatetime() {
     return datetime != null ? new Date(datetime.getTime()) : null;
   }
 
+  /**
+   * Sets the datetime.
+   *
+   * @param datetime the datetime.
+   */
   public void setDatetime(Date datetime) {
     this.datetime = datetime != null ? new Date(datetime.getTime()) : null;
   }

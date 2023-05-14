@@ -63,6 +63,12 @@ public class BotStatusController extends RestController {
   private final BotStatusService botStatusService;
   private final EngineConfigService engineConfigService;
 
+  /**
+   * Creates the BotStatusController.
+   *
+   * @param botStatusService the bot status service.
+   * @param engineConfigService the engine config service.
+   */
   @Autowired
   public BotStatusController(
       BotStatusService botStatusService, EngineConfigService engineConfigService) {

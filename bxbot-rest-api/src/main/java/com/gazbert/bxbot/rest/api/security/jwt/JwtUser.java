@@ -41,15 +41,34 @@ public class JwtUser implements UserDetails {
 
   private static final long serialVersionUID = -7857515944595149222L;
 
+  /** User id. */
   private final Long id;
+
+  /** Username. */
   private final String username;
+
+  /** Firstname. */
   private final String firstname;
+
+  /** Lastname. */
   private final String lastname;
+
+  /** Password. */
   private final String password;
+
+  /** Email. */
   private final String email;
+
+  /** Granted authorities. */
   private final Collection<? extends GrantedAuthority> authorities;
+
+  /** Is enabled. */
   private final boolean enabled;
+
+  /** Last password reset date. */
   private final long lastPasswordResetDate;
+
+  /** The user's roles. */
   private final List<String> roles;
 
   /**
@@ -93,6 +112,11 @@ public class JwtUser implements UserDetails {
     }
   }
 
+  /**
+   * Returns the id.
+   *
+   * @return the id.
+   */
   @JsonIgnore
   public Long getId() {
     return id;
@@ -121,14 +145,29 @@ public class JwtUser implements UserDetails {
     return true;
   }
 
+  /**
+   * Returns the firstname.
+   *
+   * @return the firstname.
+   */
   public String getFirstname() {
     return firstname;
   }
 
+  /**
+   * Returns the lastname.
+   *
+   * @return the lastname.
+   */
   public String getLastname() {
     return lastname;
   }
 
+  /**
+   * Returns the email.
+   *
+   * @return the email.
+   */
   public String getEmail() {
     return email;
   }
@@ -149,10 +188,20 @@ public class JwtUser implements UserDetails {
     return enabled;
   }
 
+  /**
+   * Returns the last password reset date.
+   *
+   * @return the last password reset date.
+   */
   public long getLastPasswordResetDate() {
     return lastPasswordResetDate;
   }
 
+  /**
+   * Returns the roles.
+   *
+   * @return the roles.
+   */
   public List<String> getRoles() {
     return roles;
   }

@@ -36,7 +36,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 public class MarketConfig {
 
   @Schema(
-      required = true,
+      requiredMode = Schema.RequiredMode.REQUIRED,
       description =
           "A unique identifier for the Market. Value must be an alphanumeric string. "
               + "Underscores and dashes are also permitted.")
@@ -45,19 +45,23 @@ public class MarketConfig {
   @Schema(description = "An optional friendly name for the Market.")
   private String name;
 
-  @Schema(required = true, description = "The Market Base Currency.")
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The Market Base Currency.")
   private String baseCurrency;
 
-  @Schema(required = true, description = "The Market Counter Currency.")
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The Market Counter Currency.")
   private String counterCurrency;
 
-  @Schema(required = true, description = "Enable trading on this Market?")
+  @Schema(
+      requiredMode = Schema.RequiredMode.REQUIRED,
+      description = "Enable trading on this Market?")
   private boolean enabled;
 
-  @Schema(required = true, description = "The Strategy ID to use for the Market.")
+  @Schema(
+      requiredMode = Schema.RequiredMode.REQUIRED,
+      description = "The Strategy ID to use for the Market.")
   private String tradingStrategyId;
 
-  // Required by ConfigurableComponentFactory
+  /** Creates a MarketConfig. Required by ConfigurableComponentFactory */
   public MarketConfig() {
   }
 
@@ -101,50 +105,110 @@ public class MarketConfig {
     this.tradingStrategyId = tradingStrategyId;
   }
 
+  /**
+   * Returns the id.
+   *
+   * @return the id.
+   */
   public String getId() {
     return id;
   }
 
+  /**
+   * Sets the id.
+   *
+   * @param id the id.
+   */
   public void setId(String id) {
     this.id = id;
   }
 
+  /**
+   * Returns the name.
+   *
+   * @return the name.
+   */
   public String getName() {
     return name;
   }
 
+  /**
+   * Sets the name.
+   *
+   * @param name the name.
+   */
   public void setName(String name) {
     this.name = name;
   }
 
+  /**
+   * Returns the base currency.
+   *
+   * @return the base currency.
+   */
   public String getBaseCurrency() {
     return baseCurrency;
   }
 
+  /**
+   * Sets the base currency.
+   *
+   * @param baseCurrency the base currency.
+   */
   public void setBaseCurrency(String baseCurrency) {
     this.baseCurrency = baseCurrency;
   }
 
+  /**
+   * Returns the counter currency.
+   *
+   * @return the counter currency.
+   */
   public String getCounterCurrency() {
     return counterCurrency;
   }
 
+  /**
+   * Sets the counter currency.
+   *
+   * @param counterCurrency the counter currency.
+   */
   public void setCounterCurrency(String counterCurrency) {
     this.counterCurrency = counterCurrency;
   }
 
+  /**
+   * Returns is market enabled.
+   *
+   * @return is market enabled.
+   */
   public boolean isEnabled() {
     return enabled;
   }
 
+  /**
+   * Sets market enabled.
+   *
+   * @param enabled market enabled.
+   */
   public void setEnabled(boolean enabled) {
     this.enabled = enabled;
   }
 
+  /**
+   * Returns trading strategy id.
+   *
+   * @return trading strategy id.
+   */
   public String getTradingStrategyId() {
     return tradingStrategyId;
   }
 
+  /**
+   * Sets trading strategy id.
+   *
+   * @param tradingStrategyId trading strategy id.
+   */
   public void setTradingStrategyId(String tradingStrategyId) {
     this.tradingStrategyId = tradingStrategyId;
   }

@@ -53,6 +53,11 @@ public class BotLogfileServiceImpl implements BotLogfileService {
   private static final String NEWLINE = System.getProperty("line.separator");
   private LogFileWebEndpoint logFileWebEndpoint;
 
+  /**
+   * Constructs the BotLogfileService.
+   *
+   * @param logFileWebEndpoint the Log File Web Endpoint.
+   */
   @Autowired
   public BotLogfileServiceImpl(LogFileWebEndpoint logFileWebEndpoint) {
     this.logFileWebEndpoint = logFileWebEndpoint;

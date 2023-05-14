@@ -31,14 +31,10 @@ package com.gazbert.bxbot.trading.api;
  */
 public enum OrderType {
 
-  /**
-   * Buy order.
-   */
+  /** Buy order. */
   BUY("Buy"),
 
-  /**
-   * Sell order.
-   */
+  /** Sell order. */
   SELL("Sell");
 
   private final String type;
@@ -47,6 +43,11 @@ public enum OrderType {
     this.type = type;
   }
 
+  /**
+   * Returns the string value of the Order Type.
+   *
+   * @return the string value.
+   */
   public String getStringValue() {
     return type;
   }

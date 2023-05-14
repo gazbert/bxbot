@@ -13,11 +13,11 @@ dependencies {
     implementation libraries.spring_boot_starter
     implementation libraries.spring_boot_starter_log4j2
     implementation libraries.google_guava
-    implementation libraries.javax_mail_api
-    implementation libraries.javax_mail_sun
+
+    implementation libraries.jakarta_mail_api
+    implementation libraries.jakarta_mail_sun
 
     implementation libraries.springdoc_openapi_ui
-    implementation libraries.springdoc_openapi_security
 
     testImplementation libraries.powermock_junit
     testImplementation libraries.powermock_api_easymock
@@ -35,10 +35,8 @@ jacocoTestCoverageVerification {
             // "... right now there is NO WAY TO USE PowerMock with JaCoCo On-the-fly instrumentation."
             // See https://github.com/powermock/powermock/wiki/Code-coverage-with-JaCoCo
             excludes = [
-                    'com.gazbert.bxbot.core.mail.EmailAlerter*',                // Powermock tests
-                    'com.gazbert.bxbot.core.util.ConfigurableComponentFactory', // Powermock tests
-                    'com.gazbert.bxbot.core.engine.TradingEngine',              // Powermock tests
-                    'com.gazbert.bxbot.BxBot'                                   // Nothing to test
+                    'com.gazbert.bxbot.BxBot',                  // Nothing to test
+                    'com.gazbert.bxbot.core.mail.EmailAlerter*' // Powermock tests
             ]
             limit {
                 counter = 'LINE'

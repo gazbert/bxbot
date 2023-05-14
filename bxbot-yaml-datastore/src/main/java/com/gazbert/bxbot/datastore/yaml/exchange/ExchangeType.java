@@ -34,10 +34,20 @@ public class ExchangeType {
 
   private ExchangeConfig exchange;
 
+  /**
+   * Returns the exchange config.
+   *
+   * @return the exchange config.
+   */
   public ExchangeConfig getExchange() {
     return exchange;
   }
 
+  /**
+   * Sets the exchange config.
+   *
+   * @param exchange the exchange config.
+   */
   public void setExchange(ExchangeConfig exchange) {
     this.exchange = exchange;
   }

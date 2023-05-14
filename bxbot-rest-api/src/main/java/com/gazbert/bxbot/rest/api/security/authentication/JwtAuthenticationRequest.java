@@ -25,7 +25,7 @@
 package com.gazbert.bxbot.rest.api.security.authentication;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 /**
  * Encapsulates a JWT Authentication Request containing username/password sent from the client.
@@ -37,37 +37,63 @@ import javax.validation.constraints.NotNull;
  */
 public class JwtAuthenticationRequest {
 
-  @Schema(required = true, description = "The username.")
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The username.")
   @NotNull(message = "Username cannot be null")
   private String username;
 
-  @Schema(required = true, description = "The password.")
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The password.")
   @NotNull(message = "Password cannot be null")
   private String password;
 
-  // For Jackson
+  /** Creates the JwtAuthenticationRequest. Required for Jackson. */
   public JwtAuthenticationRequest() {
     username = "";
     password = "";
   }
 
+  /**
+   * Creates the JwtAuthenticationRequest.
+   *
+   * @param username the username.
+   * @param password the password.
+   */
   public JwtAuthenticationRequest(String username, String password) {
     this.username = username;
     this.password = password;
   }
 
+  /**
+   * Returns the username.
+   *
+   * @return the username.
+   */
   public String getUsername() {
     return this.username;
   }
 
+  /**
+   * Sets the username.
+   *
+   * @param username the username.
+   */
   public void setUsername(String username) {
     this.username = username;
   }
 
+  /**
+   * Returns the password.
+   *
+   * @return the password.
+   */
   public String getPassword() {
     return this.password;
   }
 
+  /**
+   * Sets the password.
+   *
+   * @param password the password.
+   */
   public void setPassword(String password) {
     this.password = password;
   }

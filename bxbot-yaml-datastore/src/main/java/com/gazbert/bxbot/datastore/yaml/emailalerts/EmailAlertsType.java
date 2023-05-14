@@ -34,10 +34,20 @@ public class EmailAlertsType {
 
   private EmailAlertsConfig emailAlerts;
 
+  /**
+   * Returns the email alerts config.
+   *
+   * @return the email alerts config.
+   */
   public EmailAlertsConfig getEmailAlerts() {
     return emailAlerts;
   }
 
+  /**
+   * Sets the email alerts config.
+   *
+   * @param emailAlerts the email alerts config.
+   */
   public void setEmailAlerts(EmailAlertsConfig emailAlerts) {
     this.emailAlerts = emailAlerts;
   }

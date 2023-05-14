@@ -54,18 +54,26 @@ public final class StrategyConfigItems implements StrategyConfig {
     return Collections.unmodifiableSet(items.keySet());
   }
 
+  /**
+   * Sets the config items.
+   *
+   * @param items the config items.
+   */
   public void setItems(Map<String, String> items) {
     this.items = items;
   }
 
+  /**
+   * Returns the config items.
+   *
+   * @return the config items.
+   */
   Map<String, String> getItems() {
     return items;
   }
 
   @Override
   public String toString() {
-    return MoreObjects.toStringHelper(this)
-        .add("items", items)
-        .toString();
+    return MoreObjects.toStringHelper(this).add("items", items).toString();
   }
 }

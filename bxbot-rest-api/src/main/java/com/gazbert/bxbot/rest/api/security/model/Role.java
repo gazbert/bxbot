@@ -24,19 +24,19 @@
 
 package com.gazbert.bxbot.rest.api.security.model;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
 import java.util.List;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.ManyToMany;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
 
 /**
  * Represents a Role for a BX-bot User.
@@ -61,26 +61,56 @@ public class Role {
   @ManyToMany(mappedBy = "roles", fetch = FetchType.LAZY)
   private List<User> users;
 
+  /**
+   * Returns the id.
+   *
+   * @return the id.
+   */
   public Long getId() {
     return id;
   }
 
+  /**
+   * Sets the id.
+   *
+   * @param id the id.
+   */
   public void setId(Long id) {
     this.id = id;
   }
 
+  /**
+   * Returns the name.
+   *
+   * @return the name.
+   */
   public RoleName getName() {
     return name;
   }
 
+  /**
+   * Sets the name.
+   *
+   * @param name the name.
+   */
   public void setName(RoleName name) {
     this.name = name;
   }
 
+  /**
+   * Returns the users.
+   *
+   * @return the users.
+   */
   public List<User> getUsers() {
     return users;
   }
 
+  /**
+   * Sets the users.
+   *
+   * @param users the users.
+   */
   public void setUsers(List<User> users) {
     this.users = users;
   }

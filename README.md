@@ -1,5 +1,7 @@
 # BX-bot
 
+**JDK 17 / Spring Boot 3 Alpha Release Candidate**
+
 [![Gradle CI](https://github.com/gazbert/bxbot/actions/workflows/gradle.yml/badge.svg?branch=master)](https://github.com/gazbert/bxbot/actions/workflows/gradle.yml)
 [![Maven CI](https://github.com/gazbert/bxbot/actions/workflows/maven.yml/badge.svg?branch=master)](https://github.com/gazbert/bxbot/actions/workflows/maven.yml)
 [![Sonarcloud Status](https://sonarcloud.io/api/project_badges/measure?project=gazbert_bxbot&metric=alert_status)](https://sonarcloud.io/dashboard?id=gazbert_bxbot)
@@ -17,9 +19,8 @@ except for the trading strategies - you'll need to write those yourself! A simpl
 [`ExampleScalpingStrategy`](./bxbot-strategies/src/main/java/com/gazbert/bxbot/strategies/ExampleScalpingStrategy.java) 
 is included to get you started with the Trading API - see [Ta4j](https://github.com/ta4j/ta4j) for more ideas.
 
-Exchange Adapters for using [Bitstamp](https://www.bitstamp.net), [Bitfinex](https://www.bitfinex.com),
-[itBit](https://www.itbit.com/), [Kraken](https://www.kraken.com), [Gemini](https://gemini.com/),
-and [Coinbase Pro](https://pro.coinbase.com/) are included. 
+Exchange Adapters for using [Bitstamp](https://www.bitstamp.net), [Bitfinex](https://www.bitfinex.com), 
+[Kraken](https://www.kraken.com), [Gemini](https://gemini.com/), and [Coinbase Pro](https://pro.coinbase.com/) are included. 
 Feel free to improve these or contribute new adapters to the project; that would be 
 [shiny!](https://en.wikipedia.org/wiki/Firefly_(TV_series))
 
@@ -59,9 +60,9 @@ it will log the error, send an email alert (if configured), and then shut down.
   
 The bot runs on Linux, macOS, and Windows.
 
-BX-bot requires a Java 11+ JDK (e.g. [openjdk-11-jdk](http://openjdk.java.net/projects/jdk/11/) or 
-[Oracle JDK 11](https://www.oracle.com/technetwork/java/javase/downloads/jdk11-downloads-5066655.html))
-to be installed on the machine you are going to use to build and run the bot.
+BX-bot is supported on the current JDK 17 LTS. You'll need the JDK (e.g. [OpenJDK 17](http://openjdk.java.net/projects/jdk/17) or 
+[Oracle JDK 17](https://www.oracle.com/uk/java/technologies/downloads/#java17))
+installed on the machine you are going to use to build and run the bot.
 Be mindful of Oracle's recent [licensing changes](https://www.oracle.com/technetwork/java/javase/overview/oracle-jdk-faqs.html)
 and how you intend to use the bot.
 
@@ -113,7 +114,7 @@ and evaluate the bot, Docker is the way to go.
    Then run: `docker container attach <CONTAINER ID>`   
    
 ## Build Guide
-If you plan on developing the bot, you'll need JDK 11+ installed on your dev box.
+If you plan on developing the bot, you'll need JDK 17 installed on your dev box.
 
 You can use Gradle or Maven to build the bot and pull down the dependencies.
 
@@ -214,7 +215,7 @@ The [`TryModeExchangeAdapter`](./bxbot-exchanges/src/main/java/com/gazbert/bxbot
 configured by default to delegate public API calls to the 
 [`BitstampExchangeAdapter`](./bxbot-exchanges/src/main/java/com/gazbert/bxbot/exchanges/BitstampExchangeAdapter.java). 
 It simulates the private API (order management) calls; it's good for testing your initial setup and 
-``paper trading, but you'll eventually want to send live orders to the exchange!
+paper trading, but you'll eventually want to send live orders to the exchange!
 
 The configuration below shows how to live-trade with Bitstamp:
 
@@ -572,7 +573,7 @@ public network - see the _[TLS](#tls)_ section below.
 
 You _must_ also change the `bxbot.restapi.jwt.secret` value in the 
 [./config/application.properties](./config/application.properties) before using the REST API over a public network.
-This is the key that is used to sign your web tokens - the JWTs are signed using the HS512 algorithm.
+This value should be a long random alphanumeric string (100+ chars). It is used to sign your web tokens using the HS512 algorithm.
   
 Other interesting configuration in the [./config/application.properties](./config/application.properties) includes:
 

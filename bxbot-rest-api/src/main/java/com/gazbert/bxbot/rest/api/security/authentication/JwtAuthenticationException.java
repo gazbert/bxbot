@@ -34,10 +34,21 @@ public class JwtAuthenticationException extends AuthenticationException {
 
   private static final long serialVersionUID = -5066890753686004758L;
 
+  /**
+   * Creates the JwtAuthenticationException.
+   *
+   * @param msg the error message.
+   * @param e the original error.
+   */
   public JwtAuthenticationException(String msg, Throwable e) {
     super(msg, e);
   }
 
+  /**
+   * Creates the JwtAuthenticationException.
+   *
+   * @param msg the error message.
+   */
   public JwtAuthenticationException(String msg) {
     super(msg);
   }

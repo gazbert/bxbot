@@ -47,9 +47,15 @@ public class EmailAlertsConfigServiceImpl implements EmailAlertsConfigService {
   private static final Logger LOG = LogManager.getLogger();
   private final EmailAlertsConfigRepository emailAlertsConfigRepository;
 
+  /**
+   * Creates the EmailAlertsConfigService.
+   *
+   * @param emailAlertsConfigRepository the email alerts config repo.
+   */
   @Autowired
-  public EmailAlertsConfigServiceImpl(@Qualifier("emailAlertsConfigYamlRepository")
-      EmailAlertsConfigRepository emailAlertsConfigRepository) {
+  public EmailAlertsConfigServiceImpl(
+      @Qualifier("emailAlertsConfigYamlRepository")
+          EmailAlertsConfigRepository emailAlertsConfigRepository) {
     this.emailAlertsConfigRepository = emailAlertsConfigRepository;
   }
 

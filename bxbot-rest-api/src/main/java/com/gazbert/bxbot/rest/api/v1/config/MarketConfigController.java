@@ -66,6 +66,11 @@ public class MarketConfigController extends RestController {
   private static final String MARKETS_RESOURCE_PATH = "/markets";
   private final MarketConfigService marketConfigService;
 
+  /**
+   * Creates the MarketConfigController.
+   *
+   * @param marketConfigService the market config service.
+   */
   @Autowired
   public MarketConfigController(MarketConfigService marketConfigService) {
     this.marketConfigService = marketConfigService;
