@@ -7,7 +7,7 @@ buildscript {
 
     dependencies {
         classpath('io.spring.gradle:dependency-management-plugin:1.1.0')
-        classpath('org.springframework.boot:spring-boot-gradle-plugin:3.0.6')
+        classpath('org.springframework.boot:spring-boot-gradle-plugin:3.0.7')
     }
 }
 
@@ -23,11 +23,11 @@ buildScan {
 }
 
 ext.versions = [
-        springBootVersion        : '3.0.6',
+        springBootVersion        : '3.0.7',
         springCloudVersion       : '4.0.2',
 
         // Should be same as dependency used by springBootVersion
-        springCoreVersion        : '6.0.8',
+        springCoreVersion        : '6.0.9',
 
         hibernateVaildatorVersion: '8.0.0.Final',
         spotbugsToolVersion      : '4.7.3', // https://plugins.gradle.org/plugin/com.github.spotbugs
@@ -90,7 +90,7 @@ ext.libraries = [
         spring_boot_starter_test                : dependencies.create("org.springframework.boot:spring-boot-starter-test:" + ext.versions.springBootVersion) {
             exclude module: "spring-boot-starter-logging"
         },
-        spring_security_test                    : dependencies.create("org.springframework.security:spring-security-test:6.0.2"),
+        spring_security_test                    : dependencies.create("org.springframework.security:spring-security-test:6.0.3"),
         awaitility                              : dependencies.create("org.awaitility:awaitility:4.2.0")
 ]
 
