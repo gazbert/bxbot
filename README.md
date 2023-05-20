@@ -643,6 +643,6 @@ server.ssl.key-store-type=PKCS12
 
 ## Coming Soon... (Definitely Maybe)
 
-A UI built with [React](https://reactjs.org/) - it will consume the REST API. 
+A UI built with [Angular](https://angular.io/) - it will consume the REST API. 
 
 See the [Project Board](https://github.com/users/gazbert/projects/1) for timescales and progress.
