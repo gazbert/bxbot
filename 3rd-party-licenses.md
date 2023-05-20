@@ -16,6 +16,7 @@
 * Jakarta Bean Validation  - https://beanvalidation.org/licensing/
 * Springfox                - https://github.com/springfox/springfox/blob/master/LICENSE
 * Swagger                  - https://github.com/swagger-api/swagger-core/blob/master/LICENSE
+* Eclipse Temurin          - https://projects.eclipse.org/projects/adoptium.temurin
 
 ## Build & Test
 
@@ -32,5 +33,6 @@
 * Checkstyle                - https://checkstyle.org/licenses.html
 * SonarQube                 - https://www.sonarqube.org/downloads/license
 * JBehave                   - https://jbehave.org/license.html
+
 
 
