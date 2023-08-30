@@ -62,7 +62,7 @@ class TestTradingApi {
   }
 
   @Test
-  public void testGetMinOrder() throws Exception {
+  void testGetMinOrder() throws Exception {
     final MyApiImpl myApi = new MyApiImpl();
     final BigDecimal minimumOrderVolume = myApi.getMinimumOrderVolume("market-123");
     assertNull(minimumOrderVolume);

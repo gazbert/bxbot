@@ -45,11 +45,11 @@
     <revision>2.0.1-SNAPSHOT</revision>
 
     <!-- Should be same as dependency used by spring-boot-starter.version -->
-    <spring-core.version>6.0.9</spring-core.version>
+    <spring-core.version>6.0.11</spring-core.version>
 
     <jjwt.version>0.11.5</jjwt.version>
     <powermock.version>2.0.9</powermock.version>
-    <spring-boot-starter.version>3.0.7</spring-boot-starter.version>
+    <spring-boot-starter.version>3.1.3</spring-boot-starter.version>
     <checkstlye.version>3.2.1</checkstlye.version>
     <spotbugs.version>4.7.3.4</spotbugs.version>
     <hibernate-vaildator.version>8.0.0.Final</hibernate-vaildator.version>
@@ -61,7 +61,7 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>3.0.7</version>
+    <version>3.1.3</version>
   </parent>
   <profiles>
     <profile>
