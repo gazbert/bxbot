@@ -1043,7 +1043,7 @@ public class TestTryModeExchangeAdapter extends AbstractExchangeAdapter {
     final TryModeExchangeAdapter exchangeAdapter = new TryModeExchangeAdapter();
     exchangeAdapter.init(exchangeConfig);
     assertEquals(
-        "Try-Mode Test Adapter: configurable exchange public API delegation & simulated orders",
+        "Try-Mode Test Adapter (configurable exchange public API delegation & simulated orders)",
         exchangeAdapter.getImplName());
     PowerMock.verifyAll();
   }
