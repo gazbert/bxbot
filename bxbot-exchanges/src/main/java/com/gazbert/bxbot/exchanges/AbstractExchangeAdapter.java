@@ -313,7 +313,7 @@ abstract class AbstractExchangeAdapter {
    */
   String getOtherConfigItem(OtherConfig otherConfig, String itemName) {
     final String itemValue = otherConfig.getItem(itemName);
-    LOG.info(() -> itemName + ": " + itemValue);
+    LOG.debug(() -> itemName + ": " + itemValue);
     return assertItemExists(itemName, itemValue);
   }
 

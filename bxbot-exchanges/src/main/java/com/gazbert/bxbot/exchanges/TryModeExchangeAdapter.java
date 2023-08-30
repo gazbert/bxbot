@@ -208,11 +208,11 @@ public class TryModeExchangeAdapter extends AbstractExchangeAdapter implements E
   }
 
   private void setOtherConfig(ExchangeConfig exchangeConfig) {
-    LOG.info(() -> "Load try-mode adapter config...");
+    LOG.info(() -> "Loading try-mode adapter config...");
     final OtherConfig otherConfig = getOtherConfig(exchangeConfig);
 
     simulatedBaseCurrency = getOtherConfigItem(otherConfig, SIMULATED_BASE_CURRENCY_PROPERTY_NAME);
-    LOG.info(() -> "Base currency to be simulated:" + simulatedBaseCurrency);
+    LOG.info(() -> "Base currency to be simulated: " + simulatedBaseCurrency);
 
     final String startingBaseBalanceInConfig =
         getOtherConfigItem(otherConfig, SIMULATED_BASE_CURRENCY_START_BALANCE_PROPERTY_NAME);
@@ -224,7 +224,7 @@ public class TryModeExchangeAdapter extends AbstractExchangeAdapter implements E
 
     simulatedCounterCurrency =
         getOtherConfigItem(otherConfig, SIMULATED_COUNTER_CURRENCY_PROPERTY_NAME);
-    LOG.info(() -> "Counter currency to be simulated:" + simulatedCounterCurrency);
+    LOG.info(() -> "Counter currency to be simulated: " + simulatedCounterCurrency);
 
     final String startingBalanceInConfig =
         getOtherConfigItem(otherConfig, SIMULATED_COUNTER_CURRENCY_START_BALANCE_PROPERTY_NAME);
@@ -247,21 +247,19 @@ public class TryModeExchangeAdapter extends AbstractExchangeAdapter implements E
         getOtherConfigItem(otherConfig, DELEGATE_ADAPTER_CLASS_PROPERTY_NAME);
     LOG.info(
         () ->
-            "Delegate exchange adapter to be used for public API calls:"
+            "Delegate exchange adapter to be used for public API calls: "
                 + delegateExchangeClassName);
     LOG.info(() -> "Try-mode adapter config successfully loaded.");
   }
 
   private void initializeAdapterDelegation(ExchangeConfig config) {
-    LOG.info(
-        () -> "Initializing the delegate exchange adapter '" + delegateExchangeClassName + "'...");
     delegateExchangeAdapter = createDelegateExchangeAdapter();
     delegateExchangeAdapter.init(config);
   }
 
   @SuppressWarnings("unchecked")
   private ExchangeAdapter createDelegateExchangeAdapter() {
-    LOG.info(() -> "Creating the delegate exchange adapter '" + delegateExchangeClassName + "'...");
+    LOG.info(() -> "Creating the delegate exchange adapter: " + delegateExchangeClassName + "...");
     try {
       final Class componentClass = Class.forName(delegateExchangeClassName);
       final Object rawComponentObject = componentClass.getDeclaredConstructor().newInstance();

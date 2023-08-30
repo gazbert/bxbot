@@ -143,7 +143,9 @@ public class TradingStrategiesBuilder {
                 "Initialized trading strategy successfully. Name: ["
                     + tradingStrategy.getName()
                     + "] Class: "
-                    + tradingStrategy.getClassName());
+                    + tradingStrategy.getClassName()
+                    + " Bean: "
+                    + tradingStrategy.getBeanName());
 
         tradingStrategiesToExecute.add(strategyImpl);
       } else {
