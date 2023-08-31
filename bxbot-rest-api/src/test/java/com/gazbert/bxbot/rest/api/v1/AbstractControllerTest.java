@@ -32,9 +32,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Base64;
 import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -47,7 +47,6 @@ import org.springframework.security.web.FilterChainProxy;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.util.Base64Utils;
 import org.springframework.web.context.WebApplicationContext;
 
 /**
@@ -67,10 +66,10 @@ public abstract class AbstractControllerTest {
   // This must match a user's PASSWORD in the user table in src/main/resources/import.sql
   protected static final String VALID_USER_PASSWORD = "user";
 
-  // This must match a admin's USERNAME in the user table in src/main/resources/import.sql
+  // This must match an admin's USERNAME in the user table in src/main/resources/import.sql
   protected static final String VALID_ADMIN_NAME = "admin";
 
-  // This must match a admin's PASSWORD in the user table in src/main/resources/import.sql
+  // This must match an admin's PASSWORD in the user table in src/main/resources/import.sql
   protected static final String VALID_ADMIN_PASSWORD = "admin";
 
   // Used to convert Java objects into JSON
@@ -101,8 +100,9 @@ public abstract class AbstractControllerTest {
   protected String buildAuthorizationHeaderValue(String username, String password) {
     return "Basic "
         + new String(
-            Base64Utils.encode((username + ":" + password).getBytes(StandardCharsets.UTF_8)),
-            Charset.forName("UTF-8"));
+            Base64.getEncoder()
+                .encode((username + ":" + password).getBytes(StandardCharsets.UTF_8)),
+            StandardCharsets.UTF_8);
   }
 
   /*
@@ -174,6 +174,7 @@ public abstract class AbstractControllerTest {
 
     // empty constructor needed by Jackson
     public JwtResponse() {
+      // noop
     }
 
     String getToken() {
