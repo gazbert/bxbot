@@ -134,7 +134,7 @@ public class WebSecurityConfig {
 
     // No need to create session as JWT auth is stateless / per request.
     http.sessionManagement(
-        (session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+        session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
     // Add our custom JWT security filter before Spring Security's Username/Password filter.
     http.addFilterBefore(authenticationTokenFilter(), UsernamePasswordAuthenticationFilter.class);

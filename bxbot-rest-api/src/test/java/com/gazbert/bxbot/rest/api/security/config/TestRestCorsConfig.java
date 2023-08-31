@@ -23,8 +23,8 @@
 
 package com.gazbert.bxbot.rest.api.security.config;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.cors.CorsConfigurationSource;
 
@@ -40,6 +40,6 @@ class TestRestCorsConfig {
     final RestCorsConfig restCorsConfig = new RestCorsConfig();
     final CorsConfigurationSource corsConfigurationSource =
         restCorsConfig.corsConfigurationSource();
-    Assertions.assertNotNull(corsConfigurationSource);
+    assertNotNull(corsConfigurationSource);
   }
 }

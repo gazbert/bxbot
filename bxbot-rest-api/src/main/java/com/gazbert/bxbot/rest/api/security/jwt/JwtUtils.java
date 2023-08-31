@@ -48,8 +48,8 @@ import org.springframework.stereotype.Component;
  *
  * <p>Properties are loaded from the config/application.properties file.
  *
- * <p>Code originated from the excellent JWT and Spring Boot example by
- * <a href="https://github.com/szerhusenBC/jwt-spring-security-demo">Stephan Zerhusen</a>.
+ * <p>Code originated from the excellent JWT and Spring Boot example by <a
+ * href="https://github.com/szerhusenBC/jwt-spring-security-demo">Stephan Zerhusen</a>.
  *
  * @author gazbert
  */
@@ -154,9 +154,9 @@ public class JwtUtils {
     boolean canBeRefreshed = isCreatedAfterLastPasswordReset(created, lastPasswordReset);
     if (!canBeRefreshed) {
       LOG.warn(
-          "Token cannot be refreshed for user: "
-              + claims.get(CLAIM_KEY_USERNAME)
-              + " - token creation date is BEFORE last password reset date");
+          "Token cannot be refreshed for user: {} "
+              + "- token creation date is BEFORE last password reset date",
+          claims.get(CLAIM_KEY_USERNAME));
     }
     return canBeRefreshed;
   }
