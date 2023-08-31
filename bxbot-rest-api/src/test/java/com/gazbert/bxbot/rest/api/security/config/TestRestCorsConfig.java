@@ -23,10 +23,10 @@
 
 package com.gazbert.bxbot.rest.api.security.config;
 
-import static org.junit.Assert.assertNotNull;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.springframework.web.filter.CorsFilter;
+import org.springframework.web.cors.CorsConfigurationSource;
 
 /**
  * Tests the REST CORS config filter is created as expected.
@@ -38,7 +38,8 @@ class TestRestCorsConfig {
   @Test
   void testInitialisationWorksAsExpected() {
     final RestCorsConfig restCorsConfig = new RestCorsConfig();
-    final CorsFilter corsFilter = restCorsConfig.corsFilter();
-    assertNotNull(corsFilter);
+    final CorsConfigurationSource corsConfigurationSource =
+        restCorsConfig.corsConfigurationSource();
+    Assertions.assertNotNull(corsConfigurationSource);
   }
 }

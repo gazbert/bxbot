@@ -77,7 +77,7 @@ public class MarketConfigController extends RestController {
   }
 
   /**
-   * Returns all of the Market configuration for the bot.
+   * Returns all the Market configuration for the bot.
    *
    * @param principal the authenticated user.
    * @return all the Market configurations.

@@ -48,8 +48,8 @@ import org.springframework.stereotype.Component;
  *
  * <p>Properties are loaded from the config/application.properties file.
  *
- * <p>Code originated from the excellent JWT and Spring Boot example by Stephan Zerhusen:
- * https://github.com/szerhusenBC/jwt-spring-security-demo
+ * <p>Code originated from the excellent JWT and Spring Boot example by
+ * <a href="https://github.com/szerhusenBC/jwt-spring-security-demo">Stephan Zerhusen</a>.
  *
  * @author gazbert
  */

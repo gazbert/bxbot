@@ -29,8 +29,9 @@ package com.gazbert.bxbot.rest.api.security.model;
  *
  * <p>They are assigned to users in the resources/import.sql script when the bot bootstraps.
  *
- * <p>See:
- * https://docs.spring.io/spring-security/site/docs/current/reference/htmlsingle/#appendix-faq-role-prefix
+ * <p>See <a
+ * href="https://docs.spring.io/spring-security/site/docs/current/reference/htmlsingle/#appendix-faq-role-prefix">Role
+ * Prefix docs</a>.
  *
  * @author gazbert
  */

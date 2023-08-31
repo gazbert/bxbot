@@ -24,6 +24,8 @@
 
 package com.gazbert.bxbot.rest.api.security.config;
 
+import static org.springframework.security.config.Customizer.withDefaults;
+
 import com.gazbert.bxbot.rest.api.security.authentication.JwtAuthenticationEntryPoint;
 import com.gazbert.bxbot.rest.api.security.authentication.JwtAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,20 +38,21 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.filter.CorsFilter;
 
 /**
  * Encapsulates the Spring web security config for the app.
  *
- * <p>Code originated from the excellent JWT and Spring Boot example by Stephan Zerhusen:
- * https://github.com/szerhusenBC/jwt-spring-security-demo
+ * <p>Code originated from the excellent JWT and Spring Boot example by <a
+ * href="https://github.com/szerhusenBC/jwt-spring-security-demo">Stephan Zerhusen</a>.
  *
- * <p>It has had significant rework for Spring Security 6.
+ * <p>It has had significant rework for Spring Security 6 and prep for 7.
  *
  * @author gazbert
  */
@@ -58,19 +61,19 @@ import org.springframework.web.filter.CorsFilter;
 @EnableMethodSecurity
 public class WebSecurityConfig {
 
+  private static final int BCRYPT_STRENGTH_12_ROUNDS = 12;
+
   private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
   private final UserDetailsService userDetailsService;
 
   /**
    * Creates the WebSecurityConfig.
    *
-   * @param corsFilter the CORS filter.
    * @param jwtAuthenticationEntryPoint the JWT authentication entry point.
    * @param userDetailsService the user details service.
    */
   @Autowired
   public WebSecurityConfig(
-      CorsFilter corsFilter,
       JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint,
       UserDetailsService userDetailsService) {
     this.jwtAuthenticationEntryPoint = jwtAuthenticationEntryPoint;
@@ -78,69 +81,68 @@ public class WebSecurityConfig {
   }
 
   /**
-   * Creates the security filter chain for the app.
+   * Creates the Security Filter Chain for the app.
    *
-   * @param httpSecurity the HTTP security builder.
-   * @return the HTTP security chain.
+   * @param http the HTTP Security builder.
+   * @return the Security Filter chain.
    * @throws Exception if anything unexpected happens.
    */
   @Bean
-  public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
+  public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
-    httpSecurity
-        // Default behaviour is to enable CSRF protection.
-        // We need to override this behaviour for our stateless (no cookies used!) REST endpoints.
-        // https://security.stackexchange.com/questions/166724/should-i-use-csrf-protection-on-rest-api-endpoints
-        // https://stackoverflow.com/questions/27390407/post-request-to-spring-server-returns-403-forbidden
-        .csrf()
-        .disable()
-        .exceptionHandling()
-        .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+    // By default, Spring Security uses a Bean by the name of corsConfigurationSource defined in our
+    // RestCorsConfig class.
+    http.cors(withDefaults());
 
-        // No need to create session as JWT auth is stateless / per request
-        .and()
-        .sessionManagement()
-        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+    // Restrict access to the REST API.
+    http.authorizeHttpRequests(
+        auth ->
+            // Allow anyone to try and authenticate to get a JWT.
+            auth.requestMatchers(HttpMethod.POST, "/api/token")
+                .permitAll()
 
-        // Allow anyone to try and authenticate to get a toke
-        .and()
-        .authorizeHttpRequests(
-            auth ->
-                auth
+                // Allow anyone to access the Swagger docs.
+                .requestMatchers(
+                    HttpMethod.GET,
+                    "/api-docs",
+                    "/swagger-resources/**",
+                    "/swagger-ui.html**",
+                    "/swagger-ui/**",
+                    "/v3/api-docs/**",
+                    "/api-docs/**",
+                    "/webjars/**",
+                    "/favicon.ico")
+                .permitAll()
 
-                    // Allow anyone to try and authenticate
-                    .requestMatchers("/api/token")
-                    .permitAll()
+                // Allow CORS pre-flighting.
+                .requestMatchers(HttpMethod.OPTIONS, "/**")
+                .permitAll()
 
-                    // Allow CORS pre-flighting
-                    .requestMatchers(HttpMethod.OPTIONS, "/**")
-                    .permitAll()
+                // All other requests MUST be authenticated.
+                .anyRequest()
+                .authenticated());
 
-                    // Allow anyone access to Swagger docs
-                    .requestMatchers(
-                        HttpMethod.GET,
-                        "/api-docs",
-                        "/swagger-resources/**",
-                        "/swagger-ui.html**",
-                        "/swagger-ui/**",
-                        "/v3/api-docs/**",
-                        "/api-docs/**",
-                        "/webjars/**",
-                        "/favicon.ico")
-                    .permitAll()
+    // Set our JWT authentication entry point.
+    http.exceptionHandling(
+        exceptionHandler -> exceptionHandler.authenticationEntryPoint(jwtAuthenticationEntryPoint));
 
-                    // All other requests must be authenticated
-                    .anyRequest()
-                    .authenticated());
+    // Default behaviour is to enable CSRF protection.
+    // We need to override this behaviour for our stateless (no cookies used!) REST endpoints.
+    // https://security.stackexchange.com/questions/166724/should-i-use-csrf-protection-on-rest-api-endpoints
+    // https://stackoverflow.com/questions/27390407/post-request-to-spring-server-returns-403-forbidden
+    http.csrf(AbstractHttpConfigurer::disable);
 
-    // Add our custom JWT security filter before Spring Security's Username/Password filter
-    httpSecurity.addFilterBefore(
-        authenticationTokenFilter(), UsernamePasswordAuthenticationFilter.class);
+    // No need to create session as JWT auth is stateless / per request.
+    http.sessionManagement(
+        (session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
-    // Disable page caching in the browser
-    httpSecurity.headers().cacheControl().disable();
+    // Add our custom JWT security filter before Spring Security's Username/Password filter.
+    http.addFilterBefore(authenticationTokenFilter(), UsernamePasswordAuthenticationFilter.class);
 
-    return httpSecurity.build();
+    // Disable page caching in the browser.
+    http.headers(headers -> headers.cacheControl(HeadersConfigurer.CacheControlConfig::disable));
+
+    return http.build();
   }
 
   /**
@@ -170,14 +172,16 @@ public class WebSecurityConfig {
   }
 
   /**
-   * Use bcrypt password encoding.
-   * https://docs.spring.io/spring-security/site/docs/5.0.5.RELEASE/reference/htmlsingle/#pe-bcpe
+   * Use bcrypt password encoding. See: <a
+   * href="https://docs.spring.io/spring-security/site/docs/5.0.5.RELEASE/reference/htmlsingle/#pe-bcpe">BCrypt
+   * password encoder</a>.
    *
    * @return The BCrypt password encoder.
    */
   @Bean
   public BCryptPasswordEncoder bcryptPasswordEncoder() {
-    return new BCryptPasswordEncoder(12); // tuned to 1 sec; default is 10 rounds.
+    return new BCryptPasswordEncoder(
+        BCRYPT_STRENGTH_12_ROUNDS); // tuned to 1 sec; default is 10 rounds.
   }
 
   /**
