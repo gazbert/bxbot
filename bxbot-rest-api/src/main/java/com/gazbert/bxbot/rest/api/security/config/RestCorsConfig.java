@@ -26,8 +26,7 @@ package com.gazbert.bxbot.rest.api.security.config;
 import jakarta.validation.constraints.NotNull;
 import java.util.Arrays;
 import java.util.Collections;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -44,9 +43,8 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
  * @author gazbert
  */
 @Configuration
+@Log4j2
 public class RestCorsConfig {
-
-  private static final Logger LOG = LogManager.getLogger();
 
   @NotNull
   @Value("${restapi.cors.allowed_origin}")
@@ -64,7 +62,7 @@ public class RestCorsConfig {
   @Bean
   CorsConfigurationSource corsConfigurationSource() {
 
-    LOG.info(() -> String.format("CORS Allowed Origins: %s", allowedOrigin));
+    log.info("CORS Allowed Origins: " + allowedOrigin);
 
     final CorsConfiguration configuration = new CorsConfiguration();
     configuration.setAllowedOrigins(Collections.singletonList(allowedOrigin));
