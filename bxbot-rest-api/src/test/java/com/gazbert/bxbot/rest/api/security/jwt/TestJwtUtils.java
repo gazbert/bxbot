@@ -56,8 +56,8 @@ import org.springframework.test.util.ReflectionTestUtils;
 /**
  * Tests the JWT utils.
  *
- * <p>Code originated from the excellent JWT and Spring Boot example by Stephan Zerhusen:
- * https://github.com/szerhusenBC/jwt-spring-security-demo
+ * <p>Code originated from the excellent JWT and Spring Boot example by <a
+ * href="https://github.com/szerhusenBC/jwt-spring-security-demo">Stephan Zerhusen</a>.
  *
  * @author gazbert
  */

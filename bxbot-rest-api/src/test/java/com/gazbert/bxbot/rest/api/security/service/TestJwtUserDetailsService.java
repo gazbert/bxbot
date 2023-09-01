@@ -34,7 +34,6 @@ import com.gazbert.bxbot.rest.api.security.model.User;
 import com.gazbert.bxbot.rest.api.security.repository.UserRepository;
 import org.easymock.EasyMock;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.api.easymock.PowerMock;
@@ -62,8 +61,8 @@ public class TestJwtUserDetailsService {
   }
 
   /**
-   * Stuck on JUnit4 as Powermock doesn't play with JUnit5. See:
-   * https://github.com/powermock/powermock/issues/929
+   * Stuck on JUnit4 as Powermock doesn't play with JUnit5. See: <a
+   * href="https://github.com/powermock/powermock/issues/929">Powermock issue 929</a>.
    */
   @Test
   public void whenLoadByUsernameCalledWithKnownUsernameThenExpectUserDetailsToBeReturned() {
