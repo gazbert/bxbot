@@ -26,7 +26,6 @@ package com.gazbert.bxbot.rest.api.security.service;
 import static org.easymock.EasyMock.eq;
 import static org.easymock.EasyMock.expect;
 import static org.junit.Assert.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.gazbert.bxbot.rest.api.security.jwt.JwtUser;
 import com.gazbert.bxbot.rest.api.security.jwt.JwtUserFactory;
@@ -81,15 +80,13 @@ public class TestJwtUserDetailsService {
     PowerMock.verifyAll();
   }
 
-  @Test
+  @Test(expected = UsernameNotFoundException.class)
   public void whenLoadByUsernameCalledWithUnknownUsernameThenExpectUsernameNotFoundException() {
     expect(userRepository.findByUsername(UNKNOWN_USERNAME)).andStubReturn(null);
     PowerMock.replayAll();
 
     final JwtUserDetailsService jwtUserDetailsService = new JwtUserDetailsService(userRepository);
-    assertThrows(
-        UsernameNotFoundException.class,
-        () -> jwtUserDetailsService.loadUserByUsername(UNKNOWN_USERNAME));
+    jwtUserDetailsService.loadUserByUsername(UNKNOWN_USERNAME);
 
     PowerMock.verifyAll();
   }
