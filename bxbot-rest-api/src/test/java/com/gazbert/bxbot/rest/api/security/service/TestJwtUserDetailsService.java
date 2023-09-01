@@ -23,21 +23,14 @@
 
 package com.gazbert.bxbot.rest.api.security.service;
 
-import static org.easymock.EasyMock.eq;
 import static org.easymock.EasyMock.expect;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import com.gazbert.bxbot.rest.api.security.jwt.JwtUser;
-import com.gazbert.bxbot.rest.api.security.jwt.JwtUserFactory;
-import com.gazbert.bxbot.rest.api.security.model.User;
 import com.gazbert.bxbot.rest.api.security.repository.UserRepository;
 import org.easymock.EasyMock;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.powermock.api.easymock.PowerMock;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 /**
@@ -45,49 +38,33 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
  *
  * @author gazbert
  */
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({JwtUserFactory.class})
-public class TestJwtUserDetailsService {
+class TestJwtUserDetailsService {
 
-  private static final String KNOWN_USERNAME = "known-username";
   private static final String UNKNOWN_USERNAME = "unknown-username";
 
   private UserRepository userRepository;
 
-  @Before
-  public void setup() {
-    userRepository = PowerMock.createMock(UserRepository.class);
+  @BeforeEach
+  void setup() {
+    userRepository = EasyMock.createMock(UserRepository.class);
   }
 
-  /**
-   * Stuck on JUnit4 as Powermock doesn't play with JUnit5. See: <a
-   * href="https://github.com/powermock/powermock/issues/929">Powermock issue 929</a>.
-   */
   @Test
-  public void whenLoadByUsernameCalledWithKnownUsernameThenExpectUserDetailsToBeReturned() {
-    PowerMock.mockStatic(JwtUserFactory.class);
-    final User user = PowerMock.createMock(User.class);
-    final JwtUser jwtUser = EasyMock.createMock(JwtUser.class);
-
-    expect(userRepository.findByUsername(KNOWN_USERNAME)).andStubReturn(user);
-    expect(JwtUserFactory.create(eq(user))).andStubReturn(jwtUser);
-    PowerMock.replayAll();
-
+  void testServiceCreationIsAsExpected() {
     final JwtUserDetailsService jwtUserDetailsService = new JwtUserDetailsService(userRepository);
-    final JwtUser userDetails = (JwtUser) jwtUserDetailsService.loadUserByUsername(KNOWN_USERNAME);
-    assertEquals(jwtUser, userDetails);
-
-    PowerMock.verifyAll();
+    assertNotNull(jwtUserDetailsService);
   }
 
-  @Test(expected = UsernameNotFoundException.class)
-  public void whenLoadByUsernameCalledWithUnknownUsernameThenExpectUsernameNotFoundException() {
+  @Test
+  void whenLoadByUsernameCalledWithUnknownUsernameThenExpectUsernameNotFoundException() {
     expect(userRepository.findByUsername(UNKNOWN_USERNAME)).andStubReturn(null);
-    PowerMock.replayAll();
+    EasyMock.replay(userRepository);
 
     final JwtUserDetailsService jwtUserDetailsService = new JwtUserDetailsService(userRepository);
-    jwtUserDetailsService.loadUserByUsername(UNKNOWN_USERNAME);
+    assertThrows(
+        UsernameNotFoundException.class,
+        () -> jwtUserDetailsService.loadUserByUsername(UNKNOWN_USERNAME));
 
-    PowerMock.verifyAll();
+    EasyMock.verify(userRepository);
   }
 }

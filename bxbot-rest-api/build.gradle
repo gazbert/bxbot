@@ -33,24 +33,17 @@ dependencies {
     testImplementation libraries.spring_boot_starter_test
     testImplementation libraries.spring_security_test
     testImplementation libraries.easymock
-    testImplementation libraries.powermock_junit
-    testImplementation libraries.powermock_api_easymock
     testImplementation libraries.awaitility
-    testImplementation libraries.junit_vintage_engine
 }
 
-// FIXME: Broken with Gradle 7.3.3 :-(
 jacocoTestCoverageVerification {
     violationRules {
         rule {
             element = 'CLASS'
-            excludes = [
-                    'com.gazbert.bxbot.rest.api.security.jwt.JwtUserFactory*'
-            ]
             limit {
                 counter = 'LINE'
                 value = 'COVEREDRATIO'
-                minimum = 0.0
+                minimum = 0.8
             }
         }
     }
