@@ -28,14 +28,17 @@ import com.gazbert.bxbot.rest.api.security.authentication.JwtAuthenticationExcep
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.crypto.SecretKey;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
@@ -252,21 +255,24 @@ public class JwtUtils {
   private String buildToken(Map<String, Object> claims) {
     final Date issuedAtDate = new Date((Long) claims.get(CLAIM_KEY_ISSUED_AT));
     final Date expirationDate = new Date(issuedAtDate.getTime() + (expirationInSecs * 1000));
+    final SecretKey key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
 
     return Jwts.builder()
         .setClaims(claims)
         .setExpiration(expirationDate)
         .setIssuedAt(issuedAtDate)
-        .signWith(SignatureAlgorithm.HS512, secret)
+        .signWith(key, SignatureAlgorithm.HS512)
         .compact();
   }
 
   private Claims getClaimsFromToken(String token) {
-    return Jwts.parser()
+    final SecretKey key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+    return Jwts.parserBuilder()
+        .setSigningKey(key)
         .setAllowedClockSkewSeconds(allowedClockSkewInSecs)
-        .setSigningKey(secret)
         .requireIssuer(issuer)
         .requireAudience(audience)
+        .build()
         .parseClaimsJws(token)
         .getBody();
   }
