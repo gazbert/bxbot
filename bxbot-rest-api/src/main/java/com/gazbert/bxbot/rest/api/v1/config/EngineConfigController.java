@@ -37,8 +37,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.security.Principal;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -61,9 +60,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @org.springframework.web.bind.annotation.RestController
 @RequestMapping(CONFIG_ENDPOINT_BASE_URI)
 @Tag(name = "Engine Configuration")
+@Log4j2
 public class EngineConfigController extends RestController {
 
-  private static final Logger LOG = LogManager.getLogger();
   private static final String ENGINE_RESOURCE_PATH = "/engine";
   private final EngineConfigService engineConfigService;
 
@@ -99,11 +98,10 @@ public class EngineConfigController extends RestController {
       })
   public EngineConfig getEngine(@Parameter(hidden = true) Principal principal) {
 
-    LOG.info(
-        () -> "GET " + ENGINE_RESOURCE_PATH + " - getEngine() - caller: " + principal.getName());
+    log.info("GET " + ENGINE_RESOURCE_PATH + " - getEngine() - caller: " + principal.getName());
 
     final EngineConfig engineConfig = engineConfigService.getEngineConfig();
-    LOG.info(() -> "Response: " + engineConfig);
+    log.info("Response: " + engineConfig);
     return engineConfig;
   }
 
@@ -132,17 +130,16 @@ public class EngineConfigController extends RestController {
   public ResponseEntity<EngineConfig> updateEngine(
       @Parameter(hidden = true) Principal principal, @Valid @RequestBody EngineConfig config) {
 
-    LOG.info(
-        () -> "PUT " + ENGINE_RESOURCE_PATH + " - updateEngine() - caller: " + principal.getName());
+    log.info("PUT " + ENGINE_RESOURCE_PATH + " - updateEngine() - caller: " + principal.getName());
 
-    LOG.info(() -> "Request: " + config);
+    log.info("Request: " + config);
 
     final EngineConfig updatedConfig = engineConfigService.updateEngineConfig(config);
     return buildResponseEntity(updatedConfig);
   }
 
   private ResponseEntity<EngineConfig> buildResponseEntity(EngineConfig entity) {
-    LOG.info(() -> "Response: " + entity);
+    log.info("Response: " + entity);
     return new ResponseEntity<>(entity, null, HttpStatus.OK);
   }
 }

@@ -38,8 +38,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.security.Principal;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -60,9 +59,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 @org.springframework.web.bind.annotation.RestController
 @RequestMapping(RUNTIME_ENDPOINT_BASE_URI)
 @Tag(name = "Bot Logfile")
+@Log4j2
 public class BotLogfileController extends RestController {
 
-  private static final Logger LOG = LogManager.getLogger();
   private static final String LOGFILE_RESOURCE_PATH = "/logfile";
   private static final String LOGFILE_DOWNLOAD_RESOURCE_PATH = "/logfile/download";
 
@@ -108,12 +107,8 @@ public class BotLogfileController extends RestController {
   public ResponseEntity<Resource> downloadLogfile(
       @Parameter(hidden = true) Principal principal, HttpServletRequest request) {
 
-    LOG.info(
-        () ->
-            "GET "
-                + LOGFILE_RESOURCE_PATH
-                + " - downloadLogfile() - caller: "
-                + principal.getName());
+    log.info(
+        "GET " + LOGFILE_RESOURCE_PATH + " - downloadLogfile() - caller: " + principal.getName());
 
     Resource logfile;
     try {
@@ -126,7 +121,7 @@ public class BotLogfileController extends RestController {
     try {
       contentType = request.getServletContext().getMimeType(logfile.getFile().getAbsolutePath());
     } catch (IOException ex) {
-      LOG.info(() -> "Could not determine file type.");
+      log.info("Could not determine file type.");
     }
     // Fallback to the default content type if type could not be determined
     if (contentType == null) {
@@ -182,16 +177,15 @@ public class BotLogfileController extends RestController {
           @RequestParam(required = false)
           Integer tail) {
 
-    LOG.info(
-        () ->
-            "GET "
-                + LOGFILE_RESOURCE_PATH
-                + " - getLogfile() - caller: "
-                + principal.getName()
-                + ", head="
-                + head
-                + ", tail="
-                + tail);
+    log.info(
+        "GET "
+            + LOGFILE_RESOURCE_PATH
+            + " - getLogfile() - caller: "
+            + principal.getName()
+            + ", head="
+            + head
+            + ", tail="
+            + tail);
 
     String logfile;
     final int maxLogfileLineCount = restApiConfig.getMaxLogfileLines();
@@ -199,10 +193,9 @@ public class BotLogfileController extends RestController {
     try {
       if (head != null && head > 0) {
         if (head > maxLogfileLineCount) {
-          LOG.warn(
-              () ->
-                  "Requested head line count exceeds max line count. Using max line count: "
-                      + maxLogfileLineCount);
+          log.warn(
+              "Requested head line count exceeds max line count. Using max line count: "
+                  + maxLogfileLineCount);
           logfile = botLogfileService.getLogfileHead(maxLogfileLineCount);
         } else {
           logfile = botLogfileService.getLogfileHead(head);
@@ -210,10 +203,9 @@ public class BotLogfileController extends RestController {
 
       } else if (tail != null && tail > 0) {
         if (tail > maxLogfileLineCount) {
-          LOG.warn(
-              () ->
-                  "Requested tail line count exceeds max line count. Using max line count: "
-                      + maxLogfileLineCount);
+          log.warn(
+              "Requested tail line count exceeds max line count. Using max line count: "
+                  + maxLogfileLineCount);
           logfile = botLogfileService.getLogfileTail(maxLogfileLineCount);
         } else {
           logfile = botLogfileService.getLogfileTail(tail);

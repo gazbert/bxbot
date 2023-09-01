@@ -23,6 +23,7 @@
 
 package com.gazbert.bxbot.rest.api.security.authentication;
 
+import java.io.Serial;
 import org.springframework.security.core.AuthenticationException;
 
 /**
@@ -32,7 +33,7 @@ import org.springframework.security.core.AuthenticationException;
  */
 public class JwtAuthenticationException extends AuthenticationException {
 
-  private static final long serialVersionUID = -5066890753686004758L;
+  @Serial private static final long serialVersionUID = -5066890753686004758L;
 
   /**
    * Creates the JwtAuthenticationException.

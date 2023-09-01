@@ -30,9 +30,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.text.MessageFormat;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -46,14 +44,14 @@ import org.springframework.web.filter.OncePerRequestFilter;
  *
  * <p>The filter is invoked once for every request to validate the JWT - we don't use sessions.
  *
- * <p>Code originated from the excellent JWT and Spring Boot example by
- * <a href="https://github.com/szerhusenBC/jwt-spring-security-demo">Stephan Zerhusen</a>.
+ * <p>Code originated from the excellent JWT and Spring Boot example by <a
+ * href="https://github.com/szerhusenBC/jwt-spring-security-demo">Stephan Zerhusen</a>.
  *
  * @author gazbert
  */
+@Log4j2
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-  private static final Logger LOG = LogManager.getLogger();
   private static final String AUTHORIZATION_HEADER = "Authorization";
   private static final String BEARER_PREFIX = "Bearer ";
   private static final int BEARER_PREFIX_LENGTH = BEARER_PREFIX.length();
@@ -75,9 +73,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
       // Might be null if client does not have a token yet.
       if (authorizationHeader != null) {
         final Claims claims = jwtUtils.validateTokenAndGetClaims(authorizationHeader);
-        LOG.info(() -> "JWT is valid");
+        log.info("JWT is valid");
         final String username = jwtUtils.getUsernameFromTokenClaims(claims);
-        LOG.info(() -> "Username in JWT: " + username);
+        log.info("Username in JWT: " + username);
 
         if (SecurityContextHolder.getContext().getAuthentication() == null) {
           // First time in - store user details in Spring's Security context
@@ -88,16 +86,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
           authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
           SecurityContextHolder.getContext().setAuthentication(authentication);
 
-          LOG.info(
-              () -> "Authenticated User: " + username + " has been set in Spring SecurityContext.");
+          log.info("Authenticated User: " + username + " has been set in Spring SecurityContext.");
         }
       }
 
       chain.doFilter(request, response);
 
     } catch (Exception e) {
-      LOG.error(
-          MessageFormat.format("JWT Authentication failure! Details: {0}", e.getMessage()), e);
+      log.error("JWT Authentication failure! Details: " + e.getMessage(), e);
       response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
     }
   }

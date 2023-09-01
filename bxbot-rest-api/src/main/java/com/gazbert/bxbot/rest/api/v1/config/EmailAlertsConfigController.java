@@ -37,8 +37,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.security.Principal;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -61,9 +60,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @org.springframework.web.bind.annotation.RestController
 @RequestMapping(CONFIG_ENDPOINT_BASE_URI)
 @Tag(name = "Email Alerts Configuration")
+@Log4j2
 public class EmailAlertsConfigController extends RestController {
 
-  private static final Logger LOG = LogManager.getLogger();
   private static final String EMAIL_ALERTS_RESOURCE_PATH = "/email-alerts";
   private final EmailAlertsConfigService emailAlertsConfigService;
 
@@ -99,15 +98,14 @@ public class EmailAlertsConfigController extends RestController {
       })
   public EmailAlertsConfig getEmailAlerts(@Parameter(hidden = true) Principal principal) {
 
-    LOG.info(
-        () ->
-            "GET "
-                + EMAIL_ALERTS_RESOURCE_PATH
-                + " - getEmailAlerts() - caller: "
-                + principal.getName());
+    log.info(
+        "GET "
+            + EMAIL_ALERTS_RESOURCE_PATH
+            + " - getEmailAlerts() - caller: "
+            + principal.getName());
 
     final EmailAlertsConfig emailAlertsConfig = emailAlertsConfigService.getEmailAlertsConfig();
-    LOG.info(() -> "Response: " + emailAlertsConfig);
+    log.info("Response: " + emailAlertsConfig);
     return emailAlertsConfig;
   }
 
@@ -136,14 +134,13 @@ public class EmailAlertsConfigController extends RestController {
   public ResponseEntity<EmailAlertsConfig> updateEmailAlerts(
       @Parameter(hidden = true) Principal principal, @RequestBody EmailAlertsConfig config) {
 
-    LOG.info(
-        () ->
-            "PUT "
-                + EMAIL_ALERTS_RESOURCE_PATH
-                + " - updateEmailAlerts() - caller: "
-                + principal.getName());
+    log.info(
+        "PUT "
+            + EMAIL_ALERTS_RESOURCE_PATH
+            + " - updateEmailAlerts() - caller: "
+            + principal.getName());
 
-    LOG.info(() -> "Request: " + config);
+    log.info("Request: " + config);
 
     final EmailAlertsConfig updatedConfig =
         emailAlertsConfigService.updateEmailAlertsConfig(config);
@@ -151,7 +148,7 @@ public class EmailAlertsConfigController extends RestController {
   }
 
   private ResponseEntity<EmailAlertsConfig> buildResponseEntity(EmailAlertsConfig entity) {
-    LOG.info(() -> "Response: " + entity);
+    log.info("Response: " + entity);
     return new ResponseEntity<>(entity, null, HttpStatus.OK);
   }
 }

@@ -39,8 +39,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.security.Principal;
 import java.util.Date;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -55,9 +54,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @org.springframework.web.bind.annotation.RestController
 @RequestMapping(RUNTIME_ENDPOINT_BASE_URI)
 @Tag(name = "Bot Status")
+@Log4j2
 public class BotStatusController extends RestController {
 
-  private static final Logger LOG = LogManager.getLogger();
   private static final String STATUS_RESOURCE_PATH = "/status";
 
   private final BotStatusService botStatusService;
@@ -98,8 +97,7 @@ public class BotStatusController extends RestController {
       })
   public BotStatus getStatus(@Parameter(hidden = true) Principal principal) {
 
-    LOG.info(
-        () -> "GET " + STATUS_RESOURCE_PATH + " - getStatus() - caller: " + principal.getName());
+    log.info("GET " + STATUS_RESOURCE_PATH + " - getStatus() - caller: " + principal.getName());
 
     final EngineConfig engineConfig = engineConfigService.getEngineConfig();
     final String status = botStatusService.getStatus();
@@ -110,7 +108,7 @@ public class BotStatusController extends RestController {
     botStatus.setStatus(status);
     botStatus.setDatetime(new Date());
 
-    LOG.info(() -> "Response: " + botStatus);
+    log.info("Response: " + botStatus);
     return botStatus;
   }
 }
