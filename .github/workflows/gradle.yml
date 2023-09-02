@@ -15,9 +15,12 @@ jobs:
           distribution: 'adopt'
       - name: Validate Gradle wrapper
         uses: gradle/wrapper-validation-action@e6e38bacfdf1a337459f332974bb2327a31aaf4b
-      - name: Gradle build
-        run: ./gradlew build integrationTests jacocoTestReport
+      - name: Gradle build & SonarCloud analysis
+        run: ./gradlew build integrationTests jacocoTestReport sonarqube
         env:
           # Needed to get some information about the pull request, if any
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # SonarCloud access token should be generated from https://sonarcloud.io/account/security/
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
 
