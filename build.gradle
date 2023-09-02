@@ -6,15 +6,15 @@ buildscript {
     }
 
     dependencies {
-        classpath('io.spring.gradle:dependency-management-plugin:1.1.0')
+        classpath('io.spring.gradle:dependency-management-plugin:1.1.3')
         classpath('org.springframework.boot:spring-boot-gradle-plugin:3.1.3')
     }
 }
 
 plugins {
-    id 'org.sonarqube' version '4.0.0.2929' // https://plugins.gradle.org/plugin/org.sonarqube
+    id 'org.sonarqube' version '4.3.1.3277'  // https://plugins.gradle.org/plugin/org.sonarqube
     id 'jacoco'
-    id 'com.github.spotbugs' version '5.0.14' // https://plugins.gradle.org/plugin/com.github.spotbugs
+    id 'com.github.spotbugs' version '5.1.3' // https://plugins.gradle.org/plugin/com.github.spotbugs
 }
 
 buildScan {
@@ -24,13 +24,12 @@ buildScan {
 
 ext.versions = [
         springBootVersion        : '3.1.3',
-        springCloudVersion       : '4.0.2',
+        springCloudVersion       : '4.0.4',
 
         // Should be same as dependency used by springBootVersion
         springCoreVersion        : '6.0.11',
 
-        hibernateVaildatorVersion: '8.0.0.Final',
-        spotbugsToolVersion      : '4.7.3', // https://plugins.gradle.org/plugin/com.github.spotbugs
+        hibernateVaildatorVersion: '8.0.1.Final',
         jjwtVersion              : '0.11.5'
 ]
 
@@ -63,18 +62,18 @@ ext.libraries = [
         jjwt_impl                               : dependencies.create("io.jsonwebtoken:jjwt-impl:" + ext.versions.jjwtVersion),
         jjwt_jackson                            : dependencies.create("io.jsonwebtoken:jjwt-jackson:" + ext.versions.jjwtVersion),
 
-        google_guava                            : dependencies.create("com.google.guava:guava:31.1-jre"),
+        google_guava                            : dependencies.create("com.google.guava:guava:32.1.2-jre"),
         google_gson                             : dependencies.create("com.google.code.gson:gson:2.10.1"),
-        h2                                      : dependencies.create("com.h2database:h2:2.1.214"),
+        h2                                      : dependencies.create("com.h2database:h2:2.2.222"),
 
-        jakarta_mail_api                        : dependencies.create("jakarta.mail:jakarta.mail-api:2.1.1"),
-        jakarta_mail_sun                        : dependencies.create("org.eclipse.angus:angus-mail:2.0.1"),
+        jakarta_mail_api                        : dependencies.create("jakarta.mail:jakarta.mail-api:2.1.2"),
+        jakarta_mail_sun                        : dependencies.create("org.eclipse.angus:angus-mail:2.0.2"),
 
         jakarta_xml_api                         : dependencies.create("javax.xml.bind:jaxb-api:2.4.0-b180830.0359"),
 
         snake_yaml                              : dependencies.create("org.yaml:snakeyaml:1.33"),
 
-        springdoc_openapi_ui                    : dependencies.create("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0"),
+        springdoc_openapi_ui                    : dependencies.create("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0"),
 
         lombok                                  : dependencies.create("org.projectlombok:lombok:1.18.20"),
 
@@ -84,15 +83,15 @@ ext.libraries = [
 
         powermock_junit                         : dependencies.create("org.powermock:powermock-module-junit4:2.0.9"),
         powermock_api_easymock                  : dependencies.create("org.powermock:powermock-api-easymock:2.0.9"),
-        easymock                                : dependencies.create("org.easymock:easymock:5.1.0"),
+        easymock                                : dependencies.create("org.easymock:easymock:5.2.0"),
 
         // JUnit 4 still as Powermock does not play with Junit 5: https://github.com/powermock/powermock/issues/929
-        junit_vintage_engine                    : dependencies.create("org.junit.vintage:junit-vintage-engine:5.9.2"),
+        junit_vintage_engine                    : dependencies.create("org.junit.vintage:junit-vintage-engine:5.10.0"),
 
         spring_boot_starter_test                : dependencies.create("org.springframework.boot:spring-boot-starter-test:" + ext.versions.springBootVersion) {
             exclude module: "spring-boot-starter-logging"
         },
-        spring_security_test                    : dependencies.create("org.springframework.security:spring-security-test:6.0.3"),
+        spring_security_test                    : dependencies.create("org.springframework.security:spring-security-test:6.1.3"),
         awaitility                              : dependencies.create("org.awaitility:awaitility:4.2.0")
 ]
 
@@ -107,7 +106,7 @@ allprojects {
     apply plugin: 'org.sonarqube'
 
     group = 'com.gazbert.bxbot'
-    version = '2.0.1-SNAPSHOT'
+    version = '2.1.0-SNAPSHOT'
 
     dependencyManagement {
         applyMavenExclusions = false
@@ -136,8 +135,8 @@ subprojects {
     }
 
     checkstyle {
-        toolVersion '8.23'
         // https://stackoverflow.com/questions/47715303/how-to-find-which-checkstyle-version-gradle-is-using
+        toolVersion '8.23'
         configFile = file("${rootDir}/etc/google_checks.xml")
         ignoreFailures = false
         showViolations = true
@@ -170,7 +169,7 @@ subprojects {
     test.jvmArgs "--add-exports", "java.base/sun.net.www.protocol.https=ALL-UNNAMED"
 
     jacoco {
-        toolVersion = "0.8.8" // https://docs.gradle.org/current/userguide/jacoco_plugin.html
+        toolVersion = "0.8.9" // https://docs.gradle.org/current/userguide/jacoco_plugin.html
     }
     jacocoTestReport {
         reports {
