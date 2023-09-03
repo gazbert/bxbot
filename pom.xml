@@ -340,23 +340,6 @@
             <includes>
               <include>**/Test*.java</include>
             </includes>
-            <!-- See: https://stackoverflow.com/questions/69896191/powermock-compatibility-with-jdk-17 -->
-            <argLine>
-              --add-opens java.base/java.util=ALL-UNNAMED
-              --add-opens java.base/java.util.stream=ALL-UNNAMED
-              --add-opens java.base/java.util.concurrent=ALL-UNNAMED
-              --add-opens java.base/java.lang=ALL-UNNAMED
-              --add-opens java.base/java.lang.reflect=ALL-UNNAMED
-              --add-opens java.base/java.text=ALL-UNNAMED
-              --add-opens java.base/java.io=ALL-UNNAMED
-              --add-opens java.base/java.nio.file=ALL-UNNAMED
-              --add-opens java.base/java.math=ALL-UNNAMED
-              --add-opens java.base/java.time=ALL-UNNAMED
-              --add-opens java.base/java.security=ALL-UNNAMED
-              --add-opens java.base/java.net=ALL-UNNAMED
-              --add-opens java.base/sun.net.www.protocol.https=ALL-UNNAMED
-              --add-exports java.base/sun.net.www.protocol.https=ALL-UNNAMED
-            </argLine>
           </configuration>
         </plugin>
         <plugin>
@@ -365,10 +348,6 @@
           <version>3.1.2</version>
           <configuration>
             <skipTests>${skip.integration.tests}</skipTests>
-            <!-- See: https://stackoverflow.com/questions/69896191/powermock-compatibility-with-jdk-17 -->
-            <argLine>
-              --add-opens java.base/java.util=ALL-UNNAMED
-            </argLine>
           </configuration>
           <executions>
             <execution>
@@ -388,7 +367,7 @@
           </configuration>
         </plugin>
 
-        <!-- Surely must be better way than this?!! -->
+        <!-- Surely must be a better way than this?!! -->
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-antrun-plugin</artifactId>

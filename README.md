@@ -612,7 +612,7 @@ JWT before it expires in order to get a new one. Alternatively, you can re-authe
 The REST API _must_ be configured to use TLS before accessing it over a public network.
 
 You will need to 
-[create a keystore](https://docs.oracle.com/en/java/javase/11/tools/keytool.html) - the command to
+[create a keystore](https://docs.oracle.com/en/java/javase/17/docs/specs/man/keytool.html) - the command to
 create a [PKCS12](https://en.wikipedia.org/wiki/PKCS_12) self-signed certificate is shown below:
 
 ``` bash
