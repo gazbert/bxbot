@@ -106,6 +106,8 @@
           </includes>
           <!-- See: https://stackoverflow.com/questions/69896191/powermock-compatibility-with-jdk-17 -->
           <argLine>
+            <!-- See: https://stackoverflow.com/questions/23190107/cannot-use-jacoco-jvm-args-and-surefire-jvm-args-together-in-maven -->
+            ${argLine}
             --add-opens java.base/java.util=ALL-UNNAMED
             --add-opens java.base/java.util.stream=ALL-UNNAMED
             --add-opens java.base/java.util.concurrent=ALL-UNNAMED
