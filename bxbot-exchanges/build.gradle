@@ -50,6 +50,24 @@ configurations {
     integrationTestsRuntimeOnly.extendsFrom(testRuntimeOnly)
 }
 
+// See: https://stackoverflow.com/questions/69896191/powermock-compatibility-with-jdk-17
+test.jvmArgs "--add-opens", "java.base/java.lang=ALL-UNNAMED"
+test.jvmArgs "--add-opens", "java.base/java.util=ALL-UNNAMED"
+test.jvmArgs "--add-opens", "java.base/java.util.stream=ALL-UNNAMED"
+test.jvmArgs "--add-opens", "java.base/java.util.concurrent=ALL-UNNAMED"
+test.jvmArgs "--add-opens", "java.base/java.lang=ALL-UNNAMED"
+test.jvmArgs "--add-opens", "java.base/java.lang.reflect=ALL-UNNAMED"
+test.jvmArgs "--add-opens", "java.base/java.text=ALL-UNNAMED"
+test.jvmArgs "--add-opens", "java.base/java.text=ALL-UNNAMED"
+test.jvmArgs "--add-opens", "java.base/java.io=ALL-UNNAMED"
+test.jvmArgs "--add-opens", "java.base/java.nio.file=ALL-UNNAMED"
+test.jvmArgs "--add-opens", "java.base/java.math=ALL-UNNAMED"
+test.jvmArgs "--add-opens", "java.base/java.time=ALL-UNNAMED"
+test.jvmArgs "--add-opens", "java.base/java.security=ALL-UNNAMED"
+test.jvmArgs "--add-opens", "java.base/java.net=ALL-UNNAMED"
+test.jvmArgs "--add-opens", "java.base/sun.net.www.protocol.https=ALL-UNNAMED"
+test.jvmArgs "--add-exports", "java.base/sun.net.www.protocol.https=ALL-UNNAMED"
+
 jacocoTestCoverageVerification {
     violationRules {
         rule {
