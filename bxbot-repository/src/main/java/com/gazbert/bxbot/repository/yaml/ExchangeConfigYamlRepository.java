@@ -45,10 +45,17 @@ public class ExchangeConfigYamlRepository implements ExchangeConfigRepository {
 
   private static final Logger LOG = LogManager.getLogger();
 
+  private final ConfigurationManager configurationManager;
+
+  public ExchangeConfigYamlRepository(ConfigurationManager configurationManager) {
+    this.configurationManager = configurationManager;
+  }
+
   @Override
   public ExchangeConfig get() {
     LOG.info(() -> "Fetching ExchangeConfig...");
-    return ConfigurationManager.loadConfig(ExchangeType.class, EXCHANGE_CONFIG_YAML_FILENAME)
+    return configurationManager
+        .loadConfig(ExchangeType.class, EXCHANGE_CONFIG_YAML_FILENAME)
         .getExchange();
   }
 
@@ -58,10 +65,11 @@ public class ExchangeConfigYamlRepository implements ExchangeConfigRepository {
 
     final ExchangeType exchangeType = new ExchangeType();
     exchangeType.setExchange(config);
-    ConfigurationManager.saveConfig(
+    configurationManager.saveConfig(
         ExchangeType.class, exchangeType, EXCHANGE_CONFIG_YAML_FILENAME);
 
-    return ConfigurationManager.loadConfig(ExchangeType.class, EXCHANGE_CONFIG_YAML_FILENAME)
+    return configurationManager
+        .loadConfig(ExchangeType.class, EXCHANGE_CONFIG_YAML_FILENAME)
         .getExchange();
   }
 }

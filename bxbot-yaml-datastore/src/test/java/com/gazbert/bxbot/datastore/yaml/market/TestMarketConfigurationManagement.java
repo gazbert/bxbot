@@ -69,8 +69,9 @@ class TestMarketConfigurationManagement {
 
   @Test
   void testLoadingValidYamlConfigFileIsSuccessful() {
+    final ConfigurationManager configurationManager = new ConfigurationManager();
     final MarketsType marketsType =
-        ConfigurationManager.loadConfig(MarketsType.class, VALID_YAML_CONFIG_FILENAME);
+        configurationManager.loadConfig(MarketsType.class, VALID_YAML_CONFIG_FILENAME);
 
     assertEquals(2, marketsType.getMarkets().size());
 
@@ -91,16 +92,18 @@ class TestMarketConfigurationManagement {
 
   @Test
   void testLoadingMissingYamlConfigFileThrowsException() {
+    final ConfigurationManager configurationManager = new ConfigurationManager();
     assertThrows(
         IllegalStateException.class,
-        () -> ConfigurationManager.loadConfig(MarketsType.class, MISSING_YAML_CONFIG_FILENAME));
+        () -> configurationManager.loadConfig(MarketsType.class, MISSING_YAML_CONFIG_FILENAME));
   }
 
   @Test
   void testLoadingInvalidYamlConfigFileThrowsException() {
+    final ConfigurationManager configurationManager = new ConfigurationManager();
     assertThrows(
         IllegalArgumentException.class,
-        () -> ConfigurationManager.loadConfig(MarketsType.class, INVALID_YAML_CONFIG_FILENAME));
+        () -> configurationManager.loadConfig(MarketsType.class, INVALID_YAML_CONFIG_FILENAME));
   }
 
   @Test
@@ -125,11 +128,12 @@ class TestMarketConfigurationManagement {
     marketsConfig.getMarkets().add(market1);
     marketsConfig.getMarkets().add(market2);
 
-    ConfigurationManager.saveConfig(MarketsType.class, marketsConfig, YAML_CONFIG_TO_SAVE_FILENAME);
+    final ConfigurationManager configurationManager = new ConfigurationManager();
+    configurationManager.saveConfig(MarketsType.class, marketsConfig, YAML_CONFIG_TO_SAVE_FILENAME);
 
     // Read it back in
     final MarketsType marketsReloaded =
-        ConfigurationManager.loadConfig(MarketsType.class, YAML_CONFIG_TO_SAVE_FILENAME);
+        configurationManager.loadConfig(MarketsType.class, YAML_CONFIG_TO_SAVE_FILENAME);
 
     assertThat(marketsReloaded.getMarkets().get(0).isEnabled()).isEqualTo(MARKET_1_IS_ENABLED);
     assertThat(marketsReloaded.getMarkets().get(0).getId()).isEqualTo(MARKET_1_ID);
@@ -177,10 +181,12 @@ class TestMarketConfigurationManagement {
     marketsConfig.getMarkets().add(market1);
     marketsConfig.getMarkets().add(market2);
 
+    final ConfigurationManager configurationManager = new ConfigurationManager();
+
     assertThrows(
         IllegalStateException.class,
         () ->
-            ConfigurationManager.saveConfig(
+            configurationManager.saveConfig(
                 MarketsType.class, marketsConfig, INVALID_YAML_CONFIG_TO_SAVE_FILENAME));
   }
 }

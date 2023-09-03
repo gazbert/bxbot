@@ -34,35 +34,18 @@ import com.gazbert.bxbot.datastore.yaml.market.MarketsType;
 import com.gazbert.bxbot.domain.market.MarketConfig;
 import com.gazbert.bxbot.repository.MarketConfigRepository;
 import java.util.List;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.powermock.api.easymock.PowerMock;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.easymock.EasyMock;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests YAML backed Market configuration repository behaves as expected.
  *
  * @author gazbert
  */
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({ConfigurationManager.class, MarketConfigYamlRepository.class})
-@PowerMockIgnore({
-    "javax.crypto.*",
-    "javax.management.*",
-    "com.sun.org.apache.xerces.*",
-    "javax.xml.parsers.*",
-    "org.xml.sax.*",
-    "org.w3c.dom.*"
-})
-public class TestMarketConfigYamlRepository {
-
-  private static final String MOCKED_GENERATE_UUID_METHOD = "generateUuid";
+class TestMarketConfigYamlRepository {
 
   private static final String UNKNOWN_MARKET_ID = "unknown-or-new-market-id";
-  private static final String GENERATED_MARKET_ID = "new-market-id-123";
 
   private static final String MARKET_1_ID = "gemini_usd/btc";
   private static final String MARKET_1_NAME = "BTC/USD";
@@ -84,19 +67,22 @@ public class TestMarketConfigYamlRepository {
   private static final boolean NEW_MARKET_IS_ENABLED = false;
   private static final String NEW_MARKET_TRADING_STRATEGY_ID = "macd-jobby";
 
-  @Before
-  public void setup() {
-    PowerMock.mockStatic(ConfigurationManager.class);
+  private ConfigurationManager configurationManager;
+
+  @BeforeEach
+  void setup() {
+    configurationManager = EasyMock.createMock(ConfigurationManager.class);
   }
 
   @Test
-  public void whenFindAllCalledThenExpectServiceToReturnAllMarketConfigs() {
-    expect(ConfigurationManager.loadConfig(eq(MarketsType.class), eq(MARKETS_CONFIG_YAML_FILENAME)))
+  void whenFindAllCalledThenExpectServiceToReturnAllMarketConfigs() {
+    expect(configurationManager.loadConfig(eq(MarketsType.class), eq(MARKETS_CONFIG_YAML_FILENAME)))
         .andReturn(allTheInternalMarketsConfig());
 
-    PowerMock.replayAll();
+    EasyMock.replay(configurationManager);
 
-    final MarketConfigRepository marketConfigRepository = new MarketConfigYamlRepository();
+    final MarketConfigRepository marketConfigRepository =
+        new MarketConfigYamlRepository(configurationManager);
     final List<MarketConfig> marketConfigItems = marketConfigRepository.findAll();
 
     assertThat(marketConfigItems.size()).isEqualTo(2);
@@ -117,17 +103,18 @@ public class TestMarketConfigYamlRepository {
     assertThat(marketConfigItems.get(1).getTradingStrategyId())
         .isEqualTo(MARKET_2_TRADING_STRATEGY_ID);
 
-    PowerMock.verifyAll();
+    EasyMock.verify(configurationManager);
   }
 
   @Test
-  public void whenFindByIdCalledWithKnownIdThenReturnMatchingMarketConfig() {
-    expect(ConfigurationManager.loadConfig(eq(MarketsType.class), eq(MARKETS_CONFIG_YAML_FILENAME)))
+  void whenFindByIdCalledWithKnownIdThenReturnMatchingMarketConfig() {
+    expect(configurationManager.loadConfig(eq(MarketsType.class), eq(MARKETS_CONFIG_YAML_FILENAME)))
         .andReturn(allTheInternalMarketsConfig());
 
-    PowerMock.replayAll();
+    EasyMock.replay(configurationManager);
 
-    final MarketConfigRepository marketConfigRepository = new MarketConfigYamlRepository();
+    final MarketConfigRepository marketConfigRepository =
+        new MarketConfigYamlRepository(configurationManager);
     final MarketConfig marketConfig = marketConfigRepository.findById(MARKET_1_ID);
 
     assertThat(marketConfig.getId()).isEqualTo(MARKET_1_ID);
@@ -137,37 +124,39 @@ public class TestMarketConfigYamlRepository {
     assertThat(marketConfig.getCounterCurrency()).isEqualTo(MARKET_1_COUNTER_CURRENCY);
     assertThat(marketConfig.getTradingStrategyId()).isEqualTo(MARKET_1_TRADING_STRATEGY_ID);
 
-    PowerMock.verifyAll();
+    EasyMock.verify(configurationManager);
   }
 
   @Test
-  public void whenFindByIdCalledWithUnknownIdThenReturnNullMarketConfig() {
-    expect(ConfigurationManager.loadConfig(eq(MarketsType.class), eq(MARKETS_CONFIG_YAML_FILENAME)))
+  void whenFindByIdCalledWithUnknownIdThenReturnNullMarketConfig() {
+    expect(configurationManager.loadConfig(eq(MarketsType.class), eq(MARKETS_CONFIG_YAML_FILENAME)))
         .andReturn(allTheInternalMarketsConfig());
 
-    PowerMock.replayAll();
+    EasyMock.replay(configurationManager);
 
-    final MarketConfigRepository marketConfigRepository = new MarketConfigYamlRepository();
+    final MarketConfigRepository marketConfigRepository =
+        new MarketConfigYamlRepository(configurationManager);
     final MarketConfig marketConfig = marketConfigRepository.findById(UNKNOWN_MARKET_ID);
 
     assertThat(marketConfig).isNull();
-    PowerMock.verifyAll();
+    EasyMock.verify(configurationManager);
   }
 
   @Test
-  public void whenSaveCalledWithKnownIdThenReturnUpdatedMarketConfig() {
-    expect(ConfigurationManager.loadConfig(eq(MarketsType.class), eq(MARKETS_CONFIG_YAML_FILENAME)))
+  void whenSaveCalledWithKnownIdThenReturnUpdatedMarketConfig() {
+    expect(configurationManager.loadConfig(eq(MarketsType.class), eq(MARKETS_CONFIG_YAML_FILENAME)))
         .andReturn(allTheInternalMarketsConfig());
 
-    ConfigurationManager.saveConfig(
+    configurationManager.saveConfig(
         eq(MarketsType.class), anyObject(MarketsType.class), eq(MARKETS_CONFIG_YAML_FILENAME));
 
-    expect(ConfigurationManager.loadConfig(eq(MarketsType.class), eq(MARKETS_CONFIG_YAML_FILENAME)))
+    expect(configurationManager.loadConfig(eq(MarketsType.class), eq(MARKETS_CONFIG_YAML_FILENAME)))
         .andReturn(allTheInternalMarketsConfig());
 
-    PowerMock.replayAll();
+    EasyMock.replay(configurationManager);
 
-    final MarketConfigRepository marketConfigRepository = new MarketConfigYamlRepository();
+    final MarketConfigRepository marketConfigRepository =
+        new MarketConfigYamlRepository(configurationManager);
     final MarketConfig marketConfig = marketConfigRepository.save(someExternalMarketConfig());
 
     assertThat(marketConfig.getId()).isEqualTo(MARKET_1_ID);
@@ -177,66 +166,37 @@ public class TestMarketConfigYamlRepository {
     assertThat(marketConfig.getCounterCurrency()).isEqualTo(MARKET_1_COUNTER_CURRENCY);
     assertThat(marketConfig.getTradingStrategyId()).isEqualTo(MARKET_1_TRADING_STRATEGY_ID);
 
-    PowerMock.verifyAll();
+    EasyMock.verify(configurationManager);
   }
 
   @Test
-  public void whenSaveCalledWithUnknownIdThenReturnEmptyMarketConfig() {
-    expect(ConfigurationManager.loadConfig(eq(MarketsType.class), eq(MARKETS_CONFIG_YAML_FILENAME)))
+  void whenSaveCalledWithUnknownIdThenReturnEmptyMarketConfig() {
+    expect(configurationManager.loadConfig(eq(MarketsType.class), eq(MARKETS_CONFIG_YAML_FILENAME)))
         .andReturn(allTheInternalMarketsConfig());
 
-    PowerMock.replayAll();
+    EasyMock.replay(configurationManager);
 
-    final MarketConfigRepository marketConfigRepository = new MarketConfigYamlRepository();
+    final MarketConfigRepository marketConfigRepository =
+        new MarketConfigYamlRepository(configurationManager);
     final MarketConfig marketConfig =
         marketConfigRepository.save(someExternalMarketConfigWithUnknownId());
 
     assertThat(marketConfig).isEqualTo(null);
-    PowerMock.verifyAll();
+    EasyMock.verify(configurationManager);
   }
 
   @Test
-  public void whenSaveCalledWithEmptyIdThenExpectCreatedMarketConfigToBeReturned()
-      throws Exception {
-    expect(ConfigurationManager.loadConfig(eq(MarketsType.class), eq(MARKETS_CONFIG_YAML_FILENAME)))
+  void whenDeleteCalledWithKnownIdThenReturnMatchingMarketConfig() {
+    expect(configurationManager.loadConfig(eq(MarketsType.class), eq(MARKETS_CONFIG_YAML_FILENAME)))
         .andReturn(allTheInternalMarketsConfig());
 
-    ConfigurationManager.saveConfig(
+    configurationManager.saveConfig(
         eq(MarketsType.class), anyObject(MarketsType.class), eq(MARKETS_CONFIG_YAML_FILENAME));
 
-    expect(ConfigurationManager.loadConfig(eq(MarketsType.class), eq(MARKETS_CONFIG_YAML_FILENAME)))
-        .andReturn(allTheInternalMarketsConfigPlusNewOne());
+    EasyMock.replay(configurationManager);
 
     final MarketConfigRepository marketConfigRepository =
-        PowerMock.createPartialMock(MarketConfigYamlRepository.class, MOCKED_GENERATE_UUID_METHOD);
-    PowerMock.expectPrivate(marketConfigRepository, MOCKED_GENERATE_UUID_METHOD)
-        .andReturn(GENERATED_MARKET_ID);
-
-    PowerMock.replayAll();
-
-    final MarketConfig marketConfig = marketConfigRepository.save(someNewExternalMarketConfig());
-
-    assertThat(marketConfig.getId()).isEqualTo(GENERATED_MARKET_ID);
-    assertThat(marketConfig.getName()).isEqualTo(NEW_MARKET_NAME);
-    assertThat(marketConfig.isEnabled()).isEqualTo(NEW_MARKET_IS_ENABLED);
-    assertThat(marketConfig.getBaseCurrency()).isEqualTo(NEW_MARKET_BASE_CURRENCY);
-    assertThat(marketConfig.getCounterCurrency()).isEqualTo(NEW_MARKET_COUNTER_CURRENCY);
-    assertThat(marketConfig.getTradingStrategyId()).isEqualTo(NEW_MARKET_TRADING_STRATEGY_ID);
-
-    PowerMock.verifyAll();
-  }
-
-  @Test
-  public void whenDeleteCalledWithKnownIdThenReturnMatchingMarketConfig() {
-    expect(ConfigurationManager.loadConfig(eq(MarketsType.class), eq(MARKETS_CONFIG_YAML_FILENAME)))
-        .andReturn(allTheInternalMarketsConfig());
-
-    ConfigurationManager.saveConfig(
-        eq(MarketsType.class), anyObject(MarketsType.class), eq(MARKETS_CONFIG_YAML_FILENAME));
-
-    PowerMock.replayAll();
-
-    final MarketConfigRepository marketConfigRepository = new MarketConfigYamlRepository();
+        new MarketConfigYamlRepository(configurationManager);
     final MarketConfig marketConfig = marketConfigRepository.delete(MARKET_1_ID);
 
     assertThat(marketConfig.getId()).isEqualTo(MARKET_1_ID);
@@ -246,21 +206,48 @@ public class TestMarketConfigYamlRepository {
     assertThat(marketConfig.getCounterCurrency()).isEqualTo(MARKET_1_COUNTER_CURRENCY);
     assertThat(marketConfig.getTradingStrategyId()).isEqualTo(MARKET_1_TRADING_STRATEGY_ID);
 
-    PowerMock.verifyAll();
+    EasyMock.verify(configurationManager);
   }
 
   @Test
-  public void whenDeleteCalledWithUnknownIdThenReturnEmptyMarket() {
-    expect(ConfigurationManager.loadConfig(eq(MarketsType.class), eq(MARKETS_CONFIG_YAML_FILENAME)))
+  void whenSaveCalledWithEmptyIdThenExpectCreatedMarketConfigToBeReturned() {
+
+    expect(configurationManager.loadConfig(eq(MarketsType.class), eq(MARKETS_CONFIG_YAML_FILENAME)))
         .andReturn(allTheInternalMarketsConfig());
 
-    PowerMock.replayAll();
+    configurationManager.saveConfig(
+        eq(MarketsType.class), anyObject(MarketsType.class), eq(MARKETS_CONFIG_YAML_FILENAME));
 
-    final MarketConfigRepository marketConfigRepository = new MarketConfigYamlRepository();
+    EasyMock.replay(configurationManager);
+
+    final MarketConfigRepository marketConfigRepository =
+        new MarketConfigYamlRepository(configurationManager);
+
+    final MarketConfig marketConfig = marketConfigRepository.save(someNewExternalMarketConfig());
+
+    assertThat(marketConfig.getId()).isNotBlank();
+    assertThat(marketConfig.getName()).isEqualTo(NEW_MARKET_NAME);
+    assertThat(marketConfig.isEnabled()).isEqualTo(NEW_MARKET_IS_ENABLED);
+    assertThat(marketConfig.getBaseCurrency()).isEqualTo(NEW_MARKET_BASE_CURRENCY);
+    assertThat(marketConfig.getCounterCurrency()).isEqualTo(NEW_MARKET_COUNTER_CURRENCY);
+    assertThat(marketConfig.getTradingStrategyId()).isEqualTo(NEW_MARKET_TRADING_STRATEGY_ID);
+
+    EasyMock.verify(configurationManager);
+  }
+
+  @Test
+  void whenDeleteCalledWithUnknownIdThenReturnEmptyMarket() {
+    expect(configurationManager.loadConfig(eq(MarketsType.class), eq(MARKETS_CONFIG_YAML_FILENAME)))
+        .andReturn(allTheInternalMarketsConfig());
+
+    EasyMock.replay(configurationManager);
+
+    final MarketConfigRepository marketConfigRepository =
+        new MarketConfigYamlRepository(configurationManager);
     final MarketConfig marketConfig = marketConfigRepository.delete(UNKNOWN_MARKET_ID);
 
     assertThat(marketConfig).isNull();
-    PowerMock.verifyAll();
+    EasyMock.verify(configurationManager);
   }
 
   // --------------------------------------------------------------------------
@@ -289,20 +276,6 @@ public class TestMarketConfigYamlRepository {
     marketsType.getMarkets().add(marketConfig2);
 
     return marketsType;
-  }
-
-  private static MarketsType allTheInternalMarketsConfigPlusNewOne() {
-    final MarketConfig newMarket = new MarketConfig();
-    newMarket.setId(GENERATED_MARKET_ID);
-    newMarket.setName(NEW_MARKET_NAME);
-    newMarket.setEnabled(NEW_MARKET_IS_ENABLED);
-    newMarket.setBaseCurrency(NEW_MARKET_BASE_CURRENCY);
-    newMarket.setCounterCurrency(NEW_MARKET_COUNTER_CURRENCY);
-    newMarket.setTradingStrategyId(NEW_MARKET_TRADING_STRATEGY_ID);
-
-    final MarketsType existingMarketsPlusNewOne = allTheInternalMarketsConfig();
-    existingMarketsPlusNewOne.getMarkets().add(newMarket);
-    return existingMarketsPlusNewOne;
   }
 
   private static MarketConfig someExternalMarketConfig() {

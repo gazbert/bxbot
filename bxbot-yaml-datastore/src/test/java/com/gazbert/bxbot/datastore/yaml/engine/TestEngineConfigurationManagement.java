@@ -59,8 +59,9 @@ class TestEngineConfigurationManagement {
 
   @Test
   void testLoadingValidYamlConfigFileIsSuccessful() {
+    final ConfigurationManager configurationManager = new ConfigurationManager();
     final EngineType engineType =
-        ConfigurationManager.loadConfig(EngineType.class, VALID_YAML_CONFIG_FILENAME);
+        configurationManager.loadConfig(EngineType.class, VALID_YAML_CONFIG_FILENAME);
     assertEquals(BOT_ID, engineType.getEngine().getBotId());
     assertEquals(BOT_NAME, engineType.getEngine().getBotName());
     assertEquals(EMERGENCY_STOP_CURRENCY, engineType.getEngine().getEmergencyStopCurrency());
@@ -71,16 +72,18 @@ class TestEngineConfigurationManagement {
 
   @Test
   void testLoadingMissingYamlConfigThrowsException() {
+    final ConfigurationManager configurationManager = new ConfigurationManager();
     assertThrows(
         IllegalStateException.class,
-        () -> ConfigurationManager.loadConfig(EngineType.class, MISSING_YAML_CONFIG_FILENAME));
+        () -> configurationManager.loadConfig(EngineType.class, MISSING_YAML_CONFIG_FILENAME));
   }
 
   @Test
   void testLoadingInvalidYamlConfigThrowsException() {
+    final ConfigurationManager configurationManager = new ConfigurationManager();
     assertThrows(
         IllegalArgumentException.class,
-        () -> ConfigurationManager.loadConfig(EngineType.class, INVALID_YAML_CONFIG_FILENAME));
+        () -> configurationManager.loadConfig(EngineType.class, INVALID_YAML_CONFIG_FILENAME));
   }
 
   @Test
@@ -95,11 +98,12 @@ class TestEngineConfigurationManagement {
     final EngineType engineType = new EngineType();
     engineType.setEngine(engineConfig);
 
-    ConfigurationManager.saveConfig(EngineType.class, engineType, YAML_CONFIG_TO_SAVE_FILENAME);
+    final ConfigurationManager configurationManager = new ConfigurationManager();
+    configurationManager.saveConfig(EngineType.class, engineType, YAML_CONFIG_TO_SAVE_FILENAME);
 
     // Read it back in
     final EngineType engineTypeReloaded =
-        ConfigurationManager.loadConfig(EngineType.class, YAML_CONFIG_TO_SAVE_FILENAME);
+        configurationManager.loadConfig(EngineType.class, YAML_CONFIG_TO_SAVE_FILENAME);
 
     assertEquals(BOT_ID, engineTypeReloaded.getEngine().getBotId());
     assertEquals(BOT_NAME, engineTypeReloaded.getEngine().getBotName());
@@ -126,10 +130,12 @@ class TestEngineConfigurationManagement {
     final EngineType engineType = new EngineType();
     engineType.setEngine(engineConfig);
 
+    final ConfigurationManager configurationManager = new ConfigurationManager();
+
     assertThrows(
         IllegalStateException.class,
         () ->
-            ConfigurationManager.saveConfig(
+            configurationManager.saveConfig(
                 EngineType.class, engineType, INVALID_YAML_CONFIG_TO_SAVE_FILENAME));
   }
 }

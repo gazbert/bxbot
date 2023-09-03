@@ -38,31 +38,16 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.powermock.api.easymock.PowerMock;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.easymock.EasyMock;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests YAML backed Exchange configuration repository behaves as expected.
  *
  * @author gazbert
  */
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({ConfigurationManager.class})
-@PowerMockIgnore({
-    "javax.crypto.*",
-    "javax.management.*",
-    "com.sun.org.apache.xerces.*",
-    "javax.xml.parsers.*",
-    "org.xml.sax.*",
-    "org.w3c.dom.*"
-})
-public class TestExchangeConfigYamlRepository {
+class TestExchangeConfigYamlRepository {
 
   private static final String EXCHANGE_NAME = "Bitstamp";
   private static final String EXCHANGE_ADAPTER = "com.gazbert.bxbot.exchanges.TestExchangeAdapter";
@@ -86,21 +71,24 @@ public class TestExchangeConfigYamlRepository {
   private static final String SELL_FEE_CONFIG_ITEM_KEY = "sell-fee";
   private static final String SELL_FEE_CONFIG_ITEM_VALUE = "0.25";
 
-  @Before
-  public void setup() {
-    PowerMock.mockStatic(ConfigurationManager.class);
+  private ConfigurationManager configurationManager;
+
+  @BeforeEach
+  void setup() {
+    configurationManager = EasyMock.createMock(ConfigurationManager.class);
   }
 
   @Test
-  public void whenGetCalledThenReturnExchangeConfig() {
+  void whenGetCalledThenReturnExchangeConfig() {
     expect(
-            ConfigurationManager.loadConfig(
+            configurationManager.loadConfig(
                 eq(ExchangeType.class), eq(EXCHANGE_CONFIG_YAML_FILENAME)))
         .andReturn(someInternalExchangeConfig());
 
-    PowerMock.replayAll();
+    EasyMock.replay(configurationManager);
 
-    final ExchangeConfigRepository exchangeConfigRepository = new ExchangeConfigYamlRepository();
+    final ExchangeConfigRepository exchangeConfigRepository =
+        new ExchangeConfigYamlRepository(configurationManager);
     final ExchangeConfig exchangeConfig = exchangeConfigRepository.get();
 
     assertThat(exchangeConfig.getName()).isEqualTo(EXCHANGE_NAME);
@@ -122,22 +110,23 @@ public class TestExchangeConfigYamlRepository {
     assertThat(exchangeConfig.getOtherConfig().get(SELL_FEE_CONFIG_ITEM_KEY))
         .isEqualTo(SELL_FEE_CONFIG_ITEM_VALUE);
 
-    PowerMock.verifyAll();
+    EasyMock.verify(configurationManager);
   }
 
   @Test
-  public void whenSaveCalledThenExpectRepositoryToSaveItAndReturnSavedExchangeConfig() {
-    ConfigurationManager.saveConfig(
+  void whenSaveCalledThenExpectRepositoryToSaveItAndReturnSavedExchangeConfig() {
+    configurationManager.saveConfig(
         eq(ExchangeType.class), anyObject(ExchangeType.class), eq(EXCHANGE_CONFIG_YAML_FILENAME));
 
     expect(
-            ConfigurationManager.loadConfig(
+            configurationManager.loadConfig(
                 eq(ExchangeType.class), eq(EXCHANGE_CONFIG_YAML_FILENAME)))
         .andReturn(someInternalExchangeConfig());
 
-    PowerMock.replayAll();
+    EasyMock.replay(configurationManager);
 
-    final ExchangeConfigRepository exchangeConfigRepository = new ExchangeConfigYamlRepository();
+    final ExchangeConfigRepository exchangeConfigRepository =
+        new ExchangeConfigYamlRepository(configurationManager);
     final ExchangeConfig savedExchangeConfig =
         exchangeConfigRepository.save(someExternalExchangeConfig());
 
@@ -160,7 +149,7 @@ public class TestExchangeConfigYamlRepository {
     assertThat(savedExchangeConfig.getOtherConfig().get(SELL_FEE_CONFIG_ITEM_KEY))
         .isEqualTo(SELL_FEE_CONFIG_ITEM_VALUE);
 
-    PowerMock.verifyAll();
+    EasyMock.verify(configurationManager);
   }
 
   // --------------------------------------------------------------------------

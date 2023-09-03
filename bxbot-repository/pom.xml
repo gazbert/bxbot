@@ -82,15 +82,6 @@
       <artifactId>spring-boot-starter-test</artifactId>
       <scope>test</scope>
     </dependency>
-    <!--
-     JUnit4 still needed as Powermock doesn't play with JUnit5
-     See: https://github.com/powermock/powermock/issues/929
-    -->
-    <dependency>
-      <groupId>org.junit.vintage</groupId>
-      <artifactId>junit-vintage-engine</artifactId>
-      <scope>test</scope>
-    </dependency>
   </dependencies>
 
   <build>
@@ -104,66 +95,11 @@
           <includes>
             <include>**/Test*.java</include>
           </includes>
-          <!-- See: https://stackoverflow.com/questions/69896191/powermock-compatibility-with-jdk-17 -->
-          <argLine>
-            <!-- See: https://stackoverflow.com/questions/23190107/cannot-use-jacoco-jvm-args-and-surefire-jvm-args-together-in-maven -->
-            ${argLine}
-            --add-opens java.base/java.util=ALL-UNNAMED
-            --add-opens java.base/java.util.stream=ALL-UNNAMED
-            --add-opens java.base/java.util.concurrent=ALL-UNNAMED
-            --add-opens java.base/java.lang=ALL-UNNAMED
-            --add-opens java.base/java.lang.reflect=ALL-UNNAMED
-            --add-opens java.base/java.text=ALL-UNNAMED
-            --add-opens java.base/java.io=ALL-UNNAMED
-            --add-opens java.base/java.nio.file=ALL-UNNAMED
-            --add-opens java.base/java.math=ALL-UNNAMED
-            --add-opens java.base/java.time=ALL-UNNAMED
-            --add-opens java.base/java.security=ALL-UNNAMED
-            --add-opens java.base/java.net=ALL-UNNAMED
-            --add-opens java.base/sun.net.www.protocol.https=ALL-UNNAMED
-            --add-exports java.base/sun.net.www.protocol.https=ALL-UNNAMED
-          </argLine>
         </configuration>
       </plugin>
       <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
-        <configuration>
-          <!--
-            Ignore classes tested using Powermock. JaCoCo won't/can't instrument them:
-            "... right now there is NO WAY TO USE PowerMock with JaCoCo On-the-fly instrumentation."
-            See https://github.com/powermock/powermock/wiki/Code-coverage-with-JaCoCo
-           -->
-          <excludes>
-            <exclude>**/StrategyConfigYamlRepository.class</exclude>
-            <exclude>**/MarketConfigYamlRepository.class</exclude>
-            <exclude>**/EngineConfigYamlRepository.class</exclude>
-            <exclude>**/ExchangeConfigYamlRepository.class</exclude>
-            <exclude>**/EmailAlertsConfigYamlRepository.class</exclude>
-          </excludes>
-        </configuration>
-        <executions>
-          <execution>
-            <id>jacoco-check</id>
-            <goals>
-              <goal>check</goal>
-            </goals>
-            <configuration>
-              <rules>
-                <rule>
-                  <element>CLASS</element>
-                  <limits>
-                    <limit>
-                      <counter>LINE</counter>
-                      <value>COVEREDRATIO</value>
-                      <minimum>0.8</minimum>
-                    </limit>
-                  </limits>
-                </rule>
-              </rules>
-            </configuration>
-          </execution>
-        </executions>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>

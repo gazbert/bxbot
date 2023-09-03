@@ -50,10 +50,17 @@ public class MarketConfigYamlRepository implements MarketConfigRepository {
   private static final Logger LOG = LogManager.getLogger();
   private static final String EXISTING_MARKET_CONFIG = " Existing MarketConfig: ";
 
+  private final ConfigurationManager configurationManager;
+
+  public MarketConfigYamlRepository(ConfigurationManager configurationManager) {
+    this.configurationManager = configurationManager;
+  }
+
   @Override
   public List<MarketConfig> findAll() {
     LOG.info(() -> "Fetching all Market configs...");
-    return ConfigurationManager.loadConfig(MarketsType.class, MARKETS_CONFIG_YAML_FILENAME)
+    return configurationManager
+        .loadConfig(MarketsType.class, MARKETS_CONFIG_YAML_FILENAME)
         .getMarkets();
   }
 
@@ -62,7 +69,7 @@ public class MarketConfigYamlRepository implements MarketConfigRepository {
     LOG.info(() -> "Fetching Market config for id: " + id);
 
     final MarketsType marketsType =
-        ConfigurationManager.loadConfig(MarketsType.class, MARKETS_CONFIG_YAML_FILENAME);
+        configurationManager.loadConfig(MarketsType.class, MARKETS_CONFIG_YAML_FILENAME);
 
     return adaptInternalToExternalConfig(
         marketsType.getMarkets().stream()
@@ -74,7 +81,7 @@ public class MarketConfigYamlRepository implements MarketConfigRepository {
   @Override
   public MarketConfig save(MarketConfig config) {
     final MarketsType marketsType =
-        ConfigurationManager.loadConfig(MarketsType.class, MARKETS_CONFIG_YAML_FILENAME);
+        configurationManager.loadConfig(MarketsType.class, MARKETS_CONFIG_YAML_FILENAME);
 
     final List<MarketConfig> marketConfigs =
         marketsType.getMarkets().stream()
@@ -90,17 +97,10 @@ public class MarketConfigYamlRepository implements MarketConfigRepository {
         newMarketConfig.setId(generateUuid());
 
         marketsType.getMarkets().add(newMarketConfig);
-        ConfigurationManager.saveConfig(
+        configurationManager.saveConfig(
             MarketsType.class, marketsType, MARKETS_CONFIG_YAML_FILENAME);
 
-        final MarketsType updatedInternalMarketsConfig =
-            ConfigurationManager.loadConfig(MarketsType.class, MARKETS_CONFIG_YAML_FILENAME);
-
-        return adaptInternalToExternalConfig(
-            updatedInternalMarketsConfig.getMarkets().stream()
-                .filter(item -> item.getId().equals(newMarketConfig.getId()))
-                .distinct()
-                .collect(Collectors.toList()));
+        return newMarketConfig;
       } else {
         throw new IllegalStateException(
             "Trying to create new MarketConfig but null/empty id already exists. "
@@ -116,11 +116,11 @@ public class MarketConfigYamlRepository implements MarketConfigRepository {
 
         marketsType.getMarkets().remove(marketConfigs.get(0)); // will only be 1 unique strat
         marketsType.getMarkets().add(config);
-        ConfigurationManager.saveConfig(
+        configurationManager.saveConfig(
             MarketsType.class, marketsType, MARKETS_CONFIG_YAML_FILENAME);
 
         final MarketsType updatedMarketsType =
-            ConfigurationManager.loadConfig(MarketsType.class, MARKETS_CONFIG_YAML_FILENAME);
+            configurationManager.loadConfig(MarketsType.class, MARKETS_CONFIG_YAML_FILENAME);
 
         return adaptInternalToExternalConfig(
             updatedMarketsType.getMarkets().stream()
@@ -144,7 +144,7 @@ public class MarketConfigYamlRepository implements MarketConfigRepository {
     LOG.info(() -> "Deleting Market config for id: " + id);
 
     final MarketsType marketsType =
-        ConfigurationManager.loadConfig(MarketsType.class, MARKETS_CONFIG_YAML_FILENAME);
+        configurationManager.loadConfig(MarketsType.class, MARKETS_CONFIG_YAML_FILENAME);
 
     final List<MarketConfig> marketConfigs =
         marketsType.getMarkets().stream()
@@ -155,7 +155,7 @@ public class MarketConfigYamlRepository implements MarketConfigRepository {
     if (!marketConfigs.isEmpty()) {
       final MarketConfig marketToRemove = marketConfigs.get(0); // will only be 1 unique strat
       marketsType.getMarkets().remove(marketToRemove);
-      ConfigurationManager.saveConfig(MarketsType.class, marketsType, MARKETS_CONFIG_YAML_FILENAME);
+      configurationManager.saveConfig(MarketsType.class, marketsType, MARKETS_CONFIG_YAML_FILENAME);
       return adaptInternalToExternalConfig(Collections.singletonList(marketToRemove));
     } else {
       LOG.warn(

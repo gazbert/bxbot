@@ -33,6 +33,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.stereotype.Component;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
@@ -48,13 +49,11 @@ import org.yaml.snakeyaml.representer.Representer;
  *
  * @author gazbert
  */
-public final class ConfigurationManager {
+@Component
+public class ConfigurationManager {
 
   private static final Logger LOG = LogManager.getLogger();
   private static final String YAML_HEADER = "---" + System.getProperty("line.separator");
-
-  private ConfigurationManager() {
-  }
 
   /**
    * Loads the config from the YAML file.
@@ -64,7 +63,7 @@ public final class ConfigurationManager {
    * @param <T> the type of config.
    * @return the loaded config.
    */
-  public static synchronized <T> T loadConfig(final Class<T> configClass, String yamlConfigFile) {
+  public synchronized <T> T loadConfig(final Class<T> configClass, String yamlConfigFile) {
 
     LOG.info(
         () -> "Loading configuration for [" + configClass + "] from: " + yamlConfigFile + " ...");
@@ -97,7 +96,7 @@ public final class ConfigurationManager {
    * @param yamlConfigFile the YAML config filename.
    * @param <T> the type of config.
    */
-  public static synchronized <T> void saveConfig(
+  public synchronized <T> void saveConfig(
       Class<T> configClass, T config, String yamlConfigFile) {
 
     LOG.info(() -> "Saving configuration for [" + configClass + "] to: " + yamlConfigFile + " ...");

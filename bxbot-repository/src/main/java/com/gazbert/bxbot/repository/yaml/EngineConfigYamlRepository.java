@@ -45,10 +45,17 @@ public class EngineConfigYamlRepository implements EngineConfigRepository {
 
   private static final Logger LOG = LogManager.getLogger();
 
+  private final ConfigurationManager configurationManager;
+
+  public EngineConfigYamlRepository(ConfigurationManager configurationManager) {
+    this.configurationManager = configurationManager;
+  }
+
   @Override
   public EngineConfig get() {
     LOG.info(() -> "Fetching EngineConfig...");
-    return ConfigurationManager.loadConfig(EngineType.class, ENGINE_CONFIG_YAML_FILENAME)
+    return configurationManager
+        .loadConfig(EngineType.class, ENGINE_CONFIG_YAML_FILENAME)
         .getEngine();
   }
 
@@ -58,9 +65,10 @@ public class EngineConfigYamlRepository implements EngineConfigRepository {
 
     final EngineType engineType = new EngineType();
     engineType.setEngine(config);
-    ConfigurationManager.saveConfig(EngineType.class, engineType, ENGINE_CONFIG_YAML_FILENAME);
+    configurationManager.saveConfig(EngineType.class, engineType, ENGINE_CONFIG_YAML_FILENAME);
 
-    return ConfigurationManager.loadConfig(EngineType.class, ENGINE_CONFIG_YAML_FILENAME)
+    return configurationManager
+        .loadConfig(EngineType.class, ENGINE_CONFIG_YAML_FILENAME)
         .getEngine();
   }
 }

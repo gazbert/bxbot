@@ -45,10 +45,16 @@ public class EmailAlertsConfigYamlRepository implements EmailAlertsConfigReposit
 
   private static final Logger LOG = LogManager.getLogger();
 
+  private final ConfigurationManager configurationManager;
+
+  EmailAlertsConfigYamlRepository(ConfigurationManager configurationManager) {
+    this.configurationManager = configurationManager;
+  }
+
   @Override
   public EmailAlertsConfig get() {
     LOG.info(() -> "Fetching EmailAlertsConfig...");
-    return ConfigurationManager.loadConfig(EmailAlertsType.class, EMAIL_ALERTS_CONFIG_YAML_FILENAME)
+    return configurationManager.loadConfig(EmailAlertsType.class, EMAIL_ALERTS_CONFIG_YAML_FILENAME)
         .getEmailAlerts();
   }
 
@@ -58,10 +64,10 @@ public class EmailAlertsConfigYamlRepository implements EmailAlertsConfigReposit
 
     final EmailAlertsType emailAlertsType = new EmailAlertsType();
     emailAlertsType.setEmailAlerts(config);
-    ConfigurationManager.saveConfig(
+    configurationManager.saveConfig(
         EmailAlertsType.class, emailAlertsType, EMAIL_ALERTS_CONFIG_YAML_FILENAME);
 
-    return ConfigurationManager.loadConfig(EmailAlertsType.class, EMAIL_ALERTS_CONFIG_YAML_FILENAME)
+    return configurationManager.loadConfig(EmailAlertsType.class, EMAIL_ALERTS_CONFIG_YAML_FILENAME)
         .getEmailAlerts();
   }
 }
