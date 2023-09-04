@@ -133,24 +133,17 @@
           <includes>
             <include>**/Test*.java</include>
           </includes>
-          <!-- See: https://stackoverflow.com/questions/69896191/powermock-compatibility-with-jdk-17 -->
+          <!--
+            For Powermock tests messing with JDK 17 bytecode.
+            See: https://stackoverflow.com/questions/69896191/powermock-compatibility-with-jdk-17
+          -->
           <argLine>
             <!-- See: https://stackoverflow.com/questions/23190107/cannot-use-jacoco-jvm-args-and-surefire-jvm-args-together-in-maven -->
             ${argLine}
             --add-opens java.base/java.util=ALL-UNNAMED
-            --add-opens java.base/java.util.stream=ALL-UNNAMED
             --add-opens java.base/java.util.concurrent=ALL-UNNAMED
             --add-opens java.base/java.lang=ALL-UNNAMED
-            --add-opens java.base/java.lang.reflect=ALL-UNNAMED
             --add-opens java.base/java.text=ALL-UNNAMED
-            --add-opens java.base/java.io=ALL-UNNAMED
-            --add-opens java.base/java.nio.file=ALL-UNNAMED
-            --add-opens java.base/java.math=ALL-UNNAMED
-            --add-opens java.base/java.time=ALL-UNNAMED
-            --add-opens java.base/java.security=ALL-UNNAMED
-            --add-opens java.base/java.net=ALL-UNNAMED
-            --add-opens java.base/sun.net.www.protocol.https=ALL-UNNAMED
-            --add-exports java.base/sun.net.www.protocol.https=ALL-UNNAMED
           </argLine>
         </configuration>
       </plugin>
@@ -161,7 +154,7 @@
           <!--
             Ignore classes tested using Powermock. JaCoCo won't/can't instrument them:
             "... right now there is NO WAY TO USE PowerMock with JaCoCo On-the-fly instrumentation."
-            See https://github.com/powermock/powermock/wiki/Code-coverage-with-JaCoCo
+            See: https://github.com/powermock/powermock/wiki/Code-coverage-with-JaCoCo
            -->
           <excludes>
             <exclude>**/EmailAlerter*class</exclude> <!-- Powermock tests -->

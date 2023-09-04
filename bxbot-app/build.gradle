@@ -1,25 +1,25 @@
 apply plugin: 'org.springframework.boot'
 
 bootJar {
-    mainClassName = 'com.gazbert.bxbot.BxBot'
+  mainClassName = 'com.gazbert.bxbot.BxBot'
 }
 
 dependencies {
 
-    implementation project(':bxbot-trading-api')
-    implementation project(':bxbot-strategy-api')
-    implementation project(':bxbot-exchange-api')
-    implementation project(':bxbot-strategies')
-    implementation project(':bxbot-exchanges')
-    implementation project(':bxbot-domain-objects')
-    implementation project(':bxbot-yaml-datastore')
-    implementation project(':bxbot-repository')
-    implementation project(':bxbot-core')
-    implementation project(':bxbot-rest-api')
+  implementation project(':bxbot-trading-api')
+  implementation project(':bxbot-strategy-api')
+  implementation project(':bxbot-exchange-api')
+  implementation project(':bxbot-strategies')
+  implementation project(':bxbot-exchanges')
+  implementation project(':bxbot-domain-objects')
+  implementation project(':bxbot-yaml-datastore')
+  implementation project(':bxbot-repository')
+  implementation project(':bxbot-core')
+  implementation project(':bxbot-rest-api')
 
-    // Add your (optional) Trading Strategies here
-    // implementation group: 'com.gazbert.bxbot', name: 'bxbot-strategies', version: '3.0-SNAPSHOT'
+  // Add your (optional) Trading Strategies here
+  // implementation group: 'com.gazbert.bxbot', name: 'bxbot-strategies', version: '3.0-SNAPSHOT'
 
-    // Add your (optional) Exchange Adapters here
-    // implementation group: 'com.your.stuff', name: 'your-custom-exchanges', version: '1.0-SNAPSHOT'
+  // Add your (optional) Exchange Adapters here
+  // implementation group: 'com.your.stuff', name: 'your-custom-exchanges', version: '1.0-SNAPSHOT'
 }
