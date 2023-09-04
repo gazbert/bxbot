@@ -35,8 +35,7 @@ import jakarta.mail.Transport;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
 import java.util.Properties;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Component;
@@ -48,9 +47,8 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @ComponentScan(basePackages = {"com.gazbert.bxbot.repository"})
+@Log4j2
 public class EmailAlerter {
-
-  private static final Logger LOG = LogManager.getLogger();
 
   private SmtpConfig smtpConfig;
   private Properties smtpProps;
@@ -96,19 +94,18 @@ public class EmailAlerter {
         message.setSubject(subject);
         message.setText(msgContent);
 
-        LOG.info(() -> "About to send following Email Alert with message content: " + msgContent);
+        log.info("About to send following Email Alert with message content: " + msgContent);
         Transport.send(message);
 
       } catch (MessagingException e) {
-        LOG.error(() -> "Failed to send Email Alert. Details: " + e.getMessage(), e);
+        log.error("Failed to send Email Alert. Details: " + e.getMessage(), e);
       }
     } else {
-      LOG.warn(
-          () ->
-              "Email Alerts are disabled. Not sending the following message: Subject: "
-                  + subject
-                  + " Content: "
-                  + msgContent);
+      log.warn(
+          "Email Alerts are disabled. Not sending the following message: Subject: "
+              + subject
+              + " Content: "
+              + msgContent);
     }
   }
 
@@ -122,7 +119,7 @@ public class EmailAlerter {
       sendEmailAlertsEnabled = emailAlertsConfig.isEnabled();
 
       if (sendEmailAlertsEnabled) {
-        LOG.info(() -> "Email Alert for emergency bot shutdown is enabled. Loading SMTP config...");
+        log.info("Email Alert for emergency bot shutdown is enabled. Loading SMTP config...");
         smtpConfig = emailAlertsConfig.getSmtpConfig();
 
         if (smtpConfig == null) {
@@ -132,12 +129,12 @@ public class EmailAlerter {
           throw new IllegalStateException(errorMsg);
         }
 
-        LOG.info(() -> "SMTP host: " + smtpConfig.getHost());
-        LOG.info(() -> "SMTP TLS Port: " + smtpConfig.getTlsPort());
-        LOG.info(() -> "Account username: " + smtpConfig.getAccountUsername());
+        log.info("SMTP host: " + smtpConfig.getHost());
+        log.info("SMTP TLS Port: " + smtpConfig.getTlsPort());
+        log.info("Account username: " + smtpConfig.getAccountUsername());
         // Account password not logged intentionally
-        LOG.info(() -> "From address: " + smtpConfig.getFromAddress());
-        LOG.info(() -> "To address: " + smtpConfig.getToAddress());
+        log.info("From address: " + smtpConfig.getFromAddress());
+        log.info("To address: " + smtpConfig.getToAddress());
 
         smtpProps = new Properties();
         smtpProps.put("mail.smtp.auth", "true");
@@ -146,7 +143,7 @@ public class EmailAlerter {
         smtpProps.put("mail.smtp.port", smtpConfig.getTlsPort());
 
       } else {
-        LOG.warn(() -> "Email Alerts are disabled. Are you sure you want to configure this?");
+        log.warn("Email Alerts are disabled. Are you sure you want to configure this?");
       }
     }
   }

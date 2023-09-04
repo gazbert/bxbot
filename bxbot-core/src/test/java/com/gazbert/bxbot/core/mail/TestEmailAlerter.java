@@ -29,12 +29,10 @@ import static org.easymock.EasyMock.expect;
 import com.gazbert.bxbot.domain.emailalerts.EmailAlertsConfig;
 import com.gazbert.bxbot.domain.emailalerts.SmtpConfig;
 import com.gazbert.bxbot.services.config.EmailAlertsConfigService;
-
 import jakarta.mail.Message;
 import jakarta.mail.Transport;
 import org.easymock.EasyMock;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.api.easymock.PowerMock;
@@ -154,7 +152,8 @@ public class TestEmailAlerter {
    *   <li>Change the [project-root]/config/email-alerts.yaml to use your account SMTP settings.
    *   <li>Comment out @RunWith(PowerMockRunner.class) and @PrepareForTest(Transport.class) at top
    *       of class - they mess with the SSLContext and the test will fail - no time to debug why
-   *       but related to: https://code.google.com/p/powermock/issues/detail?id=288
+   *       but related to: <a href="https://code.google.com/p/powermock/issues/detail?id=288">Google
+   *       bug 288</a>.
    *   <li>Run this test on its own.
    * </ol>
    */

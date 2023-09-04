@@ -35,8 +35,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -46,9 +45,9 @@ import org.springframework.stereotype.Component;
  * @author gazbert
  */
 @Component
+@Log4j2
 public class TradingStrategiesBuilder {
 
-  private static final Logger LOG = LogManager.getLogger();
   private TradingStrategyFactory tradingStrategyFactory;
 
   /**
@@ -80,7 +79,7 @@ public class TradingStrategiesBuilder {
     final Map<String, StrategyConfig> tradingStrategyConfigs = new HashMap<>();
     for (final StrategyConfig strategy : strategies) {
       tradingStrategyConfigs.put(strategy.getId(), strategy);
-      LOG.info(() -> "Registered Trading Strategy with Trading Engine: Id=" + strategy.getId());
+      log.info("Registered Trading Strategy with Trading Engine: Id=" + strategy.getId());
     }
 
     // Set logic only as crude mechanism for checking for duplicate Markets.
@@ -90,8 +89,7 @@ public class TradingStrategiesBuilder {
     for (final MarketConfig market : markets) {
       final String marketName = market.getName();
       if (!market.isEnabled()) {
-        LOG.info(
-            () -> marketName + " market is NOT enabled for trading - skipping to next market...");
+        log.info(marketName + " market is NOT enabled for trading - skipping to next market...");
         continue;
       }
 
@@ -101,20 +99,16 @@ public class TradingStrategiesBuilder {
       final boolean wasAdded = loadedMarkets.add(tradingMarket);
       if (!wasAdded) {
         final String errorMsg = "Found duplicate Market! Market details: " + market;
-        LOG.fatal(() -> errorMsg);
+        log.fatal(errorMsg);
         throw new IllegalArgumentException(errorMsg);
       } else {
-        LOG.info(
-            () ->
-                "Registered Market with Trading Engine: Id="
-                    + market.getId()
-                    + ", Name="
-                    + marketName);
+        log.info(
+            "Registered Market with Trading Engine: Id=" + market.getId() + ", Name=" + marketName);
       }
 
       // Get the strategy to use for this Market
       final String strategyToUse = market.getTradingStrategyId();
-      LOG.info(() -> "Market Trading Strategy Id to use: " + strategyToUse);
+      log.info("Market Trading Strategy Id to use: " + strategyToUse);
 
       if (tradingStrategyConfigs.containsKey(strategyToUse)) {
         final StrategyConfig tradingStrategy = tradingStrategyConfigs.get(strategyToUse);
@@ -123,12 +117,10 @@ public class TradingStrategiesBuilder {
         if (configItems != null && !configItems.isEmpty()) {
           tradingStrategyConfig.setItems(configItems);
         } else {
-          LOG.info(
-              () ->
-                  "No (optional) configuration has been set for Trading Strategy: "
-                      + strategyToUse);
+          log.info(
+              "No (optional) configuration has been set for Trading Strategy: " + strategyToUse);
         }
-        LOG.info(() -> "StrategyConfigImpl (optional): " + tradingStrategyConfig);
+        log.info("StrategyConfigImpl (optional): " + tradingStrategyConfig);
 
         /*
          * Load the Trading Strategy impl, instantiate it, set its config, and store in the
@@ -138,15 +130,14 @@ public class TradingStrategiesBuilder {
             tradingStrategyFactory.createTradingStrategy(tradingStrategy);
         strategyImpl.init(exchangeAdapter, tradingMarket, tradingStrategyConfig);
 
-        LOG.info(
-            () ->
-                "Initialized trading strategy successfully. Name: ["
-                    + tradingStrategy.getName()
-                    + "] Class: ["
-                    + tradingStrategy.getClassName()
-                    + "] Bean: ["
-                    + tradingStrategy.getBeanName()
-                    + "]");
+        log.info(
+            "Initialized trading strategy successfully. Name: ["
+                + tradingStrategy.getName()
+                + "] Class: ["
+                + tradingStrategy.getClassName()
+                + "] Bean: ["
+                + tradingStrategy.getBeanName()
+                + "]");
 
         tradingStrategiesToExecute.add(strategyImpl);
       } else {
@@ -161,7 +152,7 @@ public class TradingStrategiesBuilder {
                 + "] cannot be found in the "
                 + " Strategy Descriptions map: "
                 + tradingStrategyConfigs;
-        LOG.error(() -> errorMsg);
+        log.error(errorMsg);
         throw new IllegalArgumentException(errorMsg);
       }
     }

@@ -33,9 +33,7 @@ import com.gazbert.bxbot.trading.api.TradingApi;
 import java.math.BigDecimal;
 import java.util.List;
 
-/*
- * A valid (but useless!) Exchange Adapter for unit testing.
- */
+/** A valid (but useless!) Exchange Adapter for unit testing. */
 public class ValidExchangeAdapter implements TradingApi, ExchangeAdapter {
 
   @Override
@@ -86,5 +84,6 @@ public class ValidExchangeAdapter implements TradingApi, ExchangeAdapter {
 
   @Override
   public void init(ExchangeConfig config) {
+    // noimpl
   }
 }

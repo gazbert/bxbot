@@ -33,22 +33,21 @@ import com.gazbert.bxbot.trading.api.TradingApiException;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.Map;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.log4j.Log4j2;
 
 /**
  * Util class that checks if Emergency Stop Limit has been breached.
  *
  * @author gazbert
  */
+@Log4j2
 public class EmergencyStopChecker {
-
-  private static final Logger LOG = LogManager.getLogger();
 
   private static final String CRITICAL_EMAIL_ALERT_SUBJECT = "CRITICAL Alert message from BX-bot";
   private static final String DECIMAL_FORMAT_PATTERN = "#.########";
 
   private EmergencyStopChecker() {
+    // noimpl
   }
 
   /**
@@ -80,7 +79,7 @@ public class EmergencyStopChecker {
 
     boolean isEmergencyStopLimitBreached = true;
 
-    LOG.info(() -> "Performing Emergency Stop check...");
+    log.info("Performing Emergency Stop check...");
 
     BalanceInfo balanceInfo;
     try {
@@ -89,7 +88,7 @@ public class EmergencyStopChecker {
       final String errorMsg =
           "Failed to get Balance info from exchange to perform Emergency Stop check - letting"
               + " Trade Engine error policy decide what to do next...";
-      LOG.error(() -> errorMsg, e);
+      log.error(errorMsg, e);
       // re-throw to main loop - might only be connection issue and it will retry...
       throw e;
     }
@@ -104,24 +103,22 @@ public class EmergencyStopChecker {
               + "' key into Balances map "
               + "returned null. Balances returned: "
               + balancesAvailable;
-      LOG.error(() -> errorMsg);
+      log.error(errorMsg);
       throw new IllegalStateException(errorMsg);
     } else {
 
-      LOG.info(
-          () ->
-              "Emergency Stop Currency balance available on exchange is ["
-                  + new DecimalFormat(DECIMAL_FORMAT_PATTERN).format(currentBalance)
-                  + "] "
-                  + engineConfig.getEmergencyStopCurrency());
+      log.info(
+          "Emergency Stop Currency balance available on exchange is ["
+              + new DecimalFormat(DECIMAL_FORMAT_PATTERN).format(currentBalance)
+              + "] "
+              + engineConfig.getEmergencyStopCurrency());
 
-      LOG.info(
-          () ->
-              "Balance that will stop ALL trading across ALL markets is ["
-                  + new DecimalFormat(DECIMAL_FORMAT_PATTERN)
-                      .format(engineConfig.getEmergencyStopBalance())
-                  + "] "
-                  + engineConfig.getEmergencyStopCurrency());
+      log.info(
+          "Balance that will stop ALL trading across ALL markets is ["
+              + new DecimalFormat(DECIMAL_FORMAT_PATTERN)
+                  .format(engineConfig.getEmergencyStopBalance())
+              + "] "
+              + engineConfig.getEmergencyStopCurrency());
 
       if (currentBalance.compareTo(engineConfig.getEmergencyStopBalance()) < 0) {
         final String balanceBlownErrorMsg =
@@ -137,7 +134,7 @@ public class EmergencyStopChecker {
                 + "] "
                 + engineConfig.getEmergencyStopCurrency();
 
-        LOG.fatal(() -> balanceBlownErrorMsg);
+        log.fatal(balanceBlownErrorMsg);
 
         emailAlerter.sendMessage(
             CRITICAL_EMAIL_ALERT_SUBJECT,
@@ -150,7 +147,7 @@ public class EmergencyStopChecker {
       } else {
 
         isEmergencyStopLimitBreached = false;
-        LOG.info(() -> "Emergency Stop check PASSED!");
+        log.info("Emergency Stop check PASSED!");
       }
     }
     return isEmergencyStopLimitBreached;

@@ -26,8 +26,7 @@ package com.gazbert.bxbot.core.config.strategy;
 import com.gazbert.bxbot.core.util.ConfigurableComponentFactory;
 import com.gazbert.bxbot.domain.strategy.StrategyConfig;
 import com.gazbert.bxbot.strategy.api.TradingStrategy;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
@@ -38,9 +37,9 @@ import org.springframework.stereotype.Component;
  * @author gazbert
  */
 @Component
+@Log4j2
 public class TradingStrategyFactory {
 
-  private static final Logger LOG = LogManager.getLogger();
   private ApplicationContext springContext;
 
   /**
@@ -65,14 +64,14 @@ public class TradingStrategyFactory {
 
     TradingStrategy strategyImpl = null;
     if (tradingStrategyBeanName != null) {
-      // if beanName is configured, try get the bean first
+      // if beanName is configured, try and get the bean first
       try {
         strategyImpl = (TradingStrategy) springContext.getBean(tradingStrategyBeanName);
 
       } catch (NullPointerException e) {
         final String errorMsg =
             "Failed to obtain bean [" + tradingStrategyBeanName + "] from spring context";
-        LOG.error(() -> errorMsg);
+        log.error(errorMsg);
         throw new IllegalArgumentException(errorMsg);
       }
     }
