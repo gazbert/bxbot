@@ -32,7 +32,7 @@ traded at the [spot price](http://www.investopedia.com/terms/s/spotprice.asp).
 If you're looking for something more sophisticated with a much richer Trading API, take a look at
 [XChange](https://github.com/knowm/XChange).
  
-**Warning:** Trading Bitcoin carries significant financial risk; you could lose money. This software is provided 'as is'
+**Warning:** Trading cryptocurrency carries significant financial risk; you could lose money. This software is provided 'as is'
 and released under the [MIT license](http://opensource.org/licenses/MIT).
 
 ## Architecture
@@ -566,7 +566,7 @@ and started the bot.
 The REST API listens for plain HTTP traffic on port `8080` by default - you can change the 
 `server.port` in the [./config/application.properties](./config/application.properties) file.
  
-**Warning:** The bot must be configured to use TLS if you plan on accessing the REST API over a
+The bot _must_ be configured to use TLS if you plan on accessing the REST API over a
 public network - see the _[TLS](#tls)_ section below.
 
 You _must_ also change the `bxbot.restapi.jwt.secret` value in the 
@@ -609,13 +609,13 @@ JWT before it expires in order to get a new one. Alternatively, you can re-authe
 `/api/token` endpoint.
 
 #### TLS
-The REST API _must_ be configured to use TLS before accessing it over a public network.
+The REST API must be configured to use TLS before accessing it over a public network.
 
 You will need to 
 [create a keystore](https://docs.oracle.com/en/java/javase/17/docs/specs/man/keytool.html) - the command to
 create a [PKCS12](https://en.wikipedia.org/wiki/PKCS_12) self-signed certificate is shown below:
 
-``` bash
+```bash
 keytool -genkeypair -alias rest-api-keystore -keyalg RSA -keysize 2048 -storetype PKCS12 -keystore keystore.p12 -validity 3650
 ```
  
@@ -627,7 +627,7 @@ CA signed certificate.
 The 'TLS Configuration' section in the [./config/application.properties](./config/application.properties) 
 file needs the following properties set:
 
-``` properties
+```properties
 # Spring Boot profile for REST API.
 # Must use https profile in Production environment.
 spring.profiles.active=https
