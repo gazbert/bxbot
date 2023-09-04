@@ -47,6 +47,11 @@ public class ExchangeConfigYamlRepository implements ExchangeConfigRepository {
 
   private final ConfigurationManager configurationManager;
 
+  /**
+   * Creates the Exchange config YAML repo.
+   *
+   * @param configurationManager the config manager.
+   */
   public ExchangeConfigYamlRepository(ConfigurationManager configurationManager) {
     this.configurationManager = configurationManager;
   }

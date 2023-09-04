@@ -52,6 +52,11 @@ public class MarketConfigYamlRepository implements MarketConfigRepository {
 
   private final ConfigurationManager configurationManager;
 
+  /**
+   * Creates the Market config YAML repo.
+   *
+   * @param configurationManager the config manager.
+   */
   public MarketConfigYamlRepository(ConfigurationManager configurationManager) {
     this.configurationManager = configurationManager;
   }

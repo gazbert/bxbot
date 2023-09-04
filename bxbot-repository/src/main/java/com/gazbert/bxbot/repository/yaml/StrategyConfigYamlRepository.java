@@ -51,6 +51,11 @@ public class StrategyConfigYamlRepository implements StrategyConfigRepository {
 
   private final ConfigurationManager configurationManager;
 
+  /**
+   * Creates the Strategy config YAML repo.
+   *
+   * @param configurationManager the config manager.
+   */
   public StrategyConfigYamlRepository(ConfigurationManager configurationManager) {
     this.configurationManager = configurationManager;
   }

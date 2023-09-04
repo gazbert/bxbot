@@ -47,6 +47,11 @@ public class EngineConfigYamlRepository implements EngineConfigRepository {
 
   private final ConfigurationManager configurationManager;
 
+  /**
+   * Creates the Engine config YAML repo.
+   *
+   * @param configurationManager the config manager.
+   */
   public EngineConfigYamlRepository(ConfigurationManager configurationManager) {
     this.configurationManager = configurationManager;
   }

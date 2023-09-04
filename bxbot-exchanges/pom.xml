@@ -88,10 +88,6 @@
       <groupId>javax.xml.bind</groupId>
       <artifactId>jaxb-api</artifactId>
     </dependency>
-    <!--    <dependency>-->
-    <!--      <groupId>com.sun.xml.bind</groupId>-->
-    <!--      <artifactId>jaxb-impl</artifactId>-->
-    <!--    </dependency>-->
 
     <!--
     Testing dependencies
@@ -150,7 +146,6 @@
             ${argLine}
             --add-opens java.base/java.util=ALL-UNNAMED
             --add-opens java.base/java.util.stream=ALL-UNNAMED
-            --add-opens java.base/java.util.concurrent=ALL-UNNAMED
             --add-opens java.base/java.lang=ALL-UNNAMED
             --add-opens java.base/java.lang.reflect=ALL-UNNAMED
             --add-opens java.base/java.text=ALL-UNNAMED
@@ -161,7 +156,6 @@
             --add-opens java.base/java.security=ALL-UNNAMED
             --add-opens java.base/java.net=ALL-UNNAMED
             --add-opens java.base/sun.net.www.protocol.https=ALL-UNNAMED
-            --add-exports java.base/sun.net.www.protocol.https=ALL-UNNAMED
           </argLine>
         </configuration>
       </plugin>
