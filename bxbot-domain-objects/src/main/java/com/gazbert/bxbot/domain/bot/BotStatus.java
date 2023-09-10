@@ -54,7 +54,7 @@ public class BotStatus {
   /**
    * Creates a new BotStatus.
    *
-   * @param botId the bot Id.
+   * @param botId the bot id.
    * @param displayName the bot display name.
    * @param status the bot's status.
    * @param datetime the current datetime.

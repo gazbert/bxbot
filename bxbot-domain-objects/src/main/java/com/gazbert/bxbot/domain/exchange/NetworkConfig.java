@@ -83,16 +83,16 @@ public class NetworkConfig {
   }
 
   /**
-   * Returns the non fatal error codes.
+   * Returns the non-fatal error codes.
    *
-   * @return the non fatal error codes.
+   * @return the non-fatal error codes.
    */
   public List<Integer> getNonFatalErrorCodes() {
     return nonFatalErrorCodes;
   }
 
   /**
-   * * Sets the non fatal error codes.
+   * * Sets the non-fatal error codes.
    *
    * @param nonFatalErrorCodes the non fatal error codes.
    */
@@ -101,9 +101,9 @@ public class NetworkConfig {
   }
 
   /**
-   * Returns the non fatal error messages.
+   * Returns the non-fatal error messages.
    *
-   * @return the non fatal error messages.
+   * @return the non-fatal error messages.
    */
   public List<String> getNonFatalErrorMessages() {
     return nonFatalErrorMessages;
@@ -112,7 +112,7 @@ public class NetworkConfig {
   /**
    * Sets the non fatal error messages.
    *
-   * @param nonFatalErrorMessages the non fatal error messages.
+   * @param nonFatalErrorMessages the non-fatal error messages.
    */
   public void setNonFatalErrorMessages(List<String> nonFatalErrorMessages) {
     this.nonFatalErrorMessages = nonFatalErrorMessages;
