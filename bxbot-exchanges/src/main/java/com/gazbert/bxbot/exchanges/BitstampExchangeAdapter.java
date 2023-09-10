@@ -791,7 +791,7 @@ public class BitstampExchangeAdapter extends AbstractExchangeAdapter implements 
        * Signature is a HMAC-SHA256 encoded message containing: nonce, client ID and API key.
        * The HMAC-SHA256 code must be generated using a secret key that was generated with your
        * API key.
-       * This code must be converted to it's hexadecimal representation (64 uppercase characters).
+       * This code must be converted to its hexadecimal representation (64 uppercase characters).
        *
        * signature = hmac.new(API_SECRET, msg=message, digestmod=hashlib.sha256).hexdigest().upper()
        */

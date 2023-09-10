@@ -44,8 +44,6 @@ import java.net.URLConnection;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormatSymbols;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -90,7 +88,7 @@ abstract class AbstractExchangeAdapter {
   private final Set<String> nonFatalNetworkErrorMessages;
 
   private int connectionTimeout;
-  private DecimalFormatSymbols decimalFormatSymbols;
+  private final DecimalFormatSymbols decimalFormatSymbols;
 
   /**
    * Constructor sets some sensible defaults for the network config and specifies decimal point
@@ -138,7 +136,7 @@ abstract class AbstractExchangeAdapter {
 
       setRequestHeaders(exchangeConnection, requestHeaders);
 
-      // Add a timeout so we don't get blocked indefinitely; timeout on URLConnection is in millis.
+      // Add a timeout, so we don't get blocked indefinitely; timeout on URLConnection is in millis.
       final int timeoutInMillis = connectionTimeout * 1000;
       exchangeConnection.setConnectTimeout(timeoutInMillis);
       exchangeConnection.setReadTimeout(timeoutInMillis);
@@ -318,29 +316,6 @@ abstract class AbstractExchangeAdapter {
   }
 
   /**
-   * Sorts the request params alphabetically (uses natural ordering) and returns them as a query
-   * string.
-   *
-   * @param params the request params to sort.
-   * @return the query string containing the sorted request params.
-   */
-  String createAlphabeticallySortedQueryString(Map<String, String> params) {
-    final List<String> keys = new ArrayList<>(params.keySet());
-    Collections.sort(keys); // use natural/alphabetical ordering of params
-
-    final StringBuilder sortedQueryString = new StringBuilder();
-    for (final String param : keys) {
-      if (sortedQueryString.length() > 0) {
-        sortedQueryString.append("&");
-      }
-      sortedQueryString.append(param);
-      sortedQueryString.append("=");
-      sortedQueryString.append(params.get(param));
-    }
-    return sortedQueryString.toString();
-  }
-
-  /**
    * Returns the decimal format symbols for using with BigDecimals with the exchanges. Specifically,
    * the decimal point symbol is set to a '.'
    *
@@ -361,10 +336,6 @@ abstract class AbstractExchangeAdapter {
       this.statusCode = statusCode;
       this.reasonPhrase = reasonPhrase;
       this.payload = payload;
-    }
-
-    String getReasonPhrase() {
-      return reasonPhrase;
     }
 
     int getStatusCode() {

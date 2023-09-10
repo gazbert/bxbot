@@ -46,6 +46,7 @@ import com.google.common.base.MoreObjects;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.SerializedName;
+import java.io.Serial;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.HttpURLConnection;
@@ -540,8 +541,8 @@ public final class CoinbaseProExchangeAdapter extends AbstractExchangeAdapter
   /**
    * GSON class for COINBASE PRO '/orders' API call response.
    *
-   * <p>There are other critters in here different to what is spec'd:
-   * https://docs.pro.coinbase.com/#list-orders
+   * <p>There are other critters in here different to <a
+   * href="https://docs.pro.coinbase.com/#list-orders">what is spec'd</a>.
    */
   private static class CoinbaseProOrder {
 
@@ -618,7 +619,7 @@ public final class CoinbaseProExchangeAdapter extends AbstractExchangeAdapter
    */
   private static class CoinbaseProMarketOrder extends ArrayList<BigDecimal> {
 
-    private static final long serialVersionUID = -4919711220797077759L;
+    @Serial private static final long serialVersionUID = -4919711220797077759L;
   }
 
   /** GSON class for COINBASE PRO '/products/{marketId}/ticker' API call response. */
@@ -840,7 +841,7 @@ public final class CoinbaseProExchangeAdapter extends AbstractExchangeAdapter
               "Don't know how to build secure [" + httpMethod + "] request!");
       }
 
-      // Get UNIX EPOCH in secs and add the time server bias
+      // Get UNIX EPOCH in secs and add the time-server bias
       final long timeServer = Instant.now().getEpochSecond() + timeServerBias;
       final String timestamp = Long.toString(timeServer);
       LOG.debug(() -> "Server UNIX EPOCH in seconds: " + timestamp);
@@ -880,7 +881,7 @@ public final class CoinbaseProExchangeAdapter extends AbstractExchangeAdapter
    */
   private void initSecureMessageLayer() {
     try {
-      // COINBASE PRO secret is in Base64 so we must decode it first.
+      // COINBASE PRO secret is in Base64, so we must decode it first.
       final byte[] decodedBase64Secret = DatatypeConverter.parseBase64Binary(secret);
 
       final SecretKeySpec keyspec = new SecretKeySpec(decodedBase64Secret, "HmacSHA256");

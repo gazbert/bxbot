@@ -44,6 +44,7 @@ import com.google.common.base.MoreObjects;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.SerializedName;
+import java.io.Serial;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.MalformedURLException;
@@ -539,7 +540,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter
 
   /** GSON class for receiving your open orders in 'orders' API call response. */
   private static class BitfinexOpenOrders extends ArrayList<BitfinexOpenOrder> {
-    private static final long serialVersionUID = 5516523641153401953L;
+    @Serial private static final long serialVersionUID = 5516523641153401953L;
   }
 
   /** GSON class for mapping returned order from 'orders' API call response. */
@@ -664,7 +665,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter
    * </pre>
    */
   private static class BitfinexAccountInfos extends ArrayList<BitfinexAccountInfo> {
-    private static final long serialVersionUID = 5516521641453401953L;
+    @Serial private static final long serialVersionUID = 5516521641453401953L;
   }
 
   /** GSON class for holding Bitfinex Account Info. */
@@ -690,7 +691,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter
 
   /** GSON class for holding Bitfinex Pair Fees. */
   private static class BitfinexPairFees extends ArrayList<BitfinexPairFee> {
-    private static final long serialVersionUID = 1516526641473401953L;
+    @Serial private static final long serialVersionUID = 1516526641473401953L;
   }
 
   /** GSON class for holding Bitfinex Pair Fee. */
@@ -731,7 +732,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter
    * </pre>
    */
   private static class BitfinexBalances extends ArrayList<BitfinexAccountBalance> {
-    private static final long serialVersionUID = 5516523641953401953L;
+    @Serial private static final long serialVersionUID = 5516523641953401953L;
   }
 
   /**

@@ -55,6 +55,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
+import java.io.Serial;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -111,9 +112,9 @@ import org.apache.logging.log4j.Logger;
  *
  * <p>This adapter expects the market id to use the 3 letter commonly used names, e.g. you access
  * the XBT/USD market using 'XBTUSD'. Note: the exchange always returns the market id back in the
- * X-ISO4217-A3 format, i.e. 'XXBTZUSD'. The reason for doing this is because the Open Order
- * response contains the asset pair in the 3 letter format ('XBTUSD'), and we need to be able to
- * filter only the orders for the given market id.
+ * X-ISO4217-A3 format, i.e. 'XXBTZUSD'. The reason for that is because the Open Order response
+ * contains the asset pair in the 3 letter format ('XBTUSD'), and we need to be able to filter only
+ * the orders for the given market id.
  *
  * <p>The exchange regularly goes down for maintenance. If the keep-alive-during-maintenance
  * config-item is set to true in the exchange.yaml config file, the bot will stay alive and wait
@@ -641,27 +642,28 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
   /** GSON class that wraps Depth API call result - the Market Order Book. */
   private static class KrakenMarketOrderBookResult extends HashMap<String, KrakenOrderBook> {
 
-    private static final long serialVersionUID = -4913711010647027721L;
+    @Serial private static final long serialVersionUID = -4913711010647027721L;
   }
 
   /** GSON class that wraps a Balance API call result. */
   private static class KrakenBalanceResult extends HashMap<String, BigDecimal> {
 
-    private static final long serialVersionUID = -4919711010747027759L;
+    @Serial private static final long serialVersionUID = -4919711010747027759L;
   }
 
   /** GSON class that wraps a Ticker API call result. */
   private static class KrakenTickerResult extends HashMap<String, String> {
 
-    private static final long serialVersionUID = -4913711010647027759L;
+    @Serial private static final long serialVersionUID = -4913711010647027759L;
 
     KrakenTickerResult() {
+      // noimpl
     }
   }
 
   private static class KrakenAssetPairsConfig extends HashMap<String, Object> {
 
-    private static final long serialVersionUID = -9226840830768795L;
+    @Serial private static final long serialVersionUID = -9226840830768795L;
 
     PairPrecisionConfig loadPrecisionConfig() {
       Gson gson = new Gson();
@@ -680,7 +682,6 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
           BigDecimal orderMin = jsonObject.get("ordermin").getAsBigDecimal();
           orderMins.put(name, orderMin);
         }
-
 
         prices.put(name, price);
         volumes.put(name, volume);
@@ -820,7 +821,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
    */
   private static class KrakenMarketOrder extends ArrayList<BigDecimal> {
 
-    private static final long serialVersionUID = -4959711260742077759L;
+    @Serial private static final long serialVersionUID = -4959711260742077759L;
   }
 
   /**
@@ -833,6 +834,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
       implements JsonDeserializer<KrakenTickerResult> {
 
     KrakenTickerResultDeserializer() {
+      // noimpl
     }
 
     public KrakenTickerResult deserialize(
@@ -959,7 +961,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
    * API-Sign = Message signature using HMAC-SHA512 of (URI path + SHA256(nonce + POST data))
    *            and base64 decoded secret API key
    *
-   * The nonce must always increasing unsigned 64 bit integer.
+   * The nonce must always be an increasing unsigned 64-bit integer.
    *
    * Note: Sometimes requests can arrive out of order or NTP can cause your clock to rewind,
    * resulting in nonce issues. If you encounter this issue, you can change the nonce window in
@@ -1087,7 +1089,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
     final String keepAliveDuringMaintenanceConfig =
         getOtherConfigItem(otherConfig, KEEP_ALIVE_DURING_MAINTENANCE_PROPERTY_NAME);
     if (!keepAliveDuringMaintenanceConfig.isEmpty()) {
-      keepAliveDuringMaintenance = Boolean.valueOf(keepAliveDuringMaintenanceConfig);
+      keepAliveDuringMaintenance = Boolean.parseBoolean(keepAliveDuringMaintenanceConfig);
       LOG.info(() -> "Keep Alive During Maintenance: " + keepAliveDuringMaintenance);
     } else {
       LOG.info(() -> KEEP_ALIVE_DURING_MAINTENANCE_PROPERTY_NAME + " is not set in exchange.yaml");

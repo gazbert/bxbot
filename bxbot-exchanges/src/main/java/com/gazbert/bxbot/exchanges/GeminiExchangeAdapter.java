@@ -43,6 +43,7 @@ import com.google.common.base.MoreObjects;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.SerializedName;
+import java.io.Serial;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.MalformedURLException;
@@ -497,7 +498,7 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter
   /** GSON class for Balances API call response. */
   private static class GeminiBalances extends ArrayList<GeminiAccountBalance> {
 
-    private static final long serialVersionUID = 5516523141993401253L;
+    @Serial private static final long serialVersionUID = 5516523141993401253L;
   }
 
   /**
@@ -568,7 +569,7 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter
   /** GSON class for holding an active orders API call response. */
   private static class GeminiOpenOrders extends ArrayList<GeminiOpenOrder> {
 
-    private static final long serialVersionUID = 5516523611153405953L;
+    @Serial private static final long serialVersionUID = 5516523611153405953L;
   }
 
   /** GSON class representing an open order on the exchange. */

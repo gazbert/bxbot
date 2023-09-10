@@ -566,7 +566,7 @@ public class TestTryModeExchangeAdapter extends AbstractExchangeAdapter {
     assertEquals(MARKET_ID, openOrders.get(0).getMarketId());
     assertEquals(OPEN_ORDER_ID, openOrders.get(0).getId());
     assertSame(OrderType.SELL, openOrders.get(0).getType());
-    assertEquals(openOrders.get(0).getCreationDate(), OPEN_ORDER_CREATION_DATE);
+    assertEquals(OPEN_ORDER_CREATION_DATE, openOrders.get(0).getCreationDate());
     assertEquals(0, openOrders.get(0).getPrice().compareTo(OPEN_SELL_ORDER_PRICE));
     assertEquals(0, openOrders.get(0).getQuantity().compareTo(OPEN_ORDER_QUANTITY));
     assertEquals(0, openOrders.get(0).getTotal().compareTo(OPEN_ORDER_TOTAL));
@@ -665,7 +665,7 @@ public class TestTryModeExchangeAdapter extends AbstractExchangeAdapter {
     assertEquals(MARKET_ID, openOrders.get(0).getMarketId());
     assertEquals(OPEN_ORDER_ID, openOrders.get(0).getId());
     assertSame(OrderType.BUY, openOrders.get(0).getType());
-    assertEquals(openOrders.get(0).getCreationDate(), OPEN_ORDER_CREATION_DATE);
+    assertEquals(OPEN_ORDER_CREATION_DATE, openOrders.get(0).getCreationDate());
     assertEquals(0, openOrders.get(0).getPrice().compareTo(OPEN_BUY_ORDER_PRICE));
     assertEquals(0, openOrders.get(0).getQuantity().compareTo(OPEN_ORDER_QUANTITY));
     assertEquals(0, openOrders.get(0).getTotal().compareTo(OPEN_ORDER_TOTAL));

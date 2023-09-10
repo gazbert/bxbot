@@ -169,8 +169,8 @@ public class TestBitfinexExchangeAdapter extends AbstractExchangeAdapterTest {
         new AbstractExchangeAdapter.ExchangeHttpResponse(
             200, "OK", new String(encoded, StandardCharsets.UTF_8));
 
-    // Mock out param map so we can assert the contents passed to the transport layer are what we
-    // expect.
+    // Mock out param map, so we can assert the contents passed to the transport
+    // layer are what we expect.
     final Map<String, Object> requestParamMap = PowerMock.createMock(Map.class);
     expect(requestParamMap.put("symbol", MARKET_ID)).andStubReturn(null);
     expect(
@@ -429,7 +429,7 @@ public class TestBitfinexExchangeAdapter extends AbstractExchangeAdapterTest {
     final BigDecimal buyQuantity = new BigDecimal("5.0");
     final BigDecimal buyTotal = buyPrice.multiply(buyQuantity);
 
-    assertEquals(906, marketOrderBook.getBuyOrders().size()); // 'finex sends them all back!
+    assertEquals(906, marketOrderBook.getBuyOrders().size()); // finex sends them all back!
     assertSame(OrderType.BUY, marketOrderBook.getBuyOrders().get(0).getType());
     assertEquals(0, marketOrderBook.getBuyOrders().get(0).getPrice().compareTo(buyPrice));
     assertEquals(0, marketOrderBook.getBuyOrders().get(0).getQuantity().compareTo(buyQuantity));
@@ -439,7 +439,7 @@ public class TestBitfinexExchangeAdapter extends AbstractExchangeAdapterTest {
     final BigDecimal sellQuantity = new BigDecimal("6.35595596");
     final BigDecimal sellTotal = sellPrice.multiply(sellQuantity);
 
-    assertEquals(984, marketOrderBook.getSellOrders().size()); // 'finex sends them all back!
+    assertEquals(984, marketOrderBook.getSellOrders().size()); // finex sends them all back!
     assertSame(OrderType.SELL, marketOrderBook.getSellOrders().get(0).getType());
     assertEquals(0, marketOrderBook.getSellOrders().get(0).getPrice().compareTo(sellPrice));
     assertEquals(0, marketOrderBook.getSellOrders().get(0).getQuantity().compareTo(sellQuantity));

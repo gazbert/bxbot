@@ -10,7 +10,7 @@ import java.util.Locale;
  */
 abstract class AbstractExchangeAdapterTest {
 
-  private DecimalFormatSymbols decimalFormatSymbols;
+  private final DecimalFormatSymbols decimalFormatSymbols;
 
   AbstractExchangeAdapterTest() {
     // Some locales (e.g. France, Germany, Czech Republic) default to ',' instead of '.' for decimal

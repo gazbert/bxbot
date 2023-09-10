@@ -197,8 +197,8 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
         new AbstractExchangeAdapter.ExchangeHttpResponse(
             200, "OK", new String(encoded, StandardCharsets.UTF_8));
 
-    // Mock out param map so we can assert the contents passed to the transport layer are what we
-    // expect.
+    // Mock out param map, so we can assert the contents passed to the transport
+    // layer are what we expect.
     final Map<String, String> requestParamMap = PowerMock.createMock(Map.class);
     expect(requestParamMap.put("pair", MARKET_ID)).andStubReturn(null);
 
@@ -1477,11 +1477,12 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
             eq(requestHeaderMap))
         .andThrow(
             new TradingApiException(
-                "Below the thunders of the upper deep;\n"
-                    + "Far far beneath in the abysmal sea,\n"
-                    + "His ancient, dreamless, uninvaded sleep\n"
-                    + "The Kraken sleepeth: faintest sunlights flee\n"
-                    + "About his shadowy sides; above him swell..."));
+                """
+                    Below the thunders of the upper deep;
+                    Far far beneath in the abysmal sea,
+                    His ancient, dreamless, uninvaded sleep
+                    The Kraken sleepeth: faintest sunlights flee
+                    About his shadowy sides; above him swell..."""));
 
     PowerMock.replayAll();
     exchangeAdapter.init(exchangeConfig);
