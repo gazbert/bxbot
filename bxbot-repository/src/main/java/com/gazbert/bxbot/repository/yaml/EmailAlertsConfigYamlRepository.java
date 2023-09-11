@@ -29,8 +29,7 @@ import com.gazbert.bxbot.datastore.yaml.ConfigurationManager;
 import com.gazbert.bxbot.datastore.yaml.emailalerts.EmailAlertsType;
 import com.gazbert.bxbot.domain.emailalerts.EmailAlertsConfig;
 import com.gazbert.bxbot.repository.EmailAlertsConfigRepository;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,9 +40,8 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Repository("emailAlertsConfigYamlRepository")
 @Transactional
+@Log4j2
 public class EmailAlertsConfigYamlRepository implements EmailAlertsConfigRepository {
-
-  private static final Logger LOG = LogManager.getLogger();
 
   private final ConfigurationManager configurationManager;
 
@@ -58,7 +56,7 @@ public class EmailAlertsConfigYamlRepository implements EmailAlertsConfigReposit
 
   @Override
   public EmailAlertsConfig get() {
-    LOG.info(() -> "Fetching EmailAlertsConfig...");
+    log.info("Fetching EmailAlertsConfig...");
     return configurationManager
         .loadConfig(EmailAlertsType.class, EMAIL_ALERTS_CONFIG_YAML_FILENAME)
         .getEmailAlerts();
@@ -66,7 +64,7 @@ public class EmailAlertsConfigYamlRepository implements EmailAlertsConfigReposit
 
   @Override
   public EmailAlertsConfig save(EmailAlertsConfig config) {
-    LOG.info(() -> "About to save EmailAlertsConfig: " + config);
+    log.info("About to save EmailAlertsConfig: " + config);
 
     final EmailAlertsType emailAlertsType = new EmailAlertsType();
     emailAlertsType.setEmailAlerts(config);

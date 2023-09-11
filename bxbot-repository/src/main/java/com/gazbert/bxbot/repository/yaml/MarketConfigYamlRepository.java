@@ -33,8 +33,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,9 +44,9 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Repository("marketConfigYamlRepository")
 @Transactional
+@Log4j2
 public class MarketConfigYamlRepository implements MarketConfigRepository {
 
-  private static final Logger LOG = LogManager.getLogger();
   private static final String EXISTING_MARKET_CONFIG = " Existing MarketConfig: ";
 
   private final ConfigurationManager configurationManager;
@@ -63,7 +62,7 @@ public class MarketConfigYamlRepository implements MarketConfigRepository {
 
   @Override
   public List<MarketConfig> findAll() {
-    LOG.info(() -> "Fetching all Market configs...");
+    log.info("Fetching all Market configs...");
     return configurationManager
         .loadConfig(MarketsType.class, MARKETS_CONFIG_YAML_FILENAME)
         .getMarkets();
@@ -71,7 +70,7 @@ public class MarketConfigYamlRepository implements MarketConfigRepository {
 
   @Override
   public MarketConfig findById(String id) {
-    LOG.info(() -> "Fetching Market config for id: " + id);
+    log.info("Fetching Market config for id: " + id);
 
     final MarketsType marketsType =
         configurationManager.loadConfig(MarketsType.class, MARKETS_CONFIG_YAML_FILENAME);
@@ -95,7 +94,7 @@ public class MarketConfigYamlRepository implements MarketConfigRepository {
             .toList();
 
     if (config.getId() == null || config.getId().isEmpty()) {
-      LOG.info(() -> "About to create MarketConfig: " + config);
+      log.info("About to create MarketConfig: " + config);
 
       if (marketConfigs.isEmpty()) {
         final MarketConfig newMarketConfig = new MarketConfig(config);
@@ -115,7 +114,7 @@ public class MarketConfigYamlRepository implements MarketConfigRepository {
                 + marketsType.getMarkets());
       }
     } else {
-      LOG.info(() -> "About to update MarketConfig: " + config);
+      log.info("About to update MarketConfig: " + config);
 
       if (!marketConfigs.isEmpty()) {
 
@@ -133,12 +132,11 @@ public class MarketConfigYamlRepository implements MarketConfigRepository {
                 .distinct()
                 .collect(Collectors.toList()));
       } else {
-        LOG.warn(
-            () ->
-                "Trying to update MarketConfig but id does not exist MarketConfig: "
-                    + config
-                    + EXISTING_MARKET_CONFIG
-                    + marketsType.getMarkets());
+        log.warn(
+            "Trying to update MarketConfig but id does not exist MarketConfig: "
+                + config
+                + EXISTING_MARKET_CONFIG
+                + marketsType.getMarkets());
         return null;
       }
     }
@@ -146,7 +144,7 @@ public class MarketConfigYamlRepository implements MarketConfigRepository {
 
   @Override
   public MarketConfig delete(String id) {
-    LOG.info(() -> "Deleting Market config for id: " + id);
+    log.info("Deleting Market config for id: " + id);
 
     final MarketsType marketsType =
         configurationManager.loadConfig(MarketsType.class, MARKETS_CONFIG_YAML_FILENAME);
@@ -163,12 +161,11 @@ public class MarketConfigYamlRepository implements MarketConfigRepository {
       configurationManager.saveConfig(MarketsType.class, marketsType, MARKETS_CONFIG_YAML_FILENAME);
       return adaptInternalToExternalConfig(Collections.singletonList(marketToRemove));
     } else {
-      LOG.warn(
-          () ->
-              "Trying to delete MarketConfig but id does not exist. MarketConfig id: "
-                  + id
-                  + EXISTING_MARKET_CONFIG
-                  + marketsType.getMarkets());
+      log.warn(
+          "Trying to delete MarketConfig but id does not exist. MarketConfig id: "
+              + id
+              + EXISTING_MARKET_CONFIG
+              + marketsType.getMarkets());
       return null;
     }
   }
