@@ -92,7 +92,7 @@ public class MarketConfigYamlRepository implements MarketConfigRepository {
         marketsType.getMarkets().stream()
             .filter(item -> item.getId().equals(config.getId()))
             .distinct()
-            .collect(Collectors.toList());
+            .toList();
 
     if (config.getId() == null || config.getId().isEmpty()) {
       LOG.info(() -> "About to create MarketConfig: " + config);
@@ -155,7 +155,7 @@ public class MarketConfigYamlRepository implements MarketConfigRepository {
         marketsType.getMarkets().stream()
             .filter(item -> item.getId().equals(id))
             .distinct()
-            .collect(Collectors.toList());
+            .toList();
 
     if (!marketConfigs.isEmpty()) {
       final MarketConfig marketToRemove = marketConfigs.get(0); // will only be 1 unique strat

@@ -63,6 +63,7 @@ public class MarketConfig {
 
   /** Creates a MarketConfig. Required by ConfigurableComponentFactory */
   public MarketConfig() {
+    // noimpl
   }
 
   /**

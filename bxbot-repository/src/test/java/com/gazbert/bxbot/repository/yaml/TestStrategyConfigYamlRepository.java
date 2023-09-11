@@ -48,7 +48,6 @@ import org.junit.jupiter.api.Test;
 class TestStrategyConfigYamlRepository {
 
   private static final String UNKNOWN_STRAT_ID = "unknown-or-new-strat-id";
-  private static final String GENERATED_STRAT_ID = "new-strat-id-123";
 
   private static final String STRAT_ID_1 = "macd-long-position";
   private static final String STRAT_NAME_1 = "MACD Long Position Algo";
@@ -234,7 +233,7 @@ class TestStrategyConfigYamlRepository {
   }
 
   @Test
-  void whenSaveCalledWithEmptyIdThenExpectCreatedStrategyConfigToBeReturned() throws Exception {
+  void whenSaveCalledWithEmptyIdThenExpectCreatedStrategyConfigToBeReturned() {
 
     expect(
             configurationManager.loadConfig(

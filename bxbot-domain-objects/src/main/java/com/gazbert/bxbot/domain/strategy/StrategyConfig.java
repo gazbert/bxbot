@@ -67,6 +67,7 @@ public class StrategyConfig {
 
   /** Creates a new StrategyConfig. Required by ConfigurableComponentFactory */
   public StrategyConfig() {
+    // noimpl
   }
 
   /**

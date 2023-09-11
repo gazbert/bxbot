@@ -49,6 +49,7 @@ public class BotStatus {
 
   /** Creates a new BotStatus. Required by ConfigurableComponentFactory. */
   public BotStatus() {
+    // noimpl
   }
 
   /**

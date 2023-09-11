@@ -61,8 +61,9 @@ public class SmtpConfig {
   @Email(message = "To Address must be a valid email address")
   private String toAddress;
 
-  /** Creates a new SmtpConfig. Required for jackson. */
+  /** Creates a new SmtpConfig. */
   public SmtpConfig() {
+    // noimpl
   }
 
   /**

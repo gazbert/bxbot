@@ -79,6 +79,7 @@ public class EngineConfig {
 
   /** Creates an EngineConfig. Required by ConfigurableComponentFactory */
   public EngineConfig() {
+    // noimpl
   }
 
   /**
