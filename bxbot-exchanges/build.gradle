@@ -12,6 +12,9 @@ dependencies {
 
   implementation libraries.jakarta_xml_api
 
+  compileOnly libraries.lombok
+  annotationProcessor libraries.lombok
+
   testImplementation libraries.powermock_junit
   testImplementation libraries.powermock_api_easymock
   testImplementation libraries.easymock

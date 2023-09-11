@@ -69,8 +69,7 @@ import java.util.List;
 import java.util.Map;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.log4j.Log4j2;
 
 /**
  * Exchange Adapter for integrating with the Bitstamp exchange. It uses v2 of the Bitstamp API; it
@@ -103,10 +102,8 @@ import org.apache.logging.log4j.Logger;
  * @author gazbert
  * @since 1.0
  */
+@Log4j2
 public class BitstampExchangeAdapter extends AbstractExchangeAdapter implements ExchangeAdapter {
-
-  private static final Logger LOG = LogManager.getLogger();
-
   private static final String API_BASE_URL = "https://www.bitstamp.net/api/v2/";
 
   private static final String UNEXPECTED_ERROR_MSG =
@@ -134,7 +131,7 @@ public class BitstampExchangeAdapter extends AbstractExchangeAdapter implements 
 
   @Override
   public void init(ExchangeConfig config) {
-    LOG.info(() -> "About to initialise Bitstamp ExchangeConfig: " + config);
+    log.info("About to initialise Bitstamp ExchangeConfig: " + config);
     setAuthenticationConfig(config);
     setNetworkConfig(config);
 
@@ -153,7 +150,7 @@ public class BitstampExchangeAdapter extends AbstractExchangeAdapter implements 
       throws TradingApiException, ExchangeNetworkException {
     try {
       final ExchangeHttpResponse response = sendPublicRequestToExchange("order_book/" + marketId);
-      LOG.debug(() -> "Market Orders response: " + response);
+      log.debug("Market Orders response: " + response);
 
       final BitstampOrderBook bitstampOrderBook =
           gson.fromJson(response.getPayload(), BitstampOrderBook.class);
@@ -188,7 +185,7 @@ public class BitstampExchangeAdapter extends AbstractExchangeAdapter implements 
       throw e;
 
     } catch (Exception e) {
-      LOG.error(UNEXPECTED_ERROR_MSG, e);
+      log.error(UNEXPECTED_ERROR_MSG, e);
       throw new TradingApiException(UNEXPECTED_ERROR_MSG, e);
     }
   }
@@ -199,7 +196,7 @@ public class BitstampExchangeAdapter extends AbstractExchangeAdapter implements 
     try {
       final ExchangeHttpResponse response =
           sendAuthenticatedRequestToExchange("open_orders/" + marketId, null);
-      LOG.debug(() -> "Open Orders response: " + response);
+      log.debug("Open Orders response: " + response);
 
       final BitstampOrderResponse[] myOpenOrders =
           gson.fromJson(response.getPayload(), BitstampOrderResponse[].class);
@@ -236,7 +233,7 @@ public class BitstampExchangeAdapter extends AbstractExchangeAdapter implements 
       throw e;
 
     } catch (Exception e) {
-      LOG.error(UNEXPECTED_ERROR_MSG, e);
+      log.error(UNEXPECTED_ERROR_MSG, e);
       throw new TradingApiException(UNEXPECTED_ERROR_MSG, e);
     }
   }
@@ -270,18 +267,18 @@ public class BitstampExchangeAdapter extends AbstractExchangeAdapter implements 
                 + OrderType.BUY.getStringValue()
                 + " or "
                 + OrderType.SELL.getStringValue();
-        LOG.error(errorMsg);
+        log.error(errorMsg);
         throw new IllegalArgumentException(errorMsg);
       }
 
-      LOG.debug(() -> "Create Order response: " + response);
+      log.debug("Create Order response: " + response);
 
       final BitstampOrderResponse createOrderResponse =
           gson.fromJson(response.getPayload(), BitstampOrderResponse.class);
       final long id = createOrderResponse.id;
       if (id == 0) {
         final String errorMsg = "Failed to place order on exchange. Error response: " + response;
-        LOG.error(errorMsg);
+        log.error(errorMsg);
         throw new TradingApiException(errorMsg);
       } else {
         return Long.toString(createOrderResponse.id);
@@ -291,7 +288,7 @@ public class BitstampExchangeAdapter extends AbstractExchangeAdapter implements 
       throw e;
 
     } catch (Exception e) {
-      LOG.error(UNEXPECTED_ERROR_MSG, e);
+      log.error(UNEXPECTED_ERROR_MSG, e);
       throw new TradingApiException(UNEXPECTED_ERROR_MSG, e);
     }
   }
@@ -308,13 +305,13 @@ public class BitstampExchangeAdapter extends AbstractExchangeAdapter implements 
 
       final ExchangeHttpResponse response =
           sendAuthenticatedRequestToExchange("cancel_order", params);
-      LOG.debug(() -> "Cancel Order response: " + response);
+      log.debug("Cancel Order response: " + response);
 
       final BitstampCancelOrderResponse cancelOrderResponse =
           gson.fromJson(response.getPayload(), BitstampCancelOrderResponse.class);
       if (!orderId.equals(String.valueOf(cancelOrderResponse.id))) {
         final String errorMsg = "Failed to cancel order on exchange. Error response: " + response;
-        LOG.error(errorMsg);
+        log.error(errorMsg);
         return false;
       } else {
         return true;
@@ -324,7 +321,7 @@ public class BitstampExchangeAdapter extends AbstractExchangeAdapter implements 
       throw e;
 
     } catch (Exception e) {
-      LOG.error(UNEXPECTED_ERROR_MSG, e);
+      log.error(UNEXPECTED_ERROR_MSG, e);
       throw new TradingApiException(UNEXPECTED_ERROR_MSG, e);
     }
   }
@@ -334,7 +331,7 @@ public class BitstampExchangeAdapter extends AbstractExchangeAdapter implements 
       throws TradingApiException, ExchangeNetworkException {
     try {
       final ExchangeHttpResponse response = sendPublicRequestToExchange("ticker/" + marketId);
-      LOG.debug(() -> "Latest Market Price response: " + response);
+      log.debug("Latest Market Price response: " + response);
 
       final BitstampTicker bitstampTicker =
           gson.fromJson(response.getPayload(), BitstampTicker.class);
@@ -344,7 +341,7 @@ public class BitstampExchangeAdapter extends AbstractExchangeAdapter implements 
       throw e;
 
     } catch (Exception e) {
-      LOG.error(UNEXPECTED_ERROR_MSG, e);
+      log.error(UNEXPECTED_ERROR_MSG, e);
       throw new TradingApiException(UNEXPECTED_ERROR_MSG, e);
     }
   }
@@ -353,7 +350,7 @@ public class BitstampExchangeAdapter extends AbstractExchangeAdapter implements 
   public BalanceInfo getBalanceInfo() throws TradingApiException, ExchangeNetworkException {
     try {
       final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange(BALANCE, null);
-      LOG.debug(() -> "Balance Info response: " + response);
+      log.debug("Balance Info response: " + response);
 
       final BitstampBalance balances = gson.fromJson(response.getPayload(), BitstampBalance.class);
 
@@ -377,7 +374,7 @@ public class BitstampExchangeAdapter extends AbstractExchangeAdapter implements 
       throw e;
 
     } catch (Exception e) {
-      LOG.error(UNEXPECTED_ERROR_MSG, e);
+      log.error(UNEXPECTED_ERROR_MSG, e);
       throw new TradingApiException(UNEXPECTED_ERROR_MSG, e);
     }
   }
@@ -387,7 +384,7 @@ public class BitstampExchangeAdapter extends AbstractExchangeAdapter implements 
       throws TradingApiException, ExchangeNetworkException {
     try {
       final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange(BALANCE, null);
-      LOG.debug(() -> "Buy Fee response: " + response);
+      log.debug("Buy Fee response: " + response);
 
       final BitstampBalance balances = gson.fromJson(response.getPayload(), BitstampBalance.class);
 
@@ -408,14 +405,14 @@ public class BitstampExchangeAdapter extends AbstractExchangeAdapter implements 
               + marketId
               + " BitstampBalances: "
               + balances;
-      LOG.error(errorMsg);
+      log.error(errorMsg);
       throw new IllegalArgumentException(errorMsg);
 
     } catch (ExchangeNetworkException | TradingApiException e) {
       throw e;
 
     } catch (Exception e) {
-      LOG.error(UNEXPECTED_ERROR_MSG, e);
+      log.error(UNEXPECTED_ERROR_MSG, e);
       throw new TradingApiException(UNEXPECTED_ERROR_MSG, e);
     }
   }
@@ -425,7 +422,7 @@ public class BitstampExchangeAdapter extends AbstractExchangeAdapter implements 
       throws TradingApiException, ExchangeNetworkException {
     try {
       final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange(BALANCE, null);
-      LOG.debug(() -> "Sell Fee response: " + response);
+      log.debug("Sell Fee response: " + response);
 
       final BitstampBalance balances = gson.fromJson(response.getPayload(), BitstampBalance.class);
 
@@ -446,14 +443,14 @@ public class BitstampExchangeAdapter extends AbstractExchangeAdapter implements 
               + marketId
               + " BitstampBalances: "
               + balances;
-      LOG.error(errorMsg);
+      log.error(errorMsg);
       throw new IllegalArgumentException(errorMsg);
 
     } catch (ExchangeNetworkException | TradingApiException e) {
       throw e;
 
     } catch (Exception e) {
-      LOG.error(UNEXPECTED_ERROR_MSG, e);
+      log.error(UNEXPECTED_ERROR_MSG, e);
       throw new TradingApiException(UNEXPECTED_ERROR_MSG, e);
     }
   }
@@ -468,7 +465,7 @@ public class BitstampExchangeAdapter extends AbstractExchangeAdapter implements 
 
     try {
       final ExchangeHttpResponse response = sendPublicRequestToExchange("ticker/" + marketId);
-      LOG.debug(() -> "Ticker response: " + response);
+      log.debug("Ticker response: " + response);
 
       final BitstampTicker bitstampTicker =
           gson.fromJson(response.getPayload(), BitstampTicker.class);
@@ -487,7 +484,7 @@ public class BitstampExchangeAdapter extends AbstractExchangeAdapter implements 
       throw e;
 
     } catch (Exception e) {
-      LOG.error(UNEXPECTED_ERROR_MSG, e);
+      log.error(UNEXPECTED_ERROR_MSG, e);
       throw new TradingApiException(UNEXPECTED_ERROR_MSG, e);
     }
   }
@@ -726,8 +723,7 @@ public class BitstampExchangeAdapter extends AbstractExchangeAdapter implements 
 
     private final SimpleDateFormat bitstampDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-    BitstampDateDeserializer() {
-    }
+    BitstampDateDeserializer() {}
 
     public Date deserialize(JsonElement json, Type type, JsonDeserializationContext context) {
       Date dateFromBitstamp = null;
@@ -736,7 +732,7 @@ public class BitstampExchangeAdapter extends AbstractExchangeAdapter implements 
           dateFromBitstamp = bitstampDateFormat.parse(json.getAsString());
         } catch (ParseException e) {
           final String errorMsg = "DateDeserializer failed to parse a Bitstamp date!";
-          LOG.error(errorMsg, e);
+          log.error(errorMsg, e);
           throw new JsonParseException(errorMsg, e);
         }
       }
@@ -756,7 +752,7 @@ public class BitstampExchangeAdapter extends AbstractExchangeAdapter implements 
 
     } catch (MalformedURLException e) {
       final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
-      LOG.error(errorMsg, e);
+      log.error(errorMsg, e);
       throw new TradingApiException(errorMsg, e);
     }
   }
@@ -767,7 +763,7 @@ public class BitstampExchangeAdapter extends AbstractExchangeAdapter implements 
 
     if (!initializedMacAuthentication) {
       final String errorMsg = "MAC Message security layer has not been initialized.";
-      LOG.error(errorMsg);
+      log.error(errorMsg);
       throw new IllegalStateException(errorMsg);
     }
 
@@ -822,7 +818,7 @@ public class BitstampExchangeAdapter extends AbstractExchangeAdapter implements 
 
     } catch (MalformedURLException e) {
       final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
-      LOG.error(errorMsg, e);
+      log.error(errorMsg, e);
       throw new TradingApiException(errorMsg, e);
     }
   }
@@ -850,11 +846,11 @@ public class BitstampExchangeAdapter extends AbstractExchangeAdapter implements 
       initializedMacAuthentication = true;
     } catch (NoSuchAlgorithmException e) {
       final String errorMsg = "Failed to setup MAC security. HINT: Is HMAC-SHA256 installed?";
-      LOG.error(errorMsg, e);
+      log.error(errorMsg, e);
       throw new IllegalStateException(errorMsg, e);
     } catch (InvalidKeyException e) {
       final String errorMsg = "Failed to setup MAC security. Secret key seems invalid!";
-      LOG.error(errorMsg, e);
+      log.error(errorMsg, e);
       throw new IllegalArgumentException(errorMsg, e);
     }
   }

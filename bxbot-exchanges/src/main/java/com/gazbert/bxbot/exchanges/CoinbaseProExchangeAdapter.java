@@ -67,8 +67,7 @@ import java.util.Map;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import javax.xml.bind.DatatypeConverter;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.log4j.Log4j2;
 
 /**
  * Exchange Adapter for integrating with the CoinbasePro exchange. The CoinbasePro API is documented
@@ -107,11 +106,9 @@ import org.apache.logging.log4j.Logger;
  * @author davidhuertas
  * @since 1.0
  */
+@Log4j2
 public final class CoinbaseProExchangeAdapter extends AbstractExchangeAdapter
     implements ExchangeAdapter {
-
-  private static final Logger LOG = LogManager.getLogger();
-
   private static final String PUBLIC_API_BASE_URL = "https://api.pro.coinbase.com/";
   private static final String AUTHENTICATED_API_URL = PUBLIC_API_BASE_URL;
 
@@ -146,7 +143,7 @@ public final class CoinbaseProExchangeAdapter extends AbstractExchangeAdapter
 
   @Override
   public void init(ExchangeConfig config) {
-    LOG.info(() -> "About to initialise COINBASE PRO ExchangeConfig: " + config);
+    log.info("About to initialise COINBASE PRO ExchangeConfig: " + config);
     setAuthenticationConfig(config);
     setNetworkConfig(config);
     setOtherConfig(config);
@@ -188,7 +185,7 @@ public final class CoinbaseProExchangeAdapter extends AbstractExchangeAdapter
                 + OrderType.BUY.getStringValue()
                 + " or "
                 + OrderType.SELL.getStringValue();
-        LOG.error(errorMsg);
+        log.error(errorMsg);
         throw new IllegalArgumentException(errorMsg);
       }
 
@@ -203,7 +200,7 @@ public final class CoinbaseProExchangeAdapter extends AbstractExchangeAdapter
 
       final ExchangeHttpResponse response =
           sendAuthenticatedRequestToExchange("POST", "orders", params);
-      LOG.debug(() -> "Create Order response: " + response);
+      log.debug("Create Order response: " + response);
 
       if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
         final CoinbaseProOrder createOrderResponse =
@@ -213,12 +210,12 @@ public final class CoinbaseProExchangeAdapter extends AbstractExchangeAdapter
           return createOrderResponse.id;
         } else {
           final String errorMsg = "Failed to place order on exchange. Error response: " + response;
-          LOG.error(errorMsg);
+          log.error(errorMsg);
           throw new TradingApiException(errorMsg);
         }
       } else {
         final String errorMsg = "Failed to create order on exchange. Details: " + response;
-        LOG.error(errorMsg);
+        log.error(errorMsg);
         throw new TradingApiException(errorMsg);
       }
 
@@ -226,7 +223,7 @@ public final class CoinbaseProExchangeAdapter extends AbstractExchangeAdapter
       throw e;
 
     } catch (Exception e) {
-      LOG.error(UNEXPECTED_ERROR_MSG, e);
+      log.error(UNEXPECTED_ERROR_MSG, e);
       throw new TradingApiException(UNEXPECTED_ERROR_MSG, e);
     }
   }
@@ -241,7 +238,7 @@ public final class CoinbaseProExchangeAdapter extends AbstractExchangeAdapter
       final ExchangeHttpResponse response =
           sendAuthenticatedRequestToExchange("DELETE", "orders/" + orderId, null);
 
-      LOG.debug(() -> "Cancel Order response: " + response);
+      log.debug("Cancel Order response: " + response);
 
       if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
         // 1 Nov 2017 - COINBASE PRO API no longer returns cancelled orderId in array payload;
@@ -249,7 +246,7 @@ public final class CoinbaseProExchangeAdapter extends AbstractExchangeAdapter
         return true;
       } else {
         final String errorMsg = "Failed to cancel order on exchange. Details: " + response;
-        LOG.error(errorMsg);
+        log.error(errorMsg);
         return false;
       }
 
@@ -257,7 +254,7 @@ public final class CoinbaseProExchangeAdapter extends AbstractExchangeAdapter
       throw e;
 
     } catch (Exception e) {
-      LOG.error(UNEXPECTED_ERROR_MSG, e);
+      log.error(UNEXPECTED_ERROR_MSG, e);
       throw new TradingApiException(UNEXPECTED_ERROR_MSG, e);
     }
   }
@@ -272,7 +269,7 @@ public final class CoinbaseProExchangeAdapter extends AbstractExchangeAdapter
       final ExchangeHttpResponse response =
           sendAuthenticatedRequestToExchange("GET", "orders", null);
 
-      LOG.debug(() -> "Open Orders response: " + response);
+      log.debug("Open Orders response: " + response);
 
       if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
         final CoinbaseProOrder[] coinbaseProOpenOrders =
@@ -317,7 +314,7 @@ public final class CoinbaseProExchangeAdapter extends AbstractExchangeAdapter
       } else {
         final String errorMsg =
             "Failed to get your open orders from exchange. Details: " + response;
-        LOG.error(errorMsg);
+        log.error(errorMsg);
         throw new TradingApiException(errorMsg);
       }
 
@@ -325,7 +322,7 @@ public final class CoinbaseProExchangeAdapter extends AbstractExchangeAdapter
       throw e;
 
     } catch (Exception e) {
-      LOG.error(UNEXPECTED_ERROR_MSG, e);
+      log.error(UNEXPECTED_ERROR_MSG, e);
       throw new TradingApiException(UNEXPECTED_ERROR_MSG, e);
     }
   }
@@ -340,7 +337,7 @@ public final class CoinbaseProExchangeAdapter extends AbstractExchangeAdapter
       final ExchangeHttpResponse response =
           sendPublicRequestToExchange(PRODUCTS + marketId + "/book", params);
 
-      LOG.debug(() -> "Market Orders response: " + response);
+      log.debug("Market Orders response: " + response);
 
       if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
         final CoinbaseProBookWrapper orderBook =
@@ -372,7 +369,7 @@ public final class CoinbaseProExchangeAdapter extends AbstractExchangeAdapter
       } else {
         final String errorMsg =
             "Failed to get market order book from exchange. Details: " + response;
-        LOG.error(errorMsg);
+        log.error(errorMsg);
         throw new TradingApiException(errorMsg);
       }
 
@@ -380,7 +377,7 @@ public final class CoinbaseProExchangeAdapter extends AbstractExchangeAdapter
       throw e;
 
     } catch (Exception e) {
-      LOG.error(UNEXPECTED_ERROR_MSG, e);
+      log.error(UNEXPECTED_ERROR_MSG, e);
       throw new TradingApiException(UNEXPECTED_ERROR_MSG, e);
     }
   }
@@ -391,7 +388,7 @@ public final class CoinbaseProExchangeAdapter extends AbstractExchangeAdapter
       final ExchangeHttpResponse response =
           sendAuthenticatedRequestToExchange("GET", "accounts", null);
 
-      LOG.debug(() -> "Balance Info response: " + response);
+      log.debug("Balance Info response: " + response);
 
       if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
         final CoinbaseProAccount[] coinbaseProAccounts =
@@ -408,14 +405,14 @@ public final class CoinbaseProExchangeAdapter extends AbstractExchangeAdapter
       } else {
         final String errorMsg =
             "Failed to get your wallet balance info from exchange. Details: " + response;
-        LOG.error(errorMsg);
+        log.error(errorMsg);
         throw new TradingApiException(errorMsg);
       }
 
     } catch (ExchangeNetworkException | TradingApiException e) {
       throw e;
     } catch (Exception e) {
-      LOG.error(UNEXPECTED_ERROR_MSG, e);
+      log.error(UNEXPECTED_ERROR_MSG, e);
       throw new TradingApiException(UNEXPECTED_ERROR_MSG, e);
     }
   }
@@ -427,7 +424,7 @@ public final class CoinbaseProExchangeAdapter extends AbstractExchangeAdapter
       final ExchangeHttpResponse response =
           sendPublicRequestToExchange(PRODUCTS + marketId + "/ticker", null);
 
-      LOG.debug(() -> "Latest Market Price response: " + response);
+      log.debug("Latest Market Price response: " + response);
 
       if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
         final CoinbaseProTicker coinbaseProTicker =
@@ -435,7 +432,7 @@ public final class CoinbaseProExchangeAdapter extends AbstractExchangeAdapter
         return coinbaseProTicker.price;
       } else {
         final String errorMsg = "Failed to get market ticker from exchange. Details: " + response;
-        LOG.error(errorMsg);
+        log.error(errorMsg);
         throw new TradingApiException(errorMsg);
       }
 
@@ -443,7 +440,7 @@ public final class CoinbaseProExchangeAdapter extends AbstractExchangeAdapter
       throw e;
 
     } catch (Exception e) {
-      LOG.error(UNEXPECTED_ERROR_MSG, e);
+      log.error(UNEXPECTED_ERROR_MSG, e);
       throw new TradingApiException(UNEXPECTED_ERROR_MSG, e);
     }
   }
@@ -479,7 +476,7 @@ public final class CoinbaseProExchangeAdapter extends AbstractExchangeAdapter
       final ExchangeHttpResponse tickerResponse =
           sendPublicRequestToExchange(PRODUCTS + marketId + "/ticker", null);
 
-      LOG.debug(() -> "Ticker response: " + tickerResponse);
+      log.debug("Ticker response: " + tickerResponse);
 
       if (tickerResponse.getStatusCode() == HttpURLConnection.HTTP_OK) {
         final CoinbaseProTicker coinbaseProTicker =
@@ -501,7 +498,7 @@ public final class CoinbaseProExchangeAdapter extends AbstractExchangeAdapter
         final ExchangeHttpResponse statsResponse =
             sendPublicRequestToExchange(PRODUCTS + marketId + "/stats", null);
 
-        LOG.debug(() -> "Stats response: " + statsResponse);
+        log.debug("Stats response: " + statsResponse);
 
         if (statsResponse.getStatusCode() == HttpURLConnection.HTTP_OK) {
           final CoinbaseProStats coinbaseProStats =
@@ -511,7 +508,7 @@ public final class CoinbaseProExchangeAdapter extends AbstractExchangeAdapter
           ticker.setOpen(coinbaseProStats.open);
         } else {
           final String errorMsg = "Failed to get stats from exchange. Details: " + statsResponse;
-          LOG.error(errorMsg);
+          log.error(errorMsg);
           throw new TradingApiException(errorMsg);
         }
 
@@ -520,7 +517,7 @@ public final class CoinbaseProExchangeAdapter extends AbstractExchangeAdapter
       } else {
         final String errorMsg =
             "Failed to get market ticker from exchange. Details: " + tickerResponse;
-        LOG.error(errorMsg);
+        log.error(errorMsg);
         throw new TradingApiException(errorMsg);
       }
 
@@ -528,7 +525,7 @@ public final class CoinbaseProExchangeAdapter extends AbstractExchangeAdapter
       throw e;
 
     } catch (Exception e) {
-      LOG.error(UNEXPECTED_ERROR_MSG, e);
+      log.error(UNEXPECTED_ERROR_MSG, e);
       throw new TradingApiException(UNEXPECTED_ERROR_MSG, e);
     }
   }
@@ -737,7 +734,7 @@ public final class CoinbaseProExchangeAdapter extends AbstractExchangeAdapter
 
     } catch (MalformedURLException e) {
       final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
-      LOG.error(errorMsg, e);
+      log.error(errorMsg, e);
       throw new TradingApiException(errorMsg, e);
     }
   }
@@ -787,7 +784,7 @@ public final class CoinbaseProExchangeAdapter extends AbstractExchangeAdapter
 
     if (!initializedMacAuthentication) {
       final String errorMsg = "MAC Message security layer has not been initialized.";
-      LOG.error(errorMsg);
+      log.error(errorMsg);
       throw new IllegalStateException(errorMsg);
     }
 
@@ -803,7 +800,7 @@ public final class CoinbaseProExchangeAdapter extends AbstractExchangeAdapter
 
       switch (httpMethod) {
         case "GET":
-          LOG.debug(() -> "Building secure GET request...");
+          log.debug("Building secure GET request...");
           // Build (optional) query param string
           final StringBuilder queryParamBuilder = new StringBuilder();
           for (final Map.Entry<String, String> param : params.entrySet()) {
@@ -816,7 +813,7 @@ public final class CoinbaseProExchangeAdapter extends AbstractExchangeAdapter
           }
 
           final String queryParams = queryParamBuilder.toString();
-          LOG.debug(() -> "Query param string: " + queryParams);
+          log.debug("Query param string: " + queryParams);
 
           if (params.isEmpty()) {
             invocationUrl = AUTHENTICATED_API_URL + apiMethod;
@@ -826,13 +823,13 @@ public final class CoinbaseProExchangeAdapter extends AbstractExchangeAdapter
           break;
 
         case "POST":
-          LOG.debug(() -> "Building secure POST request...");
+          log.debug("Building secure POST request...");
           invocationUrl = AUTHENTICATED_API_URL + apiMethod;
           requestBody = gson.toJson(params);
           break;
 
         case "DELETE":
-          LOG.debug(() -> "Building secure DELETE request...");
+          log.debug("Building secure DELETE request...");
           invocationUrl = AUTHENTICATED_API_URL + apiMethod;
           break;
 
@@ -844,7 +841,7 @@ public final class CoinbaseProExchangeAdapter extends AbstractExchangeAdapter
       // Get UNIX EPOCH in secs and add the time-server bias
       final long timeServer = Instant.now().getEpochSecond() + timeServerBias;
       final String timestamp = Long.toString(timeServer);
-      LOG.debug(() -> "Server UNIX EPOCH in seconds: " + timestamp);
+      log.debug("Server UNIX EPOCH in seconds: " + timestamp);
 
       // Build the signature string: timestamp + method + requestPath + body
       final String signatureBuilder =
@@ -868,7 +865,7 @@ public final class CoinbaseProExchangeAdapter extends AbstractExchangeAdapter
 
     } catch (MalformedURLException e) {
       final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
-      LOG.error(errorMsg, e);
+      log.error(errorMsg, e);
       throw new TradingApiException(errorMsg, e);
     }
   }
@@ -890,11 +887,11 @@ public final class CoinbaseProExchangeAdapter extends AbstractExchangeAdapter
       initializedMacAuthentication = true;
     } catch (NoSuchAlgorithmException e) {
       final String errorMsg = "Failed to setup MAC security. HINT: Is HMAC-SHA256 installed?";
-      LOG.error(errorMsg, e);
+      log.error(errorMsg, e);
       throw new IllegalStateException(errorMsg, e);
     } catch (InvalidKeyException e) {
       final String errorMsg = "Failed to setup MAC security. Secret key seems invalid!";
-      LOG.error(errorMsg, e);
+      log.error(errorMsg, e);
       throw new IllegalArgumentException(errorMsg, e);
     }
   }
@@ -916,17 +913,17 @@ public final class CoinbaseProExchangeAdapter extends AbstractExchangeAdapter
     final String buyFeeInConfig = getOtherConfigItem(otherConfig, BUY_FEE_PROPERTY_NAME);
     buyFeePercentage =
         new BigDecimal(buyFeeInConfig).divide(new BigDecimal("100"), 8, RoundingMode.HALF_UP);
-    LOG.info(() -> "Buy fee % in BigDecimal format: " + buyFeePercentage);
+    log.info("Buy fee % in BigDecimal format: " + buyFeePercentage);
 
     final String sellFeeInConfig = getOtherConfigItem(otherConfig, SELL_FEE_PROPERTY_NAME);
     sellFeePercentage =
         new BigDecimal(sellFeeInConfig).divide(new BigDecimal("100"), 8, RoundingMode.HALF_UP);
-    LOG.info(() -> "Sell fee % in BigDecimal format: " + sellFeePercentage);
+    log.info("Sell fee % in BigDecimal format: " + sellFeePercentage);
 
     final String serverTimeBiasInConfig =
         getOtherConfigItem(otherConfig, SERVER_TIME_BIAS_PROPERTY_NAME);
     timeServerBias = Long.parseLong(serverTimeBiasInConfig);
-    LOG.info(() -> "Time server bias in long format: " + timeServerBias);
+    log.info("Time server bias in long format: " + timeServerBias);
   }
 
   // --------------------------------------------------------------------------

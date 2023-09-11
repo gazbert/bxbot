@@ -79,8 +79,7 @@ import java.util.Optional;
 import java.util.Set;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.log4j.Log4j2;
 
 /**
  * Exchange Adapter for integrating with the Kraken exchange. The Kraken API is documented <a
@@ -131,11 +130,9 @@ import org.apache.logging.log4j.Logger;
  * @author gazbert
  * @since 1.0
  */
+@Log4j2
 public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
     implements ExchangeAdapter {
-
-  private static final Logger LOG = LogManager.getLogger();
-
   private static final String KRAKEN_BASE_URI = "https://api.kraken.com/";
   private static final String KRAKEN_API_VERSION = "0";
   private static final String KRAKEN_PUBLIC_PATH = "/public/";
@@ -196,7 +193,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
 
   @Override
   public void init(ExchangeConfig config) {
-    LOG.info(() -> "About to initialise Kraken ExchangeConfig: " + config);
+    log.info("About to initialise Kraken ExchangeConfig: " + config);
     initGson();
     setAuthenticationConfig(config);
     setNetworkConfig(config);
@@ -223,7 +220,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
       params.put("pair", marketId);
 
       response = sendPublicRequestToExchange("Depth", params);
-      LOG.debug(() -> "Market Orders response: " + response);
+      log.debug("Market Orders response: " + response);
 
       if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
         final Type resultType =
@@ -236,18 +233,18 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
 
         } else {
           if (isExchangeUndergoingMaintenance(response) && keepAliveDuringMaintenance) {
-            LOG.warn(() -> UNDER_MAINTENANCE_WARNING_MESSAGE);
+            log.warn(UNDER_MAINTENANCE_WARNING_MESSAGE);
             throw new ExchangeNetworkException(UNDER_MAINTENANCE_WARNING_MESSAGE);
           }
 
           final String errorMsg = FAILED_TO_GET_MARKET_ORDERS + response;
-          LOG.error(errorMsg);
+          log.error(errorMsg);
           throw new TradingApiException(errorMsg);
         }
 
       } else {
         final String errorMsg = FAILED_TO_GET_MARKET_ORDERS + response;
-        LOG.error(errorMsg);
+        log.error(errorMsg);
         throw new TradingApiException(errorMsg);
       }
 
@@ -255,7 +252,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
       throw e;
 
     } catch (Exception e) {
-      LOG.error(UNEXPECTED_ERROR_MSG, e);
+      log.error(UNEXPECTED_ERROR_MSG, e);
       throw new TradingApiException(UNEXPECTED_ERROR_MSG, e);
     }
   }
@@ -268,7 +265,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
 
     try {
       response = sendAuthenticatedRequestToExchange("OpenOrders", null);
-      LOG.debug(() -> "Open Orders response: " + response);
+      log.debug("Open Orders response: " + response);
 
       if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
 
@@ -281,18 +278,18 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
 
         } else {
           if (isExchangeUndergoingMaintenance(response) && keepAliveDuringMaintenance) {
-            LOG.warn(() -> UNDER_MAINTENANCE_WARNING_MESSAGE);
+            log.warn(UNDER_MAINTENANCE_WARNING_MESSAGE);
             throw new ExchangeNetworkException(UNDER_MAINTENANCE_WARNING_MESSAGE);
           }
 
           final String errorMsg = FAILED_TO_GET_OPEN_ORDERS + response;
-          LOG.error(errorMsg);
+          log.error(errorMsg);
           throw new TradingApiException(errorMsg);
         }
 
       } else {
         final String errorMsg = FAILED_TO_GET_OPEN_ORDERS + response;
-        LOG.error(errorMsg);
+        log.error(errorMsg);
         throw new TradingApiException(errorMsg);
       }
 
@@ -300,7 +297,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
       throw e;
 
     } catch (Exception e) {
-      LOG.error(UNEXPECTED_ERROR_MSG, e);
+      log.error(UNEXPECTED_ERROR_MSG, e);
       throw new TradingApiException(UNEXPECTED_ERROR_MSG, e);
     }
   }
@@ -328,7 +325,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
                 + OrderType.BUY.getStringValue()
                 + " or "
                 + OrderType.SELL.getStringValue();
-        LOG.error(errorMsg);
+        log.error(errorMsg);
         throw new IllegalArgumentException(errorMsg);
       }
 
@@ -341,7 +338,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
           "volume", new DecimalFormat(volumePrecision, getDecimalFormatSymbols()).format(quantity));
 
       response = sendAuthenticatedRequestToExchange("AddOrder", params);
-      LOG.debug(() -> "Create Order response: " + response);
+      log.debug("Create Order response: " + response);
 
       if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
 
@@ -360,18 +357,18 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
 
         } else {
           if (isExchangeUndergoingMaintenance(response) && keepAliveDuringMaintenance) {
-            LOG.warn(() -> UNDER_MAINTENANCE_WARNING_MESSAGE);
+            log.warn(UNDER_MAINTENANCE_WARNING_MESSAGE);
             throw new ExchangeNetworkException(UNDER_MAINTENANCE_WARNING_MESSAGE);
           }
 
           final String errorMsg = FAILED_TO_ADD_ORDER + response;
-          LOG.error(errorMsg);
+          log.error(errorMsg);
           throw new TradingApiException(errorMsg);
         }
 
       } else {
         final String errorMsg = FAILED_TO_ADD_ORDER + response;
-        LOG.error(errorMsg);
+        log.error(errorMsg);
         throw new TradingApiException(errorMsg);
       }
 
@@ -379,7 +376,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
       throw e;
 
     } catch (Exception e) {
-      LOG.error(UNEXPECTED_ERROR_MSG, e);
+      log.error(UNEXPECTED_ERROR_MSG, e);
       throw new TradingApiException(UNEXPECTED_ERROR_MSG, e);
     }
   }
@@ -394,7 +391,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
       params.put("txid", orderId);
 
       response = sendAuthenticatedRequestToExchange("CancelOrder", params);
-      LOG.debug(() -> "Cancel Order response: " + response);
+      log.debug("Cancel Order response: " + response);
 
       if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
 
@@ -408,18 +405,18 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
 
         } else {
           if (isExchangeUndergoingMaintenance(response) && keepAliveDuringMaintenance) {
-            LOG.warn(() -> UNDER_MAINTENANCE_WARNING_MESSAGE);
+            log.warn(UNDER_MAINTENANCE_WARNING_MESSAGE);
             throw new ExchangeNetworkException(UNDER_MAINTENANCE_WARNING_MESSAGE);
           }
 
           final String errorMsg = FAILED_TO_CANCEL_ORDER + response;
-          LOG.error(errorMsg);
+          log.error(errorMsg);
           throw new TradingApiException(errorMsg);
         }
 
       } else {
         final String errorMsg = FAILED_TO_CANCEL_ORDER + response;
-        LOG.error(errorMsg);
+        log.error(errorMsg);
         throw new TradingApiException(errorMsg);
       }
 
@@ -427,7 +424,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
       throw e;
 
     } catch (Exception e) {
-      LOG.error(UNEXPECTED_ERROR_MSG, e);
+      log.error(UNEXPECTED_ERROR_MSG, e);
       throw new TradingApiException(UNEXPECTED_ERROR_MSG, e);
     }
   }
@@ -443,7 +440,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
       params.put("pair", marketId);
 
       response = sendPublicRequestToExchange("Ticker", params);
-      LOG.debug(() -> "Latest Market Price response: " + response);
+      log.debug("Latest Market Price response: " + response);
 
       if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
 
@@ -463,25 +460,25 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
         } else {
 
           if (isExchangeUndergoingMaintenance(response) && keepAliveDuringMaintenance) {
-            LOG.warn(() -> UNDER_MAINTENANCE_WARNING_MESSAGE);
+            log.warn(UNDER_MAINTENANCE_WARNING_MESSAGE);
             throw new ExchangeNetworkException(UNDER_MAINTENANCE_WARNING_MESSAGE);
           }
 
           final String errorMsg = FAILED_TO_GET_TICKER + response;
-          LOG.error(errorMsg);
+          log.error(errorMsg);
           throw new TradingApiException(errorMsg);
         }
 
       } else {
         final String errorMsg = FAILED_TO_GET_TICKER + response;
-        LOG.error(errorMsg);
+        log.error(errorMsg);
         throw new TradingApiException(errorMsg);
       }
 
     } catch (ExchangeNetworkException | TradingApiException e) {
       throw e;
     } catch (Exception e) {
-      LOG.error(UNEXPECTED_ERROR_MSG, e);
+      log.error(UNEXPECTED_ERROR_MSG, e);
       throw new TradingApiException(UNEXPECTED_ERROR_MSG, e);
     }
   }
@@ -493,7 +490,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
 
     try {
       response = sendAuthenticatedRequestToExchange("Balance", null);
-      LOG.debug(() -> "Balance Info response: " + response);
+      log.debug("Balance Info response: " + response);
 
       if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
         final Type resultType = new TypeToken<KrakenResponse<KrakenBalanceResult>>() {}.getType();
@@ -501,7 +498,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
 
       } else {
         final String errorMsg = FAILED_TO_GET_BALANCE + response;
-        LOG.error(errorMsg);
+        log.error(errorMsg);
         throw new TradingApiException(errorMsg);
       }
 
@@ -509,7 +506,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
       throw e;
 
     } catch (Exception e) {
-      LOG.error(UNEXPECTED_ERROR_MSG, e);
+      log.error(UNEXPECTED_ERROR_MSG, e);
       throw new TradingApiException(UNEXPECTED_ERROR_MSG, e);
     }
   }
@@ -554,7 +551,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
       params.put("pair", marketId);
 
       response = sendPublicRequestToExchange("Ticker", params);
-      LOG.debug(() -> "Ticker response: " + response);
+      log.debug("Ticker response: " + response);
 
       if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
 
@@ -581,18 +578,18 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
 
         } else {
           if (isExchangeUndergoingMaintenance(response) && keepAliveDuringMaintenance) {
-            LOG.warn(() -> UNDER_MAINTENANCE_WARNING_MESSAGE);
+            log.warn(UNDER_MAINTENANCE_WARNING_MESSAGE);
             throw new ExchangeNetworkException(UNDER_MAINTENANCE_WARNING_MESSAGE);
           }
 
           final String errorMsg = FAILED_TO_GET_TICKER + response;
-          LOG.error(errorMsg);
+          log.error(errorMsg);
           throw new TradingApiException(errorMsg);
         }
 
       } else {
         final String errorMsg = FAILED_TO_GET_TICKER + response;
-        LOG.error(errorMsg);
+        log.error(errorMsg);
         throw new TradingApiException(errorMsg);
       }
 
@@ -600,7 +597,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
       throw e;
 
     } catch (Exception e) {
-      LOG.error(UNEXPECTED_ERROR_MSG, e);
+      log.error(UNEXPECTED_ERROR_MSG, e);
       throw new TradingApiException(UNEXPECTED_ERROR_MSG, e);
     }
   }
@@ -903,7 +900,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
               break;
 
             default:
-              LOG.warn(() -> "Received unexpected Ticker param - ignoring: " + key);
+              log.warn("Received unexpected Ticker param - ignoring: " + key);
           }
         }
       }
@@ -947,7 +944,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
 
     } catch (MalformedURLException e) {
       final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
-      LOG.error(errorMsg, e);
+      log.error(errorMsg, e);
       throw new TradingApiException(errorMsg, e);
     }
   }
@@ -975,7 +972,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
 
     if (!initializedMacAuthentication) {
       final String errorMsg = "MAC Message security layer has not been initialized.";
-      LOG.error(errorMsg);
+      log.error(errorMsg);
       throw new IllegalStateException(errorMsg);
     }
 
@@ -1032,7 +1029,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
 
     } catch (MalformedURLException | NoSuchAlgorithmException e) {
       final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
-      LOG.error(errorMsg, e);
+      log.error(errorMsg, e);
       throw new TradingApiException(errorMsg, e);
     }
   }
@@ -1054,11 +1051,11 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
       initializedMacAuthentication = true;
     } catch (NoSuchAlgorithmException e) {
       final String errorMsg = "Failed to setup MAC security. HINT: Is HmacSHA512 installed?";
-      LOG.error(errorMsg, e);
+      log.error(errorMsg, e);
       throw new IllegalStateException(errorMsg, e);
     } catch (InvalidKeyException e) {
       final String errorMsg = "Failed to setup MAC security. Secret key seems invalid!";
-      LOG.error(errorMsg, e);
+      log.error(errorMsg, e);
       throw new IllegalArgumentException(errorMsg, e);
     }
   }
@@ -1079,20 +1076,20 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
     final String buyFeeInConfig = getOtherConfigItem(otherConfig, BUY_FEE_PROPERTY_NAME);
     buyFeePercentage =
         new BigDecimal(buyFeeInConfig).divide(new BigDecimal("100"), 8, RoundingMode.HALF_UP);
-    LOG.info(() -> "Buy fee % in BigDecimal format: " + buyFeePercentage);
+    log.info("Buy fee % in BigDecimal format: " + buyFeePercentage);
 
     final String sellFeeInConfig = getOtherConfigItem(otherConfig, SELL_FEE_PROPERTY_NAME);
     sellFeePercentage =
         new BigDecimal(sellFeeInConfig).divide(new BigDecimal("100"), 8, RoundingMode.HALF_UP);
-    LOG.info(() -> "Sell fee % in BigDecimal format: " + sellFeePercentage);
+    log.info("Sell fee % in BigDecimal format: " + sellFeePercentage);
 
     final String keepAliveDuringMaintenanceConfig =
         getOtherConfigItem(otherConfig, KEEP_ALIVE_DURING_MAINTENANCE_PROPERTY_NAME);
     if (!keepAliveDuringMaintenanceConfig.isEmpty()) {
       keepAliveDuringMaintenance = Boolean.parseBoolean(keepAliveDuringMaintenanceConfig);
-      LOG.info(() -> "Keep Alive During Maintenance: " + keepAliveDuringMaintenance);
+      log.info("Keep Alive During Maintenance: " + keepAliveDuringMaintenance);
     } else {
-      LOG.info(() -> KEEP_ALIVE_DURING_MAINTENANCE_PROPERTY_NAME + " is not set in exchange.yaml");
+      log.info(KEEP_ALIVE_DURING_MAINTENANCE_PROPERTY_NAME + " is not set in exchange.yaml");
     }
   }
 
@@ -1104,12 +1101,11 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
 
       if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
         Type type = new TypeToken<KrakenResponse<KrakenAssetPairsConfig>>() {}.getType();
-        KrakenResponse<KrakenAssetPairsConfig> krakenResponse = gson.fromJson(
-            response.getPayload(), type);
+        KrakenResponse<KrakenAssetPairsConfig> krakenResponse =
+            gson.fromJson(response.getPayload(), type);
 
         if (krakenResponse.error != null && !krakenResponse.error.isEmpty()) {
-          LOG.error(
-              () -> String.format("Error when fetching pair precision: %s", krakenResponse.error));
+          log.error(String.format("Error when fetching pair precision: %s", krakenResponse.error));
           return;
         }
 
@@ -1117,7 +1113,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
       }
     } catch (ExchangeNetworkException | TradingApiException e) {
       final String errorMsg = "Failed to load price precision config";
-      LOG.error(errorMsg, e);
+      log.error(errorMsg, e);
     }
   }
 
@@ -1212,7 +1208,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
       return new MarketOrderBookImpl(marketId, sellOrders, buyOrders);
     } else {
       final String errorMsg = FAILED_TO_GET_MARKET_ORDERS + krakenResponse;
-      LOG.error(errorMsg);
+      log.error(errorMsg);
       throw new TradingApiException(errorMsg);
     }
   }
@@ -1226,12 +1222,12 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
         return true;
       } else {
         final String errorMsg = FAILED_TO_CANCEL_ORDER + krakenResponse;
-        LOG.error(errorMsg);
+        log.error(errorMsg);
         return false;
       }
     } else {
       final String errorMsg = FAILED_TO_CANCEL_ORDER + krakenResponse;
-      LOG.error(errorMsg);
+      log.error(errorMsg);
       return false;
     }
   }
@@ -1256,17 +1252,17 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
 
       } else {
         if (isExchangeUndergoingMaintenance(response) && keepAliveDuringMaintenance) {
-          LOG.warn(() -> UNDER_MAINTENANCE_WARNING_MESSAGE);
+          log.warn(UNDER_MAINTENANCE_WARNING_MESSAGE);
           throw new ExchangeNetworkException(UNDER_MAINTENANCE_WARNING_MESSAGE);
         }
 
         final String errorMsg = FAILED_TO_GET_BALANCE + response;
-        LOG.error(errorMsg);
+        log.error(errorMsg);
         throw new TradingApiException(errorMsg);
       }
     } else {
       final String errorMsg = FAILED_TO_GET_BALANCE + response;
-      LOG.error(errorMsg);
+      log.error(errorMsg);
       throw new TradingApiException(errorMsg);
     }
   }
