@@ -26,6 +26,7 @@ package com.gazbert.bxbot.core.config.strategy;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import com.gazbert.bxbot.core.util.ConfigurableComponentFactory;
 import com.gazbert.bxbot.domain.market.MarketConfig;
 import com.gazbert.bxbot.domain.strategy.StrategyConfig;
 import com.gazbert.bxbot.exchange.api.ExchangeAdapter;
@@ -83,7 +84,10 @@ class TestTradingStrategiesBuilder {
   @Test
   void testBuildingStrategiesSuccessfully() {
     final ExchangeAdapter exchangeAdapter = EasyMock.createMock(ExchangeAdapter.class);
-    final TradingStrategyFactory tradingStrategyFactory = new TradingStrategyFactory();
+    final ConfigurableComponentFactory configurableComponentFactory =
+        new ConfigurableComponentFactory();
+    final TradingStrategyFactory tradingStrategyFactory =
+        new TradingStrategyFactory(configurableComponentFactory);
     final TradingStrategiesBuilder tradingStrategiesBuilder = new TradingStrategiesBuilder();
     tradingStrategiesBuilder.setTradingStrategyFactory(tradingStrategyFactory);
     final List<TradingStrategy> strategies =
@@ -95,7 +99,10 @@ class TestTradingStrategiesBuilder {
   @Test
   void testBuildingStrategiesFailsForUnknownStrategyId() {
     final ExchangeAdapter exchangeAdapter = EasyMock.createMock(ExchangeAdapter.class);
-    final TradingStrategyFactory tradingStrategyFactory = new TradingStrategyFactory();
+    final ConfigurableComponentFactory configurableComponentFactory =
+        new ConfigurableComponentFactory();
+    final TradingStrategyFactory tradingStrategyFactory =
+        new TradingStrategyFactory(configurableComponentFactory);
     final TradingStrategiesBuilder tradingStrategiesBuilder = new TradingStrategiesBuilder();
     tradingStrategiesBuilder.setTradingStrategyFactory(tradingStrategyFactory);
 
@@ -111,7 +118,10 @@ class TestTradingStrategiesBuilder {
   @Test
   void testBuildingStrategiesFailsDuplicateMarket() {
     final ExchangeAdapter exchangeAdapter = EasyMock.createMock(ExchangeAdapter.class);
-    final TradingStrategyFactory tradingStrategyFactory = new TradingStrategyFactory();
+    final ConfigurableComponentFactory configurableComponentFactory =
+        new ConfigurableComponentFactory();
+    final TradingStrategyFactory tradingStrategyFactory =
+        new TradingStrategyFactory(configurableComponentFactory);
     final TradingStrategiesBuilder tradingStrategiesBuilder = new TradingStrategiesBuilder();
     tradingStrategiesBuilder.setTradingStrategyFactory(tradingStrategyFactory);
 

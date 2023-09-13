@@ -28,6 +28,7 @@ import static org.easymock.EasyMock.expect;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.gazbert.bxbot.core.config.strategy.strategies.TradingStrategyForBeanNameInstantiation;
+import com.gazbert.bxbot.core.util.ConfigurableComponentFactory;
 import com.gazbert.bxbot.domain.strategy.StrategyConfig;
 import com.gazbert.bxbot.strategy.api.TradingStrategy;
 import org.easymock.EasyMock;
@@ -57,7 +58,10 @@ class TestStrategyConfigFactory {
     strategyConfig.setDescription(STRATEGY_DESCRIPTION);
     strategyConfig.setClassName(STRATEGY_CLASSNAME);
 
-    final TradingStrategyFactory tradingStrategyFactory = new TradingStrategyFactory();
+    final ConfigurableComponentFactory configurableComponentFactory =
+        new ConfigurableComponentFactory();
+    final TradingStrategyFactory tradingStrategyFactory =
+        new TradingStrategyFactory(configurableComponentFactory);
     final TradingStrategy tradingStrategy =
         tradingStrategyFactory.createTradingStrategy(strategyConfig);
 
@@ -75,7 +79,11 @@ class TestStrategyConfigFactory {
     final ApplicationContext applicationContext = EasyMock.createMock(ApplicationContext.class);
     expect(applicationContext.getBean(STRATEGY_BEAN_NAME))
         .andReturn(new TradingStrategyForBeanNameInstantiation());
-    final TradingStrategyFactory tradingStrategyFactory = new TradingStrategyFactory();
+
+    final ConfigurableComponentFactory configurableComponentFactory =
+        new ConfigurableComponentFactory();
+    final TradingStrategyFactory tradingStrategyFactory =
+        new TradingStrategyFactory(configurableComponentFactory);
     tradingStrategyFactory.setSpringContext(applicationContext);
     EasyMock.replay(applicationContext);
 
@@ -97,7 +105,11 @@ class TestStrategyConfigFactory {
     final ApplicationContext applicationContext = EasyMock.createMock(ApplicationContext.class);
     expect(applicationContext.getBean(INVALID_STRATEGY_BEAN_NAME))
         .andThrow(new NullPointerException("No such bean error!"));
-    final TradingStrategyFactory tradingStrategyFactory = new TradingStrategyFactory();
+
+    final ConfigurableComponentFactory configurableComponentFactory =
+        new ConfigurableComponentFactory();
+    final TradingStrategyFactory tradingStrategyFactory =
+        new TradingStrategyFactory(configurableComponentFactory);
     tradingStrategyFactory.setSpringContext(applicationContext);
     EasyMock.replay(applicationContext);
 

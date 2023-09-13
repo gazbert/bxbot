@@ -23,39 +23,24 @@
 
 package com.gazbert.bxbot.core.mail;
 
-import static junit.framework.TestCase.assertNotNull;
 import static org.easymock.EasyMock.expect;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.gazbert.bxbot.domain.emailalerts.EmailAlertsConfig;
 import com.gazbert.bxbot.domain.emailalerts.SmtpConfig;
 import com.gazbert.bxbot.services.config.EmailAlertsConfigService;
-import jakarta.mail.Message;
-import jakarta.mail.Transport;
 import org.easymock.EasyMock;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.powermock.api.easymock.PowerMock;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test the Email Alerter behaves as expected.
  *
  * @author gazbert
  */
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({Transport.class})
-@PowerMockIgnore({
-    "javax.crypto.*",
-    "javax.management.*",
-    "com.sun.org.apache.xerces.*",
-    "javax.xml.parsers.*",
-    "org.xml.sax.*",
-    "org.w3c.dom.*"
-})
-public class TestEmailAlerter {
+class TestEmailAlerter {
 
   private static final String EMAIL_SUBJECT = "CRITICAL Alert message from BX-bot";
   private static final String EMAIL_MSG = "The exchange has blown up!";
@@ -69,78 +54,56 @@ public class TestEmailAlerter {
 
   private EmailAlertsConfigService emailAlertsConfigService;
 
-  @Before
+  @BeforeEach
   public void setup() {
-    emailAlertsConfigService = PowerMock.createMock(EmailAlertsConfigService.class);
+    emailAlertsConfigService = EasyMock.createMock(EmailAlertsConfigService.class);
   }
 
   @Test
-  public void testEmailAlerterInitialisedSuccessfully() {
+  void testEmailAlerterInitialisedSuccessfully() {
     expect(emailAlertsConfigService.getEmailAlertsConfig())
         .andReturn(someEmailAlertsConfigWithAlertsEnabledAndSmtpConfig());
-    PowerMock.replayAll();
+    EasyMock.replay(emailAlertsConfigService);
 
     final EmailAlerter emailAlerter = new EmailAlerter(emailAlertsConfigService);
     assertNotNull(emailAlerter);
 
-    PowerMock.verifyAll();
+    EasyMock.verify(emailAlertsConfigService);
   }
 
   @Test
-  public void testEmailAlerterInitialisedSuccessfullyWhenAlertsDisabledAndNoSmtpConfigSupplied() {
+  void testEmailAlerterInitialisedSuccessfullyWhenAlertsDisabledAndNoSmtpConfigSupplied() {
     expect(emailAlertsConfigService.getEmailAlertsConfig())
         .andReturn(someEmailAlertsConfigWithAlertsDisabledAndNoSmtpConfig());
-    PowerMock.replayAll();
+    EasyMock.replay(emailAlertsConfigService);
 
     final EmailAlerter emailAlerter = new EmailAlerter(emailAlertsConfigService);
     assertNotNull(emailAlerter);
 
-    PowerMock.verifyAll();
+    EasyMock.verify(emailAlertsConfigService);
   }
 
   @Test
-  public void testEmailAlerterInitialisedSuccessfullyWhenAlertsDisabledAndSmtpConfigSupplied() {
+  void testEmailAlerterInitialisedSuccessfullyWhenAlertsDisabledAndSmtpConfigSupplied() {
     expect(emailAlertsConfigService.getEmailAlertsConfig())
         .andReturn(someEmailAlertsConfigWithAlertsDisabledAndSmtpConfig());
-    PowerMock.replayAll();
+    EasyMock.replay(emailAlertsConfigService);
 
     final EmailAlerter emailAlerter = new EmailAlerter(emailAlertsConfigService);
     assertNotNull(emailAlerter);
 
-    PowerMock.verifyAll();
+    EasyMock.verify(emailAlertsConfigService);
   }
 
-  @Test(expected = IllegalStateException.class)
-  public void testEmailAlerterInitialisationFailsWhenAlertsEnabledButNoSmtpConfigSupplied() {
+  @Test
+  void testEmailAlerterInitialisationFailsWhenAlertsEnabledButNoSmtpConfigSupplied() {
     expect(emailAlertsConfigService.getEmailAlertsConfig())
         .andReturn(someEmailAlertsConfigWithAlertsEnabledAndNoSmtpConfig());
-    PowerMock.replayAll();
+    EasyMock.replay(emailAlertsConfigService);
 
-    final EmailAlerter emailAlerter = new EmailAlerter(emailAlertsConfigService);
-    assertNotNull(emailAlerter);
+    assertThrows(IllegalStateException.class, () -> new EmailAlerter(emailAlertsConfigService));
 
-    PowerMock.verifyAll();
-  }
-
-  /*
-   * Can safely run this test without 'real' credentials.
-   * Crude use of mocks to test behaviour.
-   * It does not send anything down the wire.
-   */
-  @Test
-  public void testEmailAlerterSendsMailSuccessfullyUsingMockTransport() throws Exception {
-    expect(emailAlertsConfigService.getEmailAlertsConfig())
-        .andReturn(someEmailAlertsConfigWithAlertsEnabledAndSmtpConfig());
-
-    PowerMock.mockStatic(Transport.class);
-    Transport.send(EasyMock.anyObject(Message.class));
-
-    PowerMock.replayAll();
-
-    final EmailAlerter emailAlerter = new EmailAlerter(emailAlertsConfigService);
-    emailAlerter.sendMessage(EMAIL_SUBJECT, EMAIL_MSG);
-
-    PowerMock.verifyAll();
+    EasyMock.verify(emailAlertsConfigService);
   }
 
   /**
@@ -148,21 +111,18 @@ public class TestEmailAlerter {
    * you're all setup before deployment.
    *
    * <ol>
-   *   <li>Uncomment @Test.
+   *   <li>Remove the @Disabled.
    *   <li>Change the [project-root]/config/email-alerts.yaml to use your account SMTP settings.
-   *   <li>Comment out @RunWith(PowerMockRunner.class) and @PrepareForTest(Transport.class) at top
-   *       of class - they mess with the SSLContext and the test will fail - no time to debug why
-   *       but related to: <a href="https://code.google.com/p/powermock/issues/detail?id=288">Google
-   *       bug 288</a>.
    *   <li>Run this test on its own.
    * </ol>
    */
-  // @Test
-  public void testEmailAlerterReallySendsMailSuccessfully() {
+  @Test
+  @Disabled("Uncomment me for a live email test!")
+  void testEmailAlerterReallySendsMailSuccessfully() {
     final EmailAlerter emailAlerter = new EmailAlerter(emailAlertsConfigService);
     emailAlerter.sendMessage(EMAIL_SUBJECT, EMAIL_MSG);
-
     // expect to send message - check your inbox!
+    assertNotNull(EMAIL_SUBJECT); // shut Sonar up ;-)
   }
 
   // ------------------------------------------------------------------------

@@ -23,14 +23,15 @@
 
 package com.gazbert.bxbot.core.engine;
 
-import static junit.framework.TestCase.assertTrue;
 import static org.awaitility.Awaitility.await;
 import static org.easymock.EasyMock.anyObject;
 import static org.easymock.EasyMock.contains;
 import static org.easymock.EasyMock.eq;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.expectLastCall;
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gazbert.bxbot.core.config.strategy.TradingStrategiesBuilder;
 import com.gazbert.bxbot.core.config.strategy.TradingStrategyFactory;
@@ -62,14 +63,9 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.powermock.api.easymock.PowerMock;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.easymock.EasyMock;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests the behaviour of the Trading Engine is as expected.
@@ -77,24 +73,14 @@ import org.powermock.modules.junit4.PowerMockRunner;
  * <p>The Exchange Adapter and Configuration subsystem are mocked out; they have their own unit
  * tests.
  *
- * <p>TradingEngine.class is prepared so we can mock constructors for Market + StrategyConfigItems
+ * <p>TradingEngine.class is prepared, so we can mock constructors for Market + StrategyConfigItems
  * object creation.
  *
  * <p>There's a lot of time dependent stuff going on here; I hate these sorts of tests!
  *
  * @author gazbert
  */
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({ConfigurableComponentFactory.class})
-@PowerMockIgnore({
-    "javax.crypto.*",
-    "javax.management.*",
-    "com.sun.org.apache.xerces.*",
-    "javax.xml.parsers.*",
-    "org.xml.sax.*",
-    "org.w3c.dom.*"
-})
-public class TestTradingEngine {
+class TestTradingEngine {
 
   private enum EngineState {
     RUNNING,
@@ -146,6 +132,7 @@ public class TestTradingEngine {
   private EngineConfigService engineConfigService;
   private StrategyConfigService strategyConfigService;
   private MarketConfigService marketConfigService;
+  private ConfigurableComponentFactory configurableComponentFactory;
 
   private TradingStrategiesBuilder tradingStrategiesBuilder;
 
@@ -155,27 +142,36 @@ public class TestTradingEngine {
    * <p>Test scenarios use 1 market with 1 strategy with 1 config item to keep tests manageable.
    * Loading multiple markets/strategies is tested in the Configuration subsystem unit tests.
    */
-  @Before
-  public void setupForEachTest() {
-    exchangeAdapter = PowerMock.createMock(ExchangeAdapter.class);
-    tradingStrategy = PowerMock.createMock(TradingStrategy.class);
-    emailAlerter = PowerMock.createMock(EmailAlerter.class);
+  @BeforeEach
+  void setupForEachTest() {
+    exchangeAdapter = EasyMock.createMock(ExchangeAdapter.class);
+    tradingStrategy = EasyMock.createMock(TradingStrategy.class);
+    emailAlerter = EasyMock.createMock(EmailAlerter.class);
 
-    exchangeConfigService = PowerMock.createMock(ExchangeConfigService.class);
-    engineConfigService = PowerMock.createMock(EngineConfigService.class);
-    strategyConfigService = PowerMock.createMock(StrategyConfigService.class);
-    marketConfigService = PowerMock.createMock(MarketConfigService.class);
+    exchangeConfigService = EasyMock.createMock(ExchangeConfigService.class);
+    engineConfigService = EasyMock.createMock(EngineConfigService.class);
+    strategyConfigService = EasyMock.createMock(StrategyConfigService.class);
+    marketConfigService = EasyMock.createMock(MarketConfigService.class);
+    configurableComponentFactory = EasyMock.createMock(ConfigurableComponentFactory.class);
 
-    final TradingStrategyFactory tradingStrategyFactory = new TradingStrategyFactory();
+    final TradingStrategyFactory tradingStrategyFactory =
+        new TradingStrategyFactory(configurableComponentFactory);
+
     tradingStrategiesBuilder = new TradingStrategiesBuilder();
     tradingStrategiesBuilder.setTradingStrategyFactory(tradingStrategyFactory);
-
-    PowerMock.mockStatic(ConfigurableComponentFactory.class);
   }
 
   @Test
-  public void testEngineInitialisesSuccessfully() {
-    PowerMock.replayAll();
+  void testEngineInitialisesSuccessfully() {
+
+    EasyMock.replay(configurableComponentFactory);
+    EasyMock.replay(exchangeAdapter);
+    EasyMock.replay(tradingStrategy);
+    EasyMock.replay(emailAlerter);
+    EasyMock.replay(exchangeConfigService);
+    EasyMock.replay(engineConfigService);
+    EasyMock.replay(strategyConfigService);
+    EasyMock.replay(marketConfigService);
 
     final TradingEngine tradingEngine =
         new TradingEngine(
@@ -184,14 +180,23 @@ public class TestTradingEngine {
             strategyConfigService,
             marketConfigService,
             emailAlerter,
-            tradingStrategiesBuilder);
+            tradingStrategiesBuilder,
+            configurableComponentFactory);
+
     assertFalse(tradingEngine.isRunning());
 
-    PowerMock.verifyAll();
+    EasyMock.verify(configurableComponentFactory);
+    EasyMock.verify(exchangeAdapter);
+    EasyMock.verify(tradingStrategy);
+    EasyMock.verify(emailAlerter);
+    EasyMock.verify(exchangeConfigService);
+    EasyMock.verify(engineConfigService);
+    EasyMock.verify(strategyConfigService);
+    EasyMock.verify(marketConfigService);
   }
 
   @Test
-  public void testEngineShutsDownWhenEmergencyStopBalanceIfBreached() throws Exception {
+  void testEngineShutsDownWhenEmergencyStopBalanceIfBreached() throws Exception {
     setupConfigLoadingExpectations();
 
     final Map<String, BigDecimal> balancesAvailable = new HashMap<>();
@@ -200,7 +205,7 @@ public class TestTradingEngine {
     balancesAvailable.put(ENGINE_EMERGENCY_STOP_CURRENCY, btcBalance);
 
     // expect BalanceInfo to be fetched using Trading API
-    final BalanceInfo balanceInfo = PowerMock.createMock(BalanceInfo.class);
+    final BalanceInfo balanceInfo = EasyMock.createMock(BalanceInfo.class);
     expect(exchangeAdapter.getBalanceInfo()).andReturn(balanceInfo);
     expect(balanceInfo.getBalancesAvailable()).andReturn(balancesAvailable);
 
@@ -214,7 +219,15 @@ public class TestTradingEngine {
             + new DecimalFormat("#.########").format(ENGINE_EMERGENCY_STOP_BALANCE)
             + "] BTC");
 
-    PowerMock.replayAll();
+    EasyMock.replay(balanceInfo);
+    EasyMock.replay(configurableComponentFactory);
+    EasyMock.replay(exchangeAdapter);
+    EasyMock.replay(tradingStrategy);
+    EasyMock.replay(emailAlerter);
+    EasyMock.replay(exchangeConfigService);
+    EasyMock.replay(engineConfigService);
+    EasyMock.replay(strategyConfigService);
+    EasyMock.replay(marketConfigService);
 
     final TradingEngine tradingEngine =
         new TradingEngine(
@@ -223,25 +236,41 @@ public class TestTradingEngine {
             strategyConfigService,
             marketConfigService,
             emailAlerter,
-            tradingStrategiesBuilder);
+            tradingStrategiesBuilder,
+            configurableComponentFactory);
+
     tradingEngine.start();
 
     await().until(engineStateChanged(tradingEngine, EngineState.SHUTDOWN));
     assertFalse(tradingEngine.isRunning());
 
-    PowerMock.verifyAll();
+    EasyMock.verify(balanceInfo);
+    EasyMock.verify(configurableComponentFactory);
+    EasyMock.verify(exchangeAdapter);
+    EasyMock.verify(tradingStrategy);
+    EasyMock.verify(emailAlerter);
+    EasyMock.verify(exchangeConfigService);
+    EasyMock.verify(engineConfigService);
+    EasyMock.verify(strategyConfigService);
+    EasyMock.verify(marketConfigService);
   }
 
   @Test
-  public void testEngineDoesNotPerformEmergencyStopCheckWhenEmergencyStopBalanceIsZero()
-      throws Exception {
+  void testEngineDoesNotPerformEmergencyStopCheckWhenEmergencyStopBalanceIsZero() throws Exception {
     setupConfigLoadingExpectationsForNoEmergencyStopCheck();
 
     // expect Trading Strategy to be invoked at least once
     tradingStrategy.execute();
     expectLastCall().atLeastOnce();
 
-    PowerMock.replayAll();
+    EasyMock.replay(configurableComponentFactory);
+    EasyMock.replay(exchangeAdapter);
+    EasyMock.replay(tradingStrategy);
+    EasyMock.replay(emailAlerter);
+    EasyMock.replay(exchangeConfigService);
+    EasyMock.replay(engineConfigService);
+    EasyMock.replay(strategyConfigService);
+    EasyMock.replay(marketConfigService);
 
     final TradingEngine tradingEngine =
         new TradingEngine(
@@ -250,7 +279,8 @@ public class TestTradingEngine {
             strategyConfigService,
             marketConfigService,
             emailAlerter,
-            tradingStrategiesBuilder);
+            tradingStrategiesBuilder,
+            configurableComponentFactory);
 
     final Executor executor = Executors.newSingleThreadExecutor();
     executor.execute(tradingEngine::start);
@@ -263,15 +293,22 @@ public class TestTradingEngine {
     await().until(engineStateChanged(tradingEngine, EngineState.SHUTDOWN));
     assertFalse(tradingEngine.isRunning());
 
-    PowerMock.verifyAll();
+    EasyMock.verify(configurableComponentFactory);
+    EasyMock.verify(exchangeAdapter);
+    EasyMock.verify(tradingStrategy);
+    EasyMock.verify(emailAlerter);
+    EasyMock.verify(exchangeConfigService);
+    EasyMock.verify(engineConfigService);
+    EasyMock.verify(strategyConfigService);
+    EasyMock.verify(marketConfigService);
   }
 
   /*
    * Tests the engine starts up and executes trade cycles successfully.
-   * Scenario is at least one successful trade cycle and then we shut it down.
+   * Scenario is at least one successful trade cycle, and then we shut it down.
    */
   @Test
-  public void testEngineExecutesTradeCyclesAndCanBeShutdownSuccessfully() throws Exception {
+  void testEngineExecutesTradeCyclesAndCanBeShutdownSuccessfully() throws Exception {
     setupConfigLoadingExpectations();
 
     final Map<String, BigDecimal> balancesAvailable = new HashMap<>();
@@ -279,7 +316,7 @@ public class TestTradingEngine {
     balancesAvailable.put(ENGINE_EMERGENCY_STOP_CURRENCY, new BigDecimal("0.5"));
 
     // expect BalanceInfo to be fetched using Trading API
-    final BalanceInfo balanceInfo = PowerMock.createMock(BalanceInfo.class);
+    final BalanceInfo balanceInfo = EasyMock.createMock(BalanceInfo.class);
     expect(exchangeAdapter.getBalanceInfo()).andReturn(balanceInfo).atLeastOnce();
     expect(balanceInfo.getBalancesAvailable()).andReturn(balancesAvailable).atLeastOnce();
 
@@ -287,7 +324,15 @@ public class TestTradingEngine {
     tradingStrategy.execute();
     expectLastCall().atLeastOnce();
 
-    PowerMock.replayAll();
+    EasyMock.replay(balanceInfo);
+    EasyMock.replay(configurableComponentFactory);
+    EasyMock.replay(exchangeAdapter);
+    EasyMock.replay(tradingStrategy);
+    EasyMock.replay(emailAlerter);
+    EasyMock.replay(exchangeConfigService);
+    EasyMock.replay(engineConfigService);
+    EasyMock.replay(strategyConfigService);
+    EasyMock.replay(marketConfigService);
 
     final TradingEngine tradingEngine =
         new TradingEngine(
@@ -296,7 +341,8 @@ public class TestTradingEngine {
             strategyConfigService,
             marketConfigService,
             emailAlerter,
-            tradingStrategiesBuilder);
+            tradingStrategiesBuilder,
+            configurableComponentFactory);
 
     final Executor executor = Executors.newSingleThreadExecutor();
     executor.execute(tradingEngine::start);
@@ -309,23 +355,30 @@ public class TestTradingEngine {
     await().until(engineStateChanged(tradingEngine, EngineState.SHUTDOWN));
     assertFalse(tradingEngine.isRunning());
 
-    PowerMock.verifyAll();
+    EasyMock.verify(balanceInfo);
+    EasyMock.verify(configurableComponentFactory);
+    EasyMock.verify(exchangeAdapter);
+    EasyMock.verify(tradingStrategy);
+    EasyMock.verify(emailAlerter);
+    EasyMock.verify(exchangeConfigService);
+    EasyMock.verify(engineConfigService);
+    EasyMock.verify(strategyConfigService);
+    EasyMock.verify(marketConfigService);
   }
 
   /*
    * Tests the engine starts up, executes 1 trade cycle successfully, but then receives
-   * StrategyException from Trading Strategy - we expect the engine to shutdown.
+   * StrategyException from Trading Strategy - we expect the engine to shut down.
    */
   @Test
-  public void testEngineShutsDownWhenItReceivesStrategyExceptionFromTradingStrategy()
-      throws Exception {
+  void testEngineShutsDownWhenItReceivesStrategyExceptionFromTradingStrategy() throws Exception {
     setupConfigLoadingExpectations();
 
     final String exceptionErrorMsg = "Eeek! My strat just broke. Please shutdown!";
     final Map<String, BigDecimal> balancesAvailable = new HashMap<>();
     // balance limit NOT breached for BTC
     balancesAvailable.put(ENGINE_EMERGENCY_STOP_CURRENCY, new BigDecimal("0.5"));
-    final BalanceInfo balanceInfo = PowerMock.createMock(BalanceInfo.class);
+    final BalanceInfo balanceInfo = EasyMock.createMock(BalanceInfo.class);
 
     // expect 1st trade cycle to be successful
     expect(exchangeAdapter.getBalanceInfo()).andReturn(balanceInfo);
@@ -342,7 +395,16 @@ public class TestTradingEngine {
     emailAlerter.sendMessage(
         eq(CRITICAL_EMAIL_ALERT_SUBJECT),
         contains("A FATAL error has occurred in Trading Strategy! Details: " + exceptionErrorMsg));
-    PowerMock.replayAll();
+
+    EasyMock.replay(balanceInfo);
+    EasyMock.replay(configurableComponentFactory);
+    EasyMock.replay(exchangeAdapter);
+    EasyMock.replay(tradingStrategy);
+    EasyMock.replay(emailAlerter);
+    EasyMock.replay(exchangeConfigService);
+    EasyMock.replay(engineConfigService);
+    EasyMock.replay(strategyConfigService);
+    EasyMock.replay(marketConfigService);
 
     final TradingEngine tradingEngine =
         new TradingEngine(
@@ -351,30 +413,38 @@ public class TestTradingEngine {
             strategyConfigService,
             marketConfigService,
             emailAlerter,
-            tradingStrategiesBuilder);
+            tradingStrategiesBuilder,
+            configurableComponentFactory);
 
     tradingEngine.start();
 
     await().until(engineStateChanged(tradingEngine, EngineState.SHUTDOWN));
     assertFalse(tradingEngine.isRunning());
 
-    PowerMock.verifyAll();
+    EasyMock.verify(balanceInfo);
+    EasyMock.verify(configurableComponentFactory);
+    EasyMock.verify(exchangeAdapter);
+    EasyMock.verify(tradingStrategy);
+    EasyMock.verify(emailAlerter);
+    EasyMock.verify(exchangeConfigService);
+    EasyMock.verify(engineConfigService);
+    EasyMock.verify(strategyConfigService);
+    EasyMock.verify(marketConfigService);
   }
 
   /*
    * Tests the engine starts up, executes 1 trade cycle successfully, but then receives unexpected
-   * Exception from Trading Strategy - we expect the engine to shutdown.
+   * Exception from Trading Strategy - we expect the engine to shut down.
    */
   @Test
-  public void testEngineShutsDownWhenItReceivesUnexpectedExceptionFromTradingStrategy()
-      throws Exception {
+  void testEngineShutsDownWhenItReceivesUnexpectedExceptionFromTradingStrategy() throws Exception {
     setupConfigLoadingExpectations();
 
     final String exceptionErrorMsg = "Ah, curse your sudden but inevitable betrayal!";
     final Map<String, BigDecimal> balancesAvailable = new HashMap<>();
     // balance limit NOT breached for BTC
     balancesAvailable.put(ENGINE_EMERGENCY_STOP_CURRENCY, new BigDecimal("0.5"));
-    final BalanceInfo balanceInfo = PowerMock.createMock(BalanceInfo.class);
+    final BalanceInfo balanceInfo = EasyMock.createMock(BalanceInfo.class);
 
     // expect 1st trade cycle to be successful
     expect(exchangeAdapter.getBalanceInfo()).andReturn(balanceInfo);
@@ -395,7 +465,15 @@ public class TestTradingEngine {
                 + "Details: "
                 + exceptionErrorMsg));
 
-    PowerMock.replayAll();
+    EasyMock.replay(balanceInfo);
+    EasyMock.replay(configurableComponentFactory);
+    EasyMock.replay(exchangeAdapter);
+    EasyMock.replay(tradingStrategy);
+    EasyMock.replay(emailAlerter);
+    EasyMock.replay(exchangeConfigService);
+    EasyMock.replay(engineConfigService);
+    EasyMock.replay(strategyConfigService);
+    EasyMock.replay(marketConfigService);
 
     final TradingEngine tradingEngine =
         new TradingEngine(
@@ -404,23 +482,31 @@ public class TestTradingEngine {
             strategyConfigService,
             marketConfigService,
             emailAlerter,
-            tradingStrategiesBuilder);
+            tradingStrategiesBuilder,
+            configurableComponentFactory);
 
     tradingEngine.start();
 
     await().until(engineStateChanged(tradingEngine, EngineState.SHUTDOWN));
     assertFalse(tradingEngine.isRunning());
 
-    PowerMock.verifyAll();
+    EasyMock.verify(balanceInfo);
+    EasyMock.verify(configurableComponentFactory);
+    EasyMock.verify(exchangeAdapter);
+    EasyMock.verify(tradingStrategy);
+    EasyMock.verify(emailAlerter);
+    EasyMock.verify(exchangeConfigService);
+    EasyMock.verify(engineConfigService);
+    EasyMock.verify(strategyConfigService);
+    EasyMock.verify(marketConfigService);
   }
 
   /*
    * Tests the engine starts up, executes 1 trade cycle successfully, but then receives unexpected
-   * Exception from Exchange Adapter on the 2nd cycle. We expect the engine to shutdown.
+   * Exception from Exchange Adapter on the 2nd cycle. We expect the engine to shut down.
    */
   @Test
-  public void testEngineShutsDownWhenItReceivesUnexpectedExceptionFromExchangeAdapter()
-      throws Exception {
+  void testEngineShutsDownWhenItReceivesUnexpectedExceptionFromExchangeAdapter() throws Exception {
 
     setupConfigLoadingExpectations();
 
@@ -430,7 +516,7 @@ public class TestTradingEngine {
     final Map<String, BigDecimal> balancesAvailable = new HashMap<>();
     // balance limit NOT breached for BTC
     balancesAvailable.put(ENGINE_EMERGENCY_STOP_CURRENCY, new BigDecimal("0.5"));
-    final BalanceInfo balanceInfo = PowerMock.createMock(BalanceInfo.class);
+    final BalanceInfo balanceInfo = EasyMock.createMock(BalanceInfo.class);
 
     // expect 1st trade cycle to be successful
     expect(exchangeAdapter.getBalanceInfo()).andReturn(balanceInfo);
@@ -448,7 +534,15 @@ public class TestTradingEngine {
                 + " Details: "
                 + exceptionErrorMsg));
 
-    PowerMock.replayAll();
+    EasyMock.replay(balanceInfo);
+    EasyMock.replay(configurableComponentFactory);
+    EasyMock.replay(exchangeAdapter);
+    EasyMock.replay(tradingStrategy);
+    EasyMock.replay(emailAlerter);
+    EasyMock.replay(exchangeConfigService);
+    EasyMock.replay(engineConfigService);
+    EasyMock.replay(strategyConfigService);
+    EasyMock.replay(marketConfigService);
 
     final TradingEngine tradingEngine =
         new TradingEngine(
@@ -457,23 +551,31 @@ public class TestTradingEngine {
             strategyConfigService,
             marketConfigService,
             emailAlerter,
-            tradingStrategiesBuilder);
+            tradingStrategiesBuilder,
+            configurableComponentFactory);
 
     tradingEngine.start();
 
     await().until(engineStateChanged(tradingEngine, EngineState.SHUTDOWN));
     assertFalse(tradingEngine.isRunning());
 
-    PowerMock.verifyAll();
+    EasyMock.verify(balanceInfo);
+    EasyMock.verify(configurableComponentFactory);
+    EasyMock.verify(exchangeAdapter);
+    EasyMock.verify(tradingStrategy);
+    EasyMock.verify(emailAlerter);
+    EasyMock.verify(exchangeConfigService);
+    EasyMock.verify(engineConfigService);
+    EasyMock.verify(strategyConfigService);
+    EasyMock.verify(marketConfigService);
   }
 
   /*
    * Tests the engine starts up, executes 1 trade cycle successfully, but then receives
-   * TradingApiException from Exchange Adapter on the 2nd cycle. We expect the engine to shutdown.
+   * TradingApiException from Exchange Adapter on the 2nd cycle. We expect the engine to shut down.
    */
   @Test
-  public void testEngineShutsDownWhenItReceivesTradingApiExceptionFromExchangeAdapter()
-      throws Exception {
+  void testEngineShutsDownWhenItReceivesTradingApiExceptionFromExchangeAdapter() throws Exception {
     setupConfigLoadingExpectations();
 
     final String exceptionErrorMsg =
@@ -482,7 +584,7 @@ public class TestTradingEngine {
     final Map<String, BigDecimal> balancesAvailable = new HashMap<>();
     // balance limit NOT breached for BTC
     balancesAvailable.put(ENGINE_EMERGENCY_STOP_CURRENCY, new BigDecimal("0.5"));
-    final BalanceInfo balanceInfo = PowerMock.createMock(BalanceInfo.class);
+    final BalanceInfo balanceInfo = EasyMock.createMock(BalanceInfo.class);
 
     // expect 1st trade cycle to be successful
     expect(exchangeAdapter.getBalanceInfo()).andReturn(balanceInfo);
@@ -498,7 +600,15 @@ public class TestTradingEngine {
         contains(
             "A FATAL error has occurred in Exchange" + " Adapter! Details: " + exceptionErrorMsg));
 
-    PowerMock.replayAll();
+    EasyMock.replay(balanceInfo);
+    EasyMock.replay(configurableComponentFactory);
+    EasyMock.replay(exchangeAdapter);
+    EasyMock.replay(tradingStrategy);
+    EasyMock.replay(emailAlerter);
+    EasyMock.replay(exchangeConfigService);
+    EasyMock.replay(engineConfigService);
+    EasyMock.replay(strategyConfigService);
+    EasyMock.replay(marketConfigService);
 
     final TradingEngine tradingEngine =
         new TradingEngine(
@@ -507,14 +617,23 @@ public class TestTradingEngine {
             strategyConfigService,
             marketConfigService,
             emailAlerter,
-            tradingStrategiesBuilder);
+            tradingStrategiesBuilder,
+            configurableComponentFactory);
 
     tradingEngine.start();
 
     await().until(engineStateChanged(tradingEngine, EngineState.SHUTDOWN));
     assertFalse(tradingEngine.isRunning());
 
-    PowerMock.verifyAll();
+    EasyMock.verify(balanceInfo);
+    EasyMock.verify(configurableComponentFactory);
+    EasyMock.verify(exchangeAdapter);
+    EasyMock.verify(tradingStrategy);
+    EasyMock.verify(emailAlerter);
+    EasyMock.verify(exchangeConfigService);
+    EasyMock.verify(engineConfigService);
+    EasyMock.verify(strategyConfigService);
+    EasyMock.verify(marketConfigService);
   }
 
   /*
@@ -524,8 +643,7 @@ public class TestTradingEngine {
    * of every trade cycle.successfully executes subsequent trade cycles.
    */
   @Test
-  public void testEngineExecutesNextTradeCyclesAfterReceivingExchangeNetworkException()
-      throws Exception {
+  void testEngineExecutesNextTradeCyclesAfterReceivingExchangeNetworkException() throws Exception {
     setupConfigLoadingExpectations();
 
     final String exceptionErrorMsg =
@@ -534,7 +652,7 @@ public class TestTradingEngine {
     final Map<String, BigDecimal> balancesAvailable = new HashMap<>();
     // balance limit NOT breached for BTC
     balancesAvailable.put(ENGINE_EMERGENCY_STOP_CURRENCY, new BigDecimal("0.5"));
-    final BalanceInfo balanceInfo = PowerMock.createMock(BalanceInfo.class);
+    final BalanceInfo balanceInfo = EasyMock.createMock(BalanceInfo.class);
 
     // expect 1st trade cycle to be successful
     expect(exchangeAdapter.getBalanceInfo()).andReturn(balanceInfo);
@@ -551,7 +669,15 @@ public class TestTradingEngine {
     tradingStrategy.execute();
     expectLastCall().atLeastOnce();
 
-    PowerMock.replayAll();
+    EasyMock.replay(balanceInfo);
+    EasyMock.replay(configurableComponentFactory);
+    EasyMock.replay(exchangeAdapter);
+    EasyMock.replay(tradingStrategy);
+    EasyMock.replay(emailAlerter);
+    EasyMock.replay(exchangeConfigService);
+    EasyMock.replay(engineConfigService);
+    EasyMock.replay(strategyConfigService);
+    EasyMock.replay(marketConfigService);
 
     final TradingEngine tradingEngine =
         new TradingEngine(
@@ -560,7 +686,8 @@ public class TestTradingEngine {
             strategyConfigService,
             marketConfigService,
             emailAlerter,
-            tradingStrategiesBuilder);
+            tradingStrategiesBuilder,
+            configurableComponentFactory);
 
     final Executor executor = Executors.newSingleThreadExecutor();
     executor.execute(tradingEngine::start);
@@ -579,14 +706,22 @@ public class TestTradingEngine {
     await().until(engineStateChanged(tradingEngine, EngineState.SHUTDOWN));
     assertFalse(tradingEngine.isRunning());
 
-    PowerMock.verifyAll();
+    EasyMock.verify(balanceInfo);
+    EasyMock.verify(configurableComponentFactory);
+    EasyMock.verify(exchangeAdapter);
+    EasyMock.verify(tradingStrategy);
+    EasyMock.verify(emailAlerter);
+    EasyMock.verify(exchangeConfigService);
+    EasyMock.verify(engineConfigService);
+    EasyMock.verify(strategyConfigService);
+    EasyMock.verify(marketConfigService);
   }
 
   /*
    * Tests the engine cannot be started more than once.
    */
-  @Test(expected = IllegalStateException.class)
-  public void testEngineCannotBeStartedMoreThanOnce() throws Exception {
+  @Test
+  void testEngineCannotBeStartedMoreThanOnce() throws Exception {
     setupConfigLoadingExpectations();
 
     final Map<String, BigDecimal> balancesAvailable = new HashMap<>();
@@ -594,7 +729,7 @@ public class TestTradingEngine {
     balancesAvailable.put(ENGINE_EMERGENCY_STOP_CURRENCY, new BigDecimal("0.5"));
 
     // expect BalanceInfo to be fetched using Trading API
-    final BalanceInfo balanceInfo = PowerMock.createMock(BalanceInfo.class);
+    final BalanceInfo balanceInfo = EasyMock.createMock(BalanceInfo.class);
     expect(exchangeAdapter.getBalanceInfo()).andReturn(balanceInfo).atLeastOnce();
     expect(balanceInfo.getBalancesAvailable()).andReturn(balancesAvailable).atLeastOnce();
 
@@ -602,7 +737,15 @@ public class TestTradingEngine {
     tradingStrategy.execute();
     expectLastCall().atLeastOnce();
 
-    PowerMock.replayAll();
+    EasyMock.replay(balanceInfo);
+    EasyMock.replay(configurableComponentFactory);
+    EasyMock.replay(exchangeAdapter);
+    EasyMock.replay(tradingStrategy);
+    EasyMock.replay(emailAlerter);
+    EasyMock.replay(exchangeConfigService);
+    EasyMock.replay(engineConfigService);
+    EasyMock.replay(strategyConfigService);
+    EasyMock.replay(marketConfigService);
 
     final TradingEngine tradingEngine =
         new TradingEngine(
@@ -611,7 +754,9 @@ public class TestTradingEngine {
             strategyConfigService,
             marketConfigService,
             emailAlerter,
-            tradingStrategiesBuilder);
+            tradingStrategiesBuilder,
+            configurableComponentFactory);
+
     final Executor executor = Executors.newSingleThreadExecutor();
     executor.execute(tradingEngine::start);
 
@@ -619,20 +764,28 @@ public class TestTradingEngine {
     assertTrue(tradingEngine.isRunning());
 
     // try start the engine again
-    tradingEngine.start();
+    assertThrows(IllegalStateException.class, tradingEngine::start);
 
-    PowerMock.verifyAll();
+    EasyMock.verify(balanceInfo);
+    EasyMock.verify(configurableComponentFactory);
+    EasyMock.verify(exchangeAdapter);
+    EasyMock.verify(tradingStrategy);
+    EasyMock.verify(emailAlerter);
+    EasyMock.verify(exchangeConfigService);
+    EasyMock.verify(engineConfigService);
+    EasyMock.verify(strategyConfigService);
+    EasyMock.verify(marketConfigService);
   }
 
   @Test
-  public void testEngineShutsDownWhenBalancesCannotBeFetchedFromExchange() throws Exception {
+  void testEngineShutsDownWhenBalancesCannotBeFetchedFromExchange() throws Exception {
     setupConfigLoadingExpectations();
 
     // empty balances from exchange
     final Map<String, BigDecimal> balancesAvailable = new HashMap<>();
 
     // expect BalanceInfo to be fetched using Trading API
-    final BalanceInfo balanceInfo = PowerMock.createMock(BalanceInfo.class);
+    final BalanceInfo balanceInfo = EasyMock.createMock(BalanceInfo.class);
     expect(exchangeAdapter.getBalanceInfo()).andReturn(balanceInfo);
     expect(balanceInfo.getBalancesAvailable()).andReturn(balancesAvailable);
 
@@ -645,7 +798,16 @@ public class TestTradingEngine {
                 + "' key into Balances map "
                 + "returned null. Balances returned: "
                 + balancesAvailable));
-    PowerMock.replayAll();
+
+    EasyMock.replay(balanceInfo);
+    EasyMock.replay(configurableComponentFactory);
+    EasyMock.replay(exchangeAdapter);
+    EasyMock.replay(tradingStrategy);
+    EasyMock.replay(emailAlerter);
+    EasyMock.replay(exchangeConfigService);
+    EasyMock.replay(engineConfigService);
+    EasyMock.replay(strategyConfigService);
+    EasyMock.replay(marketConfigService);
 
     final TradingEngine tradingEngine =
         new TradingEngine(
@@ -654,17 +816,27 @@ public class TestTradingEngine {
             strategyConfigService,
             marketConfigService,
             emailAlerter,
-            tradingStrategiesBuilder);
+            tradingStrategiesBuilder,
+            configurableComponentFactory);
+
     tradingEngine.start();
 
     await().until(engineStateChanged(tradingEngine, EngineState.SHUTDOWN));
     assertFalse(tradingEngine.isRunning());
 
-    PowerMock.verifyAll();
+    EasyMock.verify(balanceInfo);
+    EasyMock.verify(configurableComponentFactory);
+    EasyMock.verify(exchangeAdapter);
+    EasyMock.verify(tradingStrategy);
+    EasyMock.verify(emailAlerter);
+    EasyMock.verify(exchangeConfigService);
+    EasyMock.verify(engineConfigService);
+    EasyMock.verify(strategyConfigService);
+    EasyMock.verify(marketConfigService);
   }
 
   @Test
-  public void testEngineInitialisesSuccessfullyWithoutNetworkConfig() throws Exception {
+  void testEngineInitialisesSuccessfullyWithoutNetworkConfig() throws Exception {
     setupExchangeAdapterConfigWithNoNetworkConfigExpectations();
     setupEngineConfigExpectations();
     setupStrategyAndMarketConfigExpectations();
@@ -674,7 +846,7 @@ public class TestTradingEngine {
     balancesAvailable.put(ENGINE_EMERGENCY_STOP_CURRENCY, new BigDecimal("0.5"));
 
     // expect BalanceInfo to be fetched using Trading API
-    final BalanceInfo balanceInfo = PowerMock.createMock(BalanceInfo.class);
+    final BalanceInfo balanceInfo = EasyMock.createMock(BalanceInfo.class);
     expect(exchangeAdapter.getBalanceInfo()).andReturn(balanceInfo).atLeastOnce();
     expect(balanceInfo.getBalancesAvailable()).andReturn(balancesAvailable).atLeastOnce();
 
@@ -682,7 +854,15 @@ public class TestTradingEngine {
     tradingStrategy.execute();
     expectLastCall().atLeastOnce();
 
-    PowerMock.replayAll();
+    EasyMock.replay(balanceInfo);
+    EasyMock.replay(configurableComponentFactory);
+    EasyMock.replay(exchangeAdapter);
+    EasyMock.replay(tradingStrategy);
+    EasyMock.replay(emailAlerter);
+    EasyMock.replay(exchangeConfigService);
+    EasyMock.replay(engineConfigService);
+    EasyMock.replay(strategyConfigService);
+    EasyMock.replay(marketConfigService);
 
     final TradingEngine tradingEngine =
         new TradingEngine(
@@ -691,7 +871,8 @@ public class TestTradingEngine {
             strategyConfigService,
             marketConfigService,
             emailAlerter,
-            tradingStrategiesBuilder);
+            tradingStrategiesBuilder,
+            configurableComponentFactory);
 
     final Executor executor = Executors.newSingleThreadExecutor();
     executor.execute(tradingEngine::start);
@@ -704,7 +885,15 @@ public class TestTradingEngine {
     await().until(engineStateChanged(tradingEngine, EngineState.SHUTDOWN));
     assertFalse(tradingEngine.isRunning());
 
-    PowerMock.verifyAll();
+    EasyMock.verify(balanceInfo);
+    EasyMock.verify(configurableComponentFactory);
+    EasyMock.verify(exchangeAdapter);
+    EasyMock.verify(tradingStrategy);
+    EasyMock.verify(emailAlerter);
+    EasyMock.verify(exchangeConfigService);
+    EasyMock.verify(engineConfigService);
+    EasyMock.verify(strategyConfigService);
+    EasyMock.verify(marketConfigService);
   }
 
   // --------------------------------------------------------------------------
@@ -713,7 +902,7 @@ public class TestTradingEngine {
 
   private void setupExchangeAdapterConfigExpectations() {
     expect(exchangeConfigService.getExchangeConfig()).andReturn(someExchangeConfig());
-    expect(ConfigurableComponentFactory.createComponent(EXCHANGE_ADAPTER_IMPL_CLASS))
+    expect(configurableComponentFactory.createComponent(EXCHANGE_ADAPTER_IMPL_CLASS))
         .andReturn(exchangeAdapter);
     expect(exchangeAdapter.getImplName()).andReturn(EXCHANGE_NAME).anyTimes();
     exchangeAdapter.init(anyObject(ExchangeConfig.class));
@@ -723,7 +912,7 @@ public class TestTradingEngine {
     final com.gazbert.bxbot.domain.exchange.ExchangeConfig exchangeConfig =
         someExchangeConfigWithoutNetworkConfig();
     expect(exchangeConfigService.getExchangeConfig()).andReturn(exchangeConfig);
-    expect(ConfigurableComponentFactory.createComponent(EXCHANGE_ADAPTER_IMPL_CLASS))
+    expect(configurableComponentFactory.createComponent(EXCHANGE_ADAPTER_IMPL_CLASS))
         .andReturn(exchangeAdapter);
     expect(exchangeAdapter.getImplName()).andReturn(EXCHANGE_NAME).anyTimes();
     exchangeAdapter.init(anyObject(ExchangeConfig.class));
@@ -741,7 +930,7 @@ public class TestTradingEngine {
   private void setupStrategyAndMarketConfigExpectations() {
     expect(strategyConfigService.getAllStrategyConfig()).andReturn(allTheStrategiesConfig());
     expect(marketConfigService.getAllMarketConfig()).andReturn(allTheMarketsConfig());
-    expect(ConfigurableComponentFactory.createComponent(STRATEGY_IMPL_CLASS))
+    expect(configurableComponentFactory.createComponent(STRATEGY_IMPL_CLASS))
         .andReturn(tradingStrategy);
     tradingStrategy.init(
         eq(exchangeAdapter),

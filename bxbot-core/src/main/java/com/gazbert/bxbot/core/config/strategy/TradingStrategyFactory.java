@@ -40,7 +40,18 @@ import org.springframework.stereotype.Component;
 @Log4j2
 public class TradingStrategyFactory {
 
+  private final ConfigurableComponentFactory configurableComponentFactory;
+
   private ApplicationContext springContext;
+
+  /**
+   * Creates the Trading Strategy Factory.
+   *
+   * @param configurableComponentFactory the configurable Component Factory.
+   */
+  public TradingStrategyFactory(ConfigurableComponentFactory configurableComponentFactory) {
+    this.configurableComponentFactory = configurableComponentFactory;
+  }
 
   /**
    * Sets the Application Context.
@@ -78,7 +89,7 @@ public class TradingStrategyFactory {
 
     if (strategyImpl == null) {
       // if beanName not configured use className
-      strategyImpl = ConfigurableComponentFactory.createComponent(tradingStrategyClassname);
+      strategyImpl = configurableComponentFactory.createComponent(tradingStrategyClassname);
     }
     return strategyImpl;
   }

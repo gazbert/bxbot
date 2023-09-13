@@ -96,6 +96,7 @@ public class TradingEngine {
   private final MarketConfigService marketConfigService;
 
   private final TradingStrategiesBuilder tradingStrategiesBuilder;
+  private final ConfigurableComponentFactory configurableComponentFactory;
 
   /**
    * Creates the Trading Engine.
@@ -106,6 +107,7 @@ public class TradingEngine {
    * @param marketConfigService the Market config service.
    * @param emailAlerter the Email Alerter.
    * @param tradingStrategiesBuilder the Trading Strategies Builder.
+   * @param configurableComponentFactory the Configurable Component Factory.
    */
   @Autowired
   public TradingEngine(
@@ -114,7 +116,8 @@ public class TradingEngine {
       StrategyConfigService strategyConfigService,
       MarketConfigService marketConfigService,
       EmailAlerter emailAlerter,
-      TradingStrategiesBuilder tradingStrategiesBuilder) {
+      TradingStrategiesBuilder tradingStrategiesBuilder,
+      ConfigurableComponentFactory configurableComponentFactory) {
 
     this.exchangeConfigService = exchangeConfigService;
     this.engineConfigService = engineConfigService;
@@ -122,6 +125,7 @@ public class TradingEngine {
     this.marketConfigService = marketConfigService;
     this.emailAlerter = emailAlerter;
     this.tradingStrategiesBuilder = tradingStrategiesBuilder;
+    this.configurableComponentFactory = configurableComponentFactory;
   }
 
   /** Starts the bot. */
@@ -323,7 +327,7 @@ public class TradingEngine {
     log.info("Fetched Exchange config from repository: " + exchangeConfig);
 
     final ExchangeAdapter adapter =
-        ConfigurableComponentFactory.createComponent(exchangeConfig.getAdapter());
+        configurableComponentFactory.createComponent(exchangeConfig.getAdapter());
     log.info("Trading Engine will use Exchange Adapter for: " + adapter.getImplName());
 
     final ExchangeConfigImpl exchangeApiConfig =

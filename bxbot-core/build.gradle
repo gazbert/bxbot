@@ -22,36 +22,23 @@ dependencies {
   compileOnly libraries.lombok
   annotationProcessor libraries.lombok
 
-  testImplementation libraries.powermock_junit
-  testImplementation libraries.powermock_api_easymock
   testImplementation libraries.easymock
-  testImplementation libraries.junit_vintage_engine
   testImplementation libraries.spring_boot_starter_test
   testImplementation libraries.awaitility
 }
 
-// For Powermock tests messing with JDK 17 bytecode.
-// See: https://stackoverflow.com/questions/69896191/powermock-compatibility-with-jdk-17
-test.jvmArgs "--add-opens", "java.base/java.lang=ALL-UNNAMED"
-test.jvmArgs "--add-opens", "java.base/java.util=ALL-UNNAMED"
-test.jvmArgs "--add-opens", "java.base/java.util.concurrent=ALL-UNNAMED"
-test.jvmArgs "--add-opens", "java.base/java.text=ALL-UNNAMED"
-
 jacocoTestCoverageVerification {
   violationRules {
     rule {
-      element = 'BUNDLE'
-      // Ignore classes tested using Powermock. JaCoCo won't/can't instrument them:
-      // "... right now there is NO WAY TO USE PowerMock with JaCoCo On-the-fly instrumentation."
-      // See: https://github.com/powermock/powermock/wiki/Code-coverage-with-JaCoCo
+      element = 'CLASS'
       excludes = [
-          'com.gazbert.bxbot.core.mail.EmailAlerter*', // Powermock tests
+          'com.gazbert.bxbot.core.mail.EmailAlerter*', // Needs static mocking of Transport layer
           'com.gazbert.bxbot.BxBot',                   // Nothing to test
       ]
       limit {
         counter = 'LINE'
         value = 'COVEREDRATIO'
-        minimum = 0.7
+        minimum = 0.8
       }
     }
   }
