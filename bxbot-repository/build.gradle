@@ -2,33 +2,33 @@ description = 'BX-bot Repository'
 
 dependencies {
 
-    implementation project(':bxbot-yaml-datastore')
-    implementation project(':bxbot-domain-objects')
+  implementation project(':bxbot-yaml-datastore')
+  implementation project(':bxbot-domain-objects')
 
-    implementation libraries.spring_tx
-    implementation libraries.spring_boot_starter
-    implementation libraries.spring_boot_starter_log4j2
-    implementation libraries.google_guava
+  implementation libraries.spring_tx
+  implementation libraries.spring_boot_starter
+  implementation libraries.spring_boot_starter_log4j2
+  implementation libraries.google_guava
 
-    implementation libraries.springdoc_openapi_ui
+  implementation libraries.springdoc_openapi_ui
 
-    compileOnly libraries.lombok
-    annotationProcessor libraries.lombok
+  compileOnly libraries.lombok
+  annotationProcessor libraries.lombok
 
-    testImplementation libraries.easymock
-    testImplementation libraries.spring_boot_starter_test
-    testImplementation libraries.snake_yaml
+  testImplementation libraries.easymock
+  testImplementation libraries.spring_boot_starter_test
+  testImplementation libraries.snake_yaml
 }
 
 jacocoTestCoverageVerification {
-    violationRules {
-        rule {
-            element = 'CLASS'
-            limit {
-                counter = 'LINE'
-                value = 'COVEREDRATIO'
-                minimum = 0.8
-            }
-        }
+  violationRules {
+    rule {
+      element = 'CLASS'
+      limit {
+        counter = 'LINE'
+        value = 'COVEREDRATIO'
+        minimum = 0.8
+      }
     }
+  }
 }
