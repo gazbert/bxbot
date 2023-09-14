@@ -28,7 +28,7 @@ import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
 
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import org.easymock.EasyMock;
@@ -229,7 +229,7 @@ class TestBotLogfileService {
         botLogfileService.getLogfileAsResource(maxLogfileSizeInBytes);
     final byte[] logfileInBytes = logfileAsResource.getInputStream().readAllBytes();
 
-    assertThat(new String(logfileInBytes, Charset.forName("UTF-8")))
+    assertThat(new String(logfileInBytes, StandardCharsets.UTF_8))
         .isEqualTo(expectedLogfileContent);
     verify(logFileWebEndpoint);
   }
@@ -256,7 +256,7 @@ class TestBotLogfileService {
         botLogfileService.getLogfileAsResource(maxLogfileSizeInBytes);
     final byte[] logfileInBytes = logfileAsResource.getInputStream().readAllBytes();
 
-    assertThat(new String(logfileInBytes, Charset.forName("UTF-8"))).isEqualTo(firstLineOfLogfile);
+    assertThat(new String(logfileInBytes, StandardCharsets.UTF_8)).isEqualTo(firstLineOfLogfile);
     verify(logFileWebEndpoint);
   }
 }

@@ -24,8 +24,7 @@
 package com.gazbert.bxbot.services.runtime.impl;
 
 import com.gazbert.bxbot.services.runtime.BotStatusService;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.health.HealthComponent;
 import org.springframework.boot.actuate.health.HealthEndpoint;
@@ -38,10 +37,10 @@ import org.springframework.stereotype.Service;
  * @author gazbert
  */
 @Service("botStatusService")
+@Log4j2
 public class BotStatusServiceImpl implements BotStatusService {
 
-  private static final Logger LOG = LogManager.getLogger();
-  private HealthEndpoint healthEndpoint;
+  private final HealthEndpoint healthEndpoint;
 
   /**
    * Constructs the BotStatusService.
@@ -57,7 +56,7 @@ public class BotStatusServiceImpl implements BotStatusService {
   public String getStatus() {
     final HealthComponent health = healthEndpoint.health();
     final Status status = health.getStatus();
-    LOG.info(() -> "Health Status: " + status);
+    log.info("Health Status: " + status);
     return status.getCode();
   }
 }

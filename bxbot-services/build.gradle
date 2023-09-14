@@ -14,6 +14,9 @@ dependencies {
 
   implementation libraries.springdoc_openapi_ui
 
+  compileOnly libraries.lombok
+  annotationProcessor libraries.lombok
+
   testImplementation libraries.spring_boot_starter_test
   testImplementation libraries.junit_vintage_engine
   testImplementation libraries.easymock

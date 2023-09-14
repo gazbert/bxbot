@@ -27,8 +27,7 @@ import com.gazbert.bxbot.domain.strategy.StrategyConfig;
 import com.gazbert.bxbot.repository.StrategyConfigRepository;
 import com.gazbert.bxbot.services.config.StrategyConfigService;
 import java.util.List;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.ComponentScan;
@@ -43,9 +42,9 @@ import org.springframework.transaction.annotation.Transactional;
 @Service("strategyConfigService")
 @Transactional
 @ComponentScan(basePackages = {"com.gazbert.bxbot.repository"})
+@Log4j2
 public class StrategyConfigServiceImpl implements StrategyConfigService {
 
-  private static final Logger LOG = LogManager.getLogger();
   private final StrategyConfigRepository strategyConfigRepository;
 
   /**
@@ -67,25 +66,25 @@ public class StrategyConfigServiceImpl implements StrategyConfigService {
 
   @Override
   public StrategyConfig getStrategyConfig(String id) {
-    LOG.info(() -> "Fetching Strategy config for id: " + id);
+    log.info("Fetching Strategy config for id: " + id);
     return strategyConfigRepository.findById(id);
   }
 
   @Override
   public StrategyConfig updateStrategyConfig(StrategyConfig config) {
-    LOG.info(() -> "About to update Strategy config: " + config);
+    log.info("About to update Strategy config: " + config);
     return strategyConfigRepository.save(config);
   }
 
   @Override
   public StrategyConfig createStrategyConfig(StrategyConfig config) {
-    LOG.info(() -> "About to create Strategy config: " + config);
+    log.info("About to create Strategy config: " + config);
     return strategyConfigRepository.save(config);
   }
 
   @Override
   public StrategyConfig deleteStrategyConfig(String id) {
-    LOG.info(() -> "About to delete Strategy config for id: " + id);
+    log.info("About to delete Strategy config for id: " + id);
     return strategyConfigRepository.delete(id);
   }
 }

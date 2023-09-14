@@ -33,8 +33,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.logging.LogFileWebEndpoint;
 import org.springframework.core.io.ByteArrayResource;
@@ -47,11 +46,11 @@ import org.springframework.stereotype.Service;
  * @author gazbert
  */
 @Service("botLogfileService")
+@Log4j2
 public class BotLogfileServiceImpl implements BotLogfileService {
 
-  private static final Logger LOG = LogManager.getLogger();
   private static final String NEWLINE = System.getProperty("line.separator");
-  private LogFileWebEndpoint logFileWebEndpoint;
+  private final LogFileWebEndpoint logFileWebEndpoint;
 
   /**
    * Constructs the BotLogfileService.
@@ -71,12 +70,11 @@ public class BotLogfileServiceImpl implements BotLogfileService {
       if (logfileLength <= maxFileSize) {
         return logfile;
       } else {
-        LOG.warn(
-            () ->
-                "Logfile exceeds MaxFileSize. Truncating end of file. MaxFileSize: "
-                    + maxFileSize
-                    + " LogfileSize: "
-                    + logfileLength);
+        log.warn(
+            "Logfile exceeds MaxFileSize. Truncating end of file. MaxFileSize: "
+                + maxFileSize
+                + " LogfileSize: "
+                + logfileLength);
         final InputStream inputStream = logfile.getInputStream();
         final byte[] truncatedLogfile = new byte[maxFileSize];
         inputStream.readNBytes(truncatedLogfile, 0, maxFileSize);
@@ -84,7 +82,7 @@ public class BotLogfileServiceImpl implements BotLogfileService {
       }
     } catch (IOException e) {
       final String errorMsg = "Failed to load logfile. Details: " + e.getMessage();
-      LOG.error(() -> errorMsg);
+      log.error(errorMsg);
       throw e;
     }
   }
