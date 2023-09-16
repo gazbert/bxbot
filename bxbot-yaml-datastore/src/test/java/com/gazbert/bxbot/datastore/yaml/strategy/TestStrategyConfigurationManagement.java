@@ -137,7 +137,7 @@ class TestStrategyConfigurationManagement {
     assertEquals("myMacdStratBean", strategyConfig.getStrategies().get(2).getBeanName());
     assertNull(strategyConfig.getStrategies().get(2).getClassName());
     assertEquals(
-        new HashMap(),
+        new HashMap<>(),
         strategyConfig.getStrategies().get(2).getConfigItems()); // optional element check
   }
 

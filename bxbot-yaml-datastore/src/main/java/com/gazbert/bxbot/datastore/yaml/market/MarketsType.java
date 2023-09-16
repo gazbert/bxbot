@@ -51,7 +51,7 @@ public class MarketsType {
   /**
    * Sets the markets config.
    *
-   * @param markets the markets config.
+   * @param markets the markets' config.
    */
   public void setMarkets(List<MarketConfig> markets) {
     this.markets = markets;

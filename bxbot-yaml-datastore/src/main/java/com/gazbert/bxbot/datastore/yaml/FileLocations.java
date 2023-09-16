@@ -46,5 +46,6 @@ public final class FileLocations {
   public static final String STRATEGIES_CONFIG_YAML_FILENAME = "config/strategies.yaml";
 
   private FileLocations() {
+    // noimpl
   }
 }

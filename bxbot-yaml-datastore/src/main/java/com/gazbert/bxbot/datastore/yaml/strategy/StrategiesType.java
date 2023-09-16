@@ -51,7 +51,7 @@ public class StrategiesType {
   /**
    * Sets the strategies config.
    *
-   * @param strategies the strategies config.
+   * @param strategies the strategies' config.
    */
   public void setStrategies(List<StrategyConfig> strategies) {
     this.strategies = strategies;
