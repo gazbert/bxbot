@@ -23,15 +23,18 @@
 
 package com.gazbert.bxbot.strategy.api;
 
+import java.io.Serial;
+
 /**
  * Trading Strategy implementations should throw this exception if they want the Trading Engine to
- * shutdown the bot immediately.
+ * shut down the bot immediately.
  *
  * @author gazbert
  * @since 1.0
  */
 public final class StrategyException extends Exception {
 
+  @Serial
   private static final long serialVersionUID = -5066890753686004758L;
 
   /**

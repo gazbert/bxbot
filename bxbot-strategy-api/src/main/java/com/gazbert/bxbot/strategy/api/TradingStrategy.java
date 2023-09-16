@@ -52,7 +52,7 @@ public interface TradingStrategy {
    * <p>Here, you can create some orders, cancel some, buy some beer... do whatever you want.
    *
    * @throws StrategyException if something goes bad. Trading Strategy implementations should throw
-   *     this exception if they want the Trading Engine to shutdown the bot immediately.
+   *     this exception if they want the Trading Engine to shut down the bot immediately.
    */
   void execute() throws StrategyException;
 }

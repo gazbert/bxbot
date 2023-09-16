@@ -56,9 +56,9 @@ public interface StrategyConfig {
   int getNumberOfConfigItems();
 
   /**
-   * Returns all of the config item keys.
+   * Returns all the config item keys.
    *
-   * @return all of the config item keys.
+   * @return all the config item keys.
    */
   Set<String> getConfigItemKeys();
 }
