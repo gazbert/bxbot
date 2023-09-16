@@ -163,7 +163,7 @@ public class TestExampleScalpingStrategy {
     // mock an existing buy order state
     final BigDecimal lastOrderAmount = new BigDecimal("35");
     final BigDecimal lastOrderPrice = new BigDecimal("1454.018");
-    final Class orderStateClass =
+    final Class<Object> orderStateClass =
         Whitebox.getInnerClassType(ExampleScalpingStrategy.class, "OrderState");
     final Object orderState = createMock(orderStateClass);
     Whitebox.setInternalState(orderState, "id", "45345346");
@@ -208,7 +208,7 @@ public class TestExampleScalpingStrategy {
    * Tests scenario when strategy's current buy order is still waiting to be filled. We expect
    * it to hold.
    *
-   * - Given the bot has placed a buy order and it had not filled
+   * - Given the bot has placed a buy order, and it had not filled
    * - When the strategy is invoked
    * - Then the bot holds until the next trade cycle
    */
@@ -223,7 +223,7 @@ public class TestExampleScalpingStrategy {
     // mock an existing buy order state
     final BigDecimal lastOrderAmount = new BigDecimal("35");
     final BigDecimal lastOrderPrice = new BigDecimal("1454.018");
-    final Class orderStateClass =
+    final Class<Object> orderStateClass =
         Whitebox.getInnerClassType(ExampleScalpingStrategy.class, "OrderState");
     final Object orderState = createMock(orderStateClass);
     Whitebox.setInternalState(orderState, "id", "45345346");
@@ -290,7 +290,7 @@ public class TestExampleScalpingStrategy {
     // mock an existing sell order state
     final BigDecimal lastOrderAmount = new BigDecimal("35");
     final BigDecimal lastOrderPrice = new BigDecimal("1454.018");
-    final Class orderStateClass =
+    final Class<Object> orderStateClass =
         Whitebox.getInnerClassType(ExampleScalpingStrategy.class, "OrderState");
     final Object orderState = createMock(orderStateClass);
     Whitebox.setInternalState(orderState, "id", "45345346");
@@ -337,7 +337,7 @@ public class TestExampleScalpingStrategy {
    * Tests scenario when strategy's current sell order is still waiting to be filled. We expect
    * it to hold.
    *
-   * - Given the bot has placed a sell order and it had not filled
+   * - Given the bot has placed a sell order, and it had not filled
    * - When the strategy is invoked<
    * - Then the bot holds until the next trade cycle<
    */
@@ -352,7 +352,7 @@ public class TestExampleScalpingStrategy {
     // mock an existing sell order state
     final BigDecimal lastOrderAmount = new BigDecimal("35");
     final BigDecimal lastOrderPrice = new BigDecimal("1454.018");
-    final Class orderStateClass =
+    final Class<Object> orderStateClass =
         Whitebox.getInnerClassType(ExampleScalpingStrategy.class, "OrderState");
     final Object orderState = createMock(orderStateClass);
     Whitebox.setInternalState(orderState, "id", "45345346");
@@ -461,7 +461,7 @@ public class TestExampleScalpingStrategy {
     // mock an existing sell order state
     final BigDecimal lastOrderAmount = new BigDecimal("35");
     final BigDecimal lastOrderPrice = new BigDecimal("1454.018");
-    final Class orderStateClass =
+    final Class<Object> orderStateClass =
         Whitebox.getInnerClassType(ExampleScalpingStrategy.class, "OrderState");
     final Object orderState = createMock(orderStateClass);
     Whitebox.setInternalState(orderState, "id", "45345346");
@@ -522,7 +522,7 @@ public class TestExampleScalpingStrategy {
     // mock an existing buy order state
     final BigDecimal lastOrderAmount = new BigDecimal("35");
     final BigDecimal lastOrderPrice = new BigDecimal("1454.018");
-    final Class orderStateClass =
+    final Class<Object> orderStateClass =
         Whitebox.getInnerClassType(ExampleScalpingStrategy.class, "OrderState");
     final Object orderState = createMock(orderStateClass);
     Whitebox.setInternalState(orderState, "id", "45345346");
@@ -624,7 +624,7 @@ public class TestExampleScalpingStrategy {
     // mock an existing sell order state
     final BigDecimal lastOrderAmount = new BigDecimal("35");
     final BigDecimal lastOrderPrice = new BigDecimal("1454.018");
-    final Class orderStateClass =
+    final Class<Object> orderStateClass =
         Whitebox.getInnerClassType(ExampleScalpingStrategy.class, "OrderState");
     final Object orderState = createMock(orderStateClass);
     Whitebox.setInternalState(orderState, "id", "45345346");
@@ -685,7 +685,7 @@ public class TestExampleScalpingStrategy {
     // mock an existing buy order state
     final BigDecimal lastOrderAmount = new BigDecimal("35");
     final BigDecimal lastOrderPrice = new BigDecimal("1454.018");
-    final Class orderStateClass =
+    final Class<Object> orderStateClass =
         Whitebox.getInnerClassType(ExampleScalpingStrategy.class, "OrderState");
     final Object orderState = createMock(orderStateClass);
     Whitebox.setInternalState(orderState, "id", "45345346");
