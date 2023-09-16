@@ -69,7 +69,7 @@ class TestTradingApi {
   }
 
   /** Test class. */
-  class MyApiImpl implements TradingApi {
+  static class MyApiImpl implements TradingApi {
 
     @Override
     public String getImplName() {
