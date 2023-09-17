@@ -72,8 +72,9 @@ class TestStrategyConfigurationManagement {
 
   @Test
   void testLoadingValidYamlConfigFileIsSuccessful() {
+    final ConfigurationManager configurationManager = new ConfigurationManager();
     final StrategiesType strategyConfig =
-        ConfigurationManager.loadConfig(StrategiesType.class, VALID_YAML_CONFIG_FILENAME);
+        configurationManager.loadConfig(StrategiesType.class, VALID_YAML_CONFIG_FILENAME);
 
     assertEquals(3, strategyConfig.getStrategies().size());
 
@@ -136,22 +137,24 @@ class TestStrategyConfigurationManagement {
     assertEquals("myMacdStratBean", strategyConfig.getStrategies().get(2).getBeanName());
     assertNull(strategyConfig.getStrategies().get(2).getClassName());
     assertEquals(
-        new HashMap(),
+        new HashMap<>(),
         strategyConfig.getStrategies().get(2).getConfigItems()); // optional element check
   }
 
   @Test
   void testLoadingMissingYamlConfigFileThrowsException() {
+    final ConfigurationManager configurationManager = new ConfigurationManager();
     assertThrows(
         IllegalStateException.class,
-        () -> ConfigurationManager.loadConfig(StrategiesType.class, MISSING_YAML_CONFIG_FILENAME));
+        () -> configurationManager.loadConfig(StrategiesType.class, MISSING_YAML_CONFIG_FILENAME));
   }
 
   @Test
   void testLoadingInvalidYamlConfigFileThrowsException() {
+    final ConfigurationManager configurationManager = new ConfigurationManager();
     assertThrows(
         IllegalArgumentException.class,
-        () -> ConfigurationManager.loadConfig(StrategiesType.class, INVALID_YAML_CONFIG_FILENAME));
+        () -> configurationManager.loadConfig(StrategiesType.class, INVALID_YAML_CONFIG_FILENAME));
   }
 
   @Test
@@ -184,12 +187,13 @@ class TestStrategyConfigurationManagement {
     strategiesConfig.getStrategies().add(strategy1);
     strategiesConfig.getStrategies().add(strategy2);
 
-    ConfigurationManager.saveConfig(
+    final ConfigurationManager configurationManager = new ConfigurationManager();
+    configurationManager.saveConfig(
         StrategiesType.class, strategiesConfig, YAML_CONFIG_TO_SAVE_FILENAME);
 
     // Read it back in
     final StrategiesType strategiesReloaded =
-        ConfigurationManager.loadConfig(StrategiesType.class, YAML_CONFIG_TO_SAVE_FILENAME);
+        configurationManager.loadConfig(StrategiesType.class, YAML_CONFIG_TO_SAVE_FILENAME);
 
     // Strat 1
     assertThat(strategiesReloaded.getStrategies().get(0).getId()).isEqualTo(STRAT_ID_1);
@@ -273,10 +277,12 @@ class TestStrategyConfigurationManagement {
     strategiesConfig.getStrategies().add(strategy1);
     strategiesConfig.getStrategies().add(strategy2);
 
+    final ConfigurationManager configurationManager = new ConfigurationManager();
+
     assertThrows(
         IllegalStateException.class,
         () ->
-            ConfigurationManager.saveConfig(
+            configurationManager.saveConfig(
                 StrategiesType.class, strategiesConfig, INVALID_YAML_CONFIG_TO_SAVE_FILENAME));
   }
 }

@@ -28,16 +28,18 @@ import com.gazbert.bxbot.rest.api.security.authentication.JwtAuthenticationExcep
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import javax.crypto.SecretKey;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -48,15 +50,15 @@ import org.springframework.stereotype.Component;
  *
  * <p>Properties are loaded from the config/application.properties file.
  *
- * <p>Code originated from the excellent JWT and Spring Boot example by Stephan Zerhusen:
- * https://github.com/szerhusenBC/jwt-spring-security-demo
+ * <p>Code originated from the excellent JWT and Spring Boot example by <a
+ * href="https://github.com/szerhusenBC/jwt-spring-security-demo">Stephan Zerhusen</a>.
  *
  * @author gazbert
  */
 @Component
+@Log4j2
 public class JwtUtils {
 
-  private static final Logger LOG = LogManager.getLogger();
   private static final String CUSTOM_CLAIM_NAMESPACE = "https://gazbert.com/bxbot/";
 
   static final String CLAIM_KEY_LAST_PASSWORD_CHANGE_DATE =
@@ -111,13 +113,13 @@ public class JwtUtils {
                 + created
                 + " Password reset date: "
                 + lastPasswordResetDate;
-        LOG.error(errorMsg);
+        log.error(errorMsg);
         throw new JwtAuthenticationException(errorMsg);
       }
       return claims;
     } catch (Exception e) {
       final String errorMsg = "Invalid token! Details: " + e.getMessage();
-      LOG.error(errorMsg, e);
+      log.error(errorMsg, e);
       throw new JwtAuthenticationException(errorMsg, e);
     }
   }
@@ -153,10 +155,10 @@ public class JwtUtils {
     final Date created = getIssuedAtDateFromTokenClaims(claims);
     boolean canBeRefreshed = isCreatedAfterLastPasswordReset(created, lastPasswordReset);
     if (!canBeRefreshed) {
-      LOG.warn(
-          "Token cannot be refreshed for user: "
-              + claims.get(CLAIM_KEY_USERNAME)
-              + " - token creation date is BEFORE last password reset date");
+      log.warn(
+          "Token cannot be refreshed for user: {} "
+              + "- token creation date is BEFORE last password reset date",
+          claims.get(CLAIM_KEY_USERNAME));
     }
     return canBeRefreshed;
   }
@@ -175,7 +177,7 @@ public class JwtUtils {
       return buildToken(claims);
     } catch (Exception e) {
       final String errorMsg = "Failed to refresh token!";
-      LOG.error(errorMsg, e);
+      log.error(errorMsg, e);
       throw new JwtAuthenticationException(errorMsg, e);
     }
   }
@@ -191,13 +193,13 @@ public class JwtUtils {
       final String username = claims.getSubject();
       if (username == null) {
         final String errorMsg = "Failed to extract username claim from token!";
-        LOG.error(errorMsg);
+        log.error(errorMsg);
         throw new JwtAuthenticationException(errorMsg);
       }
       return username;
     } catch (Exception e) {
       final String errorMsg = "Failed to extract username claim from token!";
-      LOG.error(errorMsg);
+      log.error(errorMsg);
       throw new JwtAuthenticationException(errorMsg, e);
     }
   }
@@ -220,7 +222,7 @@ public class JwtUtils {
       return roles;
     } catch (Exception e) {
       final String errorMsg = "Failed to extract roles claim from token!";
-      LOG.error(errorMsg, e);
+      log.error(errorMsg, e);
       throw new JwtAuthenticationException(errorMsg, e);
     }
   }
@@ -239,7 +241,7 @@ public class JwtUtils {
       lastPasswordResetDate = new Date((Long) claims.get(CLAIM_KEY_LAST_PASSWORD_CHANGE_DATE));
     } catch (Exception e) {
       final String errorMsg = "Failed to extract lastPasswordResetDate claim from token!";
-      LOG.error(errorMsg, e);
+      log.error(errorMsg, e);
       throw new JwtAuthenticationException(errorMsg, e);
     }
     return lastPasswordResetDate;
@@ -252,21 +254,24 @@ public class JwtUtils {
   private String buildToken(Map<String, Object> claims) {
     final Date issuedAtDate = new Date((Long) claims.get(CLAIM_KEY_ISSUED_AT));
     final Date expirationDate = new Date(issuedAtDate.getTime() + (expirationInSecs * 1000));
+    final SecretKey key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
 
     return Jwts.builder()
         .setClaims(claims)
         .setExpiration(expirationDate)
         .setIssuedAt(issuedAtDate)
-        .signWith(SignatureAlgorithm.HS512, secret)
+        .signWith(key, SignatureAlgorithm.HS512)
         .compact();
   }
 
   private Claims getClaimsFromToken(String token) {
-    return Jwts.parser()
+    final SecretKey key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+    return Jwts.parserBuilder()
+        .setSigningKey(key)
         .setAllowedClockSkewSeconds(allowedClockSkewInSecs)
-        .setSigningKey(secret)
         .requireIssuer(issuer)
         .requireAudience(audience)
+        .build()
         .parseClaimsJws(token)
         .getBody();
   }

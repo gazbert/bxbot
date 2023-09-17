@@ -48,26 +48,32 @@ class TestTradingStrategyCreation {
 
   @Test
   void testCreationOfValidTradingStrategyImpl() {
+    final ConfigurableComponentFactory configurableComponentFactory =
+        new ConfigurableComponentFactory();
     final TradingStrategy tradingStrategy =
-        ConfigurableComponentFactory.createComponent(VALID_TRADING_STRATEGY_IMPL);
+        configurableComponentFactory.createComponent(VALID_TRADING_STRATEGY_IMPL);
     assertNotNull(tradingStrategy);
     assertEquals(VALID_TRADING_STRATEGY_IMPL, tradingStrategy.getClass().getCanonicalName());
   }
 
   @Test
   void testCreatingTradingStrategyImplThatDoesNotImplementTradingStrategyThrowsException() {
+    final ConfigurableComponentFactory configurableComponentFactory =
+        new ConfigurableComponentFactory();
     assertThrows(
         ClassCastException.class,
         () -> {
           final TradingStrategy tradingStrategy =
-              ConfigurableComponentFactory.createComponent(INVALID_TRADING_STRATEGY_IMPL);
+              configurableComponentFactory.createComponent(INVALID_TRADING_STRATEGY_IMPL);
         });
   }
 
   @Test
   void testCreatingTradingStrategyImplThatDoesNotExistThrowsException() {
+    final ConfigurableComponentFactory configurableComponentFactory =
+        new ConfigurableComponentFactory();
     assertThrows(
         IllegalStateException.class,
-        () -> ConfigurableComponentFactory.createComponent(MISSING_TRADING_STRATEGY_IMPL));
+        () -> configurableComponentFactory.createComponent(MISSING_TRADING_STRATEGY_IMPL));
   }
 }

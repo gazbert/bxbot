@@ -36,8 +36,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.security.Principal;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -59,9 +58,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @org.springframework.web.bind.annotation.RestController
 @RequestMapping(CONFIG_ENDPOINT_BASE_URI)
 @Tag(name = "Exchange Configuration")
+@Log4j2
 public class ExchangeConfigController extends RestController {
 
-  private static final Logger LOG = LogManager.getLogger();
   private static final String EXCHANGE_RESOURCE_PATH = "/exchange";
   private final ExchangeConfigService exchangeConfigService;
 
@@ -99,13 +98,11 @@ public class ExchangeConfigController extends RestController {
       })
   public ExchangeConfig getExchange(@Parameter(hidden = true) Principal principal) {
 
-    LOG.info(
-        () ->
-            "GET " + EXCHANGE_RESOURCE_PATH + " - getExchange() - caller: " + principal.getName());
+    log.info("GET " + EXCHANGE_RESOURCE_PATH + " - getExchange() - caller: " + principal.getName());
 
     final ExchangeConfig exchangeConfig = exchangeConfigService.getExchangeConfig();
     exchangeConfig.setAuthenticationConfig(null);
-    LOG.info(() -> "Response: " + exchangeConfig);
+    log.info("Response: " + exchangeConfig);
     return exchangeConfig;
   }
 
@@ -137,14 +134,10 @@ public class ExchangeConfigController extends RestController {
   public ResponseEntity<ExchangeConfig> updateExchange(
       @Parameter(hidden = true) Principal principal, @RequestBody ExchangeConfig config) {
 
-    LOG.info(
-        () ->
-            "PUT "
-                + EXCHANGE_RESOURCE_PATH
-                + " - updateExchange() - caller: "
-                + principal.getName());
+    log.info(
+        "PUT " + EXCHANGE_RESOURCE_PATH + " - updateExchange() - caller: " + principal.getName());
 
-    LOG.info(() -> "Request: " + config);
+    log.info("Request: " + config);
 
     final ExchangeConfig updatedConfig =
         exchangeConfigService.updateExchangeConfig(mergeWithLocalAuthenticationConfig(config));
@@ -162,7 +155,7 @@ public class ExchangeConfigController extends RestController {
   }
 
   private ResponseEntity<ExchangeConfig> buildResponseEntity(ExchangeConfig entity) {
-    LOG.info(() -> "Response: " + entity);
+    log.info("Response: " + entity);
     return new ResponseEntity<>(entity, null, HttpStatus.OK);
   }
 }

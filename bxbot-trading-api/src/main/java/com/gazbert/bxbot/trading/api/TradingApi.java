@@ -122,7 +122,7 @@ public interface TradingApi {
   /**
    * Cancels your existing order on the exchange.
    *
-   * @param orderId your order Id.
+   * @param orderId your order id.
    * @param marketId the id of the market the order was placed on, e.g. btc_usd
    * @return true if order cancelled ok, false otherwise.
    * @throws ExchangeNetworkException if a network error occurred trying to connect to the exchange.
@@ -228,7 +228,7 @@ public interface TradingApi {
    * a null value is returned.
    *
    * @param marketId the id of the market.
-   * @return the minimum order volume in base currency that is needed to place a Order as a {@link
+   * @return the minimum order volume in base currency that is needed to place an Order as a {@link
    *     BigDecimal}.
    * @throws ExchangeNetworkException if a network error occurred trying to connect to the exchange.
    *     This is implementation specific for each Exchange Adapter - see the documentation for the

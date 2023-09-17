@@ -52,10 +52,12 @@ class TestExchangeAdapterCreation {
 
   @Test
   void testCreatingValidExchangeAdapter() {
+    final ConfigurableComponentFactory configurableComponentFactory =
+        new ConfigurableComponentFactory();
     final TradingApi tradingApi =
-        ConfigurableComponentFactory.createComponent(VALID_EXCHANGE_ADAPTER_IMPL);
+        configurableComponentFactory.createComponent(VALID_EXCHANGE_ADAPTER_IMPL);
     final ExchangeAdapter exchangeAdapter =
-        ConfigurableComponentFactory.createComponent(VALID_EXCHANGE_ADAPTER_IMPL);
+        configurableComponentFactory.createComponent(VALID_EXCHANGE_ADAPTER_IMPL);
     assertNotNull(tradingApi);
     assertNotNull(exchangeAdapter);
     assertEquals(VALID_EXCHANGE_ADAPTER_IMPL, exchangeAdapter.getClass().getCanonicalName());
@@ -63,28 +65,36 @@ class TestExchangeAdapterCreation {
 
   @Test
   void testCreatingExchangeAdapterThatDoesNotExistThrowsException() {
+    final ConfigurableComponentFactory configurableComponentFactory =
+        new ConfigurableComponentFactory();
     assertThrows(
         IllegalStateException.class,
-        () -> ConfigurableComponentFactory.createComponent(NONEXISTENT_EXCHANGE_ADAPTER_IMPL));
+        () -> configurableComponentFactory.createComponent(NONEXISTENT_EXCHANGE_ADAPTER_IMPL));
   }
 
   @Test
   void testCreatingExchangeAdapterThatDoesNotImplementTradingApiThrowsException() {
+    final ConfigurableComponentFactory configurableComponentFactory =
+        new ConfigurableComponentFactory();
     assertThrows(
         ClassCastException.class,
         () -> {
-          final TradingApi tradingApi = ConfigurableComponentFactory.createComponent(
-              INVALID_EXCHANGE_ADAPTER_NOT_IMPL_TRADING_API);
+          final TradingApi tradingApi =
+              configurableComponentFactory.createComponent(
+                  INVALID_EXCHANGE_ADAPTER_NOT_IMPL_TRADING_API);
         });
   }
 
   @Test
   void testCreatingExchangeAdapterThatDoesNotImplementExchangeAdapterThrowsException() {
+    final ConfigurableComponentFactory configurableComponentFactory =
+        new ConfigurableComponentFactory();
     assertThrows(
         ClassCastException.class,
         () -> {
-          final ExchangeAdapter exchangeAdapter = ConfigurableComponentFactory.createComponent(
-              INVALID_EXCHANGE_ADAPTER_NOT_IMPL_EXCHANGE_ADAPTER);
+          final ExchangeAdapter exchangeAdapter =
+              configurableComponentFactory.createComponent(
+                  INVALID_EXCHANGE_ADAPTER_NOT_IMPL_EXCHANGE_ADAPTER);
         });
   }
 }

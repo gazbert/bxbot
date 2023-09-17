@@ -24,14 +24,15 @@
 package com.gazbert.bxbot.rest.api.security.config;
 
 import jakarta.validation.constraints.NotNull;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import java.util.Arrays;
+import java.util.Collections;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.filter.CorsFilter;
 
 /**
  * CORS config for BX-bot's REST API.
@@ -42,35 +43,34 @@ import org.springframework.web.filter.CorsFilter;
  * @author gazbert
  */
 @Configuration
+@Log4j2
 public class RestCorsConfig {
-
-  private static final Logger LOG = LogManager.getLogger();
 
   @NotNull
   @Value("${restapi.cors.allowed_origin}")
   private String allowedOrigin;
 
   /**
-   * Creates the CORS filter.
+   * Creates the CORS configuration for the CorsFilter to use.
    *
-   * @return the CORS filter.
+   * <p>See: <a
+   * href="https://docs.spring.io/spring-security/reference/servlet/integrations/cors.html">Spring
+   * Security CORS</a>.
+   *
+   * @return the CORS configuration source.
    */
   @Bean
-  public CorsFilter corsFilter() {
+  CorsConfigurationSource corsConfigurationSource() {
 
-    LOG.info(() -> String.format("CORS Allowed Origins: %s", allowedOrigin));
+    log.info("CORS Allowed Origins: " + allowedOrigin);
+
+    final CorsConfiguration configuration = new CorsConfiguration();
+    configuration.setAllowedOrigins(Collections.singletonList(allowedOrigin));
+    configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+    configuration.setAllowCredentials(true);
 
     final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-    final CorsConfiguration config = new CorsConfiguration();
-    config.setAllowCredentials(true);
-    config.addAllowedOrigin(allowedOrigin);
-    config.addAllowedHeader("*");
-    config.addAllowedMethod("OPTIONS");
-    config.addAllowedMethod("GET");
-    config.addAllowedMethod("POST");
-    config.addAllowedMethod("PUT");
-    config.addAllowedMethod("DELETE");
-    source.registerCorsConfiguration("/**", config);
-    return new CorsFilter(source);
+    source.registerCorsConfiguration("/**", configuration);
+    return source;
   }
 }

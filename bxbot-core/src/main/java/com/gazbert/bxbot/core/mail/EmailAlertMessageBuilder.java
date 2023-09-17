@@ -39,6 +39,7 @@ public final class EmailAlertMessageBuilder {
       "--------------------------------------------------" + NEWLINE;
 
   private EmailAlertMessageBuilder() {
+    // noimpl
   }
 
   /**
@@ -97,7 +98,7 @@ public final class EmailAlertMessageBuilder {
       final StringWriter stringWriter = new StringWriter();
       final PrintWriter printWriter = new PrintWriter(stringWriter);
       exception.printStackTrace(printWriter);
-      msgContent.append(stringWriter.toString());
+      msgContent.append(stringWriter);
     }
 
     return msgContent.toString();

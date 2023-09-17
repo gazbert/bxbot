@@ -65,7 +65,7 @@ public class NetworkConfigImpl implements NetworkConfig {
   }
 
   /**
-   * Sets the non fatal error codes.
+   * Sets the non-fatal error codes.
    *
    * @param nonFatalErrorCodes the non fatal error codes.
    */
@@ -81,7 +81,7 @@ public class NetworkConfigImpl implements NetworkConfig {
   /**
    * Sets the non fatal error messages.
    *
-   * @param nonFatalErrorMessages the non fatal error messages.
+   * @param nonFatalErrorMessages the non-fatal error messages.
    */
   public void setNonFatalErrorMessages(List<String> nonFatalErrorMessages) {
     this.nonFatalErrorMessages = nonFatalErrorMessages;

@@ -44,6 +44,7 @@ import com.google.common.base.MoreObjects;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.SerializedName;
+import java.io.Serial;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.MalformedURLException;
@@ -62,8 +63,7 @@ import java.util.Map;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import javax.xml.bind.DatatypeConverter;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.log4j.Log4j2;
 
 /**
  * Exchange Adapter for integrating with the Bitfinex exchange. The Bitfinex API is documented <a
@@ -94,10 +94,9 @@ import org.apache.logging.log4j.Logger;
  * @author gazbert
  * @since 1.0
  */
+@Log4j2
 public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter
     implements ExchangeAdapter {
-
-  private static final Logger LOG = LogManager.getLogger();
 
   private static final String BITFINEX_API_VERSION = "v1";
   private static final String PUBLIC_API_BASE_URL =
@@ -138,7 +137,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter
 
   @Override
   public void init(ExchangeConfig config) {
-    LOG.info(() -> "About to initialise Bitfinex ExchangeConfig: " + config);
+    log.info("About to initialise Bitfinex ExchangeConfig: " + config);
     setAuthenticationConfig(config);
     setNetworkConfig(config);
 
@@ -157,7 +156,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter
       throws TradingApiException, ExchangeNetworkException {
     try {
       final ExchangeHttpResponse response = sendPublicRequestToExchange("book/" + marketId);
-      LOG.debug(() -> "Market Orders response: " + response);
+      log.debug("Market Orders response: " + response);
 
       final BitfinexOrderBook orderBook =
           gson.fromJson(response.getPayload(), BitfinexOrderBook.class);
@@ -190,7 +189,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter
       throw e;
 
     } catch (Exception e) {
-      LOG.error(UNEXPECTED_ERROR_MSG, e);
+      log.error(UNEXPECTED_ERROR_MSG, e);
       throw new TradingApiException(UNEXPECTED_ERROR_MSG, e);
     }
   }
@@ -200,7 +199,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter
       throws TradingApiException, ExchangeNetworkException {
     try {
       final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("orders", null);
-      LOG.debug(() -> "Open Orders response: " + response);
+      log.debug("Open Orders response: " + response);
 
       final BitfinexOpenOrders bitfinexOpenOrders =
           gson.fromJson(response.getPayload(), BitfinexOpenOrders.class);
@@ -251,7 +250,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter
       throw e;
 
     } catch (Exception e) {
-      LOG.error(UNEXPECTED_ERROR_MSG, e);
+      log.error(UNEXPECTED_ERROR_MSG, e);
       throw new TradingApiException(UNEXPECTED_ERROR_MSG, e);
     }
   }
@@ -284,7 +283,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter
                 + OrderType.BUY.getStringValue()
                 + " or "
                 + OrderType.SELL.getStringValue();
-        LOG.error(errorMsg);
+        log.error(errorMsg);
         throw new IllegalArgumentException(errorMsg);
       }
 
@@ -302,14 +301,14 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter
       // params.put("is_hidden", "false");
 
       final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("order/new", params);
-      LOG.debug(() -> "Create Order response: " + response);
+      log.debug("Create Order response: " + response);
 
       final BitfinexNewOrderResponse createOrderResponse =
           gson.fromJson(response.getPayload(), BitfinexNewOrderResponse.class);
       final long id = createOrderResponse.orderId;
       if (id == 0) {
         final String errorMsg = "Failed to place order on exchange. Error response: " + response;
-        LOG.error(errorMsg);
+        log.error(errorMsg);
         throw new TradingApiException(errorMsg);
       } else {
         return Long.toString(createOrderResponse.orderId);
@@ -319,7 +318,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter
       throw e;
 
     } catch (Exception e) {
-      LOG.error(UNEXPECTED_ERROR_MSG, e);
+      log.error(UNEXPECTED_ERROR_MSG, e);
       throw new TradingApiException(UNEXPECTED_ERROR_MSG, e);
     }
   }
@@ -336,7 +335,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter
 
       final ExchangeHttpResponse response =
           sendAuthenticatedRequestToExchange("order/cancel", params);
-      LOG.debug(() -> "Cancel Order response: " + response);
+      log.debug("Cancel Order response: " + response);
 
       // Exchange returns order id and other details if successful, a 400 HTTP Status if the order
       // id was not recognised.
@@ -347,14 +346,14 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter
       if (e.getCause() != null && e.getCause().getMessage().contains("400")) {
         final String errorMsg =
             "Failed to cancel order on exchange. Did not recognise Order Id: " + orderId;
-        LOG.error(errorMsg, e);
+        log.error(errorMsg, e);
         return false;
       } else {
         throw e;
       }
 
     } catch (Exception e) {
-      LOG.error(UNEXPECTED_ERROR_MSG, e);
+      log.error(UNEXPECTED_ERROR_MSG, e);
       throw new TradingApiException(UNEXPECTED_ERROR_MSG, e);
     }
   }
@@ -364,7 +363,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter
       throws TradingApiException, ExchangeNetworkException {
     try {
       final ExchangeHttpResponse response = sendPublicRequestToExchange("pubticker/" + marketId);
-      LOG.debug(() -> "Latest Market Price response: " + response);
+      log.debug("Latest Market Price response: " + response);
 
       final BitfinexTicker ticker = gson.fromJson(response.getPayload(), BitfinexTicker.class);
       return ticker.lastPrice;
@@ -373,7 +372,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter
       throw e;
 
     } catch (Exception e) {
-      LOG.error(UNEXPECTED_ERROR_MSG, e);
+      log.error(UNEXPECTED_ERROR_MSG, e);
       throw new TradingApiException(UNEXPECTED_ERROR_MSG, e);
     }
   }
@@ -382,7 +381,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter
   public BalanceInfo getBalanceInfo() throws TradingApiException, ExchangeNetworkException {
     try {
       final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("balances", null);
-      LOG.debug(() -> "Balance Info response: " + response);
+      log.debug("Balance Info response: " + response);
 
       final BitfinexBalances allAccountBalances =
           gson.fromJson(response.getPayload(), BitfinexBalances.class);
@@ -413,7 +412,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter
       throw e;
 
     } catch (Exception e) {
-      LOG.error(UNEXPECTED_ERROR_MSG, e);
+      log.error(UNEXPECTED_ERROR_MSG, e);
       throw new TradingApiException(UNEXPECTED_ERROR_MSG, e);
     }
   }
@@ -424,7 +423,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter
     try {
       final ExchangeHttpResponse response =
           sendAuthenticatedRequestToExchange("account_infos", null);
-      LOG.debug(() -> "Buy Fee response: " + response);
+      log.debug("Buy Fee response: " + response);
 
       // Nightmare to adapt! Just take the top-level taker fees.
       final BitfinexAccountInfos bitfinexAccountInfos =
@@ -438,7 +437,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter
       throw e;
 
     } catch (Exception e) {
-      LOG.error(UNEXPECTED_ERROR_MSG, e);
+      log.error(UNEXPECTED_ERROR_MSG, e);
       throw new TradingApiException(UNEXPECTED_ERROR_MSG, e);
     }
   }
@@ -449,7 +448,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter
     try {
       final ExchangeHttpResponse response =
           sendAuthenticatedRequestToExchange("account_infos", null);
-      LOG.debug(() -> "Sell Fee response: " + response);
+      log.debug("Sell Fee response: " + response);
 
       // Nightmare to adapt! Just take the top-level taker fees.
       final BitfinexAccountInfos bitfinexAccountInfos =
@@ -463,7 +462,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter
       throw e;
 
     } catch (Exception e) {
-      LOG.error(UNEXPECTED_ERROR_MSG, e);
+      log.error(UNEXPECTED_ERROR_MSG, e);
       throw new TradingApiException(UNEXPECTED_ERROR_MSG, e);
     }
   }
@@ -477,7 +476,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter
   public Ticker getTicker(String marketId) throws TradingApiException, ExchangeNetworkException {
     try {
       final ExchangeHttpResponse response = sendPublicRequestToExchange("pubticker/" + marketId);
-      LOG.debug(() -> "Latest Market Price response: " + response);
+      log.debug("Latest Market Price response: " + response);
 
       final BitfinexTicker ticker = gson.fromJson(response.getPayload(), BitfinexTicker.class);
       return new TickerImpl(
@@ -498,7 +497,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter
       throw e;
 
     } catch (Exception e) {
-      LOG.error(UNEXPECTED_ERROR_MSG, e);
+      log.error(UNEXPECTED_ERROR_MSG, e);
       throw new TradingApiException(UNEXPECTED_ERROR_MSG, e);
     }
   }
@@ -539,7 +538,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter
 
   /** GSON class for receiving your open orders in 'orders' API call response. */
   private static class BitfinexOpenOrders extends ArrayList<BitfinexOpenOrder> {
-    private static final long serialVersionUID = 5516523641153401953L;
+    @Serial private static final long serialVersionUID = 5516523641153401953L;
   }
 
   /** GSON class for mapping returned order from 'orders' API call response. */
@@ -664,7 +663,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter
    * </pre>
    */
   private static class BitfinexAccountInfos extends ArrayList<BitfinexAccountInfo> {
-    private static final long serialVersionUID = 5516521641453401953L;
+    @Serial private static final long serialVersionUID = 5516521641453401953L;
   }
 
   /** GSON class for holding Bitfinex Account Info. */
@@ -690,7 +689,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter
 
   /** GSON class for holding Bitfinex Pair Fees. */
   private static class BitfinexPairFees extends ArrayList<BitfinexPairFee> {
-    private static final long serialVersionUID = 1516526641473401953L;
+    @Serial private static final long serialVersionUID = 1516526641473401953L;
   }
 
   /** GSON class for holding Bitfinex Pair Fee. */
@@ -731,7 +730,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter
    * </pre>
    */
   private static class BitfinexBalances extends ArrayList<BitfinexAccountBalance> {
-    private static final long serialVersionUID = 5516523641953401953L;
+    @Serial private static final long serialVersionUID = 5516523641953401953L;
   }
 
   /**
@@ -901,7 +900,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter
 
     } catch (MalformedURLException e) {
       final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
-      LOG.error(errorMsg, e);
+      log.error(errorMsg, e);
       throw new TradingApiException(errorMsg, e);
     }
   }
@@ -938,7 +937,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter
 
     if (!initializedMacAuthentication) {
       final String errorMsg = "MAC Message security layer has not been initialized.";
-      LOG.error(errorMsg);
+      log.error(errorMsg);
       throw new IllegalStateException(errorMsg);
     }
 
@@ -987,7 +986,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter
 
     } catch (MalformedURLException e) {
       final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
-      LOG.error(errorMsg, e);
+      log.error(errorMsg, e);
       throw new TradingApiException(errorMsg, e);
     }
   }
@@ -1015,11 +1014,11 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter
       initializedMacAuthentication = true;
     } catch (NoSuchAlgorithmException e) {
       final String errorMsg = "Failed to setup MAC security. HINT: Is HMAC-SHA384 installed?";
-      LOG.error(errorMsg, e);
+      log.error(errorMsg, e);
       throw new IllegalStateException(errorMsg, e);
     } catch (InvalidKeyException e) {
       final String errorMsg = "Failed to setup MAC security. Secret key seems invalid!";
-      LOG.error(errorMsg, e);
+      log.error(errorMsg, e);
       throw new IllegalArgumentException(errorMsg, e);
     }
   }

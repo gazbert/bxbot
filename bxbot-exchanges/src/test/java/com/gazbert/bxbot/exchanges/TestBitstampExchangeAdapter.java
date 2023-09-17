@@ -168,8 +168,8 @@ public class TestBitstampExchangeAdapter extends AbstractExchangeAdapter {
         new AbstractExchangeAdapter.ExchangeHttpResponse(
             200, "OK", new String(encoded, StandardCharsets.UTF_8));
 
-    // Mock out param map so we can assert the contents passed to the transport layer are what we
-    // expect.
+    // Mock out param map, so we can assert the contents passed to the transport
+    // layer are what we expect.
     final Map<String, String> requestParamMap = PowerMock.createMock(Map.class);
     expect(requestParamMap.put("id", ORDER_ID_TO_CANCEL)).andStubReturn(null);
 

@@ -31,8 +31,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Set;
 import java.util.TreeSet;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.log4j.Log4j2;
+import org.springframework.stereotype.Component;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
@@ -48,13 +48,11 @@ import org.yaml.snakeyaml.representer.Representer;
  *
  * @author gazbert
  */
-public final class ConfigurationManager {
+@Component
+@Log4j2
+public class ConfigurationManager {
 
-  private static final Logger LOG = LogManager.getLogger();
   private static final String YAML_HEADER = "---" + System.getProperty("line.separator");
-
-  private ConfigurationManager() {
-  }
 
   /**
    * Loads the config from the YAML file.
@@ -64,27 +62,26 @@ public final class ConfigurationManager {
    * @param <T> the type of config.
    * @return the loaded config.
    */
-  public static synchronized <T> T loadConfig(final Class<T> configClass, String yamlConfigFile) {
+  public synchronized <T> T loadConfig(final Class<T> configClass, String yamlConfigFile) {
 
-    LOG.info(
-        () -> "Loading configuration for [" + configClass + "] from: " + yamlConfigFile + " ...");
+    log.info("Loading configuration for [" + configClass + "] from: " + yamlConfigFile + " ...");
 
     try (final FileInputStream fileInputStream = new FileInputStream(yamlConfigFile)) {
       final Yaml yaml = new Yaml(new Constructor(configClass));
       final T requestedConfig = yaml.load(fileInputStream);
 
-      LOG.info(() -> "Loaded and set configuration for [" + configClass + "] successfully!");
+      log.info("Loaded and set configuration for [" + configClass + "] successfully!");
       return requestedConfig;
 
     } catch (IOException e) {
       final String errorMsg = "Failed to find or read [" + yamlConfigFile + "] config";
-      LOG.error(errorMsg, e);
+      log.error(errorMsg, e);
       throw new IllegalStateException(errorMsg, e);
 
     } catch (Exception e) {
       final String errorMsg =
           "Failed to load [" + yamlConfigFile + "] file. Details: " + e.getMessage();
-      LOG.error(errorMsg, e);
+      log.error(errorMsg, e);
       throw new IllegalArgumentException(errorMsg, e);
     }
   }
@@ -97,10 +94,9 @@ public final class ConfigurationManager {
    * @param yamlConfigFile the YAML config filename.
    * @param <T> the type of config.
    */
-  public static synchronized <T> void saveConfig(
-      Class<T> configClass, T config, String yamlConfigFile) {
+  public synchronized <T> void saveConfig(Class<T> configClass, T config, String yamlConfigFile) {
 
-    LOG.info(() -> "Saving configuration for [" + configClass + "] to: " + yamlConfigFile + " ...");
+    log.info("Saving configuration for [" + configClass + "] to: " + yamlConfigFile + " ...");
 
     try (final FileOutputStream fileOutputStream = new FileOutputStream(yamlConfigFile);
         final PrintWriter writer =
@@ -114,18 +110,18 @@ public final class ConfigurationManager {
       final StringBuilder sb = new StringBuilder(YAML_HEADER);
       sb.append(yaml.dumpAs(config, Tag.MAP, DumperOptions.FlowStyle.BLOCK));
 
-      LOG.debug(() -> "YAML file content:\n" + sb);
+      log.debug("YAML file content:\n" + sb);
       writer.print(sb);
 
     } catch (IOException e) {
       final String errorMsg = "Failed to find or read [" + yamlConfigFile + "] config";
-      LOG.error(errorMsg, e);
+      log.error(errorMsg, e);
       throw new IllegalStateException(errorMsg, e);
 
     } catch (Exception e) {
       final String errorMsg =
           "Failed to save config to [" + yamlConfigFile + "] file. Details: " + e.getMessage();
-      LOG.error(errorMsg, e);
+      log.error(errorMsg, e);
       throw new IllegalArgumentException(errorMsg, e);
     }
   }

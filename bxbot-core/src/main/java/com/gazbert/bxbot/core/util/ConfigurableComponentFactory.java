@@ -24,8 +24,8 @@
 package com.gazbert.bxbot.core.util;
 
 import java.lang.reflect.InvocationTargetException;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.log4j.Log4j2;
+import org.springframework.stereotype.Component;
 
 /**
  * Factory for creating user components defined in the bot configuration files. These are currently
@@ -33,12 +33,9 @@ import org.apache.logging.log4j.Logger;
  *
  * @author gazbert
  */
-public abstract class ConfigurableComponentFactory {
-
-  private static final Logger LOG = LogManager.getLogger();
-
-  private ConfigurableComponentFactory() {
-  }
+@Component
+@Log4j2
+public class ConfigurableComponentFactory {
 
   /**
    * Loads and instantiates a given class and returns it.
@@ -48,11 +45,11 @@ public abstract class ConfigurableComponentFactory {
    * @return the instantiated class.
    */
   @SuppressWarnings("unchecked")
-  public static <T> T createComponent(String componentClassName) {
+  public <T> T createComponent(String componentClassName) {
     try {
       final Class componentClass = Class.forName(componentClassName);
       final Object rawComponentObject = componentClass.getDeclaredConstructor().newInstance();
-      LOG.info(() -> "Successfully created the Component class for: " + componentClassName);
+      log.info("Successfully created the Component class for: " + componentClassName);
       return (T) rawComponentObject;
 
     } catch (ClassNotFoundException
@@ -61,7 +58,7 @@ public abstract class ConfigurableComponentFactory {
         | NoSuchMethodException
         | InvocationTargetException e) {
       final String errorMsg = "Failed to load and initialise Component class.";
-      LOG.error(errorMsg, e);
+      log.error(errorMsg, e);
       throw new IllegalStateException(errorMsg, e);
     }
   }

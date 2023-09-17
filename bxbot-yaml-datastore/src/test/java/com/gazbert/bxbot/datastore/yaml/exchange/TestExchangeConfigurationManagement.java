@@ -90,8 +90,9 @@ class TestExchangeConfigurationManagement {
 
   @Test
   void testLoadingValidYamlConfigFileIsSuccessful() {
+    final ConfigurationManager configurationManager = new ConfigurationManager();
     final ExchangeType exchangeType =
-        ConfigurationManager.loadConfig(ExchangeType.class, VALID_YAML_CONFIG_FILENAME);
+        configurationManager.loadConfig(ExchangeType.class, VALID_YAML_CONFIG_FILENAME);
 
     assertThat(exchangeType.getExchange().getName()).isEqualTo(EXCHANGE_NAME);
     assertThat(exchangeType.getExchange().getAdapter()).isEqualTo(EXCHANGE_ADAPTER);
@@ -131,16 +132,18 @@ class TestExchangeConfigurationManagement {
 
   @Test
   void testLoadingMissingYamlConfigFileThrowsException() {
+    final ConfigurationManager configurationManager = new ConfigurationManager();
     assertThrows(
         IllegalStateException.class,
-        () -> ConfigurationManager.loadConfig(ExchangeType.class, MISSING_XML_CONFIG_FILENAME));
+        () -> configurationManager.loadConfig(ExchangeType.class, MISSING_XML_CONFIG_FILENAME));
   }
 
   @Test
   void testLoadingInvalidYamlConfigFileThrowsException() {
+    final ConfigurationManager configurationManager = new ConfigurationManager();
     assertThrows(
         IllegalArgumentException.class,
-        () -> ConfigurationManager.loadConfig(ExchangeType.class, INVALID_YAML_CONFIG_FILENAME));
+        () -> configurationManager.loadConfig(ExchangeType.class, INVALID_YAML_CONFIG_FILENAME));
   }
 
   @Test
@@ -168,12 +171,14 @@ class TestExchangeConfigurationManagement {
     final ExchangeType exchangeType = new ExchangeType();
     exchangeType.setExchange(exchangeConfig);
 
+    final ConfigurationManager configurationManager = new ConfigurationManager();
+
     // Save it
-    ConfigurationManager.saveConfig(ExchangeType.class, exchangeType, YAML_CONFIG_TO_SAVE_FILENAME);
+    configurationManager.saveConfig(ExchangeType.class, exchangeType, YAML_CONFIG_TO_SAVE_FILENAME);
 
     // Read it back in
     final ExchangeType exchangeReloaded =
-        ConfigurationManager.loadConfig(ExchangeType.class, YAML_CONFIG_TO_SAVE_FILENAME);
+        configurationManager.loadConfig(ExchangeType.class, YAML_CONFIG_TO_SAVE_FILENAME);
 
     assertThat(exchangeReloaded.getExchange().getName()).isEqualTo(EXCHANGE_NAME);
     assertThat(exchangeReloaded.getExchange().getAdapter()).isEqualTo(EXCHANGE_ADAPTER);
@@ -236,10 +241,12 @@ class TestExchangeConfigurationManagement {
     final ExchangeType exchangeType = new ExchangeType();
     exchangeType.setExchange(exchangeConfig);
 
+    final ConfigurationManager configurationManager = new ConfigurationManager();
+
     assertThrows(
         IllegalStateException.class,
         () ->
-            ConfigurationManager.saveConfig(
+            configurationManager.saveConfig(
                 ExchangeType.class, exchangeType, INVALID_YAML_CONFIG_TO_SAVE_FILENAME));
   }
 }

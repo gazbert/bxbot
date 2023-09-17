@@ -58,6 +58,10 @@
       <groupId>org.springdoc</groupId>
       <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+    </dependency>
 
     <!--
     Testing dependencies
@@ -82,59 +86,24 @@
       <artifactId>spring-boot-starter-test</artifactId>
       <scope>test</scope>
     </dependency>
-    <!--
-     JUnit4 still needed as Powermock doesn't play with JUnit5
-     See: https://github.com/powermock/powermock/issues/929
-    -->
-    <dependency>
-      <groupId>org.junit.vintage</groupId>
-      <artifactId>junit-vintage-engine</artifactId>
-      <scope>test</scope>
-    </dependency>
   </dependencies>
 
   <build>
     <defaultGoal>clean install</defaultGoal>
     <plugins>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <skipTests>${skip.unit.tests}</skipTests>
+          <includes>
+            <include>**/Test*.java</include>
+          </includes>
+        </configuration>
+      </plugin>
+      <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
-        <configuration>
-          <!--
-            Ignore classes tested using Powermock. JaCoCo won't/can't instrument them:
-            "... right now there is NO WAY TO USE PowerMock with JaCoCo On-the-fly instrumentation."
-            See https://github.com/powermock/powermock/wiki/Code-coverage-with-JaCoCo
-           -->
-          <excludes>
-            <exclude>**/StrategyConfigYamlRepository.class</exclude>
-            <exclude>**/MarketConfigYamlRepository.class</exclude>
-            <exclude>**/EngineConfigYamlRepository.class</exclude>
-            <exclude>**/ExchangeConfigYamlRepository.class</exclude>
-            <exclude>**/EmailAlertsConfigYamlRepository.class</exclude>
-          </excludes>
-        </configuration>
-        <executions>
-          <execution>
-            <id>jacoco-check</id>
-            <goals>
-              <goal>check</goal>
-            </goals>
-            <configuration>
-              <rules>
-                <rule>
-                  <element>CLASS</element>
-                  <limits>
-                    <limit>
-                      <counter>LINE</counter>
-                      <value>COVEREDRATIO</value>
-                      <minimum>0.8</minimum>
-                    </limit>
-                  </limits>
-                </rule>
-              </rules>
-            </configuration>
-          </execution>
-        </executions>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>

@@ -43,6 +43,7 @@ import com.google.common.base.MoreObjects;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.SerializedName;
+import java.io.Serial;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.MalformedURLException;
@@ -61,8 +62,7 @@ import java.util.Map;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import javax.xml.bind.DatatypeConverter;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.log4j.Log4j2;
 
 /**
  * Exchange Adapter for integrating with the Gemini exchange. The Gemini API is documented <a
@@ -107,11 +107,9 @@ import org.apache.logging.log4j.Logger;
  * @author gazbert
  * @since 1.0
  */
+@Log4j2
 public final class GeminiExchangeAdapter extends AbstractExchangeAdapter
     implements ExchangeAdapter {
-
-  private static final Logger LOG = LogManager.getLogger();
-
   private static final String GEMINI_API_VERSION = "v1";
   private static final String PUBLIC_API_BASE_URL =
       "https://api.gemini.com/" + GEMINI_API_VERSION + "/";
@@ -164,7 +162,7 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter
 
   @Override
   public void init(ExchangeConfig config) {
-    LOG.info(() -> "About to initialise Gemini ExchangeConfig: " + config);
+    log.info("About to initialise Gemini ExchangeConfig: " + config);
     setAuthenticationConfig(config);
     setNetworkConfig(config);
     setOtherConfig(config);
@@ -190,8 +188,7 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter
 
       // note we need to limit amount and price to 6 decimal places else exchange will barf with 400
       // response
-      params.put(
-          AMOUNT, new DecimalFormat("#.######", getDecimalFormatSymbols()).format(quantity));
+      params.put(AMOUNT, new DecimalFormat("#.######", getDecimalFormatSymbols()).format(quantity));
 
       // Decimal precision of price varies with market price currency
       if (marketId.equals(MarketId.BTC_USD.getStringValue())
@@ -209,7 +206,7 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter
                 + MarketId.ETH_USD.getStringValue()
                 + " or "
                 + MarketId.ETH_BTC.getStringValue();
-        LOG.error(errorMsg);
+        log.error(errorMsg);
         throw new IllegalArgumentException(errorMsg);
       }
 
@@ -225,7 +222,7 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter
                 + OrderType.BUY.getStringValue()
                 + " or "
                 + OrderType.SELL.getStringValue();
-        LOG.error(errorMsg);
+        log.error(errorMsg);
         throw new IllegalArgumentException(errorMsg);
       }
 
@@ -234,14 +231,14 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter
 
       final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("order/new", params);
 
-      LOG.debug(() -> "Create Order response: " + response);
+      log.debug("Create Order response: " + response);
 
       final GeminiOpenOrder createOrderResponse =
           gson.fromJson(response.getPayload(), GeminiOpenOrder.class);
       final long id = createOrderResponse.orderId;
       if (id == 0) {
         final String errorMsg = "Failed to place order on exchange. Error response: " + response;
-        LOG.error(errorMsg);
+        log.error(errorMsg);
         throw new TradingApiException(errorMsg);
       } else {
         return Long.toString(createOrderResponse.orderId);
@@ -251,7 +248,7 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter
       throw e;
 
     } catch (Exception e) {
-      LOG.error(UNEXPECTED_ERROR_MSG, e);
+      log.error(UNEXPECTED_ERROR_MSG, e);
       throw new TradingApiException(UNEXPECTED_ERROR_MSG, e);
     }
   }
@@ -266,7 +263,7 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter
       final ExchangeHttpResponse response =
           sendAuthenticatedRequestToExchange("order/cancel", params);
 
-      LOG.debug(() -> "Cancel Order response: " + response);
+      log.debug("Cancel Order response: " + response);
 
       // Exchange returns order id and other details if successful, a 400 HTTP Status if the order
       // id was not recognised.
@@ -277,14 +274,14 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter
       if (e.getCause() != null && e.getCause().getMessage().contains("400")) {
         final String errorMsg =
             "Failed to cancel order on exchange. Did not recognise Order Id: " + orderId;
-        LOG.error(errorMsg, e);
+        log.error(errorMsg, e);
         return false;
       } else {
         throw e;
       }
 
     } catch (Exception e) {
-      LOG.error(UNEXPECTED_ERROR_MSG, e);
+      log.error(UNEXPECTED_ERROR_MSG, e);
       throw new TradingApiException(UNEXPECTED_ERROR_MSG, e);
     }
   }
@@ -295,7 +292,7 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter
     try {
       final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("orders", null);
 
-      LOG.debug(() -> "Open Orders response: " + response);
+      log.debug("Open Orders response: " + response);
 
       final GeminiOpenOrders geminiOpenOrders =
           gson.fromJson(response.getPayload(), GeminiOpenOrders.class);
@@ -342,7 +339,7 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter
       throw e;
 
     } catch (Exception e) {
-      LOG.error(UNEXPECTED_ERROR_MSG, e);
+      log.error(UNEXPECTED_ERROR_MSG, e);
       throw new TradingApiException(UNEXPECTED_ERROR_MSG, e);
     }
   }
@@ -353,7 +350,7 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter
     try {
       final ExchangeHttpResponse response = sendPublicRequestToExchange("book/" + marketId);
 
-      LOG.debug(() -> "Market Orders response: " + response);
+      log.debug("Market Orders response: " + response);
 
       final GeminiOrderBook orderBook = gson.fromJson(response.getPayload(), GeminiOrderBook.class);
 
@@ -385,7 +382,7 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter
       throw e;
 
     } catch (Exception e) {
-      LOG.error(UNEXPECTED_ERROR_MSG, e);
+      log.error(UNEXPECTED_ERROR_MSG, e);
       throw new TradingApiException(UNEXPECTED_ERROR_MSG, e);
     }
   }
@@ -396,7 +393,7 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter
     try {
       final ExchangeHttpResponse response = sendPublicRequestToExchange("pubticker/" + marketId);
 
-      LOG.debug(() -> "Latest Market Price response: " + response);
+      log.debug("Latest Market Price response: " + response);
 
       final GeminiTicker ticker = gson.fromJson(response.getPayload(), GeminiTicker.class);
       return ticker.last;
@@ -405,7 +402,7 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter
       throw e;
 
     } catch (Exception e) {
-      LOG.error(UNEXPECTED_ERROR_MSG, e);
+      log.error(UNEXPECTED_ERROR_MSG, e);
       throw new TradingApiException(UNEXPECTED_ERROR_MSG, e);
     }
   }
@@ -415,7 +412,7 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter
     try {
       final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("balances", null);
 
-      LOG.debug(() -> "Balance Info response: " + response);
+      log.debug("Balance Info response: " + response);
 
       final GeminiBalances allAccountBalances =
           gson.fromJson(response.getPayload(), GeminiBalances.class);
@@ -436,7 +433,7 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter
       throw e;
 
     } catch (Exception e) {
-      LOG.error(UNEXPECTED_ERROR_MSG, e);
+      log.error(UNEXPECTED_ERROR_MSG, e);
       throw new TradingApiException(UNEXPECTED_ERROR_MSG, e);
     }
   }
@@ -497,7 +494,7 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter
   /** GSON class for Balances API call response. */
   private static class GeminiBalances extends ArrayList<GeminiAccountBalance> {
 
-    private static final long serialVersionUID = 5516523141993401253L;
+    @Serial private static final long serialVersionUID = 5516523141993401253L;
   }
 
   /**
@@ -568,7 +565,7 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter
   /** GSON class for holding an active orders API call response. */
   private static class GeminiOpenOrders extends ArrayList<GeminiOpenOrder> {
 
-    private static final long serialVersionUID = 5516523611153405953L;
+    @Serial private static final long serialVersionUID = 5516523611153405953L;
   }
 
   /** GSON class representing an open order on the exchange. */
@@ -647,7 +644,7 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter
 
     } catch (MalformedURLException e) {
       final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
-      LOG.error(errorMsg, e);
+      log.error(errorMsg, e);
       throw new TradingApiException(errorMsg, e);
     }
   }
@@ -699,7 +696,7 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter
 
     if (!initializedMacAuthentication) {
       final String errorMsg = "MAC Message security layer has not been initialized.";
-      LOG.error(errorMsg);
+      log.error(errorMsg);
       throw new IllegalStateException(errorMsg);
     }
 
@@ -742,7 +739,7 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter
 
     } catch (MalformedURLException e) {
       final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
-      LOG.error(errorMsg, e);
+      log.error(errorMsg, e);
       throw new TradingApiException(errorMsg, e);
     }
   }
@@ -770,11 +767,11 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter
       initializedMacAuthentication = true;
     } catch (NoSuchAlgorithmException e) {
       final String errorMsg = "Failed to setup MAC security. HINT: Is HMAC-SHA384 installed?";
-      LOG.error(errorMsg, e);
+      log.error(errorMsg, e);
       throw new IllegalStateException(errorMsg, e);
     } catch (InvalidKeyException e) {
       final String errorMsg = "Failed to setup MAC security. Secret key seems invalid!";
-      LOG.error(errorMsg, e);
+      log.error(errorMsg, e);
       throw new IllegalArgumentException(errorMsg, e);
     }
   }
@@ -795,12 +792,12 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter
     final String buyFeeInConfig = getOtherConfigItem(otherConfig, BUY_FEE_PROPERTY_NAME);
     buyFeePercentage =
         new BigDecimal(buyFeeInConfig).divide(new BigDecimal("100"), 8, RoundingMode.HALF_UP);
-    LOG.info(() -> "Buy fee % in BigDecimal format: " + buyFeePercentage);
+    log.info("Buy fee % in BigDecimal format: " + buyFeePercentage);
 
     final String sellFeeInConfig = getOtherConfigItem(otherConfig, SELL_FEE_PROPERTY_NAME);
     sellFeePercentage =
         new BigDecimal(sellFeeInConfig).divide(new BigDecimal("100"), 8, RoundingMode.HALF_UP);
-    LOG.info(() -> "Sell fee % in BigDecimal format: " + sellFeePercentage);
+    log.info("Sell fee % in BigDecimal format: " + sellFeePercentage);
   }
 
   // --------------------------------------------------------------------------

@@ -25,8 +25,7 @@ package com.gazbert.bxbot.services.runtime.impl;
 
 import com.gazbert.bxbot.services.runtime.BotRestartService;
 import java.util.Map;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.context.restart.RestartEndpoint;
 import org.springframework.stereotype.Service;
@@ -37,10 +36,10 @@ import org.springframework.stereotype.Service;
  * @author gazbert
  */
 @Service("botRestartService")
+@Log4j2
 public class BotRestartServiceImpl implements BotRestartService {
 
-  private static final Logger LOG = LogManager.getLogger();
-  private RestartEndpoint restartEndpoint;
+  private final RestartEndpoint restartEndpoint;
 
   /**
    * Constructs the BotRestartService.
@@ -57,7 +56,7 @@ public class BotRestartServiceImpl implements BotRestartService {
     // Spring endpoint returns a map: Collections.singletonMap("message", "Restarting");
     final Map result = (Map) restartEndpoint.restart();
     final String status = (String) result.get("message");
-    LOG.info(() -> "Restart result: " + status);
+    log.info("Restart result: " + status);
     return status;
   }
 }

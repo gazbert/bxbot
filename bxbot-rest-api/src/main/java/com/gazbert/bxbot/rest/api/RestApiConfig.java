@@ -25,8 +25,7 @@ package com.gazbert.bxbot.rest.api;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Component;
@@ -41,11 +40,11 @@ import org.springframework.stereotype.Component;
 @Component
 @EnableConfigurationProperties
 @ConfigurationProperties(prefix = "bxbot.restapi")
+@Log4j2
 public class RestApiConfig {
 
   static final int DEFAULT_MAX_LINES = 1000;
   static final int DEFAULT_MAX_DOWNLOAD_SIZE = 1024 * 1024;
-  private static final Logger LOG = LogManager.getLogger();
 
   @NotNull
   @Min(1)
@@ -64,12 +63,11 @@ public class RestApiConfig {
    */
   public int getMaxLogfileLines() {
     if (maxLogfileLines == 0) {
-      LOG.warn(
-          () ->
-              "bxbot.restapi.maxLogfileLines not set in application.properties file. "
-                  + "Defaulting to: "
-                  + DEFAULT_MAX_LINES
-                  + " lines.");
+      log.warn(
+          "bxbot.restapi.maxLogfileLines not set in application.properties file. "
+              + "Defaulting to: "
+              + DEFAULT_MAX_LINES
+              + " lines.");
       maxLogfileLines = DEFAULT_MAX_LINES;
     }
     return maxLogfileLines;
@@ -93,12 +91,11 @@ public class RestApiConfig {
    */
   public int getLogfileDownloadSize() {
     if (maxLogfileDownloadSize == 0) {
-      LOG.warn(
-          () ->
-              "bxbot.restapi.maxLogfileDownloadSize not set in application.properties file. "
-                  + "Defaulting to: "
-                  + DEFAULT_MAX_DOWNLOAD_SIZE
-                  + " bytes");
+      log.warn(
+          "bxbot.restapi.maxLogfileDownloadSize not set in application.properties file. "
+              + "Defaulting to: "
+              + DEFAULT_MAX_DOWNLOAD_SIZE
+              + " bytes");
       maxLogfileDownloadSize = DEFAULT_MAX_DOWNLOAD_SIZE;
     }
     return maxLogfileDownloadSize;

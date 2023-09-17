@@ -26,6 +26,7 @@ package com.gazbert.bxbot.rest.api.security.jwt;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.gazbert.bxbot.rest.api.security.model.Role;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -39,7 +40,7 @@ import org.springframework.security.core.userdetails.UserDetails;
  */
 public class JwtUser implements UserDetails {
 
-  private static final long serialVersionUID = -7857515944595149222L;
+  @Serial private static final long serialVersionUID = -7857515944595149222L;
 
   /** User id. */
   private final Long id;

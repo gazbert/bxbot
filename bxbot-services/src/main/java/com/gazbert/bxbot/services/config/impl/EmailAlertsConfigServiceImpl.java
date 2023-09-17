@@ -26,8 +26,7 @@ package com.gazbert.bxbot.services.config.impl;
 import com.gazbert.bxbot.domain.emailalerts.EmailAlertsConfig;
 import com.gazbert.bxbot.repository.EmailAlertsConfigRepository;
 import com.gazbert.bxbot.services.config.EmailAlertsConfigService;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.ComponentScan;
@@ -42,9 +41,9 @@ import org.springframework.transaction.annotation.Transactional;
 @Service("emailAlertsConfigService")
 @Transactional
 @ComponentScan(basePackages = {"com.gazbert.bxbot.repository"})
+@Log4j2
 public class EmailAlertsConfigServiceImpl implements EmailAlertsConfigService {
 
-  private static final Logger LOG = LogManager.getLogger();
   private final EmailAlertsConfigRepository emailAlertsConfigRepository;
 
   /**
@@ -66,7 +65,7 @@ public class EmailAlertsConfigServiceImpl implements EmailAlertsConfigService {
 
   @Override
   public EmailAlertsConfig updateEmailAlertsConfig(EmailAlertsConfig config) {
-    LOG.info(() -> "About to update Email Alerts config: " + config);
+    log.info("About to update Email Alerts config: " + config);
     return emailAlertsConfigRepository.save(config);
   }
 }

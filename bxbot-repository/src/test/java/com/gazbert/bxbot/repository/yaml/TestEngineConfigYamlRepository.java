@@ -34,30 +34,16 @@ import com.gazbert.bxbot.datastore.yaml.engine.EngineType;
 import com.gazbert.bxbot.domain.engine.EngineConfig;
 import com.gazbert.bxbot.repository.EngineConfigRepository;
 import java.math.BigDecimal;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.powermock.api.easymock.PowerMock;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.easymock.EasyMock;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests YAML backed Engine configuration repository behaves as expected.
  *
  * @author gazbert
  */
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({ConfigurationManager.class})
-@PowerMockIgnore({
-    "javax.crypto.*",
-    "javax.management.*",
-    "com.sun.org.apache.xerces.*",
-    "javax.xml.parsers.*",
-    "org.xml.sax.*",
-    "org.w3c.dom.*"
-})
-public class TestEngineConfigYamlRepository {
+class TestEngineConfigYamlRepository {
 
   private static final String BOT_ID = "avro-707_1";
   private static final String BOT_NAME = "Avro 707";
@@ -65,19 +51,22 @@ public class TestEngineConfigYamlRepository {
   private static final BigDecimal ENGINE_EMERGENCY_STOP_BALANCE = new BigDecimal("0.5");
   private static final int ENGINE_TRADE_CYCLE_INTERVAL = 60;
 
-  @Before
-  public void setup() {
-    PowerMock.mockStatic(ConfigurationManager.class);
+  private ConfigurationManager configurationManager;
+
+  @BeforeEach
+  void setup() {
+    configurationManager = EasyMock.createMock(ConfigurationManager.class);
   }
 
   @Test
-  public void whenGetCalledThenExpectEngineConfigToBeReturned() {
-    expect(ConfigurationManager.loadConfig(eq(EngineType.class), eq(ENGINE_CONFIG_YAML_FILENAME)))
+  void whenGetCalledThenExpectEngineConfigToBeReturned() {
+    expect(configurationManager.loadConfig(eq(EngineType.class), eq(ENGINE_CONFIG_YAML_FILENAME)))
         .andReturn(someInternalEngineConfig());
 
-    PowerMock.replayAll();
+    EasyMock.replay(configurationManager);
 
-    final EngineConfigRepository engineConfigRepository = new EngineConfigYamlRepository();
+    final EngineConfigRepository engineConfigRepository =
+        new EngineConfigYamlRepository(configurationManager);
     final EngineConfig engineConfig = engineConfigRepository.get();
     assertThat(engineConfig.getBotId()).isEqualTo(BOT_ID);
     assertThat(engineConfig.getBotName()).isEqualTo(BOT_NAME);
@@ -85,20 +74,21 @@ public class TestEngineConfigYamlRepository {
     assertThat(engineConfig.getEmergencyStopBalance()).isEqualTo(ENGINE_EMERGENCY_STOP_BALANCE);
     assertThat(engineConfig.getTradeCycleInterval()).isEqualTo(ENGINE_TRADE_CYCLE_INTERVAL);
 
-    PowerMock.verifyAll();
+    EasyMock.verify(configurationManager);
   }
 
   @Test
-  public void whenSaveCalledThenExpectRepositoryToSaveItAndReturnSavedEngineConfig() {
-    ConfigurationManager.saveConfig(
+  void whenSaveCalledThenExpectRepositoryToSaveItAndReturnSavedEngineConfig() {
+    configurationManager.saveConfig(
         eq(EngineType.class), anyObject(EngineType.class), eq(ENGINE_CONFIG_YAML_FILENAME));
 
-    expect(ConfigurationManager.loadConfig(eq(EngineType.class), eq(ENGINE_CONFIG_YAML_FILENAME)))
+    expect(configurationManager.loadConfig(eq(EngineType.class), eq(ENGINE_CONFIG_YAML_FILENAME)))
         .andReturn(someInternalEngineConfig());
 
-    PowerMock.replayAll();
+    EasyMock.replay(configurationManager);
 
-    final EngineConfigRepository engineConfigRepository = new EngineConfigYamlRepository();
+    final EngineConfigRepository engineConfigRepository =
+        new EngineConfigYamlRepository(configurationManager);
     final EngineConfig savedConfig = engineConfigRepository.save(someExternalEngineConfig());
 
     assertThat(savedConfig.getBotId()).isEqualTo(BOT_ID);
@@ -107,7 +97,7 @@ public class TestEngineConfigYamlRepository {
     assertThat(savedConfig.getEmergencyStopBalance()).isEqualTo(ENGINE_EMERGENCY_STOP_BALANCE);
     assertThat(savedConfig.getTradeCycleInterval()).isEqualTo(ENGINE_TRADE_CYCLE_INTERVAL);
 
-    PowerMock.verifyAll();
+    EasyMock.verify(configurationManager);
   }
 
   // --------------------------------------------------------------------------

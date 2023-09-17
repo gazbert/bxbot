@@ -43,7 +43,7 @@ public final class MarketImpl implements Market {
    * Creates a new MarketImpl.
    *
    * @param name the name of the market.
-   * @param id the ID of the the market.
+   * @param id the ID of the market.
    * @param baseCurrency the market base currency.
    * @param counterCurrency the market counter currency.
    */

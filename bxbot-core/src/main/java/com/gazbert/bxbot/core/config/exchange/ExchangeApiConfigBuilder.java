@@ -27,19 +27,18 @@ import com.gazbert.bxbot.domain.exchange.ExchangeConfig;
 import com.gazbert.bxbot.domain.exchange.NetworkConfig;
 import java.util.List;
 import java.util.Map;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.log4j.Log4j2;
 
 /**
  * Util class for building the Exchange API config.
  *
  * @author gazbert
  */
+@Log4j2
 public final class ExchangeApiConfigBuilder {
 
-  private static final Logger LOG = LogManager.getLogger();
-
   private ExchangeApiConfigBuilder() {
+    // noimpl
   }
 
   /**
@@ -63,32 +62,29 @@ public final class ExchangeApiConfigBuilder {
       if (nonFatalErrorCodes != null && !nonFatalErrorCodes.isEmpty()) {
         exchangeApiNetworkConfig.setNonFatalErrorCodes(nonFatalErrorCodes);
       } else {
-        LOG.info(
-            () ->
-                "No (optional) NetworkConfiguration NonFatalErrorCodes have been set for "
-                    + "Exchange Adapter: "
-                    + exchangeConfig.getAdapter());
+        log.info(
+            "No (optional) NetworkConfiguration NonFatalErrorCodes have been set for "
+                + "Exchange Adapter: "
+                + exchangeConfig.getAdapter());
       }
 
       final List<String> nonFatalErrorMessages = networkConfig.getNonFatalErrorMessages();
       if (nonFatalErrorMessages != null && !nonFatalErrorMessages.isEmpty()) {
         exchangeApiNetworkConfig.setNonFatalErrorMessages(nonFatalErrorMessages);
       } else {
-        LOG.info(
-            () ->
-                "No (optional) NetworkConfiguration NonFatalErrorMessages have been set for "
-                    + "Exchange Adapter: "
-                    + exchangeConfig.getAdapter());
+        log.info(
+            "No (optional) NetworkConfiguration NonFatalErrorMessages have been set for "
+                + "Exchange Adapter: "
+                + exchangeConfig.getAdapter());
       }
 
       exchangeApiConfig.setNetworkConfig(exchangeApiNetworkConfig);
-      LOG.info(() -> "NetworkConfiguration has been set: " + exchangeApiNetworkConfig);
+      log.info("NetworkConfiguration has been set: " + exchangeApiNetworkConfig);
 
     } else {
-      LOG.info(
-          () ->
-              "No (optional) NetworkConfiguration has been set for Exchange Adapter: "
-                  + exchangeConfig.getAdapter());
+      log.info(
+          "No (optional) NetworkConfiguration has been set for Exchange Adapter: "
+              + exchangeConfig.getAdapter());
     }
 
     final Map<String, String> authenticationConfig = exchangeConfig.getAuthenticationConfig();
@@ -99,13 +95,12 @@ public final class ExchangeApiConfigBuilder {
       exchangeApiConfig.setAuthenticationConfig(exchangeApiAuthenticationConfig);
 
       // We don't log the creds!
-      LOG.info(() -> "AuthenticationConfiguration has been set successfully.");
+      log.info("AuthenticationConfiguration has been set successfully.");
 
     } else {
-      LOG.info(
-          () ->
-              "No (optional) AuthenticationConfiguration has been set for Exchange Adapter: "
-                  + exchangeConfig.getAdapter());
+      log.info(
+          "No (optional) AuthenticationConfiguration has been set for Exchange Adapter: "
+              + exchangeConfig.getAdapter());
     }
 
     final Map<String, String> otherConfig = exchangeConfig.getOtherConfig();
@@ -113,11 +108,9 @@ public final class ExchangeApiConfigBuilder {
       final OtherConfigImpl exchangeApiOtherConfig = new OtherConfigImpl();
       exchangeApiOtherConfig.setItems(otherConfig);
       exchangeApiConfig.setOtherConfig(exchangeApiOtherConfig);
-      LOG.info(() -> "Other Exchange Adapter config has been set: " + exchangeApiOtherConfig);
+      log.info("Other Exchange Adapter config has been set: " + exchangeApiOtherConfig);
     } else {
-      LOG.info(
-          () ->
-              "No Other config has been set for Exchange Adapter: " + exchangeConfig.getAdapter());
+      log.info("No Other config has been set for Exchange Adapter: " + exchangeConfig.getAdapter());
     }
 
     return exchangeApiConfig;

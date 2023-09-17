@@ -37,8 +37,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.security.Principal;
 import java.util.List;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -60,9 +59,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @org.springframework.web.bind.annotation.RestController
 @RequestMapping(CONFIG_ENDPOINT_BASE_URI)
 @Tag(name = "Strategy Configuration")
+@Log4j2
 public class StrategyConfigController extends RestController {
 
-  private static final Logger LOG = LogManager.getLogger();
   private static final String STRATEGIES_RESOURCE_PATH = "/strategies";
   private final StrategyConfigService strategyConfigService;
 
@@ -77,7 +76,7 @@ public class StrategyConfigController extends RestController {
   }
 
   /**
-   * Returns all of the Strategy configuration for the bot.
+   * Returns all the Strategy configuration for the bot.
    *
    * @param principal the authenticated user.
    * @return all the Strategy configurations.
@@ -98,16 +97,15 @@ public class StrategyConfigController extends RestController {
       })
   public List<StrategyConfig> getAllStrategies(@Parameter(hidden = true) Principal principal) {
 
-    LOG.info(
-        () ->
-            "GET "
-                + STRATEGIES_RESOURCE_PATH
-                + " - getAllStrategies() - caller: "
-                + principal.getName());
+    log.info(
+        "GET "
+            + STRATEGIES_RESOURCE_PATH
+            + " - getAllStrategies() - caller: "
+            + principal.getName());
 
     final List<StrategyConfig> strategyConfigs = strategyConfigService.getAllStrategyConfig();
 
-    LOG.info(() -> "Response: " + strategyConfigs);
+    log.info("Response: " + strategyConfigs);
     return strategyConfigs;
   }
 
@@ -139,14 +137,13 @@ public class StrategyConfigController extends RestController {
   public ResponseEntity<StrategyConfig> getStrategy(
       @Parameter(hidden = true) Principal principal, @PathVariable String strategyId) {
 
-    LOG.info(
-        () ->
-            "GET "
-                + STRATEGIES_RESOURCE_PATH
-                + "/"
-                + strategyId
-                + " - getStrategy() - caller: "
-                + principal.getName());
+    log.info(
+        "GET "
+            + STRATEGIES_RESOURCE_PATH
+            + "/"
+            + strategyId
+            + " - getStrategy() - caller: "
+            + principal.getName());
 
     final StrategyConfig strategyConfig = strategyConfigService.getStrategyConfig(strategyId);
     return strategyConfig == null
@@ -186,16 +183,15 @@ public class StrategyConfigController extends RestController {
       @PathVariable String strategyId,
       @RequestBody StrategyConfig config) {
 
-    LOG.info(
-        () ->
-            "PUT "
-                + STRATEGIES_RESOURCE_PATH
-                + "/"
-                + strategyId
-                + " - updateStrategy() - caller: "
-                + principal.getName());
+    log.info(
+        "PUT "
+            + STRATEGIES_RESOURCE_PATH
+            + "/"
+            + strategyId
+            + " - updateStrategy() - caller: "
+            + principal.getName());
 
-    LOG.info(() -> "Request: " + config);
+    log.info("Request: " + config);
 
     if (config.getId() == null || !strategyId.equals(config.getId())) {
       return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -236,14 +232,13 @@ public class StrategyConfigController extends RestController {
   public ResponseEntity<StrategyConfig> createStrategy(
       @Parameter(hidden = true) Principal principal, @RequestBody StrategyConfig config) {
 
-    LOG.info(
-        () ->
-            "POST "
-                + STRATEGIES_RESOURCE_PATH
-                + " - createStrategy() - caller: "
-                + principal.getName());
+    log.info(
+        "POST "
+            + STRATEGIES_RESOURCE_PATH
+            + " - createStrategy() - caller: "
+            + principal.getName());
 
-    LOG.info(() -> "Request: " + config);
+    log.info("Request: " + config);
 
     final StrategyConfig createdConfig = strategyConfigService.createStrategyConfig(config);
     return createdConfig == null
@@ -280,14 +275,13 @@ public class StrategyConfigController extends RestController {
   public ResponseEntity<StrategyConfig> deleteStrategy(
       @Parameter(hidden = true) Principal principal, @PathVariable String strategyId) {
 
-    LOG.info(
-        () ->
-            "DELETE "
-                + STRATEGIES_RESOURCE_PATH
-                + "/"
-                + strategyId
-                + " - deleteStrategy() - caller: "
-                + principal.getName());
+    log.info(
+        "DELETE "
+            + STRATEGIES_RESOURCE_PATH
+            + "/"
+            + strategyId
+            + " - deleteStrategy() - caller: "
+            + principal.getName());
 
     final StrategyConfig deletedConfig = strategyConfigService.deleteStrategyConfig(strategyId);
     return deletedConfig == null
@@ -301,7 +295,7 @@ public class StrategyConfigController extends RestController {
 
   private ResponseEntity<StrategyConfig> buildResponseEntity(
       StrategyConfig entity, HttpStatus status) {
-    LOG.info(() -> "Response: " + entity);
+    log.info("Response: " + entity);
     return new ResponseEntity<>(entity, null, status);
   }
 }

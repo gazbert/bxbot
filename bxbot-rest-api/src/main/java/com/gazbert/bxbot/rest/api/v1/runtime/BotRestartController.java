@@ -35,8 +35,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.security.Principal;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -53,9 +52,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @org.springframework.web.bind.annotation.RestController
 @RequestMapping(RUNTIME_ENDPOINT_BASE_URI)
 @Tag(name = "Bot Restart")
+@Log4j2
 public class BotRestartController extends RestController {
 
-  private static final Logger LOG = LogManager.getLogger();
   private static final String RESTART_RESOURCE_PATH = "/restart";
   private final BotRestartService botRestartService;
 
@@ -92,12 +91,11 @@ public class BotRestartController extends RestController {
       })
   public ResponseEntity<String> restart(@Parameter(hidden = true) Principal principal) {
 
-    LOG.info(
-        () -> "POST " + RESTART_RESOURCE_PATH + " - restart() - caller: " + principal.getName());
+    log.info("POST " + RESTART_RESOURCE_PATH + " - restart() - caller: " + principal.getName());
 
     final Object status = botRestartService.restart();
 
-    LOG.info(() -> "Response: " + status.toString());
+    log.info("Response: " + status.toString());
     return new ResponseEntity<>(status.toString(), null, HttpStatus.OK);
   }
 }

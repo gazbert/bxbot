@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
   <artifactId>bxbot-exchanges</artifactId>
@@ -88,10 +88,10 @@
       <groupId>javax.xml.bind</groupId>
       <artifactId>jaxb-api</artifactId>
     </dependency>
-<!--    <dependency>-->
-<!--      <groupId>com.sun.xml.bind</groupId>-->
-<!--      <artifactId>jaxb-impl</artifactId>-->
-<!--    </dependency>-->
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+    </dependency>
 
     <!--
     Testing dependencies
@@ -117,7 +117,7 @@
       <scope>test</scope>
     </dependency>
     <!--
-     JUnit4 still needed as Powermock doesn't play with JUnit5 in TestTradingEngine.java + TestEmailAlerter.java
+     JUnit4 still needed as Powermock doesn't play with JUnit5 in adapter tests.
      See: https://github.com/powermock/powermock/issues/929
     -->
     <dependency>
@@ -141,6 +141,26 @@
           <includes>
             <include>**/Test*.java</include>
           </includes>
+          <!--
+            For Powermock tests messing with JDK 17 bytecode.
+            See: https://stackoverflow.com/questions/69896191/powermock-compatibility-with-jdk-17
+          -->
+          <argLine>
+            <!-- See: https://stackoverflow.com/questions/23190107/cannot-use-jacoco-jvm-args-and-surefire-jvm-args-together-in-maven -->
+            ${argLine}
+            --add-opens java.base/java.util=ALL-UNNAMED
+            --add-opens java.base/java.util.stream=ALL-UNNAMED
+            --add-opens java.base/java.lang=ALL-UNNAMED
+            --add-opens java.base/java.lang.reflect=ALL-UNNAMED
+            --add-opens java.base/java.text=ALL-UNNAMED
+            --add-opens java.base/java.io=ALL-UNNAMED
+            --add-opens java.base/java.nio.file=ALL-UNNAMED
+            --add-opens java.base/java.math=ALL-UNNAMED
+            --add-opens java.base/java.time=ALL-UNNAMED
+            --add-opens java.base/java.security=ALL-UNNAMED
+            --add-opens java.base/java.net=ALL-UNNAMED
+            --add-opens java.base/sun.net.www.protocol.https=ALL-UNNAMED
+          </argLine>
         </configuration>
       </plugin>
       <plugin>
@@ -148,6 +168,10 @@
         <artifactId>maven-failsafe-plugin</artifactId>
         <configuration>
           <skipTests>${skip.integration.tests}</skipTests>
+          <!-- See: https://stackoverflow.com/questions/69896191/powermock-compatibility-with-jdk-17 -->
+          <argLine>
+            --add-opens java.base/java.util=ALL-UNNAMED
+          </argLine>
         </configuration>
         <executions>
           <execution>
@@ -183,7 +207,7 @@
           <!--
             Ignore classes tested using Powermock. JaCoCo won't/can't instrument them:
             "... right now there is NO WAY TO USE PowerMock with JaCoCo On-the-fly instrumentation."
-            See https://github.com/powermock/powermock/wiki/Code-coverage-with-JaCoCo
+            See: https://github.com/powermock/powermock/wiki/Code-coverage-with-JaCoCo
            -->
           <excludes>
             <exclude>**/exchanges/*Adapter.class</exclude>    <!-- main adapter classes -->

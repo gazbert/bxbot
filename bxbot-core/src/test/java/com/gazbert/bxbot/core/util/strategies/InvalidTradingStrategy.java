@@ -23,12 +23,13 @@
 
 package com.gazbert.bxbot.core.util.strategies;
 
-/*
- * An invalid (and useless) Trading Strategy for unit testing.
- * Invalid because it does not implement the TradingStrategy interface.
+/**
+ * An invalid (and useless) Trading Strategy for unit testing. Invalid because it does not implement
+ * the TradingStrategy interface.
  */
 public class InvalidTradingStrategy {
 
   public void execute() {
+    // noimpl
   }
 }

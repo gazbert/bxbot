@@ -34,30 +34,16 @@ import com.gazbert.bxbot.datastore.yaml.emailalerts.EmailAlertsType;
 import com.gazbert.bxbot.domain.emailalerts.EmailAlertsConfig;
 import com.gazbert.bxbot.domain.emailalerts.SmtpConfig;
 import com.gazbert.bxbot.repository.EmailAlertsConfigRepository;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.powermock.api.easymock.PowerMock;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.easymock.EasyMock;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests YAML backed Email Alerts configuration repository behaves as expected.
  *
  * @author gazbert
  */
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({ConfigurationManager.class})
-@PowerMockIgnore({
-    "javax.crypto.*",
-    "javax.management.*",
-    "com.sun.org.apache.xerces.*",
-    "javax.xml.parsers.*",
-    "org.xml.sax.*",
-    "org.w3c.dom.*"
-})
-public class TestEmailAlertsConfigYamlRepository {
+class TestEmailAlertsConfigYamlRepository {
 
   private static final boolean ENABLED = true;
   private static final String HOST = "smtp.host.deathstar.com";
@@ -74,22 +60,24 @@ public class TestEmailAlertsConfigYamlRepository {
   private static final String UPDATED_FROM_ADDRESS = "updated-boba.fett@Mandalore.com";
   private static final String UPDATED_TO_ADDRESS = "updated-darth.vader@deathstar.com";
 
-  @Before
-  public void setup() {
-    PowerMock.mockStatic(ConfigurationManager.class);
+  private ConfigurationManager configurationManager;
+
+  @BeforeEach
+  void setup() {
+    configurationManager = EasyMock.createMock(ConfigurationManager.class);
   }
 
   @Test
-  public void whenGetCalledThenExpectEmailAlertsConfigToBeReturned() {
+  void whenGetCalledThenExpectEmailAlertsConfigToBeReturned() {
     expect(
-            ConfigurationManager.loadConfig(
+            configurationManager.loadConfig(
                 eq(EmailAlertsType.class), eq(EMAIL_ALERTS_CONFIG_YAML_FILENAME)))
         .andReturn(someEmailAlertsConfig());
 
-    PowerMock.replayAll();
+    EasyMock.replay(configurationManager);
 
     final EmailAlertsConfigRepository emailAlertsConfigRepository =
-        new EmailAlertsConfigYamlRepository();
+        new EmailAlertsConfigYamlRepository(configurationManager);
     final EmailAlertsConfig emailAlertsConfig = emailAlertsConfigRepository.get();
     assertThat(emailAlertsConfig.isEnabled()).isEqualTo(ENABLED);
     assertThat(emailAlertsConfig.getSmtpConfig().getHost()).isEqualTo(HOST);
@@ -99,25 +87,25 @@ public class TestEmailAlertsConfigYamlRepository {
     assertThat(emailAlertsConfig.getSmtpConfig().getAccountUsername()).isEqualTo(ACCOUNT_USERNAME);
     assertThat(emailAlertsConfig.getSmtpConfig().getAccountPassword()).isEqualTo(ACCOUNT_PASSWORD);
 
-    PowerMock.verifyAll();
+    EasyMock.verify(configurationManager);
   }
 
   @Test
-  public void whenSaveCalledThenExpectRepositoryToSaveItAndReturnSavedEmailAlertsConfig() {
-    ConfigurationManager.saveConfig(
+  void whenSaveCalledThenExpectRepositoryToSaveItAndReturnSavedEmailAlertsConfig() {
+    configurationManager.saveConfig(
         eq(EmailAlertsType.class),
         anyObject(EmailAlertsType.class),
         eq(EMAIL_ALERTS_CONFIG_YAML_FILENAME));
 
     expect(
-            ConfigurationManager.loadConfig(
+            configurationManager.loadConfig(
                 eq(EmailAlertsType.class), eq(EMAIL_ALERTS_CONFIG_YAML_FILENAME)))
         .andReturn(adaptExternalToInternalConfig(someUpdatedEmailAlertsConfig()));
 
-    PowerMock.replayAll();
+    EasyMock.replay(configurationManager);
 
     final EmailAlertsConfigRepository emailAlertsConfigRepository =
-        new EmailAlertsConfigYamlRepository();
+        new EmailAlertsConfigYamlRepository(configurationManager);
     final EmailAlertsConfig savedConfig =
         emailAlertsConfigRepository.save(someUpdatedEmailAlertsConfig());
 
@@ -131,7 +119,7 @@ public class TestEmailAlertsConfigYamlRepository {
     assertThat(savedConfig.getSmtpConfig().getAccountPassword())
         .isEqualTo(UPDATED_ACCOUNT_PASSWORD);
 
-    PowerMock.verifyAll();
+    EasyMock.verify(configurationManager);
   }
 
   // --------------------------------------------------------------------------

@@ -23,8 +23,8 @@
 
 package com.gazbert.bxbot.rest.api.security.jwt;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gazbert.bxbot.rest.api.security.model.Role;
 import com.gazbert.bxbot.rest.api.security.model.RoleName;

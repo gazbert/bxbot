@@ -26,8 +26,7 @@ package com.gazbert.bxbot.services.config.impl;
 import com.gazbert.bxbot.domain.exchange.ExchangeConfig;
 import com.gazbert.bxbot.repository.ExchangeConfigRepository;
 import com.gazbert.bxbot.services.config.ExchangeConfigService;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.ComponentScan;
@@ -42,9 +41,9 @@ import org.springframework.transaction.annotation.Transactional;
 @Service("exchangeConfigService")
 @Transactional
 @ComponentScan(basePackages = {"com.gazbert.bxbot.repository"})
+@Log4j2
 public class ExchangeConfigServiceImpl implements ExchangeConfigService {
 
-  private static final Logger LOG = LogManager.getLogger();
   private final ExchangeConfigRepository exchangeConfigRepository;
 
   /**
@@ -66,7 +65,7 @@ public class ExchangeConfigServiceImpl implements ExchangeConfigService {
 
   @Override
   public ExchangeConfig updateExchangeConfig(ExchangeConfig config) {
-    LOG.info(() -> "About to update Exchange config: " + config);
+    log.info("About to update Exchange config: " + config);
     return exchangeConfigRepository.save(config);
   }
 }

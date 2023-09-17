@@ -43,7 +43,7 @@ class TestBotRestartService {
 
   @Test
   void whenRestartCalledThenExpectBotStatusToBeRestarting() {
-    final Map restartingStatus = Collections.singletonMap("message", "Restarting");
+    final Map<String, String> restartingStatus = Collections.singletonMap("message", "Restarting");
     final RestartEndpoint restartEndpoint = EasyMock.createMock(RestartEndpoint.class);
     expect(restartEndpoint.restart()).andReturn(restartingStatus);
     replay(restartEndpoint);

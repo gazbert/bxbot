@@ -52,8 +52,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 /**
  * REST Controller for handling initial authentication requests to obtain a JWT.
  *
- * <p>Code originated from the excellent JWT and Spring Boot example by Stephan Zerhusen:
- * https://github.com/szerhusenBC/jwt-spring-security-demo
+ * <p>Code originated from the excellent JWT and Spring Boot example by
+ * <a href="https://github.com/szerhusenBC/jwt-spring-security-demo">Stephan Zerhusen</a>.
  *
  * @author gazbert
  */
@@ -90,7 +90,7 @@ public class AuthenticationController extends RestController {
    * @param authenticationRequest the authentication request containing the client's
    *     username/password.
    * @return a JWT if the client was authenticated successfully.
-   * @throws AuthenticationException if the the client was not authenticated successfully.
+   * @throws AuthenticationException if the client was not authenticated successfully.
    */
   @PostMapping(value = "/api/token")
   @Operation(summary = "Gets an API token")

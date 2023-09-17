@@ -23,6 +23,8 @@
 
 package com.gazbert.bxbot.trading.api;
 
+import java.io.Serial;
+
 /**
  * This exception is thrown from Exchange Adapter implementations when there is a problem making an
  * API call to the exchange.
@@ -39,6 +41,7 @@ package com.gazbert.bxbot.trading.api;
  */
 public class TradingApiException extends Exception {
 
+  @Serial
   private static final long serialVersionUID = -8279304672615688060L;
 
   /**

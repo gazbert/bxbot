@@ -46,6 +46,7 @@ public class EmailAlertsConfig {
 
   /** Creates a new EmailAlertsConfig. Required by ConfigurableComponentFactory. */
   public EmailAlertsConfig() {
+    // noimpl
   }
 
   /**

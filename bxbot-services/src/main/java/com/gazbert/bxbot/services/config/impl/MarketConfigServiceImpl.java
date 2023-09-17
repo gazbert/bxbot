@@ -27,8 +27,7 @@ import com.gazbert.bxbot.domain.market.MarketConfig;
 import com.gazbert.bxbot.repository.MarketConfigRepository;
 import com.gazbert.bxbot.services.config.MarketConfigService;
 import java.util.List;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.ComponentScan;
@@ -43,9 +42,9 @@ import org.springframework.transaction.annotation.Transactional;
 @Service("marketConfigService")
 @Transactional
 @ComponentScan(basePackages = {"com.gazbert.bxbot.repository"})
+@Log4j2
 public class MarketConfigServiceImpl implements MarketConfigService {
 
-  private static final Logger LOG = LogManager.getLogger();
   private final MarketConfigRepository marketConfigRepository;
 
   /**
@@ -66,25 +65,25 @@ public class MarketConfigServiceImpl implements MarketConfigService {
 
   @Override
   public MarketConfig getMarketConfig(String id) {
-    LOG.info(() -> "Fetching Market config for id: " + id);
+    log.info("Fetching Market config for id: " + id);
     return marketConfigRepository.findById(id);
   }
 
   @Override
   public MarketConfig updateMarketConfig(MarketConfig config) {
-    LOG.info(() -> "About to update Market config: " + config);
+    log.info("About to update Market config: " + config);
     return marketConfigRepository.save(config);
   }
 
   @Override
   public MarketConfig createMarketConfig(MarketConfig config) {
-    LOG.info(() -> "About to create Market config: " + config);
+    log.info("About to create Market config: " + config);
     return marketConfigRepository.save(config);
   }
 
   @Override
   public MarketConfig deleteMarketConfig(String id) {
-    LOG.info(() -> "About to delete Market config for id: " + id);
+    log.info("About to delete Market config for id: " + id);
     return marketConfigRepository.delete(id);
   }
 }

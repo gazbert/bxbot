@@ -44,15 +44,12 @@ import java.net.URLConnection;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormatSymbols;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.log4j.Log4j2;
 
 /**
  * Base class for common Exchange Adapter functionality.
@@ -62,9 +59,8 @@ import org.apache.logging.log4j.Logger;
  * @author gazbert
  * @since 1.0
  */
+@Log4j2
 abstract class AbstractExchangeAdapter {
-
-  private static final Logger LOG = LogManager.getLogger();
   private static final String EXCHANGE_CONFIG_FILE = "config/exchange.yaml";
 
   private static final String UNEXPECTED_IO_ERROR_MSG =
@@ -90,7 +86,7 @@ abstract class AbstractExchangeAdapter {
   private final Set<String> nonFatalNetworkErrorMessages;
 
   private int connectionTimeout;
-  private DecimalFormatSymbols decimalFormatSymbols;
+  private final DecimalFormatSymbols decimalFormatSymbols;
 
   /**
    * Constructor sets some sensible defaults for the network config and specifies decimal point
@@ -129,7 +125,7 @@ abstract class AbstractExchangeAdapter {
     final StringBuilder exchangeResponse = new StringBuilder();
 
     try {
-      LOG.debug(() -> "Using following URL for API call: " + url);
+      log.debug("Using following URL for API call: " + url);
 
       exchangeConnection = (HttpURLConnection) url.openConnection();
       exchangeConnection.setUseCaches(false);
@@ -138,13 +134,13 @@ abstract class AbstractExchangeAdapter {
 
       setRequestHeaders(exchangeConnection, requestHeaders);
 
-      // Add a timeout so we don't get blocked indefinitely; timeout on URLConnection is in millis.
+      // Add a timeout, so we don't get blocked indefinitely; timeout on URLConnection is in millis.
       final int timeoutInMillis = connectionTimeout * 1000;
       exchangeConnection.setConnectTimeout(timeoutInMillis);
       exchangeConnection.setReadTimeout(timeoutInMillis);
 
       if (httpMethod.equalsIgnoreCase("POST") && postData != null) {
-        LOG.debug(() -> "Doing POST with request body: " + postData);
+        log.debug("Doing POST with request body: " + postData);
         try (final OutputStreamWriter outputPostStream =
             new OutputStreamWriter(exchangeConnection.getOutputStream(), StandardCharsets.UTF_8)) {
           outputPostStream.write(postData);
@@ -170,19 +166,19 @@ abstract class AbstractExchangeAdapter {
 
     } catch (MalformedURLException e) {
       final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
-      LOG.error(errorMsg, e);
+      log.error(errorMsg, e);
       throw new TradingApiException(errorMsg, e);
 
     } catch (SocketTimeoutException e) {
       final String errorMsg = IO_SOCKET_TIMEOUT_ERROR_MSG;
-      LOG.error(errorMsg, e);
+      log.error(errorMsg, e);
       throw new ExchangeNetworkException(errorMsg, e);
 
     } catch (FileNotFoundException | UnknownHostException e) {
       // Huobi started throwing FileNotFoundException as of 8 Nov 2015.
       // EC2 started throwing UnknownHostException for BTC-e, GDAX, as of 14 July 2016 :-/
       final String errorMsg = "Failed to connect to Exchange. It's dead Jim!";
-      LOG.error(errorMsg, e);
+      log.error(errorMsg, e);
       throw new ExchangeNetworkException(errorMsg, e);
 
     } catch (IOException e) {
@@ -190,24 +186,24 @@ abstract class AbstractExchangeAdapter {
         if (errorMessageIsRecoverableNetworkError(e)) {
           final String errorMsg =
               "Failed to connect to Exchange. SSL Connection was refused or reset by the server.";
-          LOG.error(errorMsg, e);
+          log.error(errorMsg, e);
           throw new ExchangeNetworkException(errorMsg, e);
 
         } else if (errorCodeIsRecoverableNetworkError(exchangeConnection)) {
           final String errorMsg = IO_5XX_TIMEOUT_ERROR_MSG;
-          LOG.error(errorMsg, e);
+          log.error(errorMsg, e);
           throw new ExchangeNetworkException(errorMsg, e);
 
         } else {
           // Game over!
           String errorMsg = extractIoErrorMessage(exchangeConnection);
-          LOG.error(errorMsg, e);
+          log.error(errorMsg, e);
           throw new TradingApiException(errorMsg, e);
         }
 
       } catch (IOException e1) {
         final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
-        LOG.error(errorMsg, e1);
+        log.error(errorMsg, e1);
         throw new TradingApiException(errorMsg, e1);
       }
 
@@ -229,7 +225,7 @@ abstract class AbstractExchangeAdapter {
     final NetworkConfig networkConfig = exchangeConfig.getNetworkConfig();
     if (networkConfig == null) {
       final String errorMsg = NETWORK_CONFIG_MISSING + exchangeConfig;
-      LOG.error(errorMsg);
+      log.error(errorMsg);
       throw new IllegalArgumentException(errorMsg);
     }
 
@@ -237,22 +233,22 @@ abstract class AbstractExchangeAdapter {
     if (connectionTimeout == 0) {
       final String errorMsg =
           CONNECTION_TIMEOUT_PROPERTY_NAME + " cannot be 0 value." + exchangeConfig;
-      LOG.error(errorMsg);
+      log.error(errorMsg);
       throw new IllegalArgumentException(errorMsg);
     }
-    LOG.info(() -> CONNECTION_TIMEOUT_PROPERTY_NAME + ": " + connectionTimeout);
+    log.info(CONNECTION_TIMEOUT_PROPERTY_NAME + ": " + connectionTimeout);
 
     final List<Integer> nonFatalErrorCodesFromConfig = networkConfig.getNonFatalErrorCodes();
     if (nonFatalErrorCodesFromConfig != null) {
       nonFatalNetworkErrorCodes.addAll(nonFatalErrorCodesFromConfig);
     }
-    LOG.info(() -> NON_FATAL_ERROR_CODES_PROPERTY_NAME + ": " + nonFatalNetworkErrorCodes);
+    log.info(NON_FATAL_ERROR_CODES_PROPERTY_NAME + ": " + nonFatalNetworkErrorCodes);
 
     final List<String> nonFatalErrorMessagesFromConfig = networkConfig.getNonFatalErrorMessages();
     if (nonFatalErrorMessagesFromConfig != null) {
       nonFatalNetworkErrorMessages.addAll(nonFatalErrorMessagesFromConfig);
     }
-    LOG.info(() -> NON_FATAL_ERROR_MESSAGES_PROPERTY_NAME + ": " + nonFatalNetworkErrorMessages);
+    log.info(NON_FATAL_ERROR_MESSAGES_PROPERTY_NAME + ": " + nonFatalNetworkErrorMessages);
   }
 
   /**
@@ -267,7 +263,7 @@ abstract class AbstractExchangeAdapter {
     final AuthenticationConfig authenticationConfig = exchangeConfig.getAuthenticationConfig();
     if (authenticationConfig == null) {
       final String errorMsg = AUTHENTICATION_CONFIG_MISSING + exchangeConfig;
-      LOG.error(errorMsg);
+      log.error(errorMsg);
       throw new IllegalArgumentException(errorMsg);
     }
     return authenticationConfig;
@@ -284,7 +280,7 @@ abstract class AbstractExchangeAdapter {
     final OtherConfig otherConfig = exchangeConfig.getOtherConfig();
     if (otherConfig == null) {
       final String errorMsg = OTHER_CONFIG_MISSING + exchangeConfig;
-      LOG.error(errorMsg);
+      log.error(errorMsg);
       throw new IllegalArgumentException(errorMsg);
     }
     return otherConfig;
@@ -313,31 +309,8 @@ abstract class AbstractExchangeAdapter {
    */
   String getOtherConfigItem(OtherConfig otherConfig, String itemName) {
     final String itemValue = otherConfig.getItem(itemName);
-    LOG.info(() -> itemName + ": " + itemValue);
+    log.debug(itemName + ": " + itemValue);
     return assertItemExists(itemName, itemValue);
-  }
-
-  /**
-   * Sorts the request params alphabetically (uses natural ordering) and returns them as a query
-   * string.
-   *
-   * @param params the request params to sort.
-   * @return the query string containing the sorted request params.
-   */
-  String createAlphabeticallySortedQueryString(Map<String, String> params) {
-    final List<String> keys = new ArrayList<>(params.keySet());
-    Collections.sort(keys); // use natural/alphabetical ordering of params
-
-    final StringBuilder sortedQueryString = new StringBuilder();
-    for (final String param : keys) {
-      if (sortedQueryString.length() > 0) {
-        sortedQueryString.append("&");
-      }
-      sortedQueryString.append(param);
-      sortedQueryString.append("=");
-      sortedQueryString.append(params.get(param));
-    }
-    return sortedQueryString.toString();
   }
 
   /**
@@ -361,10 +334,6 @@ abstract class AbstractExchangeAdapter {
       this.statusCode = statusCode;
       this.reasonPhrase = reasonPhrase;
       this.payload = payload;
-    }
-
-    String getReasonPhrase() {
-      return reasonPhrase;
     }
 
     int getStatusCode() {
@@ -401,7 +370,7 @@ abstract class AbstractExchangeAdapter {
     if (requestHeaders != null) {
       for (final Map.Entry<String, String> requestHeader : requestHeaders.entrySet()) {
         exchangeConnection.setRequestProperty(requestHeader.getKey(), requestHeader.getValue());
-        LOG.debug(() -> "Setting following request header: " + requestHeader);
+        log.debug("Setting following request header: " + requestHeader);
       }
     }
   }
@@ -441,7 +410,7 @@ abstract class AbstractExchangeAdapter {
     if (itemValue == null || itemValue.length() == 0) {
       final String errorMsg =
           itemName + CONFIG_IS_NULL_OR_ZERO_LENGTH + EXCHANGE_CONFIG_FILE + " ?";
-      LOG.error(errorMsg);
+      log.error(errorMsg);
       throw new IllegalArgumentException(errorMsg);
     }
     return itemValue;
