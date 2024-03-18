@@ -66,7 +66,7 @@ To work on something, whether a new feature or a bug fix:
 
   
 After your PR has been reviewed and signed off, a maintainer will merge it into 
-the master branch.
+the main branch.
 
 ## Code conventions and housekeeping
 

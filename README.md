@@ -1,7 +1,7 @@
 # BX-bot
 
-[![Gradle CI](https://github.com/gazbert/bxbot/actions/workflows/gradle.yml/badge.svg?branch=master)](https://github.com/gazbert/bxbot/actions/workflows/gradle.yml)
-[![Maven CI](https://github.com/gazbert/bxbot/actions/workflows/maven.yml/badge.svg?branch=master)](https://github.com/gazbert/bxbot/actions/workflows/maven.yml)
+[![Gradle CI](https://github.com/gazbert/bxbot/actions/workflows/gradle.yml/badge.svg?branch=main)](https://github.com/gazbert/bxbot/actions/workflows/gradle.yml)
+[![Maven CI](https://github.com/gazbert/bxbot/actions/workflows/maven.yml/badge.svg?branch=main)](https://github.com/gazbert/bxbot/actions/workflows/maven.yml)
 [![Sonarcloud Status](https://sonarcloud.io/api/project_badges/measure?project=gazbert_bxbot&metric=alert_status)](https://sonarcloud.io/dashboard?id=gazbert_bxbot)
 [![Join the chat at https://gitter.im/BX-bot/Lobby](https://badges.gitter.im/BX-bot/Lobby.svg)](https://gitter.im/BX-bot/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)		 	 
  
@@ -118,7 +118,7 @@ You can use Gradle or Maven to build the bot and pull down the dependencies.
 
 The instructions below are for Linux/macOS, but equivalent Windows scripts are included.
 
-Clone the repo locally (master branch).
+Clone the repo locally (main branch).
 
 ### Maven
 1. From the project root, run `./mvnw clean install`.
@@ -149,7 +149,7 @@ The bot has undergone basic unit testing on a _best-effort_ basis.
 There is a CI build running on [GitHub Actions](https://github.com/gazbert/bxbot/actions).
 
 The latest stable build can always be found on the [Releases](https://github.com/gazbert/bxbot/releases) page. 
-The SNAPSHOT builds on master are active development builds, but the tests should always pass and the bot should always 
+The SNAPSHOT builds on main are active development builds, but the tests should always pass and the bot should always 
 be deployable.
 
 ## User Guide
