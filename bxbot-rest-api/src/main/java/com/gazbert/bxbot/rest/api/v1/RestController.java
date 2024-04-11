@@ -49,9 +49,4 @@ import org.springframework.context.annotation.PropertySource;
             termsOfService = "https://github.com/gazbert/bxbot"))
 @SecurityRequirement(name = "Authorization")
 public abstract class RestController {
-
-  /** Constructs the REST Controller. */
-  RestController() {
-    // No extra init needed.
-  }
 }
