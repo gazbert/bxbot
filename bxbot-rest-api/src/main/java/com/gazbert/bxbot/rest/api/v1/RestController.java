@@ -51,7 +51,7 @@ import org.springframework.context.annotation.PropertySource;
 public abstract class RestController {
 
   /** Constructs the REST Controller. */
-  public RestController() {
+  RestController() {
     // No extra init needed.
   }
 }
