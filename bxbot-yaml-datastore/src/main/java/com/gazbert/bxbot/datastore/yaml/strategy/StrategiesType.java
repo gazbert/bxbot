@@ -36,6 +36,11 @@ public class StrategiesType {
 
   private List<StrategyConfig> strategies;
 
+  /** Creates the Strategies type. */
+  public StrategiesType() {
+    // No extra init needed.
+  }
+
   /**
    * Returns the Strategy configs.
    *

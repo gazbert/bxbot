@@ -135,6 +135,11 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter
 
   private Gson gson;
 
+  /** Constructs the Exchange Adapter. */
+  public BitfinexExchangeAdapter() {
+    // No extra init.
+  }
+
   @Override
   public void init(ExchangeConfig config) {
     log.info("About to initialise Bitfinex ExchangeConfig: " + config);

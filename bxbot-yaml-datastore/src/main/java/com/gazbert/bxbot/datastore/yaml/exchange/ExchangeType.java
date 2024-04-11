@@ -34,6 +34,11 @@ public class ExchangeType {
 
   private ExchangeConfig exchange;
 
+  /** Creates the Exchange type. */
+  public ExchangeType() {
+    // No extra init needed.
+  }
+
   /**
    * Returns the exchange config.
    *

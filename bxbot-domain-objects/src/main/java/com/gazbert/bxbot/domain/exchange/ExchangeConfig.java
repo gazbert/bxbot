@@ -36,7 +36,7 @@ import java.util.Map;
 public class ExchangeConfig {
 
   @Schema(
-          requiredMode = Schema.RequiredMode.REQUIRED,
+      requiredMode = Schema.RequiredMode.REQUIRED,
       description =
           "The Exchange name. It is used in log statements to display the Exchange's name."
               + " Value must be an alphanumeric string. Spaces are allowed.")
@@ -68,6 +68,11 @@ public class ExchangeConfig {
           "Optional, but required by the inbuilt Exchange Adapters to set "
               + "any additional config, e.g. buy/sell fees.")
   private Map<String, String> otherConfig;
+
+  /** Creates the Exchange config. */
+  public ExchangeConfig() {
+    // No extra init needed.
+  }
 
   /**
    * Returns the name.

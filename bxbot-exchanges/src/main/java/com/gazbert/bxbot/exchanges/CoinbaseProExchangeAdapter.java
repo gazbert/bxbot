@@ -141,6 +141,11 @@ public final class CoinbaseProExchangeAdapter extends AbstractExchangeAdapter
 
   private Gson gson;
 
+  /** Constructs the Exchange Adapter. */
+  public CoinbaseProExchangeAdapter() {
+    // No extra init.
+  }
+
   @Override
   public void init(ExchangeConfig config) {
     log.info("About to initialise COINBASE PRO ExchangeConfig: " + config);

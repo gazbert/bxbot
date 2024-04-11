@@ -54,6 +54,11 @@ public class ConfigurationManager {
 
   private static final String YAML_HEADER = "---" + System.getProperty("line.separator");
 
+  /** Creates the Configuration Manager. */
+  public ConfigurationManager() {
+    // No extra init needed.
+  }
+
   /**
    * Loads the config from the YAML file.
    *

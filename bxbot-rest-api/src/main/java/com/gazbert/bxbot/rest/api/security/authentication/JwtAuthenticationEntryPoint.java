@@ -45,6 +45,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
+  /** Creates the JWT Authentication Entry Point. */
+  public JwtAuthenticationEntryPoint() {
+    // No extra init needed.
+  }
+
   /**
    * This is invoked when a user tries to access a secured REST resource without supplying any
    * credentials in the HTTP Authorization header.

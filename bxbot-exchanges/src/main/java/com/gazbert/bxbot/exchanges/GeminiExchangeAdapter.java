@@ -160,6 +160,11 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter
 
   private Gson gson;
 
+  /** Constructs the Exchange Adapter. */
+  public GeminiExchangeAdapter() {
+    // No extra init.
+  }
+
   @Override
   public void init(ExchangeConfig config) {
     log.info("About to initialise Gemini ExchangeConfig: " + config);

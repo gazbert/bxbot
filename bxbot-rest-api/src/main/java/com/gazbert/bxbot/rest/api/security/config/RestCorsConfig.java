@@ -50,6 +50,11 @@ public class RestCorsConfig {
   @Value("${restapi.cors.allowed_origin}")
   private String allowedOrigin;
 
+  /** Creates the REST CORS config. */
+  public RestCorsConfig() {
+    // No extra init needed.
+  }
+
   /**
    * Creates the CORS configuration for the CorsFilter to use.
    *

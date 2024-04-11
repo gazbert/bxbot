@@ -37,6 +37,11 @@ import org.springframework.stereotype.Component;
 @Log4j2
 public class ConfigurableComponentFactory {
 
+  /** Creates the Configurable Component Factory. */
+  public ConfigurableComponentFactory() {
+    // No extra init needed.
+  }
+
   /**
    * Loads and instantiates a given class and returns it.
    *

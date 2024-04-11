@@ -58,6 +58,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
   private JwtUtils jwtUtils;
 
+  /** Creates the JWT Authentication Filter. */
+  public JwtAuthenticationFilter() {
+    // No extra init needed.
+  }
+
   @Override
   protected void doFilterInternal(
       HttpServletRequest request, HttpServletResponse response, FilterChain chain)

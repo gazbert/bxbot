@@ -188,8 +188,12 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
 
   private Mac mac;
   private boolean initializedMacAuthentication = false;
-
   private Gson gson;
+
+  /** Constructs the Exchange Adapter. */
+  public KrakenExchangeAdapter() {
+    // No extra init.
+  }
 
   @Override
   public void init(ExchangeConfig config) {
