@@ -69,7 +69,7 @@ ext.libraries = [
     jakarta_mail_api                        : dependencies.create("jakarta.mail:jakarta.mail-api:2.1.2"),
     jakarta_mail_sun                        : dependencies.create("org.eclipse.angus:angus-mail:2.0.2"),
 
-    jakarta_xml_api                         : dependencies.create("javax.xml.bind:jaxb-api:2.4.0-b180830.0359"),
+    jakarta_xml_api                         : dependencies.create("jakarta.xml.bind:jakarta.xml.bind-api:4.0.2"),
 
     snake_yaml                              : dependencies.create("org.yaml:snakeyaml:1.33"),
 
