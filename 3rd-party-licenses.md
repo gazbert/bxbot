@@ -20,14 +20,14 @@
 
 ## Build & Test
 
-* JUnit                     - http://opensource.org/licenses/eclipse-1.0.html
+* JUnit                     - https://opensource.org/licenses/eclipse-1.0.html
 * Powermock                 - https://github.com/jayway/powermock/blob/master/LICENSE.txt
-* EasyMock                  - http://easymock.org/License.html
-* Maven                     - http://www.apache.org/licenses/
+* EasyMock                  - https://easymock.org/License.html
+* Maven                     - https://www.apache.org/licenses/
 * Gradle                    - https://gradle.org/license/
 * JsonPath                  - https://github.com/jayway/JsonPath/blob/master/LICENSE
 * Awaitility                - https://github.com/awaitility/awaitility/blob/master/LICENSE
-* spring-boot-starter-test  - http://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-testing.html
+* spring-boot-starter-test  - https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-testing.html
 * SpotBugs                  - https://spotbugs.github.io/index.html
 * JaCoCo                    - https://www.jacoco.org/license.html
 * Checkstyle                - https://checkstyle.org/licenses.html

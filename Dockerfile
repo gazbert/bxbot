@@ -1,4 +1,4 @@
-FROM eclipse-temurin:17.0.7_7-jdk
+FROM eclipse-temurin:21.0.2_13-jdk
 
 RUN apt-get update
 RUN apt-get install -y maven
