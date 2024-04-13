@@ -53,7 +53,7 @@ configurations {
   integrationTestsRuntimeOnly.extendsFrom(testRuntimeOnly)
 }
 
-// For Powermock tests messing with JDK 17 bytecode.
+// For Powermock tests messing with JDK 17+ bytecode.
 // See: https://stackoverflow.com/questions/69896191/powermock-compatibility-with-jdk-17
 test.jvmArgs "--add-opens", "java.base/java.lang=ALL-UNNAMED"
 test.jvmArgs "--add-opens", "java.base/java.util=ALL-UNNAMED"

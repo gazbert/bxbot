@@ -46,6 +46,7 @@ import com.google.common.base.MoreObjects;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.SerializedName;
+import jakarta.xml.bind.DatatypeConverter;
 import java.io.Serial;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -66,7 +67,6 @@ import java.util.List;
 import java.util.Map;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
-import javax.xml.bind.DatatypeConverter;
 import lombok.extern.log4j.Log4j2;
 
 /**
