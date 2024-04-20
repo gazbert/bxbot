@@ -1,7 +1,7 @@
 # BX-bot
 
-[![Gradle CI](https://github.com/gazbert/bxbot/actions/workflows/gradle.yml/badge.svg?branch=master)](https://github.com/gazbert/bxbot/actions/workflows/gradle.yml)
-[![Maven CI](https://github.com/gazbert/bxbot/actions/workflows/maven.yml/badge.svg?branch=master)](https://github.com/gazbert/bxbot/actions/workflows/maven.yml)
+[![Gradle CI](https://github.com/gazbert/bxbot/actions/workflows/gradle.yml/badge.svg?branch=main)](https://github.com/gazbert/bxbot/actions/workflows/gradle.yml)
+[![Maven CI](https://github.com/gazbert/bxbot/actions/workflows/maven.yml/badge.svg?branch=main)](https://github.com/gazbert/bxbot/actions/workflows/maven.yml)
 [![Sonarcloud Status](https://sonarcloud.io/api/project_badges/measure?project=gazbert_bxbot&metric=alert_status)](https://sonarcloud.io/dashboard?id=gazbert_bxbot)
 [![Join the chat at https://gitter.im/BX-bot/Lobby](https://badges.gitter.im/BX-bot/Lobby.svg)](https://gitter.im/BX-bot/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)		 	 
  
@@ -12,13 +12,13 @@
 [BX-bot (_Bex_)](https://github.com/gazbert/bxbot) is a simple Bitcoin trading bot written in Java for trading on cryptocurrency 
 [exchanges](https://bitcoin.org/en/exchanges).
 
-The project contains the basic infrastructure to trade on a [cryptocurrency](http://coinmarketcap.com/) exchange...
+The project contains the basic infrastructure to trade on a [cryptocurrency](https://coinmarketcap.com/) exchange...
 except for the trading strategies - you'll need to write those yourself! A simple 
 [`ExampleScalpingStrategy`](./bxbot-strategies/src/main/java/com/gazbert/bxbot/strategies/ExampleScalpingStrategy.java) 
 is included to get you started with the Trading API - see [Ta4j](https://github.com/ta4j/ta4j) for more ideas.
 
 Exchange Adapters for using [Bitstamp](https://www.bitstamp.net), [Bitfinex](https://www.bitfinex.com), 
-[Kraken](https://www.kraken.com), [Gemini](https://gemini.com/), and [Coinbase Pro](https://pro.coinbase.com/) are included. 
+[Kraken](https://www.kraken.com), and [Gemini](https://gemini.com/) are included. 
 Feel free to improve these or contribute new adapters to the project; that would be 
 [shiny!](https://en.wikipedia.org/wiki/Firefly_(TV_series))
 
@@ -27,13 +27,13 @@ configured by default to delegate public API calls to Bitstamp, but it simulates
 API (order management) calls; it's good for testing your initial setup and 
 [paper trading](https://www.investopedia.com/terms/p/papertrade.asp) without actually sending orders to the exchange.
 
-The Trading API provides support for [limit orders](http://www.investopedia.com/terms/l/limitorder.asp)
-traded at the [spot price](http://www.investopedia.com/terms/s/spotprice.asp).
+The Trading API provides support for [limit orders](https://www.investopedia.com/terms/l/limitorder.asp)
+traded at the [spot price](https://www.investopedia.com/terms/s/spotprice.asp).
 If you're looking for something more sophisticated with a much richer Trading API, take a look at
 [XChange](https://github.com/knowm/XChange).
  
 **Warning:** Trading cryptocurrency carries significant financial risk; you could lose money. This software is provided 'as is'
-and released under the [MIT license](http://opensource.org/licenses/MIT).
+and released under the [MIT license](https://opensource.org/licenses/MIT).
 
 ## Architecture
 
@@ -58,8 +58,8 @@ it will log the error, send an email alert (if configured), and then shut down.
   
 The bot runs on Linux, macOS, and Windows.
 
-BX-bot is supported on the current JDK 17 LTS. You'll need the JDK (e.g. [OpenJDK 17](http://openjdk.java.net/projects/jdk/17) or 
-[Oracle JDK 17](https://www.oracle.com/uk/java/technologies/downloads/#java17))
+BX-bot is supported on the current JDK 21 LTS. You'll need the JDK (e.g. [OpenJDK 21](https://openjdk.java.net/projects/jdk/21) or 
+[Oracle JDK 21](https://www.oracle.com/uk/java/technologies/downloads/#java21))
 installed on the machine you are going to use to build and run the bot.
 Be mindful of Oracle's recent [licensing changes](https://www.oracle.com/technetwork/java/javase/overview/oracle-jdk-faqs.html)
 and how you intend to use the bot.
@@ -112,13 +112,13 @@ and evaluate the bot, Docker is the way to go.
    Then run: `docker container attach <CONTAINER ID>`   
    
 ## Build Guide
-If you plan on developing the bot, you'll need JDK 17 installed on your dev box.
+If you plan on developing the bot, you'll need JDK 21 installed on your dev box.
 
 You can use Gradle or Maven to build the bot and pull down the dependencies.
 
 The instructions below are for Linux/macOS, but equivalent Windows scripts are included.
 
-Clone the repo locally (master branch).
+Clone the repo locally (main branch).
 
 ### Maven
 1. From the project root, run `./mvnw clean install`.
@@ -149,7 +149,7 @@ The bot has undergone basic unit testing on a _best-effort_ basis.
 There is a CI build running on [GitHub Actions](https://github.com/gazbert/bxbot/actions).
 
 The latest stable build can always be found on the [Releases](https://github.com/gazbert/bxbot/releases) page. 
-The SNAPSHOT builds on master are active development builds, but the tests should always pass and the bot should always 
+The SNAPSHOT builds on main are active development builds, but the tests should always pass and the bot should always 
 be deployable.
 
 ## User Guide
@@ -533,7 +533,7 @@ your own jar for your adapters, e.g. `my-adapters.jar`, and include it on BX-bot
 see the _[Installation Guide](#the-manual-way)_ for how to do this.
 
 ### Logging
-Logging for the bot is provided by [log4j](http://logging.apache.org/log4j). The log file is written to `logs/bxbot.log` 
+Logging for the bot is provided by [log4j](https://logging.apache.org/log4j). The log file is written to `logs/bxbot.log` 
 using a rolling policy. When a log file size reaches 100 MB or a new day is started, it is archived and a new log file 
 is created. BX-bot will create up to 7 archives on the same day; these are stored in a directory based on the current 
 year and month. Only the last 90 archives are kept. Each archive is compressed using gzip. The logging level is set 
@@ -612,7 +612,7 @@ JWT before it expires in order to get a new one. Alternatively, you can re-authe
 The REST API must be configured to use TLS before accessing it over a public network.
 
 You will need to 
-[create a keystore](https://docs.oracle.com/en/java/javase/17/docs/specs/man/keytool.html) - the command to
+[create a keystore](https://docs.oracle.com/en/java/javase/21/docs/specs/man/keytool.html) - the command to
 create a [PKCS12](https://en.wikipedia.org/wiki/PKCS_12) self-signed certificate is shown below:
 
 ```bash

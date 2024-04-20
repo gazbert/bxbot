@@ -36,6 +36,11 @@ public class MarketsType {
 
   private List<MarketConfig> markets;
 
+  /** Creates the Market type. */
+  public MarketsType() {
+    // No extra init needed.
+  }
+
   /**
    * Returns the market configs.
    *

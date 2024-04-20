@@ -61,6 +61,11 @@ public class Role {
   @ManyToMany(mappedBy = "roles", fetch = FetchType.LAZY)
   private List<User> users;
 
+  /** Creates the Role. */
+  public Role() {
+    // No extra init needed.
+  }
+
   /**
    * Returns the id.
    *

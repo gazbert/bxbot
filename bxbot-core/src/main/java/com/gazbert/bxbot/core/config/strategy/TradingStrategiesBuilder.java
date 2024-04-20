@@ -50,6 +50,11 @@ public class TradingStrategiesBuilder {
 
   private TradingStrategyFactory tradingStrategyFactory;
 
+  /** Creates the Trading Strategies Builder. */
+  public TradingStrategiesBuilder() {
+    // No extra init needed.
+  }
+
   /**
    * Sets the trading strategy factory.
    *

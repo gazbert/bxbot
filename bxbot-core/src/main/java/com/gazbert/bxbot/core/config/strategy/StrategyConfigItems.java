@@ -39,6 +39,11 @@ public final class StrategyConfigItems implements StrategyConfig {
 
   private Map<String, String> items = new HashMap<>();
 
+  /** Creates the Strategy Config Items. */
+  public StrategyConfigItems() {
+    // No extra init needed.
+  }
+
   @Override
   public String getConfigItem(String key) {
     return items.get(key);

@@ -54,6 +54,11 @@ public class RestApiConfig {
   @Min(1)
   private int maxLogfileDownloadSize;
 
+  /** Creates the REST API config. */
+  public RestApiConfig() {
+    // No extra init needed.
+  }
+
   /**
    * Returns the max logfile size (in bytes) to be returned by the REST API.
    *

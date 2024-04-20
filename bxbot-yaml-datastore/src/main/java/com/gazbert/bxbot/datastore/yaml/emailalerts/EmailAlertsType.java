@@ -34,6 +34,11 @@ public class EmailAlertsType {
 
   private EmailAlertsConfig emailAlerts;
 
+  /** Creates the Email Alerts type. */
+  public EmailAlertsType() {
+    // No extra init needed.
+  }
+
   /**
    * Returns the email alerts config.
    *

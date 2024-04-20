@@ -42,6 +42,11 @@ public class ExchangeConfigImpl implements ExchangeConfig {
   private NetworkConfig networkConfig;
   private OtherConfig otherConfig;
 
+  /** Creates the Exchange Config impl. */
+  public ExchangeConfigImpl() {
+    // No extra init needed.
+  }
+
   @Override
   public String getExchangeName() {
     return exchangeName;

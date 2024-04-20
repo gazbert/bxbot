@@ -99,6 +99,11 @@ public class User {
       inverseJoinColumns = {@JoinColumn(name = "ROLE_ID", referencedColumnName = "ID")})
   private List<Role> roles;
 
+  /** Creates the User. */
+  public User() {
+    // No extra init needed.
+  }
+
   /**
    * Returns the id.
    *

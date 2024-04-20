@@ -34,6 +34,11 @@ public class EngineType {
 
   private EngineConfig engine;
 
+  /** Creates the Engine type. */
+  public EngineType() {
+    // No extra init needed.
+  }
+
   /**
    * Returns the engine config.
    *

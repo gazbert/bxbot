@@ -129,6 +129,11 @@ public class BitstampExchangeAdapter extends AbstractExchangeAdapter implements 
 
   private Gson gson;
 
+  /** Constructs the Exchange Adapter. */
+  public BitstampExchangeAdapter() {
+    // No extra init.
+  }
+
   @Override
   public void init(ExchangeConfig config) {
     log.info("About to initialise Bitstamp ExchangeConfig: " + config);

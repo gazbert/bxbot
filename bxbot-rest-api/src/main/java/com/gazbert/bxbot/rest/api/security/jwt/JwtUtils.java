@@ -92,6 +92,11 @@ public class JwtUtils {
   @Value("${bxbot.restapi.jwt.audience}")
   private String audience;
 
+  /** Creates the JWT Utils. */
+  public JwtUtils() {
+    // No extra init needed.
+  }
+
   /**
    * For simple validation, it is sufficient to check the token integrity by just decrypting it with
    * the signing key and making sure it has not expired. We don't have to call the database for an

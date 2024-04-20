@@ -155,6 +155,11 @@ public class ExampleScalpingStrategy implements TradingStrategy {
    */
   private BigDecimal minimumPercentageGain;
 
+  /** Constructs the Example Scalping Strategy. */
+  public ExampleScalpingStrategy() {
+    // No extra init.
+  }
+
   /**
    * Initialises the Trading Strategy. Called once by the Trading Engine when the bot starts up;
    * it's a bit like a servlet init() method.

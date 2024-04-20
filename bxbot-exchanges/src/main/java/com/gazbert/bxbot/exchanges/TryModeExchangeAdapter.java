@@ -94,6 +94,11 @@ public class TryModeExchangeAdapter extends AbstractExchangeAdapter implements E
   private OpenOrder currentOpenOrder;
   private boolean isOpenOrderCheckReentering;
 
+  /** Constructs the Exchange Adapter. */
+  public TryModeExchangeAdapter() {
+    // No extra init.
+  }
+
   @Override
   public void init(ExchangeConfig config) {
     log.info("About to initialise try-mode adapter with the following exchange config: " + config);

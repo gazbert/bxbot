@@ -46,12 +46,6 @@
         <Bug pattern="REC_CATCH_EXCEPTION"/>
     </Match>
 
-    <!-- Ignore Exception not thrown for catch warnings in Coinbase Pro adapter -->
-    <Match>
-        <Class name="com.gazbert.bxbot.exchanges.CoinbaseProExchangeAdapter"/>
-        <Bug pattern="REC_CATCH_EXCEPTION"/>
-    </Match>
-
     <!-- Ignore toLowerCase/toUpperCase warnings without locale in Bitfinex adapter
          Exchange uses US English.
     -->
@@ -73,14 +67,6 @@
     -->
     <Match>
         <Class name="com.gazbert.bxbot.exchanges.GeminiExchangeAdapter"/>
-        <Bug pattern="DM_CONVERT_CASE"/>
-    </Match>
-
-    <!-- Ignore toLowerCase/toUpperCase warnings without locale in Coinbase Pro adapter
-         Exchange uses US English.
-    -->
-    <Match>
-        <Class name="com.gazbert.bxbot.exchanges.CoinbaseProExchangeAdapter"/>
         <Bug pattern="DM_CONVERT_CASE"/>
     </Match>
 
@@ -325,6 +311,12 @@
     <Match>
         <Class name="com.gazbert.bxbot.datastore.yaml.market.MarketsType"/>
         <Bug pattern="EI_EXPOSE_REP2"/>
+    </Match>
+
+    <!-- It does throw an IllegalArg exception if SMTP config is missing - the bot should fail to start. -->
+    <Match>
+        <Class name="com.gazbert.bxbot.core.mail.EmailAlerter"/>
+        <Bug pattern="CT_CONSTRUCTOR_THROW"/>
     </Match>
 
 </FindBugsFilter>
