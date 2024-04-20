@@ -126,7 +126,7 @@ public class EmailAlerter {
           final String errorMsg =
               "Failed to initialise Email Alerter. "
                   + "Alerts are enabled but no SMTP Config has been supplied in config.";
-          throw new IllegalStateException(errorMsg);
+          log.error(errorMsg);
         }
 
         log.info("SMTP host: " + smtpConfig.getHost());
