@@ -18,7 +18,7 @@ except for the trading strategies - you'll need to write those yourself! A simpl
 is included to get you started with the Trading API - see [Ta4j](https://github.com/ta4j/ta4j) for more ideas.
 
 Exchange Adapters for using [Bitstamp](https://www.bitstamp.net), [Bitfinex](https://www.bitfinex.com), 
-[Kraken](https://www.kraken.com), [Gemini](https://gemini.com/), and [Coinbase Pro](https://pro.coinbase.com/) are included. 
+[Kraken](https://www.kraken.com), and [Gemini](https://gemini.com/) are included. 
 Feel free to improve these or contribute new adapters to the project; that would be 
 [shiny!](https://en.wikipedia.org/wiki/Firefly_(TV_series))
 
