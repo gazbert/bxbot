@@ -313,4 +313,10 @@
         <Bug pattern="EI_EXPOSE_REP2"/>
     </Match>
 
+    <!-- It does throw an IllegalArg exception if SMTP config is missing - the bot should fail to start. -->
+    <Match>
+        <Class name="com.gazbert.bxbot.core.mail.EmailAlerter"/>
+        <Bug pattern="CT_CONSTRUCTOR_THROW"/>
+    </Match>
+
 </FindBugsFilter>
