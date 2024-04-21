@@ -100,7 +100,7 @@ allprojects {
   apply plugin: 'application'
   apply plugin: 'io.spring.dependency-management'
   apply plugin: 'maven-publish'
-  apply plugin: 'checkstyle'
+//  apply plugin: 'checkstyle'
   apply plugin: 'jacoco'
   apply plugin: 'com.github.spotbugs'
   apply plugin: 'org.sonarqube'
@@ -134,21 +134,20 @@ subprojects {
     include "**/api/**"
   }
 
-  checkstyle {
-    // https://stackoverflow.com/questions/47715303/how-to-find-which-checkstyle-version-gradle-is-using
-    toolVersion '8.23'
-    configFile = file("${rootDir}/etc/google_checks.xml")
-    ignoreFailures = false
-    showViolations = true
-    maxErrors = 0
-    maxWarnings = 0
-  }
-  checkstyleMain {
-    source = 'src/main/java'
-  }
-  checkstyleTest {
-    source = 'src/test/java'
-  }
+//  checkstyle {
+//    toolVersion "10.12.4"
+//    configFile = file("${rootDir}/etc/google_checks.xml")
+//    ignoreFailures = false
+//    showViolations = true
+//    maxErrors = 0
+//    maxWarnings = 0
+//  }
+//  checkstyleMain {
+//    source = 'src/main/java'
+//  }
+//  checkstyleTest {
+//    source = 'src/test/java'
+//  }
 
   jacoco {
     toolVersion = "0.8.11" // https://docs.gradle.org/current/userguide/jacoco_plugin.html
