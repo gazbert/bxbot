@@ -61,6 +61,8 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
@@ -943,10 +945,10 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
         requestHeaders.put("Content-Type", "application/x-www-form-urlencoded");
       }
 
-      final URL url = new URL(PUBLIC_API_BASE_URL + apiMethod + queryString);
+      final URL url = new URI(PUBLIC_API_BASE_URL + apiMethod + queryString).toURL();
       return makeNetworkRequest(url, "GET", null, requestHeaders);
 
-    } catch (MalformedURLException e) {
+    } catch (MalformedURLException | URISyntaxException e) {
       final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
       log.error(errorMsg, e);
       throw new TradingApiException(errorMsg, e);
@@ -1028,10 +1030,10 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
       requestHeaders.put("API-Key", key);
       requestHeaders.put("API-Sign", signature);
 
-      final URL url = new URL(AUTHENTICATED_API_URL + apiMethod);
+      final URL url = new URI(AUTHENTICATED_API_URL + apiMethod).toURL();
       return makeNetworkRequest(url, "POST", postData.toString(), requestHeaders);
 
-    } catch (MalformedURLException | NoSuchAlgorithmException e) {
+    } catch (MalformedURLException | NoSuchAlgorithmException | URISyntaxException e) {
       final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
       log.error(errorMsg, e);
       throw new TradingApiException(errorMsg, e);

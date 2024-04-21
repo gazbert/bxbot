@@ -53,6 +53,8 @@ import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
@@ -754,10 +756,10 @@ public class BitstampExchangeAdapter extends AbstractExchangeAdapter implements 
   private ExchangeHttpResponse sendPublicRequestToExchange(String apiMethod)
       throws ExchangeNetworkException, TradingApiException {
     try {
-      final URL url = new URL(API_BASE_URL + apiMethod);
+      final URL url = new URI(API_BASE_URL + apiMethod).toURL();
       return makeNetworkRequest(url, "GET", null, createHeaderParamMap());
 
-    } catch (MalformedURLException e) {
+    } catch (MalformedURLException | URISyntaxException e) {
       final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
       log.error(errorMsg, e);
       throw new TradingApiException(errorMsg, e);
@@ -820,10 +822,10 @@ public class BitstampExchangeAdapter extends AbstractExchangeAdapter implements 
       requestHeaders.put("Content-Type", "application/x-www-form-urlencoded");
 
       // MUST have the trailing slash else exchange barfs...
-      final URL url = new URL(API_BASE_URL + apiMethod + "/");
+      final URL url = new URI(API_BASE_URL + apiMethod + "/").toURL();
       return makeNetworkRequest(url, "POST", postData.toString(), requestHeaders);
 
-    } catch (MalformedURLException e) {
+    } catch (MalformedURLException | URISyntaxException e) {
       final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
       log.error(errorMsg, e);
       throw new TradingApiException(errorMsg, e);
