@@ -48,6 +48,8 @@ import java.io.Serial;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
@@ -644,10 +646,10 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter
   private ExchangeHttpResponse sendPublicRequestToExchange(String apiMethod)
       throws ExchangeNetworkException, TradingApiException {
     try {
-      final URL url = new URL(PUBLIC_API_BASE_URL + apiMethod);
+      final URL url = new URI(PUBLIC_API_BASE_URL + apiMethod).toURL();
       return makeNetworkRequest(url, "GET", null, createRequestParamMap());
 
-    } catch (MalformedURLException e) {
+    } catch (MalformedURLException | URISyntaxException e) {
       final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
       log.error(errorMsg, e);
       throw new TradingApiException(errorMsg, e);
@@ -739,10 +741,10 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter
       // payload is JSON for this exchange
       requestHeaders.put("Content-Type", "application/json");
 
-      final URL url = new URL(AUTHENTICATED_API_URL + apiMethod);
+      final URL url = new URI(AUTHENTICATED_API_URL + apiMethod).toURL();
       return makeNetworkRequest(url, "POST", paramsInJson, requestHeaders);
 
-    } catch (MalformedURLException e) {
+    } catch (MalformedURLException | URISyntaxException e) {
       final String errorMsg = UNEXPECTED_IO_ERROR_MSG;
       log.error(errorMsg, e);
       throw new TradingApiException(errorMsg, e);
