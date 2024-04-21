@@ -48,6 +48,8 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.google.gson.annotations.SerializedName;
+
+import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
@@ -822,7 +824,7 @@ public class BitstampExchangeAdapter extends AbstractExchangeAdapter implements 
       requestHeaders.put("Content-Type", "application/x-www-form-urlencoded");
 
       // MUST have the trailing slash else exchange barfs...
-      final URL url = new URI(API_BASE_URL + apiMethod + "/").toURL();
+      final URL url = new URI(API_BASE_URL + apiMethod + File.separator).toURL();
       return makeNetworkRequest(url, "POST", postData.toString(), requestHeaders);
 
     } catch (MalformedURLException | URISyntaxException e) {
