@@ -297,7 +297,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter
       // 'type' is either "market" / "limit" / "stop" / "trailing-stop" / "fill-or-kill" / "exchange
       // market" /
       // "exchange limit" / "exchange stop" / "exchange trailing-stop" / "exchange fill-or-kill".
-      // (type starting by "exchange " are exchange orders, others are margin trading orders)
+      // 'type' starting by "exchange " are exchange orders, others are margin trading orders.
 
       // this adapter only supports 'exchange limit orders'
       params.put("type", "exchange limit");

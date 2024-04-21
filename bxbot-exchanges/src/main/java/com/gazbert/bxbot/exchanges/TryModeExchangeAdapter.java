@@ -254,11 +254,10 @@ public class TryModeExchangeAdapter extends AbstractExchangeAdapter implements E
     delegateExchangeAdapter.init(config);
   }
 
-  @SuppressWarnings("unchecked")
   private ExchangeAdapter createDelegateExchangeAdapter() {
     log.info("Creating the delegate exchange adapter: " + delegateExchangeClassName + "...");
     try {
-      final Class componentClass = Class.forName(delegateExchangeClassName);
+      final Class<?> componentClass = Class.forName(delegateExchangeClassName);
       final Object rawComponentObject = componentClass.getDeclaredConstructor().newInstance();
       log.info(
           "Successfully created the delegate exchange adapter class for: "

@@ -55,6 +55,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
+import java.io.File;
 import java.io.Serial;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
@@ -231,9 +232,9 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
       if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
         final Type resultType =
             new TypeToken<KrakenResponse<KrakenMarketOrderBookResult>>() {}.getType();
-        final KrakenResponse krakenResponse = gson.fromJson(response.getPayload(), resultType);
+        final KrakenResponse<?> krakenResponse = gson.fromJson(response.getPayload(), resultType);
 
-        final List errors = krakenResponse.error;
+        final List<?> errors = krakenResponse.error;
         if (errors == null || errors.isEmpty()) {
           return adaptKrakenOrderBook(krakenResponse, marketId);
 
@@ -276,9 +277,9 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
       if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
 
         final Type resultType = new TypeToken<KrakenResponse<KrakenOpenOrderResult>>() {}.getType();
-        final KrakenResponse krakenResponse = gson.fromJson(response.getPayload(), resultType);
+        final KrakenResponse<?> krakenResponse = gson.fromJson(response.getPayload(), resultType);
 
-        final List errors = krakenResponse.error;
+        final List<?> errors = krakenResponse.error;
         if (errors == null || errors.isEmpty()) {
           return adaptKrakenOpenOrders(krakenResponse, marketId);
 
@@ -349,9 +350,9 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
       if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
 
         final Type resultType = new TypeToken<KrakenResponse<KrakenAddOrderResult>>() {}.getType();
-        final KrakenResponse krakenResponse = gson.fromJson(response.getPayload(), resultType);
+        final KrakenResponse<?> krakenResponse = gson.fromJson(response.getPayload(), resultType);
 
-        final List errors = krakenResponse.error;
+        final List<?> errors = krakenResponse.error;
         if (errors == null || errors.isEmpty()) {
 
           // Assume we'll always get something here if errors array is empty; else blow fast wih NPE
@@ -403,9 +404,9 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
 
         final Type resultType =
             new TypeToken<KrakenResponse<KrakenCancelOrderResult>>() {}.getType();
-        final KrakenResponse krakenResponse = gson.fromJson(response.getPayload(), resultType);
+        final KrakenResponse<?> krakenResponse = gson.fromJson(response.getPayload(), resultType);
 
-        final List errors = krakenResponse.error;
+        final List<?> errors = krakenResponse.error;
         if (errors == null || errors.isEmpty()) {
           return adaptKrakenCancelOrderResult(krakenResponse);
 
@@ -451,9 +452,9 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
       if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
 
         final Type resultType = new TypeToken<KrakenResponse<KrakenTickerResult>>() {}.getType();
-        final KrakenResponse krakenResponse = gson.fromJson(response.getPayload(), resultType);
+        final KrakenResponse<?> krakenResponse = gson.fromJson(response.getPayload(), resultType);
 
-        final List errors = krakenResponse.error;
+        final List<?> errors = krakenResponse.error;
         if (errors == null || errors.isEmpty()) {
 
           // Assume we'll always get something here if errors array is empty; else blow fast wih NPE
@@ -562,9 +563,9 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
       if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
 
         final Type resultType = new TypeToken<KrakenResponse<KrakenTickerResult>>() {}.getType();
-        final KrakenResponse krakenResponse = gson.fromJson(response.getPayload(), resultType);
+        final KrakenResponse<?> krakenResponse = gson.fromJson(response.getPayload(), resultType);
 
-        final List errors = krakenResponse.error;
+        final List<?> errors = krakenResponse.error;
         if (errors == null || errors.isEmpty()) {
 
           // Assume we'll always get something here if errors array is empty; else blow fast wih NPE
@@ -857,56 +858,47 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
 
           final String key = jsonTickerParam.getKey();
           switch (key) {
-            case "c":
+            case "c" -> {
               final List<String> lastTradeDetails =
                   context.deserialize(jsonTickerParam.getValue(), List.class);
               krakenTickerResult.put("c", lastTradeDetails.get(0));
-              break;
-
-            case "b":
+            }
+            case "b" -> {
               final List<String> bidDetails =
                   context.deserialize(jsonTickerParam.getValue(), List.class);
               krakenTickerResult.put("b", bidDetails.get(0));
-              break;
-
-            case "a":
+            }
+            case "a" -> {
               final List<String> askDetails =
                   context.deserialize(jsonTickerParam.getValue(), List.class);
               krakenTickerResult.put("a", askDetails.get(0));
-              break;
-
-            case "l":
+            }
+            case "l" -> {
               final List<String> lowDetails =
                   context.deserialize(jsonTickerParam.getValue(), List.class);
               krakenTickerResult.put("l", lowDetails.get(1));
-              break;
-
-            case "h":
+            }
+            case "h" -> {
               final List<String> highDetails =
                   context.deserialize(jsonTickerParam.getValue(), List.class);
               krakenTickerResult.put("h", highDetails.get(1));
-              break;
-
-            case "o":
+            }
+            case "o" -> {
               final String openDetails =
                   context.deserialize(jsonTickerParam.getValue(), String.class);
               krakenTickerResult.put("o", openDetails);
-              break;
-
-            case "v":
+            }
+            case "v" -> {
               final List<String> volumeDetails =
                   context.deserialize(jsonTickerParam.getValue(), List.class);
               krakenTickerResult.put("v", volumeDetails.get(1));
-              break;
-
-            case "p":
+            }
+            case "p" -> {
               final List<String> vWapDetails =
                   context.deserialize(jsonTickerParam.getValue(), List.class);
               krakenTickerResult.put("p", vWapDetails.get(1));
-              break;
-
-            default:
-              log.warn("Received unexpected Ticker param - ignoring: " + key);
+            }
+            default -> log.warn("Received unexpected Ticker param - ignoring: " + key);
           }
         }
       }
@@ -1007,7 +999,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
 
       // And now the tricky part... ;-o
       final byte[] pathInBytes =
-          ("/" + KRAKEN_API_VERSION + KRAKEN_PRIVATE_PATH + apiMethod)
+          (File.separator + KRAKEN_API_VERSION + KRAKEN_PRIVATE_PATH + apiMethod)
               .getBytes(StandardCharsets.UTF_8);
       final String noncePrependedToPostData = Long.toString(nonce) + postData;
 
@@ -1127,7 +1119,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
   //  Util methods
   // --------------------------------------------------------------------------
 
-  private List<OpenOrder> adaptKrakenOpenOrders(KrakenResponse krakenResponse, String marketId)
+  private List<OpenOrder> adaptKrakenOpenOrders(KrakenResponse<?> krakenResponse, String marketId)
       throws TradingApiException {
     final List<OpenOrder> openOrders = new ArrayList<>();
 
@@ -1139,7 +1131,6 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
     if (krakenOpenOrders != null) {
       for (final Map.Entry<String, KrakenOpenOrder> openOrder : krakenOpenOrders.entrySet()) {
 
-        OrderType orderType;
         final KrakenOpenOrder krakenOpenOrder = openOrder.getValue();
         final KrakenOpenOrderDescription krakenOpenOrderDescription = krakenOpenOrder.descr;
 
@@ -1147,6 +1138,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
           continue;
         }
 
+        OrderType orderType;
         switch (krakenOpenOrderDescription.type) {
           case "buy":
             orderType = OrderType.BUY;
@@ -1180,8 +1172,8 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
     return openOrders;
   }
 
-  private MarketOrderBookImpl adaptKrakenOrderBook(KrakenResponse krakenResponse, String marketId)
-      throws TradingApiException {
+  private MarketOrderBookImpl adaptKrakenOrderBook(
+      KrakenResponse<?> krakenResponse, String marketId) throws TradingApiException {
 
     // Assume we'll always get something here if errors array is empty; else blow fast wih NPE
     final KrakenMarketOrderBookResult krakenOrderBookResult =
@@ -1219,7 +1211,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
     }
   }
 
-  private boolean adaptKrakenCancelOrderResult(KrakenResponse krakenResponse) {
+  private boolean adaptKrakenCancelOrderResult(KrakenResponse<?> krakenResponse) {
     // Assume we'll always get something here if errors array is empty; else blow fast wih NPE
     final KrakenCancelOrderResult krakenCancelOrderResult =
         (KrakenCancelOrderResult) krakenResponse.result;
@@ -1240,9 +1232,9 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
 
   private BalanceInfoImpl adaptKrakenBalanceInfo(ExchangeHttpResponse response, Type resultType)
       throws ExchangeNetworkException, TradingApiException {
-    final KrakenResponse krakenResponse = gson.fromJson(response.getPayload(), resultType);
+    final KrakenResponse<?> krakenResponse = gson.fromJson(response.getPayload(), resultType);
     if (krakenResponse != null) {
-      final List errors = krakenResponse.error;
+      final List<?> errors = krakenResponse.error;
       if (errors == null || errors.isEmpty()) {
         // Assume we'll always get something here if errors array is empty; else blow fast wih NPE
         final KrakenBalanceResult balanceResult = (KrakenBalanceResult) krakenResponse.result;
