@@ -55,7 +55,7 @@ public class EmergencyStopChecker {
    * <strong>below</strong> configured limit.
    *
    * <p>If the balance cannot be obtained or has dropped below the configured limit, we send an
-   * Email Alert and notify the main control loop to immediately shutdown the bot.
+   * Email Alert and notify the main control loop to immediately shut down the bot.
    *
    * <p>This check is here to help protect runaway losses due to:
    *
@@ -89,7 +89,7 @@ public class EmergencyStopChecker {
           "Failed to get Balance info from exchange to perform Emergency Stop check - letting"
               + " Trade Engine error policy decide what to do next...";
       log.error(errorMsg, e);
-      // re-throw to main loop - might only be connection issue and it will retry...
+      // re-throw to main loop - might only be connection issue, and it will retry...
       throw e;
     }
 

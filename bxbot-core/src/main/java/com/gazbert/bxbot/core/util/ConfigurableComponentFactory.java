@@ -52,7 +52,7 @@ public class ConfigurableComponentFactory {
   @SuppressWarnings("unchecked")
   public <T> T createComponent(String componentClassName) {
     try {
-      final Class componentClass = Class.forName(componentClassName);
+      final Class<?> componentClass = Class.forName(componentClassName);
       final Object rawComponentObject = componentClass.getDeclaredConstructor().newInstance();
       log.info("Successfully created the Component class for: " + componentClassName);
       return (T) rawComponentObject;
