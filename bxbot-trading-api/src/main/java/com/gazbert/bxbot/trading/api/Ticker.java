@@ -88,8 +88,8 @@ public interface Ticker {
   BigDecimal getVolume();
 
   /**
-   * Returns the last 24 hours volume weighted average -
-   * https://en.wikipedia.org/wiki/Volume-weighted_average_price
+   * Returns the last 24 hours volume weighted average - see
+   * <a href="https://en.wikipedia.org/wiki/Volume-weighted_average_price">here</a>.
    *
    * @return the last 24 hours volume weighted average if the exchange provides it, null otherwise.
    */

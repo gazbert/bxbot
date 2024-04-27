@@ -34,7 +34,7 @@ import java.io.Serial;
  *
  * <p>If your Trading Strategy catches this exception, you could retry the API call, or exit from
  * your Trading Strategy and let the Trading Engine execute your Trading Strategy at the next trade
- * cycle. This allows the you to recover from temporary network issues.
+ * cycle. This allows you to recover from temporary network issues.
  *
  * <p>If the Trading Engine receives these exceptions from directly calling an Exchange Adapter
  * method, it will log the event and sleep until the next trade cycle.
