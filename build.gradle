@@ -12,9 +12,9 @@ buildscript {
 }
 
 plugins {
-  id 'org.sonarqube' version '5.0.0.4638'  // https://plugins.gradle.org/plugin/org.sonarqube
+  id 'org.sonarqube' version '5.0.0.4638'   // https://plugins.gradle.org/plugin/org.sonarqube
   id 'jacoco'
-  id 'com.github.spotbugs' version '5.2.5' // https://plugins.gradle.org/plugin/com.github.spotbugs
+  id 'com.github.spotbugs' version '5.2.5'  // https://plugins.gradle.org/plugin/com.github.spotbugs
 }
 
 buildScan {
@@ -100,7 +100,7 @@ allprojects {
   apply plugin: 'application'
   apply plugin: 'io.spring.dependency-management'
   apply plugin: 'maven-publish'
-//  apply plugin: 'checkstyle'
+  apply plugin: 'checkstyle'
   apply plugin: 'jacoco'
   apply plugin: 'com.github.spotbugs'
   apply plugin: 'org.sonarqube'
@@ -134,23 +134,24 @@ subprojects {
     include "**/api/**"
   }
 
-//  checkstyle {
-//    toolVersion "10.12.4"
-//    configFile = file("${rootDir}/etc/google_checks.xml")
-//    ignoreFailures = false
-//    showViolations = true
-//    maxErrors = 0
-//    maxWarnings = 0
-//  }
-//  checkstyleMain {
-//    source = 'src/main/java'
-//  }
-//  checkstyleTest {
-//    source = 'src/test/java'
-//  }
+  checkstyle {
+    toolVersion "10.15.0"
+    configFile = file("${rootDir}/etc/google_checks.xml")
+    configProperties = ["org.checkstyle.google.suppressionfilter.config": file("${rootDir}/etc/checkstyle-suppressions.xml")]
+    ignoreFailures = false
+    showViolations = true
+    maxErrors = 0
+    maxWarnings = 0
+  }
+  checkstyleMain {
+    source = 'src/main/java'
+  }
+  checkstyleTest {
+    source = 'src/test/java'
+  }
 
   jacoco {
-    toolVersion = "0.8.11" // https://docs.gradle.org/current/userguide/jacoco_plugin.html
+    toolVersion = "0.8.12" // https://docs.gradle.org/current/userguide/jacoco_plugin.html
   }
   jacocoTestReport {
     reports {

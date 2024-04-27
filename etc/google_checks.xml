@@ -29,11 +29,12 @@
   <module name="BeforeExecutionExclusionFileFilter">
     <property name="fileNamePattern" value="module\-info\.java$"/>
   </module>
+
   <!-- https://checkstyle.org/filters/suppressionfilter.html -->
   <module name="SuppressionFilter">
     <property name="file" value="${org.checkstyle.google.suppressionfilter.config}"
               default="checkstyle-suppressions.xml" />
-    <property name="optional" value="true"/>
+    <property name="optional" value="false"/>
   </module>
 
   <!-- Checks for whitespace                               -->
@@ -93,10 +94,15 @@
     <module name="RightCurly">
       <property name="id" value="RightCurlyAlone"/>
       <property name="option" value="alone"/>
+
+      <!-- FIXME: gazbert: Removed LITERAL_CASE as breaking with Gradle 8.7, Checkstyle tool version 10.15.0:
+      Caused by: com.puppycrawl.tools.checkstyle.api.CheckstyleException: cannot initialize module TreeWalker -
+      Token "LITERAL_CASE" was not found in Acceptable tokens list in check com.puppycrawl.tools.checkstyle.checks.blocks.RightCurlyCheck
+       -->
       <property name="tokens"
                 value="CLASS_DEF, METHOD_DEF, CTOR_DEF, LITERAL_FOR, LITERAL_WHILE, STATIC_INIT,
                     INSTANCE_INIT, ANNOTATION_DEF, ENUM_DEF, INTERFACE_DEF, RECORD_DEF,
-                    COMPACT_CTOR_DEF, LITERAL_SWITCH, LITERAL_CASE"/>
+                    COMPACT_CTOR_DEF, LITERAL_SWITCH"/>
     </module>
     <module name="SuppressionXpathSingleFilter">
       <!-- suppresion is required till https://github.com/checkstyle/checkstyle/issues/7541 -->

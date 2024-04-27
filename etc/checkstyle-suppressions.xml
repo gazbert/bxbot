@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE suppressions PUBLIC
+        "-//Checkstyle//DTD SuppressionFilter Configuration 1.2//EN"
+        "https://checkstyle.org/dtds/suppressions_1_2.dtd">
+
+<suppressions>
+    <!-- Suppress JBehave javadocs -->
+    <suppress checks="JavadocMethod" files=".*Steps\.java"/>
+
+    <suppress checks="AbbreviationAsWordInName"
+              files="BitstampIT.java"
+              lines="1-9999"/>
+    <suppress checks="AbbreviationAsWordInName"
+              files="KrakenIT.java"
+              lines="1-9999"/>
+    <suppress checks="AbbreviationAsWordInName"
+              files="BitfinexIT.java"
+              lines="1-9999"/>
+    <suppress checks="AbbreviationAsWordInName"
+              files="GeminiIT.java"
+              lines="1-9999"/>
+</suppressions>
