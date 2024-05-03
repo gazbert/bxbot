@@ -1,5 +1,4 @@
-Sample BX-bot Configurations
-============================
+# Sample BX-bot Configurations
 
 Each folder contains sample config for running against a particular Exchange.
  
