@@ -19,7 +19,7 @@ engine:
 
   # This must be set to prevent catastrophic loss on the exchange.
   # This is normally the currency you intend to hold a long position in. It should be set to the currency short code for the
-  # wallet, e.g. XXBT, LTC, USD. This value can be case sensitive for some exchanges - check the Exchange Adapter documentation.
+  # wallet, e.g. XXBT, LTC, USD. This value can be case-sensitive for some exchanges - check the Exchange Adapter documentation.
   #
   # Markets assets (currencies) can be referenced using their ISO4217-A3 names in the case of ISO registered names,
   # their 3 letter commonly used names in the case of unregistered names,
@@ -35,7 +35,7 @@ engine:
   # Manual intervention is then required to restart the bot. You can set this value to 0 to override this check.
   emergencyStopBalance: 1.0
 
-  # The is the interval in seconds that the Trading Engine will wait/sleep before executing
+  # This is the interval in seconds that the Trading Engine will wait/sleep before executing
   # the next trade cycle. The minimum value is 1 second. Some exchanges allow you to hit them harder than others. However,
   # while their API documentation might say one thing, the reality is you might get socket timeouts and 5XX responses if you
   # hit it too hard - you cannot perform ultra low latency trading over the public internet ;-)

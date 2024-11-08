@@ -1108,7 +1108,7 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
     exchangeAdapter.init(exchangeConfig);
 
     final BigDecimal minimumOrderVolume = exchangeAdapter.getMinimumOrderVolume("XBTUSD");
-    assertEquals(0, minimumOrderVolume.compareTo(new BigDecimal("0.0001")));
+    assertEquals(0, minimumOrderVolume.compareTo(new BigDecimal("0.00005")));
 
     PowerMock.verifyAll();
   }
