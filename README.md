@@ -109,7 +109,10 @@ and evaluate the bot, Docker is the way to go.
 1. Usage: `./bxbot.sh [start|stop|status]`
 1. You can detach from the container and leave the bot running using the `CTRL-p` `CTRL-q` key sequence.
 1. To re-attach to the Docker container, run `docker container ls` to get the CONTAINER ID. 
-   Then run: `docker container attach <CONTAINER ID>`   
+   Then run: `docker container attach <CONTAINER ID>`
+
+You could modify the [Dockerfile](./Dockerfile) to make the bot cloud native, e.g. run in Kubernetes. The config could
+be externalised using a Docker [volume](https://docs.docker.com/engine/storage/) mount.
    
 ## Build Guide
 If you plan on developing the bot, you'll need JDK 21 installed on your dev box.

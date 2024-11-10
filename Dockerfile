@@ -1,12 +1,13 @@
-FROM eclipse-temurin:21.0.2_13-jdk
+FROM eclipse-temurin:21-jdk
 
+# Install editor for folks to play around with the config.
 RUN apt-get update
-RUN apt-get install -y maven
+RUN apt-get install -y vim
 
 COPY . bxbot-staging
-
 WORKDIR ./bxbot-staging
-RUN mvn clean package
+
+RUN ./mvnw clean package
 RUN cp ./bxbot-app/target/bxbot-app-*-dist.tar.gz /
 
 WORKDIR /
