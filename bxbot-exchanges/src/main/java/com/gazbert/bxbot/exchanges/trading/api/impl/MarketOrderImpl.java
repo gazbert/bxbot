@@ -25,14 +25,15 @@ package com.gazbert.bxbot.exchanges.trading.api.impl;
 
 import com.gazbert.bxbot.trading.api.MarketOrder;
 import com.gazbert.bxbot.trading.api.OrderType;
-import com.google.common.base.MoreObjects;
 import java.math.BigDecimal;
+import lombok.Data;
 
 /**
  * A MarketOrder implementation that can be used by Exchange Adapters.
  *
  * @author gazbert
  */
+@Data
 public final class MarketOrderImpl implements MarketOrder {
 
   private OrderType type;
@@ -53,71 +54,5 @@ public final class MarketOrderImpl implements MarketOrder {
     this.price = price;
     this.quantity = quantity;
     this.total = total;
-  }
-
-  @Override
-  public OrderType getType() {
-    return type;
-  }
-
-  /**
-   * Sets the order type.
-   *
-   * @param type the order type.
-   */
-  public void setType(OrderType type) {
-    this.type = type;
-  }
-
-  @Override
-  public BigDecimal getPrice() {
-    return price;
-  }
-
-  /**
-   * Sets the price.
-   *
-   * @param price the price.
-   */
-  public void setPrice(BigDecimal price) {
-    this.price = price;
-  }
-
-  @Override
-  public BigDecimal getQuantity() {
-    return quantity;
-  }
-
-  /**
-   * Sets the quantity.
-   *
-   * @param quantity the quantity.
-   */
-  public void setQuantity(BigDecimal quantity) {
-    this.quantity = quantity;
-  }
-
-  @Override
-  public BigDecimal getTotal() {
-    return total;
-  }
-
-  /**
-   * Sets the total.
-   *
-   * @param total the total.
-   */
-  public void setTotal(BigDecimal total) {
-    this.total = total;
-  }
-
-  @Override
-  public String toString() {
-    return MoreObjects.toStringHelper(this)
-        .add("type", type)
-        .add("price", price)
-        .add("quantity", quantity)
-        .add("total", total)
-        .toString();
   }
 }

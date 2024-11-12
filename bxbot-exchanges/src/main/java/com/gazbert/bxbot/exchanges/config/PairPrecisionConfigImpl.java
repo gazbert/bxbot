@@ -26,12 +26,14 @@ package com.gazbert.bxbot.exchanges.config;
 import com.gazbert.bxbot.exchange.api.PairPrecisionConfig;
 import java.math.BigDecimal;
 import java.util.Map;
+import lombok.ToString;
 
 /**
  * Default implementation of {@link PairPrecisionConfig} backed by {@link Map}s.
  *
  * @author maiph
  */
+@ToString
 public class PairPrecisionConfigImpl implements PairPrecisionConfig {
 
   private final Map<String, Integer> prices;

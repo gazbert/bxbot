@@ -989,7 +989,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
       // Build the URL with query param args in it - yuk!
       final StringBuilder postData = new StringBuilder();
       for (final Map.Entry<String, String> param : params.entrySet()) {
-        if (postData.length() > 0) {
+        if (!postData.isEmpty()) {
           postData.append("&");
         }
         postData.append(param.getKey());

@@ -407,7 +407,7 @@ abstract class AbstractExchangeAdapter {
   }
 
   private static String assertItemExists(String itemName, String itemValue) {
-    if (itemValue == null || itemValue.length() == 0) {
+    if (itemValue == null || itemValue.isEmpty()) {
       final String errorMsg =
           itemName + CONFIG_IS_NULL_OR_ZERO_LENGTH + EXCHANGE_CONFIG_FILE + " ?";
       log.error(errorMsg);
