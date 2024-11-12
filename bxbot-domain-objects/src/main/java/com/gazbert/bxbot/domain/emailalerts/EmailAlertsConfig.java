@@ -23,8 +23,8 @@
 
 package com.gazbert.bxbot.domain.emailalerts;
 
-import com.google.common.base.MoreObjects;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Data;
 
 /**
  * Domain object representing the Email Alerts config.
@@ -32,6 +32,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
  * @author gazbert
  */
 @Schema
+@Data
 public class EmailAlertsConfig {
 
   @Schema(
@@ -58,49 +59,5 @@ public class EmailAlertsConfig {
   public EmailAlertsConfig(boolean enabled, SmtpConfig smtpConfig) {
     this.enabled = enabled;
     this.smtpConfig = smtpConfig;
-  }
-
-  /**
-   * Returns alerts enabled.
-   *
-   * @return alerts enabled.
-   */
-  public boolean isEnabled() {
-    return enabled;
-  }
-
-  /**
-   * Sets alerts enabled.
-   *
-   * @param enabled alerts enabled.
-   */
-  public void setEnabled(boolean enabled) {
-    this.enabled = enabled;
-  }
-
-  /**
-   * Returns the SMTP config.
-   *
-   * @return the SMTP config.
-   */
-  public SmtpConfig getSmtpConfig() {
-    return smtpConfig;
-  }
-
-  /**
-   * Sets the SMTP config.
-   *
-   * @param smtpConfig the SMTP config.
-   */
-  public void setSmtpConfig(SmtpConfig smtpConfig) {
-    this.smtpConfig = smtpConfig;
-  }
-
-  @Override
-  public String toString() {
-    return MoreObjects.toStringHelper(this)
-        .add("enabled", enabled)
-        .add("smtpConfig", smtpConfig)
-        .toString();
   }
 }

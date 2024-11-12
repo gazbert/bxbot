@@ -23,15 +23,16 @@
 
 package com.gazbert.bxbot.domain.bot;
 
-import com.google.common.base.MoreObjects;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.Date;
+import lombok.Data;
 
 /**
  * Domain object representing the Bot's status.
  *
  * @author gazbert
  */
+@Data
 @Schema
 public class BotStatus {
 
@@ -68,60 +69,6 @@ public class BotStatus {
   }
 
   /**
-   * Returns the bot id.
-   *
-   * @return the bot id.
-   */
-  public String getBotId() {
-    return botId;
-  }
-
-  /**
-   * Sets the bot id.
-   *
-   * @param botId the bot id.
-   */
-  public void setBotId(String botId) {
-    this.botId = botId;
-  }
-
-  /**
-   * Returns the display name.
-   *
-   * @return the display name.
-   */
-  public String getDisplayName() {
-    return displayName;
-  }
-
-  /**
-   * Sets the display name.
-   *
-   * @param displayName the display name.
-   */
-  public void setDisplayName(String displayName) {
-    this.displayName = displayName;
-  }
-
-  /**
-   * Returns the status.
-   *
-   * @return the status.
-   */
-  public String getStatus() {
-    return status;
-  }
-
-  /**
-   * Sets the status.
-   *
-   * @param status the status.
-   */
-  public void setStatus(String status) {
-    this.status = status;
-  }
-
-  /**
    * Returns the datetime.
    *
    * @return the datetime.
@@ -137,15 +84,5 @@ public class BotStatus {
    */
   public void setDatetime(Date datetime) {
     this.datetime = datetime != null ? new Date(datetime.getTime()) : null;
-  }
-
-  @Override
-  public String toString() {
-    return MoreObjects.toStringHelper(this)
-        .add("botId", botId)
-        .add("displayName", displayName)
-        .add("status", status)
-        .add("datetime", getDatetime())
-        .toString();
   }
 }

@@ -88,6 +88,6 @@ class TestBotStatus {
         botStatus
             .toString()
             .startsWith(
-                "BotStatus{botId=avro-707_1, displayName=Avro 707, status=running, datetime="));
+                "BotStatus(botId=avro-707_1, displayName=Avro 707, status=running, datetime="));
   }
 }

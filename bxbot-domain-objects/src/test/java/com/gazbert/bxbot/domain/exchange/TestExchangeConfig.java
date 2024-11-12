@@ -83,10 +83,10 @@ class TestExchangeConfig {
     exchangeConfig.setOtherConfig(OTHER_CONFIG);
 
     assertEquals(
-        "ExchangeConfig{name=Bitstamp, "
+        "ExchangeConfig(name=Bitstamp, "
             + "adapter=com.gazbert.bxbot.exchanges.TestExchangeAdapter, "
-            + "networkConfig=NetworkConfig{connectionTimeout=null, nonFatalErrorCodes=[], "
-            + "nonFatalErrorMessages=[]}, otherConfig={}}",
+            + "networkConfig=NetworkConfig(connectionTimeout=null, nonFatalErrorCodes=[], "
+            + "nonFatalErrorMessages=[]), otherConfig={})",
         exchangeConfig.toString());
   }
 }

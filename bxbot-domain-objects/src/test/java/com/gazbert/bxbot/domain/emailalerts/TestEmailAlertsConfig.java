@@ -66,8 +66,8 @@ class TestEmailAlertsConfig {
     emailAlertsConfig.setSmtpConfig(SMTP_CONFIG);
 
     assertEquals(
-        "EmailAlertsConfig{enabled=true, smtpConfig=SmtpConfig{host=null, tlsPort=0, "
-            + "accountUsername=null, fromAddress=null, toAddress=null}}",
+        "EmailAlertsConfig(enabled=true, smtpConfig=SmtpConfig(host=null, tlsPort=0, "
+            + "accountUsername=null, fromAddress=null, toAddress=null))",
         emailAlertsConfig.toString());
   }
 }

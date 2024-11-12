@@ -95,8 +95,8 @@ class TestSmtpConfig {
     emailAlertsConfig.setToAddress(TO_ADDRESS);
 
     assertEquals(
-        "SmtpConfig{host=mail.google.com, tlsPort=587, accountUsername=user@google.com,"
-            + " fromAddress=from.me@google.com, toAddress=to.them@google.com}",
+        "SmtpConfig(host=mail.google.com, tlsPort=587, accountUsername=user@google.com,"
+            + " fromAddress=from.me@google.com, toAddress=to.them@google.com)",
         emailAlertsConfig.toString());
   }
 }
