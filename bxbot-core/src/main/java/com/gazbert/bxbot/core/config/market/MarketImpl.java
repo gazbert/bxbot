@@ -24,14 +24,17 @@
 package com.gazbert.bxbot.core.config.market;
 
 import com.gazbert.bxbot.trading.api.Market;
-import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
+import lombok.Setter;
+import lombok.ToString;
 
 /**
  * Holds information for an Exchange market.
  *
  * @author gazbert
  */
+@Setter
+@ToString
 public final class MarketImpl implements Market {
 
   private String name;
@@ -52,15 +55,6 @@ public final class MarketImpl implements Market {
     this.name = name;
     this.baseCurrency = baseCurrency;
     this.counterCurrency = counterCurrency;
-  }
-
-  /**
-   * Sets the name.
-   *
-   * @param name the name.
-   */
-  public void setName(String name) {
-    this.name = name;
   }
 
   @Override
@@ -121,15 +115,5 @@ public final class MarketImpl implements Market {
   @Override
   public int hashCode() {
     return Objects.hashCode(id);
-  }
-
-  @Override
-  public String toString() {
-    return MoreObjects.toStringHelper(this)
-        .add("name", name)
-        .add("id", id)
-        .add("baseCurrency", baseCurrency)
-        .add("counterCurrency", counterCurrency)
-        .toString();
   }
 }

@@ -27,18 +27,23 @@ import com.gazbert.bxbot.exchange.api.AuthenticationConfig;
 import com.gazbert.bxbot.exchange.api.ExchangeConfig;
 import com.gazbert.bxbot.exchange.api.NetworkConfig;
 import com.gazbert.bxbot.exchange.api.OtherConfig;
-import com.google.common.base.MoreObjects;
+import lombok.Setter;
+import lombok.ToString;
 
 /**
  * Exchange API Exchange config.
  *
  * @author gazbert
  */
+@Setter
+@ToString
 public class ExchangeConfigImpl implements ExchangeConfig {
 
   private String exchangeName;
   private String exchangeAdapter;
-  private AuthenticationConfig authenticationConfig;
+
+  @ToString.Exclude private AuthenticationConfig authenticationConfig;
+
   private NetworkConfig networkConfig;
   private OtherConfig otherConfig;
 
@@ -80,24 +85,6 @@ public class ExchangeConfigImpl implements ExchangeConfig {
     return authenticationConfig;
   }
 
-  /**
-   * Sets the authentication config.
-   *
-   * @param authenticationConfig authentication config.
-   */
-  public void setAuthenticationConfig(AuthenticationConfig authenticationConfig) {
-    this.authenticationConfig = authenticationConfig;
-  }
-
-  /**
-   * Sets the network config.
-   *
-   * @param networkConfig the network config.
-   */
-  public void setNetworkConfig(NetworkConfig networkConfig) {
-    this.networkConfig = networkConfig;
-  }
-
   @Override
   public NetworkConfig getNetworkConfig() {
     return networkConfig;
@@ -106,25 +93,5 @@ public class ExchangeConfigImpl implements ExchangeConfig {
   @Override
   public OtherConfig getOtherConfig() {
     return otherConfig;
-  }
-
-  /**
-   * Sets the other config.
-   *
-   * @param otherConfig the other config.
-   */
-  public void setOtherConfig(OtherConfig otherConfig) {
-    this.otherConfig = otherConfig;
-  }
-
-  @Override
-  public String toString() {
-    return MoreObjects.toStringHelper(this)
-        .add("exchangeName", exchangeName)
-        .add("exchangeAdapter", exchangeAdapter)
-        .add("authenticationConfig", "NOT SHOWN BY DESIGN")
-        .add("networkConfig", networkConfig)
-        .add("otherConfig", otherConfig)
-        .toString();
   }
 }

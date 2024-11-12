@@ -24,17 +24,20 @@
 package com.gazbert.bxbot.core.config.strategy;
 
 import com.gazbert.bxbot.strategy.api.StrategyConfig;
-import com.google.common.base.MoreObjects;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import lombok.Setter;
+import lombok.ToString;
 
 /**
  * Encapsulates (optional) Strategy Config Items.
  *
  * @author gazbert
  */
+@Setter
+@ToString
 public final class StrategyConfigItems implements StrategyConfig {
 
   private Map<String, String> items = new HashMap<>();
@@ -60,25 +63,11 @@ public final class StrategyConfigItems implements StrategyConfig {
   }
 
   /**
-   * Sets the config items.
-   *
-   * @param items the config items.
-   */
-  public void setItems(Map<String, String> items) {
-    this.items = items;
-  }
-
-  /**
    * Returns the config items.
    *
    * @return the config items.
    */
   Map<String, String> getItems() {
     return items;
-  }
-
-  @Override
-  public String toString() {
-    return MoreObjects.toStringHelper(this).add("items", items).toString();
   }
 }

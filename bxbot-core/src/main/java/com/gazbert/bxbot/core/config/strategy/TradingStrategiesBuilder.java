@@ -147,7 +147,7 @@ public class TradingStrategiesBuilder {
         tradingStrategiesToExecute.add(strategyImpl);
       } else {
 
-        // Game over. Config integrity blown - we can't find strat.
+        // Game over. Config integrity blown - we can't find strategy.
         final String errorMsg =
             "Failed to find matching Strategy for Market "
                 + market
