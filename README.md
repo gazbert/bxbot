@@ -111,7 +111,7 @@ and evaluate the bot, Docker is the way to go.
 1. To re-attach to the Docker container, run `docker container ls` to get the CONTAINER ID. 
    Then run: `docker container attach <CONTAINER ID>`
 
-You could modify the [Dockerfile](./Dockerfile) to make the bot cloud native, e.g. run in Kubernetes. The config could
+You could modify the [Dockerfile](./Dockerfile) to containerise the bot and deploy to Kubernetes. The config can
 be externalised using a Docker [volume](https://docs.docker.com/engine/storage/) mount.
    
 ## Build Guide
