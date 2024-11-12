@@ -45,11 +45,11 @@
     <revision>2.2.1-SNAPSHOT</revision>
 
     <!-- Should be same as dependency used by spring-boot-starter.version -->
-    <spring-core.version>6.0.19</spring-core.version>
+    <spring-core.version>6.1.14</spring-core.version>
 
     <jjwt.version>0.11.5</jjwt.version>
     <powermock.version>2.0.9</powermock.version>
-    <spring-boot-starter.version>3.1.11</spring-boot-starter.version>
+    <spring-boot-starter.version>3.3.5</spring-boot-starter.version>
     <checkstlye.version>3.6.0</checkstlye.version>
     <spotbugs.version>4.8.6.5</spotbugs.version>
     <hibernate-vaildator.version>8.0.1.Final</hibernate-vaildator.version>
@@ -61,7 +61,7 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>3.1.11</version>
+    <version>3.3.5</version>
   </parent>
   <profiles>
     <profile>
@@ -193,7 +193,7 @@
       <dependency>
         <groupId>org.springframework.cloud</groupId>
         <artifactId>spring-cloud-starter</artifactId>
-        <version>4.0.5</version>
+        <version>4.1.4</version>
       </dependency>
       <dependency>
         <groupId>io.jsonwebtoken</groupId>
@@ -312,7 +312,7 @@
       <dependency>
         <groupId>org.springframework.security</groupId>
         <artifactId>spring-security-test</artifactId>
-        <version>6.1.8</version>
+        <version>6.3.4</version>
         <scope>test</scope>
       </dependency>
       <dependency>
