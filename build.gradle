@@ -72,7 +72,7 @@ ext.libraries = [
 
     jakarta_xml_api                         : dependencies.create("jakarta.xml.bind:jakarta.xml.bind-api:4.0.2"),
 
-    snake_yaml                              : dependencies.create("org.yaml:snakeyaml:1.33"),
+    snake_yaml                              : dependencies.create("org.yaml:snakeyaml:2.2"),
 
     springdoc_openapi_ui                    : dependencies.create("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0"),
 
