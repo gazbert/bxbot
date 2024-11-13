@@ -49,13 +49,16 @@ public class JwtUser implements UserDetails {
   /** Username. */
   private final String username;
 
+  /** Firstname. */
   @Getter private final String firstname;
 
+  /** Lastname. */
   @Getter private final String lastname;
 
   /** Password. */
   private final String password;
 
+  /** Email address. */
   @Getter private final String email;
 
   /** Granted authorities. */
@@ -64,8 +67,10 @@ public class JwtUser implements UserDetails {
   /** Is enabled. */
   private final boolean enabled;
 
+  /** Date the password was last set. */
   @Getter private final long lastPasswordResetDate;
 
+  /** The User's roles. */
   @Getter private final List<String> roles;
 
   /**
