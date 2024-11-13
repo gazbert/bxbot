@@ -144,7 +144,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter
 
   @Override
   public void init(ExchangeConfig config) {
-    log.info("About to initialise Bitfinex ExchangeConfig: " + config);
+    log.info("About to initialise Bitfinex ExchangeConfig: {}", config);
     setAuthenticationConfig(config);
     setNetworkConfig(config);
 
@@ -163,7 +163,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter
       throws TradingApiException, ExchangeNetworkException {
     try {
       final ExchangeHttpResponse response = sendPublicRequestToExchange("book/" + marketId);
-      log.debug("Market Orders response: " + response);
+      log.debug("Market Orders response: {}", response);
 
       final BitfinexOrderBook orderBook =
           gson.fromJson(response.getPayload(), BitfinexOrderBook.class);
@@ -206,7 +206,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter
       throws TradingApiException, ExchangeNetworkException {
     try {
       final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("orders", null);
-      log.debug("Open Orders response: " + response);
+      log.debug("Open Orders response: {}", response);
 
       final BitfinexOpenOrders bitfinexOpenOrders =
           gson.fromJson(response.getPayload(), BitfinexOpenOrders.class);
@@ -308,7 +308,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter
       // params.put("is_hidden", "false");
 
       final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("order/new", params);
-      log.debug("Create Order response: " + response);
+      log.debug("Create Order response: {}", response);
 
       final BitfinexNewOrderResponse createOrderResponse =
           gson.fromJson(response.getPayload(), BitfinexNewOrderResponse.class);
@@ -342,7 +342,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter
 
       final ExchangeHttpResponse response =
           sendAuthenticatedRequestToExchange("order/cancel", params);
-      log.debug("Cancel Order response: " + response);
+      log.debug("Cancel Order response: {}", response);
 
       // Exchange returns order id and other details if successful, a 400 HTTP Status if the order
       // id was not recognised.
@@ -370,7 +370,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter
       throws TradingApiException, ExchangeNetworkException {
     try {
       final ExchangeHttpResponse response = sendPublicRequestToExchange("pubticker/" + marketId);
-      log.debug("Latest Market Price response: " + response);
+      log.debug("Latest Market Price response: {}", response);
 
       final BitfinexTicker ticker = gson.fromJson(response.getPayload(), BitfinexTicker.class);
       return ticker.lastPrice;
@@ -388,7 +388,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter
   public BalanceInfo getBalanceInfo() throws TradingApiException, ExchangeNetworkException {
     try {
       final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("balances", null);
-      log.debug("Balance Info response: " + response);
+      log.debug("Balance Info response: {}", response);
 
       final BitfinexBalances allAccountBalances =
           gson.fromJson(response.getPayload(), BitfinexBalances.class);
@@ -430,7 +430,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter
     try {
       final ExchangeHttpResponse response =
           sendAuthenticatedRequestToExchange("account_infos", null);
-      log.debug("Buy Fee response: " + response);
+      log.debug("Buy Fee response: {}", response);
 
       // Nightmare to adapt! Just take the top-level taker fees.
       final BitfinexAccountInfos bitfinexAccountInfos =
@@ -455,7 +455,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter
     try {
       final ExchangeHttpResponse response =
           sendAuthenticatedRequestToExchange("account_infos", null);
-      log.debug("Sell Fee response: " + response);
+      log.debug("Sell Fee response: {}", response);
 
       // Nightmare to adapt! Just take the top-level taker fees.
       final BitfinexAccountInfos bitfinexAccountInfos =
@@ -483,7 +483,7 @@ public final class BitfinexExchangeAdapter extends AbstractExchangeAdapter
   public Ticker getTicker(String marketId) throws TradingApiException, ExchangeNetworkException {
     try {
       final ExchangeHttpResponse response = sendPublicRequestToExchange("pubticker/" + marketId);
-      log.debug("Latest Market Price response: " + response);
+      log.debug("Latest Market Price response: {}", response);
 
       final BitfinexTicker ticker = gson.fromJson(response.getPayload(), BitfinexTicker.class);
       return new TickerImpl(

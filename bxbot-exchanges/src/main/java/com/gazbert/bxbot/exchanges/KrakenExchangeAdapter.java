@@ -200,7 +200,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
 
   @Override
   public void init(ExchangeConfig config) {
-    log.info("About to initialise Kraken ExchangeConfig: " + config);
+    log.info("About to initialise Kraken ExchangeConfig: {}", config);
     initGson();
     setAuthenticationConfig(config);
     setNetworkConfig(config);
@@ -227,7 +227,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
       params.put("pair", marketId);
 
       response = sendPublicRequestToExchange("Depth", params);
-      log.debug("Market Orders response: " + response);
+      log.debug("Market Orders response: {}", response);
 
       if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
         final Type resultType =
@@ -272,7 +272,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
 
     try {
       response = sendAuthenticatedRequestToExchange("OpenOrders", null);
-      log.debug("Open Orders response: " + response);
+      log.debug("Open Orders response: {}", response);
 
       if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
 
@@ -345,7 +345,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
           "volume", new DecimalFormat(volumePrecision, getDecimalFormatSymbols()).format(quantity));
 
       response = sendAuthenticatedRequestToExchange("AddOrder", params);
-      log.debug("Create Order response: " + response);
+      log.debug("Create Order response: {}", response);
 
       if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
 
@@ -398,7 +398,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
       params.put("txid", orderId);
 
       response = sendAuthenticatedRequestToExchange("CancelOrder", params);
-      log.debug("Cancel Order response: " + response);
+      log.debug("Cancel Order response: {}", response);
 
       if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
 
@@ -447,7 +447,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
       params.put("pair", marketId);
 
       response = sendPublicRequestToExchange("Ticker", params);
-      log.debug("Latest Market Price response: " + response);
+      log.debug("Latest Market Price response: {}", response);
 
       if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
 
@@ -497,7 +497,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
 
     try {
       response = sendAuthenticatedRequestToExchange("Balance", null);
-      log.debug("Balance Info response: " + response);
+      log.debug("Balance Info response: {}", response);
 
       if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
         final Type resultType = new TypeToken<KrakenResponse<KrakenBalanceResult>>() {}.getType();
@@ -558,7 +558,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
       params.put("pair", marketId);
 
       response = sendPublicRequestToExchange("Ticker", params);
-      log.debug("Ticker response: " + response);
+      log.debug("Ticker response: {}", response);
 
       if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
 
@@ -898,7 +898,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
                   context.deserialize(jsonTickerParam.getValue(), List.class);
               krakenTickerResult.put("p", vWapDetails.get(1));
             }
-            default -> log.warn("Received unexpected Ticker param - ignoring: " + key);
+            default -> log.warn("Received unexpected Ticker param - ignoring: {}", key);
           }
         }
       }
@@ -1074,18 +1074,18 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
     final String buyFeeInConfig = getOtherConfigItem(otherConfig, BUY_FEE_PROPERTY_NAME);
     buyFeePercentage =
         new BigDecimal(buyFeeInConfig).divide(new BigDecimal("100"), 8, RoundingMode.HALF_UP);
-    log.info("Buy fee % in BigDecimal format: " + buyFeePercentage);
+    log.info("Buy fee % in BigDecimal format: {}", buyFeePercentage);
 
     final String sellFeeInConfig = getOtherConfigItem(otherConfig, SELL_FEE_PROPERTY_NAME);
     sellFeePercentage =
         new BigDecimal(sellFeeInConfig).divide(new BigDecimal("100"), 8, RoundingMode.HALF_UP);
-    log.info("Sell fee % in BigDecimal format: " + sellFeePercentage);
+    log.info("Sell fee % in BigDecimal format: {}", sellFeePercentage);
 
     final String keepAliveDuringMaintenanceConfig =
         getOtherConfigItem(otherConfig, KEEP_ALIVE_DURING_MAINTENANCE_PROPERTY_NAME);
     if (!keepAliveDuringMaintenanceConfig.isEmpty()) {
       keepAliveDuringMaintenance = Boolean.parseBoolean(keepAliveDuringMaintenanceConfig);
-      log.info("Keep Alive During Maintenance: " + keepAliveDuringMaintenance);
+      log.info("Keep Alive During Maintenance: {}", keepAliveDuringMaintenance);
     } else {
       log.info(KEEP_ALIVE_DURING_MAINTENANCE_PROPERTY_NAME + " is not set in exchange.yaml");
     }
@@ -1103,7 +1103,7 @@ public final class KrakenExchangeAdapter extends AbstractExchangeAdapter
             gson.fromJson(response.getPayload(), type);
 
         if (krakenResponse.error != null && !krakenResponse.error.isEmpty()) {
-          log.error(String.format("Error when fetching pair precision: %s", krakenResponse.error));
+          log.error("Error when fetching pair precision: {}", krakenResponse.error);
           return;
         }
 

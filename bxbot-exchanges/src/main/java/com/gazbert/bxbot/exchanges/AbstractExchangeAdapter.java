@@ -115,7 +115,7 @@ abstract class AbstractExchangeAdapter {
    * @throws ExchangeNetworkException if a network error occurred trying to connect to the exchange.
    *     This exception allows for recovery from temporary network issues.
    * @throws TradingApiException if the API call failed for any reason other than a network error.
-   *     This means something really bad as happened.
+   *     This means something awful has happened.
    */
   ExchangeHttpResponse sendNetworkRequest(
       URL url, String httpMethod, String postData, Map<String, String> requestHeaders)
@@ -125,7 +125,7 @@ abstract class AbstractExchangeAdapter {
     final StringBuilder exchangeResponse = new StringBuilder();
 
     try {
-      log.debug("Using following URL for API call: " + url);
+      log.debug("Using following URL for API call: {}", url);
 
       exchangeConnection = (HttpURLConnection) url.openConnection();
       exchangeConnection.setUseCaches(false);
@@ -140,7 +140,7 @@ abstract class AbstractExchangeAdapter {
       exchangeConnection.setReadTimeout(timeoutInMillis);
 
       if (httpMethod.equalsIgnoreCase("POST") && postData != null) {
-        log.debug("Doing POST with request body: " + postData);
+        log.debug("Doing POST with request body: {}", postData);
         try (final OutputStreamWriter outputPostStream =
             new OutputStreamWriter(exchangeConnection.getOutputStream(), StandardCharsets.UTF_8)) {
           outputPostStream.write(postData);
@@ -236,19 +236,19 @@ abstract class AbstractExchangeAdapter {
       log.error(errorMsg);
       throw new IllegalArgumentException(errorMsg);
     }
-    log.info(CONNECTION_TIMEOUT_PROPERTY_NAME + ": " + connectionTimeout);
+    log.info(CONNECTION_TIMEOUT_PROPERTY_NAME + ": {}", connectionTimeout);
 
     final List<Integer> nonFatalErrorCodesFromConfig = networkConfig.getNonFatalErrorCodes();
     if (nonFatalErrorCodesFromConfig != null) {
       nonFatalNetworkErrorCodes.addAll(nonFatalErrorCodesFromConfig);
     }
-    log.info(NON_FATAL_ERROR_CODES_PROPERTY_NAME + ": " + nonFatalNetworkErrorCodes);
+    log.info(NON_FATAL_ERROR_CODES_PROPERTY_NAME + ": {}", nonFatalNetworkErrorCodes);
 
     final List<String> nonFatalErrorMessagesFromConfig = networkConfig.getNonFatalErrorMessages();
     if (nonFatalErrorMessagesFromConfig != null) {
       nonFatalNetworkErrorMessages.addAll(nonFatalErrorMessagesFromConfig);
     }
-    log.info(NON_FATAL_ERROR_MESSAGES_PROPERTY_NAME + ": " + nonFatalNetworkErrorMessages);
+    log.info(NON_FATAL_ERROR_MESSAGES_PROPERTY_NAME + ": {}", nonFatalNetworkErrorMessages);
   }
 
   /**
@@ -309,7 +309,7 @@ abstract class AbstractExchangeAdapter {
    */
   String getOtherConfigItem(OtherConfig otherConfig, String itemName) {
     final String itemValue = otherConfig.getItem(itemName);
-    log.debug(itemName + ": " + itemValue);
+    log.debug("{}: {}", itemName, itemValue);
     return assertItemExists(itemName, itemValue);
   }
 
@@ -370,7 +370,7 @@ abstract class AbstractExchangeAdapter {
     if (requestHeaders != null) {
       for (final Map.Entry<String, String> requestHeader : requestHeaders.entrySet()) {
         exchangeConnection.setRequestProperty(requestHeader.getKey(), requestHeader.getValue());
-        log.debug("Setting following request header: " + requestHeader);
+        log.debug("Setting following request header: {}", requestHeader);
       }
     }
   }

@@ -101,7 +101,7 @@ public class TryModeExchangeAdapter extends AbstractExchangeAdapter implements E
 
   @Override
   public void init(ExchangeConfig config) {
-    log.info("About to initialise try-mode adapter with the following exchange config: " + config);
+    log.info("About to initialise try-mode adapter with the following exchange config: {}", config);
     setOtherConfig(config);
     initializeAdapterDelegation(config);
   }
@@ -126,7 +126,7 @@ public class TryModeExchangeAdapter extends AbstractExchangeAdapter implements E
     final List<OpenOrder> result = new LinkedList<>();
     if (currentOpenOrder != null) {
       result.add(currentOpenOrder);
-      log.info("getYourOpenOrders: Found an open DUMMY order: " + currentOpenOrder);
+      log.info("getYourOpenOrders: Found an open DUMMY order: {}", currentOpenOrder);
     } else {
       log.info("getYourOpenOrders: no open order found. Return empty order list");
     }
@@ -148,7 +148,7 @@ public class TryModeExchangeAdapter extends AbstractExchangeAdapter implements E
     currentOpenOrder =
         new OpenOrderImpl(
             newOrderId, creationDate, marketId, orderType, price, quantity, quantity, total);
-    log.info("Created a new dummy order: " + currentOpenOrder);
+    log.info("Created a new dummy order: {}", currentOpenOrder);
     checkOpenOrderExecution(marketId);
     return newOrderId;
   }
@@ -168,7 +168,7 @@ public class TryModeExchangeAdapter extends AbstractExchangeAdapter implements E
               + ", actual: "
               + orderId);
     }
-    log.info("The following order is canceled: " + currentOpenOrder);
+    log.info("The following order is canceled: {}", currentOpenOrder);
     currentOpenOrder = null;
     return true;
   }
@@ -187,7 +187,7 @@ public class TryModeExchangeAdapter extends AbstractExchangeAdapter implements E
     availableBalances.put(simulatedBaseCurrency, simulatedBaseCurrencyBalance);
     availableBalances.put(simulatedCounterCurrency, simulatedCounterCurrencyBalance);
     final BalanceInfo currentBalance = new BalanceInfoImpl(availableBalances, new HashMap<>());
-    log.info("Return the following simulated balances: " + currentBalance);
+    log.info("Return the following simulated balances: {}", currentBalance);
     return currentBalance;
   }
 
@@ -213,39 +213,39 @@ public class TryModeExchangeAdapter extends AbstractExchangeAdapter implements E
     final OtherConfig otherConfig = getOtherConfig(exchangeConfig);
 
     simulatedBaseCurrency = getOtherConfigItem(otherConfig, SIMULATED_BASE_CURRENCY_PROPERTY_NAME);
-    log.info("Base currency to be simulated: " + simulatedBaseCurrency);
+    log.info("Base currency to be simulated: {}", simulatedBaseCurrency);
 
     final String startingBaseBalanceInConfig =
         getOtherConfigItem(otherConfig, SIMULATED_BASE_CURRENCY_START_BALANCE_PROPERTY_NAME);
     simulatedBaseCurrencyBalance = new BigDecimal(startingBaseBalanceInConfig);
     log.info(
-        "Base currency balance at simulation start in BigDecimal format: "
-            + simulatedBaseCurrencyBalance);
+        "Base currency balance at simulation start in BigDecimal format: {}",
+        simulatedBaseCurrencyBalance);
 
     simulatedCounterCurrency =
         getOtherConfigItem(otherConfig, SIMULATED_COUNTER_CURRENCY_PROPERTY_NAME);
-    log.info("Counter currency to be simulated: " + simulatedCounterCurrency);
+    log.info("Counter currency to be simulated: {}", simulatedCounterCurrency);
 
     final String startingBalanceInConfig =
         getOtherConfigItem(otherConfig, SIMULATED_COUNTER_CURRENCY_START_BALANCE_PROPERTY_NAME);
     simulatedCounterCurrencyBalance = new BigDecimal(startingBalanceInConfig);
     log.info(
-        "Counter currency balance at simulation start in BigDecimal format: "
-            + simulatedCounterCurrencyBalance);
+        "Counter currency balance at simulation start in BigDecimal format: {}",
+        simulatedCounterCurrencyBalance);
 
     final String sellFeeInConfig =
         getOtherConfigItem(otherConfig, SIMULATED_SELL_FEE_PROPERTY_NAME);
     simulatedSellFee = new BigDecimal(sellFeeInConfig);
-    log.info("Sell Fee at simulation start in BigDecimal format: " + simulatedSellFee);
+    log.info("Sell Fee at simulation start in BigDecimal format: {}", simulatedSellFee);
 
     final String buyFeeInConfig = getOtherConfigItem(otherConfig, SIMULATED_BUY_FEE_PROPERTY_NAME);
     simulatedBuyFee = new BigDecimal(buyFeeInConfig);
-    log.info("Buy Fee at simulation start in BigDecimal format: " + simulatedBuyFee);
+    log.info("Buy Fee at simulation start in BigDecimal format: {}", simulatedBuyFee);
 
     delegateExchangeClassName =
         getOtherConfigItem(otherConfig, DELEGATE_ADAPTER_CLASS_PROPERTY_NAME);
     log.info(
-        "Delegate exchange adapter to be used for public API calls: " + delegateExchangeClassName);
+        "Delegate exchange adapter to be used for public API calls: {}", delegateExchangeClassName);
     log.info("Try-mode adapter config successfully loaded.");
   }
 
@@ -255,13 +255,13 @@ public class TryModeExchangeAdapter extends AbstractExchangeAdapter implements E
   }
 
   private ExchangeAdapter createDelegateExchangeAdapter() {
-    log.info("Creating the delegate exchange adapter: " + delegateExchangeClassName + "...");
+    log.info("Creating the delegate exchange adapter: {}...", delegateExchangeClassName);
     try {
       final Class<?> componentClass = Class.forName(delegateExchangeClassName);
       final Object rawComponentObject = componentClass.getDeclaredConstructor().newInstance();
       log.info(
-          "Successfully created the delegate exchange adapter class for: "
-              + delegateExchangeClassName);
+          "Successfully created the delegate exchange adapter class for: {}",
+          delegateExchangeClassName);
       return (ExchangeAdapter) rawComponentObject;
     } catch (ClassNotFoundException
         | InstantiationException

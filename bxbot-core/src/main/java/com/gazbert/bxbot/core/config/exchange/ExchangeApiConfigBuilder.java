@@ -63,8 +63,9 @@ public final class ExchangeApiConfigBuilder {
         exchangeApiNetworkConfig.setNonFatalErrorCodes(nonFatalErrorCodes);
       } else {
         log.info(
-            "No (optional) NetworkConfiguration NonFatalErrorCodes have been set for Exchange Adapter: {}",
-            exchangeConfig.getAdapter());
+            "No (optional) NetworkConfiguration NonFatalErrorCodes have been set for Exchange "
+                + "Adapter: "
+                + exchangeConfig.getAdapter());
       }
 
       final List<String> nonFatalErrorMessages = networkConfig.getNonFatalErrorMessages();
@@ -72,8 +73,9 @@ public final class ExchangeApiConfigBuilder {
         exchangeApiNetworkConfig.setNonFatalErrorMessages(nonFatalErrorMessages);
       } else {
         log.info(
-            "No (optional) NetworkConfiguration NonFatalErrorMessages have been set for Exchange Adapter: {}",
-            exchangeConfig.getAdapter());
+            "No (optional) NetworkConfiguration NonFatalErrorMessages have been set for "
+                + "Exchange Adapter: "
+                + exchangeConfig.getAdapter());
       }
 
       exchangeApiConfig.setNetworkConfig(exchangeApiNetworkConfig);

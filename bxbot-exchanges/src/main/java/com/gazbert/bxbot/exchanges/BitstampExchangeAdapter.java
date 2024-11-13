@@ -139,7 +139,7 @@ public class BitstampExchangeAdapter extends AbstractExchangeAdapter implements 
 
   @Override
   public void init(ExchangeConfig config) {
-    log.info("About to initialise Bitstamp ExchangeConfig: " + config);
+    log.info("About to initialise Bitstamp ExchangeConfig: {}", config);
     setAuthenticationConfig(config);
     setNetworkConfig(config);
 
@@ -158,7 +158,7 @@ public class BitstampExchangeAdapter extends AbstractExchangeAdapter implements 
       throws TradingApiException, ExchangeNetworkException {
     try {
       final ExchangeHttpResponse response = sendPublicRequestToExchange("order_book/" + marketId);
-      log.debug("Market Orders response: " + response);
+      log.debug("Market Orders response: {}", response);
 
       final BitstampOrderBook bitstampOrderBook =
           gson.fromJson(response.getPayload(), BitstampOrderBook.class);
@@ -204,7 +204,7 @@ public class BitstampExchangeAdapter extends AbstractExchangeAdapter implements 
     try {
       final ExchangeHttpResponse response =
           sendAuthenticatedRequestToExchange("open_orders/" + marketId, null);
-      log.debug("Open Orders response: " + response);
+      log.debug("Open Orders response: {}", response);
 
       final BitstampOrderResponse[] myOpenOrders =
           gson.fromJson(response.getPayload(), BitstampOrderResponse[].class);
@@ -279,7 +279,7 @@ public class BitstampExchangeAdapter extends AbstractExchangeAdapter implements 
         throw new IllegalArgumentException(errorMsg);
       }
 
-      log.debug("Create Order response: " + response);
+      log.debug("Create Order response: {}", response);
 
       final BitstampOrderResponse createOrderResponse =
           gson.fromJson(response.getPayload(), BitstampOrderResponse.class);
@@ -313,7 +313,7 @@ public class BitstampExchangeAdapter extends AbstractExchangeAdapter implements 
 
       final ExchangeHttpResponse response =
           sendAuthenticatedRequestToExchange("cancel_order", params);
-      log.debug("Cancel Order response: " + response);
+      log.debug("Cancel Order response: {}", response);
 
       final BitstampCancelOrderResponse cancelOrderResponse =
           gson.fromJson(response.getPayload(), BitstampCancelOrderResponse.class);
@@ -339,7 +339,7 @@ public class BitstampExchangeAdapter extends AbstractExchangeAdapter implements 
       throws TradingApiException, ExchangeNetworkException {
     try {
       final ExchangeHttpResponse response = sendPublicRequestToExchange("ticker/" + marketId);
-      log.debug("Latest Market Price response: " + response);
+      log.debug("Latest Market Price response: {}", response);
 
       final BitstampTicker bitstampTicker =
           gson.fromJson(response.getPayload(), BitstampTicker.class);
@@ -358,7 +358,7 @@ public class BitstampExchangeAdapter extends AbstractExchangeAdapter implements 
   public BalanceInfo getBalanceInfo() throws TradingApiException, ExchangeNetworkException {
     try {
       final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange(BALANCE, null);
-      log.debug("Balance Info response: " + response);
+      log.debug("Balance Info response: {}", response);
 
       final BitstampBalance balances = gson.fromJson(response.getPayload(), BitstampBalance.class);
 
@@ -392,7 +392,7 @@ public class BitstampExchangeAdapter extends AbstractExchangeAdapter implements 
       throws TradingApiException, ExchangeNetworkException {
     try {
       final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange(BALANCE, null);
-      log.debug("Buy Fee response: " + response);
+      log.debug("Buy Fee response: {}", response);
 
       final BitstampBalance balances = gson.fromJson(response.getPayload(), BitstampBalance.class);
 
@@ -430,7 +430,7 @@ public class BitstampExchangeAdapter extends AbstractExchangeAdapter implements 
       throws TradingApiException, ExchangeNetworkException {
     try {
       final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange(BALANCE, null);
-      log.debug("Sell Fee response: " + response);
+      log.debug("Sell Fee response: {}", response);
 
       final BitstampBalance balances = gson.fromJson(response.getPayload(), BitstampBalance.class);
 
@@ -473,7 +473,7 @@ public class BitstampExchangeAdapter extends AbstractExchangeAdapter implements 
 
     try {
       final ExchangeHttpResponse response = sendPublicRequestToExchange("ticker/" + marketId);
-      log.debug("Ticker response: " + response);
+      log.debug("Ticker response: {}", response);
 
       final BitstampTicker bitstampTicker =
           gson.fromJson(response.getPayload(), BitstampTicker.class);
