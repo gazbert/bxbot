@@ -171,10 +171,10 @@ public class BotLogfileController extends RestController {
   public ResponseEntity<String> getLogfile(
       @Parameter(hidden = true) Principal principal,
       @Parameter(description = "Number of lines to fetch from head of file.", example = "100")
-          @RequestParam(required = false)
+          @RequestParam(name = "head", required = false)
           Integer head,
       @Parameter(description = "Number of lines to fetch from tail of file.", example = "100")
-          @RequestParam(required = false)
+          @RequestParam(name = "tail", required = false)
           Integer tail) {
 
     log.info(
