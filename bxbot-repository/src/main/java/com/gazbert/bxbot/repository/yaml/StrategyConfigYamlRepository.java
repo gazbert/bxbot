@@ -68,7 +68,7 @@ public class StrategyConfigYamlRepository implements StrategyConfigRepository {
 
   @Override
   public StrategyConfig findById(String id) {
-    log.info("Fetching config for Strategy id: " + id);
+    log.info("Fetching config for Strategy id: {}", id);
 
     final StrategiesType strategiesType =
         configurationManager.loadConfig(StrategiesType.class, STRATEGIES_CONFIG_YAML_FILENAME);
@@ -92,7 +92,7 @@ public class StrategyConfigYamlRepository implements StrategyConfigRepository {
             .toList();
 
     if (config.getId() == null || config.getId().isEmpty()) {
-      log.info("About to create StrategyConfig: " + config);
+      log.info("About to create StrategyConfig: {}", config);
       if (strategyConfigs.isEmpty()) {
 
         final StrategyConfig newStrategyConfig = new StrategyConfig(config);
@@ -112,7 +112,7 @@ public class StrategyConfigYamlRepository implements StrategyConfigRepository {
                 + strategiesType.getStrategies());
       }
     } else {
-      log.info("About to update StrategyConfig: " + config);
+      log.info("About to update StrategyConfig: {}", config);
 
       if (!strategyConfigs.isEmpty()) {
         strategiesType
@@ -132,10 +132,9 @@ public class StrategyConfigYamlRepository implements StrategyConfigRepository {
                 .collect(Collectors.toList()));
       } else {
         log.warn(
-            "Trying to update StrategyConfig but id does not exist StrategyConfig: "
-                + config
-                + " Existing StrategyConfig: "
-                + strategiesType.getStrategies());
+            "Trying to update StrategyConfig but id does not exist StrategyConfig: {} Existing StrategyConfig: {}",
+            config,
+            strategiesType.getStrategies());
         return null;
       }
     }
@@ -143,7 +142,7 @@ public class StrategyConfigYamlRepository implements StrategyConfigRepository {
 
   @Override
   public StrategyConfig delete(String id) {
-    log.info("Deleting Strategy config for id: " + id);
+    log.info("Deleting Strategy config for id: {}", id);
 
     final StrategiesType strategiesType =
         configurationManager.loadConfig(StrategiesType.class, STRATEGIES_CONFIG_YAML_FILENAME);
@@ -162,10 +161,9 @@ public class StrategyConfigYamlRepository implements StrategyConfigRepository {
       return adaptInternalToExternalConfig(Collections.singletonList(strategyToRemove));
     } else {
       log.warn(
-          "Trying to delete StrategyConfig but id does not exist. StrategyConfig id: "
-              + id
-              + " Existing StrategyConfig: "
-              + strategiesType.getStrategies());
+          "Trying to delete StrategyConfig but id does not exist. StrategyConfig id: {} Existing StrategyConfig: {}",
+          id,
+          strategiesType.getStrategies());
       return null;
     }
   }

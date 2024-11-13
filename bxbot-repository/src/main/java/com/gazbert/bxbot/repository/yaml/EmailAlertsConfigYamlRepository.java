@@ -64,7 +64,7 @@ public class EmailAlertsConfigYamlRepository implements EmailAlertsConfigReposit
 
   @Override
   public EmailAlertsConfig save(EmailAlertsConfig config) {
-    log.info("About to save EmailAlertsConfig: " + config);
+    log.info("About to save EmailAlertsConfig: {}", config);
 
     final EmailAlertsType emailAlertsType = new EmailAlertsType();
     emailAlertsType.setEmailAlerts(config);
