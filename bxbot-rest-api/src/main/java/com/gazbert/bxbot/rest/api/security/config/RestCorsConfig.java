@@ -67,7 +67,7 @@ public class RestCorsConfig {
   @Bean
   CorsConfigurationSource corsConfigurationSource() {
 
-    log.info("CORS Allowed Origins: " + allowedOrigin);
+    log.info("CORS Allowed Origins: {}", allowedOrigin);
 
     final CorsConfiguration configuration = new CorsConfiguration();
     configuration.setAllowedOrigins(Collections.singletonList(allowedOrigin));

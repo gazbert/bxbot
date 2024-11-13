@@ -98,10 +98,10 @@ public class MarketConfigController extends RestController {
   public List<MarketConfig> getAllMarkets(@Parameter(hidden = true) Principal principal) {
 
     log.info(
-        "GET " + MARKETS_RESOURCE_PATH + " - getAllMarkets() - caller: " + principal.getName());
+        "GET " + MARKETS_RESOURCE_PATH + " - getAllMarkets() - caller: {}", principal.getName());
 
     final List<MarketConfig> marketConfigs = marketConfigService.getAllMarketConfig();
-    log.info("Response: " + marketConfigs);
+    log.info("Response: {}", marketConfigs);
 
     return marketConfigs;
   }
@@ -135,12 +135,9 @@ public class MarketConfigController extends RestController {
       @Parameter(hidden = true) Principal principal, @PathVariable String marketId) {
 
     log.info(
-        "GET "
-            + MARKETS_RESOURCE_PATH
-            + "/"
-            + marketId
-            + " - getMarket() - caller: "
-            + principal.getName());
+        "GET " + MARKETS_RESOURCE_PATH + "/{} - getMarket() - caller: {}",
+        marketId,
+        principal.getName());
 
     final MarketConfig marketConfig = marketConfigService.getMarketConfig(marketId);
     return marketConfig == null
@@ -181,14 +178,11 @@ public class MarketConfigController extends RestController {
       @RequestBody MarketConfig config) {
 
     log.info(
-        "PUT "
-            + MARKETS_RESOURCE_PATH
-            + "/"
-            + marketId
-            + " - updateMarket() - caller: "
-            + principal.getName());
+        "PUT " + MARKETS_RESOURCE_PATH + "/{} - updateMarket() - caller: {}",
+        marketId,
+        principal.getName());
 
-    log.info("Request: " + config);
+    log.info("Request: {}", config);
 
     if (config.getId() == null || !marketId.equals(config.getId())) {
       return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -226,9 +220,9 @@ public class MarketConfigController extends RestController {
       @Parameter(hidden = true) Principal principal, @RequestBody MarketConfig config) {
 
     log.info(
-        "POST " + MARKETS_RESOURCE_PATH + " - createMarket() - caller: " + principal.getName());
+        "POST " + MARKETS_RESOURCE_PATH + " - createMarket() - caller: {}", principal.getName());
 
-    log.info("Request: " + config);
+    log.info("Request: {}", config);
 
     final MarketConfig createdConfig = marketConfigService.createMarketConfig(config);
     return createdConfig == null
@@ -266,12 +260,9 @@ public class MarketConfigController extends RestController {
       @Parameter(hidden = true) Principal principal, @PathVariable String marketId) {
 
     log.info(
-        "DELETE "
-            + MARKETS_RESOURCE_PATH
-            + "/"
-            + marketId
-            + " - deleteMarket() - caller: "
-            + principal.getName());
+        "DELETE " + MARKETS_RESOURCE_PATH + "/{} - deleteMarket() - caller: {}",
+        marketId,
+        principal.getName());
 
     final MarketConfig deletedConfig = marketConfigService.deleteMarketConfig(marketId);
     return deletedConfig == null
@@ -284,7 +275,7 @@ public class MarketConfigController extends RestController {
   // ------------------------------------------------------------------------
 
   private ResponseEntity<MarketConfig> buildResponseEntity(MarketConfig entity, HttpStatus status) {
-    log.info("Response: " + entity);
+    log.info("Response: {}", entity);
     return new ResponseEntity<>(entity, null, status);
   }
 }

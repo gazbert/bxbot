@@ -37,12 +37,16 @@ import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import java.util.List;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Represents a Role for a BX-bot User.
  *
  * @author gazbert
  */
+@Setter
+@Getter
 @Entity
 @Table(name = "ROLE")
 public class Role {
@@ -64,59 +68,5 @@ public class Role {
   /** Creates the Role. */
   public Role() {
     // No extra init needed.
-  }
-
-  /**
-   * Returns the id.
-   *
-   * @return the id.
-   */
-  public Long getId() {
-    return id;
-  }
-
-  /**
-   * Sets the id.
-   *
-   * @param id the id.
-   */
-  public void setId(Long id) {
-    this.id = id;
-  }
-
-  /**
-   * Returns the name.
-   *
-   * @return the name.
-   */
-  public RoleName getName() {
-    return name;
-  }
-
-  /**
-   * Sets the name.
-   *
-   * @param name the name.
-   */
-  public void setName(RoleName name) {
-    this.name = name;
-  }
-
-  /**
-   * Returns the users.
-   *
-   * @return the users.
-   */
-  public List<User> getUsers() {
-    return users;
-  }
-
-  /**
-   * Sets the users.
-   *
-   * @param users the users.
-   */
-  public void setUsers(List<User> users) {
-    this.users = users;
   }
 }

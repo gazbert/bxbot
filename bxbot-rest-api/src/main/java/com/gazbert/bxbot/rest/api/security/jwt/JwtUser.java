@@ -30,6 +30,7 @@ import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -48,17 +49,14 @@ public class JwtUser implements UserDetails {
   /** Username. */
   private final String username;
 
-  /** Firstname. */
-  private final String firstname;
+  @Getter private final String firstname;
 
-  /** Lastname. */
-  private final String lastname;
+  @Getter private final String lastname;
 
   /** Password. */
   private final String password;
 
-  /** Email. */
-  private final String email;
+  @Getter private final String email;
 
   /** Granted authorities. */
   private final Collection<? extends GrantedAuthority> authorities;
@@ -66,11 +64,9 @@ public class JwtUser implements UserDetails {
   /** Is enabled. */
   private final boolean enabled;
 
-  /** Last password reset date. */
-  private final long lastPasswordResetDate;
+  @Getter private final long lastPasswordResetDate;
 
-  /** The user's roles. */
-  private final List<String> roles;
+  @Getter private final List<String> roles;
 
   /**
    * Creates a JWT User.
@@ -146,33 +142,6 @@ public class JwtUser implements UserDetails {
     return true;
   }
 
-  /**
-   * Returns the firstname.
-   *
-   * @return the firstname.
-   */
-  public String getFirstname() {
-    return firstname;
-  }
-
-  /**
-   * Returns the lastname.
-   *
-   * @return the lastname.
-   */
-  public String getLastname() {
-    return lastname;
-  }
-
-  /**
-   * Returns the email.
-   *
-   * @return the email.
-   */
-  public String getEmail() {
-    return email;
-  }
-
   @JsonIgnore
   @Override
   public String getPassword() {
@@ -187,23 +156,5 @@ public class JwtUser implements UserDetails {
   @Override
   public boolean isEnabled() {
     return enabled;
-  }
-
-  /**
-   * Returns the last password reset date.
-   *
-   * @return the last password reset date.
-   */
-  public long getLastPasswordResetDate() {
-    return lastPasswordResetDate;
-  }
-
-  /**
-   * Returns the roles.
-   *
-   * @return the roles.
-   */
-  public List<String> getRoles() {
-    return roles;
   }
 }

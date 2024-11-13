@@ -36,7 +36,7 @@ import com.gazbert.bxbot.core.engine.TradingEngine;
 import com.gazbert.bxbot.core.mail.EmailAlerter;
 import com.gazbert.bxbot.services.runtime.BotLogfileService;
 import java.io.IOException;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -90,7 +90,7 @@ class TestBotLogfileController extends AbstractRuntimeControllerTest {
 
   @Test
   void testDownloadLogfile() throws Exception {
-    final Resource resource = new ByteArrayResource(LOGFILE.getBytes(Charset.forName("UTF-8")));
+    final Resource resource = new ByteArrayResource(LOGFILE.getBytes(StandardCharsets.UTF_8));
     given(botLogfileService.getLogfileAsResource(MAX_LOGFILE_DOWNLOAD_SIZE)).willReturn(resource);
 
     mockMvc

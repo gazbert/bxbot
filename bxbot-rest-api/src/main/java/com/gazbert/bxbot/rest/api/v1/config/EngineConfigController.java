@@ -98,10 +98,10 @@ public class EngineConfigController extends RestController {
       })
   public EngineConfig getEngine(@Parameter(hidden = true) Principal principal) {
 
-    log.info("GET " + ENGINE_RESOURCE_PATH + " - getEngine() - caller: " + principal.getName());
+    log.info("GET " + ENGINE_RESOURCE_PATH + " - getEngine() - caller: {}", principal.getName());
 
     final EngineConfig engineConfig = engineConfigService.getEngineConfig();
-    log.info("Response: " + engineConfig);
+    log.info("Response: {}", engineConfig);
     return engineConfig;
   }
 
@@ -130,16 +130,16 @@ public class EngineConfigController extends RestController {
   public ResponseEntity<EngineConfig> updateEngine(
       @Parameter(hidden = true) Principal principal, @Valid @RequestBody EngineConfig config) {
 
-    log.info("PUT " + ENGINE_RESOURCE_PATH + " - updateEngine() - caller: " + principal.getName());
+    log.info("PUT " + ENGINE_RESOURCE_PATH + " - updateEngine() - caller: {}", principal.getName());
 
-    log.info("Request: " + config);
+    log.info("Request: {}", config);
 
     final EngineConfig updatedConfig = engineConfigService.updateEngineConfig(config);
     return buildResponseEntity(updatedConfig);
   }
 
   private ResponseEntity<EngineConfig> buildResponseEntity(EngineConfig entity) {
-    log.info("Response: " + entity);
+    log.info("Response: {}", entity);
     return new ResponseEntity<>(entity, null, HttpStatus.OK);
   }
 }

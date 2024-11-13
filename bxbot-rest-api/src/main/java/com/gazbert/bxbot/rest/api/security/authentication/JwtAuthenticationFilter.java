@@ -80,7 +80,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         final Claims claims = jwtUtils.validateTokenAndGetClaims(authorizationHeader);
         log.info("JWT is valid");
         final String username = jwtUtils.getUsernameFromTokenClaims(claims);
-        log.info("Username in JWT: " + username);
+        log.info("Username in JWT: {}", username);
 
         if (SecurityContextHolder.getContext().getAuthentication() == null) {
           // First time in - store user details in Spring's Security context
@@ -91,14 +91,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
           authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
           SecurityContextHolder.getContext().setAuthentication(authentication);
 
-          log.info("Authenticated User: " + username + " has been set in Spring SecurityContext.");
+          log.info("Authenticated User: {} has been set in Spring SecurityContext.", username);
         }
       }
 
       chain.doFilter(request, response);
 
     } catch (Exception e) {
-      log.error("JWT Authentication failure! Details: " + e.getMessage(), e);
+      log.error("JWT Authentication failure! Details: {}", e.getMessage(), e);
       response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
     }
   }

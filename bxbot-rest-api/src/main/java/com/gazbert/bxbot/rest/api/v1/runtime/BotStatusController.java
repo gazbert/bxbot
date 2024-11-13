@@ -97,7 +97,7 @@ public class BotStatusController extends RestController {
       })
   public BotStatus getStatus(@Parameter(hidden = true) Principal principal) {
 
-    log.info("GET " + STATUS_RESOURCE_PATH + " - getStatus() - caller: " + principal.getName());
+    log.info("GET " + STATUS_RESOURCE_PATH + " - getStatus() - caller: {}", principal.getName());
 
     final EngineConfig engineConfig = engineConfigService.getEngineConfig();
     final String status = botStatusService.getStatus();
@@ -108,7 +108,7 @@ public class BotStatusController extends RestController {
     botStatus.setStatus(status);
     botStatus.setDatetime(new Date());
 
-    log.info("Response: " + botStatus);
+    log.info("Response: {}", botStatus);
     return botStatus;
   }
 }

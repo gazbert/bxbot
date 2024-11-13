@@ -132,9 +132,10 @@ public class StrategyConfigYamlRepository implements StrategyConfigRepository {
                 .collect(Collectors.toList()));
       } else {
         log.warn(
-            "Trying to update StrategyConfig but id does not exist StrategyConfig: {} Existing StrategyConfig: {}",
-            config,
-            strategiesType.getStrategies());
+            "Trying to update StrategyConfig but id does not exist StrategyConfig: "
+                + config
+                + " Existing StrategyConfig: "
+                + strategiesType.getStrategies());
         return null;
       }
     }
@@ -161,9 +162,10 @@ public class StrategyConfigYamlRepository implements StrategyConfigRepository {
       return adaptInternalToExternalConfig(Collections.singletonList(strategyToRemove));
     } else {
       log.warn(
-          "Trying to delete StrategyConfig but id does not exist. StrategyConfig id: {} Existing StrategyConfig: {}",
-          id,
-          strategiesType.getStrategies());
+          "Trying to delete StrategyConfig but id does not exist. StrategyConfig id: "
+              + id
+              + " Existing StrategyConfig: "
+              + strategiesType.getStrategies());
       return null;
     }
   }
