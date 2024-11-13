@@ -49,15 +49,13 @@ To work on something, whether a new feature or a bug fix:
   git checkout -b my-new-feature-or-bugfix-branch
   ```
   5. Write some code! Commit to that branch locally, and regularly push your work to the same 
-  branch on the server. Commit messages must have a short description no longer than 50 characters 
-  followed by a blank line and a longer, more descriptive message that includes reference to 
-  issue(s) being addressed so that they will be automatically closed on a merge e.g. 
-  ```Closes #1234``` or ```Fixes #1234``` - see 
+  branch on the server. When writing a commit message please use 
+  [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) that include references to 
+  issue being addressed, so that they will be automatically closed on a merge e.g. 
+  ```fix: #123 - Fixed the NullPointer bug``` - see 
   [here](https://help.github.com/articles/closing-issues-via-commit-messages/) for more details.
-  When writing a commit message please follow 
-  [these conventions](http://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html).
 
-  6. Any code changes that affect documentation (e.g. README.MD) should be accompanied by 
+  6. Any code changes that affect documentation (e.g. README.md) should be accompanied by 
   corresponding changes (or additions) to the documentation and tests. This will ensure that if 
   the merged PR is reversed, all traces of the change will be reversed as well.
 
@@ -91,4 +89,9 @@ The following conventions should be followed:
 * We like static analysis: the build uses [JaCoCo](https://www.jacoco.org/jacoco/) to enforce code 
   coverage and [SpotBugs](https://spotbugs.github.io/) to weed out bugs. 
   [Sonarcloud](https://sonarcloud.io/dashboard?id=gazbert_bxbot) is used for analysing and 
-  maintaining the quality of our code. Please maintain this, or better still, help improve it! 
+  maintaining the quality of our code. Please maintain this, or better still, help improve it!
+
+## Code of Conduct
+We want the BX-bot project to be a friendly and collaborative development experience for everyone.
+
+We adopt and support the [Contributor Covenant](https://www.contributor-covenant.org/).

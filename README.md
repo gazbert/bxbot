@@ -3,6 +3,7 @@
 [![Gradle CI](https://github.com/gazbert/bxbot/actions/workflows/gradle.yml/badge.svg?branch=main)](https://github.com/gazbert/bxbot/actions/workflows/gradle.yml)
 [![Maven CI](https://github.com/gazbert/bxbot/actions/workflows/maven.yml/badge.svg?branch=main)](https://github.com/gazbert/bxbot/actions/workflows/maven.yml)
 [![Sonarcloud Status](https://sonarcloud.io/api/project_badges/measure?project=gazbert_bxbot&metric=alert_status)](https://sonarcloud.io/dashboard?id=gazbert_bxbot)
+[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg)](code_of_conduct.md)
 [![Join the chat at https://gitter.im/BX-bot/Lobby](https://badges.gitter.im/BX-bot/Lobby.svg)](https://gitter.im/BX-bot/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)		 	 
  
 ## What is BX-bot?
@@ -294,7 +295,7 @@ You specify which markets you want to trade on in the
   
     - id: ltcusd
       name: LTC/BTC
-      baseCurrency: LTC
+      baseCurrency: LTC[CONTRIBUTING.md](CONTRIBUTING.md)
       counterCurrency: BTC
       enabled: false
       tradingStrategyId: scalping-strategy
