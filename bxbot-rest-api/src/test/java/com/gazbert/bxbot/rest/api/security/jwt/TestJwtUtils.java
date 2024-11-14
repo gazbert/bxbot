@@ -140,7 +140,7 @@ class TestJwtUtils {
   void testRolesCanBeExtractedFromTokenClaims() {
     when(claims.get(JwtUtils.CLAIM_KEY_ROLES)).thenReturn(ROLES);
     final List<GrantedAuthority> roles = jwtUtils.getRolesFromTokenClaims(claims);
-    assertThat(roles.size()).isEqualTo(2);
+    assertThat(roles).hasSize(2);
     assertThat(roles.get(0).getAuthority()).isEqualTo(RoleName.ROLE_ADMIN.name());
     assertThat(roles.get(1).getAuthority()).isEqualTo(RoleName.ROLE_USER.name());
     verify(claims, times(1)).get(JwtUtils.CLAIM_KEY_ROLES);
@@ -208,7 +208,7 @@ class TestJwtUtils {
     final String refreshToken = jwtUtils.refreshToken(token);
     final Claims refreshTokenClaims = jwtUtils.validateTokenAndGetClaims(refreshToken);
 
-    assertThat(refreshTokenClaims.getIssuedAt()).isAfterOrEqualsTo(tokenClaims.getIssuedAt());
+    assertThat(refreshTokenClaims.getIssuedAt()).isAfterOrEqualTo(tokenClaims.getIssuedAt());
   }
 
   @Test
