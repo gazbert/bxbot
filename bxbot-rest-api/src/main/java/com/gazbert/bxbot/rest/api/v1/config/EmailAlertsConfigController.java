@@ -99,13 +99,11 @@ public class EmailAlertsConfigController extends RestController {
   public EmailAlertsConfig getEmailAlerts(@Parameter(hidden = true) Principal principal) {
 
     log.info(
-        "GET "
-            + EMAIL_ALERTS_RESOURCE_PATH
-            + " - getEmailAlerts() - caller: "
-            + principal.getName());
+        "GET " + EMAIL_ALERTS_RESOURCE_PATH + " - getEmailAlerts() - caller: {}",
+        principal.getName());
 
     final EmailAlertsConfig emailAlertsConfig = emailAlertsConfigService.getEmailAlertsConfig();
-    log.info("Response: " + emailAlertsConfig);
+    log.info("Response: {}", emailAlertsConfig);
     return emailAlertsConfig;
   }
 
@@ -135,12 +133,10 @@ public class EmailAlertsConfigController extends RestController {
       @Parameter(hidden = true) Principal principal, @RequestBody EmailAlertsConfig config) {
 
     log.info(
-        "PUT "
-            + EMAIL_ALERTS_RESOURCE_PATH
-            + " - updateEmailAlerts() - caller: "
-            + principal.getName());
+        "PUT " + EMAIL_ALERTS_RESOURCE_PATH + " - updateEmailAlerts() - caller: {}",
+        principal.getName());
 
-    log.info("Request: " + config);
+    log.info("Request: {}", config);
 
     final EmailAlertsConfig updatedConfig =
         emailAlertsConfigService.updateEmailAlertsConfig(config);
@@ -148,7 +144,7 @@ public class EmailAlertsConfigController extends RestController {
   }
 
   private ResponseEntity<EmailAlertsConfig> buildResponseEntity(EmailAlertsConfig entity) {
-    log.info("Response: " + entity);
+    log.info("Response: {}", entity);
     return new ResponseEntity<>(entity, null, HttpStatus.OK);
   }
 }

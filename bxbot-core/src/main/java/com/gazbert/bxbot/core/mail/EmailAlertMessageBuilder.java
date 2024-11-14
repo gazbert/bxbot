@@ -34,7 +34,7 @@ import java.util.Date;
  */
 public final class EmailAlertMessageBuilder {
 
-  private static final String NEWLINE = System.getProperty("line.separator");
+  private static final String NEWLINE = System.lineSeparator();
   private static final String HORIZONTAL_RULE =
       "--------------------------------------------------" + NEWLINE;
 

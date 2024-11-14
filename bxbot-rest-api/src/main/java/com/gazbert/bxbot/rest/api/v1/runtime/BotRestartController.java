@@ -91,11 +91,11 @@ public class BotRestartController extends RestController {
       })
   public ResponseEntity<String> restart(@Parameter(hidden = true) Principal principal) {
 
-    log.info("POST " + RESTART_RESOURCE_PATH + " - restart() - caller: " + principal.getName());
+    log.info("POST " + RESTART_RESOURCE_PATH + " - restart() - caller: {}", principal.getName());
 
     final Object status = botRestartService.restart();
 
-    log.info("Response: " + status.toString());
+    log.info("Response: {}", status.toString());
     return new ResponseEntity<>(status.toString(), null, HttpStatus.OK);
   }
 }

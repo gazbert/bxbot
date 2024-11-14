@@ -25,14 +25,15 @@ package com.gazbert.bxbot.exchanges.trading.api.impl;
 
 import com.gazbert.bxbot.trading.api.MarketOrder;
 import com.gazbert.bxbot.trading.api.MarketOrderBook;
-import com.google.common.base.MoreObjects;
 import java.util.List;
+import lombok.Data;
 
 /**
  * A MarketOrderBook implementation that can be used by Exchange Adapters.
  *
  * @author gazbert
  */
+@Data
 public final class MarketOrderBookImpl implements MarketOrderBook {
 
   private String marketId;
@@ -51,56 +52,5 @@ public final class MarketOrderBookImpl implements MarketOrderBook {
     this.marketId = marketId;
     this.sellOrders = sellOrders;
     this.buyOrders = buyOrders;
-  }
-
-  @Override
-  public String getMarketId() {
-    return marketId;
-  }
-
-  /**
-   * Sets the market id.
-   *
-   * @param marketId the market id.
-   */
-  public void setMarketId(String marketId) {
-    this.marketId = marketId;
-  }
-
-  @Override
-  public List<MarketOrder> getSellOrders() {
-    return sellOrders;
-  }
-
-  /**
-   * Sets the sell orders.
-   *
-   * @param sellOrders the sell orders.
-   */
-  public void setSellOrders(List<MarketOrder> sellOrders) {
-    this.sellOrders = sellOrders;
-  }
-
-  @Override
-  public List<MarketOrder> getBuyOrders() {
-    return buyOrders;
-  }
-
-  /**
-   * Sets the buy orders.
-   *
-   * @param buyOrders the buy orders.
-   */
-  public void setBuyOrders(List<MarketOrder> buyOrders) {
-    this.buyOrders = buyOrders;
-  }
-
-  @Override
-  public String toString() {
-    return MoreObjects.toStringHelper(this)
-        .add("marketId", marketId)
-        .add("sellOrders", sellOrders)
-        .add("buyOrders", buyOrders)
-        .toString();
   }
 }

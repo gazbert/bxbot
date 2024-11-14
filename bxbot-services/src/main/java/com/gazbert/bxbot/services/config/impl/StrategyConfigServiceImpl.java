@@ -66,25 +66,25 @@ public class StrategyConfigServiceImpl implements StrategyConfigService {
 
   @Override
   public StrategyConfig getStrategyConfig(String id) {
-    log.info("Fetching Strategy config for id: " + id);
+    log.info("Fetching Strategy config for id: {}", id);
     return strategyConfigRepository.findById(id);
   }
 
   @Override
   public StrategyConfig updateStrategyConfig(StrategyConfig config) {
-    log.info("About to update Strategy config: " + config);
+    log.info("About to update Strategy config: {}", config);
     return strategyConfigRepository.save(config);
   }
 
   @Override
   public StrategyConfig createStrategyConfig(StrategyConfig config) {
-    log.info("About to create Strategy config: " + config);
+    log.info("About to create Strategy config: {}", config);
     return strategyConfigRepository.save(config);
   }
 
   @Override
   public StrategyConfig deleteStrategyConfig(String id) {
-    log.info("About to delete Strategy config for id: " + id);
+    log.info("About to delete Strategy config for id: {}", id);
     return strategyConfigRepository.delete(id);
   }
 }

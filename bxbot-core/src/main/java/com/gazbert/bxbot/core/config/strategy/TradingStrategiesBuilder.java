@@ -84,7 +84,7 @@ public class TradingStrategiesBuilder {
     final Map<String, StrategyConfig> tradingStrategyConfigs = new HashMap<>();
     for (final StrategyConfig strategy : strategies) {
       tradingStrategyConfigs.put(strategy.getId(), strategy);
-      log.info("Registered Trading Strategy with Trading Engine: Id=" + strategy.getId());
+      log.info("Registered Trading Strategy with Trading Engine: Id={}", strategy.getId());
     }
 
     // Set logic only as crude mechanism for checking for duplicate Markets.
@@ -94,7 +94,7 @@ public class TradingStrategiesBuilder {
     for (final MarketConfig market : markets) {
       final String marketName = market.getName();
       if (!market.isEnabled()) {
-        log.info(marketName + " market is NOT enabled for trading - skipping to next market...");
+        log.info("{} market is NOT enabled for trading - skipping to next market...", marketName);
         continue;
       }
 
@@ -108,12 +108,12 @@ public class TradingStrategiesBuilder {
         throw new IllegalArgumentException(errorMsg);
       } else {
         log.info(
-            "Registered Market with Trading Engine: Id=" + market.getId() + ", Name=" + marketName);
+            "Registered Market with Trading Engine: Id={}, Name={}", market.getId(), marketName);
       }
 
       // Get the strategy to use for this Market
       final String strategyToUse = market.getTradingStrategyId();
-      log.info("Market Trading Strategy Id to use: " + strategyToUse);
+      log.info("Market Trading Strategy Id to use: {}", strategyToUse);
 
       if (tradingStrategyConfigs.containsKey(strategyToUse)) {
         final StrategyConfig tradingStrategy = tradingStrategyConfigs.get(strategyToUse);
@@ -123,9 +123,9 @@ public class TradingStrategiesBuilder {
           tradingStrategyConfig.setItems(configItems);
         } else {
           log.info(
-              "No (optional) configuration has been set for Trading Strategy: " + strategyToUse);
+              "No (optional) configuration has been set for Trading Strategy: {}", strategyToUse);
         }
-        log.info("StrategyConfigImpl (optional): " + tradingStrategyConfig);
+        log.info("StrategyConfigImpl (optional): {}", tradingStrategyConfig);
 
         /*
          * Load the Trading Strategy impl, instantiate it, set its config, and store in the
@@ -136,18 +136,15 @@ public class TradingStrategiesBuilder {
         strategyImpl.init(exchangeAdapter, tradingMarket, tradingStrategyConfig);
 
         log.info(
-            "Initialized trading strategy successfully. Name: ["
-                + tradingStrategy.getName()
-                + "] Class: ["
-                + tradingStrategy.getClassName()
-                + "] Bean: ["
-                + tradingStrategy.getBeanName()
-                + "]");
+            "Initialized trading strategy successfully. Name: [{}] Class: [{}] Bean: [{}]",
+            tradingStrategy.getName(),
+            tradingStrategy.getClassName(),
+            tradingStrategy.getBeanName());
 
         tradingStrategiesToExecute.add(strategyImpl);
       } else {
 
-        // Game over. Config integrity blown - we can't find strat.
+        // Game over. Config integrity blown - we can't find strategy.
         final String errorMsg =
             "Failed to find matching Strategy for Market "
                 + market

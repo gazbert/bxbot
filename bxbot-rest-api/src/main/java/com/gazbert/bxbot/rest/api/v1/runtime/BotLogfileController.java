@@ -108,7 +108,7 @@ public class BotLogfileController extends RestController {
       @Parameter(hidden = true) Principal principal, HttpServletRequest request) {
 
     log.info(
-        "GET " + LOGFILE_RESOURCE_PATH + " - downloadLogfile() - caller: " + principal.getName());
+        "GET " + LOGFILE_RESOURCE_PATH + " - downloadLogfile() - caller: {}", principal.getName());
 
     Resource logfile;
     try {
@@ -171,21 +171,17 @@ public class BotLogfileController extends RestController {
   public ResponseEntity<String> getLogfile(
       @Parameter(hidden = true) Principal principal,
       @Parameter(description = "Number of lines to fetch from head of file.", example = "100")
-          @RequestParam(required = false)
+          @RequestParam(name = "head", required = false)
           Integer head,
       @Parameter(description = "Number of lines to fetch from tail of file.", example = "100")
-          @RequestParam(required = false)
+          @RequestParam(name = "tail", required = false)
           Integer tail) {
 
     log.info(
-        "GET "
-            + LOGFILE_RESOURCE_PATH
-            + " - getLogfile() - caller: "
-            + principal.getName()
-            + ", head="
-            + head
-            + ", tail="
-            + tail);
+        "GET " + LOGFILE_RESOURCE_PATH + " - getLogfile() - caller: {}, head={}, tail={}",
+        principal.getName(),
+        head,
+        tail);
 
     String logfile;
     final int maxLogfileLineCount = restApiConfig.getMaxLogfileLines();
@@ -194,8 +190,8 @@ public class BotLogfileController extends RestController {
       if (head != null && head > 0) {
         if (head > maxLogfileLineCount) {
           log.warn(
-              "Requested head line count exceeds max line count. Using max line count: "
-                  + maxLogfileLineCount);
+              "Requested head line count exceeds max line count. Using max line count: {}",
+              maxLogfileLineCount);
           logfile = botLogfileService.getLogfileHead(maxLogfileLineCount);
         } else {
           logfile = botLogfileService.getLogfileHead(head);
@@ -204,8 +200,8 @@ public class BotLogfileController extends RestController {
       } else if (tail != null && tail > 0) {
         if (tail > maxLogfileLineCount) {
           log.warn(
-              "Requested tail line count exceeds max line count. Using max line count: "
-                  + maxLogfileLineCount);
+              "Requested tail line count exceeds max line count. Using max line count: {}",
+              maxLogfileLineCount);
           logfile = botLogfileService.getLogfileTail(maxLogfileLineCount);
         } else {
           logfile = botLogfileService.getLogfileTail(tail);

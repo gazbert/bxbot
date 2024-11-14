@@ -23,7 +23,7 @@
 
 package com.gazbert.bxbot.datastore.yaml.strategy;
 
-import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -160,16 +160,7 @@ class TestStrategyConfigurationManagement {
   @Test
   void testSavingConfigToYamlIsSuccessful() throws Exception {
     // Strat 1
-    final StrategyConfig strategy1 = new StrategyConfig();
-    strategy1.setId(STRAT_ID_1);
-    strategy1.setName(STRAT_NAME_1);
-    strategy1.setDescription(STRAT_DESCRIPTION_1);
-    strategy1.setClassName(STRAT_CLASSNAME_1);
-
-    final Map<String, String> strat1ConfigItems = new HashMap<>();
-    strat1ConfigItems.put(BUY_PRICE_CONFIG_ITEM_KEY, BUY_PRICE_CONFIG_ITEM_VALUE);
-    strat1ConfigItems.put(AMOUNT_TO_BUY_CONFIG_ITEM_KEY, AMOUNT_TO_BUY_CONFIG_ITEM_VALUE);
-    strategy1.setConfigItems(strat1ConfigItems);
+    final StrategyConfig strategy1 = getStrategyConfig();
 
     // Strat 2
     final StrategyConfig strategy2 = new StrategyConfig();
@@ -204,20 +195,10 @@ class TestStrategyConfigurationManagement {
         .isEqualTo(STRAT_CLASSNAME_1);
     assertThat(strategiesReloaded.getStrategies().get(0).getBeanName()).isNull();
 
-    assertThat(
-            strategiesReloaded
-                .getStrategies()
-                .get(0)
-                .getConfigItems()
-                .get(BUY_PRICE_CONFIG_ITEM_KEY))
-        .isEqualTo(BUY_PRICE_CONFIG_ITEM_VALUE);
-    assertThat(
-            strategiesReloaded
-                .getStrategies()
-                .get(0)
-                .getConfigItems()
-                .get(AMOUNT_TO_BUY_CONFIG_ITEM_KEY))
-        .isEqualTo(AMOUNT_TO_BUY_CONFIG_ITEM_VALUE);
+    assertThat(strategiesReloaded.getStrategies().get(0).getConfigItems())
+        .containsEntry(BUY_PRICE_CONFIG_ITEM_KEY, BUY_PRICE_CONFIG_ITEM_VALUE);
+    assertThat(strategiesReloaded.getStrategies().get(0).getConfigItems())
+        .containsEntry(AMOUNT_TO_BUY_CONFIG_ITEM_KEY, AMOUNT_TO_BUY_CONFIG_ITEM_VALUE);
 
     // Strat 2
     assertThat(strategiesReloaded.getStrategies().get(1).getId()).isEqualTo(STRAT_ID_2);
@@ -228,23 +209,27 @@ class TestStrategyConfigurationManagement {
     assertThat(strategiesReloaded.getStrategies().get(1).getBeanName())
         .isEqualTo(STRAT_BEAN_NAME_2);
 
-    assertThat(
-            strategiesReloaded
-                .getStrategies()
-                .get(1)
-                .getConfigItems()
-                .get(BUY_PRICE_CONFIG_ITEM_KEY))
-        .isEqualTo(BUY_PRICE_CONFIG_ITEM_VALUE);
-    assertThat(
-            strategiesReloaded
-                .getStrategies()
-                .get(1)
-                .getConfigItems()
-                .get(AMOUNT_TO_BUY_CONFIG_ITEM_KEY))
-        .isEqualTo(AMOUNT_TO_BUY_CONFIG_ITEM_VALUE);
+    assertThat(strategiesReloaded.getStrategies().get(1).getConfigItems())
+        .containsEntry(BUY_PRICE_CONFIG_ITEM_KEY, BUY_PRICE_CONFIG_ITEM_VALUE);
+    assertThat(strategiesReloaded.getStrategies().get(1).getConfigItems())
+        .containsEntry(AMOUNT_TO_BUY_CONFIG_ITEM_KEY, AMOUNT_TO_BUY_CONFIG_ITEM_VALUE);
 
     // cleanup
     Files.delete(FileSystems.getDefault().getPath(YAML_CONFIG_TO_SAVE_FILENAME));
+  }
+
+  private static StrategyConfig getStrategyConfig() {
+    final StrategyConfig strategy1 = new StrategyConfig();
+    strategy1.setId(STRAT_ID_1);
+    strategy1.setName(STRAT_NAME_1);
+    strategy1.setDescription(STRAT_DESCRIPTION_1);
+    strategy1.setClassName(STRAT_CLASSNAME_1);
+
+    final Map<String, String> strat1ConfigItems = new HashMap<>();
+    strat1ConfigItems.put(BUY_PRICE_CONFIG_ITEM_KEY, BUY_PRICE_CONFIG_ITEM_VALUE);
+    strat1ConfigItems.put(AMOUNT_TO_BUY_CONFIG_ITEM_KEY, AMOUNT_TO_BUY_CONFIG_ITEM_VALUE);
+    strategy1.setConfigItems(strat1ConfigItems);
+    return strategy1;
   }
 
   @Test

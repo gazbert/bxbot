@@ -41,6 +41,8 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.util.Date;
 import java.util.List;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.util.Assert;
 
 /**
@@ -52,37 +54,51 @@ import org.springframework.util.Assert;
 @Table(name = "BXBOT_USER")
 public class User {
 
+  @Setter
+  @Getter
   @Id
   @Column(name = "ID")
   @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_seq")
   @SequenceGenerator(name = "user_seq", sequenceName = "user_seq", allocationSize = 1)
   private Long id;
 
+  @Getter
+  @Setter
   @Column(name = "USERNAME", length = 50, unique = true)
   @NotNull
   @Size(min = 5, max = 50)
   private String username;
 
+  @Setter
+  @Getter
   @Column(name = "PASSWORD", length = 100)
   @NotNull
   @Size(min = 5, max = 100)
   private String password;
 
+  @Getter
+  @Setter
   @Column(name = "FIRSTNAME", length = 50)
   @NotNull
   @Size(min = 5, max = 50)
   private String firstname;
 
+  @Setter
+  @Getter
   @Column(name = "LASTNAME", length = 50)
   @NotNull
   @Size(min = 5, max = 50)
   private String lastname;
 
+  @Getter
+  @Setter
   @Column(name = "EMAIL", length = 100)
   @NotNull
   @Size(min = 5, max = 100)
   private String email;
 
+  @Setter
+  @Getter
   @Column(name = "ENABLED")
   @NotNull
   private Boolean enabled;
@@ -92,6 +108,8 @@ public class User {
   @NotNull
   private Date lastPasswordResetDate;
 
+  @Getter
+  @Setter
   @ManyToMany(fetch = FetchType.EAGER)
   @JoinTable(
       name = "USER_ROLE",
@@ -102,150 +120,6 @@ public class User {
   /** Creates the User. */
   public User() {
     // No extra init needed.
-  }
-
-  /**
-   * Returns the id.
-   *
-   * @return the id.
-   */
-  public Long getId() {
-    return id;
-  }
-
-  /**
-   * Sets the id.
-   *
-   * @param id the id.
-   */
-  public void setId(Long id) {
-    this.id = id;
-  }
-
-  /**
-   * Returns the username.
-   *
-   * @return the username.
-   */
-  public String getUsername() {
-    return username;
-  }
-
-  /**
-   * Sets the username.
-   *
-   * @param username the username.
-   */
-  public void setUsername(String username) {
-    this.username = username;
-  }
-
-  /**
-   * Returns the password.
-   *
-   * @return the password.
-   */
-  public String getPassword() {
-    return password;
-  }
-
-  /**
-   * Sets the password.
-   *
-   * @param password the password.
-   */
-  public void setPassword(String password) {
-    this.password = password;
-  }
-
-  /**
-   * Returns the firstname.
-   *
-   * @return the firstname.
-   */
-  public String getFirstname() {
-    return firstname;
-  }
-
-  /**
-   * Sets the firstname.
-   *
-   * @param firstname the firstname.
-   */
-  public void setFirstname(String firstname) {
-    this.firstname = firstname;
-  }
-
-  /**
-   * Returns the lastname.
-   *
-   * @return the lastname.
-   */
-  public String getLastname() {
-    return lastname;
-  }
-
-  /**
-   * Sets the lastname.
-   *
-   * @param lastname the lastname.
-   */
-  public void setLastname(String lastname) {
-    this.lastname = lastname;
-  }
-
-  /**
-   * Returns the email.
-   *
-   * @return the email.
-   */
-  public String getEmail() {
-    return email;
-  }
-
-  /**
-   * Sets the email.
-   *
-   * @param email the email.
-   */
-  public void setEmail(String email) {
-    this.email = email;
-  }
-
-  /**
-   * Returns if user is enabled.
-   *
-   * @return user enabled?
-   */
-  public Boolean getEnabled() {
-    return enabled;
-  }
-
-  /**
-   * Sets if user is enabled.
-   *
-   * @param enabled user enabled?
-   */
-  public void setEnabled(Boolean enabled) {
-    this.enabled = enabled;
-  }
-
-  /**
-   * Returns their roles.
-   *
-   * @return their roles.
-   */
-  public List<Role> getRoles() {
-    return roles;
-  }
-
-  /**
-   * Sets their roles.
-   *
-   * @param roles their roles.
-   */
-  public void setRoles(List<Role> roles) {
-    this.roles = roles;
   }
 
   /**

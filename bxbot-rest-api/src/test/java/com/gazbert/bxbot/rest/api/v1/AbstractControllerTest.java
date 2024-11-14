@@ -81,6 +81,11 @@ public abstract class AbstractControllerTest {
 
   protected MockMvc mockMvc;
 
+  /**
+   * Sets the Jackson HTTP converters.
+   *
+   * @param converters the HTTP converters.
+   */
   @Autowired
   protected void setConverters(HttpMessageConverter<?>[] converters) {
     mappingJackson2HttpMessageConverter =
@@ -97,6 +102,13 @@ public abstract class AbstractControllerTest {
   // Shared utils
   // --------------------------------------------------------------------------
 
+  /**
+   * Builds the Authorization header value.
+   *
+   * @param username the username.
+   * @param password the password
+   * @return the Authorization header value.
+   */
   protected String buildAuthorizationHeaderValue(String username, String password) {
     return "Basic "
         + new String(
@@ -105,10 +117,14 @@ public abstract class AbstractControllerTest {
             StandardCharsets.UTF_8);
   }
 
-  /*
-   * Builds a JWT response.
-   * Kudos to @royclarkson for his OAuth2 version:
-   * https://github.com/royclarkson/spring-rest-service-oauth
+  /**
+   * Builds a JWT response. Kudos to @royclarkson for his OAuth2 version: <a
+   * href="https://github.com/royclarkson/spring-rest-service-oauth">See here.</a>
+   *
+   * @param username the username.
+   * @param password the password.
+   * @return the JWT.
+   * @throws Exception if anything breaks.
    */
   protected String getJwt(String username, String password) throws Exception {
 
@@ -130,6 +146,13 @@ public abstract class AbstractControllerTest {
     return jwtResponse.getToken();
   }
 
+  /**
+   * Converts an Object into a JSON string.
+   *
+   * @param objectToJsonify the object to convert.
+   * @return the JSON string.
+   * @throws IOException if the conversion fails.
+   */
   protected String jsonify(Object objectToJsonify) throws IOException {
     final MockHttpOutputMessage mockHttpOutputMessage = new MockHttpOutputMessage();
     mappingJackson2HttpMessageConverter.write(

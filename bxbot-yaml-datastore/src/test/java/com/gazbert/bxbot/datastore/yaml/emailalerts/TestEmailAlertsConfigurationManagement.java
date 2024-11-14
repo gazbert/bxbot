@@ -107,20 +107,7 @@ class TestEmailAlertsConfigurationManagement {
 
   @Test
   void testSavingConfigToXmlIsSuccessful() throws Exception {
-    final SmtpConfig smtpConfig = new SmtpConfig();
-    smtpConfig.setAccountUsername(ACCOUNT_USERNAME);
-    smtpConfig.setAccountPassword(ACCOUNT_PASSWORD);
-    smtpConfig.setHost(HOST);
-    smtpConfig.setTlsPort(TLS_PORT);
-    smtpConfig.setFromAddress(FROM_ADDRESS);
-    smtpConfig.setToAddress(TO_ADDRESS);
-
-    final EmailAlertsConfig emailAlertsConfig = new EmailAlertsConfig();
-    emailAlertsConfig.setEnabled(true);
-    emailAlertsConfig.setSmtpConfig(smtpConfig);
-
-    final EmailAlertsType emailAlertsType = new EmailAlertsType();
-    emailAlertsType.setEmailAlerts(emailAlertsConfig);
+    final EmailAlertsType emailAlertsType = getAlertsType();
 
     final ConfigurationManager configurationManager = new ConfigurationManager();
 
@@ -149,6 +136,22 @@ class TestEmailAlertsConfigurationManagement {
 
   @Test
   void testSavingConfigToInvalidYamlFileIsHandled() {
+    final EmailAlertsType emailAlertsType = getAlertsType();
+
+    final ConfigurationManager configurationManager = new ConfigurationManager();
+
+    assertThrows(
+        IllegalStateException.class,
+        () ->
+            configurationManager.saveConfig(
+                EmailAlertsType.class, emailAlertsType, INVALID_YAML_CONFIG_TO_SAVE_FILENAME));
+  }
+
+  // --------------------------------------------------------------------------
+  // Canned data
+  // --------------------------------------------------------------------------
+
+  private static EmailAlertsType getAlertsType() {
     final SmtpConfig smtpConfig = new SmtpConfig();
     smtpConfig.setAccountUsername(ACCOUNT_USERNAME);
     smtpConfig.setAccountPassword(ACCOUNT_PASSWORD);
@@ -163,13 +166,6 @@ class TestEmailAlertsConfigurationManagement {
 
     final EmailAlertsType emailAlertsType = new EmailAlertsType();
     emailAlertsType.setEmailAlerts(emailAlertsConfig);
-
-    final ConfigurationManager configurationManager = new ConfigurationManager();
-
-    assertThrows(
-        IllegalStateException.class,
-        () ->
-            configurationManager.saveConfig(
-                EmailAlertsType.class, emailAlertsType, INVALID_YAML_CONFIG_TO_SAVE_FILENAME));
+    return emailAlertsType;
   }
 }

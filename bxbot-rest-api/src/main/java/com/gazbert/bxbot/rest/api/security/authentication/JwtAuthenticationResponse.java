@@ -26,12 +26,16 @@ package com.gazbert.bxbot.rest.api.security.authentication;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Encapsulates a JWT Authentication response. It wraps the JWT (Base64 encoded String).
  *
  * @author gazbert
  */
+@Setter
+@Getter
 public class JwtAuthenticationResponse {
 
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The JWT.")
@@ -49,24 +53,6 @@ public class JwtAuthenticationResponse {
    * @param token the JWT.
    */
   public JwtAuthenticationResponse(String token) {
-    this.token = token;
-  }
-
-  /**
-   * Returns the JWT.
-   *
-   * @return the JWT.
-   */
-  public String getToken() {
-    return this.token;
-  }
-
-  /**
-   * Sets the JWT.
-   *
-   * @param token the JWT.
-   */
-  public void setToken(String token) {
     this.token = token;
   }
 }

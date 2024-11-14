@@ -54,7 +54,7 @@ public class ConfigurableComponentFactory {
     try {
       final Class<?> componentClass = Class.forName(componentClassName);
       final Object rawComponentObject = componentClass.getDeclaredConstructor().newInstance();
-      log.info("Successfully created the Component class for: " + componentClassName);
+      log.info("Successfully created the Component class for: {}", componentClassName);
       return (T) rawComponentObject;
 
     } catch (ClassNotFoundException

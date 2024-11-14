@@ -108,17 +108,14 @@ public class EmergencyStopChecker {
     } else {
 
       log.info(
-          "Emergency Stop Currency balance available on exchange is ["
-              + new DecimalFormat(DECIMAL_FORMAT_PATTERN).format(currentBalance)
-              + "] "
-              + engineConfig.getEmergencyStopCurrency());
+          "Emergency Stop Currency balance available on exchange is [{}] {}",
+          new DecimalFormat(DECIMAL_FORMAT_PATTERN).format(currentBalance),
+          engineConfig.getEmergencyStopCurrency());
 
       log.info(
-          "Balance that will stop ALL trading across ALL markets is ["
-              + new DecimalFormat(DECIMAL_FORMAT_PATTERN)
-                  .format(engineConfig.getEmergencyStopBalance())
-              + "] "
-              + engineConfig.getEmergencyStopCurrency());
+          "Balance that will stop ALL trading across ALL markets is [{}] {}",
+          new DecimalFormat(DECIMAL_FORMAT_PATTERN).format(engineConfig.getEmergencyStopBalance()),
+          engineConfig.getEmergencyStopCurrency());
 
       if (currentBalance.compareTo(engineConfig.getEmergencyStopBalance()) < 0) {
         final String balanceBlownErrorMsg =

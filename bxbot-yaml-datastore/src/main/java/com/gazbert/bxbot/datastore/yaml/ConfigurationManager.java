@@ -34,6 +34,7 @@ import java.util.TreeSet;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 import org.yaml.snakeyaml.DumperOptions;
+import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 import org.yaml.snakeyaml.introspector.BeanAccess;
@@ -52,7 +53,7 @@ import org.yaml.snakeyaml.representer.Representer;
 @Log4j2
 public class ConfigurationManager {
 
-  private static final String YAML_HEADER = "---" + System.getProperty("line.separator");
+  private static final String YAML_HEADER = "---" + System.lineSeparator();
 
   /** Creates the Configuration Manager. */
   public ConfigurationManager() {
@@ -69,13 +70,15 @@ public class ConfigurationManager {
    */
   public synchronized <T> T loadConfig(final Class<T> configClass, String yamlConfigFile) {
 
-    log.info("Loading configuration for [" + configClass + "] from: " + yamlConfigFile + " ...");
+    log.info("Loading configuration for [{}] from: {} ...", configClass, yamlConfigFile);
 
     try (final FileInputStream fileInputStream = new FileInputStream(yamlConfigFile)) {
-      final Yaml yaml = new Yaml(new Constructor(configClass));
+
+      final LoaderOptions options = new LoaderOptions();
+      final Yaml yaml = new Yaml(new Constructor(configClass, options));
       final T requestedConfig = yaml.load(fileInputStream);
 
-      log.info("Loaded and set configuration for [" + configClass + "] successfully!");
+      log.info("Loaded and set configuration for [{}] successfully!", configClass);
       return requestedConfig;
 
     } catch (IOException e) {
@@ -101,21 +104,22 @@ public class ConfigurationManager {
    */
   public synchronized <T> void saveConfig(Class<T> configClass, T config, String yamlConfigFile) {
 
-    log.info("Saving configuration for [" + configClass + "] to: " + yamlConfigFile + " ...");
+    log.info("Saving configuration for [{}] to: {} ...", configClass, yamlConfigFile);
 
     try (final FileOutputStream fileOutputStream = new FileOutputStream(yamlConfigFile);
         final PrintWriter writer =
             new PrintWriter(fileOutputStream, true, StandardCharsets.UTF_8)) {
 
       // Skip null fields and order the YAML fields
-      final Representer representer = new SkipNullFieldRepresenter();
+      final DumperOptions options = new DumperOptions();
+      final Representer representer = new SkipNullFieldRepresenter(options);
       representer.setPropertyUtils(new ReversedPropertyUtils());
-
       final Yaml yaml = new Yaml(representer);
+
       final StringBuilder sb = new StringBuilder(YAML_HEADER);
       sb.append(yaml.dumpAs(config, Tag.MAP, DumperOptions.FlowStyle.BLOCK));
 
-      log.debug("YAML file content:\n" + sb);
+      log.debug("YAML file content:\n{}", sb);
       writer.print(sb);
 
     } catch (IOException e) {
@@ -133,6 +137,11 @@ public class ConfigurationManager {
 
   /** Stops null fields from getting written out to YAML. */
   private static class SkipNullFieldRepresenter extends Representer {
+
+    SkipNullFieldRepresenter(DumperOptions options) {
+      super(options);
+    }
+
     @Override
     protected NodeTuple representJavaBeanProperty(
         Object javaBean, Property property, Object propertyValue, Tag customTag) {

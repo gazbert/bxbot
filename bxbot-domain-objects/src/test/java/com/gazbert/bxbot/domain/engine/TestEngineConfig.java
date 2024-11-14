@@ -158,8 +158,8 @@ class TestEngineConfig {
             TRADE_CYCLE_INTERVAL);
 
     assertEquals(
-        "EngineConfig{botId=avro-707_1, botName=Avro 707, emergencyStopCurrency=BTC, "
-            + "emergencyStopBalance=1.5, tradeCycleInterval=30}",
+        "EngineConfig(botId=avro-707_1, botName=Avro 707, emergencyStopCurrency=BTC, "
+            + "emergencyStopBalance=1.5, tradeCycleInterval=30)",
         engineConfig.toString());
   }
 }

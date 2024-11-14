@@ -76,9 +76,9 @@ class TestNetworkConfig {
     networkConfig.setNonFatalErrorMessages(NON_FATAL_ERROR_MESSAGES);
 
     assertEquals(
-        "NetworkConfig{connectionTimeout=30, nonFatalErrorCodes=[502, 503, 504],"
+        "NetworkConfig(connectionTimeout=30, nonFatalErrorCodes=[502, 503, 504],"
             + " nonFatalErrorMessages=[Connection refused, Connection reset, "
-            + "Remote host closed connection during handshake]}",
+            + "Remote host closed connection during handshake])",
         networkConfig.toString());
   }
 }

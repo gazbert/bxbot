@@ -94,18 +94,19 @@ public class EmailAlerter {
         message.setSubject(subject);
         message.setText(msgContent);
 
-        log.info("About to send following Email Alert with message content: " + msgContent);
+        log.info("About to send following Email Alert with message content: {}", msgContent);
         Transport.send(message);
 
       } catch (MessagingException e) {
-        log.error("Failed to send Email Alert. Details: " + e.getMessage(), e);
+        if (log.isErrorEnabled()) {
+          log.error("Failed to send Email Alert. Details: {}", e.getMessage(), e);
+        }
       }
     } else {
       log.warn(
-          "Email Alerts are disabled. Not sending the following message: Subject: "
-              + subject
-              + " Content: "
-              + msgContent);
+          "Email Alerts are disabled. Not sending the following message: Subject: {} Content: {}",
+          subject,
+          msgContent);
     }
   }
 
@@ -129,12 +130,12 @@ public class EmailAlerter {
           throw new IllegalStateException(errorMsg);
         }
 
-        log.info("SMTP host: " + smtpConfig.getHost());
-        log.info("SMTP TLS Port: " + smtpConfig.getTlsPort());
-        log.info("Account username: " + smtpConfig.getAccountUsername());
+        log.info("SMTP host: {}", smtpConfig.getHost());
+        log.info("SMTP TLS Port: {}", smtpConfig.getTlsPort());
+        log.info("Account username: {}", smtpConfig.getAccountUsername());
         // Account password not logged intentionally
-        log.info("From address: " + smtpConfig.getFromAddress());
-        log.info("To address: " + smtpConfig.getToAddress());
+        log.info("From address: {}", smtpConfig.getFromAddress());
+        log.info("To address: {}", smtpConfig.getToAddress());
 
         smtpProps = new Properties();
         smtpProps.put("mail.smtp.auth", "true");

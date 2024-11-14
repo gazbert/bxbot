@@ -26,12 +26,14 @@ package com.gazbert.bxbot.core.config.exchange;
 import com.gazbert.bxbot.exchange.api.AuthenticationConfig;
 import java.util.HashMap;
 import java.util.Map;
+import lombok.Setter;
 
 /**
  * Exchange API Authentication config.
  *
  * @author gazbert
  */
+@Setter
 public class AuthenticationConfigImpl implements AuthenticationConfig {
 
   private Map<String, String> items;
@@ -53,14 +55,5 @@ public class AuthenticationConfigImpl implements AuthenticationConfig {
    */
   Map<String, String> getItems() {
     return items;
-  }
-
-  /**
-   * Sets the config items.
-   *
-   * @param items the config items.
-   */
-  public void setItems(Map<String, String> items) {
-    this.items = items;
   }
 }

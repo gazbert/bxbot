@@ -26,6 +26,8 @@ package com.gazbert.bxbot.rest.api.security.authentication;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Encapsulates a JWT Authentication Request containing username/password sent from the client.
@@ -35,6 +37,8 @@ import jakarta.validation.constraints.NotNull;
  *
  * @author gazbert
  */
+@Setter
+@Getter
 public class JwtAuthenticationRequest {
 
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The username.")
@@ -59,42 +63,6 @@ public class JwtAuthenticationRequest {
    */
   public JwtAuthenticationRequest(String username, String password) {
     this.username = username;
-    this.password = password;
-  }
-
-  /**
-   * Returns the username.
-   *
-   * @return the username.
-   */
-  public String getUsername() {
-    return this.username;
-  }
-
-  /**
-   * Sets the username.
-   *
-   * @param username the username.
-   */
-  public void setUsername(String username) {
-    this.username = username;
-  }
-
-  /**
-   * Returns the password.
-   *
-   * @return the password.
-   */
-  public String getPassword() {
-    return this.password;
-  }
-
-  /**
-   * Sets the password.
-   *
-   * @param password the password.
-   */
-  public void setPassword(String password) {
     this.password = password;
   }
 }

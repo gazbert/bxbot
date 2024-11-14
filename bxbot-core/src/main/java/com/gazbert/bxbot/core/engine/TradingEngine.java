@@ -80,6 +80,9 @@ public class TradingEngine {
   private static final String DETAILS_ERROR_MSG_LABEL = " Details: ";
   private static final String CAUSE_ERROR_MSG_LABEL = " Cause: ";
 
+  private static final String THREAD_INTERRUPTED_WARN_MSG =
+      "Control Loop thread interrupted when sleeping before next trade cycle";
+
   private static final Object IS_RUNNING_MONITOR = new Object();
   private Thread engineThread;
   private volatile boolean keepAlive = true;
@@ -160,7 +163,7 @@ public class TradingEngine {
    * The code fails hard and fast if an unexpected occurs. Network exceptions *should* recover.
    */
   private void runMainControlLoop() {
-    log.info("Starting Trading Engine for " + engineConfig.getBotId() + " ...");
+    log.info("Starting Trading Engine for {} ...", engineConfig.getBotId());
     while (keepAlive) {
       try {
         log.info("*** Starting next trade cycle... ***");
@@ -171,7 +174,8 @@ public class TradingEngine {
         }
 
         for (final TradingStrategy tradingStrategy : tradingStrategies) {
-          log.info("Executing Trading Strategy ---> " + tradingStrategy.getClass().getSimpleName());
+          log.info(
+              "Executing Trading Strategy ---> {}", tradingStrategy.getClass().getSimpleName());
           tradingStrategy.execute();
         }
 
@@ -192,7 +196,7 @@ public class TradingEngine {
     }
 
     // We've broken out of the control loop due to error or admin shutdown request
-    log.fatal("BX-bot " + engineConfig.getBotId() + " is shutting down NOW!");
+    log.fatal("BX-bot {} is shutting down NOW!", engineConfig.getBotId());
     synchronized (IS_RUNNING_MONITOR) {
       isRunning = false;
     }
@@ -205,23 +209,22 @@ public class TradingEngine {
    */
   void shutdown() {
     log.info("Shutdown request received!");
-    log.info("Engine originally started in thread: " + engineThread);
+    log.info("Engine originally started in thread: {}", engineThread);
     keepAlive = false;
     engineThread.interrupt(); // poke it in case bot is sleeping
   }
 
   synchronized boolean isRunning() {
-    log.info("isRunning: " + isRunning);
+    log.info("isRunning: {}", isRunning);
     return isRunning;
   }
 
   private void sleepUntilNextTradingCycle() {
-    log.info(
-        "*** Sleeping " + engineConfig.getTradeCycleInterval() + "s til next trade cycle... ***");
+    log.info("*** Sleeping {}s til next trade cycle... ***", engineConfig.getTradeCycleInterval());
     try {
       Thread.sleep(engineConfig.getTradeCycleInterval() * 1000L);
     } catch (InterruptedException e) {
-      log.warn("Control Loop thread interrupted when sleeping before next trade cycle");
+      log.warn(THREAD_INTERRUPTED_WARN_MSG);
       Thread.currentThread().interrupt();
     }
   }
@@ -241,7 +244,7 @@ public class TradingEngine {
     try {
       Thread.sleep(engineConfig.getTradeCycleInterval() * 1000L);
     } catch (InterruptedException e1) {
-      log.warn("Control Loop thread interrupted when sleeping before next trade cycle");
+      log.warn(THREAD_INTERRUPTED_WARN_MSG);
       Thread.currentThread().interrupt();
     }
   }
@@ -324,11 +327,11 @@ public class TradingEngine {
 
   private ExchangeAdapter loadExchangeAdapter() {
     final ExchangeConfig exchangeConfig = exchangeConfigService.getExchangeConfig();
-    log.info("Fetched Exchange config from repository: " + exchangeConfig);
+    log.info("Fetched Exchange config from repository: {}", exchangeConfig);
 
     final ExchangeAdapter adapter =
         configurableComponentFactory.createComponent(exchangeConfig.getAdapter());
-    log.info("Trading Engine will use Exchange Adapter for: " + adapter.getImplName());
+    log.info("Trading Engine will use Exchange Adapter for: {}", adapter.getImplName());
 
     final ExchangeConfigImpl exchangeApiConfig =
         ExchangeApiConfigBuilder.buildConfig(exchangeConfig);
@@ -338,15 +341,15 @@ public class TradingEngine {
 
   private EngineConfig loadEngineConfig() {
     final EngineConfig loadedEngineConfig = engineConfigService.getEngineConfig();
-    log.info("Fetched Engine config from repository: " + loadedEngineConfig);
+    log.info("Fetched Engine config from repository: {}", loadedEngineConfig);
     return loadedEngineConfig;
   }
 
   private List<TradingStrategy> loadTradingStrategies() {
     final List<StrategyConfig> strategies = strategyConfigService.getAllStrategyConfig();
-    log.info("Fetched Strategy config from repository: " + strategies);
+    log.info("Fetched Strategy config from repository: {}", strategies);
     final List<MarketConfig> markets = marketConfigService.getAllMarketConfig();
-    log.info("Fetched Markets config from repository: " + markets);
+    log.info("Fetched Markets config from repository: {}", markets);
     return tradingStrategiesBuilder.buildStrategies(strategies, markets, exchangeAdapter);
   }
 }

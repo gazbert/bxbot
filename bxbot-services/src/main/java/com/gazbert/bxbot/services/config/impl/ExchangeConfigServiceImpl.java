@@ -65,7 +65,7 @@ public class ExchangeConfigServiceImpl implements ExchangeConfigService {
 
   @Override
   public ExchangeConfig updateExchangeConfig(ExchangeConfig config) {
-    log.info("About to update Exchange config: " + config);
+    log.info("About to update Exchange config: {}", config);
     return exchangeConfigRepository.save(config);
   }
 }

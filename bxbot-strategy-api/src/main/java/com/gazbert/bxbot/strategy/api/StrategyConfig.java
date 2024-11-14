@@ -26,14 +26,10 @@ package com.gazbert.bxbot.strategy.api;
 import java.util.Set;
 
 /**
- * <p>
- * Encapsulates any (optional) configuration for a Trading Strategy.
- * Basically just a map of key-value pairs.
- * </p>
+ * Encapsulates any (optional) configuration for a Trading Strategy. Basically just a map of
+ * key-value pairs.
  *
- * <p>
- * Configuration comes from the strategies.yaml file.
- * </p>
+ * <p>Configuration comes from the strategies.yaml file.
  *
  * @author gazbert
  * @since 1.0

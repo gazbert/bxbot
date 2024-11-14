@@ -70,7 +70,7 @@ public class MarketConfigYamlRepository implements MarketConfigRepository {
 
   @Override
   public MarketConfig findById(String id) {
-    log.info("Fetching Market config for id: " + id);
+    log.info("Fetching Market config for id: {}", id);
 
     final MarketsType marketsType =
         configurationManager.loadConfig(MarketsType.class, MARKETS_CONFIG_YAML_FILENAME);
@@ -94,7 +94,7 @@ public class MarketConfigYamlRepository implements MarketConfigRepository {
             .toList();
 
     if (config.getId() == null || config.getId().isEmpty()) {
-      log.info("About to create MarketConfig: " + config);
+      log.info("About to create MarketConfig: {}", config);
 
       if (marketConfigs.isEmpty()) {
         final MarketConfig newMarketConfig = new MarketConfig(config);
@@ -114,7 +114,7 @@ public class MarketConfigYamlRepository implements MarketConfigRepository {
                 + marketsType.getMarkets());
       }
     } else {
-      log.info("About to update MarketConfig: " + config);
+      log.info("About to update MarketConfig: {}", config);
 
       if (!marketConfigs.isEmpty()) {
 
@@ -133,10 +133,11 @@ public class MarketConfigYamlRepository implements MarketConfigRepository {
                 .collect(Collectors.toList()));
       } else {
         log.warn(
-            "Trying to update MarketConfig but id does not exist MarketConfig: "
-                + config
+            "Trying to update MarketConfig but id does not exist MarketConfig: {}"
                 + EXISTING_MARKET_CONFIG
-                + marketsType.getMarkets());
+                + "{}",
+            config,
+            marketsType.getMarkets());
         return null;
       }
     }
@@ -144,7 +145,7 @@ public class MarketConfigYamlRepository implements MarketConfigRepository {
 
   @Override
   public MarketConfig delete(String id) {
-    log.info("Deleting Market config for id: " + id);
+    log.info("Deleting Market config for id: {}", id);
 
     final MarketsType marketsType =
         configurationManager.loadConfig(MarketsType.class, MARKETS_CONFIG_YAML_FILENAME);
@@ -162,10 +163,11 @@ public class MarketConfigYamlRepository implements MarketConfigRepository {
       return adaptInternalToExternalConfig(Collections.singletonList(marketToRemove));
     } else {
       log.warn(
-          "Trying to delete MarketConfig but id does not exist. MarketConfig id: "
-              + id
+          "Trying to delete MarketConfig but id does not exist. MarketConfig id: {}"
               + EXISTING_MARKET_CONFIG
-              + marketsType.getMarkets());
+              + "{}",
+          id,
+          marketsType.getMarkets());
       return null;
     }
   }

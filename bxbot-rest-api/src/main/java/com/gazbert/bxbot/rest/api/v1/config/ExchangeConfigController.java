@@ -98,11 +98,12 @@ public class ExchangeConfigController extends RestController {
       })
   public ExchangeConfig getExchange(@Parameter(hidden = true) Principal principal) {
 
-    log.info("GET " + EXCHANGE_RESOURCE_PATH + " - getExchange() - caller: " + principal.getName());
+    log.info(
+        "GET " + EXCHANGE_RESOURCE_PATH + " - getExchange() - caller: {}", principal.getName());
 
     final ExchangeConfig exchangeConfig = exchangeConfigService.getExchangeConfig();
     exchangeConfig.setAuthenticationConfig(null);
-    log.info("Response: " + exchangeConfig);
+    log.info("Response: {}", exchangeConfig);
     return exchangeConfig;
   }
 
@@ -135,9 +136,9 @@ public class ExchangeConfigController extends RestController {
       @Parameter(hidden = true) Principal principal, @RequestBody ExchangeConfig config) {
 
     log.info(
-        "PUT " + EXCHANGE_RESOURCE_PATH + " - updateExchange() - caller: " + principal.getName());
+        "PUT " + EXCHANGE_RESOURCE_PATH + " - updateExchange() - caller: {}", principal.getName());
 
-    log.info("Request: " + config);
+    log.info("Request: {}", config);
 
     final ExchangeConfig updatedConfig =
         exchangeConfigService.updateExchangeConfig(mergeWithLocalAuthenticationConfig(config));
@@ -155,7 +156,7 @@ public class ExchangeConfigController extends RestController {
   }
 
   private ResponseEntity<ExchangeConfig> buildResponseEntity(ExchangeConfig entity) {
-    log.info("Response: " + entity);
+    log.info("Response: {}", entity);
     return new ResponseEntity<>(entity, null, HttpStatus.OK);
   }
 }

@@ -157,16 +157,7 @@ class TestExchangeConfigurationManagement {
     networkConfig.setNonFatalErrorCodes(NON_FATAL_ERROR_CODES);
     networkConfig.setNonFatalErrorMessages(NON_FATAL_ERROR_MESSAGES);
 
-    final Map<String, String> otherConfig = new HashMap<>();
-    otherConfig.put(BUY_FEE_CONFIG_ITEM_KEY, BUY_FEE_CONFIG_ITEM_VALUE);
-    otherConfig.put(SELL_FEE_CONFIG_ITEM_KEY, SELL_FEE_CONFIG_ITEM_VALUE);
-
-    final ExchangeConfig exchangeConfig = new ExchangeConfig();
-    exchangeConfig.setName(EXCHANGE_NAME);
-    exchangeConfig.setAdapter(EXCHANGE_ADAPTER);
-    exchangeConfig.setAuthenticationConfig(authenticationConfig);
-    exchangeConfig.setNetworkConfig(networkConfig);
-    exchangeConfig.setOtherConfig(otherConfig);
+    final ExchangeConfig exchangeConfig = getExchangeConfig(authenticationConfig, networkConfig);
 
     final ExchangeType exchangeType = new ExchangeType();
     exchangeType.setExchange(exchangeConfig);
@@ -227,16 +218,7 @@ class TestExchangeConfigurationManagement {
     networkConfig.setNonFatalErrorCodes(NON_FATAL_ERROR_CODES);
     networkConfig.setNonFatalErrorMessages(NON_FATAL_ERROR_MESSAGES);
 
-    final Map<String, String> otherConfig = new HashMap<>();
-    otherConfig.put(BUY_FEE_CONFIG_ITEM_KEY, BUY_FEE_CONFIG_ITEM_VALUE);
-    otherConfig.put(SELL_FEE_CONFIG_ITEM_KEY, SELL_FEE_CONFIG_ITEM_VALUE);
-
-    final ExchangeConfig exchangeConfig = new ExchangeConfig();
-    exchangeConfig.setName(EXCHANGE_NAME);
-    exchangeConfig.setAdapter(EXCHANGE_ADAPTER);
-    exchangeConfig.setAuthenticationConfig(authenticationConfig);
-    exchangeConfig.setNetworkConfig(networkConfig);
-    exchangeConfig.setOtherConfig(otherConfig);
+    final ExchangeConfig exchangeConfig = getExchangeConfig(authenticationConfig, networkConfig);
 
     final ExchangeType exchangeType = new ExchangeType();
     exchangeType.setExchange(exchangeConfig);
@@ -248,5 +230,24 @@ class TestExchangeConfigurationManagement {
         () ->
             configurationManager.saveConfig(
                 ExchangeType.class, exchangeType, INVALID_YAML_CONFIG_TO_SAVE_FILENAME));
+  }
+
+  // --------------------------------------------------------------------------
+  // Canned data
+  // --------------------------------------------------------------------------
+
+  private static ExchangeConfig getExchangeConfig(
+      Map<String, String> authenticationConfig, NetworkConfig networkConfig) {
+    final Map<String, String> otherConfig = new HashMap<>();
+    otherConfig.put(BUY_FEE_CONFIG_ITEM_KEY, BUY_FEE_CONFIG_ITEM_VALUE);
+    otherConfig.put(SELL_FEE_CONFIG_ITEM_KEY, SELL_FEE_CONFIG_ITEM_VALUE);
+
+    final ExchangeConfig exchangeConfig = new ExchangeConfig();
+    exchangeConfig.setName(EXCHANGE_NAME);
+    exchangeConfig.setAdapter(EXCHANGE_ADAPTER);
+    exchangeConfig.setAuthenticationConfig(authenticationConfig);
+    exchangeConfig.setNetworkConfig(networkConfig);
+    exchangeConfig.setOtherConfig(otherConfig);
+    return exchangeConfig;
   }
 }

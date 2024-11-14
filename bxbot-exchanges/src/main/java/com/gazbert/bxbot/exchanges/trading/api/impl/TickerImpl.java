@@ -24,14 +24,15 @@
 package com.gazbert.bxbot.exchanges.trading.api.impl;
 
 import com.gazbert.bxbot.trading.api.Ticker;
-import com.google.common.base.MoreObjects;
 import java.math.BigDecimal;
+import lombok.Data;
 
 /**
  * A Ticker implementation that can be used by Exchange Adapters.
  *
  * @author gazbert
  */
+@Data
 public final class TickerImpl implements Ticker {
 
   private BigDecimal last;
@@ -77,146 +78,5 @@ public final class TickerImpl implements Ticker {
     this.volume = volume;
     this.vwap = vwap;
     this.timestamp = timestamp;
-  }
-
-  @Override
-  public BigDecimal getLast() {
-    return last;
-  }
-
-  /**
-   * Set last price.
-   *
-   * @param last the last price.
-   */
-  public void setLast(BigDecimal last) {
-    this.last = last;
-  }
-
-  @Override
-  public BigDecimal getBid() {
-    return bid;
-  }
-
-  /**
-   * Set bid price.
-   *
-   * @param bid the bid price.
-   */
-  public void setBid(BigDecimal bid) {
-    this.bid = bid;
-  }
-
-  @Override
-  public BigDecimal getAsk() {
-    return ask;
-  }
-
-  /**
-   * Set ask price.
-   *
-   * @param ask the ask price.
-   */
-  public void setAsk(BigDecimal ask) {
-    this.ask = ask;
-  }
-
-  @Override
-  public BigDecimal getLow() {
-    return low;
-  }
-
-  /**
-   * Set low price.
-   *
-   * @param low the low price.
-   */
-  public void setLow(BigDecimal low) {
-    this.low = low;
-  }
-
-  @Override
-  public BigDecimal getHigh() {
-    return high;
-  }
-
-  /**
-   * Set high price.
-   *
-   * @param high the high price.
-   */
-  public void setHigh(BigDecimal high) {
-    this.high = high;
-  }
-
-  @Override
-  public BigDecimal getOpen() {
-    return open;
-  }
-
-  /**
-   * Set open price.
-   *
-   * @param open the open price.
-   */
-  public void setOpen(BigDecimal open) {
-    this.open = open;
-  }
-
-  @Override
-  public BigDecimal getVolume() {
-    return volume;
-  }
-
-  /**
-   * Set volume.
-   *
-   * @param volume the volume.
-   */
-  public void setVolume(BigDecimal volume) {
-    this.volume = volume;
-  }
-
-  @Override
-  public BigDecimal getVwap() {
-    return vwap;
-  }
-
-  /**
-   * Set vwap.
-   *
-   * @param vwap the vwap.
-   */
-  public void setVwap(BigDecimal vwap) {
-    this.vwap = vwap;
-  }
-
-  @Override
-  public Long getTimestamp() {
-    return timestamp;
-  }
-
-  /**
-   * Set timestamp.
-   *
-   * @param timestamp the timestamp.
-   */
-  public void setTimestamp(Long timestamp) {
-    this.timestamp = timestamp;
-  }
-
-  @Override
-  public String toString() {
-    return MoreObjects.toStringHelper(this)
-        .add("last", last)
-        .add("bid", bid)
-        .add("ask", ask)
-        .add("low", low)
-        .add("high", high)
-        .add("open", open)
-        .add("volume", volume)
-        .add("vwap", vwap)
-        .add("timestamp", timestamp)
-        .toString();
   }
 }

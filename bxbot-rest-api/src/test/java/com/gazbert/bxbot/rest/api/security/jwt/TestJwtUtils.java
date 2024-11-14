@@ -24,7 +24,7 @@
 
 package com.gazbert.bxbot.rest.api.security.jwt;
 
-import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.times;
@@ -43,6 +43,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import org.assertj.core.util.DateUtil;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -87,18 +88,25 @@ class TestJwtUtils {
   private static final Date LAST_PASSWORD_RESET_DATE_YESTERDAY = DateUtil.yesterday();
   private static final List<String> ROLES = Arrays.asList("ROLE_ADMIN", "ROLE_USER");
 
+  private AutoCloseable autoCloseable;
+
   @InjectMocks private JwtUtils jwtUtils;
   @MockBean private Claims claims;
 
   /** Setup for all tests. */
   @BeforeEach
   void init() {
-    MockitoAnnotations.initMocks(this);
+    autoCloseable = MockitoAnnotations.openMocks(this);
     ReflectionTestUtils.setField(jwtUtils, "expirationInSecs", EXPIRATION_PERIOD);
     ReflectionTestUtils.setField(jwtUtils, "secret", SECRET_KEY);
     ReflectionTestUtils.setField(jwtUtils, "allowedClockSkewInSecs", ALLOWED_CLOCK_SKEW_IN_SECS);
     ReflectionTestUtils.setField(jwtUtils, "issuer", ISSUER);
     ReflectionTestUtils.setField(jwtUtils, "audience", AUDIENCE);
+  }
+
+  @AfterEach
+  public void releaseMocks() throws Exception {
+    autoCloseable.close();
   }
 
   // ------------------------------------------------------------------------
@@ -140,7 +148,7 @@ class TestJwtUtils {
   void testRolesCanBeExtractedFromTokenClaims() {
     when(claims.get(JwtUtils.CLAIM_KEY_ROLES)).thenReturn(ROLES);
     final List<GrantedAuthority> roles = jwtUtils.getRolesFromTokenClaims(claims);
-    assertThat(roles.size()).isEqualTo(2);
+    assertThat(roles).hasSize(2);
     assertThat(roles.get(0).getAuthority()).isEqualTo(RoleName.ROLE_ADMIN.name());
     assertThat(roles.get(1).getAuthority()).isEqualTo(RoleName.ROLE_USER.name());
     verify(claims, times(1)).get(JwtUtils.CLAIM_KEY_ROLES);
@@ -208,7 +216,7 @@ class TestJwtUtils {
     final String refreshToken = jwtUtils.refreshToken(token);
     final Claims refreshTokenClaims = jwtUtils.validateTokenAndGetClaims(refreshToken);
 
-    assertThat(refreshTokenClaims.getIssuedAt()).isAfterOrEqualsTo(tokenClaims.getIssuedAt());
+    assertThat(refreshTokenClaims.getIssuedAt()).isAfterOrEqualTo(tokenClaims.getIssuedAt());
   }
 
   @Test
@@ -238,7 +246,7 @@ class TestJwtUtils {
 
     // Valid as token created after password last changed
     final boolean canBeRefreshed = jwtUtils.canTokenBeRefreshed(tokenClaims, DateUtil.yesterday());
-    assertThat(canBeRefreshed).isEqualTo(true);
+    assertThat(canBeRefreshed).isTrue();
   }
 
   // ------------------------------------------------------------------------

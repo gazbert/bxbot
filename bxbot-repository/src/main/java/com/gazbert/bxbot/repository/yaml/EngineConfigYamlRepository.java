@@ -64,7 +64,7 @@ public class EngineConfigYamlRepository implements EngineConfigRepository {
 
   @Override
   public EngineConfig save(EngineConfig config) {
-    log.info("About to save EngineConfig: " + config);
+    log.info("About to save EngineConfig: {}", config);
 
     final EngineType engineType = new EngineType();
     engineType.setEngine(config);

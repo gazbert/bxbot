@@ -23,15 +23,17 @@
 
 package com.gazbert.bxbot.domain.exchange;
 
-import com.google.common.base.MoreObjects;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.Map;
+import lombok.Data;
+import lombok.ToString;
 
 /**
  * Domain object representing the overall Exchange config.
  *
  * @author gazbert
  */
+@Data
 @Schema
 public class ExchangeConfig {
 
@@ -55,6 +57,7 @@ public class ExchangeConfig {
       description =
           "Optional, but required by the inbuilt Exchange Adapters to configure their exchange "
               + "trading API credentials - see the sample exchange.yaml config files for details")
+  @ToString.Exclude
   private Map<String, String> authenticationConfig;
 
   @Schema(
@@ -72,106 +75,5 @@ public class ExchangeConfig {
   /** Creates the Exchange config. */
   public ExchangeConfig() {
     // No extra init needed.
-  }
-
-  /**
-   * Returns the name.
-   *
-   * @return the name.
-   */
-  public String getName() {
-    return name;
-  }
-
-  /**
-   * Sets the name.
-   *
-   * @param name the name.
-   */
-  public void setName(String name) {
-    this.name = name;
-  }
-
-  /**
-   * Returns the adapter.
-   *
-   * @return the adapter.
-   */
-  public String getAdapter() {
-    return adapter;
-  }
-
-  /**
-   * Sets the adapter.
-   *
-   * @param adapter the adapter.
-   */
-  public void setAdapter(String adapter) {
-    this.adapter = adapter;
-  }
-
-  /**
-   * Returns the authentication config.
-   *
-   * @return the authentication config.
-   */
-  public Map<String, String> getAuthenticationConfig() {
-    return authenticationConfig;
-  }
-
-  /**
-   * Sets the authentication config.
-   *
-   * @param authenticationConfig the authentication config.
-   */
-  public void setAuthenticationConfig(Map<String, String> authenticationConfig) {
-    this.authenticationConfig = authenticationConfig;
-  }
-
-  /**
-   * Sets the network config.
-   *
-   * @param networkConfig the network config.
-   */
-  public void setNetworkConfig(NetworkConfig networkConfig) {
-    this.networkConfig = networkConfig;
-  }
-
-  /**
-   * Returns the network config.
-   *
-   * @return the network config.
-   */
-  public NetworkConfig getNetworkConfig() {
-    return networkConfig;
-  }
-
-  /**
-   * Returns the other config.
-   *
-   * @return the other config.
-   */
-  public Map<String, String> getOtherConfig() {
-    return otherConfig;
-  }
-
-  /**
-   * Sets the other config.
-   *
-   * @param otherConfig the other config.
-   */
-  public void setOtherConfig(Map<String, String> otherConfig) {
-    this.otherConfig = otherConfig;
-  }
-
-  @Override
-  public String toString() {
-    return MoreObjects.toStringHelper(this)
-        .add("name", name)
-        .add("adapter", adapter)
-        // authenticationConfig is not included
-        .add("networkConfig", networkConfig)
-        .add("otherConfig", otherConfig)
-        .toString();
   }
 }

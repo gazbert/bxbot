@@ -197,7 +197,7 @@ public class JwtUtils {
     try {
       final String username = claims.getSubject();
       if (username == null) {
-        final String errorMsg = "Failed to extract username claim from token!";
+        final String errorMsg = "The username is null in the token Claims subject field.";
         log.error(errorMsg);
         throw new JwtAuthenticationException(errorMsg);
       }

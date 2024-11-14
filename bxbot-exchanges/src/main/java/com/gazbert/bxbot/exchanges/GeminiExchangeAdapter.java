@@ -169,7 +169,7 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter
 
   @Override
   public void init(ExchangeConfig config) {
-    log.info("About to initialise Gemini ExchangeConfig: " + config);
+    log.info("About to initialise Gemini ExchangeConfig: {}", config);
     setAuthenticationConfig(config);
     setNetworkConfig(config);
     setOtherConfig(config);
@@ -238,7 +238,7 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter
 
       final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("order/new", params);
 
-      log.debug("Create Order response: " + response);
+      log.debug("Create Order response: {}", response);
 
       final GeminiOpenOrder createOrderResponse =
           gson.fromJson(response.getPayload(), GeminiOpenOrder.class);
@@ -270,7 +270,7 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter
       final ExchangeHttpResponse response =
           sendAuthenticatedRequestToExchange("order/cancel", params);
 
-      log.debug("Cancel Order response: " + response);
+      log.debug("Cancel Order response: {}", response);
 
       // Exchange returns order id and other details if successful, a 400 HTTP Status if the order
       // id was not recognised.
@@ -299,7 +299,7 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter
     try {
       final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("orders", null);
 
-      log.debug("Open Orders response: " + response);
+      log.debug("Open Orders response: {}", response);
 
       final GeminiOpenOrders geminiOpenOrders =
           gson.fromJson(response.getPayload(), GeminiOpenOrders.class);
@@ -357,7 +357,7 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter
     try {
       final ExchangeHttpResponse response = sendPublicRequestToExchange("book/" + marketId);
 
-      log.debug("Market Orders response: " + response);
+      log.debug("Market Orders response: {}", response);
 
       final GeminiOrderBook orderBook = gson.fromJson(response.getPayload(), GeminiOrderBook.class);
 
@@ -400,7 +400,7 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter
     try {
       final ExchangeHttpResponse response = sendPublicRequestToExchange("pubticker/" + marketId);
 
-      log.debug("Latest Market Price response: " + response);
+      log.debug("Latest Market Price response: {}", response);
 
       final GeminiTicker ticker = gson.fromJson(response.getPayload(), GeminiTicker.class);
       return ticker.last;
@@ -419,7 +419,7 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter
     try {
       final ExchangeHttpResponse response = sendAuthenticatedRequestToExchange("balances", null);
 
-      log.debug("Balance Info response: " + response);
+      log.debug("Balance Info response: {}", response);
 
       final GeminiBalances allAccountBalances =
           gson.fromJson(response.getPayload(), GeminiBalances.class);
@@ -490,6 +490,7 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter
 
     BigDecimal price;
     BigDecimal amount;
+
     // ignore the timestamp attribute as per the API spec
 
     @Override
@@ -799,12 +800,12 @@ public final class GeminiExchangeAdapter extends AbstractExchangeAdapter
     final String buyFeeInConfig = getOtherConfigItem(otherConfig, BUY_FEE_PROPERTY_NAME);
     buyFeePercentage =
         new BigDecimal(buyFeeInConfig).divide(new BigDecimal("100"), 8, RoundingMode.HALF_UP);
-    log.info("Buy fee % in BigDecimal format: " + buyFeePercentage);
+    log.info("Buy fee % in BigDecimal format: {}", buyFeePercentage);
 
     final String sellFeeInConfig = getOtherConfigItem(otherConfig, SELL_FEE_PROPERTY_NAME);
     sellFeePercentage =
         new BigDecimal(sellFeeInConfig).divide(new BigDecimal("100"), 8, RoundingMode.HALF_UP);
-    log.info("Sell fee % in BigDecimal format: " + sellFeePercentage);
+    log.info("Sell fee % in BigDecimal format: {}", sellFeePercentage);
   }
 
   // --------------------------------------------------------------------------

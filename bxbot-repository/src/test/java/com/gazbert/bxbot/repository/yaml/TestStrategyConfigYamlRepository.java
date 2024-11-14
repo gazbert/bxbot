@@ -24,7 +24,7 @@
 package com.gazbert.bxbot.repository.yaml;
 
 import static com.gazbert.bxbot.datastore.yaml.FileLocations.STRATEGIES_CONFIG_YAML_FILENAME;
-import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.easymock.EasyMock.anyObject;
 import static org.easymock.EasyMock.eq;
 import static org.easymock.EasyMock.expect;
@@ -91,45 +91,31 @@ class TestStrategyConfigYamlRepository {
         new StrategyConfigYamlRepository(configurationManager);
     final List<StrategyConfig> strategyConfigItems = strategyConfigRepository.findAll();
 
-    assertThat(strategyConfigItems.size()).isEqualTo(2);
+    assertThat(strategyConfigItems).hasSize(2);
 
     assertThat(strategyConfigItems.get(0).getId()).isEqualTo(STRAT_ID_1);
     assertThat(strategyConfigItems.get(0).getName()).isEqualTo(STRAT_NAME_1);
     assertThat(strategyConfigItems.get(0).getDescription()).isEqualTo(STRAT_DESCRIPTION_1);
     assertThat(strategyConfigItems.get(0).getClassName()).isEqualTo(STRAT_CLASSNAME_1);
-    assertThat(strategyConfigItems.get(0).getConfigItems().containsKey(BUY_PRICE_CONFIG_ITEM_KEY))
-        .isTrue();
-    assertThat(
-            strategyConfigItems.get(0).getConfigItems().containsValue(BUY_PRICE_CONFIG_ITEM_VALUE))
-        .isTrue();
-    assertThat(
-            strategyConfigItems.get(0).getConfigItems().containsKey(AMOUNT_TO_BUY_CONFIG_ITEM_KEY))
-        .isTrue();
-    assertThat(
-            strategyConfigItems
-                .get(0)
-                .getConfigItems()
-                .containsValue(AMOUNT_TO_BUY_CONFIG_ITEM_VALUE))
-        .isTrue();
+    assertThat(strategyConfigItems.get(0).getConfigItems()).containsKey(BUY_PRICE_CONFIG_ITEM_KEY);
+    assertThat(strategyConfigItems.get(0).getConfigItems())
+        .containsValue(BUY_PRICE_CONFIG_ITEM_VALUE);
+    assertThat(strategyConfigItems.get(0).getConfigItems())
+        .containsKey(AMOUNT_TO_BUY_CONFIG_ITEM_KEY);
+    assertThat(strategyConfigItems.get(0).getConfigItems())
+        .containsValue(AMOUNT_TO_BUY_CONFIG_ITEM_VALUE);
 
     assertThat(strategyConfigItems.get(1).getId()).isEqualTo(STRAT_ID_2);
     assertThat(strategyConfigItems.get(1).getName()).isEqualTo(STRAT_NAME_2);
     assertThat(strategyConfigItems.get(1).getDescription()).isEqualTo(STRAT_DESCRIPTION_2);
     assertThat(strategyConfigItems.get(1).getClassName()).isEqualTo(STRAT_CLASSNAME_2);
-    assertThat(strategyConfigItems.get(1).getConfigItems().containsKey(BUY_PRICE_CONFIG_ITEM_KEY))
-        .isTrue();
-    assertThat(
-            strategyConfigItems.get(1).getConfigItems().containsValue(BUY_PRICE_CONFIG_ITEM_VALUE))
-        .isTrue();
-    assertThat(
-            strategyConfigItems.get(1).getConfigItems().containsKey(AMOUNT_TO_BUY_CONFIG_ITEM_KEY))
-        .isTrue();
-    assertThat(
-            strategyConfigItems
-                .get(1)
-                .getConfigItems()
-                .containsValue(AMOUNT_TO_BUY_CONFIG_ITEM_VALUE))
-        .isTrue();
+    assertThat(strategyConfigItems.get(1).getConfigItems()).containsKey(BUY_PRICE_CONFIG_ITEM_KEY);
+    assertThat(strategyConfigItems.get(1).getConfigItems())
+        .containsValue(BUY_PRICE_CONFIG_ITEM_VALUE);
+    assertThat(strategyConfigItems.get(1).getConfigItems())
+        .containsKey(AMOUNT_TO_BUY_CONFIG_ITEM_KEY);
+    assertThat(strategyConfigItems.get(1).getConfigItems())
+        .containsValue(AMOUNT_TO_BUY_CONFIG_ITEM_VALUE);
 
     EasyMock.verify(configurationManager);
   }
@@ -151,11 +137,10 @@ class TestStrategyConfigYamlRepository {
     assertThat(strategyConfig.getName()).isEqualTo(STRAT_NAME_1);
     assertThat(strategyConfig.getDescription()).isEqualTo(STRAT_DESCRIPTION_1);
     assertThat(strategyConfig.getClassName()).isEqualTo(STRAT_CLASSNAME_1);
-    assertThat(strategyConfig.getConfigItems().containsKey(BUY_PRICE_CONFIG_ITEM_KEY)).isTrue();
-    assertThat(strategyConfig.getConfigItems().containsValue(BUY_PRICE_CONFIG_ITEM_VALUE)).isTrue();
-    assertThat(strategyConfig.getConfigItems().containsKey(AMOUNT_TO_BUY_CONFIG_ITEM_KEY)).isTrue();
-    assertThat(strategyConfig.getConfigItems().containsValue(AMOUNT_TO_BUY_CONFIG_ITEM_VALUE))
-        .isTrue();
+    assertThat(strategyConfig.getConfigItems()).containsKey(BUY_PRICE_CONFIG_ITEM_KEY);
+    assertThat(strategyConfig.getConfigItems()).containsValue(BUY_PRICE_CONFIG_ITEM_VALUE);
+    assertThat(strategyConfig.getConfigItems()).containsKey(AMOUNT_TO_BUY_CONFIG_ITEM_KEY);
+    assertThat(strategyConfig.getConfigItems()).containsValue(AMOUNT_TO_BUY_CONFIG_ITEM_VALUE);
 
     EasyMock.verify(configurationManager);
   }
@@ -173,7 +158,7 @@ class TestStrategyConfigYamlRepository {
         new StrategyConfigYamlRepository(configurationManager);
     final StrategyConfig strategyConfig = strategyConfigRepository.findById(UNKNOWN_STRAT_ID);
 
-    assertThat(strategyConfig).isEqualTo(null);
+    assertThat(strategyConfig).isNull();
     EasyMock.verify(configurationManager);
   }
 
@@ -205,11 +190,10 @@ class TestStrategyConfigYamlRepository {
     assertThat(strategyConfig.getName()).isEqualTo(STRAT_NAME_1);
     assertThat(strategyConfig.getDescription()).isEqualTo(STRAT_DESCRIPTION_1);
     assertThat(strategyConfig.getClassName()).isEqualTo(STRAT_CLASSNAME_1);
-    assertThat(strategyConfig.getConfigItems().containsKey(BUY_PRICE_CONFIG_ITEM_KEY)).isTrue();
-    assertThat(strategyConfig.getConfigItems().containsValue(BUY_PRICE_CONFIG_ITEM_VALUE)).isTrue();
-    assertThat(strategyConfig.getConfigItems().containsKey(AMOUNT_TO_BUY_CONFIG_ITEM_KEY)).isTrue();
-    assertThat(strategyConfig.getConfigItems().containsValue(AMOUNT_TO_BUY_CONFIG_ITEM_VALUE))
-        .isTrue();
+    assertThat(strategyConfig.getConfigItems()).containsKey(BUY_PRICE_CONFIG_ITEM_KEY);
+    assertThat(strategyConfig.getConfigItems()).containsValue(BUY_PRICE_CONFIG_ITEM_VALUE);
+    assertThat(strategyConfig.getConfigItems()).containsKey(AMOUNT_TO_BUY_CONFIG_ITEM_KEY);
+    assertThat(strategyConfig.getConfigItems()).containsValue(AMOUNT_TO_BUY_CONFIG_ITEM_VALUE);
 
     EasyMock.verify(configurationManager);
   }
@@ -228,7 +212,7 @@ class TestStrategyConfigYamlRepository {
     final StrategyConfig strategyConfig =
         strategyConfigRepository.save(someExternalStrategyConfigWithUnknownId());
 
-    assertThat(strategyConfig).isEqualTo(null);
+    assertThat(strategyConfig).isNull();
     EasyMock.verify(configurationManager);
   }
 
@@ -257,11 +241,10 @@ class TestStrategyConfigYamlRepository {
     assertThat(strategyConfig.getName()).isEqualTo(NEW_STRAT_NAME);
     assertThat(strategyConfig.getDescription()).isEqualTo(NEW_STRAT_DESCRIPTION);
     assertThat(strategyConfig.getClassName()).isEqualTo(NEW_STRAT_CLASSNAME);
-    assertThat(strategyConfig.getConfigItems().containsKey(BUY_PRICE_CONFIG_ITEM_KEY)).isTrue();
-    assertThat(strategyConfig.getConfigItems().containsValue(BUY_PRICE_CONFIG_ITEM_VALUE)).isTrue();
-    assertThat(strategyConfig.getConfigItems().containsKey(AMOUNT_TO_BUY_CONFIG_ITEM_KEY)).isTrue();
-    assertThat(strategyConfig.getConfigItems().containsValue(AMOUNT_TO_BUY_CONFIG_ITEM_VALUE))
-        .isTrue();
+    assertThat(strategyConfig.getConfigItems()).containsKey(BUY_PRICE_CONFIG_ITEM_KEY);
+    assertThat(strategyConfig.getConfigItems()).containsValue(BUY_PRICE_CONFIG_ITEM_VALUE);
+    assertThat(strategyConfig.getConfigItems()).containsKey(AMOUNT_TO_BUY_CONFIG_ITEM_KEY);
+    assertThat(strategyConfig.getConfigItems()).containsValue(AMOUNT_TO_BUY_CONFIG_ITEM_VALUE);
 
     EasyMock.verify(configurationManager);
   }
@@ -288,11 +271,10 @@ class TestStrategyConfigYamlRepository {
     assertThat(strategyConfig.getName()).isEqualTo(STRAT_NAME_1);
     assertThat(strategyConfig.getDescription()).isEqualTo(STRAT_DESCRIPTION_1);
     assertThat(strategyConfig.getClassName()).isEqualTo(STRAT_CLASSNAME_1);
-    assertThat(strategyConfig.getConfigItems().containsKey(BUY_PRICE_CONFIG_ITEM_KEY)).isTrue();
-    assertThat(strategyConfig.getConfigItems().containsValue(BUY_PRICE_CONFIG_ITEM_VALUE)).isTrue();
-    assertThat(strategyConfig.getConfigItems().containsKey(AMOUNT_TO_BUY_CONFIG_ITEM_KEY)).isTrue();
-    assertThat(strategyConfig.getConfigItems().containsValue(AMOUNT_TO_BUY_CONFIG_ITEM_VALUE))
-        .isTrue();
+    assertThat(strategyConfig.getConfigItems()).containsKey(BUY_PRICE_CONFIG_ITEM_KEY);
+    assertThat(strategyConfig.getConfigItems()).containsValue(BUY_PRICE_CONFIG_ITEM_VALUE);
+    assertThat(strategyConfig.getConfigItems()).containsKey(AMOUNT_TO_BUY_CONFIG_ITEM_KEY);
+    assertThat(strategyConfig.getConfigItems()).containsValue(AMOUNT_TO_BUY_CONFIG_ITEM_VALUE);
 
     EasyMock.verify(configurationManager);
   }
@@ -310,7 +292,7 @@ class TestStrategyConfigYamlRepository {
         new StrategyConfigYamlRepository(configurationManager);
     final StrategyConfig strategyConfig = strategyConfigRepository.delete(UNKNOWN_STRAT_ID);
 
-    assertThat(strategyConfig).isEqualTo(null);
+    assertThat(strategyConfig).isNull();
     EasyMock.verify(configurationManager);
   }
 

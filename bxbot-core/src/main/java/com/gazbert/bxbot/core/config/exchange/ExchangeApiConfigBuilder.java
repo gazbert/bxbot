@@ -63,8 +63,8 @@ public final class ExchangeApiConfigBuilder {
         exchangeApiNetworkConfig.setNonFatalErrorCodes(nonFatalErrorCodes);
       } else {
         log.info(
-            "No (optional) NetworkConfiguration NonFatalErrorCodes have been set for "
-                + "Exchange Adapter: "
+            "No (optional) NetworkConfiguration NonFatalErrorCodes have been set for Exchange "
+                + "Adapter: "
                 + exchangeConfig.getAdapter());
       }
 
@@ -79,12 +79,12 @@ public final class ExchangeApiConfigBuilder {
       }
 
       exchangeApiConfig.setNetworkConfig(exchangeApiNetworkConfig);
-      log.info("NetworkConfiguration has been set: " + exchangeApiNetworkConfig);
+      log.info("NetworkConfiguration has been set: {}", exchangeApiNetworkConfig);
 
     } else {
       log.info(
-          "No (optional) NetworkConfiguration has been set for Exchange Adapter: "
-              + exchangeConfig.getAdapter());
+          "No (optional) NetworkConfiguration has been set for Exchange Adapter: {}",
+          exchangeConfig.getAdapter());
     }
 
     final Map<String, String> authenticationConfig = exchangeConfig.getAuthenticationConfig();
@@ -99,8 +99,8 @@ public final class ExchangeApiConfigBuilder {
 
     } else {
       log.info(
-          "No (optional) AuthenticationConfiguration has been set for Exchange Adapter: "
-              + exchangeConfig.getAdapter());
+          "No (optional) AuthenticationConfiguration has been set for Exchange Adapter: {}",
+          exchangeConfig.getAdapter());
     }
 
     final Map<String, String> otherConfig = exchangeConfig.getOtherConfig();
@@ -108,9 +108,10 @@ public final class ExchangeApiConfigBuilder {
       final OtherConfigImpl exchangeApiOtherConfig = new OtherConfigImpl();
       exchangeApiOtherConfig.setItems(otherConfig);
       exchangeApiConfig.setOtherConfig(exchangeApiOtherConfig);
-      log.info("Other Exchange Adapter config has been set: " + exchangeApiOtherConfig);
+      log.info("Other Exchange Adapter config has been set: {}", exchangeApiOtherConfig);
     } else {
-      log.info("No Other config has been set for Exchange Adapter: " + exchangeConfig.getAdapter());
+      log.info(
+          "No Other config has been set for Exchange Adapter: {}", exchangeConfig.getAdapter());
     }
 
     return exchangeApiConfig;

@@ -64,7 +64,7 @@ public class ExchangeConfigYamlRepository implements ExchangeConfigRepository {
 
   @Override
   public ExchangeConfig save(ExchangeConfig config) {
-    log.info("About to save ExchangeConfig: " + config);
+    log.info("About to save ExchangeConfig: {}", config);
 
     final ExchangeType exchangeType = new ExchangeType();
     exchangeType.setExchange(config);
