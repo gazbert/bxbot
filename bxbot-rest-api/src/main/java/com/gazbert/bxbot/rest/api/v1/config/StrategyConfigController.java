@@ -133,7 +133,8 @@ public class StrategyConfigController extends RestController {
             content = @Content(schema = @Schema(implementation = String.class)))
       })
   public ResponseEntity<StrategyConfig> getStrategy(
-      @Parameter(hidden = true) Principal principal, @PathVariable String strategyId) {
+      @Parameter(hidden = true) Principal principal,
+      @PathVariable(name = "strategyId") String strategyId) {
 
     log.info(
         "GET " + STRATEGIES_RESOURCE_PATH + "/{} - getStrategy() - caller: {}",
@@ -175,7 +176,7 @@ public class StrategyConfigController extends RestController {
       })
   public ResponseEntity<StrategyConfig> updateStrategy(
       @Parameter(hidden = true) Principal principal,
-      @PathVariable String strategyId,
+      @PathVariable(name = "strategyId") String strategyId,
       @RequestBody StrategyConfig config) {
 
     log.info(
@@ -263,7 +264,8 @@ public class StrategyConfigController extends RestController {
             content = @Content(schema = @Schema(implementation = String.class)))
       })
   public ResponseEntity<StrategyConfig> deleteStrategy(
-      @Parameter(hidden = true) Principal principal, @PathVariable String strategyId) {
+      @Parameter(hidden = true) Principal principal,
+      @PathVariable(name = "strategyId") String strategyId) {
 
     log.info(
         "DELETE " + STRATEGIES_RESOURCE_PATH + "/{} - deleteStrategy() - caller: {}",
