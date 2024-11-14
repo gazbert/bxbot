@@ -190,7 +190,7 @@ public class ExampleScalpingStrategy implements TradingStrategy {
    */
   @Override
   public void execute() throws StrategyException {
-    log.info(market.getName() + " Checking order status...");
+    log.info("{} Checking order status...", market.getName());
 
     try {
       // Grab the latest order book for the market.
@@ -199,16 +199,16 @@ public class ExampleScalpingStrategy implements TradingStrategy {
       final List<MarketOrder> buyOrders = orderBook.getBuyOrders();
       if (buyOrders.isEmpty()) {
         log.warn(
-            "Exchange returned empty Buy Orders. Ignoring this trade window. OrderBook: "
-                + orderBook);
+            "Exchange returned empty Buy Orders. Ignoring this trade window. OrderBook: {}",
+            orderBook);
         return;
       }
 
       final List<MarketOrder> sellOrders = orderBook.getSellOrders();
       if (sellOrders.isEmpty()) {
         log.warn(
-            "Exchange returned empty Sell Orders. Ignoring this trade window. OrderBook: "
-                + orderBook);
+            "Exchange returned empty Sell Orders. Ignoring this trade window. OrderBook: {}",
+            orderBook);
         return;
       }
 
@@ -217,25 +217,25 @@ public class ExampleScalpingStrategy implements TradingStrategy {
       final BigDecimal currentAskPrice = sellOrders.get(0).getPrice();
 
       log.info(
-          market.getName()
-              + " Current BID price="
-              + new DecimalFormat(DECIMAL_FORMAT).format(currentBidPrice));
+          "{} Current BID price={}",
+          market.getName(),
+          new DecimalFormat(DECIMAL_FORMAT).format(currentBidPrice));
       log.info(
-          market.getName()
-              + " Current ASK price="
-              + new DecimalFormat(DECIMAL_FORMAT).format(currentAskPrice));
+          "{} Current ASK price={}",
+          market.getName(),
+          new DecimalFormat(DECIMAL_FORMAT).format(currentAskPrice));
 
       // Is this the first time the Strategy has been called? If yes, we initialise the OrderState,
       // so we can keep track of orders during later trace cycles.
       if (lastOrder == null) {
         log.info(
-            market.getName()
-                + " First time Strategy has been called - creating new OrderState object.");
+            "{} First time Strategy has been called - creating new OrderState object.",
+            market.getName());
         lastOrder = new OrderState();
       }
 
       // Always handy to log what the last order was during each trace cycle.
-      log.info(market.getName() + " Last Order was: " + lastOrder);
+      log.info("{} Last Order was: {}", market.getName(), lastOrder);
 
       // Execute the appropriate algorithm based on the last order type.
       if (lastOrder.type == OrderType.BUY) {
@@ -252,9 +252,9 @@ public class ExampleScalpingStrategy implements TradingStrategy {
       // Your timeout handling code could go here.
       // We are just going to log it and swallow it, and wait for next trade cycle.
       log.error(
-          market.getName()
-              + " Failed to get market orders because Exchange threw network exception. "
+          "{} Failed to get market orders because Exchange threw network exception. "
               + "Waiting until next trade cycle.",
+          market.getName(),
           e);
 
     } catch (TradingApiException e) {
@@ -262,9 +262,9 @@ public class ExampleScalpingStrategy implements TradingStrategy {
       // We are just going to re-throw as StrategyException for engine to deal with - it will
       // shut down the bot.
       log.error(
-          market.getName()
-              + " Failed to get market orders because Exchange threw TradingApi exception. "
+          "{} Failed to get market orders because Exchange threw TradingApi exception. "
               + "Telling Trading Engine to shutdown bot!",
+          market.getName(),
           e);
       throw new StrategyException(e);
     }
@@ -281,10 +281,9 @@ public class ExampleScalpingStrategy implements TradingStrategy {
   private void executeAlgoForWhenLastOrderWasNone(BigDecimal currentBidPrice)
       throws StrategyException {
     log.info(
-        market.getName()
-            + " OrderType is NONE - placing new BUY order at ["
-            + new DecimalFormat(DECIMAL_FORMAT).format(currentBidPrice)
-            + "]");
+        "{} OrderType is NONE - placing new BUY order at [{}]",
+        market.getName(),
+        new DecimalFormat(DECIMAL_FORMAT).format(currentBidPrice));
 
     try {
       // Calculate the amount of base currency (BTC) to buy for given amount of counter currency
@@ -293,13 +292,13 @@ public class ExampleScalpingStrategy implements TradingStrategy {
           getAmountOfBaseCurrencyToBuyForGivenCounterCurrencyAmount(counterCurrencyBuyOrderAmount);
 
       // Send the order to the exchange
-      log.info(market.getName() + " Sending initial BUY order to exchange --->");
+      log.info("{} Sending initial BUY order to exchange --->", market.getName());
 
       lastOrder.id =
           tradingApi.createOrder(
               market.getId(), OrderType.BUY, amountOfBaseCurrencyToBuy, currentBidPrice);
 
-      log.info(market.getName() + " Initial BUY Order sent successfully. ID: " + lastOrder.id);
+      log.info("{} Initial BUY Order sent successfully. ID: {}", market.getName(), lastOrder.id);
 
       // update last order details
       lastOrder.price = currentBidPrice;
@@ -311,9 +310,9 @@ public class ExampleScalpingStrategy implements TradingStrategy {
       // actually made it to the exchange? And if not, resend it...
       // We are just going to log it and swallow it, and wait for next trade cycle.
       log.error(
-          market.getName()
-              + " Initial order to BUY base currency failed because Exchange threw network "
+          "{} Initial order to BUY base currency failed because Exchange threw network "
               + "exception. Waiting until next trade cycle.",
+          market.getName(),
           e);
 
     } catch (TradingApiException e) {
@@ -321,9 +320,9 @@ public class ExampleScalpingStrategy implements TradingStrategy {
       // We are just going to re-throw as StrategyException for engine to deal with - it will
       // shut down the bot.
       log.error(
-          market.getName()
-              + " Initial order to BUY base currency failed because Exchange threw TradingApi "
-              + "exception. Telling Trading Engine to shutdown bot!",
+          "{} Initial order to BUY base currency failed because Exchange threw "
+              + "TradingApi exception. Telling Trading Engine to shutdown bot!",
+          market.getName(),
           e);
       throw new StrategyException(e);
     }
@@ -353,12 +352,10 @@ public class ExampleScalpingStrategy implements TradingStrategy {
       // If the order is not there, it must have all filled.
       if (!lastOrderFound) {
         log.info(
-            market.getName()
-                + " ^^^ Yay!!! Last BUY Order Id ["
-                + lastOrder.id
-                + "] filled at ["
-                + lastOrder.price
-                + "]");
+            "{} ^^^ Yay!!! Last BUY Order Id [{}] filled at [{}]",
+            market.getName(),
+            lastOrder.id,
+            lastOrder.price);
 
         /*
          * The last buy order was filled, so lets see if we can send a new sell order.
@@ -382,29 +379,29 @@ public class ExampleScalpingStrategy implements TradingStrategy {
          * send to the exchange...
          */
         log.info(
-            market.getName()
-                + " Percentage profit (in decimal) to make for the sell order is: "
-                + minimumPercentageGain);
+            "{} Percentage profit (in decimal) to make for the sell order is: {}",
+            market.getName(),
+            minimumPercentageGain);
 
         final BigDecimal amountToAdd = lastOrder.price.multiply(minimumPercentageGain);
-        log.info(market.getName() + " Amount to add to last buy order fill price: " + amountToAdd);
+        log.info(
+            "{} Amount to add to last buy order fill price: {}", market.getName(), amountToAdd);
 
         // Most exchanges (if not all) use 8 decimal places.
         // It's usually best to round up the ASK price in your calculations to maximise gains.
         final BigDecimal newAskPrice =
             lastOrder.price.add(amountToAdd).setScale(8, RoundingMode.HALF_UP);
         log.info(
-            market.getName()
-                + " Placing new SELL order at ask price ["
-                + new DecimalFormat(DECIMAL_FORMAT).format(newAskPrice)
-                + "]");
+            "{} Placing new SELL order at ask price [{}]",
+            market.getName(),
+            new DecimalFormat(DECIMAL_FORMAT).format(newAskPrice));
 
-        log.info(market.getName() + " Sending new SELL order to exchange --->");
+        log.info("{} Sending new SELL order to exchange --->", market.getName());
 
         // Build the new sell order
         lastOrder.id =
             tradingApi.createOrder(market.getId(), OrderType.SELL, lastOrder.amount, newAskPrice);
-        log.info(market.getName() + " New SELL Order sent successfully. ID: " + lastOrder.id);
+        log.info("{} New SELL Order sent successfully. ID: {}", market.getName(), lastOrder.id);
 
         // update last order state
         lastOrder.price = newAskPrice;
@@ -420,24 +417,21 @@ public class ExampleScalpingStrategy implements TradingStrategy {
          * orders!
          */
         log.info(
-            market.getName()
-                + " !!! Still have BUY Order "
-                + lastOrder.id
-                + " waiting to fill at ["
-                + lastOrder.price
-                + "] - holding last BUY order...");
+            "{} !!! Still have BUY Order {} waiting to fill at [{}] - holding last BUY order...",
+            market.getName(),
+            lastOrder.id,
+            lastOrder.price);
       }
 
     } catch (ExchangeNetworkException e) {
       // Your timeout handling code could go here, e.g. you might want to check if the order
-      // actually
-      // made it to the exchange? And if not, resend it...
+      // actual made it to the exchange? And if not, resend it...
       // We are just going to log it and swallow it, and wait for next trade cycle.
       log.error(
-          market.getName()
-              + " New Order to SELL base currency failed because Exchange threw network "
-              + "exception. Waiting until next trade cycle. Last Order: "
-              + lastOrder,
+          "{} New Order to SELL base currency failed because Exchange threw network "
+              + "exception. Waiting until next trade cycle. Last Order: {}",
+          market.getName(),
+          lastOrder,
           e);
 
     } catch (TradingApiException e) {
@@ -445,10 +439,10 @@ public class ExampleScalpingStrategy implements TradingStrategy {
       // We are just going to re-throw as StrategyException for engine to deal with - it will
       // shut down the bot.
       log.error(
-          market.getName()
-              + " New order to SELL base currency failed because Exchange threw TradingApi "
-              + "exception. Telling Trading Engine to shutdown bot! Last Order: "
-              + lastOrder,
+          "{} New order to SELL base currency failed because Exchange threw TradingApi"
+              + " exception. Telling Trading Engine to shutdown bot! Last Order: {}",
+          market.getName(),
+          lastOrder,
           e);
       throw new StrategyException(e);
     }
@@ -479,12 +473,10 @@ public class ExampleScalpingStrategy implements TradingStrategy {
       // If the order is not there, it must have all filled.
       if (!lastOrderFound) {
         log.info(
-            market.getName()
-                + " ^^^ Yay!!! Last SELL Order Id ["
-                + lastOrder.id
-                + "] filled at ["
-                + lastOrder.price
-                + "]");
+            "{} ^^^ Yay!!! Last SELL Order Id [{}] filled at [{}]",
+            market.getName(),
+            lastOrder.id,
+            lastOrder.price);
 
         // Get amount of base currency (BTC) we can buy for given counter currency (USD) amount.
         final BigDecimal amountOfBaseCurrencyToBuy =
@@ -492,18 +484,17 @@ public class ExampleScalpingStrategy implements TradingStrategy {
                 counterCurrencyBuyOrderAmount);
 
         log.info(
-            market.getName()
-                + " Placing new BUY order at bid price ["
-                + new DecimalFormat(DECIMAL_FORMAT).format(currentBidPrice)
-                + "]");
+            "{} Placing new BUY order at bid price [{}]",
+            market.getName(),
+            new DecimalFormat(DECIMAL_FORMAT).format(currentBidPrice));
 
-        log.info(market.getName() + " Sending new BUY order to exchange --->");
+        log.info("{} Sending new BUY order to exchange --->", market.getName());
 
         // Send the buy order to the exchange.
         lastOrder.id =
             tradingApi.createOrder(
                 market.getId(), OrderType.BUY, amountOfBaseCurrencyToBuy, currentBidPrice);
-        log.info(market.getName() + " New BUY Order sent successfully. ID: " + lastOrder.id);
+        log.info("{} New BUY Order sent successfully. ID: {}", market.getName(), lastOrder.id);
 
         // update last order details
         lastOrder.price = currentBidPrice;
@@ -521,30 +512,27 @@ public class ExampleScalpingStrategy implements TradingStrategy {
          */
         if (currentAskPrice.compareTo(lastOrder.price) < 0) {
           log.info(
-              market.getName()
-                  + " <<< Current ask price ["
-                  + currentAskPrice
-                  + "] is LOWER then last order price ["
-                  + lastOrder.price
-                  + "] - holding last SELL order...");
+              "{} <<< Current ask price [{}] is LOWER then last order price [{}] - "
+                  + "holding last SELL order...",
+              market.getName(),
+              currentAskPrice,
+              lastOrder.price);
 
         } else if (currentAskPrice.compareTo(lastOrder.price) > 0) {
           log.error(
-              market.getName()
-                  + " >>> Current ask price ["
-                  + currentAskPrice
-                  + "] is HIGHER than last order price ["
-                  + lastOrder.price
-                  + "] - IMPOSSIBLE! BX-bot must have sold?????");
+              "{} >>> Current ask price [{}] is HIGHER than last order price [{}] - "
+                  + "IMPOSSIBLE! BX-bot must have sold?????",
+              market.getName(),
+              currentAskPrice,
+              lastOrder.price);
 
         } else if (currentAskPrice.compareTo(lastOrder.price) == 0) {
           log.info(
-              market.getName()
-                  + " === Current ask price ["
-                  + currentAskPrice
-                  + "] is EQUAL to last order price ["
-                  + lastOrder.price
-                  + "] - holding last SELL order...");
+              "{} === Current ask price [{}] is EQUAL to last order price [{}] - "
+                  + "holding last SELL order...",
+              market.getName(),
+              currentAskPrice,
+              lastOrder.price);
         }
       }
     } catch (ExchangeNetworkException e) {
@@ -552,10 +540,10 @@ public class ExampleScalpingStrategy implements TradingStrategy {
       // actually made it to the exchange? And if not, resend it...
       // We are just going to log it and swallow it, and wait for next trade cycle.
       log.error(
-          market.getName()
-              + " New Order to BUY base currency failed because Exchange threw network "
-              + "exception. Waiting until next trade cycle. Last Order: "
-              + lastOrder,
+          "{} New Order to BUY base currency failed because Exchange threw network "
+              + "exception. Waiting until next trade cycle. Last Order: {}",
+          market.getName(),
+          lastOrder,
           e);
 
     } catch (TradingApiException e) {
@@ -563,10 +551,10 @@ public class ExampleScalpingStrategy implements TradingStrategy {
       // We are just going to re-throw as StrategyException for engine to deal with - it will
       // shut down the bot.
       log.error(
-          market.getName()
-              + " New order to BUY base currency failed because Exchange threw TradingApi "
-              + "exception. Telling Trading Engine to shutdown bot! Last Order: "
-              + lastOrder,
+          "{} New order to BUY base currency failed because Exchange threw TradingApi"
+              + " exception. Telling Trading Engine to shutdown bot! Last Order: {}",
+          market.getName(),
+          lastOrder,
           e);
       throw new StrategyException(e);
     }
@@ -588,23 +576,19 @@ public class ExampleScalpingStrategy implements TradingStrategy {
       throws TradingApiException, ExchangeNetworkException {
 
     log.info(
-        market.getName()
-            + " Calculating amount of base currency (BTC) to buy for amount of counter "
-            + "currency "
-            + new DecimalFormat(DECIMAL_FORMAT).format(amountOfCounterCurrencyToTrade)
-            + " "
-            + market.getCounterCurrency());
+        "{} Calculating amount of base currency (BTC) to buy for amount of counter currency {} {}",
+        market.getName(),
+        new DecimalFormat(DECIMAL_FORMAT).format(amountOfCounterCurrencyToTrade),
+        market.getCounterCurrency());
 
     // Fetch the last trade price
     final BigDecimal lastTradePriceInUsdForOneBtc = tradingApi.getLatestMarketPrice(market.getId());
     log.info(
-        market.getName()
-            + " Last trade price for 1 "
-            + market.getBaseCurrency()
-            + " was: "
-            + new DecimalFormat(DECIMAL_FORMAT).format(lastTradePriceInUsdForOneBtc)
-            + " "
-            + market.getCounterCurrency());
+        "{} Last trade price for 1 {} was: {} {}",
+        market.getName(),
+        market.getBaseCurrency(),
+        new DecimalFormat(DECIMAL_FORMAT).format(lastTradePriceInUsdForOneBtc),
+        market.getCounterCurrency());
 
     /*
      * Most exchanges (if not all) use 8 decimal places and typically round in favour of the
@@ -615,15 +599,12 @@ public class ExampleScalpingStrategy implements TradingStrategy {
             lastTradePriceInUsdForOneBtc, 8, RoundingMode.HALF_DOWN);
 
     log.info(
-        market.getName()
-            + " Amount of base currency ("
-            + market.getBaseCurrency()
-            + ") to BUY for "
-            + new DecimalFormat(DECIMAL_FORMAT).format(amountOfCounterCurrencyToTrade)
-            + " "
-            + market.getCounterCurrency()
-            + " based on last market trade price: "
-            + amountOfBaseCurrencyToBuy);
+        "{} Amount of base currency ({}) to BUY for {} {} based on last market trade price: {}",
+        market.getName(),
+        market.getBaseCurrency(),
+        new DecimalFormat(DECIMAL_FORMAT).format(amountOfCounterCurrencyToTrade),
+        market.getCounterCurrency(),
+        amountOfBaseCurrencyToBuy);
 
     return amountOfBaseCurrencyToBuy;
   }
@@ -647,12 +628,12 @@ public class ExampleScalpingStrategy implements TradingStrategy {
           "Mandatory counter-currency-buy-order-amount value missing in strategy.xml config.");
     }
     log.info(
-        "<counter-currency-buy-order-amount> from config is: "
-            + counterCurrencyBuyOrderAmountFromConfigAsString);
+        "<counter-currency-buy-order-amount> from config is: {}",
+        counterCurrencyBuyOrderAmountFromConfigAsString);
 
     // Will fail fast if value is not a number
     counterCurrencyBuyOrderAmount = new BigDecimal(counterCurrencyBuyOrderAmountFromConfigAsString);
-    log.info("counterCurrencyBuyOrderAmount: " + counterCurrencyBuyOrderAmount);
+    log.info("counterCurrencyBuyOrderAmount: {}", counterCurrencyBuyOrderAmount);
 
     // Get min % gain...
     final String minimumPercentageGainFromConfigAsString =
@@ -663,7 +644,7 @@ public class ExampleScalpingStrategy implements TradingStrategy {
           "Mandatory minimum-percentage-gain value missing in strategy.xml config.");
     }
     log.info(
-        "<minimum-percentage-gain> from config is: " + minimumPercentageGainFromConfigAsString);
+        "<minimum-percentage-gain> from config is: {}", minimumPercentageGainFromConfigAsString);
 
     // Will fail fast if value is not a number
     final BigDecimal minimumPercentageGainFromConfig =
@@ -671,7 +652,7 @@ public class ExampleScalpingStrategy implements TradingStrategy {
     minimumPercentageGain =
         minimumPercentageGainFromConfig.divide(new BigDecimal(100), 8, RoundingMode.HALF_UP);
 
-    log.info("minimumPercentageGain in decimal is: " + minimumPercentageGain);
+    log.info("minimumPercentageGain in decimal is: {}", minimumPercentageGain);
   }
 
   /**
