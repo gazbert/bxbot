@@ -52,7 +52,7 @@ To work on something, whether a new feature or a bug fix:
   branch on the server. When writing a commit message please use 
   [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) that include references to 
   issue being addressed, so that they will be automatically closed on a merge e.g. 
-  ```fix: #123 - Fixed the NullPointer bug``` - see 
+  ```fix: Fixed the NullPointer bug (#123)``` - see 
   [here](https://help.github.com/articles/closing-issues-via-commit-messages/) for more details.
 
   6. Any code changes that affect documentation (e.g. README.md) should be accompanied by 
