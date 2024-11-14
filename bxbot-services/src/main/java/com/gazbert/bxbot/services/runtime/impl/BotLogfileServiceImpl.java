@@ -49,7 +49,7 @@ import org.springframework.stereotype.Service;
 @Log4j2
 public class BotLogfileServiceImpl implements BotLogfileService {
 
-  private static final String NEWLINE = System.getProperty("line.separator");
+  private static final String NEWLINE = System.lineSeparator();
   private final LogFileWebEndpoint logFileWebEndpoint;
 
   /**
@@ -71,10 +71,9 @@ public class BotLogfileServiceImpl implements BotLogfileService {
         return logfile;
       } else {
         log.warn(
-            "Logfile exceeds MaxFileSize. Truncating end of file. MaxFileSize: "
-                + maxFileSize
-                + " LogfileSize: "
-                + logfileLength);
+            "Logfile exceeds MaxFileSize. Truncating end of file. MaxFileSize: {} LogfileSize: {}",
+            maxFileSize,
+            logfileLength);
         final InputStream inputStream = logfile.getInputStream();
         final byte[] truncatedLogfile = new byte[maxFileSize];
         inputStream.readNBytes(truncatedLogfile, 0, maxFileSize);

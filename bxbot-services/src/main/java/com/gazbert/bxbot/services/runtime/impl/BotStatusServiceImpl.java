@@ -56,7 +56,7 @@ public class BotStatusServiceImpl implements BotStatusService {
   public String getStatus() {
     final HealthComponent health = healthEndpoint.health();
     final Status status = health.getStatus();
-    log.info("Health Status: " + status);
+    log.info("Health Status: {}", status);
     return status.getCode();
   }
 }
