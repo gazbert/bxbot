@@ -238,7 +238,7 @@ class TestJwtUtils {
 
     // Valid as token created after password last changed
     final boolean canBeRefreshed = jwtUtils.canTokenBeRefreshed(tokenClaims, DateUtil.yesterday());
-    assertThat(canBeRefreshed).isEqualTo(true);
+    assertThat(canBeRefreshed).isTrue();
   }
 
   // ------------------------------------------------------------------------

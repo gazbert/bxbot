@@ -28,7 +28,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.easymock.EasyMock.anyObject;
 import static org.easymock.EasyMock.eq;
 import static org.easymock.EasyMock.expect;
-import static org.junit.jupiter.api.Assertions.assertNull;
 
 import com.gazbert.bxbot.datastore.yaml.ConfigurationManager;
 import com.gazbert.bxbot.datastore.yaml.strategy.StrategiesType;
@@ -159,7 +158,7 @@ class TestStrategyConfigYamlRepository {
         new StrategyConfigYamlRepository(configurationManager);
     final StrategyConfig strategyConfig = strategyConfigRepository.findById(UNKNOWN_STRAT_ID);
 
-    assertNull(strategyConfig);
+    assertThat(strategyConfig).isNull();
     EasyMock.verify(configurationManager);
   }
 
@@ -213,7 +212,7 @@ class TestStrategyConfigYamlRepository {
     final StrategyConfig strategyConfig =
         strategyConfigRepository.save(someExternalStrategyConfigWithUnknownId());
 
-    assertNull(strategyConfig);
+    assertThat(strategyConfig).isNull();
     EasyMock.verify(configurationManager);
   }
 
@@ -293,7 +292,7 @@ class TestStrategyConfigYamlRepository {
         new StrategyConfigYamlRepository(configurationManager);
     final StrategyConfig strategyConfig = strategyConfigRepository.delete(UNKNOWN_STRAT_ID);
 
-    assertNull(strategyConfig);
+    assertThat(strategyConfig).isNull();
     EasyMock.verify(configurationManager);
   }
 

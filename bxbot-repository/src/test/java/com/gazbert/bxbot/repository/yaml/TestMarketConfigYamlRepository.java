@@ -85,7 +85,7 @@ class TestMarketConfigYamlRepository {
         new MarketConfigYamlRepository(configurationManager);
     final List<MarketConfig> marketConfigItems = marketConfigRepository.findAll();
 
-    assertThat(marketConfigItems.size()).isEqualTo(2);
+    assertThat(marketConfigItems).hasSize(2);
 
     assertThat(marketConfigItems.get(0).getId()).isEqualTo(MARKET_1_ID);
     assertThat(marketConfigItems.get(0).getName()).isEqualTo(MARKET_1_NAME);
@@ -181,7 +181,7 @@ class TestMarketConfigYamlRepository {
     final MarketConfig marketConfig =
         marketConfigRepository.save(someExternalMarketConfigWithUnknownId());
 
-    assertThat(marketConfig).isEqualTo(null);
+    assertThat(marketConfig).isNull();
     EasyMock.verify(configurationManager);
   }
 
