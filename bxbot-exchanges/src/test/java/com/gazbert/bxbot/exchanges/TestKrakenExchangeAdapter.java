@@ -51,6 +51,7 @@ import com.gazbert.bxbot.trading.api.TradingApiException;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.net.URI;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -75,12 +76,12 @@ import org.powermock.modules.junit4.PowerMockRunner;
  */
 @RunWith(PowerMockRunner.class)
 @PowerMockIgnore({
-    "javax.crypto.*",
-    "javax.management.*",
-    "com.sun.org.apache.xerces.*",
-    "javax.xml.parsers.*",
-    "org.xml.sax.*",
-    "org.w3c.dom.*"
+  "javax.crypto.*",
+  "javax.management.*",
+  "com.sun.org.apache.xerces.*",
+  "javax.xml.parsers.*",
+  "org.xml.sax.*",
+  "org.w3c.dom.*"
 })
 @PrepareForTest(KrakenExchangeAdapter.class)
 public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
@@ -223,7 +224,7 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
     final MarketOrderBook marketOrderBook = exchangeAdapter.getMarketOrders(MARKET_ID);
 
     // assert some key stuff; we're not testing GSON here.
-    // assertTrue(marketOrderBook.getMarketId().equals(MARKET_ID));
+    assertEquals(MARKET_ID, marketOrderBook.getMarketId());
 
     final BigDecimal buyPrice = new BigDecimal("662.55000");
     final BigDecimal buyQuantity = new BigDecimal("5.851");
@@ -1195,7 +1196,7 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
     PowerMock.expectPrivate(exchangeAdapter, MOCKED_CREATE_REQUEST_PARAM_MAP_METHOD)
         .andReturn(requestParamMap);
 
-    final URL url = new URL(PUBLIC_API_BASE_URL + TICKER);
+    final URL url = new URI(PUBLIC_API_BASE_URL + TICKER).toURL();
     PowerMock.expectPrivate(
             exchangeAdapter,
             MOCKED_MAKE_NETWORK_REQUEST_METHOD,
@@ -1229,7 +1230,7 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
     PowerMock.expectPrivate(exchangeAdapter, MOCKED_CREATE_REQUEST_PARAM_MAP_METHOD)
         .andReturn(requestParamMap);
 
-    final URL url = new URL(PUBLIC_API_BASE_URL + TICKER);
+    final URL url = new URI(PUBLIC_API_BASE_URL + TICKER).toURL();
     PowerMock.expectPrivate(
             exchangeAdapter,
             MOCKED_MAKE_NETWORK_REQUEST_METHOD,
@@ -1266,7 +1267,7 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
     PowerMock.expectPrivate(exchangeAdapter, MOCKED_CREATE_REQUEST_PARAM_MAP_METHOD)
         .andReturn(requestParamMap);
 
-    final URL url = new URL(PUBLIC_API_BASE_URL + TICKER);
+    final URL url = new URI(PUBLIC_API_BASE_URL + TICKER).toURL();
     PowerMock.expectPrivate(
             exchangeAdapter,
             MOCKED_MAKE_NETWORK_REQUEST_METHOD,
@@ -1335,7 +1336,7 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
     PowerMock.expectPrivate(exchangeAdapter, MOCKED_CREATE_REQUEST_PARAM_MAP_METHOD)
         .andReturn(requestParamMap);
 
-    final URL url = new URL(AUTHENTICATED_API_URL + ADD_ORDER);
+    final URL url = new URI(AUTHENTICATED_API_URL + ADD_ORDER).toURL();
     PowerMock.expectPrivate(
             exchangeAdapter,
             MOCKED_MAKE_NETWORK_REQUEST_METHOD,
@@ -1397,7 +1398,7 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
     PowerMock.expectPrivate(exchangeAdapter, MOCKED_CREATE_REQUEST_PARAM_MAP_METHOD)
         .andReturn(requestParamMap);
 
-    final URL url = new URL(AUTHENTICATED_API_URL + ADD_ORDER);
+    final URL url = new URI(AUTHENTICATED_API_URL + ADD_ORDER).toURL();
     PowerMock.expectPrivate(
             exchangeAdapter,
             MOCKED_MAKE_NETWORK_REQUEST_METHOD,
@@ -1456,7 +1457,7 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
     PowerMock.expectPrivate(exchangeAdapter, MOCKED_CREATE_REQUEST_PARAM_MAP_METHOD)
         .andReturn(requestParamMap);
 
-    final URL url = new URL(AUTHENTICATED_API_URL + ADD_ORDER);
+    final URL url = new URI(AUTHENTICATED_API_URL + ADD_ORDER).toURL();
     PowerMock.expectPrivate(
             exchangeAdapter,
             MOCKED_MAKE_NETWORK_REQUEST_METHOD,
@@ -1466,11 +1467,12 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
             eq(requestHeaderMap))
         .andThrow(
             new TradingApiException(
-                "Below the thunders of the upper deep;\n"
-                    + "Far far beneath in the abysmal sea,\n"
-                    + "His ancient, dreamless, uninvaded sleep\n"
-                    + "The Kraken sleepeth: faintest sunlights flee\n"
-                    + "About his shadowy sides; above him swell..."));
+                """
+                    Below the thunders of the upper deep;
+                    Far far beneath in the abysmal sea,
+                    His ancient, dreamless, uninvaded sleep
+                    The Kraken sleepeth: faintest sunlights flee
+                    About his shadowy sides; above him swell..."""));
 
     PowerMock.replayAll();
     exchangeAdapter.init(exchangeConfig);
@@ -1492,7 +1494,7 @@ public class TestKrakenExchangeAdapter extends AbstractExchangeAdapterTest {
 
   private void mockAssetPairsNetworkRequest(Object exchangeAdapter) throws Exception {
     final ExchangeHttpResponse assetsResponse = createMockAssetPairs();
-    final URL url = new URL(PUBLIC_API_BASE_URL + ASSET_PAIRS);
+    final URL url = new URI(PUBLIC_API_BASE_URL + ASSET_PAIRS).toURL();
     PowerMock.expectPrivate(
             exchangeAdapter,
             MOCKED_MAKE_NETWORK_REQUEST_METHOD,

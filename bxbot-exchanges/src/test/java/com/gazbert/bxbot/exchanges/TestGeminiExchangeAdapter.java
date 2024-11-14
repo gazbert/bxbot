@@ -45,6 +45,7 @@ import com.gazbert.bxbot.trading.api.OrderType;
 import com.gazbert.bxbot.trading.api.TradingApiException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.net.URI;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -831,7 +832,7 @@ public class TestGeminiExchangeAdapter extends AbstractExchangeAdapterTest {
     PowerMock.expectPrivate(exchangeAdapter, MOCKED_CREATE_REQUEST_PARAM_MAP_METHOD)
         .andReturn(requestParamMap);
 
-    final URL url = new URL(PUBLIC_API_BASE_URL + PUBTICKER + "/" + ETH_BTC_MARKET_ID);
+    final URL url = new URI(PUBLIC_API_BASE_URL + PUBTICKER + "/" + ETH_BTC_MARKET_ID).toURL();
     PowerMock.expectPrivate(
             exchangeAdapter,
             MOCKED_MAKE_NETWORK_REQUEST_METHOD,
@@ -863,7 +864,7 @@ public class TestGeminiExchangeAdapter extends AbstractExchangeAdapterTest {
     PowerMock.expectPrivate(exchangeAdapter, MOCKED_CREATE_REQUEST_PARAM_MAP_METHOD)
         .andReturn(requestParamMap);
 
-    final URL url = new URL(PUBLIC_API_BASE_URL + PUBTICKER + "/" + ETH_BTC_MARKET_ID);
+    final URL url = new URI(PUBLIC_API_BASE_URL + PUBTICKER + "/" + ETH_BTC_MARKET_ID).toURL();
     PowerMock.expectPrivate(
             exchangeAdapter,
             MOCKED_MAKE_NETWORK_REQUEST_METHOD,
@@ -899,7 +900,7 @@ public class TestGeminiExchangeAdapter extends AbstractExchangeAdapterTest {
     PowerMock.expectPrivate(exchangeAdapter, MOCKED_CREATE_REQUEST_PARAM_MAP_METHOD)
         .andReturn(requestParamMap);
 
-    final URL url = new URL(PUBLIC_API_BASE_URL + PUBTICKER + "/" + ETH_BTC_MARKET_ID);
+    final URL url = new URI(PUBLIC_API_BASE_URL + PUBTICKER + "/" + ETH_BTC_MARKET_ID).toURL();
     PowerMock.expectPrivate(
             exchangeAdapter,
             MOCKED_MAKE_NETWORK_REQUEST_METHOD,
@@ -963,7 +964,7 @@ public class TestGeminiExchangeAdapter extends AbstractExchangeAdapterTest {
     PowerMock.expectPrivate(exchangeAdapter, MOCKED_CREATE_REQUEST_PARAM_MAP_METHOD)
         .andReturn(requestParamMap);
 
-    final URL url = new URL(AUTHENTICATED_API_URL + ORDER_NEW);
+    final URL url = new URI(AUTHENTICATED_API_URL + ORDER_NEW).toURL();
     PowerMock.expectPrivate(
             exchangeAdapter,
             MOCKED_MAKE_NETWORK_REQUEST_METHOD,
@@ -1026,7 +1027,7 @@ public class TestGeminiExchangeAdapter extends AbstractExchangeAdapterTest {
     PowerMock.expectPrivate(exchangeAdapter, MOCKED_CREATE_REQUEST_PARAM_MAP_METHOD)
         .andReturn(requestParamMap);
 
-    final URL url = new URL(AUTHENTICATED_API_URL + ORDER_NEW);
+    final URL url = new URI(AUTHENTICATED_API_URL + ORDER_NEW).toURL();
     PowerMock.expectPrivate(
             exchangeAdapter,
             MOCKED_MAKE_NETWORK_REQUEST_METHOD,
@@ -1090,7 +1091,7 @@ public class TestGeminiExchangeAdapter extends AbstractExchangeAdapterTest {
     PowerMock.expectPrivate(exchangeAdapter, MOCKED_CREATE_REQUEST_PARAM_MAP_METHOD)
         .andReturn(requestParamMap);
 
-    final URL url = new URL(AUTHENTICATED_API_URL + ORDER_NEW);
+    final URL url = new URI(AUTHENTICATED_API_URL + ORDER_NEW).toURL();
     PowerMock.expectPrivate(
             exchangeAdapter,
             MOCKED_MAKE_NETWORK_REQUEST_METHOD,

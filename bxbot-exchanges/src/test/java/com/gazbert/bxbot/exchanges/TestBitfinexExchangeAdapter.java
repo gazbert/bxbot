@@ -46,6 +46,7 @@ import com.gazbert.bxbot.trading.api.TradingApiException;
 import com.google.gson.GsonBuilder;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.net.URI;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -70,13 +71,13 @@ import org.powermock.modules.junit4.PowerMockRunner;
  */
 @RunWith(PowerMockRunner.class)
 @PowerMockIgnore({
-    "javax.crypto.*",
-    "javax.management.*",
-    "com.sun.org.apache.xerces.*",
-    "javax.xml.parsers.*",
-    "org.xml.sax.*",
-    "org.w3c.dom.*",
-    "javax.xml.datatype.*"
+  "javax.crypto.*",
+  "javax.management.*",
+  "com.sun.org.apache.xerces.*",
+  "javax.xml.parsers.*",
+  "org.xml.sax.*",
+  "org.w3c.dom.*",
+  "javax.xml.datatype.*"
 })
 @PrepareForTest(BitfinexExchangeAdapter.class)
 public class TestBitfinexExchangeAdapter extends AbstractExchangeAdapterTest {
@@ -1053,7 +1054,7 @@ public class TestBitfinexExchangeAdapter extends AbstractExchangeAdapterTest {
             MOCKED_MAKE_NETWORK_REQUEST_METHOD,
             MOCKED_CREATE_REQUEST_PARAM_MAP_METHOD);
 
-    final URL url = new URL(PUBLIC_API_BASE_URL + PUB_TICKER + "/" + MARKET_ID);
+    final URL url = new URI(PUBLIC_API_BASE_URL + PUB_TICKER + "/" + MARKET_ID).toURL();
     PowerMock.expectPrivate(
             exchangeAdapter,
             MOCKED_MAKE_NETWORK_REQUEST_METHOD,
@@ -1080,7 +1081,7 @@ public class TestBitfinexExchangeAdapter extends AbstractExchangeAdapterTest {
             MOCKED_MAKE_NETWORK_REQUEST_METHOD,
             MOCKED_CREATE_REQUEST_PARAM_MAP_METHOD);
 
-    final URL url = new URL(PUBLIC_API_BASE_URL + PUB_TICKER + "/" + MARKET_ID);
+    final URL url = new URI(PUBLIC_API_BASE_URL + PUB_TICKER + "/" + MARKET_ID).toURL();
     PowerMock.expectPrivate(
             exchangeAdapter,
             MOCKED_MAKE_NETWORK_REQUEST_METHOD,
@@ -1116,7 +1117,7 @@ public class TestBitfinexExchangeAdapter extends AbstractExchangeAdapterTest {
             MOCKED_MAKE_NETWORK_REQUEST_METHOD,
             MOCKED_CREATE_REQUEST_PARAM_MAP_METHOD);
 
-    final URL url = new URL(PUBLIC_API_BASE_URL + PUB_TICKER + "/" + MARKET_ID);
+    final URL url = new URI(PUBLIC_API_BASE_URL + PUB_TICKER + "/" + MARKET_ID).toURL();
     PowerMock.expectPrivate(
             exchangeAdapter,
             MOCKED_MAKE_NETWORK_REQUEST_METHOD,
@@ -1183,7 +1184,7 @@ public class TestBitfinexExchangeAdapter extends AbstractExchangeAdapterTest {
     PowerMock.expectPrivate(exchangeAdapter, MOCKED_CREATE_REQUEST_HEADER_MAP_METHOD)
         .andReturn(requestHeaderMap);
 
-    final URL url = new URL(AUTHENTICATED_API_URL + ORDER_NEW);
+    final URL url = new URI(AUTHENTICATED_API_URL + ORDER_NEW).toURL();
     PowerMock.expectPrivate(
             exchangeAdapter,
             MOCKED_MAKE_NETWORK_REQUEST_METHOD,
@@ -1246,7 +1247,7 @@ public class TestBitfinexExchangeAdapter extends AbstractExchangeAdapterTest {
     PowerMock.expectPrivate(exchangeAdapter, MOCKED_CREATE_REQUEST_HEADER_MAP_METHOD)
         .andReturn(requestHeaderMap);
 
-    final URL url = new URL(AUTHENTICATED_API_URL + ORDER_NEW);
+    final URL url = new URI(AUTHENTICATED_API_URL + ORDER_NEW).toURL();
     PowerMock.expectPrivate(
             exchangeAdapter,
             MOCKED_MAKE_NETWORK_REQUEST_METHOD,
@@ -1306,7 +1307,7 @@ public class TestBitfinexExchangeAdapter extends AbstractExchangeAdapterTest {
     PowerMock.expectPrivate(exchangeAdapter, MOCKED_CREATE_REQUEST_HEADER_MAP_METHOD)
         .andReturn(requestHeaderMap);
 
-    final URL url = new URL(AUTHENTICATED_API_URL + ORDER_NEW);
+    final URL url = new URI(AUTHENTICATED_API_URL + ORDER_NEW).toURL();
     PowerMock.expectPrivate(
             exchangeAdapter,
             MOCKED_MAKE_NETWORK_REQUEST_METHOD,
