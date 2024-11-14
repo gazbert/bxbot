@@ -32,7 +32,6 @@ import com.gazbert.bxbot.repository.StrategyConfigRepository;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -77,7 +76,7 @@ public class StrategyConfigYamlRepository implements StrategyConfigRepository {
         strategiesType.getStrategies().stream()
             .filter(item -> item.getId().equals(id))
             .distinct()
-            .collect(Collectors.toList()));
+            .toList());
   }
 
   @Override
@@ -129,13 +128,13 @@ public class StrategyConfigYamlRepository implements StrategyConfigRepository {
             updatedStrategiesType.getStrategies().stream()
                 .filter(item -> item.getId().equals(config.getId()))
                 .distinct()
-                .collect(Collectors.toList()));
+                .toList());
       } else {
         log.warn(
             "Trying to update StrategyConfig but id does not exist StrategyConfig: "
-                + config
-                + " Existing StrategyConfig: "
-                + strategiesType.getStrategies());
+                + "{} Existing StrategyConfig: {}",
+            config,
+            strategiesType.getStrategies());
         return null;
       }
     }
@@ -163,9 +162,9 @@ public class StrategyConfigYamlRepository implements StrategyConfigRepository {
     } else {
       log.warn(
           "Trying to delete StrategyConfig but id does not exist. StrategyConfig id: "
-              + id
-              + " Existing StrategyConfig: "
-              + strategiesType.getStrategies());
+              + "{} Existing StrategyConfig: {}",
+          id,
+          strategiesType.getStrategies());
       return null;
     }
   }

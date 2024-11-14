@@ -32,7 +32,6 @@ import com.gazbert.bxbot.repository.MarketConfigRepository;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -79,7 +78,7 @@ public class MarketConfigYamlRepository implements MarketConfigRepository {
         marketsType.getMarkets().stream()
             .filter(item -> item.getId().equals(id))
             .distinct()
-            .collect(Collectors.toList()));
+            .toList());
   }
 
   @Override
@@ -130,7 +129,7 @@ public class MarketConfigYamlRepository implements MarketConfigRepository {
             updatedMarketsType.getMarkets().stream()
                 .filter(item -> item.getId().equals(config.getId()))
                 .distinct()
-                .collect(Collectors.toList()));
+                .toList());
       } else {
         log.warn(
             "Trying to update MarketConfig but id does not exist MarketConfig: {}"

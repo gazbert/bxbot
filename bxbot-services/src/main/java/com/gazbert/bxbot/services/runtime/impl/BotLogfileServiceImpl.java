@@ -30,7 +30,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import lombok.extern.log4j.Log4j2;
@@ -152,14 +151,14 @@ public class BotLogfileServiceImpl implements BotLogfileService {
       // Truncates the file head if file line count > maxLines
       return IntStream.range(offset < maxLines ? 0 : offset - maxLines, offset)
           .mapToObj(idx -> lines[idx % maxLines])
-          .collect(Collectors.toList());
+          .toList();
     }
 
     List<String> getHeadLines() {
       // Truncates the file tail if file line count > maxLines
       return IntStream.range(0, maxLines > offset ? offset : maxLines)
           .mapToObj(idx -> lines[idx % maxLines])
-          .collect(Collectors.toList());
+          .toList();
     }
   }
 }
