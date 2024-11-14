@@ -24,12 +24,16 @@
 package com.gazbert.bxbot.datastore.yaml.exchange;
 
 import com.gazbert.bxbot.domain.exchange.ExchangeConfig;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Wraps Exchange config for dumping to and loading from YAML.
  *
  * @author gazbert
  */
+@Setter
+@Getter
 public class ExchangeType {
 
   private ExchangeConfig exchange;
@@ -37,23 +41,5 @@ public class ExchangeType {
   /** Creates the Exchange type. */
   public ExchangeType() {
     // No extra init needed.
-  }
-
-  /**
-   * Returns the exchange config.
-   *
-   * @return the exchange config.
-   */
-  public ExchangeConfig getExchange() {
-    return exchange;
-  }
-
-  /**
-   * Sets the exchange config.
-   *
-   * @param exchange the exchange config.
-   */
-  public void setExchange(ExchangeConfig exchange) {
-    this.exchange = exchange;
   }
 }

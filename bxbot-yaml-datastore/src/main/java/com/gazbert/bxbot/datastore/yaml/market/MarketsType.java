@@ -26,12 +26,14 @@ package com.gazbert.bxbot.datastore.yaml.market;
 import com.gazbert.bxbot.domain.market.MarketConfig;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.Setter;
 
 /**
  * Wraps a list of Market configs for dumping to and loading from YAML.
  *
  * @author gazbert
  */
+@Setter
 public class MarketsType {
 
   private List<MarketConfig> markets;
@@ -51,14 +53,5 @@ public class MarketsType {
       markets = new ArrayList<>();
     }
     return markets;
-  }
-
-  /**
-   * Sets the markets config.
-   *
-   * @param markets the markets' config.
-   */
-  public void setMarkets(List<MarketConfig> markets) {
-    this.markets = markets;
   }
 }

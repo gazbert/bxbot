@@ -70,7 +70,7 @@ public class ConfigurationManager {
    */
   public synchronized <T> T loadConfig(final Class<T> configClass, String yamlConfigFile) {
 
-    log.info("Loading configuration for [" + configClass + "] from: " + yamlConfigFile + " ...");
+    log.info("Loading configuration for [{}] from: {} ...", configClass, yamlConfigFile);
 
     try (final FileInputStream fileInputStream = new FileInputStream(yamlConfigFile)) {
 
@@ -78,7 +78,7 @@ public class ConfigurationManager {
       final Yaml yaml = new Yaml(new Constructor(configClass, options));
       final T requestedConfig = yaml.load(fileInputStream);
 
-      log.info("Loaded and set configuration for [" + configClass + "] successfully!");
+      log.info("Loaded and set configuration for [{}] successfully!", configClass);
       return requestedConfig;
 
     } catch (IOException e) {
@@ -104,7 +104,7 @@ public class ConfigurationManager {
    */
   public synchronized <T> void saveConfig(Class<T> configClass, T config, String yamlConfigFile) {
 
-    log.info("Saving configuration for [" + configClass + "] to: " + yamlConfigFile + " ...");
+    log.info("Saving configuration for [{}] to: {} ...", configClass, yamlConfigFile);
 
     try (final FileOutputStream fileOutputStream = new FileOutputStream(yamlConfigFile);
         final PrintWriter writer =
@@ -119,7 +119,7 @@ public class ConfigurationManager {
       final StringBuilder sb = new StringBuilder(YAML_HEADER);
       sb.append(yaml.dumpAs(config, Tag.MAP, DumperOptions.FlowStyle.BLOCK));
 
-      log.debug("YAML file content:\n" + sb);
+      log.debug("YAML file content:\n{}", sb);
       writer.print(sb);
 
     } catch (IOException e) {

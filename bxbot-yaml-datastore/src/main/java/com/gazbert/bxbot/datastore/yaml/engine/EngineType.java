@@ -24,12 +24,16 @@
 package com.gazbert.bxbot.datastore.yaml.engine;
 
 import com.gazbert.bxbot.domain.engine.EngineConfig;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Wraps Engine config for dumping to and loading from YAML.
  *
  * @author gazbert
  */
+@Setter
+@Getter
 public class EngineType {
 
   private EngineConfig engine;
@@ -37,23 +41,5 @@ public class EngineType {
   /** Creates the Engine type. */
   public EngineType() {
     // No extra init needed.
-  }
-
-  /**
-   * Returns the engine config.
-   *
-   * @return the engine config.
-   */
-  public EngineConfig getEngine() {
-    return engine;
-  }
-
-  /**
-   * Sets the engine config.
-   *
-   * @param engine the engine config.
-   */
-  public void setEngine(EngineConfig engine) {
-    this.engine = engine;
   }
 }

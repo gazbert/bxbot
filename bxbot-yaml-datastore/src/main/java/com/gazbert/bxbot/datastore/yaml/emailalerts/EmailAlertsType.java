@@ -24,12 +24,16 @@
 package com.gazbert.bxbot.datastore.yaml.emailalerts;
 
 import com.gazbert.bxbot.domain.emailalerts.EmailAlertsConfig;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Wraps Email Alerts config for dumping to and loading from YAML.
  *
  * @author gazbert
  */
+@Setter
+@Getter
 public class EmailAlertsType {
 
   private EmailAlertsConfig emailAlerts;
@@ -37,23 +41,5 @@ public class EmailAlertsType {
   /** Creates the Email Alerts type. */
   public EmailAlertsType() {
     // No extra init needed.
-  }
-
-  /**
-   * Returns the email alerts config.
-   *
-   * @return the email alerts config.
-   */
-  public EmailAlertsConfig getEmailAlerts() {
-    return emailAlerts;
-  }
-
-  /**
-   * Sets the email alerts config.
-   *
-   * @param emailAlerts the email alerts config.
-   */
-  public void setEmailAlerts(EmailAlertsConfig emailAlerts) {
-    this.emailAlerts = emailAlerts;
   }
 }
