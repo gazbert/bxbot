@@ -132,7 +132,8 @@ public class MarketConfigController extends RestController {
             content = @Content(schema = @Schema(implementation = String.class)))
       })
   public ResponseEntity<MarketConfig> getMarket(
-      @Parameter(hidden = true) Principal principal, @PathVariable String marketId) {
+      @Parameter(hidden = true) Principal principal,
+      @PathVariable(name = "marketId") String marketId) {
 
     log.info(
         "GET " + MARKETS_RESOURCE_PATH + "/{} - getMarket() - caller: {}",
@@ -174,7 +175,7 @@ public class MarketConfigController extends RestController {
       })
   public ResponseEntity<MarketConfig> updateMarket(
       @Parameter(hidden = true) Principal principal,
-      @PathVariable String marketId,
+      @PathVariable(name = "marketId") String marketId,
       @RequestBody MarketConfig config) {
 
     log.info(
@@ -257,7 +258,8 @@ public class MarketConfigController extends RestController {
             content = @Content(schema = @Schema(implementation = String.class)))
       })
   public ResponseEntity<MarketConfig> deleteMarket(
-      @Parameter(hidden = true) Principal principal, @PathVariable String marketId) {
+      @Parameter(hidden = true) Principal principal,
+      @PathVariable(name = "marketId") String marketId) {
 
     log.info(
         "DELETE " + MARKETS_RESOURCE_PATH + "/{} - deleteMarket() - caller: {}",
