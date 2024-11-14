@@ -195,20 +195,10 @@ class TestStrategyConfigurationManagement {
         .isEqualTo(STRAT_CLASSNAME_1);
     assertThat(strategiesReloaded.getStrategies().get(0).getBeanName()).isNull();
 
-    assertThat(
-            strategiesReloaded
-                .getStrategies()
-                .get(0)
-                .getConfigItems()
-                .get(BUY_PRICE_CONFIG_ITEM_KEY))
-        .isEqualTo(BUY_PRICE_CONFIG_ITEM_VALUE);
-    assertThat(
-            strategiesReloaded
-                .getStrategies()
-                .get(0)
-                .getConfigItems()
-                .get(AMOUNT_TO_BUY_CONFIG_ITEM_KEY))
-        .isEqualTo(AMOUNT_TO_BUY_CONFIG_ITEM_VALUE);
+    assertThat(strategiesReloaded.getStrategies().get(0).getConfigItems())
+        .containsEntry(BUY_PRICE_CONFIG_ITEM_KEY, BUY_PRICE_CONFIG_ITEM_VALUE);
+    assertThat(strategiesReloaded.getStrategies().get(0).getConfigItems())
+        .containsEntry(AMOUNT_TO_BUY_CONFIG_ITEM_KEY, AMOUNT_TO_BUY_CONFIG_ITEM_VALUE);
 
     // Strat 2
     assertThat(strategiesReloaded.getStrategies().get(1).getId()).isEqualTo(STRAT_ID_2);
@@ -219,20 +209,10 @@ class TestStrategyConfigurationManagement {
     assertThat(strategiesReloaded.getStrategies().get(1).getBeanName())
         .isEqualTo(STRAT_BEAN_NAME_2);
 
-    assertThat(
-            strategiesReloaded
-                .getStrategies()
-                .get(1)
-                .getConfigItems()
-                .get(BUY_PRICE_CONFIG_ITEM_KEY))
-        .isEqualTo(BUY_PRICE_CONFIG_ITEM_VALUE);
-    assertThat(
-            strategiesReloaded
-                .getStrategies()
-                .get(1)
-                .getConfigItems()
-                .get(AMOUNT_TO_BUY_CONFIG_ITEM_KEY))
-        .isEqualTo(AMOUNT_TO_BUY_CONFIG_ITEM_VALUE);
+    assertThat(strategiesReloaded.getStrategies().get(1).getConfigItems())
+        .containsEntry(BUY_PRICE_CONFIG_ITEM_KEY, BUY_PRICE_CONFIG_ITEM_VALUE);
+    assertThat(strategiesReloaded.getStrategies().get(1).getConfigItems())
+        .containsEntry(AMOUNT_TO_BUY_CONFIG_ITEM_KEY, AMOUNT_TO_BUY_CONFIG_ITEM_VALUE);
 
     // cleanup
     Files.delete(FileSystems.getDefault().getPath(YAML_CONFIG_TO_SAVE_FILENAME));
