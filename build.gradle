@@ -107,7 +107,7 @@ allprojects {
   apply plugin: 'org.sonarqube'
 
   group = 'com.gazbert.bxbot'
-  version = '2.2.1'
+  version = '2.2.2-SNAPSHOT'
 
   dependencyManagement {
     applyMavenExclusions = false
