@@ -88,7 +88,7 @@ public class CoinbaseIT {
   public void testPublicApiCalls() throws Exception {
     replay(authenticationConfig, networkConfig, otherConfig, exchangeConfig);
 
-    final ExchangeAdapter exchangeAdapter = new CoinbaseAdvancedExchangeAdapter();
+    final ExchangeAdapter exchangeAdapter = new CoinbaseExchangeAdapter();
     exchangeAdapter.init(exchangeConfig);
 
     final MarketOrderBook orderBook = exchangeAdapter.getMarketOrders(MARKET_ID);

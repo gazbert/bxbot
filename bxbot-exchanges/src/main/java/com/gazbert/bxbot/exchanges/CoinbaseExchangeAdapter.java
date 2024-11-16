@@ -64,7 +64,7 @@ import lombok.extern.log4j.Log4j2;
  * @since 1.0
  */
 @Log4j2
-public class CoinbaseAdvancedExchangeAdapter extends AbstractExchangeAdapter
+public class CoinbaseExchangeAdapter extends AbstractExchangeAdapter
     implements ExchangeAdapter {
 
   private static final String EXCHANGE_ADAPTER_NAME = "Coinbase Advanced Trade REST API v3";
@@ -94,7 +94,7 @@ public class CoinbaseAdvancedExchangeAdapter extends AbstractExchangeAdapter
   private Gson gson;
 
   /** Constructs the Exchange Adapter. */
-  public CoinbaseAdvancedExchangeAdapter() {
+  public CoinbaseExchangeAdapter() {
     // No extra init.
   }
 

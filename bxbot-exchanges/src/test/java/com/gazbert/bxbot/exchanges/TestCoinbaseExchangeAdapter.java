@@ -64,8 +64,8 @@ import org.powermock.modules.junit4.PowerMockRunner;
   "org.w3c.dom.*",
   "javax.xml.datatype.*"
 })
-@PrepareForTest(CoinbaseAdvancedExchangeAdapter.class)
-public class TestCoinbaseAdvancedExchangeAdapter extends AbstractExchangeAdapterTest {
+@PrepareForTest(CoinbaseExchangeAdapter.class)
+public class TestCoinbaseExchangeAdapter extends AbstractExchangeAdapterTest {
 
   private static final String PRODUCT_BOOK_JSON_RESPONSE =
       "./src/test/exchange-data/coinbase/product_book.json";
@@ -130,9 +130,9 @@ public class TestCoinbaseAdvancedExchangeAdapter extends AbstractExchangeAdapter
     final Map<String, Object> requestParamMap = PowerMock.createMock(Map.class);
     expect(requestParamMap.put(PRODUCT_ID_PARAM, MARKET_ID)).andStubReturn(null);
 
-    final CoinbaseAdvancedExchangeAdapter exchangeAdapter =
+    final CoinbaseExchangeAdapter exchangeAdapter =
         PowerMock.createPartialMockAndInvokeDefaultConstructor(
-            CoinbaseAdvancedExchangeAdapter.class,
+            CoinbaseExchangeAdapter.class,
             MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD,
             MOCKED_CREATE_REQUEST_PARAM_MAP_METHOD);
 
@@ -183,7 +183,7 @@ public class TestCoinbaseAdvancedExchangeAdapter extends AbstractExchangeAdapter
   @Test
   public void testGettingImplNameIsAsExpected() {
     PowerMock.replayAll();
-    final CoinbaseAdvancedExchangeAdapter exchangeAdapter = new CoinbaseAdvancedExchangeAdapter();
+    final CoinbaseExchangeAdapter exchangeAdapter = new CoinbaseExchangeAdapter();
     exchangeAdapter.init(exchangeConfig);
 
     assertEquals("Coinbase Advanced Trade REST API v3", exchangeAdapter.getImplName());
