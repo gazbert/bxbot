@@ -21,6 +21,9 @@
               files="GeminiIT.java"
               lines="1-9999"/>
     <suppress checks="AbbreviationAsWordInName"
+              files="CoinbaseIT.java"
+              lines="1-9999"/>
+    <suppress checks="AbbreviationAsWordInName"
               files="CoinbaseProIT.java"
               lines="1-9999"/>
 </suppressions>
