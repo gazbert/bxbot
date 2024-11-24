@@ -34,6 +34,7 @@ import com.gazbert.bxbot.trading.api.MarketOrder;
 import com.gazbert.bxbot.trading.api.MarketOrderBook;
 import com.gazbert.bxbot.trading.api.OpenOrder;
 import com.gazbert.bxbot.trading.api.OrderType;
+import com.gazbert.bxbot.trading.api.Ticker;
 import com.gazbert.bxbot.trading.api.TradingApiException;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -64,8 +65,7 @@ import lombok.extern.log4j.Log4j2;
  * @since 1.0
  */
 @Log4j2
-public class CoinbaseExchangeAdapter extends AbstractExchangeAdapter
-    implements ExchangeAdapter {
+public class CoinbaseExchangeAdapter extends AbstractExchangeAdapter implements ExchangeAdapter {
 
   private static final String EXCHANGE_ADAPTER_NAME = "Coinbase Advanced Trade REST API v3";
 
@@ -75,6 +75,11 @@ public class CoinbaseExchangeAdapter extends AbstractExchangeAdapter
   private static final String PRODUCT_ID_PARAM = "product_id";
   private static final String PRODUCT_BOOK_LIMIT_PARAM = "limit";
   private static final int PRODUCT_BOOK_LIMIT_VALUE = 100;
+
+  private static final String MARKET_PRODUCTS = "/market/products/";
+  private static final String TICKER = "/ticker";
+  private static final String TICKER_LIMIT_PARAM = "limit";
+  private static final int TICKER_LIMIT_VALUE = 1;
 
   private static final String UNEXPECTED_ERROR_MSG =
       "Unexpected error has occurred in Coinbase Advanced Trade Exchange Adapter. ";
@@ -131,12 +136,11 @@ public class CoinbaseExchangeAdapter extends AbstractExchangeAdapter
       log.info("Market Orders response: {}", response);
 
       if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
-        final CoinbaseAdvancedTradeProductBookWrapper productBookWrapper =
-            gson.fromJson(response.getPayload(), CoinbaseAdvancedTradeProductBookWrapper.class);
+        final CoinbaseProductBookWrapper productBookWrapper =
+            gson.fromJson(response.getPayload(), CoinbaseProductBookWrapper.class);
 
         final List<MarketOrder> buyOrders = new ArrayList<>();
-        for (CoinbaseAdvancedTradePriceBookOrder coinbaseProBuyOrder :
-            productBookWrapper.pricebook.bids) {
+        for (CoinbasePriceBookOrder coinbaseProBuyOrder : productBookWrapper.pricebook.bids) {
           final MarketOrder buyOrder =
               new MarketOrderImpl(
                   OrderType.BUY,
@@ -147,8 +151,7 @@ public class CoinbaseExchangeAdapter extends AbstractExchangeAdapter
         }
 
         final List<MarketOrder> sellOrders = new ArrayList<>();
-        for (CoinbaseAdvancedTradePriceBookOrder coinbaseProSellOrder :
-            productBookWrapper.pricebook.asks) {
+        for (CoinbasePriceBookOrder coinbaseProSellOrder : productBookWrapper.pricebook.asks) {
           final MarketOrder sellOrder =
               new MarketOrderImpl(
                   OrderType.SELL,
@@ -178,11 +181,42 @@ public class CoinbaseExchangeAdapter extends AbstractExchangeAdapter
   @Override
   public BigDecimal getLatestMarketPrice(String marketId)
       throws ExchangeNetworkException, TradingApiException {
-    throw new UnsupportedOperationException("TODO: This method not developed yet!");
+
+    try {
+      final Map<String, String> params = createRequestParamMap();
+      params.put(TICKER_LIMIT_PARAM, String.valueOf(TICKER_LIMIT_VALUE));
+
+      final ExchangeHttpResponse response =
+          sendPublicRequestToExchange(MARKET_PRODUCTS + marketId + TICKER, params);
+
+      log.debug("Latest Market Price response: {}", response);
+
+      if (response.getStatusCode() == HttpURLConnection.HTTP_OK) {
+        final CoinbaseExchangeAdapter.CoinbaseTickerWrapper coinbaseTickerWrapper =
+            gson.fromJson(
+                response.getPayload(), CoinbaseExchangeAdapter.CoinbaseTickerWrapper.class);
+
+        // Grab the first and only trade entry in the ticker.
+        final CoinbaseTrade lastTrade = coinbaseTickerWrapper.trades.get(0);
+        return lastTrade.price;
+
+      } else {
+        final String errorMsg =
+            "Failed to get latest market price from exchange. Details: " + response;
+        log.error(errorMsg);
+        throw new TradingApiException(errorMsg);
+      }
+    } catch (ExchangeNetworkException | TradingApiException e) {
+      throw e;
+
+    } catch (Exception e) {
+      log.error(UNEXPECTED_ERROR_MSG, e);
+      throw new TradingApiException(UNEXPECTED_ERROR_MSG, e);
+    }
   }
 
   @Override
-  public BalanceInfo getBalanceInfo() throws ExchangeNetworkException, TradingApiException {
+  public Ticker getTicker(String marketId) throws ExchangeNetworkException, TradingApiException {
     throw new UnsupportedOperationException("TODO: This method not developed yet!");
   }
 
@@ -193,6 +227,11 @@ public class CoinbaseExchangeAdapter extends AbstractExchangeAdapter
   @Override
   public List<OpenOrder> getYourOpenOrders(String marketId)
       throws ExchangeNetworkException, TradingApiException {
+    throw new UnsupportedOperationException("TODO: This method not developed yet!");
+  }
+
+  @Override
+  public BalanceInfo getBalanceInfo() throws ExchangeNetworkException, TradingApiException {
     throw new UnsupportedOperationException("TODO: This method not developed yet!");
   }
 
@@ -234,8 +273,8 @@ public class CoinbaseExchangeAdapter extends AbstractExchangeAdapter
    * Book API response.
    */
   @ToString
-  private static class CoinbaseAdvancedTradeProductBookWrapper {
-    CoinbaseAdvancedTradePriceBook pricebook;
+  private static class CoinbaseProductBookWrapper {
+    CoinbasePriceBook pricebook;
     BigDecimal last;
 
     @SerializedName("mid_market")
@@ -248,22 +287,57 @@ public class CoinbaseExchangeAdapter extends AbstractExchangeAdapter
     BigDecimal spreadAbsolute;
   }
 
-  /** GSON class for Coinbase Advanced Trade Price Book. */
+  /** GSON class for a Coinbase Advanced Trade Price Book. */
   @ToString
-  private static class CoinbaseAdvancedTradePriceBook {
+  private static class CoinbasePriceBook {
     @SerializedName("product_id")
     String productId;
 
-    List<CoinbaseAdvancedTradePriceBookOrder> bids;
-    List<CoinbaseAdvancedTradePriceBookOrder> asks;
+    List<CoinbasePriceBookOrder> bids;
+    List<CoinbasePriceBookOrder> asks;
     String time;
   }
 
-  /** GSON class for Coinbase Advanced Trade Price Book Order. */
+  /** GSON class for a Coinbase Advanced Trade Price Book Order. */
   @ToString
-  private static class CoinbaseAdvancedTradePriceBookOrder {
+  private static class CoinbasePriceBookOrder {
     BigDecimal price;
     BigDecimal size;
+  }
+
+  /**
+   * GSON class for Coinbase Advanced Trade '/market/products/{product_id}/ticker' API call
+   * response.
+   */
+  @ToString
+  private static class CoinbaseTickerWrapper {
+
+    List<CoinbaseTrade> trades;
+
+    @SerializedName("best_bid")
+    BigDecimal bestBid;
+
+    @SerializedName("best_ask")
+    BigDecimal bestAsk;
+  }
+
+  /** GSON class for a Coinbase Advanced Trade "Trade". */
+  @ToString
+  private static class CoinbaseTrade {
+
+    @SerializedName("trade_id")
+    Long tradeId;
+
+    @SerializedName("product_id")
+    String productId;
+
+    BigDecimal price;
+    BigDecimal size;
+    String time; // e.g. "2024-11-24T16:46:09.736169Z"
+    String side; // "BUY" | "SELL"
+    String bid; // always blank i.e. ""
+    String ask; // always blank i.e.  ""
+    String exchange; // coinbase
   }
 
   // --------------------------------------------------------------------------

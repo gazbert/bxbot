@@ -28,6 +28,7 @@ import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.gazbert.bxbot.exchange.api.AuthenticationConfig;
@@ -48,7 +49,7 @@ import org.junit.Test;
  */
 public class CoinbaseIT {
 
-  private static final String MARKET_ID = "BTC-GBP";
+  private static final String MARKET_ID = "BTC-USD";
 
   private static final String PASSPHRASE = "lePassPhrase";
   private static final String KEY = "key123";
@@ -95,6 +96,8 @@ public class CoinbaseIT {
     final MarketOrderBook orderBook = exchangeAdapter.getMarketOrders(MARKET_ID);
     assertEquals(100, orderBook.getBuyOrders().size());
     assertEquals(100, orderBook.getSellOrders().size());
+
+    assertNotNull(exchangeAdapter.getLatestMarketPrice(MARKET_ID));
 
     verify(authenticationConfig, networkConfig, otherConfig, exchangeConfig);
   }

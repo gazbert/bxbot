@@ -32,9 +32,12 @@ import com.gazbert.bxbot.exchange.api.AuthenticationConfig;
 import com.gazbert.bxbot.exchange.api.ExchangeConfig;
 import com.gazbert.bxbot.exchange.api.NetworkConfig;
 import com.gazbert.bxbot.exchange.api.OtherConfig;
+import com.gazbert.bxbot.trading.api.ExchangeNetworkException;
 import com.gazbert.bxbot.trading.api.MarketOrderBook;
 import com.gazbert.bxbot.trading.api.OrderType;
+import com.gazbert.bxbot.trading.api.TradingApiException;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -69,14 +72,20 @@ public class TestCoinbaseExchangeAdapter extends AbstractExchangeAdapterTest {
 
   private static final String PRODUCT_BOOK_JSON_RESPONSE =
       "./src/test/exchange-data/coinbase/product_book.json";
+  private static final String TICKER_JSON_RESPONSE =
+      "./src/test/exchange-data/coinbase/ticker.json";
 
-  private static final String MARKET_ID = "BTC-GBP";
+  private static final String MARKET_ID = "BTC-USD";
 
   private static final String PRODUCT_BOOK = "/market/product_book";
   private static final String PRODUCT_ID_PARAM = "product_id";
-
   private static final String PRODUCT_BOOK_LIMIT_PARAM = "limit";
   private static final int PRODUCT_BOOK_LIMIT_VALUE = 100;
+
+  private static final String MARKET_PRODUCTS = "/market/products/";
+  private static final String TICKER = "/ticker";
+  private static final String TICKER_LIMIT_PARAM = "limit";
+  private static final int TICKER_LIMIT_VALUE = 1;
 
   private static final String MOCKED_CREATE_REQUEST_PARAM_MAP_METHOD = "createRequestParamMap";
   private static final String MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD =
@@ -130,7 +139,7 @@ public class TestCoinbaseExchangeAdapter extends AbstractExchangeAdapterTest {
         new AbstractExchangeAdapter.ExchangeHttpResponse(
             200, "OK", new String(encoded, StandardCharsets.UTF_8));
 
-    final Map<String, Object> requestParamMap = PowerMock.createMock(Map.class);
+    final Map<String, String> requestParamMap = PowerMock.createMock(Map.class);
     expect(requestParamMap.put(PRODUCT_ID_PARAM, MARKET_ID)).andStubReturn(null);
     expect(requestParamMap.put(PRODUCT_BOOK_LIMIT_PARAM, String.valueOf(PRODUCT_BOOK_LIMIT_VALUE)))
         .andStubReturn(null);
@@ -178,6 +187,176 @@ public class TestCoinbaseExchangeAdapter extends AbstractExchangeAdapterTest {
     assertEquals(0, marketOrderBook.getSellOrders().get(0).getQuantity().compareTo(sellQuantity));
     assertEquals(0, marketOrderBook.getSellOrders().get(0).getTotal().compareTo(sellTotal));
 
+    PowerMock.verifyAll();
+  }
+
+  @Test(expected = ExchangeNetworkException.class)
+  @SuppressWarnings("unchecked")
+  public void testGettingMarketOrdersHandlesExchangeNetworkException() throws Exception {
+
+    final Map<String, String> requestParamMap = PowerMock.createMock(Map.class);
+    expect(requestParamMap.put(PRODUCT_ID_PARAM, MARKET_ID)).andStubReturn(null);
+    expect(requestParamMap.put(PRODUCT_BOOK_LIMIT_PARAM, String.valueOf(PRODUCT_BOOK_LIMIT_VALUE)))
+        .andStubReturn(null);
+
+    final CoinbaseExchangeAdapter exchangeAdapter =
+        PowerMock.createPartialMockAndInvokeDefaultConstructor(
+            CoinbaseExchangeAdapter.class,
+            MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD,
+            MOCKED_CREATE_REQUEST_PARAM_MAP_METHOD);
+
+    PowerMock.expectPrivate(exchangeAdapter, MOCKED_CREATE_REQUEST_PARAM_MAP_METHOD)
+        .andReturn(requestParamMap);
+    PowerMock.expectPrivate(
+            exchangeAdapter,
+            MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD,
+            eq(PRODUCT_BOOK),
+            eq(requestParamMap))
+        .andThrow(new ExchangeNetworkException("Re-verify our range to target... one ping only."));
+
+    PowerMock.replayAll();
+    exchangeAdapter.init(exchangeConfig);
+
+    exchangeAdapter.getMarketOrders(MARKET_ID);
+    PowerMock.verifyAll();
+  }
+
+  @Test(expected = TradingApiException.class)
+  @SuppressWarnings("unchecked")
+  public void testGettingMarketOrdersHandlesUnexpectedException() throws Exception {
+
+    final Map<String, String> requestParamMap = PowerMock.createMock(Map.class);
+    expect(requestParamMap.put(PRODUCT_ID_PARAM, MARKET_ID)).andStubReturn(null);
+    expect(requestParamMap.put(PRODUCT_BOOK_LIMIT_PARAM, String.valueOf(PRODUCT_BOOK_LIMIT_VALUE)))
+        .andStubReturn(null);
+
+    final CoinbaseExchangeAdapter exchangeAdapter =
+        PowerMock.createPartialMockAndInvokeDefaultConstructor(
+            CoinbaseExchangeAdapter.class,
+            MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD,
+            MOCKED_CREATE_REQUEST_PARAM_MAP_METHOD);
+
+    PowerMock.expectPrivate(exchangeAdapter, MOCKED_CREATE_REQUEST_PARAM_MAP_METHOD)
+        .andReturn(requestParamMap);
+    PowerMock.expectPrivate(
+            exchangeAdapter,
+            MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD,
+            eq(PRODUCT_BOOK),
+            eq(requestParamMap))
+        .andThrow(
+            new IllegalArgumentException(
+                "Mr. Ambassador, you have nearly a hundred naval vessels operating in the "
+                    + "North Atlantic right now. Your aircraft has dropped enough sonar buoys "
+                    + "so that a man could walk from Greenland to Iceland to Scotland without "
+                    + "getting his feet wet. Now, shall we dispense with the bull?"));
+
+    PowerMock.replayAll();
+    exchangeAdapter.init(exchangeConfig);
+
+    exchangeAdapter.getMarketOrders(MARKET_ID);
+    PowerMock.verifyAll();
+  }
+
+  // --------------------------------------------------------------------------
+  //  Get Latest Market Price tests
+  // --------------------------------------------------------------------------
+
+  @Test
+  @SuppressWarnings("unchecked")
+  public void testGettingLatestMarketPriceSuccessfully() throws Exception {
+
+    final byte[] encoded = Files.readAllBytes(Paths.get(TICKER_JSON_RESPONSE));
+    final AbstractExchangeAdapter.ExchangeHttpResponse exchangeResponse =
+        new AbstractExchangeAdapter.ExchangeHttpResponse(
+            200, "OK", new String(encoded, StandardCharsets.UTF_8));
+
+    final Map<String, String> requestParamMap = PowerMock.createMock(Map.class);
+    expect(requestParamMap.put(TICKER_LIMIT_PARAM, String.valueOf(TICKER_LIMIT_VALUE)))
+        .andStubReturn(null);
+
+    final CoinbaseExchangeAdapter exchangeAdapter =
+        PowerMock.createPartialMockAndInvokeDefaultConstructor(
+            CoinbaseExchangeAdapter.class,
+            MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD,
+            MOCKED_CREATE_REQUEST_PARAM_MAP_METHOD);
+
+    PowerMock.expectPrivate(exchangeAdapter, MOCKED_CREATE_REQUEST_PARAM_MAP_METHOD)
+        .andReturn(requestParamMap);
+    PowerMock.expectPrivate(
+            exchangeAdapter,
+            MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD,
+            eq(MARKET_PRODUCTS + MARKET_ID + TICKER),
+            eq(requestParamMap))
+        .andReturn(exchangeResponse);
+
+    PowerMock.replayAll();
+    exchangeAdapter.init(exchangeConfig);
+
+    final BigDecimal latestMarketPrice =
+        exchangeAdapter.getLatestMarketPrice(MARKET_ID).setScale(8, RoundingMode.HALF_UP);
+    assertEquals(0, latestMarketPrice.compareTo(new BigDecimal("96707.59")));
+
+    PowerMock.verifyAll();
+  }
+
+  @Test(expected = ExchangeNetworkException.class)
+  @SuppressWarnings("unchecked")
+  public void testGettingLatestMarketPriceHandlesExchangeNetworkException() throws Exception {
+
+    final Map<String, String> requestParamMap = PowerMock.createMock(Map.class);
+    expect(requestParamMap.put(TICKER_LIMIT_PARAM, String.valueOf(TICKER_LIMIT_VALUE)))
+        .andStubReturn(null);
+
+    final CoinbaseExchangeAdapter exchangeAdapter =
+        PowerMock.createPartialMockAndInvokeDefaultConstructor(
+            CoinbaseExchangeAdapter.class,
+            MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD,
+            MOCKED_CREATE_REQUEST_PARAM_MAP_METHOD);
+
+    PowerMock.expectPrivate(exchangeAdapter, MOCKED_CREATE_REQUEST_PARAM_MAP_METHOD)
+        .andReturn(requestParamMap);
+    PowerMock.expectPrivate(
+            exchangeAdapter,
+            MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD,
+            eq(MARKET_PRODUCTS + MARKET_ID + TICKER),
+            eq(requestParamMap))
+        .andThrow(
+            new ExchangeNetworkException("I need your clothes, your boots and your motorcycle."));
+
+    PowerMock.replayAll();
+    exchangeAdapter.init(exchangeConfig);
+
+    exchangeAdapter.getLatestMarketPrice(MARKET_ID);
+    PowerMock.verifyAll();
+  }
+
+  @Test(expected = TradingApiException.class)
+  @SuppressWarnings("unchecked")
+  public void testGettingLatestMarketPriceHandlesUnexpectedException() throws Exception {
+
+    final Map<String, String> requestParamMap = PowerMock.createMock(Map.class);
+    expect(requestParamMap.put(TICKER_LIMIT_PARAM, String.valueOf(TICKER_LIMIT_VALUE)))
+        .andStubReturn(null);
+
+    final CoinbaseExchangeAdapter exchangeAdapter =
+        PowerMock.createPartialMockAndInvokeDefaultConstructor(
+            CoinbaseExchangeAdapter.class,
+            MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD,
+            MOCKED_CREATE_REQUEST_PARAM_MAP_METHOD);
+
+    PowerMock.expectPrivate(exchangeAdapter, MOCKED_CREATE_REQUEST_PARAM_MAP_METHOD)
+        .andReturn(requestParamMap);
+    PowerMock.expectPrivate(
+            exchangeAdapter,
+            MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD,
+            eq(MARKET_PRODUCTS + MARKET_ID + TICKER),
+            eq(requestParamMap))
+        .andThrow(new IllegalArgumentException("Come with me if you want to live."));
+
+    PowerMock.replayAll();
+    exchangeAdapter.init(exchangeConfig);
+
+    exchangeAdapter.getLatestMarketPrice(MARKET_ID);
     PowerMock.verifyAll();
   }
 
