@@ -372,6 +372,10 @@ public class CoinbaseExchangeAdapter extends AbstractExchangeAdapter implements 
         }
 
         requestHeaders.put("Content-Type", "application/x-www-form-urlencoded");
+
+        // Bypass the exchange 1s cache.
+        // See: https://docs.cdp.coinbase.com/advanced-trade/docs/api-overview#public-endpoints
+        requestHeaders.put("Cache-Control", "no-cache");
       }
 
       final URL url = new URL(PUBLIC_API_BASE_URL + apiMethod + queryString);
