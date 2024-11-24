@@ -75,6 +75,9 @@ public class TestCoinbaseExchangeAdapter extends AbstractExchangeAdapterTest {
   private static final String PRODUCT_BOOK = "/market/product_book";
   private static final String PRODUCT_ID_PARAM = "product_id";
 
+  private static final String PRODUCT_BOOK_LIMIT_PARAM = "limit";
+  private static final int PRODUCT_BOOK_LIMIT_VALUE = 100;
+
   private static final String MOCKED_CREATE_REQUEST_PARAM_MAP_METHOD = "createRequestParamMap";
   private static final String MOCKED_SEND_PUBLIC_REQUEST_TO_EXCHANGE_METHOD =
       "sendPublicRequestToExchange";
@@ -129,6 +132,8 @@ public class TestCoinbaseExchangeAdapter extends AbstractExchangeAdapterTest {
 
     final Map<String, Object> requestParamMap = PowerMock.createMock(Map.class);
     expect(requestParamMap.put(PRODUCT_ID_PARAM, MARKET_ID)).andStubReturn(null);
+    expect(requestParamMap.put(PRODUCT_BOOK_LIMIT_PARAM, String.valueOf(PRODUCT_BOOK_LIMIT_VALUE)))
+        .andStubReturn(null);
 
     final CoinbaseExchangeAdapter exchangeAdapter =
         PowerMock.createPartialMockAndInvokeDefaultConstructor(
@@ -153,21 +158,21 @@ public class TestCoinbaseExchangeAdapter extends AbstractExchangeAdapterTest {
     // assert some key stuff; we're not testing GSON here.
     assertEquals(MARKET_ID, marketOrderBook.getMarketId());
 
-    final BigDecimal buyPrice = new BigDecimal("91229.9");
-    final BigDecimal buyQuantity = new BigDecimal("0.00438705");
+    final BigDecimal buyPrice = new BigDecimal("96554.73");
+    final BigDecimal buyQuantity = new BigDecimal("0.00000184");
     final BigDecimal buyTotal = buyPrice.multiply(buyQuantity);
 
-    assertEquals(1000, marketOrderBook.getBuyOrders().size());
+    assertEquals(PRODUCT_BOOK_LIMIT_VALUE, marketOrderBook.getBuyOrders().size());
     assertSame(OrderType.BUY, marketOrderBook.getBuyOrders().get(0).getType());
     assertEquals(0, marketOrderBook.getBuyOrders().get(0).getPrice().compareTo(buyPrice));
     assertEquals(0, marketOrderBook.getBuyOrders().get(0).getQuantity().compareTo(buyQuantity));
     assertEquals(0, marketOrderBook.getBuyOrders().get(0).getTotal().compareTo(buyTotal));
 
-    final BigDecimal sellPrice = new BigDecimal("91238.27");
-    final BigDecimal sellQuantity = new BigDecimal("0.00005288");
+    final BigDecimal sellPrice = new BigDecimal("96562.36");
+    final BigDecimal sellQuantity = new BigDecimal("0.03469453");
     final BigDecimal sellTotal = sellPrice.multiply(sellQuantity);
 
-    assertEquals(1000, marketOrderBook.getSellOrders().size());
+    assertEquals(PRODUCT_BOOK_LIMIT_VALUE, marketOrderBook.getSellOrders().size());
     assertSame(OrderType.SELL, marketOrderBook.getSellOrders().get(0).getType());
     assertEquals(0, marketOrderBook.getSellOrders().get(0).getPrice().compareTo(sellPrice));
     assertEquals(0, marketOrderBook.getSellOrders().get(0).getQuantity().compareTo(sellQuantity));

@@ -28,6 +28,7 @@ import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
 import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.gazbert.bxbot.exchange.api.AuthenticationConfig;
 import com.gazbert.bxbot.exchange.api.ExchangeAdapter;
@@ -92,8 +93,8 @@ public class CoinbaseIT {
     exchangeAdapter.init(exchangeConfig);
 
     final MarketOrderBook orderBook = exchangeAdapter.getMarketOrders(MARKET_ID);
-    assertFalse(orderBook.getBuyOrders().isEmpty());
-    assertFalse(orderBook.getSellOrders().isEmpty());
+    assertEquals(100, orderBook.getBuyOrders().size());
+    assertEquals(100, orderBook.getSellOrders().size());
 
     verify(authenticationConfig, networkConfig, otherConfig, exchangeConfig);
   }

@@ -73,6 +73,8 @@ public class CoinbaseExchangeAdapter extends AbstractExchangeAdapter
 
   private static final String PRODUCT_BOOK = "/market/product_book";
   private static final String PRODUCT_ID_PARAM = "product_id";
+  private static final String PRODUCT_BOOK_LIMIT_PARAM = "limit";
+  private static final int PRODUCT_BOOK_LIMIT_VALUE = 100;
 
   private static final String UNEXPECTED_ERROR_MSG =
       "Unexpected error has occurred in Coinbase Advanced Trade Exchange Adapter. ";
@@ -122,6 +124,7 @@ public class CoinbaseExchangeAdapter extends AbstractExchangeAdapter
     try {
       final Map<String, String> params = createRequestParamMap();
       params.put(PRODUCT_ID_PARAM, marketId);
+      params.put(PRODUCT_BOOK_LIMIT_PARAM, String.valueOf(PRODUCT_BOOK_LIMIT_VALUE));
 
       final ExchangeHttpResponse response = sendPublicRequestToExchange(PRODUCT_BOOK, params);
 
