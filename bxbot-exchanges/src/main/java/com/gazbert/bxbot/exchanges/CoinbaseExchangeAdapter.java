@@ -59,7 +59,7 @@ import lombok.extern.log4j.Log4j2;
  *
  * <p>This adapter only supports the Coinbase Advanced Trade <a
  * href="https://docs.cdp.coinbase.com/advanced-trade/docs/api-overview">REST API</a>. The design of
- * the API and documentation is excellent.
+ * the Coinbase API and documentation is excellent.
  *
  * @author gazbert, davidhuertas
  * @since 1.0
@@ -68,7 +68,6 @@ import lombok.extern.log4j.Log4j2;
 public class CoinbaseExchangeAdapter extends AbstractExchangeAdapter implements ExchangeAdapter {
 
   private static final String EXCHANGE_ADAPTER_NAME = "Coinbase Advanced Trade REST API v3";
-
   private static final String PUBLIC_API_BASE_URL = "https://api.coinbase.com/api/v3/brokerage";
 
   private static final String PRODUCT_BOOK = "/market/product_book";
@@ -140,24 +139,24 @@ public class CoinbaseExchangeAdapter extends AbstractExchangeAdapter implements 
             gson.fromJson(response.getPayload(), CoinbaseProductBookWrapper.class);
 
         final List<MarketOrder> buyOrders = new ArrayList<>();
-        for (CoinbasePriceBookOrder coinbaseProBuyOrder : productBookWrapper.pricebook.bids) {
+        for (CoinbasePriceBookOrder coinbasePricebookBid : productBookWrapper.pricebook.bids) {
           final MarketOrder buyOrder =
               new MarketOrderImpl(
                   OrderType.BUY,
-                  coinbaseProBuyOrder.price,
-                  coinbaseProBuyOrder.size,
-                  coinbaseProBuyOrder.price.multiply(coinbaseProBuyOrder.size));
+                  coinbasePricebookBid.price,
+                  coinbasePricebookBid.size,
+                  coinbasePricebookBid.price.multiply(coinbasePricebookBid.size));
           buyOrders.add(buyOrder);
         }
 
         final List<MarketOrder> sellOrders = new ArrayList<>();
-        for (CoinbasePriceBookOrder coinbaseProSellOrder : productBookWrapper.pricebook.asks) {
+        for (CoinbasePriceBookOrder coinbasePricebookAsk : productBookWrapper.pricebook.asks) {
           final MarketOrder sellOrder =
               new MarketOrderImpl(
                   OrderType.SELL,
-                  coinbaseProSellOrder.price,
-                  coinbaseProSellOrder.size,
-                  coinbaseProSellOrder.price.multiply(coinbaseProSellOrder.size));
+                  coinbasePricebookAsk.price,
+                  coinbasePricebookAsk.size,
+                  coinbasePricebookAsk.price.multiply(coinbasePricebookAsk.size));
           sellOrders.add(sellOrder);
         }
         return new MarketOrderBookImpl(marketId, sellOrders, buyOrders);
